@@ -31,6 +31,7 @@ package org.opennms.features.topology.app.internal.jung;
 import java.awt.geom.Point2D;
 
 import org.opennms.features.topology.api.BoundingBox;
+import org.opennms.features.topology.api.DblBoundingBox;
 import org.opennms.features.topology.api.Point;
 
 public class QuadTree<Value> {
@@ -51,7 +52,7 @@ public class QuadTree<Value> {
 
         private Point2D m_location;
         private Value m_value;
-        private BoundingBox m_bounds;
+        private DblBoundingBox m_bounds;
 
         private Node<Value>[] m_nodes;
         
@@ -59,18 +60,18 @@ public class QuadTree<Value> {
         private int m_charge;
 
         
-        public Node(BoundingBox bounds) {
+        public Node(DblBoundingBox bounds) {
             this(new Point2D.Double(bounds.getX(), bounds.getY()), null, bounds);
         }
 
-        public Node(Point2D location, Value value, BoundingBox bounds) {
+        public Node(Point2D location, Value value, DblBoundingBox bounds) {
             setLocation(location);
             setValue(value);
             setBounds(bounds);
         }
         
-        private void setBounds(BoundingBox bounds) {
-            m_bounds = new BoundingBox(bounds);
+        private void setBounds(DblBoundingBox bounds) {
+            m_bounds = new DblBoundingBox(bounds);
         }
         
         private static Point2D clonePoint(Point2D pt) {
@@ -118,7 +119,7 @@ public class QuadTree<Value> {
         }
         
         
-        public int getWidth() {
+        public double getWidth() {
             return m_bounds.getWidth();
         }
         
@@ -130,7 +131,7 @@ public class QuadTree<Value> {
         public double getY() { return m_location.getY(); }
         
         private int getQuadrant(Point2D pt) {
-            Point center = m_bounds.getCenter();
+            Point2D center = m_bounds.getCenter();
             if ( less(pt.getX(), center.getX()) &&  less(pt.getY(), center.getY())) return NW;
             if ( less(pt.getX(), center.getX()) && !less(pt.getY(), center.getY())) return SW;
             if (!less(pt.getX(), center.getX()) &&  less(pt.getY(), center.getY())) return NE;
@@ -138,16 +139,16 @@ public class QuadTree<Value> {
             return SE;
         }
         
-        private BoundingBox getChildBounds(int quadrant) {
-            int x = m_bounds.getX();
-            int y = m_bounds.getY();
-            int halfW = m_bounds.getWidth()/2;
-            int halfH = m_bounds.getHeight()/2;
+        private DblBoundingBox getChildBounds(int quadrant) {
+            double x = m_bounds.getX();
+            double y = m_bounds.getY();
+            double halfW = m_bounds.getWidth()/2;
+            double halfH = m_bounds.getHeight()/2;
             switch(quadrant) {
-            case NW: return new BoundingBox(x, y, halfW, halfH);
-            case SW: return new BoundingBox(x, y + halfH, halfW, halfH);
-            case NE: return new BoundingBox(x + halfW, y, halfW, halfH);
-            default: return new BoundingBox(x + halfW, y+halfH, halfW, halfH);
+            case NW: return new DblBoundingBox(x, y, halfW, halfH);
+            case SW: return new DblBoundingBox(x, y + halfH, halfW, halfH);
+            case NE: return new DblBoundingBox(x + halfW, y, halfW, halfH);
+            default: return new DblBoundingBox(x + halfW, y+halfH, halfW, halfH);
             }
         }
         
@@ -161,11 +162,8 @@ public class QuadTree<Value> {
             return m_nodes[quadrant];
         }
         
-        private Node<Value> getChild(Point2D pt) {
-            return getChild(getQuadrant(pt));
-        }
-        
         private boolean less(double k1, double k2) { return k1 < k2; }
+        private boolean close(Point2D a, Point2D b)   { return a.distanceSq(b) < 0.0001; }
         
         void insert(Point2D pt, int charge, Value v) {
             if (m_value == null) {
@@ -175,26 +173,27 @@ public class QuadTree<Value> {
                 setCenterOfMass(pt);
                 setCharge(charge);
                 
+            } else if (this.isLeaf() && close( m_location, pt )) {
+                setCharge(m_charge+charge);
             } else {
-                if (this.isLeaf()) {
+                if (this.isLeaf() ) {
                     // move current data into a child node
-                    insertChild(getLocation(), m_charge, m_value);
-                } else {
-                    // insert new child data and update charge and center of mass
-                    insertChild(pt, charge, v);
-                    int newCharge = m_charge+charge;
-                    double cx = (getX()*m_charge + pt.getX()) / newCharge;
-                    double cy = (getY()*m_charge + pt.getY()) / newCharge;
-                    setCenterOfMass(cx, cy);
-                    setLocation(cx, cy);
-                    m_charge = newCharge;
+                    insertChild(m_location, m_charge, m_value);
                 }
+                    // insert new child data and update charge and center of mass
+                insertChild(pt, charge, v);
+                int newCharge = m_charge+charge;
+                double cx = (getX()*m_charge + pt.getX()) / newCharge;
+                double cy = (getY()*m_charge + pt.getY()) / newCharge;
+                setCenterOfMass(cx, cy);
+                setLocation(cx, cy);
+                m_charge = newCharge;
 
             }
         }
 
         private void insertChild(Point2D pt, int charge, Value v) {
-            Node<Value> child = getChild(pt);
+            Node<Value> child = getChild(getQuadrant(pt));
             child.insert(pt, charge, v);
         }
 
@@ -214,7 +213,7 @@ public class QuadTree<Value> {
 
     }
     
-    public QuadTree(BoundingBox bounds) {
+    public QuadTree(DblBoundingBox bounds) {
         m_root = new Node<Value>(bounds);
     }
 

@@ -36,6 +36,7 @@ import edu.uci.ics.jung.graph.util.Pair;
 import org.apache.commons.collections15.Factory;
 import org.apache.commons.collections15.map.LazyMap;
 import org.opennms.features.topology.api.BoundingBox;
+import org.opennms.features.topology.api.DblBoundingBox;
 import org.opennms.features.topology.app.internal.jung.QuadTree.Node;
 import org.opennms.features.topology.app.internal.jung.QuadTree.Visitor;
 
@@ -43,12 +44,13 @@ import java.awt.geom.Point2D;
 import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
 public class D3TopoLayout<V, E> extends AbstractLayout<V, E> implements IterativeContext {
 
-    private static final double LINK_DISTANCE = 30.0;
-    private static final double LINK_STRENGTH = 1.0;
-    private static final int DEFAULT_CHARGE = -120;
+    private static final double LINK_DISTANCE = 300.0;
+    private static final double LINK_STRENGTH = 2.0;
+    private static final int DEFAULT_CHARGE = -1200;
     private double EPSILON = 0.00000000001D;
     private int m_charge = -30;
     private double m_thetaSquared = .64;
@@ -82,6 +84,9 @@ public class D3TopoLayout<V, E> extends AbstractLayout<V, E> implements Iterativ
         for(V v : getGraph().getVertices()) {
             VertexData vData = getVertexData(v);
             vData.setWeight(0);
+            Point2D location = transform(v);
+            vData.setLocation(location);
+            vData.setPrevious(location);
         }
 
         //initialize the vertices that have edges with weight
@@ -106,8 +111,7 @@ public class D3TopoLayout<V, E> extends AbstractLayout<V, E> implements Iterativ
 
     }
 
-    @Override
-    public void step() {
+    public void stepOld() {
 
         double currentForce;
 
@@ -154,12 +158,12 @@ public class D3TopoLayout<V, E> extends AbstractLayout<V, E> implements Iterativ
         //Compute quad tree center of mass and apply charge force
         if(getDefaultCharge() != 0){
             
-            BoundingBox bounds = new BoundingBox(0, 0, (int)getSize().getWidth(), (int)getSize().getHeight());
-            for(V v : getGraph().getVertices()) {
-                VertexData vData = getVertexData(v);
-                BoundingBox rounded = new BoundingBox((int)vData.getX(), (int)vData.getY(), 1, 1);
-                bounds.addBoundingbox(rounded);
-            }
+            DblBoundingBox bounds = new DblBoundingBox(0,0,getSize().getWidth(), getSize().getHeight());
+            //for(V v : getGraph().getVertices()) {
+            //    VertexData vData = getVertexData(v);
+            //    DblBoundingBox rounded = new DblBoundingBox((int)vData.getX(), (int)vData.getY(), 1, 1);
+            //    bounds.addBoundingbox(rounded);
+            //}
             
             QuadTree<VertexData> quadTree = new QuadTree<VertexData>(bounds);
             for(V v : getGraph().getVertices()) {
@@ -188,8 +192,12 @@ public class D3TopoLayout<V, E> extends AbstractLayout<V, E> implements Iterativ
                         }
                         
                         if (n.isLeaf()) {
-                            double force = n.getCharge() / dSquared;
-                            vData.offset(- (dx*force), - (dy*force));
+                            if (dSquared == 0) {
+                                vData.offset(1, 1);
+                            } else {
+                                double force = n.getCharge() / dSquared;
+                                vData.offset(- (dx*force), - (dy*force));
+                            }
                             return true;
                         }
                         
@@ -201,16 +209,125 @@ public class D3TopoLayout<V, E> extends AbstractLayout<V, E> implements Iterativ
             }
         }
         
+        
+        for(V v : getGraph().getVertices()) {
+            VertexData vData = getVertexData(v);
+            Point2D location = transform(v);
+            //System.err.printf("Setting location of %s to (%f, %f)%n", v, vData.getX(), vData.getY());
+            location.setLocation(vData.getX(), vData.getY());
+        }
+        
         m_alpha *= 0.99;
 
 
     }
 
+    @Override
+    public void step() {
+
+        double currentForce;
+
+        //guass-seidel relaxation for links
+        for (E e : getGraph().getEdges()) {
+            Pair<V> endPoints = getGraph().getEndpoints(e);
+            VertexData srcVertexData = getVertexData(endPoints.getFirst());
+            VertexData targetVertexData = getVertexData(endPoints.getSecond());
+
+            double xDelta = targetVertexData.getX() - srcVertexData.getX();
+            double yDelta = targetVertexData.getY() - srcVertexData.getY();
+            double l = xDelta * xDelta + yDelta * yDelta;
+            if (l != 0) {
+                EdgeData edgeData = getEdgeData(e);
+                double lSqrt = Math.sqrt(l);
+                double distance = m_alpha * edgeData.getStrength() * (lSqrt - edgeData.getDistance()) / lSqrt;
+                //double distance = edgeData.getStrength() * (lSqrt - edgeData.getDistance()) / lSqrt;
+
+                xDelta *= distance;
+                yDelta *= distance;
+
+                currentForce = srcVertexData.getWeight() / (targetVertexData.getWeight() + srcVertexData.getWeight());
+                //currentForce = 0.5;
+                targetVertexData.offset(-(xDelta * currentForce), -(yDelta * currentForce));
+
+                currentForce = 1 - currentForce;
+                srcVertexData.offset(xDelta * currentForce, yDelta * currentForce);
+                
+                //System.err.println("Edge Length: " + srcVertexData.distance(targetVertexData));
+
+            }
+
+        }
+
+        //Apply gravity forces
+        currentForce = m_alpha * getGravity();
+        if(currentForce != 0){
+            double centerX = getSize().getWidth() / 2;
+            double centerY = getSize().getHeight() / 2;
+
+            for (V v : getGraph().getVertices()) {
+                VertexData vData = getVertexData(v);
+                vData.offset((centerX - vData.getX()) * currentForce, (centerY - vData.getY()) * currentForce);
+            }
+            
+        }
+
+        //Compute quad tree center of mass and apply charge force
+        if(getDefaultCharge() != 0){
+
+            for(V v1 : getGraph().getVertices()) {
+                VertexData vData1 = getVertexData(v1); 
+                for(V v2 : getGraph().getVertices()) {
+                    VertexData vData2 = getVertexData(v2);
+                    
+                    double dx = vData2.getX() - vData1.getX();
+                    double dy = vData2.getY() - vData1.getY();
+                    double d = dx*dx + dy*dy;
+                    
+                    if (d > 0) {
+                        double k = m_alpha * vData2.getCharge() / d;
+                        double px = dx*k;
+                        double py = dy*k;
+                        
+                        //vData1.offsetPrevious(px, py);
+                        vData1.offset(px, py);
+                    } else {
+                        //vData1.offsetPrevious(0.5-Math.random(), 0.5-Math.random());
+                        vData1.offset(0.5-Math.random(), 0.5-Math.random());
+                    }
+                    
+                }
+            }
+        }
+        
+        
+        // position verlet integration
+        for(V v : getGraph().getVertices()) {
+            VertexData vData = getVertexData(v);
+            double tempX = vData.getX();
+            double tempY = vData.getY();
+            double x = vData.getX() + (vData.getPrevious().getX() - vData.getX())*getFriction();
+            double y = vData.getY() + (vData.getPrevious().getY() - vData.getY())*getFriction();
+            vData.setLocation(x, y);
+            vData.setPrevious(tempX, tempY);
+            Point2D location = transform(v);
+            //System.err.printf("Setting location of %s to (%f, %f)%n", v, vData.getX(), vData.getY());
+            location.setLocation(vData.getX(), vData.getY());
+        }
+        
+        m_alpha *= 0.99;
+
+
+    }
+    
     // position verlet integration
     //skipping for now
 
     private double getGravity() {
         return 0.1;
+    }
+    
+    private double getFriction() {
+        return 0.9;
     }
 
     @Override
@@ -240,12 +357,59 @@ public class D3TopoLayout<V, E> extends AbstractLayout<V, E> implements Iterativ
         private double m_distance = LINK_DISTANCE;
         private double m_strength = LINK_STRENGTH;
         private int m_charge = DEFAULT_CHARGE;
+        private Point2D m_previous = null;
 
         protected void offset(double x, double y)
         {
+            String before = this.toString();
             this.x += x;
             this.y += y;
+            String after = this.toString();
+            print(before, after);
         }
+        
+        protected void offsetPrevious(double x, double y) {
+            if (m_previous == null) {
+                m_previous = new Point2D.Double(this.x, this.y);
+            }
+            m_previous.setLocation(m_previous.getX()+x, m_previous.getY()+y);
+        }
+        
+        
+
+        public void setPrevious(Point2D location) {
+            m_previous = (Point2D) location.clone();
+        }
+        
+        public void setPrevious(double x, double y) {
+            m_previous = new Point2D.Double(x, y);
+        }
+
+
+
+        @Override
+        public void setLocation(double x, double y) {
+            String before = this.toString();
+            super.setLocation(x, y);
+            String after = this.toString();
+            print(before, after);
+        }
+
+        private void print(String before, String after) {
+            //System.err.printf("Update location from %s to %s%n", before, after);
+        }
+        
+
+
+        @Override
+        public void setLocation(Point2D p) {
+            String before = this.toString();
+            super.setLocation(p);
+            String after = this.toString();
+            print(before, after);
+        }
+
+
 
         protected double norm()
         {
@@ -283,6 +447,11 @@ public class D3TopoLayout<V, E> extends AbstractLayout<V, E> implements Iterativ
         protected int getCharge() {
             return m_charge;
         }
+        
+        protected Point2D getPrevious() {
+            return m_previous;
+        }
+        
     }
 
     protected static class EdgeData {
