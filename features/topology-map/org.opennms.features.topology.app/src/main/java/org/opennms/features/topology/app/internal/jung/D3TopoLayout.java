@@ -83,7 +83,7 @@ public class D3TopoLayout<V, E> extends AbstractLayout<V, E> implements Iterativ
         //initialize the weights
         for(V v : getGraph().getVertices()) {
             VertexData vData = getVertexData(v);
-            vData.setWeight(0);
+            vData.setWeight(1);
             Point2D location = transform(v);
             vData.setLocation(location);
             vData.setPrevious(location);
