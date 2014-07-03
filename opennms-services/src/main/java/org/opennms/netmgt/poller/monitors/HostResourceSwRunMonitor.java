@@ -251,7 +251,8 @@ public class HostResourceSwRunMonitor extends SnmpMonitorStrategy {
             walker.waitFor();
             String error = walker.getErrorMessage();
             if (error != null && !error.trim().equals("")) {
-                return logDown(Level.WARN, error);
+                LOG.warn(error);
+                return PollStatus.unavailable(error);
             }
 
             // Iterate over the list of running services
