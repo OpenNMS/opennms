@@ -6,8 +6,8 @@
         <artifactId>documentation</artifactId>
         <version>1.13.4-SNAPSHOT</version>
     </parent>
-    <artifactId>overview-doc</artifactId>
+    <artifactId>guide-doc</artifactId>
     <packaging>pom</packaging>
-    <name>OpenNMS :: Documentation :: Overview</name>
-    <description>OpenNMS Documentation Overview to get started writing/contributing documentation</description>
+    <name>OpenNMS :: Documentation :: Guide Documentation</name>
+    <description>Guide to get started writing/contributing documentation</description>
 </project>
