@@ -1,28 +1,18 @@
 // This is a template which can be copied for creating a new monitor documentation
 // !!! PLEASE DON'T INCLUDE THIS FILE INTO THE BUILD PROCESS !!!
 
-:monitorname: Name of the Monitor. Normally the name of the class without .java
+=== Name of the Monitor. Normally the name of the class without .java
 
-:summary: A summary what the monitor is doing. +
+A summary what the monitor is doing. +
 When is the monitor up or down.
-
-:introduced: Which version of OpenNMS was this monitor introduced, e.g. 1.12.1 / 1.10.1
-
-:classname: Name of the monitor class which has to be used in the poller-configuration.xml
-
-:remote-enabled: true or false if the monitor can be used by the OpenNMS remote poller
-
-=== {monitorname}
-
-{summary}
 
 ==== Monitor facts
 
 [options="autowidth"]
 |===
-| Available Since | {introduced}
-| Class Name | `{classname}`
-| Remote Enabled | {remote-enabled}
+| Available Since | Which version of OpenNMS was this monitor introduced, e.g. 1.12.1 / 1.10.1
+| Class Name | `Name of the monitor class which has to be used in the poller-configuration.xml`
+| Remote Enabled | true or false if the monitor can be used by the OpenNMS remote poller
 |===
 
 ==== Configuration and Usage
