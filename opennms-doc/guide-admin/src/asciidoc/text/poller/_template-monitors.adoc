@@ -1,0 +1,77 @@
+// This is a template which can be copied for creating a new monitor documentation
+// !!! PLEASE DON'T INCLUDE THIS FILE INTO THE BUILD PROCESS !!!
+
+:monitorname: Name of the Monitor. Normally the name of the class without .java
+
+:summary: A summary what the monitor is doing. +
+When is the monitor up or down.
+
+:introduced: Which version of OpenNMS was this monitor introduced, e.g. 1.12.1 / 1.10.1
+
+:classname: Name of the monitor class which has to be used in the poller-configuration.xml
+
+:remote-enabled: true or false if the monitor can be used by the OpenNMS remote poller
+
+=== {monitorname}
+
+{summary}
+
+==== Monitor facts
+
+[options="autowidth"]
+|===
+| Available Since | {introduced}
+| Class Name | `{classname}`
+| Remote Enabled | {remote-enabled}
+|===
+
+==== Configuration and Usage
+
+.Monitor specific parameters for the {monitorname}
+[options="header, autowidth"]
+|===
+| Parameter | Description                                    | Required
+| `my parameter 1` | This is a placeholder for the first +
+                     rquired monitor parameter description.  | required
+| `my parameter 2` | This is a placeholder for the second +
+                     optional monitor parameter description. | optional
+|===
+
+This is optional just if you can use variables in the configuration
+
+.Variables which can be used in the configuration
+[options="header, autowidth"]
+|===
+| Variable        | Description
+| `${variable1}`  | Description for the first variable
+| `${variable2}`  | Description for the second variable
+| `${variable3}`  | Description for the third variable
+|===
+
+==== Examples
+Some example configuration how to configure the monitor in the `poller-configuration.xml`
+[source, xml]
+----
+<parameter key="args" value="-i {variable3} -t ${variable2}"/>
+<parameter key="args" value="http://${variable1}/${variable2}/static"/>
+----
+
+.This section is optional and give some specific hints
+==== SystemExecuteMonitor vs GpMonitor
+
+The SystemExecuteMonitor is the successor of the GpMonitor. The main differences are:
+
+* Variable replacement for the parameter args
+* There are no fixed arguments handed to the system-call
+* The _SystemExecuteMonitor_ supports _RemotePoller_ deployment
+
+To migrate services from the _GpMonitor_ to the _SystemExecuteMonitor_ it is required to alter the parameter args.
+To match the arguments called `hoption` for the `hostAddress` and `toption` for the `timeoutInSeconds`.
+The args string that matches the _GpMonitor_ call looks like this:
+
+[source, xml]
+----
+<parameter key="my parameter 2" value="--hostname ${variable1} --timeout ${variable2}" />
+----
+
+To migrate the GpMonitor parameters `hoption` and `toption` just replace the `--hostname` and `--timeout` directly in the args key.

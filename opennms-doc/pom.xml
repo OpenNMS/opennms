@@ -63,6 +63,7 @@
             <configuration>
               <sourceHighlighter>prettify</sourceHighlighter>
               <backend>html5</backend>
+	      <doctype>book</doctype>
             </configuration>
           </execution>
         </executions>
