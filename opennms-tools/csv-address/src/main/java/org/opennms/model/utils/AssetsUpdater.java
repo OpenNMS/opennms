@@ -51,8 +51,10 @@ import org.apache.commons.lang.StringUtils;
 
 import au.com.bytecode.opencsv.CSVReader;
 
-
-public class AssetsUpdater {
+/**
+ * @deprecated Replace this class with a Hibernate implementation instead of using JDBC.
+ */
+public abstract class AssetsUpdater {
 
     private static final String PROPERTY_CSV_FILE = "csv.file";
     private static final String PROPERTY_DB_SVR = "db.server";
