@@ -1,0 +1,77 @@
+[releasenotes-1.12]
+=== Release 1.12
+
+[releasenotes-changelog-1.9.93]
+==== Release 1.9.93
+
+[releasenotes-changelog-1.12.8]
+==== Release 1.12.8
+Release 1.12.8 is the 9th in the stable 1.12 series of OpenNMS.
+It contains an important fix for a security issue that can expose files outside of the OpenNMS directory through the web interface.
+See http://www.opennms.org/wiki/What%27s_New_in_OpenNMS_1.12[What's New in OpenNMS 1.12] for a general list of changes in the 1.12 series.
+
+The codename for 1.12.8 is _John Petrucci_
+
+[releasenotes-changelog-1.12.7]
+==== Release 1.12.7
+Release 1.12.7 is the eighth in the stable 1.12 series of OpenNMS.
+It contains a number of important fixes including a XSS vulnerability, and also introduces a potentially incompatible change to the way the web UI is configured.
+For details on the web UI changes, see http://www.opennms.org/wiki/What%27s_New_in_OpenNMS_1.12#Changes_to_Web_UI_Startup[Changes to the Web UI Startup] on the http://www.opennms.org/wiki/What%27s_New_in_OpenNMS_1.12[What's New in OpenNMS 1.12] page.
+
+The codename for 1.12.7 is _Bob Marley_
+
+[releasenotes-changelog-1.12.6]
+==== Release 1.12.6
+Release 1.12.6 is the seventh in the stable 1.12 series of OpenNMS.
+It contains a number of important fixes including a potential security leak in the ReST interface.
+See http://www.opennms.org/wiki/What%27s_New_in_OpenNMS_1.12[What's New in OpenNMS 1.12].
+
+The codename for 1.12.6 is _Sascha Konietzko_
+
+[releasenotes-changelog-1.12.5]
+==== Release 1.12.5
+Release 1.12.5 is the sixth in the stable 1.12 series of OpenNMS.
+It contains a fix for upgrades when using storeByForeignSource, plus a few other small changes.
+See http://www.opennms.org/wiki/What%27s_New_in_OpenNMS_1.12[What's New in OpenNMS 1.12].
+
+The codename for 1.12.5 is _John Lee Hooker_
+
+[releasenotes-changelog-1.12.4]
+==== Release 1.12.4
+Release 1.12.4 is the fifth in the stable 1.12 series of OpenNMS.
+It contains more upgrade tool bugfixes, as well as a number of small bug fixes and enhancements.
+See http://www.opennms.org/wiki/What%27s_New_in_OpenNMS_1.12[What's New in OpenNMS 1.12].
+
+The codename for 1.12.4 is _Iggy Pop_
+
+[releasenotes-changelog-1.12.3]
+==== Release 1.12.3
+Release 1.12.3 is the fourth in the stable 1.12 series of OpenNMS.
+It contains a critical bugfix to the upgrade tools added in 1.12.2, as well as a few small config updates.
+See http://www.opennms.org/wiki/What%27s_New_in_OpenNMS_1.12[What's New in OpenNMS 1.12].
+
+The codename for 1.12.3 is _Charles Mingus_
+
+[releasenotes-changelog-1.12.2]
+==== Release 1.12.2
+Release 1.12.2 is the third in the stable 1.12 series of OpenNMS.
+It contains quite a few bug fixes and enhancements since the 1.12.1 release.
+For a high-level overview of what has changed since OpenNMS 1.10, see http://www.opennms.org/wiki/What%27s_New_in_OpenNMS_1.12[What's New in OpenNMS 1.12].
+
+The codename for 1.12.2 is _Liberace_
+
+[releasenotes-changelog-1.12.1]
+==== Release 1.12.1
+Release 1.12.1 is the second in the stable 1.12 series of OpenNMS.
+It contains a number of bug fixes and small enhancements since the 1.12.0 release.
+For a high-level overview of what has changed since OpenNMS 1.10, see http://www.opennms.org/wiki/What%27s_New_in_OpenNMS_1.12[What's New in OpenNMS 1.12].
+
+The codename for 1.12.1 is _Patrick Murphy_
+
+[releasenotes-changelog-1.12.0]
+==== Release 1.12.0
+Release 1.12.0 is the first in the stable 1.12 series of OpenNMS.
+It contains a number of bug fixes since the 1.11.94 release.
+For a high-level overview of what has changed since OpenNMS 1.10, see http://www.opennms.org/wiki/What%27s_New_in_OpenNMS_1.12]What's New in OpenNMS 1.12].
+
+The codename for 1.12.0 is _Barry Privett_
