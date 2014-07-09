@@ -1,4 +1,4 @@
-= User Guide v{opennms-version}
+// Global settings
 :ascii-ids:
 :encoding: UTF-8
 :lang: en
@@ -6,6 +6,9 @@
 :toc: left
 :toclevels: 8
 :numbered:
+
+= Developers Guide
+OpenNMS Release v{opennms-version}
 The OpenNMS Group, Inc. 220 Chatham Business Drive, Suite 220 Pittsboro, NC 27312
 
 // Include your documentation sections here

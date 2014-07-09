@@ -1,15 +1,15 @@
-= Documentation Overview
-// Authors, seperated by;. They might not be shown in the overview but will be generated
-Ronny Trommer <ronny@opennms.org>; Markus von Rueden <mvr@opennms.com>
+// Global settings
 :ascii-ids:
 :encoding: UTF-8
 :lang: en
 :icons: font
 :toc: left
-:toclevels: 4
+:toclevels: 8
 :numbered:
+
+= Users Guide
+OpenNMS Release v{opennms-version}
+The OpenNMS Group, Inc. 220 Chatham Business Drive, Suite 220 Pittsboro, NC 27312
 
 // Include your documentation sections here
 // include::text/myFile.adoc[]
-
-include::overview.adoc[]
