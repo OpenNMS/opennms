@@ -6,4 +6,5 @@
 :numbered:
 The OpenNMS Group, Inc. 220 Chatham Business Drive, Suite 220 Pittsboro, NC 27312
 
+// Include your documentation sections here
 // include::text/myFile.adoc[]
