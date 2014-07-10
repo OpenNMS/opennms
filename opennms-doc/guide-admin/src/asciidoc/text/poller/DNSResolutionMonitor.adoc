@@ -28,7 +28,7 @@ The response from the A record lookup can be any address, it is not verified wit
                       `v4` for _A records_, +
                       `v6` for _AAAA record_, +
                       `both` _A_ and _AAAA record_ must be available, +
-                      `either _A_ or _AAAA record_ must be available.   | required
+                      `either` _A_ or _AAAA record_ must be available.   | required
 | `retry`           | Amount of attempts to resolve the node label before the service goes down | required
 | `timeout`         | Time to wait for a _A_ and/or _AAAA record_ from the system configured _DNS server_ before trying a next attempt. | required
 |===
