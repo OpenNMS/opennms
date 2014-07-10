@@ -34,26 +34,52 @@ import org.opennms.features.topology.api.OperationContext;
 import org.opennms.features.topology.api.topo.EdgeStatusProvider;
 import org.opennms.features.topology.api.topo.VertexRef;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 public class LinkStatusToggleOperation extends AbstractCheckedOperation {
 
-    private EdgeStatusProvider m_edgeStatusProvider;
+    private EdgeStatusProvider m_llpdStatusProvider;
+    private EdgeStatusProvider m_ospfLinkStatusProvider;
+    private EdgeStatusProvider m_isisLinkStatusProvider;
+    private List<EdgeStatusProvider> m_providers;
     //TODO: add functionality to check bundle context when bundle is deregistered
     //private BundleContext m_bundleContext;
+
+    public void init() {
+        m_providers = new ArrayList<EdgeStatusProvider>();
+        m_providers.add(m_llpdStatusProvider);
+        m_providers.add(m_ospfLinkStatusProvider);
+        m_providers.add(m_isisLinkStatusProvider);
+    }
 
     @Override
     protected boolean isChecked(GraphContainer container) {
         Set<EdgeStatusProvider> edgeStatusProviders = container.getEdgeStatusProviders();
 
-        return edgeStatusProviders.contains(m_edgeStatusProvider);
+        return edgeStatusProviders.containsAll(m_providers);
+
     }
 
     @Override
     public void applyHistory(GraphContainer container, Map<String, String> settings) {
+        Set<EdgeStatusProvider> edgeStatusProviders = container.getEdgeStatusProviders();
 
+        String historyValue = settings.get(getClass().getName());
+        // an history value is set, decide what to do
+        boolean statusEnabled = Boolean.TRUE.toString().equals(historyValue);
+        if (statusEnabled) {
+            if(!edgeStatusProviders.containsAll(m_providers)) {
+                edgeStatusProviders.addAll(m_providers);
+            }
+
+        } else {
+            if(edgeStatusProviders.containsAll(m_providers)) {
+                edgeStatusProviders.removeAll(m_providers);
+            }
+        }
     }
 
     @Override
@@ -80,16 +106,24 @@ public class LinkStatusToggleOperation extends AbstractCheckedOperation {
     private void toggle(GraphContainer graphContainer) {
         Set<EdgeStatusProvider> edgeStatusProviders = graphContainer.getEdgeStatusProviders();
 
-        if(edgeStatusProviders.contains(m_edgeStatusProvider)) {
-            edgeStatusProviders.remove(m_edgeStatusProvider);
+        if(edgeStatusProviders.containsAll(m_providers)) {
+            edgeStatusProviders.removeAll(m_providers);
         } else {
-            edgeStatusProviders.add(m_edgeStatusProvider);
+            edgeStatusProviders.addAll(m_providers);
         }
 
         graphContainer.redoLayout();
     }
 
-    public void setEdgeStatusProvider(EdgeStatusProvider edgeStatusProvider) {
-        m_edgeStatusProvider = edgeStatusProvider;
+    public void setLlpdStatusProvider(EdgeStatusProvider llpdStatusProvider) {
+        m_llpdStatusProvider = llpdStatusProvider;
+    }
+
+    public void setOspfLinkStatusProvider(EdgeStatusProvider ospfLinkStatusProvider) {
+        m_ospfLinkStatusProvider = ospfLinkStatusProvider;
+    }
+
+    public void setIsisLinkStatusProvider(EdgeStatusProvider isisLinkStatusProvider) {
+        m_isisLinkStatusProvider = isisLinkStatusProvider;
     }
 }

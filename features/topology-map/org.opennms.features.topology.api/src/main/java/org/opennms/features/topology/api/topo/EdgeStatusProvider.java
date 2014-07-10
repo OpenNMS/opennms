@@ -36,4 +36,6 @@ public interface EdgeStatusProvider {
     public String getNameSpace();
 
     public Map<EdgeRef, Status> getStatusForEdges(EdgeProvider edgeProvider, Collection<EdgeRef> edges, Criteria[] criteria);
+
+    public boolean contributesTo(String namespace);
 }
