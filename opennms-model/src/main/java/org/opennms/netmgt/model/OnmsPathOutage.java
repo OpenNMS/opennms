@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.model;
 
+import java.io.Serializable;
 import java.net.InetAddress;
 
 import javax.persistence.Column;
@@ -35,14 +36,21 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.Type;
+
 /**
  * <p>OnmsPathOutage class</p>
  * 
  * @author <a href="ryan@mail1.opennms.com"> Ryan Lambeth </a>
  */
 @Entity
-@Table(name="onmspathoutage")
-public class OnmsPathOutage {
+@Table(name="pathoutage")
+public class OnmsPathOutage implements Serializable{
+	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 2180867754702562743L;
 	
 	private int m_nodeId;
 	private InetAddress m_criticalPathIp;
@@ -59,6 +67,10 @@ public class OnmsPathOutage {
 		m_nodeId = nodeId;
 		m_criticalPathIp = criticalPathIp;
 		m_criticalPathServiceName = criticalPathServiceName;
+	}
+	
+	public OnmsPathOutage() {
+		
 	}
 	
 	/**
@@ -87,6 +99,7 @@ public class OnmsPathOutage {
 	 * @return an InetAddress
 	 */
 	@Column(name="criticalpathip", nullable = false)
+	@Type(type="org.opennms.netmgt.model.InetAddressUserType")
 	public InetAddress getCriticalPathIp() {
 		return m_criticalPathIp;
 	}

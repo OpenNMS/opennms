@@ -72,6 +72,8 @@ public class MockNetworkTest extends TestCase {
         private int nodeCount = 0;
 
         private int serviceCount = 0;
+        
+        private int outageCount = 0;
 
         public int getContainerCount() {
             return containerCount;
@@ -126,6 +128,12 @@ public class MockNetworkTest extends TestCase {
         public void visitService(MockService s) {
             serviceCount++;
         }
+
+		@Override
+		public void visitOutage(MockPathOutage m_currentOutage) {
+			outageCount++;
+			
+		}
     }
 
     class StatusChecker extends MockVisitorAdapter {

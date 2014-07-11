@@ -29,16 +29,17 @@
 package org.opennms.netmgt.syslogd;
 
 //import java.sql.ResultSet;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
+//import java.sql.Statement;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-
-
-
-import org.opennms.core.db.DataSourceFactory;
+//import org.opennms.core.db.DataSourceFactory;
+import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.dao.api.IpInterfaceDao;
+import org.opennms.netmgt.model.OnmsIpInterface;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * This class represents a singular instance that is used to map trap IP
@@ -49,13 +50,11 @@ import org.opennms.core.db.DataSourceFactory;
  * @author <a href="mailto:tarus@opennms.org">Tarus Balog </a>
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
  */
-final class SyslogdIPMgr {
-    /**
-     * The SQL statement used to extract the list of currently known IP
-     * addresses and their node IDs from the IP Interface table.
-     */
-    private static final String IP_LOAD_SQL = "SELECT ipAddr, nodeid FROM ipInterface";
-    
+final class SyslogdIPMgrDaoImpl {
+        
+    @Autowired
+    private IpInterfaceDao ipInt;
+
     /**
      * A Map of IP addresses and node IDs
      */
@@ -71,40 +70,18 @@ final class SyslogdIPMgr {
      *             Thrown if the connection cannot be created or a database
      *             error occurs.
      */
-     static synchronized void dataSourceSync() throws SQLException {
-    	java.sql.Connection c = null;
-        Statement s = null;
-        try {
-            // Get database connection
-            c = DataSourceFactory.getInstance().getConnection();
-       	
-            // Run with it
-            c.setReadOnly(true);
-
-            s = c.createStatement();
-            final ResultSet rs = s.executeQuery(IP_LOAD_SQL);
-
-            if (rs != null) {
-                m_knownips.clear();
-                while (rs.next()) {
-                    m_knownips.put(rs.getString(1), rs.getLong(2));
-                }
-                rs.close();
-            }
-        } finally {
-            if (s != null) {
-                try {
-                    s.close();
-                } catch (final SQLException sqlE) {
-                }
-            }
-            if (c != null) {
-                try {
-                    c.close();
-                } catch (final SQLException sqlE) {
-                }
-            }
-        }
+    synchronized void dataSourceSync() throws SQLException {
+    	
+    	List<OnmsIpInterface> list = ipInt.findAll();
+    	
+    	m_knownips.clear();
+    	for (OnmsIpInterface one: list) {
+    		if (one != null) {
+    			m_knownips.put(InetAddressUtils.str(one.getIpAddress()), (long) one.getId());
+    		}
+    		
+    	}
+    	
     }
 
     /**

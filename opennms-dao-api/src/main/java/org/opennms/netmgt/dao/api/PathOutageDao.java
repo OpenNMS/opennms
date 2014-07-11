@@ -28,9 +28,6 @@
 
 package org.opennms.netmgt.dao.api;
 
-import java.util.List;
-
-import org.hibernate.Criteria;
 import org.opennms.netmgt.model.OnmsPathOutage;
 
 /**

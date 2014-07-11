@@ -41,4 +41,7 @@
       <property name="pollOutagesConfig" ref="pollOutagesConfig" />
     </bean>
     
+    <bean name="pathOutageManagerDaoImpl" class="org.opennms.netmgt.poller.PathOutageManagerDaoImpl"/>
+    
+    
 </beans>

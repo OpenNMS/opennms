@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.mock;
 
+import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -35,7 +36,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
-
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.xml.event.Event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -102,6 +103,8 @@ public class MockNetwork extends MockContainer<MockContainer<?,?>,MockElement> {
     private String m_ifAlias;
 
     private int m_nextServiceId = 1;
+    
+    private MockPathOutage m_currentOutage;
 
     /**
      * <p>Constructor for MockNetwork.</p>
@@ -128,6 +131,7 @@ public class MockNetwork extends MockContainer<MockContainer<?,?>,MockElement> {
     public void setCriticalService(String svcName) {
         m_criticalService = svcName;
     }
+    
     
     /**
      * <p>getIfAlias</p>
@@ -182,6 +186,12 @@ public class MockNetwork extends MockContainer<MockContainer<?,?>,MockElement> {
     public MockNode addNode(int nodeid, String label) {
         m_currentNode = (MockNode) addMember(new MockNode(this, nodeid, label));
         return m_currentNode;
+    }
+    
+    public MockPathOutage addOutage(int nodeid, InetAddress ipAddr, String svcName) {
+    	m_currentOutage = new MockPathOutage(nodeid, ipAddr, svcName);
+    	return m_currentOutage;
+    	
     }
 
     // model 
@@ -406,6 +416,7 @@ public class MockNetwork extends MockContainer<MockContainer<?,?>,MockElement> {
         super.visit(v);
         v.visitNetwork(this);
         visitMembers(v);
+        v.visitOutage(m_currentOutage);
     }
     
     /**
@@ -505,6 +516,7 @@ public class MockNetwork extends MockContainer<MockContainer<?,?>,MockElement> {
         addInterface("192.168.1.5");
         addService("SMTP");
         addService("HTTP");
+        addOutage(1, InetAddressUtils.addr("192.168.1.1"), "ICMP");
     }
 
 }

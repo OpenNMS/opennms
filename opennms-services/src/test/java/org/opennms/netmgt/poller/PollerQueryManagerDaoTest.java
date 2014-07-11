@@ -880,7 +880,7 @@ public class PollerQueryManagerDaoTest implements TemporaryDatabaseAware<MockDat
 
     // test open outages for unmanaged services
     @Test
-    public void testUnmangedWithOpenOutageAtStartup() {
+    public void testUnmangedWithOpenOutageAtStartup() throws InterruptedException {
         // before we start we need to initialize the database
 
         // create an outage for the service
@@ -909,7 +909,7 @@ public class PollerQueryManagerDaoTest implements TemporaryDatabaseAware<MockDat
                 .countOpenOutagesForInterface(iface));
 
         startDaemons();
-
+        
         // assert that we have no open outages
         assertEquals(0, m_db.countOpenOutagesForService(svc));
         assertEquals(1, m_db.countOutagesForService(svc));

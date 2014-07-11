@@ -69,4 +69,9 @@ public class MockVisitorAdapter implements MockVisitor {
     public void visitService(MockService s) {
     }
 
+    /** {@inheritDoc} */
+	@Override
+	public void visitOutage(MockPathOutage m_currentOutage) {		
+	}
+
 }
