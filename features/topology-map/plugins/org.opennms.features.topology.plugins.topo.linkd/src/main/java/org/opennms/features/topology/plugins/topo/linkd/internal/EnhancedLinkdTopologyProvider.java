@@ -569,11 +569,6 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
     }
 
     @Override
-    public VertexHopCriteria getDefaultCriteria() {
-        return null;
-    }
-
-    @Override
     public List<SearchResult> query(SearchQuery searchQuery, GraphContainer graphContainer) {
         //LOG.debug("SearchProvider->query: called with search query: '{}'", searchQuery);
 
