@@ -160,18 +160,17 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
      */
     private synchronized Map<String,Object> getParameters() {
         if (m_parameters == null) {
-            
-            m_parameters = createPropertyMap(m_configService);
+            m_parameters = createParameterMap(m_configService);
         }
         return m_parameters;
     }
 
-    private Map<String,Object> createPropertyMap(Service svc) {
-        Map<String,Object> m = new ConcurrentSkipListMap<String,Object>();
-        for (Parameter p : svc.getParameters()) {
-            String val = p.getValue();
+    private Map<String,Object> createParameterMap(final Service svc) {
+        final Map<String,Object> m = new ConcurrentSkipListMap<String,Object>();
+        for (final Parameter p : svc.getParameters()) {
+            Object val = p.getValue();
             if (val == null) {
-            	val = (p.getAnyObject() == null ? "" : p.getAnyObject().toString());
+            	val = (p.getAnyObject() == null ? "" : p.getAnyObject());
             }
 
            m.put(p.getKey(), val);
