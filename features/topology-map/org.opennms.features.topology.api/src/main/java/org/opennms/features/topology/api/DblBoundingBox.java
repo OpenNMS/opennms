@@ -28,81 +28,77 @@
 
 package org.opennms.features.topology.api;
 
-public class BoundingBox{
-    private int m_left = Integer.MAX_VALUE;
-    private int m_top = Integer.MAX_VALUE;
-    private int m_right = Integer.MIN_VALUE;
-    private int m_bottom = Integer.MIN_VALUE;
+import java.awt.geom.Point2D;
+
+public class DblBoundingBox{
+    private double m_left = Double.MAX_VALUE;
+    private double m_top = Double.MAX_VALUE;
+    private double m_right = Double.MIN_VALUE;
+    private double m_bottom = Double.MIN_VALUE;
     
-    public BoundingBox() {
+    public DblBoundingBox() {
         
     }
     
-    public BoundingBox(BoundingBox box) {
+    public DblBoundingBox(DblBoundingBox box) {
         m_left = box.m_left;
         m_right = box.m_right;
         m_top = box.m_top;
         m_bottom = box.m_bottom;
     }
 
-    public BoundingBox(int x, int y, int width, int height) {
+    public DblBoundingBox(double x, double y, double width, double height) {
         m_left = x;
         m_top = y;
         m_right = x + width;
         m_bottom = y + height;
     }
     
-    public BoundingBox(Point center, int width, int height) {
-        m_left = (int)center.getX() - width /2 ;
-        m_top = (int)center.getY() - height /2;
-        m_right = m_left + width;
+    public DblBoundingBox(Point2D center, double width, double height) {
+        m_left   = center.getX() - width /2 ;
+        m_top    = center.getY() - height /2;
+        m_right  = m_left + width;
         m_bottom = m_top + height;
     }
 
-    public int getX() {
+    public double getX() {
         return m_left;
     }
 
-    public int getY() {
+    public double getY() {
         return m_top;
     }
 
-    public int getWidth() {
+    public double getWidth() {
         return m_right - m_left;
     }
 
-    public int getHeight() {
+    public double getHeight() {
         return m_bottom - m_top;
     }
 
-    public void addPoint(Point location) {
-        //TODO cast to int for now
-        m_left = Math.min(m_left, (int)location.getX());
-        m_right = Math.max(m_right, (int)location.getX());
-        m_top = Math.min(m_top,  (int)location.getY());
-        m_bottom = Math.max(m_bottom, (int)location.getY());
+    public void addPoint(Point2D location) {
+        m_left = Math.min(m_left, location.getX());
+        m_right = Math.max(m_right, location.getX());
+        m_top = Math.min(m_top,  location.getY());
+        m_bottom = Math.max(m_bottom, location.getY());
     }
     
-    public Point getCenter() {
-        Point p = new Point(getX() + (getWidth()/2), getY() + (getHeight()/2));
-        return p;
+    public Point2D getCenter() {
+        return new Point2D.Double(getX() + (getWidth()/2), getY() + (getHeight()/2));
     }
     
     public void setCenter(Point center) {
-        //TODO cast to in for now
-        m_left = (int)center.getX() - getWidth()/2;
-        m_top = (int)center.getY() - getHeight()/2;
+        m_left = center.getX() - getWidth()/2;
+        m_top  = center.getY() - getHeight()/2;
     }
     
-    public BoundingBox computeWithAspectRatio(double R) {
+    public DblBoundingBox computeWithAspectRatio(double R) {
         double r = getAspectRatio();
-        int width =  (int) (r < R ? Math.round(getHeight() * R ): getWidth());
-        int height = (int) (r < R ? getHeight() : Math.round(getWidth() / R));
-        Point center = getCenter();
-        //TODO cast to int for now
-        int x = (int)center.getX() - width/2;
-        int y = (int)center.getY() - height/2;
-        return new BoundingBox(x, y, width, height);
+        double width =  r < R ? Math.round(getHeight() * R ): getWidth();
+        double height = r < R ? getHeight() : Math.round(getWidth() / R);
+        Point2D center = getCenter();
+        return new DblBoundingBox(center, width, height);
     }
 
     private double getAspectRatio() {
@@ -118,7 +114,7 @@ public class BoundingBox{
         return "(" + getX() + "," + getY() + "," + getWidth() + "," + getHeight() + ")";
     }
 
-    public void addBoundingbox(BoundingBox box) {
+    public void addBoundingbox(DblBoundingBox box) {
         m_left = Math.min(m_left, box.m_left);
         m_right = Math.max(m_right, box.m_right);
         m_top = Math.min(m_top, box.m_top);
@@ -129,12 +125,12 @@ public class BoundingBox{
     @Override
     public int hashCode() {
         final int prime = 31;
-        int result = 1;
+        double result = 1;
         result = prime * result + m_bottom;
         result = prime * result + m_left;
         result = prime * result + m_right;
         result = prime * result + m_top;
-        return result;
+        return Double.valueOf(result).hashCode();
     }
 
     @Override
@@ -145,7 +141,7 @@ public class BoundingBox{
             return false;
         if (getClass() != obj.getClass())
             return false;
-        BoundingBox other = (BoundingBox) obj;
+        DblBoundingBox other = (DblBoundingBox) obj;
         if (m_bottom != other.m_bottom)
             return false;
         if (m_left != other.m_left)

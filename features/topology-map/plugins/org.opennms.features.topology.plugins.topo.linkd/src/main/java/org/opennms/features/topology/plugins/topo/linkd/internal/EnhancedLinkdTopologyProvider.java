@@ -375,8 +375,11 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
                 boolean ipAddrCheck = sourceLink.getOspfRemIpAddr().equals(targetLink.getOspfIpAddr()) && targetLink.getOspfRemIpAddr().equals(sourceLink.getOspfIpAddr());
                 if(ipAddrCheck) {
                     String id = "ospf::" + Math.min(sourceLink.getId(), targetLink.getId()) + "||" + Math.max(sourceLink.getId(), targetLink.getId());
-                    Vertex source = new AbstractVertex(AbstractLinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD, sourceLink.getNode().getNodeId(), sourceLink.getNode().getLabel());
-                    Vertex target = new AbstractVertex(AbstractLinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD, targetLink.getNode().getNodeId(), targetLink.getNode().getLabel());
+                    AbstractVertex source = new AbstractVertex(AbstractLinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD, sourceLink.getNode().getNodeId(), sourceLink.getNode().getLabel());
+                    source.setIpAddress(sourceLink.getOspfIpAddr().getHostAddress());
+
+                    AbstractVertex target = new AbstractVertex(AbstractLinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD, targetLink.getNode().getNodeId(), targetLink.getNode().getLabel());
+                    target.setIpAddress(targetLink.getOspfIpAddr().getHostAddress());
 
                     OspfLinkDetail linkDetail = new OspfLinkDetail(
                             Math.min(sourceLink.getId(), targetLink.getId()) + "|" + Math.max(sourceLink.getId(), targetLink.getId()),
@@ -563,11 +566,6 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
     @Override
     public String getSearchProviderNamespace() {
         return TOPOLOGY_NAMESPACE_LINKD;
-    }
-
-    @Override
-    public VertexHopCriteria getDefaultCriteria() {
-        return null;
     }
 
     @Override

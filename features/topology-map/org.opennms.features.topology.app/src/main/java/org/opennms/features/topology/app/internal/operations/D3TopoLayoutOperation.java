@@ -26,29 +26,25 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.app.internal.jung;
+package org.opennms.features.topology.app.internal.operations;
 
-import org.junit.Test;
-import org.opennms.features.topology.api.Point;
-import org.opennms.features.topology.api.topo.Vertex;
+import org.opennms.features.topology.api.LayoutAlgorithm;
+import org.opennms.features.topology.app.internal.jung.D3TopoLayoutAlgorithm;
 
-import java.awt.geom.Point2D;
+public class D3TopoLayoutOperation extends LayoutOperation {
 
-public class QuadTreeTest {
+    public D3TopoLayoutOperation() {
+        super(new LayoutOperation.LayoutFactory() {
 
-    @Test
-    public void testQuadTree() {
-        /*QuadTree<Integer, String> quadTree = new QuadTree<Integer, String>();
-        quadTree.insert(10, 10, "Vertex1");
-        quadTree.insert(10, 20, "Vertex2");
-        quadTree.insert((int)(Math.random() * 100), (int) (Math.random() * 100), "Vertex3");
-        quadTree.insert((int)(Math.random() * 100), (int) (Math.random() * 100), "Vertex4");
-        quadTree.insert((int)(Math.random() * 100), (int) (Math.random() * 100), "Vertex5");
-        quadTree.insert((int)(Math.random() * 100), (int) (Math.random() * 100), "Vertex6");
-        quadTree.insert((int)(Math.random() * 100), (int) (Math.random() * 100), "Vertex7");
-        quadTree.insert((int)(Math.random() * 100), (int) (Math.random() * 100), "Vertex8");
-        quadTree.insert((int)(Math.random() * 100), (int) (Math.random() * 100), "Vertex9");*/
+            private final D3TopoLayoutAlgorithm m_layoutAlgorithm = new D3TopoLayoutAlgorithm();
 
+            @Override
+            public LayoutAlgorithm getLayoutAlgorithm() { return m_layoutAlgorithm; }
+        });
+    }
 
+    @Override
+    public String getId() {
+        return getClass().getSimpleName();
     }
 }
