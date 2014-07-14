@@ -68,8 +68,6 @@ import org.springframework.core.io.Resource;
 @RunWith(MockitoJUnitRunner.class)
 public class PollerConfigWithPSMTest {
 
-    private MockNetwork m_network;
-
     @Before
     public void setUp() throws Exception {
         MockLogAppender.setupLogging();
@@ -113,8 +111,6 @@ public class PollerConfigWithPSMTest {
         MockDatabase db = new MockDatabase();
         db.populate(network);
         DataSourceFactory.setInstance(db);
-        
-        m_network = network;
     }
 
     @After
