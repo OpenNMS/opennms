@@ -20,11 +20,11 @@ When is the monitor up or down.
 .Monitor specific parameters for the {monitorname}
 [options="header, autowidth"]
 |===
-| Parameter | Description                                    | Required
+| Parameter | Description                                    | Required | Default value
 | `my parameter 1` | This is a placeholder for the first +
-                     rquired monitor parameter description.  | required
+                     rquired monitor parameter description.  | required | `-`
 | `my parameter 2` | This is a placeholder for the second +
-                     optional monitor parameter description. | optional
+                     optional monitor parameter description. | optional | `default value`
 |===
 
 This is optional just if you can use variables in the configuration
