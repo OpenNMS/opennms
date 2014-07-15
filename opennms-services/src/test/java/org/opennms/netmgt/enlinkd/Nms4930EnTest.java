@@ -32,6 +32,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertNotNull;
 
+import java.util.List;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
@@ -63,10 +65,6 @@ public class Nms4930EnTest extends EnLinkdTestBuilder {
      * The main fact is that this devices have only the Bridge MIb walk
      * dlink_DES has STP disabled
      * dlink_DGS has STP enabled but root is itself
-     * no way to find links....
-     * Also there is no At interface information
-     * c2007db90010 --> 10.1.1.2  ---nothing in the bridge forwarding table...
-     * no way to get links...
      * 
      */
     @Test
@@ -105,9 +103,17 @@ public class Nms4930EnTest extends EnLinkdTestBuilder {
         assertTrue(m_linkd.runSingleSnmpCollection(dlink2.getId()));
         assertEquals(0,m_bridgeBridgeLinkDao.countAll());
         assertEquals(659,m_bridgeMacLinkDao.countAll());
-        for (String mac: macsonbbport)
-        	assertEquals(2,m_bridgeMacLinkDao.findByMacAddress(mac).size());
-
+        // Matt here you find that the macs on backbone port have all the same
+        // switch port
+        // the array "macsonbbport" is the intersection between 
+        // the mac address forwarding table of dlink1 port 24
+        // and the mac address forwarding table f dlink2 port 10
+        // The following code will print the links as they are discovered
+        for (String mac: macsonbbport) {
+        	List<BridgeMacLink> maclinks = m_bridgeMacLinkDao.findByMacAddress(mac);
+        	assertEquals(2,maclinks.size());
+    		printBackboneBridgeMacLink(maclinks.get(0),maclinks.get(1));
+        }
         
     }
     
@@ -145,9 +151,15 @@ public class Nms4930EnTest extends EnLinkdTestBuilder {
         assertTrue(m_linkd.runSingleSnmpCollection(dlink1.getId()));
         assertEquals(0,m_bridgeBridgeLinkDao.countAll());
         assertEquals(659,m_bridgeMacLinkDao.countAll());
-        for (String mac: macsonbbport)
-        	assertEquals(2,m_bridgeMacLinkDao.findByMacAddress(mac).size());
-
+        
+        for (String mac: macsonbbport) {
+        	List<BridgeMacLink> maclinks = m_bridgeMacLinkDao.findByMacAddress(mac);
+        	assertEquals(2,maclinks.size());
+        	for (BridgeMacLink maclink: maclinks) {
+        		printBridgeMacLink(maclink);
+        	}
+        }
+        
         BridgeMacLink mac1 = m_bridgeMacLinkDao.getByNodeIdBridgePortMac(dlink1.getId(), 1, "64168dfa8d49");
         assertNotNull(mac1);
         assertNotNull(mac1.getBridgePortIfIndex());
