@@ -768,4 +768,11 @@
 
   </changeSet>
 
+  <changeSet author="ranger@opennms.org" id="fix-typo-in-isis-table">
+    <renameColumn tableName="isislink" oldColumnName="isisisadjneighsysyype" newColumnName="isisisadjneighsystype" />
+    <rollback>
+      <renameColumn tableName="isislink" oldColumnName="isisisadjneighsystype" newColumnName="isisisadjneighsysyype" />
+    </rollback>
+  </changeSet>
+
 </databaseChangeLog>
