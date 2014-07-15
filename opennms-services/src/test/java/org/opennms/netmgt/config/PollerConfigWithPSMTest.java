@@ -49,7 +49,7 @@ import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.config.poller.Parameter;
 import org.opennms.netmgt.config.poller.Service;
 import org.opennms.netmgt.mock.MockNetwork;
-import org.opennms.netmgt.poller.PollStatus;
+import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.poller.mock.MockMonitoredService;
 import org.springframework.core.io.ClassPathResource;
