@@ -73,6 +73,8 @@ import org.opennms.netmgt.model.OnmsStpInterface;
 import org.opennms.netmgt.model.OnmsStpNode;
 import org.opennms.netmgt.model.OnmsStpNode.BridgeBaseType;
 import org.opennms.netmgt.model.OnmsStpNode.StpProtocolSpecification;
+import org.opennms.netmgt.model.topology.AtInterface;
+import org.opennms.netmgt.model.topology.LinkableNode;
 import org.opennms.netmgt.nb.Nms101NetworkBuilder;
 import org.opennms.netmgt.nb.Nms7467NetworkBuilder;
 import org.springframework.transaction.annotation.Transactional;

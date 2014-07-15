@@ -2293,6 +2293,8 @@ CREATE UNIQUE INDEX minions_properties_unique_idx ON minions_properties(minion_i
 --# Begin enlinkd table
 drop table lldpElement cascade;
 drop table lldpLink cascade;
+drop table cdpElement cascade;
+drop table cdpLink cascade;
 drop table ospfElement cascade;
 drop table ospfLink cascade;
 drop table isisElement cascade;
@@ -2333,6 +2335,34 @@ create table lldpLink (
       lldpLinkLastPollTime	timestamp not null,
       constraint pk_lldplink_id primary key (id),
       constraint fk_nodeIDlldplink foreign key (nodeid) references node ON DELETE CASCADE
+);
+
+create table cdpElement (
+      id integer default nextval('opennmsnxtid') not null,
+      nodeid          integer not null,
+      cdpGlobalRun    integer not null,
+      cdpGlobalDeviceId varchar(255) not null,
+      cdpNodeCreateTime	timestamp not null,
+      cdpNodeLastPollTime	timestamp not null,
+      constraint pk_cdpelement_id primary key (id),
+      constraint fk_nodeIDcdpelem foreign key (nodeid) references node ON DELETE CASCADE
+);
+
+create table cdpLink (
+      id integer default nextval('opennmsnxtid') not null,
+      nodeid          integer not null,
+      cdpCacheIfIndex integer not null,
+      cdpInterfaceName varchar(96) not null,
+      cdpCacheAddressType integer not null,
+      cdpCacheAddress varchar(64) not null,
+      cdpCacheVersion varchar(255) not null,
+      cdpCacheDeviceId varchar(64) not null,
+      cdpCacheDevicePort varchar(96) not null,
+      cdpCacheDevicePlatform varchar(96) not null,
+      cdpLinkCreateTime	timestamp not null,
+      cdpLinkLastPollTime timestamp not null,
+      constraint pk_cdplink_id primary key (id),
+      constraint fk_nodeIDcdplink foreign key (nodeid) references node ON DELETE CASCADE
 );
 
 create table ospfElement (

@@ -165,6 +165,18 @@
   
   <onmsgi:service interface="org.opennms.netmgt.dao.api.BridgeElementDao" ref="bridgeElementDao" />
 
+  <bean id="cdpLinkDao" class="org.opennms.netmgt.dao.hibernate.CdpLinkDaoHibernate">
+    <property name="sessionFactory" ref="sessionFactory" />
+  </bean>
+  
+  <onmsgi:service interface="org.opennms.netmgt.dao.api.CdpLinkDao" ref="cdpLinkDao" />
+    
+  <bean id="cdpElementDao" class="org.opennms.netmgt.dao.hibernate.CdpElementDaoHibernate">
+    <property name="sessionFactory" ref="sessionFactory" />
+  </bean>
+  
+  <onmsgi:service interface="org.opennms.netmgt.dao.api.CdpElementDao" ref="cdpElementDao" />
+
   <bean id="acknowledgmentDao" class="org.opennms.netmgt.dao.hibernate.AcknowledgmentDaoHibernate">
     <property name="sessionFactory" ref="sessionFactory" />
   </bean>

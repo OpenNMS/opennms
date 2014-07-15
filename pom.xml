@@ -1057,14 +1057,14 @@
     <felixVersion>2.2.0</felixVersion>
     <liquibaseVersion>2.0.5</liquibaseVersion>
     <log4jVersion>99.99.99-use-log4j2</log4jVersion>
-    <log4j2Version>2.0-rc1</log4j2Version>
+    <log4j2Version>2.0-rc2</log4j2Version>
     <minaVersion>2.0.7</minaVersion>
     <paxExamVersion>2.6.0</paxExamVersion>
     <powermockVersion>1.5.5</powermockVersion>
     <oroVersion>2.0.8</oroVersion>
     <osgiVersion>4.3.1</osgiVersion>
     <osgiEnterpriseVersion>4.2.0</osgiEnterpriseVersion>
-    <slf4jVersion>1.7.5</slf4jVersion>
+    <slf4jVersion>1.7.7</slf4jVersion>
     <springJaxbVersion>2.1.7</springJaxbVersion>
     <xalanVersion>2.7.1</xalanVersion>
     <xercesVersion>2.9.1</xercesVersion>

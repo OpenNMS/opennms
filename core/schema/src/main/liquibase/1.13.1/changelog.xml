@@ -664,4 +664,108 @@
 
   </changeSet>
 
+  <changeSet author="rssntn67" id="1.13.1-cdpelement">
+    <validCheckSum>ANY</validCheckSum>
+
+    <createTable tableName="cdpelement">
+      <column name="id" type="integer">
+        <constraints primaryKey="true" nullable="false" />
+      </column>
+      <column name="nodeid" type="integer">
+        <constraints nullable="false" />
+      </column>
+      <column name="cdpglobalrun" type="integer">
+        <constraints nullable="false" />
+      </column>
+      <column name="cdpglobaldeviceid" type="varchar(255)">
+        <constraints nullable="false" />
+      </column>
+      <column name="cdpnodecreatetime" type="DATETIME">
+        <constraints nullable="false" />
+      </column>
+      <column name="cdpnodelastpolltime" type="DATETIME">
+        <constraints nullable="false" />
+      </column>
+    </createTable>
+
+    <ext:addAutoIncrement tableName="cdpelement" columnName="id" sequenceName="opennmsNxtId" />
+    <addForeignKeyConstraint constraintName="fk_cdpelement_nodeid" onDelete="CASCADE" baseTableName="cdpelement" baseColumnNames="nodeid" referencedTableName="node" referencedColumnNames="nodeid" />
+    <createIndex tableName="cdpelement" indexName="cdpelement_nodeid_idx">
+      <column name="nodeid" />
+    </createIndex>
+    <createIndex tableName="cdpelement" indexName="cdp_deviceid_idx">
+      <column name="cdpglobaldeviceid" />
+    </createIndex>
+
+    <rollback>
+      <dropTable tableName="celement" />
+    </rollback>
+
+  </changeSet>
+
+  <changeSet author="rssntn67" id="1.13.1-cdplink">
+    <validCheckSum>ANY</validCheckSum>
+
+    <createTable tableName="cdplink">
+      <column name="id" type="integer">
+        <constraints primaryKey="true" nullable="false" />
+      </column>
+      <column name="nodeid" type="integer">
+        <constraints nullable="false" />
+      </column>
+      <column name="cdpcacheifindex" type="integer">
+        <constraints nullable="false" />
+      </column>
+      <column name="cdpinterfacename" type="varchar(96)">
+        <constraints nullable="false" />
+      </column>
+      <column name="cdpcacheaddresstype" type="integer">
+        <constraints nullable="false" />
+      </column>
+      <column name="cdpcacheaddress" type="varchar(64)">
+        <constraints nullable="false" />
+      </column>
+      <column name="cdpcacheversion" type="varchar(255)">
+        <constraints nullable="false" />
+      </column>
+      <column name="cdpcachedeviceid" type="varchar(64)">
+        <constraints nullable="false" />
+      </column>
+      <column name="cdpcachedeviceport" type="varchar(96)">
+        <constraints nullable="false" />
+      </column>
+      <column name="cdpcachedeviceplatform" type="varchar(96)">
+        <constraints nullable="false" />
+      </column>
+      <column name="cdplinkcreatetime" type="DATETIME">
+        <constraints nullable="false" />
+      </column>
+      <column name="cdplinklastpolltime" type="DATETIME">
+        <constraints nullable="false" />
+      </column>
+    </createTable>
+
+    <ext:addAutoIncrement tableName="cdplink" columnName="id" sequenceName="opennmsNxtId" />
+    <addForeignKeyConstraint constraintName="fk_cdplink_nodeid" onDelete="CASCADE" baseTableName="cdplink" baseColumnNames="nodeid" referencedTableName="node" referencedColumnNames="nodeid" />
+    <createIndex tableName="cdplink" indexName="cdplink_nodeid_idx">
+      <column name="nodeid" />
+    </createIndex>
+    <createIndex tableName="cdplink" indexName="cdplink_lastpoll_idx">
+      <column name="cdplinklastpolltime" />
+    </createIndex>
+    <createIndex tableName="cdplink" indexName="cdplink_pk_idx">
+      <column name="nodeid" />
+      <column name="cdpcachedeviceid" />
+      <column name="cdpcachedeviceport" />
+    </createIndex>
+    <createIndex tableName="cdplink" indexName="cdplink_address_idx">
+      <column name="cdpcacheaddress" />
+    </createIndex>
+
+    <rollback>
+      <dropTable tableName="cdplink" />
+    </rollback>
+
+  </changeSet>
+
 </databaseChangeLog>

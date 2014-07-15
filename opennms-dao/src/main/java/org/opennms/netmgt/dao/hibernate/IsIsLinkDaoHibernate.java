@@ -28,12 +28,17 @@
 
 package org.opennms.netmgt.dao.hibernate;
 
+import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
+import org.hibernate.HibernateException;
+import org.hibernate.Session;
 import org.opennms.netmgt.dao.api.IsIsLinkDao;
 import org.opennms.netmgt.model.IsIsLink;
 import org.opennms.netmgt.model.OnmsNode;
+import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.util.Assert;
 
 /**
@@ -83,6 +88,51 @@ public class IsIsLinkDaoHibernate extends AbstractDaoHibernate<IsIsLink, Integer
 			delete(link);
 		}
 	}
+
+    /**
+     * Gets the ISIS links between nodes and returns a list of Object[],
+     * with the following mapping:
+     * [0] = distinct id for combining links can be ignored
+     * [1] = link1 id
+     * [2] = link1 nodeid
+     * [3] = link1 isiscircifindex
+     * [4] = link2 id
+     * [5] = link2 nodeid
+     * [6] = link2 isiscircifindex
+     * @return A list of Object[] see notes for index mapping
+     */
+    public List<Object[]> getLinksForTopology() {
+        return getHibernateTemplate().execute(new HibernateCallback<List<Object[]>>() {
+
+            @Override
+            public List<Object[]> doInHibernate(Session session) throws HibernateException, SQLException {
+                List<Object[]> list = session.createSQLQuery("select distinct on (distinct_id) " +
+                        "least(l1.id, l2.id) as distinct_id, " +
+                        "l1.id as source_id, " +
+                        "l1.nodeid as source_nodeid, " +
+                        "l1.isiscircifindex as l1_isiscircifindex, " +
+                        "l2.id as target_id,  " +
+                        "l2.nodeid as target_nodeid, " +
+                        "l2.isiscircifindex as l2_isiscircifindex " +
+
+                        "from isislink l1 " +
+                        "left join isiselement e1 on l1.nodeid = e1.nodeid " +
+                        "left join isiselement e2 on l1.isisisadjneighsysid = e2.isissysid " +
+                        "left join isislink l2 on e2.nodeid=l2.nodeid " +
+                        "where l1.isisisadjindex = l2.isisisadjindex and l2.isisisadjneighsysid = e1.isissysid " +
+                        "order by distinct_id;").list();
+                return list;
+            }
+
+        });
+
+        /*String query = "select * from isislink l1 left join isiselement e on l1.isisisadjneighsysid = e.isissysid left join isislink l2 on e.nodeid=l2.nodeid where l1.isisisadjindex = l2.isisisadjindex";
+        List<Object[]> links = getHibernateTemplate().find("select l1.id, l1.nodeid, l2.id, l2.nodeid from IsisLink as l1 "
+                + "join IsisElement e on l1.isisisadjneighsysid = e.isissysid "
+                + "left join isislink l2 on e.nodeid=l2.nodeid "
+                + "where l1.isisisadjindex = l2.isisisadjindex");*/
+
+    }
     
     
 }

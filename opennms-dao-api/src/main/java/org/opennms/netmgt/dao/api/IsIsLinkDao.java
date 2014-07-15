@@ -45,4 +45,5 @@ public interface IsIsLinkDao extends OnmsDao<IsIsLink, Integer> {
 
     void deleteByNodeIdOlderThen(Integer nodeiId, Date now);
 
+    List<Object[]> getLinksForTopology();
 }
