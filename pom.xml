@@ -2873,6 +2873,12 @@
         <version>4.2.2</version>
       </dependency>
       <dependency>
+        <groupId>org.mockito</groupId>
+        <artifactId>mockito-all</artifactId>
+        <version>1.9.5</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
         <groupId>org.osgi</groupId>
         <artifactId>org.osgi.core</artifactId>
         <version>${osgiVersion}</version>
@@ -3115,7 +3121,7 @@
         <artifactId>groovy-all</artifactId>
         <version>1.7.5</version>
       </dependency>
-  </dependencies>
+    </dependencies>
   </dependencyManagement>
   <repositories>
     <repository>
