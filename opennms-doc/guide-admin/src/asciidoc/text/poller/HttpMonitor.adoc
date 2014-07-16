@@ -1,0 +1,129 @@
+
+=== HttpMonitor
+
+The HTTP monitor tests the response of an HTTP server on a specific HTTP GET command.
+During the poll, an attempt is made to connect on the specified port(s) (by default TCP ports 80, 8080, 8888). If the connection request is successful, an HTTP 'GET' command is sent to the interface. The response is parsed and a return code extracted and verified.
+
+==== Monitor facts
+
+[options="autowidth"]
+|===
+| Available Since | UNKNOWN
+| Class Name | `org.opennms.netmgt.poller.monitors.HttpMonitor`
+| Remote Enabled | UNKNOWN
+|===
+
+==== Configuration and Usage
+
+.Monitor specific parameters for the HttpMonitor
+[options="header, autowidth"]
+|===
+| Parameter | Description                                               | Required | Default value
+| `basic-authentication` | Authentication credentials to perform basic authentication.+
+                      Credentials should comply to RFC1945 section 11.1, without the Base64 encoding part. That's: be a string made of the concatenation of:+
+                        1- the user ID;
+                        2- a colon;
+                        3- the password.
+                      `basic-authentication` takes precedence over the `user` and `password` parameters (see below).   | optional | none
+| `header[0-9]+`   | Additional headers to be sent along with the request.+
+                     Note: The parameter's name here is a regular expression stating what paramter names are valid.+
+                           Example of valid paramter's names are _header0_, _header1_, and _header180_.+
+                           _header_ is not a valid parameter name. | optional | none
+| `host-name`      | Specify the _Host_ header's value. | optional | none
+| `nodelabel-host-name`  | If the `host-name` parameter isn't set and the `resolve-ip` parameter is set to _false_,+
+                           then OpenNMS will use the node's label to set the _Host_ header's value if this parameter is set to _true_.+
+                           Otherwise, OpenNMS will fall back using the node interface's IP address as _Host_ header value. | | false
+| `password`       | This parameter is meant to be used together with the `user` parameter to perform basic authentication.+
+                     This parameter specify to password to be used.+
+                     The `user` and `password` parameters are ignored when the `basic-authentication` parameter is defined. | optional | empty string
+| `port`           | A list of TCP ports to which connection shall be tried. | optional | "80,8080,8888"
+| `retry`          | Amount of attempts to get a valid HTTP response/response-text | optional | 0
+| `resolve-ip`     | If the `host-name` parameter isn't set and this parameter is set to _true_,
+                     OpenNMS will use DNS to resolve the node interface's IP address,+
+                     and use the result to set the _Host_ header's value.+
+                     When set to _false_ (and the `host-name` parameter isn't set),
+                     OpenNMS will try to use the `nodelabel-host-name` parameter to set the _Host_ header's value. | optional | false
+| `response`       | A comma-separated list of acceptable HTTP response code ranges.+
+                     Default value: If the `url` parameter isn't set or is set to '/',+
+                                    the default value for this parameter is "100-499",+
+                                    otherwise it's "100-399".+
+                     Example: "200-202,299" | optional | see description.
+| `response-text`  | Text to look for in the response body. This will be matched against every line, and it will be considered a success at the first match.+
+                     If there is a "~" at the beginning of the parameter, the rest of the string will be used as a regular expression pattern match,+
+                     otherwise the match will be a substring match.+
+                     Note: the regular expression match is anchored at the beginning and end of the line,
+                     so you will likely need to put a ".*" on both sides of your pattern unless you are going to be matching on the entire line.  | optional | none
+| `timeout`        | Timeout for TCP connection establishment. | optional | 3000ms
+| `url`            | URL to be retrieved via the HTTP 'GET' command | optional | '/' 
+| `user`           | This parameter is meant to be used together with the `password` parameter to perform basic authentication.+
+                     This parameter specify to user ID to be used.+
+                     The `user` and `password` parameters are ignored when the `basic-authentication` parameter is defined. | optional | none
+| `user-agent`     | Allows you to set the _User-Agent_ HTTP header (see also RFC2616 section 14.43). | optional | OpenNMS HttpMonitor
+| `verbose`        | When set to _true_, full communication between client and the webserver will be logged (with a log level of _DEBUG_).  | optional | none
+|===
+
+==== Examples
+
+[source, xml]
+----
+<!-- Test HTTP service on port 80 only -->
+<service name="HTTP" interval="300000" user-defined="false" status="on">
+  <parameter key="retry" value="2"/>
+  <parameter key="timeout" value="3000"/>
+  <parameter key="port" value="80"/>
+  <parameter key="url" value="/"/>
+</service>
+
+<!-- Test for virtual host opennms.com running -->
+<service name="OpenNMSdotCom" interval="300000" user-defined="false" status="on">
+  <parameter key="retry" value="1"/>
+  <parameter key="timeout" value="3000"/>
+  <parameter key="port" value="80"/>
+  <parameter key="host-name" value="opennms.com"/>
+  <parameter key="url" value="/solutions"/>
+  <parameter key="response" value="200-202,299"/>
+  <parameter key="response-text" value="~.*[Cc]onsulting.*"/>
+</service>
+
+<!-- Test for instance of OpenNMS 1.2.9 running -->
+<service name="OpenNMS-129" interval="300000" user-defined="false" status="on">
+  <parameter key="retry" value="1"/>
+  <parameter key="timeout" value="3000"/>
+  <parameter key="port" value="8080"/>
+  <parameter key="url" value="/opennms/event/list"/>
+  <parameter key="basic-authentication" value="admin:admin"/>
+  <parameter key="response" value="200"/>
+</service>
+
+<monitor service="HTTP" class-name="org.opennms.netmgt.poller.monitors.HttpMonitor" />
+<monitor service="OpenNMSdotCom" class-name="org.opennms.netmgt.poller.monitors.HttpMonitor" />
+<monitor service="OpenNMS-129" class-name="org.opennms.netmgt.poller.monitors.HttpMonitor" />
+----
+
+==== Testing filtering proxies with HttpMonitor
+
+If you have a filtering proxy server that is supposed to allow retrieval of some URLs but deny others, you can use the HttpMonitor to verify this behavior.
+
+Let's say that our proxy server is running on TCP port 3128, and that we should always be able to retrieve http://www.opennms.org/ but never http://www.myspace.com/ (hey, this is a workplace after all!). To test this behaviour, one could create the following service monitors:
+
+[source, xml]
+----
+<service name="HTTP-Allow-opennms.org" interval="300000" user-defined="false" status="on">
+  <parameter key="retry" value="1"/>
+  <parameter key="timeout" value="3000"/>
+  <parameter key="port" value="3128"/>
+  <parameter key="url" value="http://www.opennms.org/"/>
+  <parameter key="response" value="200-399"/>
+</service>
+
+<service name="HTTP-Block-myspace.com" interval="300000" user-defined="false" status="on">
+  <parameter key="retry" value="1"/>
+  <parameter key="timeout" value="3000"/>
+  <parameter key="port" value="3128"/>
+  <parameter key="url" value="http://www.myspace.com/"/>
+  <parameter key="response" value="400-599"/>
+</service>
+
+<monitor service="HTTP-Allow-opennms.org" class-name="org.opennms.netmgt.poller.monitors.HttpMonitor"/>
+<monitor service="HTTP-Block-myspace.com" class-name="org.opennms.netmgt.poller.monitors.HttpMonitor"/>
+----
