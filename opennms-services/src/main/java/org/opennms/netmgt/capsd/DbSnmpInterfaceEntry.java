@@ -1058,7 +1058,7 @@ public final class DbSnmpInterfaceEntry {
      */
     public static void main(String[] args) {
         try {
-            Integer temp = new Integer(args[1]);
+            Integer temp = Integer.valueOf(args[1]);
             DbSnmpInterfaceEntry entry =
                 DbSnmpInterfaceEntry.get(Integer.parseInt(args[0]),
                                          temp.intValue());

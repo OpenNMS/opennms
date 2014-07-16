@@ -84,7 +84,7 @@ public class CiscoVtpVlanTableTracker extends TableTracker {
 	    CISCO_VTP_VLAN_NAME
 	};
 
-	public class CiscoVtpVlanRow extends SnmpRowResult {
+	public static class CiscoVtpVlanRow extends SnmpRowResult {
 
 		public CiscoVtpVlanRow(int columnCount, SnmpInstId instance) {
 			super(columnCount, instance);

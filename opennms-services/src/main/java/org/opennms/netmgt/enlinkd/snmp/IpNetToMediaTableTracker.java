@@ -120,7 +120,7 @@ public class IpNetToMediaTableTracker extends TableTracker
 		IPNETTOMEDIA_TABLE_TYPE
 		};
 
-	public class IpNetToMediaRow extends SnmpRowResult {
+	public static class IpNetToMediaRow extends SnmpRowResult {
 
 		public IpNetToMediaRow(int columnCount, SnmpInstId instance) {
 			super(columnCount, instance);

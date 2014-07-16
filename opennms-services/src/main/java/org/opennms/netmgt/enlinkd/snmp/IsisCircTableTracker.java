@@ -73,7 +73,7 @@ public class IsisCircTableTracker extends TableTracker {
 
     };
     
-    public class IsIsCircRow extends SnmpRowResult {
+    public static class IsIsCircRow extends SnmpRowResult {
 
 		public IsIsCircRow(int columnCount, SnmpInstId instance) {
 			super(columnCount, instance);
