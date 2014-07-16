@@ -12,7 +12,6 @@ The response is parsed and a return code extracted and verified.
 
 [options="autowidth"]
 |===
-| Available Since | UNKNOWN
 | Class Name | `org.opennms.netmgt.poller.monitors.HttpMonitor`
 | Remote Enabled | `true`
 |===
