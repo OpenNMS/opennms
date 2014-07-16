@@ -34,6 +34,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectOutputStream;
 import java.net.BindException;
+import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.UnknownHostException;
@@ -104,7 +105,23 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
             LogFactory.setLogFactory(new ConsoleLogFactory());
         }
 
+        // Check to see if the pseudorandom byte generator device exists
+        if (new File("/dev/urandom").exists()) {
 
+            // If so, use it as the Java entropy gathering device so that we never
+            // block on entropy gathering. Don't use the exact string "file:/dev/urandom"
+            // because this is treated as a special value inside the JVM. Insert the
+            // "." into the path to force it to use the real /dev/urandom device.
+            //
+            // @see https://bugs.openjdk.java.net/browse/JDK-6202721
+            //
+            System.setProperty("java.security.egd", "file:/dev/./urandom");
+        }
+
+        // Allow us to override default security protocols
+        //SNMP4JSettings.setExtensibilityEnabled(true);
+        // Override the default security protocols
+        //System.setProperty(SecurityProtocols.SECURITY_PROTOCOLS_PROPERTIES, "/org/opennms/mock/snmp/SecurityProtocols.properties");
     }
 
     private static final LogAdapter s_log = LogFactory.getLogger(MockSnmpAgent.class);
@@ -181,6 +198,7 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
             }
         } catch (final InterruptedException e) {
             s_log.warn("MockSnmpAgent: Agent interrupted while starting: " + e.getLocalizedMessage());
+            thread.interrupt();
             agent.shutDownAndWait();
             throw e;
         }
@@ -565,9 +583,18 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
             super(udpAddress, reuseAddress);
         }
 
+        public InetAddress getInetAddress() {
+            return socket.getLocalAddress();
+        }
+
         public int getPort() {
             return socket.getLocalPort();
         }
+    }
+
+    public InetAddress getInetAddress() {
+        final TransportMapping mapping = transportMappings[0];
+        return ((MockUdpTransportMapping)mapping).getInetAddress();
     }
 
     public int getPort() {

@@ -114,7 +114,7 @@ public class Invoker {
                 // Get a new instance of the class
                 LOG.debug("create new instance of {}", service.getClassName());
                 
-                Map<?,?> mdc = Logging.getCopyOfContextMap();
+                Map<String,String> mdc = Logging.getCopyOfContextMap();
                 Object bean;
                 try {
                     bean = clazz.newInstance();
@@ -273,7 +273,7 @@ public class Invoker {
 
         Object object;
         try {
-        	Map<?,?> mdc = Logging.getCopyOfContextMap();
+        	Map<String,String> mdc = Logging.getCopyOfContextMap();
             try {
                 object = getServer().invoke(mbean.getObjectName(), invoke.getMethod(), parms, sig);
             } finally {
@@ -294,7 +294,7 @@ public class Invoker {
         Constructor<?> construct = attribClass.getConstructor(new Class[] { String.class });
 
         Object value;
-        Map<?,?> mdc = Logging.getCopyOfContextMap();
+        Map<String,String> mdc = Logging.getCopyOfContextMap();
         try {
             value = construct.newInstance(new Object[] { attrib.getValue().getContent() });
         } finally {
@@ -308,7 +308,7 @@ public class Invoker {
         Class<?> argClass = Class.forName(arg.getType());
         Constructor<?> construct = argClass.getConstructor(new Class[] { String.class });
 
-        Map mdc = Logging.getCopyOfContextMap();
+        Map<String,String> mdc = Logging.getCopyOfContextMap();
         try {
             return construct.newInstance(new Object[] { arg.getContent() });
         } finally {

@@ -40,12 +40,12 @@ import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
 import org.opennms.netmgt.dao.api.StpInterfaceDao;
 import org.opennms.netmgt.dao.api.StpNodeDao;
 import org.opennms.netmgt.dao.api.VlanDao;
-import org.opennms.netmgt.linkd.CdpInterface;
 import org.opennms.netmgt.linkd.Linkd;
-import org.opennms.netmgt.linkd.RouterInterface;
 import org.opennms.netmgt.model.DataLinkInterface;
 import org.opennms.netmgt.model.OnmsAtInterface;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.topology.CdpInterface;
+import org.opennms.netmgt.model.topology.RouterInterface;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 

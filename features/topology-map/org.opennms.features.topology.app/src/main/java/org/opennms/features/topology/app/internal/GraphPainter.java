@@ -61,7 +61,7 @@ public class GraphPainter extends BaseGraphVisitor {
 
         if(m_graphContainer.getEdgeStatusProviders() != null) {
             for (EdgeStatusProvider statusProvider : m_graphContainer.getEdgeStatusProviders()) {
-                if (statusProvider.getNameSpace().equals(m_graphContainer.getBaseTopology().getEdgeNamespace())) {
+                if (statusProvider.contributesTo(m_graphContainer.getBaseTopology().getEdgeNamespace())) {
                     m_edgeStatusMap.putAll(statusProvider.getStatusForEdges(m_graphContainer.getBaseTopology(),
                             new ArrayList<EdgeRef>(graph.getDisplayEdges()),
                             m_graphContainer.getCriteria()));
