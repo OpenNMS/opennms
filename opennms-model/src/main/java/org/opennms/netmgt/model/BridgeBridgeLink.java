@@ -143,7 +143,7 @@ public class BridgeBridgeLink {
 		m_designatedPortIfName = bridgePortIfName;
 	}
 
-	@Column(name="deisgnatedVlan", nullable = true)
+	@Column(name="designatedVlan", nullable = true)
 	public Integer getDesignatedVlan() {
 		return m_designatedVlan;
 	}

@@ -641,7 +641,7 @@ public class EnLinkdSnmpTest extends TestNetworkBuilder implements InitializingB
     	assertEquals("001e58a32fcd", bridge.getBaseBridgeAddress());
     	assertEquals(26, bridge.getBaseNumPorts().intValue());
     	assertEquals(BridgeDot1dBaseType.DOT1DBASETYPE_TRANSPARENT_ONLY,bridge.getBaseType());
-    	assertEquals(BridgeDot1dStpProtocolSpecification.DOT1D_STP_PROTOCOL_SPECIFICATION_IEEE8021D,bridge.getStpProtocolSpecificationType());
+    	assertEquals(BridgeDot1dStpProtocolSpecification.DOT1D_STP_PROTOCOL_SPECIFICATION_IEEE8021D,bridge.getStpProtocolSpecification());
     	assertEquals(32768,bridge.getStpPriority().intValue());
     	assertEquals("0000000000000000",bridge.getStpDesignatedRoot());
     	assertEquals(0, bridge.getStpRootCost().intValue());
