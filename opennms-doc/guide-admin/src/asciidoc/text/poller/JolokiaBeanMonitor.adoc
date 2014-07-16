@@ -55,7 +55,6 @@ Some example configuration how to configure the monitor in the `poller-configura
 The JolokiaBeanMonitor has two modes of operation. It can either scrape an attribute from a bean, or execute a method and compare output to a banner. The method execute is useful when your application has it's own test methods that you would like to trigger via OpenNMS.
 
 The args to execute a test method called "superTest" that take in a string as input would look like this:
-
 [source, xml]
 ----
 <parameter key="beanname" value="MyBean" />
@@ -64,7 +63,6 @@ The args to execute a test method called "superTest" that take in a string as in
 ----
 
 The args to scrape an attribute from the same bean would look like this:
-
 [source, xml]
 ----
 <parameter key="beanname" value="MyBean" />
