@@ -1,7 +1,7 @@
 
 === HttpMonitor
 
-The HTTP monitor tests the response of an HTTP server on a specific HTTP GET command.
+The HTTP monitor tests the response of an HTTP server on a specific HTTP 'GET' command.
 During the poll, an attempt is made to connect on the specified port(s).
 The monitor can test web server on multiple ports.
 By default the a test is made against port 80, 8080 and 8888.
@@ -23,7 +23,7 @@ The response is parsed and a return code extracted and verified.
 |===
 | Parameter              | Description                                                                                 | Required | Default value
 | `basic-authentication` | Authentication credentials to perform basic authentication. +
-                           Credentials should comply to RFC1945 section 11.1, without the Base64 encoding part. +
+                           Credentials should comply to http://www.rfc-editor.org/rfc/rfc1945.txt[RFC1945] section 11.1, without the Base64 encoding part. +
                            That's: be a string made of the concatenation of: +
                            1- the user ID; +
                            2- a colon; +
@@ -41,7 +41,7 @@ The response is parsed and a return code extracted and verified.
                            authentication. This parameter specify to password to be used. The `user` and `password` +
                            parameters are ignored when the `basic-authentication` parameter is defined.                | optional | `empty string`
 | `port`                 | A list of TCP ports to which connection shall be tried. | optional | `80`,`8080`,`8888`
-| `retry`                | Amount of attempts to get a valid HTTP response/response-text | optional | `0`
+| `retry`                | Number of attempts to get a valid HTTP response/response-text | optional | `0`
 | `resolve-ip`           | If the `host-name` parameter isn't set and this parameter is set to `true`, OpenNMS will +
                            use DNS to resolve the node interface's IP address, and use the result to set the _Host_ +
                            header's value. When set to `false` and the `host-name` parameter isn't set, OpenNMS will +
@@ -60,7 +60,7 @@ The response is parsed and a return code extracted and verified.
 | `user`                 | This parameter is meant to be used together with the `password` parameter to perform +
                            basic authentication. This parameter specify to user ID to be used. The `user` and +
                            `password` parameters are ignored when the `basic-authentication` parameter is defined.     | optional | `-`
-| `user-agent`           | Allows you to set the _User-Agent_ HTTP header (see also RFC2616 section 14.43).            | optional | `OpenNMS HttpMonitor`
+| `user-agent`           | Allows you to set the _User-Agent_ HTTP header (see also http://www.rfc-editor.org/rfc/rfc2616.txt[RFC2616] section 14.43).            | optional | `OpenNMS HttpMonitor`
 | `verbose`              | When set to _true_, full communication between client and the webserver will be logged +
                            (with a log level of `DEBUG`).                                                              | optional | `-`
 |===
