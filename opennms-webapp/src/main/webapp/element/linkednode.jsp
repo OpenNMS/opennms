@@ -32,6 +32,9 @@
 <%@page import="org.opennms.web.lldp.LldpLinkNode"%>
 <%@page import="org.opennms.web.lldp.LldpElementFactory"%>
 <%@page import="org.opennms.web.lldp.LldpElementFactoryInterface"%>
+<%@page import="org.opennms.web.ospf.OspfLinkNode"%>
+<%@page import="org.opennms.web.ospf.OspfElementFactory"%>
+<%@page import="org.opennms.web.ospf.OspfElementFactoryInterface"%>
 <%@page
 	language="java"
 	contentType="text/html"
@@ -100,6 +103,7 @@
 <%
     NetworkElementFactoryInterface factory = NetworkElementFactory.getInstance(getServletContext());
     LldpElementFactoryInterface lldpfactory = LldpElementFactory.getInstance(getServletContext());
+    OspfElementFactoryInterface ospffactory = OspfElementFactory.getInstance(getServletContext());
 
     String nodeIdString = request.getParameter( "node" );
 
@@ -501,6 +505,59 @@
 		    <td class="standard"><%=lldplink.getLldpRemPortDescr()%></td>
 		    <td class="standard"><%=lldplink.getLldpCreateTime()%></td>
 		    <td class="standard"><%=lldplink.getLldpLastPollTime()%></td>
+	    </tr>
+	    <% } %>
+		    
+	    </table>
+
+<% }  %>
+
+<hr />        
+<%
+   if (ospffactory.getOspfLinks(nodeId).isEmpty()) {
+%>
+	<div class="TwoColLeft">
+		<h3>No Ospf Nbr Links found on <%=node_db.getLabel()%> by Enhanced Linkd</h3>
+	</div>
+<% } else { %>
+<h3><%=node_db.getLabel()%> Ospf Nbr Table Links found by Enhanced Linkd</h3>
+		
+		<!-- Link box -->
+		<table class="standard">
+		
+		<thead>
+			<tr>
+			<th>Local Ip Address</th> 
+            <th>Local Address Less Index</th>
+			<th>Nbr Router Id</th>
+			<th>Nbr Ip Address</th>
+			<th>Nbr Address Kess Index</th> 
+			<th>Created</th>
+			<th>Last Poll</th>
+			</tr>
+		</thead>
+				
+		<% for( OspfLinkNode ospflink: ospffactory.getOspfLinks(nodeId)) { %>
+	    <tr>
+		    <td class="standard"><%=ospflink.getOspfIpAddr()%>(ifindex=<%=ospflink.getOspfIfIndex()%>)</td>
+		    <td class="standard"><%=ospflink.getOspfAddressLessIndex()%></td>
+            <td class="standard">
+            <% if (ospflink.getOspfRemRouterUrl() != null) { %>
+            	<a href="<%=ospflink.getOspfRemRouterUrl()%>"><%=ospflink.getOspfRemRouterId()%></a>
+            <% } else { %> 
+                    <%=ospflink.getOspfRemRouterId()%>
+    			<% } %> 
+            </td>
+		    <td class="standard">
+		 	<% if (ospflink.getOspfRemPortUrl() != null) { %>
+            	<a href="<%=ospflink.getOspfRemPortUrl()%>"><%=ospflink.getOspfRemIpAddr()%></a>
+            <% } else { %> 
+                    <%=ospflink.getOspfRemIpAddr()%>
+    		<% } %> 
+            </td>
+		    <td class="standard"><%=ospflink.getOspfRemAddressLessIndex()%></td>
+		    <td class="standard"><%=ospflink.getOspfLinkCreateTime()%></td>
+		    <td class="standard"><%=ospflink.getOspfLinkLastPollTime()%></td>
 	    </tr>
 	    <% } %>
 		    
