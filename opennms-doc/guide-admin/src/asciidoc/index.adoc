@@ -23,6 +23,6 @@ include::text/poller/BgpSessionMonitor.adoc[]
 include::text/poller/CitrixMonitor.adoc[]
 include::text/poller/DNSResolutionMonitor.adoc[]
 include::text/poller/SystemExecuteMonitor.adoc[]
-
+include::text/poller/JolokiaBeanMonitor.adoc[]
 include::text/events.adoc[]
 include::text/provisioning.adoc[]
