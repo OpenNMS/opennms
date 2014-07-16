@@ -23,11 +23,11 @@ of a given service by the display name.
 [options="header, autowidth"]
 |===
 | Parameter       | Description                                                                                        | Required | Default value
-| `retry`         | Amount of attempts to get the service state from SNMP agent                                        | required | `-`
-| `timeout`       | Time in milliseconds to wait for the SNMP result before next attempt.                              | required | `-`
+| `retry`         | Amount of attempts to get the service state from SNMP agent                                        | required | From `snmp-config.xml`
+| `timeout`       | Time in milliseconds to wait for the SNMP result before next attempt.                              | required | From `snmp-config.xml`
 | `service-name`  | The name of the service, this should be the exact name of the Windows service to monitor as it
                     appears in the Services _MSC snap-in_. Short names such as you might use with net start will *not*
-                    work here.                                                                                         | required | `-`
+                    work here.                                                                                         | required | `Server`
 |===
 
 NOTE: Non-english windows
