@@ -12,7 +12,6 @@ The response from the A record lookup can be any address, it is not verified wit
 
 [options="autowidth"]
 |===
-| Available Since | 1.10
 | Class Name | `org.opennms.netmgt.poller.monitors.DNSResolutionMonitor`
 | Remote Enabled | true
 |===
