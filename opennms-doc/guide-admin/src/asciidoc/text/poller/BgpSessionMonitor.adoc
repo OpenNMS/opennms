@@ -30,7 +30,6 @@ The servicestates for OpenNMS are mapped as follows:
 
 [options="autowidth"]
 |===
-| Available Since | 1.6.5
 | Class Name      | `org.opennms.netmgt.poller.monitors.BgpSessionMonitor`
 | Remote Enabled  | false
 |===
