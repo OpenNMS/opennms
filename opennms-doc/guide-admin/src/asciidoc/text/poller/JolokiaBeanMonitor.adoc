@@ -41,9 +41,9 @@ Banner matching supports regular expression and substring match.
 .Variables which can be used in the configuration
 [options="header, autowidth"]
 |===
-| Variable        | Description
-| `${ipaddr}`  | IP-address of the interface the service is bound to.
-| `${port}`  | Port the service it bound to.
+| Variable    | Description
+| `${ipaddr}` | IP-address of the interface the service is bound to.
+| `${port}`   | Port the service it bound to.
 |===
 
 ==== Examples
