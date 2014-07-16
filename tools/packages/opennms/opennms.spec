@@ -506,7 +506,7 @@ tar zxvf $RPM_BUILD_DIR/%{name}-%{version}-%{release}/target$RPM_BUILD_ROOT.tar.
 
 echo "=== UNTAR BUILD COMPLETED ==="
 
-### XXX is this needed?  (Most of) the current scripts don't use OPENNMS_HOME.
+### Set this so users can refer to $OPENNMS_HOME easily.
 ### /etc/profile.d
 
 mkdir -p $RPM_BUILD_ROOT%{profiledir}
@@ -550,6 +550,9 @@ install -m 640 $RPM_BUILD_ROOT%{instprefix}/contrib/remote-poller/remote-poller.
 rm -rf $RPM_BUILD_ROOT%{instprefix}/contrib/remote-poller
 
 rm -rf $RPM_BUILD_ROOT%{instprefix}/lib/*.tar.gz
+
+install -d -m 755 $RPM_BUILD_ROOT%{_libdir}/systemd/system
+install -m 655 $RPM_BUILD_ROOT%{instprefix}/etc/opennms.service $RPM_BUILD_ROOT%{_libdir}/systemd/system/
 
 cd $RPM_BUILD_ROOT
 
@@ -681,7 +684,8 @@ rm -rf $RPM_BUILD_ROOT
 %files core -f %{_tmppath}/files.main
 %defattr(664 root root 775)
 %attr(755,root,root)	%{profiledir}/%{name}.sh
-%attr(755,root,root) %{logdir}
+%attr(755,root,root)	%{_libdir}/systemd/system/opennms.service
+%attr(755,root,root)	%{logdir}
 			%{logdir}/controller
 			%{logdir}/daemon
 			%{logdir}/webapp
