@@ -13,7 +13,7 @@ The response is parsed and a return code extracted and verified.
 [options="autowidth"]
 |===
 | Class Name | `org.opennms.netmgt.poller.monitors.HttpMonitor`
-| Remote Enabled | `true`
+| Remote Enabled | true
 |===
 
 ==== Configuration and Usage

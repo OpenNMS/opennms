@@ -14,7 +14,7 @@ Banner matching supports regular expression and substring match.
 [options="autowidth"]
 |===
 | Class Name      | `org.opennms.netmgt.poller.monitors.JolokiaBeanMonitor`
-| Remote Enabled  | `false`
+| Remote Enabled  | false
 |===
 
 ==== Configuration and Usage
