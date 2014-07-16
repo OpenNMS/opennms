@@ -1,5 +1,6 @@
 === JolokiaBeanMonitor
 
+The JolokiaBeanMonitor is a JMX monitor specialiced for the use with the [Jolokia](http://www.jolokia.org) framework.
 If it is required to execute a method via JMX or poll an attribute via JMX, the JolokiaBeanMonitor can be used.
 It requires a fully installed and configured Jolokia agent to be deployed on/in the JVM/container.
 If required it allows attribute names, paths, and method parameters to be provided additional arguments to the call.
