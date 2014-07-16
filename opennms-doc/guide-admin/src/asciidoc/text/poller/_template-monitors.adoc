@@ -10,7 +10,6 @@ When is the monitor up or down.
 
 [options="autowidth"]
 |===
-| Available Since | Which version of OpenNMS was this monitor introduced, e.g. 1.12.1 / 1.10.1
 | Class Name | `Name of the monitor class which has to be used in the poller-configuration.xml`
 | Remote Enabled | true or false if the monitor can be used by the OpenNMS remote poller
 |===
