@@ -2,7 +2,11 @@
 === HttpMonitor
 
 The HTTP monitor tests the response of an HTTP server on a specific HTTP GET command.
-During the poll, an attempt is made to connect on the specified port(s) (by default TCP ports 80, 8080, 8888). If the connection request is successful, an HTTP 'GET' command is sent to the interface. The response is parsed and a return code extracted and verified.
+During the poll, an attempt is made to connect on the specified port(s).
+The monitor can test web server on multiple ports.
+By default the a test is made against port 80, 8080 and 8888.
+If the connection request is successful, an HTTP 'GET' command is sent to the interface.
+The response is parsed and a return code extracted and verified.
 
 ==== Monitor facts
 
@@ -10,7 +14,7 @@ During the poll, an attempt is made to connect on the specified port(s) (by defa
 |===
 | Available Since | UNKNOWN
 | Class Name | `org.opennms.netmgt.poller.monitors.HttpMonitor`
-| Remote Enabled | UNKNOWN
+| Remote Enabled | `true`
 |===
 
 ==== Configuration and Usage
@@ -18,48 +22,48 @@ During the poll, an attempt is made to connect on the specified port(s) (by defa
 .Monitor specific parameters for the HttpMonitor
 [options="header, autowidth"]
 |===
-| Parameter | Description                                               | Required | Default value
+| Parameter              | Description                                                                                 | Required | Default value
 | `basic-authentication` | Authentication credentials to perform basic authentication. +
-                      Credentials should comply to RFC1945 section 11.1, without the Base64 encoding part. That's: be a string made of the concatenation of: +
-                        1- the user ID; +
-                        2- a colon; +
-                        3- the password. +
-                      `basic-authentication` takes precedence over the `user` and `password` parameters (see below).   | optional | none
-| `header[0-9]+`   | Additional headers to be sent along with the request. +
-                     Note: The parameter's name here is a regular expression stating what parameter names are valid. +
-                           Example of valid parameter's names are _header0_, _header1_, and _header180_. +
-                           _header_ is not a valid parameter name. | optional | none
-| `host-name`      | Specify the _Host_ header's value. | optional | none
-| `nodelabel-host-name`  | If the `host-name` parameter isn't set and the `resolve-ip` parameter is set to _false_, +
-                           then OpenNMS will use the node's label to set the _Host_ header's value if this parameter is set to _true_. +
-                           Otherwise, OpenNMS will fall back using the node interface's IP address as _Host_ header value. | | false
-| `password`       | This parameter is meant to be used together with the `user` parameter to perform basic authentication. +
-                     This parameter specify to password to be used. +
-                     The `user` and `password` parameters are ignored when the `basic-authentication` parameter is defined. | optional | empty string
-| `port`           | A list of TCP ports to which connection shall be tried. | optional | "80,8080,8888"
-| `retry`          | Amount of attempts to get a valid HTTP response/response-text | optional | 0
-| `resolve-ip`     | If the `host-name` parameter isn't set and this parameter is set to _true_, +
-                     OpenNMS will use DNS to resolve the node interface's IP address,+
-                     and use the result to set the _Host_ header's value. +
-                     When set to _false_ (and the `host-name` parameter isn't set), +
-                     OpenNMS will try to use the `nodelabel-host-name` parameter to set the _Host_ header's value. | optional | false
-| `response`       | A comma-separated list of acceptable HTTP response code ranges. +
-                     Default value: If the `url` parameter isn't set or is set to '/', +
-                                    the default value for this parameter is "100-499", +
-                                    otherwise it's "100-399". +
-                     Example: "200-202,299" | optional | see description.
-| `response-text`  | Text to look for in the response body. This will be matched against every line, and it will be considered a success at the first match. +
-                     If there is a "~" at the beginning of the parameter, the rest of the string will be used as a regular expression pattern match, +
-                     otherwise the match will be a substring match. +
-                     Note: the regular expression match is anchored at the beginning and end of the line, +
-                     so you will likely need to put a ".*" on both sides of your pattern unless you are going to be matching on the entire line.  | optional | none
-| `timeout`        | Timeout for TCP connection establishment. | optional | 3000ms
-| `url`            | URL to be retrieved via the HTTP 'GET' command | optional | '/' 
-| `user`           | This parameter is meant to be used together with the `password` parameter to perform basic authentication. +
-                     This parameter specify to user ID to be used. +
-                     The `user` and `password` parameters are ignored when the `basic-authentication` parameter is defined. | optional | none
-| `user-agent`     | Allows you to set the _User-Agent_ HTTP header (see also RFC2616 section 14.43). | optional | OpenNMS HttpMonitor
-| `verbose`        | When set to _true_, full communication between client and the webserver will be logged (with a log level of _DEBUG_).  | optional | none
+                           Credentials should comply to RFC1945 section 11.1, without the Base64 encoding part. +
+                           That's: be a string made of the concatenation of: +
+                           1- the user ID; +
+                           2- a colon; +
+                           3- the password. +
+                          `basic-authentication` takes precedence over the `user` and `password` parameters.           | optional | `-`
+| `header[0-9]+`         | Additional headers to be sent along with the request. +
+                           Example of valid parameter's names are +
+                           `header0`, `header1` and `header180`. `header` is *not* a valid parameter name.            | optional | `-`
+| `host-name`            | Specify the _Host_ header's value. | optional | `-`
+| `nodelabel-host-name`  | If the `host-name` parameter isn't set and the `resolve-ip` parameter is set to `false`, +
+                           then OpenNMS will use the node's label to set the _Host_ header's value if this parameter +
+                           is set to `true`. Otherwise, OpenNMS will fall back using the node interface's IP address +
+                           as _Host_ header value.                                                                     | optional | `false`
+| `password`             | This parameter is meant to be used together with the `user` parameter to perform basic +
+                           authentication. This parameter specify to password to be used. The `user` and `password` +
+                           parameters are ignored when the `basic-authentication` parameter is defined.                | optional | `empty string`
+| `port`                 | A list of TCP ports to which connection shall be tried. | optional | `80`,`8080`,`8888`
+| `retry`                | Amount of attempts to get a valid HTTP response/response-text | optional | `0`
+| `resolve-ip`           | If the `host-name` parameter isn't set and this parameter is set to `true`, OpenNMS will +
+                           use DNS to resolve the node interface's IP address, and use the result to set the _Host_ +
+                           header's value. When set to `false` and the `host-name` parameter isn't set, OpenNMS will +
+                           try to use the `nodelabel-host-name` parameter to set the _Host_ header's value.            | optional | `false`
+| `response`             | A comma-separated list of acceptable HTTP response code ranges.
+                           Example: `200-202,299`                                                                      | optional | If the `url` parameter is set to `/`, the default +
+                           value for this parameter is `100-499`, otherwise it's `100-399`.
+| `response-text`        | Text to look for in the response body. This will be matched against every line, and it +
+                           will be considered a success at the first match. If there is a `~` at the beginning of +
+                           the parameter, the rest of the string will be used as a regular expression pattern match, +
+                           otherwise the match will be a substring match. The regular expression match is anchored +
+                           at the beginning and end of the line, so you will likely need to put a `.*` on both sides +
+                           of your pattern unless you are going to be matching on the entire line.                     | optional | `-`
+| `timeout`              | Timeout in milliseconds for TCP connection establishment.                                   | optional | `3000`
+| `url`                  | URL to be retrieved via the HTTP 'GET' command                                              | optional | `/`
+| `user`                 | This parameter is meant to be used together with the `password` parameter to perform +
+                           basic authentication. This parameter specify to user ID to be used. The `user` and +
+                           `password` parameters are ignored when the `basic-authentication` parameter is defined.     | optional | `-`
+| `user-agent`           | Allows you to set the _User-Agent_ HTTP header (see also RFC2616 section 14.43).            | optional | `OpenNMS HttpMonitor`
+| `verbose`              | When set to _true_, full communication between client and the webserver will be logged +
+                           (with a log level of `DEBUG`).                                                              | optional | `-`
 |===
 
 ==== Examples
