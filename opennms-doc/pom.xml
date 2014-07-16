@@ -18,12 +18,14 @@
     <module>guide-development</module>
     <module>guide-admin</module>
     <module>releasenotes</module>
+    <module>guide-all</module>
   </modules>
   <properties>
     <asciidoc.source.directory>${basedir}/src/asciidoc</asciidoc.source.directory>
     <asciidoc.output.directory>${basedir}/target/generated-docs</asciidoc.output.directory>
     <asciidoc.images.directory>images</asciidoc.images.directory>
   </properties>
+
   <build>
     <plugins>
       <!-- we need this to copy the images to the generated-docs output directory,
@@ -63,7 +65,7 @@
             <configuration>
               <sourceHighlighter>prettify</sourceHighlighter>
               <backend>html5</backend>
-	      <doctype>book</doctype>
+              <doctype>book</doctype>
             </configuration>
           </execution>
         </executions>
@@ -78,6 +80,32 @@
         </configuration>
       </plugin>
     </plugins>
+
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-assembly-plugin</artifactId>
+          <executions>
+            <execution>
+              <id>package</id>
+              <phase>package</phase>
+              <goals>
+                <goal>single</goal>
+              </goals>
+            </execution>
+          </executions>
+          <configuration>
+            <descriptors>
+              <descriptor>${basedir}/../src/assembly/doc.xml</descriptor>
+            </descriptors>
+            <appendAssemblyId>true</appendAssemblyId>
+            <outputDirectory>${dist.dir}</outputDirectory>
+            <finalName>${dist.name}</finalName>
+          </configuration>
+        </plugin>
+      </plugins>
+    </pluginManagement>
   </build>
 
   <pluginRepositories>

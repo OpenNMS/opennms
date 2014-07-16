@@ -10,4 +10,12 @@
     <packaging>pom</packaging>
     <name>OpenNMS :: Documentation :: Releasenotes</name>
     <description>OpenNMS Releasenotes</description>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-assembly-plugin</artifactId>
+      </plugin>
+    </plugins>
+  </build>
 </project>

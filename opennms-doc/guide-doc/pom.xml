@@ -10,4 +10,12 @@
     <packaging>pom</packaging>
     <name>OpenNMS :: Documentation :: Guide Documentation</name>
     <description>Guide to get started writing/contributing documentation</description>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-assembly-plugin</artifactId>
+      </plugin>
+    </plugins>
+  </build>
 </project>
