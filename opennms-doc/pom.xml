@@ -73,7 +73,7 @@
           <headerFooter>true</headerFooter>
           <sourceDirectory>${asciidoc.source.directory}</sourceDirectory>
           <outputDirectory>${asciidoc.output.directory}</outputDirectory>
-          <imagesDir>./</imagesDir>
+          <imagesDir>images</imagesDir>
           <attributes>
             <opennms-version>${project.version}</opennms-version>
           </attributes>
