@@ -12,7 +12,6 @@ If the banner is not available in the output the status is determined as down.
 
 [options="autowidth"]
 |===
-| Available Since | 1.12.2
 | Class Name | `org.opennms.netmgt.poller.monitors.SystemExecuteMonitor`
 | Remote Enabled | true
 |===
