@@ -13,7 +13,6 @@ Banner matching supports regular expression and substring match.
 
 [options="autowidth"]
 |===
-| Available Since | unknown
 | Class Name      | `org.opennms.netmgt.poller.monitors.JolokiaBeanMonitor`
 | Remote Enabled  | `false`
 |===
