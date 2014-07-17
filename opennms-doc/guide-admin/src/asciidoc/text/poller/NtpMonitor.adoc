@@ -1,6 +1,6 @@
 === NtpMonitor
 
-The ICMP monitor tests for NTP service availability.
+The NTP monitor tests for NTP service availability.
 During the poll an NTP request query packet is generated.
 If a response is received, it is parsed and validated.
 If the response is a valid NTP response, the service is considered available.
