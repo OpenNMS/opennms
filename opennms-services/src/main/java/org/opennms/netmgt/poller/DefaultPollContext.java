@@ -258,7 +258,7 @@ public class DefaultPollContext implements PollContext, EventListener {
         
         if (uei.equals(EventConstants.NODE_DOWN_EVENT_UEI)
                 && this.getPollerConfig().isPathOutageEnabled()) {
-            String[] criticalPath = PathOutageFactory.getCriticalPath(nodeId);
+            String[] criticalPath = PathOutageFactory.getInstance().getCriticalPath(nodeId);
             
             if (criticalPath[0] != null && !"".equals(criticalPath[0])) {
                 if (!this.testCriticalPath(criticalPath)) {

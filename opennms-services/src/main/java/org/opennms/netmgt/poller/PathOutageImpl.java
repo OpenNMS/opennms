@@ -10,7 +10,7 @@ public interface PathOutageImpl {
 	
 	String getPrettyCriticalPath(int nodeID) throws SQLException;
 	
-	String[] getCriticalPath(int nodeId) throws SQLException;
+	String[] getCriticalPath(int nodeId);
 	
 	List<String> getNodesInPath(String criticalPathIp, String criticalPathServiceName) throws SQLException;
 	
