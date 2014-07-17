@@ -1,8 +1,8 @@
 === AvailabilityMonitor
 
-This monitor tests reachability of a node by using the _isReachable_ method of the InetAddress java class.
+This monitor tests reachability of a node by using the _isReachable_ method of the _InetAddress_ java class.
 The service is considered available if isReachable returns true.
-See link:http://docs.oracle.com/javase/7/docs/api/java/net/InetAddress.html#isReachable%28int%29[Oracle's documentation]] for more details.
+See link:http://docs.oracle.com/javase/7/docs/api/java/net/InetAddress.html#isReachable%28int%29[Oracle's documentation] for more details.
 
 ==== Monitor facts
 
@@ -17,9 +17,9 @@ See link:http://docs.oracle.com/javase/7/docs/api/java/net/InetAddress.html#isRe
 .Monitor specific parameters for the AvailabilityMonitor
 [options="header, autowidth"]
 |===
-| Parameter | Description                                                       | Required | Default value
-| `retry`   | Number of attempts to have the isReachable method return _true_.  | optional | `3`
-| `timeout` | Timeout for the isReachable method, in milliseconds.              | optional | `3000`
+| Parameter | Description                                                         | Required | Default value
+| `retry`   | Number of attempts to have the _isReachable_ method return _true_.  | optional | `3`
+| `timeout` | Timeout for the isReachable method, in milliseconds.                | optional | `3000`
 |===
 
 ==== Examples
@@ -27,7 +27,14 @@ See link:http://docs.oracle.com/javase/7/docs/api/java/net/InetAddress.html#isRe
 
 ----
 <service name="isReachable" interval="300000" user-defined="false" status="on">
+  <parameter key="retry" value="2"/>
+  <parameter key="timeout" value="5000"/>
 </service>
 
 <monitor service="isReachable" class-name="org.opennms.netmgt.poller.monitors.AvailabilityMonitor"/>
 ----
+
+==== IcmpMonitor vs AvailabilityMonitor
+This monitor is intended to run on the OpenNMS Remote Poller.
+The OpenNMS Remote Poller has no possibilities to send ICMP messages from a raw socket like OpenNMS has with the JICMP extension.
+To have an easy to use and platform independent remote poller as a single runnable jar the AvailabilityMonitor can be used to test network availability from remote locations.
