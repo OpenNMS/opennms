@@ -1,0 +1,33 @@
+=== AvailabilityMonitor
+
+This monitor tests reachability of a node by using the _isReachable_ method of the InetAddress java class.
+The service is considered available if isReachable returns true.
+See link:http://docs.oracle.com/javase/7/docs/api/java/net/InetAddress.html#isReachable%28int%29[Oracle's documentation]] for more details.
+
+==== Monitor facts
+
+[options="autowidth"]
+|===
+| Class Name     | `org.opennms.netmgt.poller.monitors.AvailabilityMonitor`
+| Remote Enabled | true
+|===
+
+==== Configuration and Usage
+
+.Monitor specific parameters for the AvailabilityMonitor
+[options="header, autowidth"]
+|===
+| Parameter | Description                                                       | Required | Default value
+| `retry`   | Number of attempts to have the isReachable method return _true_.  | optional | `3`
+| `timeout` | Timeout for the isReachable method, in milliseconds.              | optional | `3000`
+|===
+
+==== Examples
+[source, xml]
+
+----
+<service name="isReachable" interval="300000" user-defined="false" status="on">
+</service>
+
+<monitor service="isReachable" class-name="org.opennms.netmgt.poller.monitors.AvailabilityMonitor"/>
+----
