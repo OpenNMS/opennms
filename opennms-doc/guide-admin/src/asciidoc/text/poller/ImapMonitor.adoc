@@ -2,6 +2,26 @@
 === ImapMonitor
 
 This monitor checks if an IMAP server is functional.
+The test is done by initializing a very simple IMAP conversation.
+The ImapMonitor establishes a TCP connection, sends a logout command and test the IMAP server responses.
+
+The behavior can be simulated with `telnet`:
+
+ telnet mail.myserver.de 143
+ Trying 62.108.41.197...
+ Connected to mail.myserver.de.
+ Escape character is '^]'.
+ * OK [CAPABILITY IMAP4rev1 LITERAL+ SASL-IR LOGIN-REFERRALS ID ENABLE IDLE STARTTLS LOGINDISABLED] Dovecot ready. <1>
+ ONMSPOLLER LOGOUT <2>
+ * BYE Logging out <3>
+ ONMSPOLLER OK Logout completed.
+ Connection closed by foreign host.
+
+<1> Test IMAP server banner, it has to start `* OK` to be _up_
+<2> Sending a `ONMSPOLLER LOGOUT`
+<3> Test server responds with, it has to start with `* BYE` to be _up_
+
+If one of the tests in the sample above fails the service is marked _down_.
 
 ==== Monitor facts
 
