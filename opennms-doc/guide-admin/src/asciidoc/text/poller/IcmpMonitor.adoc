@@ -1,8 +1,7 @@
 === IcmpMonitor
 
-The ICMP monitor tests for ICMP service availability by sending _echo request_ ICMP messages.
-The service is considered available when te node sends back an _echo reply_ ICMP message +
-within the specified amount of time.
+The ICMP monitor tests for ICMP service availability by sending _echo request_ ICMP messages. +
+The service is considered available when te node sends back an _echo reply_ ICMP message within the specified amount of time.
 
 ==== Monitor facts
 
