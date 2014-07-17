@@ -1,15 +1,15 @@
 
 === HttpsMonitor
 
-The HTTPS monitor tests the response of an SSL-enabled HTTP server. +
-The HTTPS monitor is an SSL-enabled extension of the HTTP monitor with a default TCP port value of 443. +
-All HttpMonitor parameters apply, so please refer to link:HttpMonitor.adoc[HttpMonitor]'s documentation more information.
+The HTTPS monitor tests the response of an SSL-enabled HTTP server.
+The HTTPS monitor is an SSL-enabled extension of the HTTP monitor with a default TCP port value of 443.
+All HttpMonitor parameters apply, so please refer to <<poller-http-monitor,HttpMonitor's documentation>> for more information.
 
 ==== Monitor facts
 
 [options="autowidth"]
 |===
-| Class Name | `org.opennms.netmgt.poller.monitors.HttpsMonitor`
+| Class Name     | `org.opennms.netmgt.poller.monitors.HttpsMonitor`
 | Remote Enabled | true
 |===
 
@@ -18,7 +18,7 @@ All HttpMonitor parameters apply, so please refer to link:HttpMonitor.adoc[HttpM
 .Monitor specific parameters for the HttpsMonitor
 [options="header, autowidth"]
 |===
-| Parameter              | Description                                                                                 | Required | Default value
+| Parameter              | Description                                             | Required | Default value
 | `port`                 | A list of TCP ports to which connection shall be tried. | optional | `443`
 |===
 

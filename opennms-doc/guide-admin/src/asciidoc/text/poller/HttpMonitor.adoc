@@ -1,4 +1,4 @@
-
+[[poller-http-monitor]]
 === HttpMonitor
 
 The HTTP monitor tests the response of an HTTP server on a specific HTTP 'GET' command.
