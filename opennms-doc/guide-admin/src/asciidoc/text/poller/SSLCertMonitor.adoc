@@ -1,7 +1,12 @@
 
 === SSLCertMonitor
-This monitor is used to test if a SSL certificate is valid.
-Additionally it is possible to configure a threshold for monitoring the date of expire of the certificate.
+This monitor is used to test if a SSL certificate presented by a remote network server are
+valid. A certificate is invalid if its initial time is prior to the current time, or if the current time
+is prior to 7 days (configurable) before the expiration time. The monitor only supports SSL on
+the socket and does not support a higher level protocol above it. Additionally, it does not
+support Server Name Indication (SNI) and so is unable to validate different certificates if
+they would be presented on the same connection.
+
 You can simulate the behavior by running a command like this:
 
  echo | openssl s_client -connect <site>:<port> 2>/dev/null | openssl x509 -noout -dates
@@ -34,8 +39,9 @@ You can configure a threshold in days applied on the `notAfter` date.
 | `days`    | Number of days before the certificate expires that we mark the service as failed. | optional | `7`
 |===
 
-WARNING: Monitoring of SSL certificates on virtual hosts is currently unsupported.
-There is currently no possibility to pass or configure a HTTP header with a _host name_.
+WARNING: The monitor has no support for communicating on other protocol layers above the SSL session layer. It
+is not able to send a Host header for HTTPS, or issue a STARTTLS command for IMAP, POP3, SMTP, FTP, XMPP, LDAP,
+or NNTP.
 
 ==== Examples
 The following example shows how to monitor SSL certificates on services like IMAPS, SMTPS and HTTPS.
