@@ -2,8 +2,8 @@
 === HttpsMonitor
 
 The HTTPS monitor tests the response of an SSL-enabled HTTP server. +
-The HTTPS monitor is just an SSL-enabled extension of the HTTP monitor with a default TCP port value of 443. +
-All HttpMonitor parameters apply, so please refer to HttpMonitor's documentation more information.
+The HTTPS monitor is an SSL-enabled extension of the HTTP monitor with a default TCP port value of 443. +
+All HttpMonitor parameters apply, so please refer to link:HttpMonitor.adoc[HttpMonitor]'s documentation more information.
 
 ==== Monitor facts
 
