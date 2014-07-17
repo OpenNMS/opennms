@@ -1,6 +1,6 @@
-=== IcmpMonitor
 
-The ICMP monitor tests for ICMP service availability by sending _echo request_ ICMP messages. +
+=== IcmpMonitor
+The ICMP monitor tests for ICMP service availability by sending _echo request_ ICMP messages.
 The service is considered available when the node sends back an _echo reply_ ICMP message within the specified amount of time.
 
 ==== Monitor facts
@@ -16,10 +16,10 @@ The service is considered available when the node sends back an _echo reply_ ICM
 .Monitor specific parameters for the IcmpMonitor
 [options="header, autowidth"]
 |===
-| Parameter | Description                                    | Required | Default value
-| `packet-size` | Number of bytes of the ICMP packet to send.  | optional | `64`
-| `retry` | Number of attempts to get a response. | optional | `2`
-| `timeout` | Time (in milliseconds) to wait for a response. | optional | `800`
+| Parameter     | Description                                            | Required | Default value
+| `packet-size` | Number of bytes of the ICMP packet to send.            | optional | `64`
+| `retry`       | Number of attempts to get a response.                  | optional | `2`
+| `timeout`     | Time in milliseconds to wait for a response.           | optional | `800`
 |===
 
 ==== Examples
