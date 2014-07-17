@@ -1,0 +1,36 @@
+=== IcmpMonitor
+
+The ICMP monitor tests for ICMP service availability by sending _echo request_ ICMP messages. +
+The service is considered available when the node sends back an _echo reply_ ICMP message within the specified amount of time.
+
+==== Monitor facts
+
+[options="autowidth"]
+|===
+| Class Name | `org.opennms.netmgt.poller.monitors.IcmpMonitor`
+| Remote Enabled | true
+|===
+
+==== Configuration and Usage
+
+.Monitor specific parameters for the IcmpMonitor
+[options="header, autowidth"]
+|===
+| Parameter | Description                                    | Required | Default value
+| `packet-size` | Number of bytes of the ICMP packet to send.  | optional | `64`
+| `retry` | Number of attempts to get a response. | optional | `2`
+| `timeout` | Time (in milliseconds) to wait for a response. | optional | `800`
+|===
+
+==== Examples
+[source, xml]
+----
+<service name="ICMP" interval="300000" user-defined="false" status="on">
+  <parameter key="retry" value="2"/>
+  <parameter key="timeout" value="3000"/>
+  <parameter key="rrd-repository" value="/var/lib/opennms/rrd/response"/>
+  <parameter key="rrd-base-name" value="icmp"/>
+  <parameter key="ds-name" value="icmp"/>
+</service>
+<monitor service="ICMP" class-name="org.opennms.netmgt.poller.monitors.IcmpMonitor"/>
+----
