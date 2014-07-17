@@ -50,7 +50,7 @@ import org.opennms.netmgt.config.OpennmsServerConfigFactory;
  * @version $Id: $
  * @since 1.8.1
  */
-public abstract class PathOutageFactory implements PathOutageImpl{
+public abstract class PathOutageFactory implements PathOutageManager{
 
     private static final String GET_CRITICAL_PATHS = "SELECT DISTINCT criticalpathip, criticalpathservicename FROM pathoutage ORDER BY criticalpathip, criticalpathservicename";
 

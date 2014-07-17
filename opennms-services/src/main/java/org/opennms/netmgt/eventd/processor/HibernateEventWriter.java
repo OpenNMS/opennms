@@ -39,7 +39,6 @@ import org.opennms.netmgt.dao.api.EventDao;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.dao.util.AutoAction;
-import org.opennms.netmgt.dao.util.Correlation;
 import org.opennms.netmgt.dao.util.OperatorAction;
 import org.opennms.netmgt.dao.util.SnmpInfo;
 import org.opennms.netmgt.eventd.EventdConstants;
@@ -146,10 +145,10 @@ public final class HibernateEventWriter extends AbstractJdbcPersister implements
         
         ovent.setEventSeverity(Integer.valueOf(event.getSeverity()));
         ovent.setEventPathOutage(event.getPathoutage());
-        ovent.setEventCorrelation(Correlation.format(event.getCorrelation(), EVENT_CORRELATION_FIELD_SIZE));
+        ovent.setEventCorrelation((event.getCorrelation() != null) ? org.opennms.netmgt.dao.util.Correlation.format(event.getCorrelation(), EVENT_CORRELATION_FIELD_SIZE) : null);
         ovent.setEventSuppressedCount(null);
         ovent.setEventOperInstruct(event.getOperinstruct());
-        ovent.setEventAutoAction(AutoAction.format(event.getAutoaction(),EVENT_AUTOACTION_FIELD_SIZE));
+        ovent.setEventAutoAction((event.getAutoactionCount() > 0) ? AutoAction.format(event.getAutoaction(), EVENT_AUTOACTION_FIELD_SIZE) : null);
   
         if (event.getOperactionCount() > 0) {
         	final List<Operaction> a = new ArrayList<Operaction>();

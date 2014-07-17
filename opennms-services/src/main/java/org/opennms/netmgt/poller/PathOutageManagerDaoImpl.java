@@ -63,7 +63,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @version $Id: $
  * @since 1.8.1
  */
-public class PathOutageManagerDaoImpl implements PathOutageImpl{
+public class PathOutageManagerDaoImpl implements PathOutageManager{
 	@Autowired
 	private NodeDao nodeDao;
 	
