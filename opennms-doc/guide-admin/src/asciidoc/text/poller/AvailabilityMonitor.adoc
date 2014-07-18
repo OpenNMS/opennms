@@ -26,15 +26,14 @@ See link:http://docs.oracle.com/javase/7/docs/api/java/net/InetAddress.html#isRe
 [source, xml]
 
 ----
-<service name="isReachable" interval="300000" user-defined="false" status="on">
+<service name="AVAIL" interval="300000" user-defined="false" status="on">
   <parameter key="retry" value="2"/>
   <parameter key="timeout" value="5000"/>
 </service>
 
-<monitor service="isReachable" class-name="org.opennms.netmgt.poller.monitors.AvailabilityMonitor"/>
+<monitor service="AVAIL" class-name="org.opennms.netmgt.poller.monitors.AvailabilityMonitor"/>
 ----
 
 ==== IcmpMonitor vs AvailabilityMonitor
-This monitor is intended to run on the OpenNMS Remote Poller.
-The OpenNMS Remote Poller has no possibilities to send ICMP messages from a raw socket like OpenNMS has with the JICMP extension.
-To have an easy to use and platform independent remote poller as a single runnable jar the AvailabilityMonitor can be used to test network availability from remote locations.
+This monitor has been developped in a time when the <<poller-icmp-monitor,IcmpMonitor>> monitor wasn't remote enabled, to circumvent this limitation.
+Now, with the JNA ICMP implementation, the IcmpMonitor monitor is remote enabled under most configurations and this monitor shouldn't be needed -unless you're running your remote poller on such an unusual configuration (See also link:http://issues.opennms.org/browse/NMS-6735[issue NMS-6735] for more information)-.
