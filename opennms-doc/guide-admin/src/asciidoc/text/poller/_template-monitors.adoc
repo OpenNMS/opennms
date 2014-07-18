@@ -1,6 +1,5 @@
-// This is a template which can be copied for creating a new monitor documentation
-// !!! PLEASE DON'T INCLUDE THIS FILE INTO THE BUILD PROCESS !!!
 
+// Please keep first line an empty line to make sure, the ToC can be build correctly
 === Name of the Monitor. Normally the name of the class without .java
 
 A summary what the monitor is doing. +

@@ -1,3 +1,4 @@
+
 === JolokiaBeanMonitor
 
 The JolokiaBeanMonitor is a JMX monitor specialized for the use with the link:http://www.jolokia.org[Jolokia framework].

@@ -1,3 +1,4 @@
+
 === NtpMonitor
 
 The NTP monitor tests for NTP service availability.
