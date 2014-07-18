@@ -27,6 +27,7 @@ One usecase is to HTTP POST to a SOAP endpoint.
 | `mimetype` | The mimetype set tu use during POST. | optional | `text/xml`
 | `port` | The port for the POST. | optional | `80`
 | `scheme` | The connection scheme to use. | optional | `http`
+| `usesslfilter` | Controlls if the SSL certificate must be correct. | optional | `false`
 | `uri` | The uri to use during the POST. | optional | `/`
 |===
 
