@@ -44,8 +44,6 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
@@ -317,7 +315,7 @@ public class Outages implements Serializable {
         }
 
         List<Outage> outageList = new ArrayList<Outage>(this._outageMap.values());
-        Outage o = outageList.set(index, vOutage);
+        outageList.set(index, vOutage);
         setOutage(outageList);
     }
 
