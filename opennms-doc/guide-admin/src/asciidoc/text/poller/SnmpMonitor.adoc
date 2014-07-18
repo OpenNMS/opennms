@@ -1,0 +1,82 @@
+=== SnmpMonitor
+
+The SNMP monitor can perform 2 types of tests against SNMP MIB objects: .
+. Test the value of a specific SNMP MIB object; 
+. Test the value of all SNMP MIB objects within a MIB branch (_walk_ mode).
+
+==== Monitor facts
+
+[options="autowidth"]
+|===
+| Class Name     | `org.opennms.netmgt.poller.monitors.SnmpMonitor`
+| Remote Enabled | true
+|===
+
+==== Configuration and Usage
+
+.Monitor specific parameters for the SnmpMonitor
+[options="header, autowidth"]
+|===
+| Parameter         | Description                                                                                      | Required | Default value
+| `hex`             | Specifies that the value monitored should be compared against its hexadecimal representation.
+                      Useful when the monitored value is a string containing non-printable characters.i                | optional | `false`
+| `match-all`       | Sets the monitor in _walk_ mode when set.
+                      If set to _true_, specifies that the value of _every_ object encountered in the walk must
+                      match the criteria specified by `operand` and `operator`.
+                      If set to _count_, specifies that the value of at least minimum and at most maximum objects 
+                      encountered in the walk must match the criteria specified by `operand` and `operator`.           | optional | `true`
+| `maximum`         | Valid only when `match-all` is set to _count_. 
+                      Should be used in conjunction with the `minimum` parameter
+                      Specifies that the value of _at most_ `maximum` objects encountered in the walk must meet the
+                      criteria specified by the `operand` and `operator` parameters.                                   | optional | `0`
+| `minimum`         | Valid only when `match-all` is set to _count_. 
+                      Should be used in conjunction with the `maximum` parameter
+                      Specifies that the value of _at least_ `minimum` objects encountered in the walk must meet the
+                      criteria specified by the `operand` and `operator` parameters.                                   | optional | `0`
+| `oid`             | The object identifier of the MIB object to monitor.
+                      If no other parameters are present, the monitor asserts that the agent's response for this 
+                      object must include a valid value (as opposed to an error, no-such-name,i
+                      or end-of-view condition) that is non-null.                                                      | optional | `.1.3.6.1.2.1.1.2.0` (SNMPv2-MIB::SysObjectID)
+| `operand`         | The value to be compared against the observed value of the monitored object.
+                      Note: Comparaison will always succeed if either the `operand` or `operator` parameter isn't set
+                            and the monitored value is non-null.                                                       | optional | `-`
+| `operator`        | The operator to be used for comparing the monitored object against the `operand` parameter.
+                      Must be one of the following symbolic operators:
+                      *<*  Less than. Both operand and observed object value must be numeric.
+                      *>*  Greater than. Both operand and observed object value must be numeric. 
+                      *<=* Less than or equal to. Both operand and observed object value must be numeric. 
+                      *>=* Greater than or equal to. Both operand and observed object value must be numeric. 
+                      *=*  Equal to. Applied in numeric context if both operand and observed object value are numeric,
+                           otherwise in string context as a case-sensitive exact match. 
+                      *!=* Not equal to. Applied in numeric context if both operand and observed object value 
+                           are numeric, otherwise in string context as a case-sensitive exact match. 
+                      *~*  Regular expression match. Always applied in string context. 
+                      Note: Comparaison will always succeed if either the `operand` or `operator` parameter isn't set
+                            and the monitored value is non-null.                                                       
+                      Keep in mind that you need to escape all < and > characters as XML entities (&lt; and &gt;
+                      respectively) if you are editing the poller-configuration.xml file by hand.                      | optional | `-`
+| `port`            | Destination port where the SNMP requests shall be sent.                                          | optional | `from snmp-config.xml'
+| `reason-template` | A user-provided template used for the monitor's reason code if the service is unvailable.
+                      Defaults to a reasonable value if unset.
+                      See below for an explanation of the possible template parameters.                                 | optional | 'depends'
+ 
+| `retry`           | Number of polls to attempt.                                                                      | optional | `from snmp-config.xml`
+| `retries`         | Deprecated. 
+                      Same as `retry`.
+                      Parameter `retry` takes precedence if both are set.                                              | optional | `from snmp-config.xml`
+| `timeout`         | Timeout in milliseconds for retrieving the object's value.                                       | optional | `from snmp-config.xml`
+| `walk`            | If set to _true_, sets the monitor in _walk_ mode, and the monitor will perform GET-NEXT or
+                      GET-BULK operations -effecting a "walk" to the end of the MIB branch specified by the
+                      `oid` parameter- instead of the default GET operation.
+                      This parameter is typically used to monitor all instances of a tabular object.
+                      When used alone, the service is considered available if the value of _any_ object encountered
+                      in the walk matches the criteria specified by operand and operator.
+                      See also the `match-all`, `minimum`, and `maximum` parameters.                                   | optional | `false`
+|===
+
+==== Examples
+
+[source, xml]
+----
+<monitor service="HTTP" class-name="org.opennms.netmgt.poller.monitors.SnmpMonitor" />
+----
