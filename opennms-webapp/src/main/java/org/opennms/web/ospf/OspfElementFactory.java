@@ -6,16 +6,10 @@ import java.util.List;
 import javax.servlet.ServletContext;
 
 import org.opennms.core.spring.BeanUtils;
-import org.opennms.netmgt.dao.api.LldpElementDao;
-import org.opennms.netmgt.dao.api.LldpLinkDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.OspfElementDao;
 import org.opennms.netmgt.dao.api.OspfLinkDao;
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
-import org.opennms.netmgt.model.LldpElement;
-import org.opennms.netmgt.model.LldpElement.LldpChassisIdSubType;
-import org.opennms.netmgt.model.LldpLink;
-import org.opennms.netmgt.model.LldpLink.LldpPortIdSubType;
 import org.opennms.netmgt.model.OspfElement;
 import org.opennms.netmgt.model.OspfElement.Status;
 import org.opennms.netmgt.model.OspfLink;
