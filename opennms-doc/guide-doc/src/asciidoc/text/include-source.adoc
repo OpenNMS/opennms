@@ -1,0 +1,102 @@
+
+[[doc-guidelines-include-source]]
+== Code Snippets ==
+It is possible to include code snippets, configuration- or source code files in the documentation.
+With the given language parameter the source code or configuration is rendered with syntax highlighting.
+
+=== Explicitly defined in the document ===
+
+WARNING: Use this kind of code snippets as little as possible.
+They are well known to get out of sync with reality after a while.
+
+This is how to do it:
+
+.This is a sample configuration explicitely in the documentation
+[source,xml]
+----
+<service name="DNS" interval="300000" user-defined="false" status="on">
+  <parameter key="retry" value="2" />
+  <parameter key="timeout" value="5000" />
+  <parameter key="port" value="53" />
+  <parameter key="lookup" value="localhost" />
+  <parameter key="fatal-response-codes" value="2,3,5" /><!-- ServFail, NXDomain, Refused -->
+  <parameter key="rrd-repository" value="/opt/opennms/share/rrd/response" />
+  <parameter key="rrd-base-name" value="dns" />
+  <parameter key="ds-name" value="dns" />
+</service>
+----
+
+If there's no suitable syntax highlighter, just omit the language: +[source]+.
+
+Currently the following syntax highlighters are enabled:
+
+* Bash
+* Groovy
+* Java
+* JavaScript
+* Python
+* XML
+
+For other highlighters we could add see https://code.google.com/p/google-code-prettify/.
+
+=== Included from an example file
+You can also include source or configuration from an external file.
+It allows to provide a working example configuration maintaining doc and example in the same time.
+The behavior is the same as with images, the path is relative to the *.adoc file where the file is included.
+
+.Include complete external file
+ [source,xml]
+ ----
+ include::../configs/wmi-config.xml[]
+ ----
+
+This is how it's rendered:
+
+[source,xml]
+----
+include::../configs/wmi-config.xml[]
+----
+
+=== Include only parts of a file
+If you want to include just a specific part of a large configuration file, you can assign tages which indicates AsciiDoc what part has to be included.
+In this example just the service definition of the _ICMP monitor_ should be included.
+
+In the 'poller-configuration.xml' tag the part as the following:
+
+[source,xml]
+----
+...
+<rrd step="300">
+  <rra>RRA:AVERAGE:0.5:1:2016</rra>
+  <rra>RRA:AVERAGE:0.5:12:1488</rra>
+  <rra>RRA:AVERAGE:0.5:288:366</rra>
+  <rra>RRA:MAX:0.5:288:366</rra>
+  <rra>RRA:MIN:0.5:288:366</rra>
+</rrd>
+<!-- // tag::IcmpServiceConfig[] -->
+<service name="ICMP" interval="300000" user-defined="false" status="on">
+  <parameter key="retry" value="2" />
+  <parameter key="timeout" value="3000" />
+  <parameter key="rrd-repository" value="/opt/opennms/share/rrd/response" />
+  <parameter key="rrd-base-name" value="icmp" />
+  <parameter key="ds-name" value="icmp" />
+</service>
+<!-- // end::IcmpServiceConfig[] -->
+<service name="DNS" interval="300000" user-defined="false" status="on">
+  <parameter key="retry" value="2" />
+  <parameter key="timeout" value="5000" />
+  <parameter key="port" value="53" />
+...
+----
+
+.Include this tagged part in the documentation using the _tag_ parameter
+ [source,xml]
+ ----
+ include::../configs/poller-configuration.xml[tags=IcmpServiceConfig]
+ ----
+
+.This is how it rendered
+[source,xml]
+include::../configs/poller-configuration.xml[tags=IcmpServiceConfig]
+
+NOTE: Spaces and tabs are taken from the original file as it is.
