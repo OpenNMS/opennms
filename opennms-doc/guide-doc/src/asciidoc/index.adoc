@@ -12,6 +12,8 @@ OpenNMS Release v{opennms-version}
 The OpenNMS Group, Inc. 220 Chatham Business Drive, Suite 220 Pittsboro, NC 27312
 
 // Include your documentation sections here
-// include::text/myFile.adoc[]
-
-include::overview.adoc[]
+include::text/introduction.adoc[]
+include::text/writing.adoc[]
+include::text/images.adoc[]
+include::text/include-source.adoc[]
+include::text/cheat-sheets.adoc[]
