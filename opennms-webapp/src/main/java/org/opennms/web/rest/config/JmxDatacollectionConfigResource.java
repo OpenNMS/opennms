@@ -79,7 +79,7 @@ public class JmxDataCollectionConfigResource implements InitializingBean {
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     public Response getJmxDataCollectionConfig() throws ConfigurationResourceException {
-        LOG.info("getJmxDataCollectionConfigurationForLocation()");
+        LOG.debug("getJmxDataCollectionConfigurationForLocation()");
 
         @SuppressWarnings("unchecked")
         final JmxDatacollectionConfig jmxDataCollectionConfig = m_jmxDataCollectionConfigDao.getContainer().getObject();
