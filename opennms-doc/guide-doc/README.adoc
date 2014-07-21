@@ -1,0 +1,34 @@
+= Documentation overview module
+This module contains the documentation overview. It should give a quick overview and help you write or contribute documentation for the OpenNMS project.
+
+== Building documentation
+The documentation is tight into the build process of OpenNMS. The documentation as AsciiDoc source is compiled into HTML files and will be distributed to http://docs.opennms.org[docs.opennms.org].
+
+== Build from source
+It is possible to build the documentation from source. It requires the following components:
+
+* Java Development Kit 1.6+, OpenJDK or Oracle Java
+* Maven
+* Internet connectivity for downloading the package dependencies with Maven
+
+== Get the source code
+Check out the source code from github with
+
+[source]
+----
+$ git clone https://github.com/OpenNMS/opennms.git
+----
+
+Change into the directory `opennms-doc`. With the command 
+
+[source]
+----
+$ cd opennms/opennms-doc/doc-overview
+$ mvn clean install
+----
+    
+Maven will compile the AsciiDoc source files into HTML. For example, the output for the `doc-overview` module is generated in
+
+    ${OPENNMS_SOURCE}/opennms-doc/doc-overview/target/generated-docs/overview.html
+    
+You can open the `overview.html` with your browser.
