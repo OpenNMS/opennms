@@ -101,6 +101,7 @@
               org.opennms.netmgt.config.databaseReports.*;version="${project.version}",
               org.opennms.netmgt.config.destinationPaths.*;version="${project.version}",
               org.opennms.netmgt.config.discovery.*;version="${project.version}",
+              org.opennms.netmgt.config.enlinkd.*;version="${project.version}",
               org.opennms.netmgt.config.eventd.*;version="${project.version}",
               org.opennms.netmgt.config.filter.*;version="${project.version}",
               org.opennms.netmgt.config.groups.*;version="${project.version}",

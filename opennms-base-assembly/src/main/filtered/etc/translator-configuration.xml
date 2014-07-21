@@ -29,6 +29,11 @@
             </value>
           </assignment>
         </mapping>
+        <mapping>
+          <assignment name="uei" type="field" >
+            <value type="constant" result="uei.opennms.org/internal/topology/linkDown" />
+          </assignment>
+        </mapping>
       </mappings>
     </event-translation-spec>
     <event-translation-spec uei="uei.opennms.org/generic/traps/SNMP_Link_Up">
@@ -54,6 +59,11 @@
               <value type="field" name="nodeid" matches=".*" result="${0}" />
               <value type="parameter" name="~^\.1\.3\.6\.1\.2\.1\.2\.2\.1\.1\.([0-9]*)$" matches=".*" result="${0}" />
             </value>
+          </assignment>
+        </mapping>
+        <mapping>
+          <assignment name="uei" type="field" >
+            <value type="constant" result="uei.opennms.org/internal/topology/linkUp" />
           </assignment>
         </mapping>
       </mappings>

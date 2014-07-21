@@ -133,7 +133,7 @@ public class JdbcCollector implements ServiceCollector {
     public void initialize(CollectionAgent agent, Map<String, Object> parameters) {        
         LOG.debug("initialize: Initializing JDBC collection for agent: {}", agent);
         
-        Integer scheduledNodeKey = new Integer(agent.getNodeId());
+        Integer scheduledNodeKey = Integer.valueOf(agent.getNodeId());
         JdbcAgentState nodeState = m_scheduledNodes.get(scheduledNodeKey);
 
         if (nodeState != null) {
@@ -156,7 +156,7 @@ public class JdbcCollector implements ServiceCollector {
 
     @Override
     public void release(CollectionAgent agent) {
-        Integer scheduledNodeKey = new Integer(agent.getNodeId());
+        Integer scheduledNodeKey = Integer.valueOf(agent.getNodeId());
         JdbcAgentState nodeState = m_scheduledNodes.get(scheduledNodeKey);
         if (nodeState != null) {
             m_scheduledNodes.remove(scheduledNodeKey);

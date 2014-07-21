@@ -118,7 +118,7 @@ public class Reportd implements SpringServiceDaemon {
      * @param report a {@link org.opennms.netmgt.config.reportd.Report} object.
      */
     public void runReport(Report report) {
-    	Map mdc = Logging.getCopyOfContextMap();
+    	Map<String,String> mdc = Logging.getCopyOfContextMap();
         try {
             Logging.putPrefix(NAME);
             LOG.debug("reportd -- running job {}", report.getReportName());

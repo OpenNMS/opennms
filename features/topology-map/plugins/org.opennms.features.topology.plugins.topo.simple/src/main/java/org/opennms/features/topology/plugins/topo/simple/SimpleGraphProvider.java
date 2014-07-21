@@ -186,7 +186,7 @@ public class SimpleGraphProvider extends AbstractTopologyProvider implements Gra
                     // Ignore this edge ID since it doesn't conform to our pattern for auto-generated IDs
                 }
             }
-            AbstractEdge newEdge = connectVertices(edge.id, edge.source, edge.target);
+            AbstractEdge newEdge = connectVertices(edge.id, edge.source, edge.target, edge.namespace);
             newEdge.setLabel(edge.label);
             newEdge.setTooltipText(edge.tooltipText);
             //addEdges(newEdge);

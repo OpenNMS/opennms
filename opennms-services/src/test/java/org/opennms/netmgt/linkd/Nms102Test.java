@@ -30,12 +30,16 @@ package org.opennms.netmgt.linkd;
 
 import static org.opennms.netmgt.nb.TestNetworkBuilder.MAC1_IP;
 import static org.opennms.netmgt.nb.TestNetworkBuilder.MAC1_NAME;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.MAC1_SNMP_RESOURCE;
 import static org.opennms.netmgt.nb.TestNetworkBuilder.MAC2_IP;
 import static org.opennms.netmgt.nb.TestNetworkBuilder.MAC2_NAME;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.MAC2_SNMP_RESOURCE;
 import static org.opennms.netmgt.nb.TestNetworkBuilder.MIKROTIK_IP;
 import static org.opennms.netmgt.nb.TestNetworkBuilder.MIKROTIK_NAME;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.MIKROTIK_SNMP_RESOURCE;
 import static org.opennms.netmgt.nb.TestNetworkBuilder.SAMSUNG_IP;
 import static org.opennms.netmgt.nb.TestNetworkBuilder.SAMSUNG_NAME;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.SAMSUNG_SNMP_RESOURCE;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -68,10 +72,10 @@ public class Nms102Test extends LinkdTestBuilder {
      */
     @Test
     @JUnitSnmpAgents(value={
-        @JUnitSnmpAgent(host=MIKROTIK_IP, port=161, resource="classpath:linkd/nms102/"+MIKROTIK_NAME+"-"+MIKROTIK_IP+"-walk.txt"),
-        @JUnitSnmpAgent(host=SAMSUNG_IP, port=161, resource="classpath:linkd/nms102/"+SAMSUNG_NAME+"-"+SAMSUNG_IP+"-walk.txt"),
-        @JUnitSnmpAgent(host=MAC1_IP, port=161, resource="classpath:linkd/nms102/"+"mac-"+MAC1_IP+"-walk.txt"),
-        @JUnitSnmpAgent(host=MAC2_IP, port=161, resource="classpath:linkd/nms102/"+"mac-"+MAC2_IP+"-walk.txt")
+        @JUnitSnmpAgent(host=MIKROTIK_IP, port=161, resource=MIKROTIK_SNMP_RESOURCE),
+        @JUnitSnmpAgent(host=SAMSUNG_IP, port=161, resource=SAMSUNG_SNMP_RESOURCE),
+        @JUnitSnmpAgent(host=MAC1_IP, port=161, resource=MAC1_SNMP_RESOURCE),
+        @JUnitSnmpAgent(host=MAC2_IP, port=161, resource=MAC2_SNMP_RESOURCE)
     })
     public void testWifiLinksWithExclusiveConf() throws Exception {
 
@@ -120,10 +124,10 @@ public class Nms102Test extends LinkdTestBuilder {
 
     @Test
     @JUnitSnmpAgents(value={
-        @JUnitSnmpAgent(host=MIKROTIK_IP, port=161, resource="classpath:linkd/nms102/"+MIKROTIK_NAME+"-"+MIKROTIK_IP+"-walk.txt"),
-        @JUnitSnmpAgent(host=SAMSUNG_IP, port=161, resource="classpath:linkd/nms102/"+SAMSUNG_NAME+"-"+SAMSUNG_IP+"-walk.txt"),
-        @JUnitSnmpAgent(host=MAC1_IP, port=161, resource="classpath:linkd/nms102/"+"mac-"+MAC1_IP+"-walk.txt"),
-        @JUnitSnmpAgent(host=MAC2_IP, port=161, resource="classpath:linkd/nms102/"+"mac-"+MAC2_IP+"-walk.txt")
+            @JUnitSnmpAgent(host=MIKROTIK_IP, port=161, resource=MIKROTIK_SNMP_RESOURCE),
+            @JUnitSnmpAgent(host=SAMSUNG_IP, port=161, resource=SAMSUNG_SNMP_RESOURCE),
+            @JUnitSnmpAgent(host=MAC1_IP, port=161, resource=MAC1_SNMP_RESOURCE),
+            @JUnitSnmpAgent(host=MAC2_IP, port=161, resource=MAC2_SNMP_RESOURCE)
     })
     public void testWifiLinksWithDefaultConf() throws Exception {
 
@@ -163,10 +167,10 @@ public class Nms102Test extends LinkdTestBuilder {
 
     @Test
     @JUnitSnmpAgents(value={
-        @JUnitSnmpAgent(host=MIKROTIK_IP, port=161, resource="classpath:linkd/nms102/"+MIKROTIK_NAME+"-"+MIKROTIK_IP+"-walk.txt"),
-        @JUnitSnmpAgent(host=SAMSUNG_IP, port=161, resource="classpath:linkd/nms102/"+SAMSUNG_NAME+"-"+SAMSUNG_IP+"-walk.txt"),
-        @JUnitSnmpAgent(host=MAC1_IP, port=161, resource="classpath:linkd/nms102/"+"mac-"+MAC1_IP+"-walk.txt"),
-        @JUnitSnmpAgent(host=MAC2_IP, port=161, resource="classpath:linkd/nms102/"+"mac-"+MAC2_IP+"-walk.txt")
+            @JUnitSnmpAgent(host=MIKROTIK_IP, port=161, resource=MIKROTIK_SNMP_RESOURCE),
+            @JUnitSnmpAgent(host=SAMSUNG_IP, port=161, resource=SAMSUNG_SNMP_RESOURCE),
+            @JUnitSnmpAgent(host=MAC1_IP, port=161, resource=MAC1_SNMP_RESOURCE),
+            @JUnitSnmpAgent(host=MAC2_IP, port=161, resource=MAC2_SNMP_RESOURCE)
     })
     public void testLinksWithIpRoute() throws Exception {
 
@@ -210,10 +214,10 @@ public class Nms102Test extends LinkdTestBuilder {
 
     @Test
     @JUnitSnmpAgents(value={
-        @JUnitSnmpAgent(host=MIKROTIK_IP, port=161, resource="classpath:linkd/nms102/"+MIKROTIK_NAME+"-"+MIKROTIK_IP+"-walk.txt"),
-        @JUnitSnmpAgent(host=SAMSUNG_IP, port=161, resource="classpath:linkd/nms102/"+SAMSUNG_NAME+"-"+SAMSUNG_IP+"-walk.txt"),
-        @JUnitSnmpAgent(host=MAC1_IP, port=161, resource="classpath:linkd/nms102/"+"mac-"+MAC1_IP+"-walk.txt"),
-        @JUnitSnmpAgent(host=MAC2_IP, port=161, resource="classpath:linkd/nms102/"+"mac-"+MAC2_IP+"-walk.txt")
+            @JUnitSnmpAgent(host=MIKROTIK_IP, port=161, resource=MIKROTIK_SNMP_RESOURCE),
+            @JUnitSnmpAgent(host=SAMSUNG_IP, port=161, resource=SAMSUNG_SNMP_RESOURCE),
+            @JUnitSnmpAgent(host=MAC1_IP, port=161, resource=MAC1_SNMP_RESOURCE),
+            @JUnitSnmpAgent(host=MAC2_IP, port=161, resource=MAC2_SNMP_RESOURCE)
     })
     public void testLinksTwoPackage() throws Exception {
 

@@ -50,7 +50,7 @@ public class IfResourceType extends ResourceType {
     
     private static final Logger LOG = LoggerFactory.getLogger(IfResourceType.class);
     
-    private TreeMap<Integer, IfInfo> m_ifMap;
+    private Map<Integer, IfInfo> m_ifMap;
 
     /**
      * <p>Constructor for IfResourceType.</p>

@@ -67,6 +67,8 @@ import org.opennms.core.utils.ProcessExec;
 import org.opennms.netmgt.config.opennmsDataSources.JdbcDataSource;
 import org.opennms.netmgt.icmp.Pinger;
 import org.opennms.netmgt.icmp.PingerFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.io.Resource;
 import org.springframework.util.StringUtils;
@@ -87,6 +89,8 @@ import org.springframework.util.StringUtils;
  */
 public class Installer {
 
+	private static final Logger LOG = LoggerFactory.getLogger(Installer.class);
+	
     static final String LIBRARY_PROPERTY_FILE = "libraries.properties";
 
     String m_opennms_home = null;
@@ -353,7 +357,9 @@ public class Installer {
      */
     public void createConfiguredFile() throws IOException {
         File f = new File(m_opennms_home + File.separator + "etc" + File.separator + "configured");
-        f.createNewFile();
+        if (!f.createNewFile()) {
+        	LOG.warn("Could not create file: {}", f.getPath());
+        }
     }
 
     /**
@@ -870,8 +876,10 @@ public class Installer {
         }
         r.close();
 
-        f.renameTo(new File(m_tomcat_conf + ".before-opennms-"
-                + System.currentTimeMillis()));
+        if(!f.renameTo(new File(m_tomcat_conf + ".before-opennms-"
+                + System.currentTimeMillis()))) {
+        	LOG.warn("Could not rename file: {}", f.getPath());
+        }
 
         f = new File(m_tomcat_conf);
         PrintWriter w = new PrintWriter(new FileOutputStream(f));
@@ -1152,7 +1160,9 @@ public class Installer {
         File f = null;
         try {
             f = new File(m_opennms_home + File.separator + "etc" + File.separator + LIBRARY_PROPERTY_FILE);
-            f.createNewFile();
+            if(!f.createNewFile()) {
+            	LOG.warn("Could not create file: {}", f.getPath());
+            }
             FileOutputStream os = new FileOutputStream(f);
             libraryProps.store(os, null);
         } catch (IOException e) {

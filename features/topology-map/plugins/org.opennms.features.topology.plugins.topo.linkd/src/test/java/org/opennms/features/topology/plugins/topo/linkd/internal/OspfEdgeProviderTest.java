@@ -28,12 +28,43 @@
 
 package org.opennms.features.topology.plugins.topo.linkd.internal;
 
+import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.opennms.core.test.MockLogAppender;
+import org.opennms.features.topology.api.topo.Edge;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations={
+        "classpath:/META-INF/opennms/applicationContext-enhanced-mock.xml"
+})
 public class OspfEdgeProviderTest {
 
-    @Test
-    public void testGetEdges(){
+    @Autowired
+    private EnhancedLinkdMockDataPopulator m_databasePopulator;
 
+    @Autowired
+    private OspfEdgeProvider m_ospfEdgeProvider;
+
+    @Before
+    public void setUp(){
+        MockLogAppender.setupLogging();
+        m_databasePopulator.populateDatabase();
+        m_databasePopulator.setUpMock();
+    }
+
+    @Test
+    public void testGetEdges() {
+
+        List<Edge> edges = m_ospfEdgeProvider.getEdges();
+
+        assertEquals(edges.size(), 1);
     }
 }

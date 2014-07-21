@@ -43,7 +43,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.WeakHashMap;
 
 import javax.xml.bind.JAXBContext;
@@ -383,49 +382,10 @@ public abstract class JaxbUtils {
             final List<Class<?>> allRelatedClasses = getAllRelatedClasses(clazz);
             LOG.trace("Creating new context for classes: {}", allRelatedClasses);
             context = org.eclipse.persistence.jaxb.JAXBContextFactory.createContext(allRelatedClasses.toArray(EMPTY_CLASS_LIST), null);
-            /*
-            if (useMoxy(clazz)) {
-                LOG.trace("Using MOXy for JAXB Context.");
-                context = org.eclipse.persistence.jaxb.JAXBContextFactory.createContext(allRelatedClasses.toArray(EMPTY_CLASS_LIST), null);
-            } else {
-                LOG.trace("Using built-in implementation for JAXB Context.");
-                context = JAXBContext.newInstance(allRelatedClasses.toArray(EMPTY_CLASS_LIST));
-            }
-            */
             LOG.trace("Context for {}: {}", allRelatedClasses, context);
             m_contexts.put(clazz, context);
         }
         return context;
-    }
-
-    @SuppressWarnings("unused")
-    private static boolean useMoxy(final Class<?> clazz) {
-        InputStream is = null;
-        try {
-            final URL url = clazz.getResource("jaxb.properties");
-            LOG.trace("Checking for jaxb.properties: {}", url);
-            if (url != null) {
-                is = url.openStream();
-                if (is != null) {
-                    final Properties props = new Properties();
-                    props.load(is);
-                    // javax.xml.bind.context.factory=org.eclipse.persistence.jaxb.JAXBContextFactory
-                    final String factory = props.getProperty("javax.xml.bind.context.factory");
-                    return "org.eclipse.persistence.jaxb.JAXBContextFactory".equals(factory);
-                }
-            }
-        } catch (final IOException e) {
-            // ignore any problems finding/reading jaxb.properties and just return false
-        } finally {
-            if (is != null) {
-                try {
-                    is.close();
-                } catch (final IOException e) {
-                    // ignore
-                }
-            }
-        }
-        return false;
     }
 
     private static List<String> getSchemaFilesFor(final Class<?> clazz) {

@@ -174,7 +174,9 @@ public class SystemReport extends Bootstrap {
             } else {
                 try {
                     final File f = new File(m_output);
-                    f.delete();
+                    if(!f.delete()) {
+                    	LOG.warn("Could not delete file: {}", f.getPath());
+                    }
                     stream = new FileOutputStream(f, false);
                 } catch (final FileNotFoundException e) {
                     LOG.error("Unable to write to '{}'", m_output, e);

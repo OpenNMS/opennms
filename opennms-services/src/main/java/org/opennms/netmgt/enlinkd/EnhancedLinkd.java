@@ -44,12 +44,12 @@ import org.opennms.netmgt.linkd.SnmpCollection;
 import org.opennms.netmgt.linkd.scheduler.ReadyRunnable;
 import org.opennms.netmgt.linkd.scheduler.Scheduler;
 import org.opennms.netmgt.model.events.EventForwarder;
+import org.opennms.netmgt.model.topology.LinkableSnmpNode;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.util.Assert;
@@ -89,7 +89,7 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
     /**
      * List that contains Linkable Nodes.
      */
-    private List<LinkableNode> m_nodes = new CopyOnWriteArrayList<LinkableNode>();
+    private List<LinkableSnmpNode> m_nodes = new CopyOnWriteArrayList<LinkableSnmpNode>();
 
     /**
      * Event handler
@@ -135,7 +135,7 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
 
     private void scheduleCollection() {
         synchronized (m_nodes) {
-            for (final LinkableNode node : m_nodes) {
+            for (final LinkableSnmpNode node : m_nodes) {
                 scheduleCollectionForNode(node);
             }
         }
@@ -148,9 +148,9 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
      * 
      * @param node
      */
-    private void scheduleCollectionForNode(final LinkableNode node) {
+    private void scheduleCollectionForNode(final LinkableSnmpNode node) {
 
-        for (final AbstractLinkdNodeDiscovery snmpcoll : getSnmpCollections(node) ){
+        for (final NodeDiscovery snmpcoll : getSnmpCollections(node) ){
             LOG.info("ScheduleCollectionForNode: Scheduling {}",
                 snmpcoll.getInfo());
         	snmpcoll.setScheduler(m_scheduler);
@@ -163,46 +163,46 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
      * 
      * @param nodeid
      */
-    public List<AbstractLinkdNodeDiscovery> getSnmpCollections(LinkableNode node) {
-        List<AbstractLinkdNodeDiscovery> snmpcolls = new ArrayList<AbstractLinkdNodeDiscovery>();
+    public List<NodeDiscovery> getSnmpCollections(LinkableSnmpNode node) {
+        List<NodeDiscovery> snmpcolls = new ArrayList<NodeDiscovery>();
         
         if (m_linkdConfig.useLldpDiscovery()) {
             LOG.info("getSnmpCollections: adding Lldp Discovery: {}",
                     node);
-            LldpLinkdNodeDiscovery lldpcoll = new LldpLinkdNodeDiscovery(this, node);
+            NodeDiscoveryLldp lldpcoll = new NodeDiscoveryLldp(this, node);
             snmpcolls.add(lldpcoll);
         }
         
         if (m_linkdConfig.useCdpDiscovery()) {
-         //   LOG.info("getSnmpCollections: adding Cdp Discovery: {}",
-         //           node);
-        //     CdpLinkdNodeDiscovery cdpcoll = new CdpLinkdNodeDiscovery(this, node);
-        //     snmpcolls.add(cdpcoll);   	
+            LOG.info("getSnmpCollections: adding Cdp Discovery: {}",
+                    node);
+             NodeDiscoveryCdp cdpcoll = new NodeDiscoveryCdp(this, node);
+             snmpcolls.add(cdpcoll);   	
         }
         
         if (m_linkdConfig.useBridgeDiscovery()) {
         	LOG.info("getSnmpCollections: adding IpNetToMedia Discovery: {}",
                     node);
-        	IpNetToMediaLinkdNodeDiscovery ipnettomediacoll = new IpNetToMediaLinkdNodeDiscovery(this, node);
+        	NodeDiscoveryIpNetToMedia ipnettomediacoll = new NodeDiscoveryIpNetToMedia(this, node);
         	snmpcolls.add(ipnettomediacoll);
         	
         	LOG.info("getSnmpCollections: adding Bridge Discovery: {}",
                     node);
-        	BridgeLinkdNodeDiscovery bridgecoll = new BridgeLinkdNodeDiscovery(this, node);
+        	NodeDiscoveryBridge bridgecoll = new NodeDiscoveryBridge(this, node);
         	snmpcolls.add(bridgecoll);
         }
 
         if (m_linkdConfig.useOspfDiscovery()) {
             LOG.info("getSnmpCollections: adding Ospf Discovery: {}",
                     node);
-        	OspfLinkdNodeDiscovery ospfcoll = new OspfLinkdNodeDiscovery(this, node);
+        	NodeDiscoveryOspf ospfcoll = new NodeDiscoveryOspf(this, node);
         	snmpcolls.add(ospfcoll);
         }
 
         if (m_linkdConfig.useIsisDiscovery()) {
             LOG.info("getSnmpCollections: adding Is-Is Discovery: {}",
                     node);
-        	IsisLinkdNodeDiscovery isiscoll = new IsisLinkdNodeDiscovery(this, node);
+        	NodeDiscoveryIsis isiscoll = new NodeDiscoveryIsis(this, node);
         	snmpcolls.add(isiscoll);
         }
 
@@ -271,7 +271,7 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
      * 
      * @return a {@link java.util.Collection} object.
      */
-    public Collection<LinkableNode> getLinkableNodes() {
+    public Collection<LinkableSnmpNode> getLinkableNodes() {
         synchronized (m_nodes) {
             return m_nodes;
         }
@@ -279,7 +279,7 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
 
     public boolean scheduleNodeCollection(int nodeid) {
 
-        LinkableNode node = getNode(nodeid);
+        LinkableSnmpNode node = getNode(nodeid);
         if (node != null) {
             LOG.info("scheduleNodeCollection: Found Scheduled Linkable node {}. Skipping ",
                             nodeid);
@@ -306,9 +306,9 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
     }
 
     public boolean runSingleSnmpCollection(final int nodeId) {
-            final LinkableNode node = m_queryMgr.getSnmpNode(nodeId);
+            final LinkableSnmpNode node = m_queryMgr.getSnmpNode(nodeId);
 
-            for (final AbstractLinkdNodeDiscovery snmpColl : getSnmpCollections(node)) {
+            for (final NodeDiscovery snmpColl : getSnmpCollections(node)) {
                 snmpColl.setScheduler(m_scheduler);
                 snmpColl.run();
             }
@@ -318,7 +318,7 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
 
     void wakeUpNodeCollection(int nodeid) {
 
-        LinkableNode node = getNode(nodeid);
+        LinkableSnmpNode node = getNode(nodeid);
 
         if (node == null) {
             LOG.warn("wakeUpNodeCollection: node not found during scheduling with ID {}",
@@ -328,13 +328,14 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
             // get collections
             // get readyRunnuble
             // wakeup RR
-            Collection<AbstractLinkdNodeDiscovery> collections = getSnmpCollections(node);
+            Collection<NodeDiscovery> collections = getSnmpCollections(node);
             LOG.info("wakeUpNodeCollection: fetched SnmpCollections from scratch, iterating over {} objects to wake them up",
                             collections.size());
-            for (AbstractLinkdNodeDiscovery collection : collections) {
+            for (NodeDiscovery collection : collections) {
                 ReadyRunnable rr = getReadyRunnable(collection);
                 if (rr == null) {
                     LOG.warn("wakeUpNodeCollection: found null ReadyRunnable for nodeid {}", nodeid);
+                    continue;
                 } else {
                     rr.wakeUp();
                 }
@@ -349,20 +350,20 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
 
             m_queryMgr.delete(nodeid);
 
-        LinkableNode node = removeNode(nodeid);
+        LinkableSnmpNode node = removeNode(nodeid);
 
         if (node == null) {
             LOG.warn("deleteNode: node not found: {}", nodeid);
         } else {
-            Collection<AbstractLinkdNodeDiscovery> collections = getSnmpCollections(node);
+            Collection<NodeDiscovery> collections = getSnmpCollections(node);
             LOG.info("deleteNode: fetched SnmpCollections from scratch, iterating over {} objects to wake them up",
                             collections.size());
-            for (AbstractLinkdNodeDiscovery collection : collections) {
+            for (NodeDiscovery collection : collections) {
                 ReadyRunnable rr = getReadyRunnable(collection);
 
                 if (rr == null) {
                     LOG.warn("deleteNode: found null ReadyRunnable");
-                    return;
+                    continue;
                 } else {
                     rr.unschedule();
                 }
@@ -373,11 +374,39 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
 
     }
 
+    void rescheduleNodeCollection(int nodeid) {
+        LOG.info("rescheduleNodeCollection: suspend collection LinkableNode for node {}",
+                nodeid);
+        
+        LinkableSnmpNode node = getNode(nodeid);
+        if (node == null) {
+            LOG.warn("rescheduleNodeCollection: node not found: {}", nodeid);
+        } else {
+            Collection<NodeDiscovery> collections = getSnmpCollections(node);
+            LOG.info("rescheduleNodeCollection: fetched SnmpCollections from scratch, iterating over {} objects to rescheduling",
+                            collections.size());
+            for (NodeDiscovery collection : collections) {
+                ReadyRunnable rr = getReadyRunnable(collection);
+
+                if (rr == null) {
+                    LOG.warn("rescheduleNodeCollection: found null ReadyRunnable");
+                    continue;
+                } else {
+                    rr.unschedule();
+                    rr.schedule();
+                }
+
+            }
+
+        }
+    	
+    }
+    
     void suspendNodeCollection(int nodeid) {
         LOG.info("suspendNodeCollection: suspend collection LinkableNode for node {}",
                         nodeid);
    
-        LinkableNode node = getNode(nodeid);
+        LinkableSnmpNode node = getNode(nodeid);
 
         if (node == null) {
             LOG.warn("suspendNodeCollection: found null ReadyRunnable");
@@ -385,15 +414,15 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
             // get collections
             // get readyRunnuble
             // suspend RR
-            Collection<AbstractLinkdNodeDiscovery> collections = getSnmpCollections(node);
+            Collection<NodeDiscovery> collections = getSnmpCollections(node);
             LOG.info("suspendNodeCollection: fetched SnmpCollections from scratch, iterating over {} objects to suspend them down",
                             collections.size());
-            for (AbstractLinkdNodeDiscovery collection : collections) {
+            for (NodeDiscovery collection : collections) {
                 ReadyRunnable rr = getReadyRunnable(collection);
                 if (rr == null) {
                     LOG.warn("suspendNodeCollection: suspend: node not found: {}",
                                    nodeid);
-                    return;
+                    continue;
                 } else {
                     rr.suspend();
                 }
@@ -410,9 +439,9 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
 
     }
 
-    LinkableNode getNode(int nodeid) {
+    LinkableSnmpNode getNode(int nodeid) {
         synchronized (m_nodes) {
-            for (LinkableNode node : m_nodes) {
+            for (LinkableSnmpNode node : m_nodes) {
                 if (node.getNodeId() == nodeid)
                     return node;
             }
@@ -420,11 +449,11 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
         }
     }
 
-    private LinkableNode removeNode(int nodeid) {
+    private LinkableSnmpNode removeNode(int nodeid) {
         synchronized (m_nodes) {
-            Iterator<LinkableNode> ite = m_nodes.iterator();
+            Iterator<LinkableSnmpNode> ite = m_nodes.iterator();
             while (ite.hasNext()) {
-                LinkableNode curNode = ite.next();
+                LinkableSnmpNode curNode = ite.next();
                 if (curNode.getNodeId() == nodeid) {
                     ite.remove();
                     return curNode;

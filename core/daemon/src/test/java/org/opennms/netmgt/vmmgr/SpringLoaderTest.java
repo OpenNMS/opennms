@@ -36,10 +36,14 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.FixMethodOrder;
 import org.junit.contrib.java.lang.system.ExpectedSystemExit;
+import org.junit.runners.MethodSorters;
 import org.opennms.core.fiber.Fiber;
 import org.opennms.netmgt.model.ServiceDaemon;
 
+// Keep the tests in alphabetical order because they are dependent on ordering
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class SpringLoaderTest {
 
 	@Before
@@ -51,7 +55,7 @@ public class SpringLoaderTest {
 	public ExpectedSystemExit exit = ExpectedSystemExit.none();
 
 	@Test
-	public void testStart() {
+	public void testAStart() {
 		System.setProperty("opennms.startup.context", "classpath:/startup.xml");
 		SpringLoader.main(new String[] { "start" });
 
@@ -66,7 +70,7 @@ public class SpringLoaderTest {
 
 	@Test
 	@Ignore("I'm not sure where this test is supposed to locate a 'collectd' bean")
-	public void testContexts() {
+	public void testBContexts() {
 		SpringLoader.main(new String[] { "start" });
 
 		ServiceDaemon daemon = (ServiceDaemon)Registry.getBean("collectd");
@@ -74,12 +78,12 @@ public class SpringLoaderTest {
 	}
 
 	@Test
-	public void testStatus() {
+	public void testCStatus() {
 		SpringLoader.main(new String[] { "status" });
 	}
 
 	@Test
-	public void testStop() {
+	public void testDStop() {
 		exit.expectSystemExitWithStatus(0);
 
 		SpringLoader.main(new String[] { "stop" });
