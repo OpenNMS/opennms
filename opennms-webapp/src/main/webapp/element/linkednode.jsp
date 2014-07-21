@@ -35,6 +35,9 @@
 <%@page import="org.opennms.web.ospf.OspfLinkNode"%>
 <%@page import="org.opennms.web.ospf.OspfElementFactory"%>
 <%@page import="org.opennms.web.ospf.OspfElementFactoryInterface"%>
+<%@page import="org.opennms.web.isis.IsisLinkNode"%>
+<%@page import="org.opennms.web.isis.IsisElementFactory"%>
+<%@page import="org.opennms.web.isis.IsisElementFactoryInterface"%>
 <%@page
 	language="java"
 	contentType="text/html"
@@ -104,6 +107,7 @@
     NetworkElementFactoryInterface factory = NetworkElementFactory.getInstance(getServletContext());
     LldpElementFactoryInterface lldpfactory = LldpElementFactory.getInstance(getServletContext());
     OspfElementFactoryInterface ospffactory = OspfElementFactory.getInstance(getServletContext());
+    IsisElementFactoryInterface isisfactory = IsisElementFactory.getInstance(getServletContext());
 
     String nodeIdString = request.getParameter( "node" );
 
@@ -558,6 +562,65 @@
 		    <td class="standard"><%=ospflink.getOspfRemAddressLessIndex()%></td>
 		    <td class="standard"><%=ospflink.getOspfLinkCreateTime()%></td>
 		    <td class="standard"><%=ospflink.getOspfLinkLastPollTime()%></td>
+	    </tr>
+	    <% } %>
+		    
+	    </table>
+
+<% }  %>
+
+<hr />        
+<%
+   if (isisfactory.getIsisLinks(nodeId).isEmpty()) {
+%>
+	<div class="TwoColLeft">
+		<h3>No IS-IS Adjacency Links found on <%=node_db.getLabel()%> by Enhanced Linkd</h3>
+	</div>
+<% } else { %>
+<h3><%=node_db.getLabel()%> IS-IS Adj Table Links found by Enhanced Linkd</h3>
+		
+		<!-- Link box -->
+		<table class="standard">
+		
+		<thead>
+			<tr>
+			<th>Circuit IfIndex</th> 
+			<th>Circuit Admin State</th>
+			<th>Adj Neigh Sys ID</th>
+			<th>Adj Neigh Sys Type</th> 
+			<th>Adj Neigh Port</th> 
+			<th>Adj Neigh State</th> 
+			<th>Adj Neigh SNPA Address</th> 
+			<th>Adj Neigh Extended Circ ID</th> 
+			<th>Created</th>
+			<th>Last Poll</th>
+			</tr>
+		</thead>
+				
+		<% for( IsisLinkNode isislink: isisfactory.getIsisLinks(nodeId)) { %>
+	    <tr>
+		    <td class="standard"><%=isislink.getIsisCircIfIndex()%></td>
+		    <td class="standard"><%=isislink.getIsisCircAdminState()%></td>
+            <td class="standard">
+            <% if (isislink.getIsisISAdjNeighSysUrl() != null) { %>
+            	<a href="<%=isislink.getIsisISAdjNeighSysUrl()%>"><%=isislink.getIsisISAdjNeighSysID() %></a>
+            <% } else { %> 
+                   <%=isislink.getIsisISAdjNeighSysID()%>
+    			<% } %> 
+            </td>
+		    <td class="standard"><%=isislink.getIsisISAdjNeighSysType()%></td>
+		    <td class="standard">
+		 	<% if (isislink.getIsisISAdjUrl() != null) { %>
+            	<a href="<%=isislink.getIsisISAdjUrl()%>"><%=isislink.getIsisISAdjNeighPort()%></a>
+            <% } else { %> 
+				<%=isislink.getIsisISAdjNeighPort()%>
+    		<% } %> 
+            </td>
+		    <td class="standard"><%=isislink.getIsisISAdjState()%></td>
+		    <td class="standard"><%=isislink.getIsisISAdjNeighSNPAAddress()%></td>
+		    <td class="standard"><%=isislink.getIsisISAdjNbrExtendedCircID()%></td>
+		    <td class="standard"><%=isislink.getIsisLinkCreateTime()%></td>
+		    <td class="standard"><%=isislink.getIsisLinkLastPollTime()%></td>
 	    </tr>
 	    <% } %>
 		    

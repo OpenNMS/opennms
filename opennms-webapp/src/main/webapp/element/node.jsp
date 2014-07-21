@@ -33,6 +33,8 @@
 <%@page import="org.opennms.web.lldp.LldpElementNode"%>
 <%@page import="org.opennms.web.ospf.OspfElementFactory"%>
 <%@page import="org.opennms.web.ospf.OspfElementNode"%>
+<%@page import="org.opennms.web.isis.IsisElementFactory"%>
+<%@page import="org.opennms.web.isis.IsisElementNode"%>
 <%@page language="java"
 	contentType="text/html"
 	session="true"
@@ -149,10 +151,9 @@
         nodeModel.put("statusSite", asset.getBuilding());
     }
     
-    LldpElementNode lldp = LldpElementFactory.getInstance(getServletContext()).getLldpElement(nodeId);
-    nodeModel.put("lldp", lldp);
-    OspfElementNode ospf = OspfElementFactory.getInstance(getServletContext()).getOspfElement(nodeId);
-    nodeModel.put("ospf", ospf);
+    nodeModel.put("lldp", LldpElementFactory.getInstance(getServletContext()).getLldpElement(nodeId));
+    nodeModel.put("ospf", OspfElementFactory.getInstance(getServletContext()).getOspfElement(nodeId));
+    nodeModel.put("isis", IsisElementFactory.getInstance(getServletContext()).getIsisElement(nodeId));
     
     nodeModel.put("resources", m_resourceService.findNodeChildResources(node_db));
     nodeModel.put("vlans", NetworkElementFactory.getInstance(getServletContext()).getVlansOnNode(nodeId));
@@ -428,6 +429,29 @@
       <tr>
         <th>last poll time</th>
         <td>${model.ospf.ospfLastPollTime}</td>
+      </tr>
+    </table>
+  </c:if>
+
+  <!-- IsIs box, if info available --> 
+  <c:if test="${! empty model.isis }">
+    <h3 class="o-box">Is-Is Information</h3>
+    <table class="o-box">
+      <tr>
+        <th>Sys ID</th>
+        <td>${model.isis.isisSysID}</td>
+      </tr>
+      <tr>
+        <th>Admin State</th>
+        <td>${model.isis.isisSysAdminState}</td>
+      </tr>
+      <tr>
+        <th>create time</th>
+        <td>${model.isis.isisCreateTime}</td>
+      </tr>
+      <tr>
+        <th>last poll time</th>
+        <td>${model.isis.isisLastPollTime}</td>
       </tr>
     </table>
   </c:if>
