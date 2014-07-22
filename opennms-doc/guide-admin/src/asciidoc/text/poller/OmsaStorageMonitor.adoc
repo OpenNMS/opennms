@@ -2,45 +2,34 @@
 // Please keep first line an empty line to make sure, the ToC can be build correctly
 === OmsaStorageMonitor
 
-A summary what the monitor is doing. +
-When is the monitor up or down.
+With OmsaStorageMonitor you are able to monitor your Dell OpenManaged servers RAID array status.
 
 ==== Monitor facts
 
 [options="autowidth"]
 |===
 | Class Name | `org.opennms.netmgt.poller.monitors.OmsaStorageMonitor`
-| Remote Enabled | true or false if the monitor can be used by the OpenNMS remote poller
+| Remote Enabled | `I don't know`
 |===
 
 ==== Configuration and Usage
 
-.Monitor specific parameters for the {monitorname}
+Monitor specific parameters for the OmsaStorageMonitor
 [options="header, autowidth"]
 |===
-| Parameter | Description                                    | Required | Default value
-| `my parameter 1` | This is a placeholder for the first +
-                     rquired monitor parameter description.  | required | `-`
-| `my parameter 2` | This is a placeholder for the second +
-                     optional monitor parameter description. | optional | `default value`
+| Parameter           | Description                                              | Required | Default value
+| `virtualDiskNumber` | The disk index of your RAID array                        | required | `-`
+| `retry`             | Amount of attempts opening a connection and try +
+                        to get the greeting banner before the service goes down. | optional | `-`
+| `timeout`           | Time (in milliseconds) to wait before receiving the +
+                        SNMP response.                                           | optional | `-`
 |===
 
-This is optional just if you can use variables in the configuration
-
-.Variables which can be used in the configuration
-[options="header, autowidth"]
-|===
-| Variable        | Description
-| `${variable1}`  | Description for the first variable
-| `${variable2}`  | Description for the second variable
-| `${variable3}`  | Description for the third variable
-|===
 
 ==== Examples
 Some example configuration how to configure the monitor in the `poller-configuration.xml`
 [source, xml]
 ----
-
 <service name="OMSA_Storage_Disk_1" interval="300000"
   user-defined="false" status="on">
  <parameter key="retry" value="3"/>
@@ -53,46 +42,19 @@ Some example configuration how to configure the monitor in the `poller-configura
  <parameter key="timeout" value="6000"/>
  <parameter key="virtualDiskNumber" value="1"/>
 </service>
+
+<monitor service="OMSA_Storage_Disk_1" class-name="org.opennms.netmgt.poller.monitors.OmsaStorageMonitor"/>
+<monitor service="OMSA_Storage_Disk_2" class-name="org.opennms.netmgt.poller.monitors.OmsaStorageMonitor"/>
 ----
 
 .This section is optional and give some specific hints
-==== SystemExecuteMonitor vs GpMonitor
+==== Hints
 
-The SystemExecuteMonitor is the successor of the GpMonitor. The main differences are:
-
-* Variable replacement for the parameter args
-* There are no fixed arguments handed to the system-call
-* The _SystemExecuteMonitor_ supports _RemotePoller_ deployment
-
-To migrate services from the _GpMonitor_ to the _SystemExecuteMonitor_ it is required to alter the parameter args.
-To match the arguments called `hoption` for the `hostAddress` and `toption` for the `timeoutInSeconds`.
-The args string that matches the _GpMonitor_ call looks like this:
-
-[source, xml]
+* The monitored system needs a specific snmp configuration to get a working datacollection. Not sure, if it is required for monitoring RAID status.
+[source]
 ----
-<parameter key="my parameter 2" value="--hostname ${variable1} --timeout ${variable2}" />
+Allow Systems Management Data Engine SNMP to connect to snmpd using SMUX
+smuxpeer .1.3.6.1.4.1.674.10892.1
 ----
-
-To migrate the GpMonitor parameters `hoption` and `toption` just replace the `--hostname` and `--timeout` directly in the args key.
-
-----
-
-.This section is optional and give some specific hints
-==== SystemExecuteMonitor vs GpMonitor
-
-The SystemExecuteMonitor is the successor of the GpMonitor. The main differences are:
-
-* Variable replacement for the parameter args
-* There are no fixed arguments handed to the system-call
-* The _SystemExecuteMonitor_ supports _RemotePoller_ deployment
-
-To migrate services from the _GpMonitor_ to the _SystemExecuteMonitor_ it is required to alter the parameter args.
-To match the arguments called `hoption` for the `hostAddress` and `toption` for the `timeoutInSeconds`.
-The args string that matches the _GpMonitor_ call looks like this:
-
-[source, xml]
-----
-<parameter key="my parameter 2" value="--hostname ${variable1} --timeout ${variable2}" />
-----
-
-To migrate the GpMonitor parameters `hoption` and `toption` just replace the `--hostname` and `--timeout` directly in the args key.
+* You'll need to know the maximum number of possible logical disks you have in your environment. + 
+For example: If you have 3 RAID arrays, you need 3 service poller.
