@@ -15,10 +15,10 @@ See the ``Operating mode selection'' and ``Monitor specific parameters for the S
 [options="header, autowidth"]
 |===
 | walk | match-all  | Operating mode
-| .3+^.^ `true` | `true` | tabular, all values must match
+.3+^|`true` | `true` | tabular, all values must match
 | `false` | tabular, any value must match
 | `count` | tabular, between `minimum` and `maximum` values must match
-| .3+^.^ `false` | `true` | scalar
+.3+^|`false` | `true` | scalar
 | `false` | scalar
 | `count` | tabular, between `minimum` and `maximum` values must match
 |===
