@@ -13,6 +13,7 @@ The OpenNMS Group, Inc. 220 Chatham Business Drive, Suite 220 Pittsboro, NC 2731
 
 // Include your documentation sections here
 include::text/introduction.adoc[]
+include::text/git-workflow.adoc[]
 include::text/writing.adoc[]
 include::text/images.adoc[]
 include::text/include-source.adoc[]
