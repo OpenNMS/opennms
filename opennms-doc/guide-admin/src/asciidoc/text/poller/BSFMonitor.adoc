@@ -9,31 +9,55 @@ This monitor runs a Bean Shell Framework (BSF) compatible script to determin the
 
 [options="autowidth"]
 |===
-| Class Name | `org.opennms.netmgt.poller.monitors.BSFMonitor`
+| Class Name     | `org.opennms.netmgt.poller.monitors.BSFMonitor`
 | Remote Enabled | `false`
 |===
 
 ==== Configuration and Usage
 
-.Monitor specific parameters for the {monitorname}
+.Monitor specific parameters for the BSFMonitor
 [options="header, autowidth"]
 |===
-| Parameter | Description                                    | Required | Default value
-| `my parameter 1` | This is a placeholder for the first +
-                     rquired monitor parameter description.  | required | `-`
-| `my parameter 2` | This is a placeholder for the second +
-                     optional monitor parameter description. | optional | `default value`
+| Parameter         | Description                                    | Required | Default value
+
+| `file-name`       | Path to the script file.                              | required | `-`
+| `lang-class`      | The BSF language class, like `groovy` or `beanshell`. | optional | `file-name extention is interpreted by default`
+
+| `bsf-engine`      | The BSF Engine to run the script in, linke +
+                      `bsh.util.BeanShellBSFEngine` or  +
+                      `?groovy?`                                            | required | `-`
+| `file-extensions` | comma seperated list                                  | optional | `-`
+| `run-type`        | one of those `eval` or `exec`                         | optional | `eval`
+
+
+// There is no retry of timeout in the BSFMonitor code....
+// There are also no dedicated retry or timeout parameters handed over to the script, just the parameter map it self.
+| `retry`          | text                                                   | optional | `-`
+| `timeout`        | text                                                   | optional | `-`
+
+
+
 |===
 
-This is optional just if you can use variables in the configuration
 
-.Variables which can be used in the configuration
+.Bean which can be used in the script
 [options="header, autowidth"]
 |===
-| Variable        | Description
-| `${variable1}`  | Description for the first variable
-| `${variable2}`  | Description for the second variable
-| `${variable3}`  | Description for the third variable
+| Variable     | Type                           | Description
+| `map`        | Map<String, Object             | The _map_ contains all various parameters passed to the monitor +
+                                                  from the service definition it the _poller-configuration.xml_ file.
+| `ip_addr`    | String                         | The IP address that is currently being polled.
+| `node_id`    | int                            | The Node ID of the node the _ip_addr_ belongs to.
+| `node_label` | String                         | The Node Label of the node the _ip_addr_ and service belongs to.
+| `svc_name`   | String                         | The name of the service that is being polled.
+| `bsf_monitor`| BSFMonitor                     | The instance of the _BSFMonitor_ object calling the script. +
+                                                  Useful for logging via its +
+                                                  log(String sev, String fmt, Object... args) method.
+| `result`     | HashMap<String, String>        | The script is ecpected to put it results into this object. +
+                                                  The status indication sould be set into the entry with key _status_. +
+                                                  If the status is not _OK_, a key _reason_ shoud contain a +
+                                                  description of the problem.
+| `times`      | LinkedHashMap<String, Number>  | The script is expected to put one or more response times into this object.
 |===
 
 ==== Examples
