@@ -25,7 +25,7 @@ Out-of-box support for _HOST-RESOURCES-MIB_ among commercial _Unix_ operating sy
 |===
 | Parameter            | Description                                                                                    | Required | Default value
 | `port`               | The port of the _SNMP agent_ of the server to test.                                            | optional | `from snmp-config.xml`
-| `retry`              | Number of attempts to get a valid response before marking the service as _down_.                | optional | `from snmp-config.xml`
+| `retry`              | Number of attempts to get a valid response before marking the service as _down_.               | optional | `from snmp-config.xml`
 | `timeout`            | Timeout in milliseonds wating for the _SNMP response_ for the process run state from the
                          agent.                                                                                         | optional | `from snmp-config.xml`
 | `service-name`       | The name of the process to be monitored. This parameter's value is case-sensitive and is
