@@ -26,63 +26,14 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.protocols.jmx.connectors;
-
-import java.io.IOException;
+package org.opennms.netmgt.jmx.connection.connectors;
 
 import javax.management.MBeanServerConnection;
 import javax.management.remote.JMXConnector;
 
-/*
-* This class manages the connection to the remote jmx server.  The Jsr160ConnectionFactory
-* class creates the connection and the close method closes it.
-* 
-* @author <A HREF="mailto:mike@opennms.org">Mike Jamison </A>
-* @author <A HREF="http://www.opennms.org/">OpenNMS </A>
-*/
-/**
- * <p>MX4JConnectionWrapper class.</p>
- *
- * @author ranger
- * @version $Id: $
- */
-public class MX4JConnectionWrapper implements ConnectionWrapper{
-  
-  private JMXConnector connector;
-  private MBeanServerConnection connection;
+class MX4JConnectionWrapper extends DefaultConnectionWrapper{
 
-  /**
-   * <p>Constructor for MX4JConnectionWrapper.</p>
-   *
-   * @param connector a {@link javax.management.remote.JMXConnector} object.
-   * @param connection a {@link javax.management.MBeanServerConnection} object.
-   */
   public MX4JConnectionWrapper(JMXConnector connector, MBeanServerConnection connection) {
-      this.connector  = connector;
-      this.connection = connection;
-  }
-  
-  /**
-   * <p>getMBeanServer</p>
-   *
-   * @return Returns the connection.
-   */
-  @Override
-  public MBeanServerConnection getMBeanServer() {
-      return connection;
-  }
-  
-  /**
-   * <p>close</p>
-   */
-  @Override
-  public void close() {
-      if (connector != null) {
-          try {
-              connector.close();
-          } catch (IOException e) {
-          }
-      }
-      connection = null;
+      super(connector, connection);
   }
 }

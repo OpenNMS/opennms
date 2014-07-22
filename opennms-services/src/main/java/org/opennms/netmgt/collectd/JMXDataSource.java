@@ -27,16 +27,10 @@
  *******************************************************************************/
 
 package org.opennms.netmgt.collectd;
-import java.io.File;
-import java.util.List;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.config.DataCollectionConfigFactory;
 import org.opennms.netmgt.config.MibObject;
-import org.opennms.netmgt.rrd.RrdException;
-import org.opennms.netmgt.rrd.RrdUtils;
-import org.opennms.netmgt.snmp.SnmpValue;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
@@ -52,6 +46,7 @@ import org.opennms.netmgt.snmp.SnmpValue;
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  * @version 1.1.1.1
  */
+// TODO mvr we may get rid of this *jippie*
 public class JMXDataSource implements Cloneable {
     private static final Logger LOG = LoggerFactory.getLogger(JMXDataSource.class);
 	private static final int MAX_DS_NAME_LENGTH = 19;
@@ -405,44 +400,5 @@ public class JMXDataSource implements Cloneable {
         buffer.append("\n   max:       ").append(m_max);
 
         return buffer.toString();
-    }
-       
-	/**
-	 * <p>performUpdate</p>
-	 *
-	 * @param owner a {@link java.lang.String} object.
-	 * @param repository a {@link java.io.File} object.
-	 * @param value a {@link org.opennms.netmgt.snmp.SnmpValue} object.
-	 * @return a boolean.
-	 */
-	public boolean performUpdate(
-		String owner,
-		File repository,
-                SnmpValue value) {
-        
-            String val = getStorableValue(value);
-        
-            String collectionName = m_collectionName;
-	        int step = DataCollectionConfigFactory.getInstance().getStep(collectionName);
-	        List<String> rraList = DataCollectionConfigFactory.getInstance().getRRAList(collectionName);
-		boolean result=false;
-		try {
-		        RrdUtils.createRRD(owner, repository.getAbsolutePath(), getName(), step, getType(), getHeartbeat(), getMin(), getMax(), rraList);
-	
-			RrdUtils.updateRRD(owner, repository.getAbsolutePath(), getName(), val);
-		} catch (RrdException e) {
-			result=true;
-		}
-		return result;
-	}
-
-    /**
-     * <p>getStorableValue</p>
-     *
-     * @param snmpVal a {@link org.opennms.netmgt.snmp.SnmpValue} object.
-     * @return a {@link java.lang.String} object.
-     */
-    public String getStorableValue(SnmpValue snmpVal) {
-        return (snmpVal == null ? null : Long.toString(snmpVal.toLong()));
     }
 }

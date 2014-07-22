@@ -26,10 +26,12 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.protocols.jmx.connectors;
+package org.opennms.netmgt.jmx.connection.connectors;
 
-import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
+import org.opennms.netmgt.jmx.connection.MBeanServerConnectionException;
+import org.opennms.netmgt.jmx.connection.MBeanServerConnector;
+import org.opennms.netmgt.jmx.connection.WiuConnectionWrapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,8 +39,12 @@ import javax.management.MBeanServerConnection;
 import javax.management.remote.JMXConnector;
 import javax.management.remote.JMXConnectorFactory;
 import javax.management.remote.JMXServiceURL;
-import javax.net.ssl.*;
-import java.net.InetAddress;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLException;
+import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.TrustManagerFactory;
+import javax.net.ssl.X509TrustManager;
 import java.net.MalformedURLException;
 import java.security.KeyStore;
 import java.security.cert.CertificateException;
@@ -52,18 +58,12 @@ import java.util.Map;
  * @author ranger
  * @version $Id: $
  */
-public class JMXSecureConnectionFactory {
+class JMXSecureMBeanServerConnector implements MBeanServerConnector {
 	
-	private static final Logger LOG = LoggerFactory.getLogger(JMXSecureConnectionFactory.class);
+	private static final Logger LOG = LoggerFactory.getLogger(JMXSecureMBeanServerConnector.class);
 
-    /**
-     * <p>getMBeanServerConnection</p>
-     *
-     * @param propertiesMap a {@link java.util.Map} object.
-     * @param address       a {@link java.net.InetAddress} object.
-     * @return a {@link org.opennms.protocols.jmx.connectors.Jsr160ConnectionWrapper} object.
-     */
-    public static Jsr160ConnectionWrapper getMBeanServerConnection(Map<?, ?> propertiesMap, InetAddress address) {
+    @Override
+    public WiuConnectionWrapper createConnection(String address, Map<String, String> propertiesMap) throws MBeanServerConnectionException {
         Jsr160ConnectionWrapper connectionWrapper = null;
 
         JMXServiceURL url = null;
@@ -80,11 +80,10 @@ public class JMXSecureConnectionFactory {
 
                 // Create an JMXMP connector client and
                 // connect it to the JMXMP connector server
-                //
-                url = new JMXServiceURL(protocol, InetAddressUtils.str(address), port, urlPath);
+                url = new JMXServiceURL(protocol, address, port, urlPath);
             } else {
                 // Fallback, building a URL for RMI
-                url = new JMXServiceURL("service:jmx:" + protocol + ":///jndi/" + protocol + "://" + InetAddressUtils.str(address) + ":" + port + urlPath);
+                url = new JMXServiceURL("service:jmx:" + protocol + ":///jndi/" + protocol + "://" + address + ":" + port + urlPath);
             }
         } catch (MalformedURLException e) {
             LOG.error("JMXServiceURL exception: {}. Error message: {}", url, e.getMessage());
@@ -152,7 +151,8 @@ public class JMXSecureConnectionFactory {
                 LOG.error("Unable to get MBeanServerConnection: {}. Error message: {}", url, e.getMessage());
             }
         }
-        return connectionWrapper;
+
+    return connectionWrapper;
     }
 
     private static class AnyServerX509TrustManager implements X509TrustManager {

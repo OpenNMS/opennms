@@ -97,6 +97,8 @@
               org.opennms.netmgt.config.categories.*;version="${project.version}",
               org.opennms.netmgt.config.charts.*;version="${project.version}",
               org.opennms.netmgt.config.collectd.*;version="${project.version}",
+              <!-- TODO mvr do we have to explicit set this? -->
+              org.opennms.netmgt.config.collectd.jmx;version="${project.version}",
               org.opennms.netmgt.config.collector.*;version="${project.version}",
               org.opennms.netmgt.config.databaseReports.*;version="${project.version}",
               org.opennms.netmgt.config.destinationPaths.*;version="${project.version}",
