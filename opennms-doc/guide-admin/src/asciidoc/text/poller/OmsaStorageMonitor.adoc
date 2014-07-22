@@ -41,47 +41,6 @@ Some example configuration how to configure the monitor in the `poller-configura
 [source, xml]
 ----
 
-// Please keep first line an empty line to make sure, the ToC can be build correctly
-=== Name of the Monitor. Normally the name of the class without .java
-
-A summary what the monitor is doing. +
-When is the monitor up or down.
-
-==== Monitor facts
-
-[options="autowidth"]
-|===
-| Class Name | `Name of the monitor class which has to be used in the poller-configuration.xml`
-| Remote Enabled | true or false if the monitor can be used by the OpenNMS remote poller
-|===
-
-==== Configuration and Usage
-
-.Monitor specific parameters for the {monitorname}
-[options="header, autowidth"]
-|===
-| Parameter | Description                                    | Required | Default value
-| `my parameter 1` | This is a placeholder for the first +
-                     rquired monitor parameter description.  | required | `-`
-| `my parameter 2` | This is a placeholder for the second +
-                     optional monitor parameter description. | optional | `default value`
-|===
-
-This is optional just if you can use variables in the configuration
-
-.Variables which can be used in the configuration
-[options="header, autowidth"]
-|===
-| Variable        | Description
-| `${variable1}`  | Description for the first variable
-| `${variable2}`  | Description for the second variable
-| `${variable3}`  | Description for the third variable
-|===
-
-==== Examples
-Some example configuration how to configure the monitor in the `poller-configuration.xml`
-[source, xml]
-----
 <service name="OMSA_Storage_Disk_1" interval="300000"
   user-defined="false" status="on">
  <parameter key="retry" value="3"/>
