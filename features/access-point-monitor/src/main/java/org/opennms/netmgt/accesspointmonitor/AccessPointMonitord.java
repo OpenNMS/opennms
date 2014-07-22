@@ -554,7 +554,12 @@ public class AccessPointMonitord extends AbstractServiceDaemon implements ReadyR
     /** {@inheritDoc} */
     @Override
     public void run() {
-        scheduleDynamicPackages();
+        m_transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus status) {
+                scheduleDynamicPackages();
+            }
+        });
 
         // Reschedule the dynamic package check
         getScheduler().schedule(getPollerConfig().getPackageScanInterval(), this);

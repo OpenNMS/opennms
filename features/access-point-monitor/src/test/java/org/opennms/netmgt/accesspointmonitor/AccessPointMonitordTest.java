@@ -79,6 +79,7 @@ import org.springframework.transaction.annotation.Transactional;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
+@Transactional
 public class AccessPointMonitordTest implements InitializingBean {
     private static final Logger LOG = LoggerFactory.getLogger(AccessPointMonitordTest.class);
 
