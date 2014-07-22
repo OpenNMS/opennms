@@ -4,19 +4,27 @@
 The SNMP monitor gives a generic possibility to monitor states and results from SNMP agents.
 This monitors has two basic operation modes:
 
- - Test the response value of one specific _OID_ (scalar object identifier)
+ - Test the response value of one specific _OID_ (scalar object identifier);
  - Test multiple values in a whole _table_.
 
-To decide which mode should be used, the `match-all` parameter is used.
-By default the `match-all` is set to `false` which puts this monitor to test a scalar object ID.
+To decide which mode should be used, the `walk` and `match-all` parameters ares used.
+
+See the ``Operating mode selection'' and ``Monitor specific parameters for the SnmpMonitor'' tables below for more information about these operation modes.
+
+.Operating mode selection
+[options="header, autowidth"]
+|===
+| walk | match-all  | Operating mode
+| .3+^.^ `true` | `true` | tabular, all values must match
+| `false` | tabular, any value must match
+| `count` | tabular, between `minimum` and `maximum` values must match
+| .3+^.^ `false` | `true` | scalar
+| `false` | scalar
+| `count` | tabular, between `minimum` and `maximum` values must match
+|===
 
 WARNING: This monitor can't be used on the OpenNMS Remote Poller.
 It is currently not possible for the Remote Poller to have access to the SNMP configuration of a central OpenNMS.
-
-[options="autodwidth"]
-|===
-|
-|===
 
 ==== Monitor facts
 
@@ -34,23 +42,26 @@ It is currently not possible for the Remote Poller to have access to the SNMP co
 | Parameter         | Description                                                                                      | Required | Default value
 | `hex`             | Specifies that the value monitored should be compared against its hexadecimal representation.
                       Useful when the monitored value is a string containing non-printable characters.                 | optional | `false`
-| `match-all`       | Sets the monitor in _walk_ mode when set.
-                      If set to `true`, specifies that the value of *every* object encountered in the walk must
-                      match the criteria specified by `operand` and `operator`.
-                      If set to `count`, specifies that the value of at least minimum and at most maximum objects
-                      encountered in the walk must match the criteria specified by `operand` and `operator`.           | optional | `true`
-| `maximum`         | Valid only when `match-all` is set to `count`.
+| `match-all`       | If set to `count`, specifies that the value of at least minimum and at most maximum objects
+                      encountered in the walk must match the criteria specified by `operand` and `operator`.  
+                      If set to `true` and the `walk` parameter is set to `true`, specifies that the value of 
+                      *every* object encountered in the walk must match the criteria specified by the `operand` and
+                      `operator` parameters.
+                      If set to `false` and the `walk` parameter is set to `true`, specifies that the value of 
+                      *any* object encountered in the walk must match the criteria specified by the `operand` and 
+                      `operator` parameters.                                                                           | optional | `true`
+| `maximum`         | Valid only when `match-all` is set to `count`, otherwise ignored.
                       Should be used in conjunction with the `minimum` parameter
                       Specifies that the value of _at most_ `maximum` objects encountered in the walk must meet the
                       criteria specified by the `operand` and `operator` parameters.                                   | optional | `0`
-| `minimum`         | Valid only when `match-all` is set to `count`.
+| `minimum`         | Valid only when `match-all` is set to `count`, otherwise ignored.
                       Should be used in conjunction with the `maximum` parameter
                       Specifies that the value of _at least_ `minimum` objects encountered in the walk must meet the
                       criteria specified by the `operand` and `operator` parameters.                                   | optional | `0`
 | `oid`             | The object identifier of the MIB object to monitor.
                       If no other parameters are present, the monitor asserts that the agent's response for this
-                      object must include a valid value (as opposed to an error, no-such-name,i
-                      or end-of-view condition) that is non-null.                                                      | optional | `.1.3.6.1.2.1.1.2.0` (SNMPv2-MIB::SysObjectID)
+                      object must include a valid value (as opposed to an error, no-such-name, or end-of-view
+                      condition) that is non-null.                                                                     | optional | `.1.3.6.1.2.1.1.2.0` (SNMPv2-MIB::SysObjectID)
 | `operand`         | The value to be compared against the observed value of the monitored object.
                       Note: Comparaison will always succeed if either the `operand` or `operator` parameter isn't set
                             and the monitored value is non-null.                                                       | optional | `-`
@@ -79,12 +90,11 @@ It is currently not possible for the Remote Poller to have access to the SNMP co
                       Same as `retry`.
                       Parameter `retry` takes precedence if both are set.                                              | optional | `from snmp-config.xml`
 | `timeout`         | Timeout in milliseconds for retrieving the object's value.                                       | optional | `from snmp-config.xml`
-| `walk`            | If set to `true`, sets the monitor in _walk_ mode, and the monitor will perform _GET-NEXT_ or
-                      _GET-BULK_ operations -effecting a "walk" to the end of the MIB branch specified by the
-                      `oid` parameter- instead of the default _GET_ operation.
-                      This parameter is typically used to monitor all instances of a tabular object.
-                      When used alone, the service is considered available if the value of *any* object encountered
-                      in the walk matches the criteria specified by operand and operator.
+| `walk`            | If set to `false`, sets the monitor to poll for a scalar object unless if the `match-all` 
+                      parameter is set to `count`, in which case the `match-all` parameter takes precedence.
+                      If set to `true`, sets the monitor to poll for a tabular object where the `match-all` parameter
+                      defines how the tabular object's values must match the criteria defined by the `operator` and
+                      `operand` parameters.
                       See also the `match-all`, `minimum`, and `maximum` parameters.                                   | optional | `false`
 |===
 
