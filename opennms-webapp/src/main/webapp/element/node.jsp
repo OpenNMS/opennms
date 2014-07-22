@@ -35,6 +35,8 @@
 <%@page import="org.opennms.web.ospf.OspfElementNode"%>
 <%@page import="org.opennms.web.isis.IsisElementFactory"%>
 <%@page import="org.opennms.web.isis.IsisElementNode"%>
+<%@page import="org.opennms.web.bridge.BridgeElementFactory"%>
+<%@page import="org.opennms.web.bridge.BridgeElementNode"%>
 <%@page language="java"
 	contentType="text/html"
 	session="true"
@@ -154,6 +156,7 @@
     nodeModel.put("lldp", LldpElementFactory.getInstance(getServletContext()).getLldpElement(nodeId));
     nodeModel.put("ospf", OspfElementFactory.getInstance(getServletContext()).getOspfElement(nodeId));
     nodeModel.put("isis", IsisElementFactory.getInstance(getServletContext()).getIsisElement(nodeId));
+    nodeModel.put("bridges", BridgeElementFactory.getInstance(getServletContext()).getBridgeElements(nodeId));
     
     nodeModel.put("resources", m_resourceService.findNodeChildResources(node_db));
     nodeModel.put("vlans", NetworkElementFactory.getInstance(getServletContext()).getVlansOnNode(nodeId));
@@ -404,6 +407,72 @@
         <td>${model.lldp.lldpLastPollTime}</td>
       </tr>
     </table>
+  </c:if>
+
+  <!-- Bridge box if available -->
+  <c:if test="${! empty model.bridges}">
+    <c:forEach items="${model.bridges}" var="bridge">
+    <h3 class="o-box">Bridge Information
+  		<c:if test="${! empty bridge.vlan}">
+  		 vlanid ${bridge.vlan}
+  		</c:if>
+  		<c:if test="${! empty bridge.vlanname}">
+  		  (${bridge.vlan})
+  		</c:if>
+    </h3>
+    <table class="o-box">
+      <tr>
+        <th>base bridge address</th>
+        <td>${bridge.baseBridgeAddress}</td>
+      </tr>
+      <tr>
+        <th>base number of ports</th>
+        <td>${bridge.baseNumPorts}</td>
+      </tr>
+      <tr>
+        <th>base type</th>
+        <td>${bridge.baseType}</td>
+      </tr>
+ 	<c:if test="${! empty bridge.stpProtocolSpecification}">
+      <tr>
+        <th>stp protocol specification</th>
+        <td>${bridge.stpProtocolSpecification}</td>
+      </tr>
+  	</c:if>
+ 	<c:if test="${! empty bridge.stpPriority}">
+      <tr>
+        <th>stp priority</th>
+        <td>${bridge.stpPriority}</td>
+      </tr>
+  	</c:if>
+ 	<c:if test="${! empty bridge.stpDesignatedRoot}">
+      <tr>
+        <th>stp designated root</th>
+        <td>${bridge.stpDesignatedRoot}</td>
+      </tr>
+  	</c:if>
+ 	<c:if test="${! empty bridge.stpRootCost}">
+      <tr>
+        <th>stp root cost</th>
+        <td>${bridge.stpRootCost}</td>
+      </tr>
+  	</c:if>
+ 	<c:if test="${! empty bridge.stpRootPort}">
+      <tr>
+        <th>stp root port</th>
+        <td>${bridge.stpRootPort}</td>
+      </tr>
+  	</c:if>
+      <tr>
+        <th>create time</th>
+        <td>${bridge.bridgeNodeCreateTime}</td>
+      </tr>
+      <tr>
+        <th>last poll time</th>
+        <td>${bridge.bridgeNodeLastPollTime}</td>
+      </tr>
+    </table>
+    </c:forEach>
   </c:if>
 
   <!-- Ospf box, if info available --> 

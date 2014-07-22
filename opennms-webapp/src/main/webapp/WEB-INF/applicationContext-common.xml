@@ -15,5 +15,6 @@
   <bean id="lldpElementFactory" class="org.opennms.web.lldp.LldpElementFactory"/>
   <bean id="ospfElementFactory" class="org.opennms.web.ospf.OspfElementFactory"/>
   <bean id="isisElementFactory" class="org.opennms.web.isis.IsisElementFactory"/>
+  <bean id="bridgeElementFactory" class="org.opennms.web.bridge.BridgeElementFactory"/>
   
 </beans>
