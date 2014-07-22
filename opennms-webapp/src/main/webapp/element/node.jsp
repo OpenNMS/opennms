@@ -174,7 +174,7 @@
     
     nodeModel.put("resources", m_resourceService.findNodeChildResources(node_db));
     nodeModel.put("vlans", NetworkElementFactory.getInstance(getServletContext()).getVlansOnNode(nodeId));
-    nodeModel.put("criticalPath", PathOutageFactory.getPrettyCriticalPath(nodeId));
+    nodeModel.put("criticalPath", PathOutageFactory.getInstance().getPrettyCriticalPath(nodeId));
     nodeModel.put("noCriticalPath", PathOutageFactory.NO_CRITICAL_PATH);
     nodeModel.put("admin", request.isUserInRole(Authentication.ROLE_ADMIN));
     

@@ -30,6 +30,7 @@ package org.opennms.netmgt.poller;
 
 import static org.junit.Assert.assertEquals;
 
+import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
@@ -65,6 +66,7 @@ import org.opennms.test.mock.MockUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
+import org.opennms.netmgt.poller.QueryManager;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
@@ -81,8 +83,7 @@ import org.springframework.transaction.annotation.Transactional;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase(tempDbClass=MockDatabase.class,reuseDatabase=false)
-@Transactional
-public class PathOutageManagerDaoTest implements TemporaryDatabaseAware<MockDatabase> {
+public class PathOutageFactoryJDBCTest implements TemporaryDatabaseAware<MockDatabase> {
     private static final String CAPSD_CONFIG = "\n"
             + "<capsd-configuration max-suspect-thread-pool-size=\"2\" max-rescan-thread-pool-size=\"3\"\n"
             + "   delete-propagation-enabled=\"true\">\n"
@@ -96,15 +97,16 @@ public class PathOutageManagerDaoTest implements TemporaryDatabaseAware<MockData
 	private MockDatabase m_db;
 
 	private MockPollerConfig m_pollerConfig;
-
-	@Autowired
-	private QueryManager m_queryManager;
-
+	
+	 @Autowired
+	 private QueryManager m_queryManager;
+	
 	@Autowired
 	private PathOutageDao m_pathOutageDao;
 	
-	@Autowired
-	private PathOutageManagerDaoImpl m_pathOutageManager;
+	private static PathOutageFactory getInstance() {
+		return new PathOutageFactory();
+	}
 	
 
 	//private DemandPollDao m_demandPollDao;
@@ -154,8 +156,6 @@ public class PathOutageManagerDaoTest implements TemporaryDatabaseAware<MockData
 		m_network.addNode(4, "DownNode");
 		m_network.addInterface("192.168.1.6");
 		m_network.addService("SNMP");
-		
-		 
 		
 //		m_network.addInterface("fe80:0000:0000:0000:0231:f982:0123:4567");
 //		m_network.addService("SNMP");
@@ -249,38 +249,41 @@ public class PathOutageManagerDaoTest implements TemporaryDatabaseAware<MockData
 	@Test
 	public void test() throws SQLException {
 		
-			String[] ar = m_pathOutageManager.getLabelAndStatus("1", null);
-			assertEquals("Router", ar[0]);
-			assertEquals("Normal", ar[1]);
-			assertEquals("All Services Up", ar[2]);
-			String[] cr = m_pathOutageManager.getLabelAndStatus("3", null);
-			assertEquals("Firewall", cr[0]);
-			assertEquals("Normal", cr[1]);
-			assertEquals("All Services Up", cr[2]);
-			List<String> lno = m_pathOutageManager.getNodesInPath("192.168.1.1", "ICMP");
-			assertEquals("1",lno.get(0));
-			List<String> vno = m_pathOutageManager.getNodesInPath("192.168.1.4", "SMTP");
-			assertEquals("3",vno.get(0));
-			List<String[]> all = m_pathOutageManager.getAllCriticalPaths();
-			assertEquals("192.168.1.1",all.get(0)[0]);
-			assertEquals("ICMP", all.get(0)[1]);
-			assertEquals("192.168.1.4",all.get(1)[0]);
-			assertEquals("SMTP",all.get(1)[1]);
-			String[] dat = m_pathOutageManager.getCriticalPathData("192.168.1.1", "ICMP");
-			assertEquals("Router", dat[0]);
-			assertEquals("1", dat[1]);
-			assertEquals("1", dat[2]);
-			assertEquals("Cleared", dat[3]);
-			String mm = m_pathOutageManager.getPrettyCriticalPath(1);
-			assertEquals("192.168.1.1 ICMP", mm);
-			String nn = m_pathOutageManager.getPrettyCriticalPath(3);
-			assertEquals("192.168.1.4 SMTP", nn);
-			String[] pa = m_pathOutageManager.getCriticalPath(1);
-			assertEquals("192.168.1.1", pa[0]);
-			assertEquals("ICMP", pa[1]);
-			String[] nc = m_pathOutageManager.getCriticalPath(3);
-			assertEquals("192.168.1.4", nc[0]);
-			assertEquals("SMTP", nc[1]);
+		//final Connection conn = DataSourceFactory.getInstance().getConnection();
+		final Connection conn = m_db.getConnection();
+		
+		String[] ar = PathOutageFactory.getInstance().getLabelAndStatus("1", conn);
+		assertEquals("Router", ar[0]);
+		assertEquals("Normal", ar[1]);
+		assertEquals("All Services Up", ar[2]);
+		String[] cr = PathOutageFactory.getInstance().getLabelAndStatus("3", conn);
+		assertEquals("Firewall", cr[0]);
+		assertEquals("Normal", cr[1]);
+		assertEquals("All Services Up", cr[2]);
+		List<String> lno = PathOutageFactory.getInstance().getNodesInPath("192.168.1.1", "ICMP");
+		assertEquals("1",lno.get(0));
+		List<String> vno = PathOutageFactory.getInstance().getNodesInPath("192.168.1.4", "SMTP");
+		assertEquals("3",vno.get(0));
+		List<String[]> all = PathOutageFactory.getInstance().getAllCriticalPaths();
+		assertEquals("192.168.1.1",all.get(0)[0]);
+		assertEquals("ICMP", all.get(0)[1]);
+		assertEquals("192.168.1.4",all.get(1)[0]);
+		assertEquals("SMTP",all.get(1)[1]);
+		String[] dat = PathOutageFactory.getInstance().getCriticalPathData("192.168.1.1", "ICMP");
+		assertEquals("Router", dat[0]);
+		assertEquals("1", dat[1]);
+		assertEquals("1", dat[2]);
+		assertEquals("Normal", dat[3]);
+		String mm = PathOutageFactory.getInstance().getPrettyCriticalPath(1);
+		assertEquals("192.168.1.1 ICMP", mm);
+		String nn = PathOutageFactory.getInstance().getPrettyCriticalPath(3);
+		assertEquals("192.168.1.4 SMTP", nn);
+		String[] pa = PathOutageFactory.getInstance().getCriticalPath(1);
+		assertEquals("192.168.1.1", pa[0]);
+		assertEquals("ICMP", pa[1]);
+		String[] nc = PathOutageFactory.getInstance().getCriticalPath(3);
+		assertEquals("192.168.1.4", nc[0]);
+		assertEquals("SMTP", nc[1]);
 		
 		
 	}

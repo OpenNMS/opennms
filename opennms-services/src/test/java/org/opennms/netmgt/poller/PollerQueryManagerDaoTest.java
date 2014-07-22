@@ -55,6 +55,7 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.MockDatabase;
 import org.opennms.core.test.db.TemporaryDatabaseAware;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.Querier;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.capsd.JdbcCapsdDbSyncer;
@@ -624,6 +625,7 @@ public class PollerQueryManagerDaoTest implements TemporaryDatabaseAware<MockDat
 		// now delete the service
 		m_eventMgr.sendEventToListeners(deleteEvent);
 		m_network.removeElement(element);
+		
 
 		verifyAnticipated(5000);
 
@@ -903,10 +905,8 @@ public class PollerQueryManagerDaoTest implements TemporaryDatabaseAware<MockDat
         assertEquals(1, m_db.countOpenOutagesForService(svc));
         assertEquals(1, m_db.countOutagesForService(svc));
 
-        assertEquals(iface.getServices().size(), m_db
-                .countOutagesForInterface(iface));
-        assertEquals(iface.getServices().size(), m_db
-                .countOpenOutagesForInterface(iface));
+        assertEquals(iface.getServices().size(), m_db.countOutagesForInterface(iface));
+        assertEquals(iface.getServices().size(), m_db.countOpenOutagesForInterface(iface));
 
         startDaemons();
         

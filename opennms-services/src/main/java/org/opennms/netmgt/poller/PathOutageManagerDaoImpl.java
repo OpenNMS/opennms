@@ -81,6 +81,8 @@ public class PathOutageManagerDaoImpl implements PathOutageManager{
 	
     /** Constant <code>NO_CRITICAL_PATH="Not Configured"</code> */
     public static final String NO_CRITICAL_PATH = "Not Configured";
+    
+    
 
     /**
      * <p>
@@ -120,7 +122,7 @@ public class PathOutageManagerDaoImpl implements PathOutageManager{
         String result = NO_CRITICAL_PATH;
 
        	OnmsPathOutage out = pathOutageDao.get(nodeID);
-       	result = out.getCriticalPathServiceName();
+       	result = InetAddressUtils.str(out.getCriticalPathIp()) + " " + out.getCriticalPathServiceName();
 
         return result;
     }
@@ -166,7 +168,7 @@ public class PathOutageManagerDaoImpl implements PathOutageManager{
         for (OnmsPathOutage out: outs) {
         	String node = out.getCriticalPathServiceName();
         	if (node.equals(criticalPathServiceName)) {
-        		pathNodes.add(node);
+        		pathNodes.add(String.valueOf(out.getNodeId()));
         	}
         }
         

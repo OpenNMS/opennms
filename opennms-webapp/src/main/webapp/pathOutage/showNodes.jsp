@@ -47,8 +47,8 @@
 <% 
       String critIp = request.getParameter("critIp");
       String critSvc = request.getParameter("critSvc");
-      String[] pthData = PathOutageFactory.getCriticalPathData(critIp, critSvc);
-      List<String> nodeList = PathOutageFactory.getNodesInPath(critIp, critSvc); %>
+      String[] pthData = PathOutageFactory.getInstance().getCriticalPathData(critIp, critSvc);
+      List<String> nodeList = PathOutageFactory.getInstance().getNodesInPath(critIp, critSvc); %>
   
       <h3>Path Outage Node List</h3>
       <table>
@@ -71,7 +71,7 @@
           final DBUtils d = new DBUtils(PathOutageFactory.class, conn);
           try {
               for (String nodeid : nodeList) {
-                  String labelColor[] = PathOutageFactory.getLabelAndStatus(nodeid, conn); %>
+                  String labelColor[] = PathOutageFactory.getInstance().getLabelAndStatus(nodeid, conn); %>
                   <tr class="CellStatus">
                   <td><a href="element/node.jsp?node=<%= nodeid %>"><%= labelColor[0] %></a></td>
                   <td class="<%= labelColor[1] %>"><%= labelColor[2] %></td>

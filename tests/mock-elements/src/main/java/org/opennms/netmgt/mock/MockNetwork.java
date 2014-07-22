@@ -106,6 +106,8 @@ public class MockNetwork extends MockContainer<MockContainer<?,?>,MockElement> {
     
     private MockPathOutage m_currentOutage;
 
+	private MockService m_currentService;
+
     /**
      * <p>Constructor for MockNetwork.</p>
      */
@@ -189,7 +191,8 @@ public class MockNetwork extends MockContainer<MockContainer<?,?>,MockElement> {
     }
     
     public MockPathOutage addOutage(int nodeid, InetAddress ipAddr, String svcName) {
-    	m_currentOutage = new MockPathOutage(nodeid, ipAddr, svcName);
+    	//m_currentOutage = (MockPathOutage) addMember(new MockPathOutage(this,nodeid, ipAddr, svcName));
+    	m_currentOutage = (MockPathOutage) m_currentNode.addMember(new MockPathOutage(this, m_currentService));
     	return m_currentOutage;
     	
     }
@@ -205,7 +208,8 @@ public class MockNetwork extends MockContainer<MockContainer<?,?>,MockElement> {
      */
     public MockService addService(int nodeId, String ipAddr, String svcName) {
         int serviceId = getServiceId(svcName);
-        return getInterface(nodeId, ipAddr).addService(svcName, serviceId);
+        m_currentService =  getInterface(nodeId, ipAddr).addService(svcName, serviceId);
+        return m_currentService;
     }
 
     // model
@@ -217,7 +221,8 @@ public class MockNetwork extends MockContainer<MockContainer<?,?>,MockElement> {
      */
     public MockService addService(String svcName) {
         int serviceId = getServiceId(svcName);
-        return m_currentInterface.addService(svcName, serviceId);
+        m_currentService = m_currentInterface.addService(svcName, serviceId);
+        return m_currentService;
 
     }
 
@@ -416,7 +421,7 @@ public class MockNetwork extends MockContainer<MockContainer<?,?>,MockElement> {
         super.visit(v);
         v.visitNetwork(this);
         visitMembers(v);
-        v.visitOutage(m_currentOutage);
+        
     }
     
     /**
@@ -499,6 +504,7 @@ public class MockNetwork extends MockContainer<MockContainer<?,?>,MockElement> {
         addInterface("192.168.1.1");
         setIfAlias("dot1 interface alias");
         addService("ICMP");
+        addOutage(1, InetAddressUtils.addr("192.168.1.1"), "ICMP");
         addService("SMTP");
         addInterface("192.168.1.2");
         setIfAlias("dot2 interface alias");
@@ -516,7 +522,7 @@ public class MockNetwork extends MockContainer<MockContainer<?,?>,MockElement> {
         addInterface("192.168.1.5");
         addService("SMTP");
         addService("HTTP");
-        addOutage(1, InetAddressUtils.addr("192.168.1.1"), "ICMP");
+        //addOutage(1, InetAddressUtils.addr("192.168.1.1"), "ICMP");
     }
 
 }

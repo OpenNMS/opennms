@@ -532,7 +532,6 @@ public class ThresholdingVisitorTest {
         // Initialize Mock Network
         MockNetwork network = new MockNetwork();
         network.setCriticalService("ICMP");
-        network.addOutage(1, InetAddressUtils.addr("192.168.1.1"), "ICMP");
         for (int i=1; i<=5; i++) {
             String ipAddress = baseIpAddress + i;
             network.addNode(i, "testNode-" + ipAddress);
@@ -544,6 +543,8 @@ public class ThresholdingVisitorTest {
                 network.addService("HTTP"); // Adding HTTP on node 5
             }
         }
+        network.addOutage(1, InetAddressUtils.addr("192.168.1.1"), "ICMP");
+
         MockDatabase db = new MockDatabase();
         db.populate(network);
         db.update("insert into categories (categoryid, categoryname) values (?, ?)", 10, "CAT1");
@@ -1128,7 +1129,7 @@ public class ThresholdingVisitorTest {
 
         MockNetwork network = new MockNetwork();
         network.setCriticalService("ICMP");
-        network.addOutage(1, InetAddressUtils.addr("192.168.1.1"), "ICMP");
+        
 
         for (int i=1; i<=numOfNodes; i++) {
             String ipAddress = baseIpAddress + i;
@@ -1138,6 +1139,7 @@ public class ThresholdingVisitorTest {
             network.addService("ICMP");
             network.addService("SNMP");
         }
+        network.addOutage(1, InetAddressUtils.addr("192.168.1.1"), "ICMP");
 
         MockDatabase db = new MockDatabase();
         db.populate(network);
