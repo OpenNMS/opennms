@@ -1,6 +1,6 @@
 
 // Please keep first line an empty line to make sure, the ToC can be build correctly
-=== org.opennms.netmgt.poller.monitors.OmsaStorageMonitor
+=== OmsaStorageMonitor
 
 A summary what the monitor is doing. +
 When is the monitor up or down.
@@ -9,7 +9,7 @@ When is the monitor up or down.
 
 [options="autowidth"]
 |===
-| Class Name | `Name of the monitor class which has to be used in the poller-configuration.xml`
+| Class Name | `org.opennms.netmgt.poller.monitors.OmsaStorageMonitor`
 | Remote Enabled | true or false if the monitor can be used by the OpenNMS remote poller
 |===
 
