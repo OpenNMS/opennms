@@ -39,6 +39,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.context.ThreadLocalSessionContext;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -46,6 +49,8 @@ import org.junit.runner.RunWith;
 import org.opennms.core.soa.ServiceRegistry;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.core.test.db.MockDatabase;
+import org.opennms.core.test.db.TemporaryDatabaseAware;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.netmgt.alarmd.api.NorthboundAlarm;
 import org.opennms.netmgt.alarmd.api.Northbounder;
@@ -55,7 +60,6 @@ import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.mock.MockEventUtil;
 import org.opennms.netmgt.mock.MockNetwork;
 import org.opennms.netmgt.mock.MockNode;
-import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.AlarmData;
@@ -86,9 +90,9 @@ import org.springframework.util.StringUtils;
         "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml"
 })
 @JUnitConfigurationEnvironment
-@JUnitTemporaryDatabase
+@JUnitTemporaryDatabase(tempDbClass=MockDatabase.class)
 @Transactional
-public class AlarmdTest implements InitializingBean {
+public class AlarmdTest implements TemporaryDatabaseAware<MockDatabase>, InitializingBean {
 
     public class MockNorthbounder implements Northbounder {
 
@@ -138,9 +142,19 @@ public class AlarmdTest implements InitializingBean {
     private MockEventIpcManager m_eventdIpcMgr;
 
     @Autowired
+    private SessionFactory m_sessionFactory;
+
+    @Autowired
     private ServiceRegistry m_registry;
 
+    private MockDatabase m_database;
+
     private MockNorthbounder m_northbounder;
+
+    @Override
+    public void setTemporaryDatabase(final MockDatabase database) {
+        m_database = database;
+    }
 
     @Override
     public void afterPropertiesSet() throws Exception {
@@ -151,12 +165,10 @@ public class AlarmdTest implements InitializingBean {
     public void setUp() throws Exception {
         m_mockNetwork.createStandardNetwork();
 
-        // Insert some empty nodes to avoid foreign-key violations on subsequent events/alarms
-        final OnmsNode node = new OnmsNode();
-        node.setId(1);
-        node.setLabel("node1");
-        m_nodeDao.save(node);
-        
+        m_eventdIpcMgr.setEventWriter(m_database);
+
+        m_database.populate(m_mockNetwork);
+
         m_northbounder = new MockNorthbounder();
         m_registry.register(m_northbounder, Northbounder.class);
     }
@@ -167,7 +179,7 @@ public class AlarmdTest implements InitializingBean {
     }
 
     @Test
-    @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
+    @JUnitTemporaryDatabase(tempDbClass=MockDatabase.class) // Relies on specific IDs so we need a fresh database
     public void testPersistAlarm() throws Exception {
         final MockNode node = m_mockNetwork.getNode(1);
 
@@ -178,18 +190,21 @@ public class AlarmdTest implements InitializingBean {
         //there should be 1 alarm now
         sendNodeDownEvent("%nodeid%", node);
         Thread.sleep(1000);
+        m_nodeDao.flush();
         assertEquals(1, m_jdbcTemplate.queryForObject("select count(*) from alarms", Integer.class).intValue());
 
         //this should be the second occurrence and shouldn't create another row
         //there should still be only 1 alarm
         sendNodeDownEvent("%nodeid%", node);
         Thread.sleep(1000);
+        m_nodeDao.flush();
         assertEquals(1, m_jdbcTemplate.queryForObject("select count(*) from alarms", Integer.class).intValue());
 
         //this should be a new alarm because of the new key
         //there should now be 2 alarms
         sendNodeDownEvent("DontReduceThis", node);
         Thread.sleep(1000);
+        m_nodeDao.flush();
         assertEquals(2, m_jdbcTemplate.queryForObject("select count(*) from alarms", Integer.class).intValue());
 
         MockUtil.println("Going for the print of the counter column");
@@ -204,8 +219,8 @@ public class AlarmdTest implements InitializingBean {
     
 
     @Test
-    @JUnitTemporaryDatabase
-    public void testPersistManyAlarmsAtOnce() throws InterruptedException {
+    @JUnitTemporaryDatabase(tempDbClass=MockDatabase.class)
+    public void testPersistManyAlarmsAtOnce() throws Exception {
         int numberOfAlarmsToReduce = 10;
 
         //there should be no alarms in the alarms table
@@ -214,47 +229,18 @@ public class AlarmdTest implements InitializingBean {
         final String reductionKey = "countThese";
         final MockNode node = m_mockNetwork.getNode(1);
 
-        final long millis = System.currentTimeMillis()+2500;
-
-        final CountDownLatch signal = new CountDownLatch(numberOfAlarmsToReduce);
-
-        for (int i=1; i<= numberOfAlarmsToReduce; i++) {
-            MockUtil.println("Creating Runnable: "+i+" of "+numberOfAlarmsToReduce+" events to reduce.");
-
-            class EventRunner implements Runnable {
-                @Override
-                public void run() {
-                    try {
-                        while (System.currentTimeMillis() < millis) {
-                            try {
-                                Thread.sleep(10);
-                            } catch (InterruptedException e) {
-                                MockUtil.println(e.getMessage());
-                            }
-                        }
-                        sendNodeDownEvent(reductionKey, node);
-                    } catch (Throwable t) {
-                        t.printStackTrace();
-                    } finally {
-                        signal.countDown();
-                    }
-                }
-            }
-
-            Runnable r = new EventRunner();
-            Thread p = new Thread(r);
-            p.start();
+        for (int i = 0; i < numberOfAlarmsToReduce; i++) {
+            sendNodeDownEvent(reductionKey, node);
+            Thread.sleep(250);
         }
-
-        signal.await();
 
         //this should be the first occurrence of this alarm
         //there should be 1 alarm now
+        m_nodeDao.flush();
         int rowCount = m_jdbcTemplate.queryForObject("select count(*) from alarms", Integer.class).intValue();
+        assertEquals("rowCount is wrong", 1, rowCount);
         Integer counterColumn = m_jdbcTemplate.queryForObject("select counter from alarms where reductionKey = ?", new Object[] { reductionKey }, Integer.class).intValue();
-        MockUtil.println("rowcCount is: "+rowCount+", expected 1.");
         MockUtil.println("counterColumn is: "+counterColumn+", expected "+numberOfAlarmsToReduce);
-        assertEquals(1, rowCount);
         if (numberOfAlarmsToReduce != counterColumn) {
             final List<Integer> reducedEvents = new ArrayList<Integer>();
             m_jdbcTemplate.query("select eventid from events where alarmID is not null", new RowCallbackHandler() {
@@ -304,7 +290,7 @@ public class AlarmdTest implements InitializingBean {
     }
 
     @Test
-    @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
+    @JUnitTemporaryDatabase(tempDbClass=MockDatabase.class) // Relies on specific IDs so we need a fresh database
     public void testNorthbounder() throws Exception {
         assertTrue(m_northbounder.isInitialized());
         assertTrue(m_northbounder.getAlarms().isEmpty());
@@ -364,7 +350,7 @@ public class AlarmdTest implements InitializingBean {
     }
     
     @Test
-    @JUnitTemporaryDatabase
+    @JUnitTemporaryDatabase(tempDbClass=MockDatabase.class)
     public void changeFields() throws InterruptedException, SQLException {
         assertEquals(0, m_jdbcTemplate.queryForObject("select count(*) from alarms", Integer.class).intValue());
         
@@ -378,6 +364,7 @@ public class AlarmdTest implements InitializingBean {
         
         //Verify we have the default alarm
         sendNodeDownEvent(reductionKey, node1);
+        m_nodeDao.flush();
         int severity = m_jdbcTemplate.queryForObject("select severity from alarms a where a.reductionKey = ?", new Object[] { reductionKey }, Integer.class).intValue();
         assertEquals(OnmsSeverity.MAJOR, OnmsSeverity.get(severity));
         
@@ -404,6 +391,7 @@ public class AlarmdTest implements InitializingBean {
 
         //Duplicate the alarm but change the severity and verify the change
         sendNodeDownEventWithUpdateFieldSeverity(reductionKey, node1, OnmsSeverity.CRITICAL);
+        m_nodeDao.flush();
         severity = m_jdbcTemplate.queryForObject("select severity from alarms", Integer.class).intValue();
         assertEquals("Severity should now be Critical", OnmsSeverity.CRITICAL, OnmsSeverity.get(severity));
         
@@ -414,6 +402,7 @@ public class AlarmdTest implements InitializingBean {
 
         //Duplicate the alarm and change the logmsg
         sendNodeDownEventChangeLogMsg(reductionKey, node1, "new logMsg");
+        m_nodeDao.flush();
         String newLogMsg = m_jdbcTemplate.query("select logmsg from alarms", new ResultSetExtractor<String>() {
             @Override
             public String extractData(ResultSet results) throws SQLException, DataAccessException {
@@ -426,6 +415,7 @@ public class AlarmdTest implements InitializingBean {
         
         //Duplicate the alarm but force logmsg to not change (lggmsg field is updated by default)
         sendNodeDownEventDontChangeLogMsg(reductionKey, node1, "newer logMsg");
+        m_nodeDao.flush();
         newLogMsg = m_jdbcTemplate.query("select logmsg from alarms", new ResultSetExtractor<String>() {
             @Override
             public String extractData(ResultSet results) throws SQLException, DataAccessException {
@@ -440,6 +430,7 @@ public class AlarmdTest implements InitializingBean {
         //Duplicate the alarm with the default configuration and verify the logmsg has changed (as is the default behavior
         //for this field)
         sendNodeDownEvent(reductionKey, node1);
+        m_nodeDao.flush();
         newLogMsg = m_jdbcTemplate.query("select logmsg from alarms", new ResultSetExtractor<String>() {
             @Override
             public String extractData(ResultSet results) throws SQLException, DataAccessException {
