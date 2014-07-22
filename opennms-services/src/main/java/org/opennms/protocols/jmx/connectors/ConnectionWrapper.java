@@ -29,31 +29,11 @@
 package org.opennms.protocols.jmx.connectors;
 
 import javax.management.MBeanServerConnection;
+import java.io.Closeable;
 
-/*
- * This interface defines the ability to handle a live connection and the ability to
- * close it.
- * 
- * @author <A HREF="mailto:mike@opennms.org">Mike Jamison </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- */
-/**
- * <p>ConnectionWrapper interface.</p>
- *
- * @author ranger
- * @version $Id: $
- */
-public interface ConnectionWrapper {
-    /**
-     * <p>getMBeanServer</p>
-     *
-     * @return a {@link javax.management.MBeanServerConnection} object.
-     */
-    public MBeanServerConnection getMBeanServer();
-    
-    /**
-     * <p>close</p>
-     */
-    public void close();
+public interface ConnectionWrapper extends Closeable {
+    MBeanServerConnection getMBeanServer();
 
+    @Override
+    void close();
 }

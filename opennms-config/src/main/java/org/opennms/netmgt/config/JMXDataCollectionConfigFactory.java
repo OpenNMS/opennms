@@ -248,6 +248,8 @@ public final class JMXDataCollectionConfigFactory {
      *            IP address to look up in the collection
      * @return a list of MIB objects
      */
+    // TODO mvr we should remove this, or declare it deprecated
+    // jsr160, opennms-jvm, ipAddresse
     public Map<String, List<Attrib>> getAttributeMap(String cName, String aSysoid, String anAddress) {
         
         Map<String, List<Attrib>> attributeMap = new HashMap<String, List<Attrib>>();
@@ -288,6 +290,36 @@ public final class JMXDataCollectionConfigFactory {
                 }
             }
             attributeMap.put(mbean.getObjectname(), list);            
+        }
+        return attributeMap;
+    }
+
+    // TODO mvr document and use this instead of the other fucked up method
+    public Map<String, List<Attrib>> getJmxCollection(String collectionName) {
+        Map<String, List<Attrib>> attributeMap = new HashMap<String, List<Attrib>>();
+
+        JmxCollection collection = m_collectionMap.get(collectionName);
+        if (collection == null) {
+            return attributeMap;
+        }
+
+        // TODO mvr The way I see it, we should only return a clone of the original list, that's it
+        for (Mbean mbean : collection.getMbeans().getMbean()) {
+            // Make sure to create a new ArrayList because we add to it below
+            List<Attrib> list = new ArrayList<Attrib>(Arrays.asList(mbean.getAttrib()));
+
+            CompAttrib[] compAttributes = mbean.getCompAttrib();
+            for (int i = 0; i < compAttributes.length; i++) {
+                CompMember[] compMembers = compAttributes[i].getCompMember();
+                for (int j = 0; j < compMembers.length; j++) {
+                    Attrib compAttrib = new Attrib();
+                    compAttrib.setName(compAttributes[i].getName() + "|" + compMembers[j].getName());
+                    compAttrib.setAlias(compMembers[j].getAlias());
+                    compAttrib.setType(compMembers[j].getType());
+                    list.add(compAttrib);
+                }
+            }
+            attributeMap.put(mbean.getObjectname(), list);
         }
         return attributeMap;
     }

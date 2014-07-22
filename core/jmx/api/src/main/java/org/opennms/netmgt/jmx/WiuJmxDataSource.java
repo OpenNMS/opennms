@@ -26,7 +26,8 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.collectd;
+package org.opennms.netmgt.jmx;
+
 import org.opennms.netmgt.config.DataCollectionConfigFactory;
 import org.opennms.netmgt.config.MibObject;
 import org.slf4j.Logger;
@@ -46,12 +47,11 @@ import org.slf4j.LoggerFactory;
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  * @version 1.1.1.1
  */
-// TODO mvr we may get rid of this *jippie*
-public class JMXDataSource implements Cloneable {
-    private static final Logger LOG = LoggerFactory.getLogger(JMXDataSource.class);
-	private static final int MAX_DS_NAME_LENGTH = 19;
-	/** Constant <code>RRD_ERROR="RRD_ERROR"</code> */
-	public static final String RRD_ERROR = "RRD_ERROR";
+// TODO mvr add in all classes/interfaces in this module the copyright header
+// TODO mvr check javadoc
+public class WiuJmxDataSource {
+    private static final Logger LOG = LoggerFactory.getLogger(WiuJmxDataSource.class);
+    private static final int MAX_DS_NAME_LENGTH = 19;
 
     /**
      * Defines the list of supported (MIB) object types which may be mapped to
@@ -85,9 +85,6 @@ public class JMXDataSource implements Cloneable {
 
     private static final String DST_COUNTER = "COUNTER";
 
-    // private static final String DST_DERIVE = "DERIVE";
-    // private static final String DST_ABSOLUTE = "ABSOLUTE";
-
     /**
      * Data Source Type. This must be one of the available RRDTool data source
      * type values: GAUGE, COUNTER, DERIVE, or ABSOLUTE
@@ -117,15 +114,15 @@ public class JMXDataSource implements Cloneable {
     private String m_name;
     private String m_collectionName;
 
-         /**
-          * <p>handlesType</p>
-          *
-          * @param objectType MIB object type being inquired about
-          * @return true if RRDDataSource can  handle the given type, false if it can't
-          */
-         public static boolean handlesType(String objectType) {
-                 return (JMXDataSource.mapType(objectType)!=null);
-         }
+    /**
+     * <p>handlesType</p>
+     *
+     * @param objectType MIB object type being inquired about
+     * @return true if RRDDataSource can  handle the given type, false if it can't
+     */
+    public static boolean handlesType(String objectType) {
+        return (WiuJmxDataSource.mapType(objectType)!=null);
+    }
 
 
 
@@ -153,22 +150,22 @@ public class JMXDataSource implements Cloneable {
         }
 
         switch (index) {
-        // counter maps to RRD data source type COUNTER.
-        case COUNTER_INDEX:
-            rrdType = DST_COUNTER;
-            break;
-        // gauge, timeticks, and integer types all map to RRD
-        // data source type GAUGE.
-        case OCTETSTRING_INDEX:
-        case TIMETICKS_INDEX:
-        case INTEGER_INDEX:
-        case GAUGE_INDEX:
-            rrdType = DST_GAUGE;
-            break;
-        // no match, object data type is NOT supported
-        default:
-            rrdType = null;
-            break;
+            // counter maps to RRD data source type COUNTER.
+            case COUNTER_INDEX:
+                rrdType = DST_COUNTER;
+                break;
+            // gauge, timeticks, and integer types all map to RRD
+            // data source type GAUGE.
+            case OCTETSTRING_INDEX:
+            case TIMETICKS_INDEX:
+            case INTEGER_INDEX:
+            case GAUGE_INDEX:
+                rrdType = DST_GAUGE;
+                break;
+            // no match, object data type is NOT supported
+            default:
+                rrdType = null;
+                break;
         }
         return rrdType;
     }
@@ -176,48 +173,68 @@ public class JMXDataSource implements Cloneable {
     /**
      * Constructor
      */
-    public JMXDataSource() {
-	super();
+    public WiuJmxDataSource() {
+        super();
         m_type = null;
         m_heartbeat = 600; // 10 minutes
         m_min = "U";
         m_max = "U";
     }
 
-       /**
-        * <p>Constructor for JMXDataSource.</p>
-        *
-        * @param obj a {@link org.opennms.netmgt.config.MibObject} object.
-        * @param collectionName a {@link java.lang.String} object.
-        */
-       public JMXDataSource(MibObject obj, String collectionName) {
-                
-                m_collectionName = collectionName;
-                
+    /**
+     * <p>Constructor for JMXDataSource.</p>
+     *
+     * @param obj a {@link org.opennms.netmgt.config.MibObject} object.
+     * @param collectionName a {@link java.lang.String} object.
+     */
+    public WiuJmxDataSource(MibObject obj, String collectionName) {
 
-                // Assign heartbeat using formula (2 * step) and hard code
-                // min & max values to "U" ("unknown").
-                this.setHeartbeat(
-                        2
-                                * DataCollectionConfigFactory.getInstance().getStep(
-                                        collectionName));
+        m_collectionName = collectionName;
 
-                // Truncate MIB object name/alias if it exceeds the 19 char max for
-                // RRD data source names.
-                if (this.getName().length() > MAX_DS_NAME_LENGTH) {
-                        LOG.warn("buildDataSourceList: Mib object name/alias '{}' exceeds 19 char maximum for RRD data source names, truncating.", obj.getAlias());
-                        char[] temp = this.getName().toCharArray();
-                        this.setName(String.copyValueOf(temp, 0, MAX_DS_NAME_LENGTH));
-                }
 
-                // Map MIB object data type to RRD data type
-                this.setType(JMXDataSource.mapType(obj.getType()));
-                this.m_min = "U";
-                this.m_max = "U";
+        // Assign heartbeat using formula (2 * step) and hard code
+        // min & max values to "U" ("unknown").
+        this.setHeartbeat(
+                2
+                        * DataCollectionConfigFactory.getInstance().getStep(
+                        collectionName));
 
-                // Assign the data source object identifier and instance
-                LOG.debug("buildDataSourceList: ds_name: {} ds_oid: {}.{} ds_max: {} ds_min: {}", this.getName(), this.getOid(), this.getInstance(), this.getMax(), this.getMin());
+        // Truncate MIB object name/alias if it exceeds the 19 char max for
+        // RRD data source names.
+        if (this.getName().length() > MAX_DS_NAME_LENGTH) {
+            LOG.warn("buildDataSourceList: Mib object name/alias '{}' exceeds 19 char maximum for RRD data source names, truncating.", obj.getAlias());
+            char[] temp = this.getName().toCharArray();
+            this.setName(String.copyValueOf(temp, 0, MAX_DS_NAME_LENGTH));
         }
+
+        // Map MIB object data type to RRD data type
+        this.setType(WiuJmxDataSource.mapType(obj.getType()));
+        this.m_min = "U";
+        this.m_max = "U";
+
+        // Assign the data source object identifier and instance
+        LOG.debug("buildDataSourceList: ds_name: {} ds_oid: {}.{} ds_max: {} ds_min: {}", this.getName(), this.getOid(), this.getInstance(), this.getMax(), this.getMin());
+    }
+
+
+    /**
+     * Class copy constructor. Constructs a new object that is an identical to
+     * the passed object, however no data is shared between the two objects. Any
+     * changes to one will not affect the other.
+     *
+     * @param second
+     *            The object to make a duplicate of.
+     */
+    public WiuJmxDataSource(WiuJmxDataSource second) {
+        m_oid = second.m_oid;
+        m_instance = second.m_instance;
+        m_name = second.m_name;
+        m_type = second.m_type;
+        m_heartbeat = second.m_heartbeat;
+        m_min = second.m_min;
+        m_max = second.m_max;
+    }
+
 
 
     /**
@@ -275,25 +292,6 @@ public class JMXDataSource implements Cloneable {
      */
     public String getName() {
         return m_name;
-    }
-       
-
-    /**
-     * Class copy constructor. Constructs a new object that is an identical to
-     * the passed object, however no data is shared between the two objects. Any
-     * changes to one will not affect the other.
-     *
-     * @param second
-     *            The object to make a duplicate of.
-     */
-    public JMXDataSource(JMXDataSource second) {
-        m_oid = second.m_oid;
-        m_instance = second.m_instance;
-        m_name = second.m_name;
-        m_type = second.m_type;
-        m_heartbeat = second.m_heartbeat;
-        m_min = second.m_min;
-        m_max = second.m_max;
     }
 
     /**
@@ -367,17 +365,6 @@ public class JMXDataSource implements Cloneable {
      */
     public String getMax() {
         return m_max;
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * Used to get a duplicate of self. The duplicate is identical to self but
-     * shares no common data.
-     */
-    @Override
-    public Object clone() {
-        return new JMXDataSource(this);
     }
 
     /**
