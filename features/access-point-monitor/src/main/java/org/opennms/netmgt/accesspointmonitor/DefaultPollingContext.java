@@ -208,7 +208,7 @@ public class DefaultPollingContext implements PollingContext {
             callables.add(p);
         }
 
-        boolean succesfullyPolledAController = false;
+        boolean successfullyPolledAController = false;
 
         try {
             if (m_pool == null) {
@@ -223,7 +223,7 @@ public class DefaultPollingContext implements PollingContext {
             for (Future<OnmsAccessPointCollection> future : futures) {
                 try {
                     apsUp.addAll(future.get().getObjects());
-                    succesfullyPolledAController = true;
+                    successfullyPolledAController = true;
                 } catch (ExecutionException e) {
                     LOG.error("An error occurred while polling", e);
                 }
@@ -237,7 +237,7 @@ public class DefaultPollingContext implements PollingContext {
 
         LOG.debug("({}) APs Online, ({}) APs offline in package '{}'", apsUp.size(), apsDown.size(), getPackage().getName());
 
-        if (!succesfullyPolledAController) {
+        if (!successfullyPolledAController) {
             LOG.warn("Failed to poll at least one controller in the package '{}'", getPackage().getName());
         }
 
