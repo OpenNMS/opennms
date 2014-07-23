@@ -11,7 +11,7 @@ As this monitor uses SNMP, the queried nodes must have proper SNMP configuration
 [options="autowidth"]
 |===
 | Class Name     | `org.opennms.netmgt.poller.monitors.OpenManageChassisMonitor`
-| Remote Enabled | true
+| Remote Enabled | false
 |===
 
 ==== Configuration and Usage
