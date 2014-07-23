@@ -30,7 +30,7 @@
         - Uses Tomcat DBCP (http://people.apache.org/~fhanik/jdbc-pool/jdbc-pool.html)  A
           highly concurrent pooling API.  Extremely experimental.
   -->
-  <connection-pool factory="org.opennms.core.db.C3P0ConnectionFactory"
+  <connection-pool factory="org.opennms.core.db.AtomikosDataSourceFactory"
     idleTimeout="600"
     loginTimeout="3"
     minPool="50"
