@@ -1,16 +1,15 @@
 
 // Please keep first line an empty line to make sure, the ToC can be build correctly
-=== Name of the Monitor. Normally the name of the class without .java
+=== StrafePingMonitor
 
-A summary what the monitor is doing. +
-When is the monitor up or down.
+The StrafePing monitor performs multiple ICMP echo (ping) requests and stores the response-time of each as well as the packet loss, in an RRD file. Credit is due to Tobias Oetiker, as this graphing feature is an adaptation of the http://oss.oetiker.ch/smokeping/[SmokePing] tool that he developed. 
 
 ==== Monitor facts
 
 [options="autowidth"]
 |===
-| Class Name | `Name of the monitor class which has to be used in the poller-configuration.xml`
-| Remote Enabled | true or false if the monitor can be used by the OpenNMS remote poller
+| Class Name | `org.opennms.netmgt.poller.monitors.StrafePingMonitor`
+| Remote Enabled | don't know
 |===
 
 ==== Configuration and Usage
@@ -18,48 +17,52 @@ When is the monitor up or down.
 .Monitor specific parameters for the {monitorname}
 [options="header, autowidth"]
 |===
-| Parameter | Description                                    | Required | Default value
-| `my parameter 1` | This is a placeholder for the first +
-                     rquired monitor parameter description.  | required | `-`
-| `my parameter 2` | This is a placeholder for the second +
-                     optional monitor parameter description. | optional | `default value`
+| Parameter           | Description                                                 | Required | Default value
+| `timeout`           | How long (in milliseconds) to wait before assuming that a 
+                        packet has not responded                                    | optional | `from snmp-config.xml`
+| `retry`             | The number of retries to attempt when a packet fails to 
+                        respond in the given timeout                                | optional | `from snmp-config.xml`
+| `ping-count`        | The number of pings to attempt each interval                | required | `20`
+| `failure-ping-count`| The number of pings that need to fail for the service to
+                        be considered down                                          | required | `20`
+| `wait-interval`     | How long (in milliseconds) to wait between each ICMP
+                        echo-request packet                                         | required | `50`
+| `rrd-repository`    | The location to write RRD data
+                        (generally, you will not want to change this from the
+                        default $OPENNMS_HOME/share/rrd/response)                   | required | `/opt/opennms/share/rrd/response`
+| `rrd-base-name`     | The name of the RRD file to write
+                        (minus the extension, .rrd or .jrb)                         | required | `strafeping`
 |===
 
-This is optional just if you can use variables in the configuration
-
-.Variables which can be used in the configuration
-[options="header, autowidth"]
-|===
-| Variable        | Description
-| `${variable1}`  | Description for the first variable
-| `${variable2}`  | Description for the second variable
-| `${variable3}`  | Description for the third variable
-|===
 
 ==== Examples
 Some example configuration how to configure the monitor in the `poller-configuration.xml`
 [source, xml]
 ----
-<parameter key="args" value="-i {variable3} -t ${variable2}"/>
-<parameter key="args" value="http://${variable1}/${variable2}/static"/>
+<package name="strafer" >
+   <filter>IPADDR != '0.0.0.0'</filter>
+   <include-range begin="0.0.0.1" end="255.255.255.255"/>
+   <rrd step="300">
+     <rra>RRA:AVERAGE:0.5:1:2016</rra>
+     <rra>RRA:AVERAGE:0.5:12:1488</rra>
+     <rra>RRA:AVERAGE:0.5:288:366</rra>
+     <rra>RRA:MAX:0.5:288:366</rra>
+     <rra>RRA:MIN:0.5:288:366</rra>
+   </rrd>
+   <service name="StrafePing" interval="300000" user-defined="false" status="on">
+     <parameter key="retry" value="0"/>
+     <parameter key="timeout" value="3000"/>
+     <parameter key="ping-count" value="20"/>
+     <parameter key="failure-ping-count" value="20"/>
+     <parameter key="wait-interval" value="50"/>
+     <parameter key="rrd-repository" value="/usr/share/opennms/share/rrd/response"/>
+     <parameter key="rrd-base-name" value="strafeping"/>
+   </service>
+   <downtime interval="30000" begin="0" end="300000"/>     
+   <downtime interval="300000" begin="300000" end="43200000"/> 
+   <downtime interval="600000" begin="43200000" end="432000000"/>  
+   <downtime begin="432000000" delete="true"/>         
+ </package>
+ <monitor service="StrafePing" class-name="org.opennms.netmgt.poller.monitors.StrafePingMonitor"/>
 ----
 
-.This section is optional and give some specific hints
-==== SystemExecuteMonitor vs GpMonitor
-
-The SystemExecuteMonitor is the successor of the GpMonitor. The main differences are:
-
-* Variable replacement for the parameter args
-* There are no fixed arguments handed to the system-call
-* The _SystemExecuteMonitor_ supports _RemotePoller_ deployment
-
-To migrate services from the _GpMonitor_ to the _SystemExecuteMonitor_ it is required to alter the parameter args.
-To match the arguments called `hoption` for the `hostAddress` and `toption` for the `timeoutInSeconds`.
-The args string that matches the _GpMonitor_ call looks like this:
-
-[source, xml]
-----
-<parameter key="my parameter 2" value="--hostname ${variable1} --timeout ${variable2}" />
-----
-
-To migrate the GpMonitor parameters `hoption` and `toption` just replace the `--hostname` and `--timeout` directly in the args key.
