@@ -71,7 +71,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -88,8 +87,7 @@ import org.springframework.transaction.annotation.Transactional;
     "classpath:META-INF/opennms/applicationContext-minimal-conf.xml"
 })
 @JUnitConfigurationEnvironment
-@JUnitTemporaryDatabase(reuseDatabase = false)
-@DirtiesContext
+@JUnitTemporaryDatabase
 @Transactional
 public class InstanceStrategyIntegrationTest implements InitializingBean {
     private static final Logger LOG = LoggerFactory.getLogger(InstanceStrategyIntegrationTest.class);
