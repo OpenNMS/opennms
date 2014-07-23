@@ -2,12 +2,12 @@
 === SnmpMonitor
 
 The SNMP monitor gives a generic possibility to monitor states and results from SNMP agents.
-This monitors has two basic operation modes:
+This monitor has two basic operation modes:
 
  - Test the response value of one specific _OID_ (scalar object identifier);
  - Test multiple values in a whole _table_.
 
-To decide which mode should be used, the `walk` and `match-all` parameters ares used.
+To decide which mode should be used, the `walk` and `match-all` parameters are used.
 
 See the ``Operating mode selection'' and ``Monitor specific parameters for the SnmpMonitor'' tables below for more information about these operation modes.
 
@@ -51,11 +51,11 @@ It is currently not possible for the Remote Poller to have access to the SNMP co
                       *any* object encountered in the walk must match the criteria specified by the `operand` and 
                       `operator` parameters.                                                                           | optional | `true`
 | `maximum`         | Valid only when `match-all` is set to `count`, otherwise ignored.
-                      Should be used in conjunction with the `minimum` parameter
+                      Should be used in conjunction with the `minimum` parameter.
                       Specifies that the value of _at most_ `maximum` objects encountered in the walk must meet the
                       criteria specified by the `operand` and `operator` parameters.                                   | optional | `0`
 | `minimum`         | Valid only when `match-all` is set to `count`, otherwise ignored.
-                      Should be used in conjunction with the `maximum` parameter
+                      Should be used in conjunction with the `maximum` parameter.
                       Specifies that the value of _at least_ `minimum` objects encountered in the walk must meet the
                       criteria specified by the `operand` and `operator` parameters.                                   | optional | `0`
 | `oid`             | The object identifier of the MIB object to monitor.
@@ -63,7 +63,7 @@ It is currently not possible for the Remote Poller to have access to the SNMP co
                       object must include a valid value (as opposed to an error, no-such-name, or end-of-view
                       condition) that is non-null.                                                                     | optional | `.1.3.6.1.2.1.1.2.0` (SNMPv2-MIB::SysObjectID)
 | `operand`         | The value to be compared against the observed value of the monitored object.
-                      Note: Comparaison will always succeed if either the `operand` or `operator` parameter isn't set
+                      Note: Comparison will always succeed if either the `operand` or `operator` parameter isn't set
                             and the monitored value is non-null.                                                       | optional | `-`
 | `operator`        | The operator to be used for comparing the monitored object against the `operand` parameter.
                       Must be one of the following symbolic operators:
@@ -105,7 +105,7 @@ It is currently not possible for the Remote Poller to have access to the SNMP co
 | `${hex}`           | Value of the `hex` parameter.
 | `${ipaddr}`        | IP address polled.
 | `${matchAll}`      | Value of the `match-all` parameter.
-| `${matchCount}`    | when `match-all` is set to `count`, contains the number of matching instances encountered.
+| `${matchCount}`    | When `match-all` is set to `count`, contains the number of matching instances encountered.
 | `${maximum}`       | Value of the `maximum` parameter.
 | `${minimum}`       | Value of the `minimum` paramater.
 | `${observedValue}` | Polled value that made the monitor succeed or fail.
@@ -211,8 +211,7 @@ predictiveFailure(4)
  should be replaced.
 ----
 
-.Example SnmpMonitor as HP Insight physical dri
-ve monitor in poller-configuration.xml
+.Example SnmpMonitor as HP Insight physical drive monitor in poller-configuration.xml
 [source, xml]
 ----
 <service name="HP-Insight-Drive-Physical" interval="300000" user-defined="false" status="on">
