@@ -20,7 +20,7 @@ Out-of-box support for _HOST-RESOURCES-MIB_ among commercial _Unix_ operating sy
 
 ==== Configuration and Usage
 
-.Monitor specific parameters for the {monitorname}
+.Monitor specific parameters for the HostResourceSwRunMonitor
 [options="header, autowidth"]
 |===
 | Parameter            | Description                                                                                    | Required | Default value
@@ -32,7 +32,7 @@ Out-of-box support for _HOST-RESOURCES-MIB_ among commercial _Unix_ operating sy
                          evaluated as an exact match.                                                                   | required | `-`
 | `match-all`          | If the process name appears multiple times in the _hrSwRunTable_, and this parameter is set to
                          `true`, then all instances of the named process must match the value specified for
-                         `run-level`.                                                                                   | optional | `default value`
+                         `run-level`.                                                                                   | optional | `false`
 | `run-level`          | The maximum allowable value of _hrSWRunStatus_ among +
                          _running(1)_, +
                          _runnable(2)_ = waiting for resource +
