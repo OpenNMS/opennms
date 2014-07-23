@@ -30,12 +30,11 @@ package org.opennms.netmgt.collectd;
 
 import java.util.Collection;
 
-import org.opennms.netmgt.config.collector.AttributeGroup;
-import org.opennms.netmgt.config.collector.AttributeGroupType;
-import org.opennms.netmgt.config.collector.CollectionAttribute;
-import org.opennms.netmgt.config.collector.CollectionResource;
-import org.opennms.netmgt.config.collector.CollectionSetVisitor;
-import org.opennms.netmgt.config.collector.ServiceParameters;
+import org.opennms.netmgt.collection.api.AttributeGroup;
+import org.opennms.netmgt.collection.api.AttributeGroupType;
+import org.opennms.netmgt.collection.api.CollectionAttribute;
+import org.opennms.netmgt.collection.api.CollectionSetVisitor;
+import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,15 +49,15 @@ public class AliasedGroup extends AttributeGroup {
     
     private static final Logger LOG = LoggerFactory.getLogger(AliasedGroup.class);
 	
-	AttributeGroup m_group;
+	private final AttributeGroup m_group;
 
 	/**
 	 * <p>Constructor for AliasedGroup.</p>
 	 *
-	 * @param resource a {@link org.opennms.netmgt.config.collector.CollectionResource} object.
-	 * @param group a {@link org.opennms.netmgt.config.collector.AttributeGroup} object.
+	 * @param resource a {@link org.opennms.netmgt.collection.api.CollectionResource} object.
+	 * @param group a {@link org.opennms.netmgt.collection.api.AttributeGroup} object.
 	 */
-	public AliasedGroup(CollectionResource resource, AttributeGroup group) {
+	public AliasedGroup(SnmpCollectionResource resource, AttributeGroup group) {
 		super(resource, group.getGroupType());
 		m_group = group;
 	}
@@ -91,7 +90,7 @@ public class AliasedGroup extends AttributeGroup {
 	/**
 	 * <p>getGroupType</p>
 	 *
-	 * @return a {@link org.opennms.netmgt.config.collector.AttributeGroupType} object.
+	 * @return a {@link org.opennms.netmgt.collection.api.AttributeGroupType} object.
 	 */
         @Override
 	public AttributeGroupType getGroupType() {

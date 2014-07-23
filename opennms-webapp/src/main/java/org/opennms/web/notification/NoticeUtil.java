@@ -33,6 +33,7 @@ import java.util.StringTokenizer;
 import javax.servlet.ServletContext;
 
 import org.opennms.core.utils.WebSecurityUtils;
+import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.web.filter.Filter;
 import org.opennms.web.notification.filter.AcknowledgedByFilter;
 import org.opennms.web.notification.filter.InterfaceFilter;
@@ -41,6 +42,7 @@ import org.opennms.web.notification.filter.NodeFilter;
 import org.opennms.web.notification.filter.NotificationIdFilter;
 import org.opennms.web.notification.filter.ResponderFilter;
 import org.opennms.web.notification.filter.ServiceFilter;
+import org.opennms.web.notification.filter.SeverityFilter;
 import org.opennms.web.notification.filter.UserFilter;
 
 /**
@@ -81,6 +83,8 @@ public abstract class NoticeUtil extends Object {
             filter = new ServiceFilter(WebSecurityUtils.safeParseInt(value), servletContext);
         } else if (type.equals(UserFilter.TYPE)) {
             filter = new UserFilter(value);
+        } else if (type.equals(SeverityFilter.TYPE)) {
+            filter = new SeverityFilter(OnmsSeverity.get(value));
         }
 
         return filter;

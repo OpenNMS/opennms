@@ -61,7 +61,7 @@ public class DefaultLayout implements Layout {
 	}
 	
 	@Override
-	public void setLocation(VertexRef v, int x, int y) {
+	public void setLocation(VertexRef v, double x, double y) {
 		setLocation(v, new Point(x, y));
 	}
 

@@ -39,12 +39,11 @@ import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.rest.AbstractSpringJerseyRestTestCase;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.test.JUnitConfigurationEnvironment;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.context.support.WebApplicationContextUtils;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @WebAppConfiguration
@@ -70,13 +69,13 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 @JUnitTemporaryDatabase
 @Transactional
 public class DataLinkInterfaceRestServiceTest extends AbstractSpringJerseyRestTestCase {
+
+    @Autowired
     private DatabasePopulator m_databasePopulator;
 
     @Override
     protected void afterServletStart() {
         MockLogAppender.setupLogging(true, "DEBUG");
-        final WebApplicationContext context = WebApplicationContextUtils.getWebApplicationContext(getServletContext());
-        m_databasePopulator = context.getBean("databasePopulator", DatabasePopulator.class);
         m_databasePopulator.populateDatabase();
     }
 
@@ -125,7 +124,7 @@ public class DataLinkInterfaceRestServiceTest extends AbstractSpringJerseyRestTe
     @JUnitTemporaryDatabase
     public void testQueryWithParentNodeid() throws Exception {
         String xml = sendRequest(GET, "/links", parseParamData("nodeParentId=2"), 200);
-        assertTrue(xml.contains("<links count=\"0\""));
+        assertTrue(xml.contains("<links/>"));
     }
 
     @Test
@@ -158,7 +157,7 @@ public class DataLinkInterfaceRestServiceTest extends AbstractSpringJerseyRestTe
         assertTrue(response.getHeader("Location").toString().contains(contextPath + "links/"));
         
         final String newXml = sendRequest(GET, "/links", 200);
-        assertTrue(newXml.contains("<links count=\"4\""));
+        assertTrue(newXml, newXml.contains("<links count=\"4\""));
     }
     
     @Test
@@ -166,15 +165,15 @@ public class DataLinkInterfaceRestServiceTest extends AbstractSpringJerseyRestTe
     public void testPut() throws Exception {
         String xml = sendRequest(GET, "/links/64", 200);
         assertNotNull(xml);
-        assertTrue(xml.contains("<link "));
-        assertTrue(xml.contains("source=\"linkd\""));
+        assertTrue(xml, xml.contains("<link "));
+        assertTrue(xml, xml.contains("source=\"linkd\""));
         
         sendPut("/links/64", "source=monkey", 303, "/links/64");
         
         xml = sendRequest(GET, "/links/64", 200);
         assertNotNull(xml);
-        assertTrue(xml.contains("<link "));
-        assertTrue(xml.contains("source=\"monkey\""));
+        assertTrue(xml, xml.contains("<link "));
+        assertTrue(xml, xml.contains("source=\"monkey\""));
     }
 
     @Test

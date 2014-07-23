@@ -33,6 +33,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
@@ -45,13 +46,13 @@ import org.opennms.netmgt.jasper.helper.ResourcePathFileTraversal;
 
 public class ResourceDataSource implements JRDataSource {
     
-    private class ResourceFilterFields{
+    private static class ResourceFilterFields{
         private String[] m_fields;
         private String[] m_strProps;
         
         public ResourceFilterFields(String[] fields, String[] strProps) {
-            m_fields = fields;
-            m_strProps = strProps;
+            m_fields = fields == null ? null : Arrays.copyOf(fields, fields.length);
+            m_strProps = strProps == null ? null : Arrays.copyOf(strProps, strProps.length);
         }
         
         public String getValueForField(String fieldName, String curPath) {

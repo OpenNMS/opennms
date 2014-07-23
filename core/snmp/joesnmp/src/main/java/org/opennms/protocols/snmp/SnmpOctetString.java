@@ -39,7 +39,7 @@ import org.opennms.protocols.snmp.asn1.AsnEncodingException;
  * of 8-bit octet data. The format of the 8-bit characters are defined by the
  * application.
  * 
- * @author <a href="mailto:weave@oculan.com>Brian Weaver </a>
+ * @author Brian Weaver
  */
 public class SnmpOctetString extends Object implements SnmpSyntax, Cloneable, Serializable {
     /**
@@ -337,7 +337,7 @@ public class SnmpOctetString extends Object implements SnmpSyntax, Cloneable, Se
             return null;
         }
     
-        byte bytes[] = octetString.getString();
+        byte[] bytes = octetString.getString();
     
         // Sanity check
         if (bytes == null || bytes.length == 0) {
@@ -354,7 +354,7 @@ public class SnmpOctetString extends Object implements SnmpSyntax, Cloneable, Se
         // decimal range 32 - 126 inclusive) with an
         // ASCII period char (decimal 46).
         // 
-        byte newBytes[] = new byte[bytes.length];
+        byte[] newBytes = new byte[bytes.length];
         for (int i = 0; i < bytes.length; i++) {
             newBytes[i] = Character.isISOControl((char)bytes[i]) ? (byte)'.' : bytes[i];
         }
@@ -375,8 +375,7 @@ public class SnmpOctetString extends Object implements SnmpSyntax, Cloneable, Se
                 sbuf.append(Integer.toHexString((int) bytes[i] & 0xf));
             }
         }
-        String physAddr = sbuf.toString().trim();
-        return physAddr;
+        return sbuf.toString().trim();
     }
 
     @Override

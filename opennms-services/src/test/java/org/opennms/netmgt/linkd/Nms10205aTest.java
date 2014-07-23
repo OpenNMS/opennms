@@ -30,119 +30,58 @@ package org.opennms.netmgt.linkd;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.BAGMANE_IP;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.BAGMANE_NAME;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.BAGMANE_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.BANGALORE_IP;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.BANGALORE_NAME;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.BANGALORE_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.CHENNAI_IP;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.CHENNAI_NAME;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.CHENNAI_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.DELHI_IP;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.DELHI_NAME;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.DELHI_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.J6350_41_IP;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.J6350_41_NAME;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.J6350_41_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.J6350_42_IP;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.J6350_42_NAME;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.J6350_42_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.MUMBAI_IP;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.MUMBAI_NAME;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.MUMBAI_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.MYSORE_IP;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.MYSORE_NAME;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.MYSORE_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.SPACE_EX_SW1_IP;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.SPACE_EX_SW1_NAME;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.SPACE_EX_SW1_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.SPACE_EX_SW2_IP;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.SPACE_EX_SW2_NAME;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.SPACE_EX_SW2_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.SRX_100_IP;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.SRX_100_NAME;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.SRX_100_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.SSG550_IP;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.SSG550_NAME;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.SSG550_SNMP_RESOURCE;
 
 import java.util.List;
-import java.util.Properties;
 
-import javax.sql.DataSource;
-
-import org.hibernate.SessionFactory;
-import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.opennms.core.spring.BeanUtils;
-import org.opennms.core.test.MockLogAppender;
-import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
-import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
-import org.opennms.netmgt.config.DatabaseSchemaConfigFactory;
-import org.opennms.netmgt.config.LinkdConfig;
-import org.opennms.netmgt.config.LinkdConfigFactory;
 import org.opennms.netmgt.config.linkd.Package;
-import org.opennms.netmgt.dao.api.DataLinkInterfaceDao;
-import org.opennms.netmgt.dao.api.NodeDao;
-import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
-import org.opennms.netmgt.dao.hibernate.Hibernate4SessionDataSource;
-import org.opennms.netmgt.dao.support.NewTransactionTemplate;
-import org.opennms.netmgt.filter.FilterDaoFactory;
-import org.opennms.netmgt.filter.JdbcFilterDao;
 import org.opennms.netmgt.model.DataLinkInterface;
 import org.opennms.netmgt.model.DataLinkInterface.DiscoveryProtocol;
 import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.test.JUnitConfigurationEnvironment;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
+import org.opennms.netmgt.nb.Nms10205aNetworkBuilder;
 
-@RunWith(OpenNMSJUnit4ClassRunner.class)
-@ContextConfiguration(locations= {
-        "classpath:/META-INF/opennms/applicationContext-soa.xml",
-        "classpath:/META-INF/opennms/applicationContext-dao.xml",
-        "classpath:/META-INF/opennms/applicationContext-daemon.xml",
-        "classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml",
-        "classpath:/META-INF/opennms/mockEventIpcManager.xml",
-        "classpath:/META-INF/opennms/applicationContext-linkd.xml",
-        "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml"
-})
-@JUnitConfigurationEnvironment(systemProperties="org.opennms.provisiond.enableDiscovery=false")
-@JUnitTemporaryDatabase
-@Transactional
-public class Nms10205aTest extends Nms10205aNetworkBuilder implements InitializingBean {
+public class Nms10205aTest extends LinkdTestBuilder {
 
-    @Autowired
-    DataSource m_dataSource;
-
-    @Autowired
-    SessionFactory m_sessionFactory;
-
-    @Autowired
-    private Linkd m_linkd;
-
-    private LinkdConfig m_linkdConfig;
-
-    @Autowired
-    private NodeDao m_nodeDao;
-    
-    @Autowired
-    private SnmpInterfaceDao m_snmpInterfaceDao;
-    
-    @Autowired
-    private DataLinkInterfaceDao m_dataLinkInterfaceDao;
-
-    @Autowired
-    private NewTransactionTemplate m_transactionTemplate;
-
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        BeanUtils.assertAutowiring(this);
-    }
-
-    @Before
-    public void setUp() throws Exception {
-        Properties p = new Properties();
-        p.setProperty("log4j.logger.org.hibernate.SQL", "WARN");
-        p.setProperty("log4j.logger.org.hibernate.cfg", "WARN");
-        p.setProperty("log4j.logger.org.springframework","WARN");
-        p.setProperty("log4j.logger.com.mchange.v2.resourcepool", "WARN");
-        MockLogAppender.setupLogging(p);
-
-        // Initialize Filter DAO
-        DatabaseSchemaConfigFactory.init();
-        JdbcFilterDao jdbcFilterDao = new JdbcFilterDao();
-        // You must wrap the data source in Spring's TransactionAwareDataSourceProxy so that it
-        // executes its queries inside the current transaction.
-        jdbcFilterDao.setDataSource(new Hibernate4SessionDataSource(m_dataSource, m_sessionFactory));
-        jdbcFilterDao.setDatabaseSchemaConfigFactory(DatabaseSchemaConfigFactory.getInstance());
-        jdbcFilterDao.afterPropertiesSet();
-        FilterDaoFactory.setInstance(jdbcFilterDao);
-    }
-
-    @Before
-    public void setUpLinkdConfiguration() throws Exception {
-        LinkdConfigFactory.init();
-        final Resource config = new ClassPathResource("etc/linkd-configuration.xml");
-        final LinkdConfigFactory factory = new LinkdConfigFactory(-1L, config.getInputStream());
-        LinkdConfigFactory.setInstance(factory);
-        m_linkdConfig = LinkdConfigFactory.getInstance();
-    }
-
-    /*
+	Nms10205aNetworkBuilder builder = new Nms10205aNetworkBuilder();
+	/*
      *  The 
      *  MUMBAI:port ge 0/1/3:ip 192.168.5.5   ------> CHENNAI:port ge 4/0/2: ip 192.168.5.6
      *  MUMBAI:port ge 0/1/2:ip 192.168.5.9   ------> DELHI:port ge 1/0/2: ip 192.168.5.10
@@ -156,38 +95,33 @@ public class Nms10205aTest extends Nms10205aNetworkBuilder implements Initializi
      */
     @Test
     @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=MUMBAI_IP, port=161, resource="classpath:linkd/nms10205/"+MUMBAI_NAME+"_"+MUMBAI_IP+".txt"),
-            @JUnitSnmpAgent(host=CHENNAI_IP, port=161, resource="classpath:linkd/nms10205/"+CHENNAI_NAME+"_"+CHENNAI_IP+".txt"),
-            @JUnitSnmpAgent(host=DELHI_IP, port=161, resource="classpath:linkd/nms10205/"+DELHI_NAME+"_"+DELHI_IP+".txt"),
-            @JUnitSnmpAgent(host=BANGALORE_IP, port=161, resource="classpath:linkd/nms10205/"+BANGALORE_NAME+"_"+BANGALORE_IP+".txt"),
-            @JUnitSnmpAgent(host=BAGMANE_IP, port=161, resource="classpath:linkd/nms10205/"+BAGMANE_NAME+"_"+BAGMANE_IP+".txt"),
-            @JUnitSnmpAgent(host=MYSORE_IP, port=161, resource="classpath:linkd/nms10205/"+MYSORE_NAME+"_"+MYSORE_IP+".txt"),
-            @JUnitSnmpAgent(host=SPACE_EX_SW1_IP, port=161, resource="classpath:linkd/nms10205/"+SPACE_EX_SW1_NAME+"_"+SPACE_EX_SW1_IP+".txt"),
-            @JUnitSnmpAgent(host=SPACE_EX_SW2_IP, port=161, resource="classpath:linkd/nms10205/"+SPACE_EX_SW2_NAME+"_"+SPACE_EX_SW2_IP+".txt"),
-            @JUnitSnmpAgent(host=J6350_41_IP, port=161, resource="classpath:linkd/nms10205/"+J6350_41_NAME+"_"+J6350_41_IP+".txt"),
-            @JUnitSnmpAgent(host=J6350_42_IP, port=161, resource="classpath:linkd/nms10205/"+"J6350-42_"+J6350_42_IP+".txt"),
-            @JUnitSnmpAgent(host=SRX_100_IP, port=161, resource="classpath:linkd/nms10205/"+"SRX-100_"+SRX_100_IP+".txt"),
-            @JUnitSnmpAgent(host=SSG550_IP, port=161, resource="classpath:linkd/nms10205/"+SSG550_NAME+"_"+SSG550_IP+".txt")
+            @JUnitSnmpAgent(host=MUMBAI_IP, port=161, resource=MUMBAI_SNMP_RESOURCE),
+            @JUnitSnmpAgent(host=CHENNAI_IP, port=161, resource=CHENNAI_SNMP_RESOURCE),
+            @JUnitSnmpAgent(host=DELHI_IP, port=161, resource=DELHI_SNMP_RESOURCE),
+            @JUnitSnmpAgent(host=BANGALORE_IP, port=161, resource=BANGALORE_SNMP_RESOURCE),
+            @JUnitSnmpAgent(host=BAGMANE_IP, port=161, resource=BAGMANE_SNMP_RESOURCE),
+            @JUnitSnmpAgent(host=MYSORE_IP, port=161, resource=MYSORE_SNMP_RESOURCE),
+            @JUnitSnmpAgent(host=SPACE_EX_SW1_IP, port=161, resource=SPACE_EX_SW1_SNMP_RESOURCE),
+            @JUnitSnmpAgent(host=SPACE_EX_SW2_IP, port=161, resource=SPACE_EX_SW2_SNMP_RESOURCE),
+            @JUnitSnmpAgent(host=J6350_41_IP, port=161, resource=J6350_41_SNMP_RESOURCE),
+            @JUnitSnmpAgent(host=J6350_42_IP, port=161, resource=J6350_42_SNMP_RESOURCE),
+            @JUnitSnmpAgent(host=SRX_100_IP, port=161, resource=SRX_100_SNMP_RESOURCE),
+            @JUnitSnmpAgent(host=SSG550_IP, port=161, resource=SSG550_SNMP_RESOURCE)
     })
     public void testNetwork10205Links() throws Exception {
-        m_transactionTemplate.execute(new TransactionCallbackWithoutResult() {
-            @Override
-            protected void doInTransactionWithoutResult(TransactionStatus status) {
-                m_nodeDao.save(getMumbai());
-                m_nodeDao.save(getChennai());
-                m_nodeDao.save(getDelhi());
-                m_nodeDao.save(getBangalore());
-                m_nodeDao.save(getBagmane());
-                m_nodeDao.save(getMysore());
-                m_nodeDao.save(getSpaceExSw1());
-                m_nodeDao.save(getSpaceExSw2());
-                m_nodeDao.save(getJ635041());
-                m_nodeDao.save(getJ635042());
-                m_nodeDao.save(getSRX100());
-                m_nodeDao.save(getSGG550());
-                m_nodeDao.flush();
-            }
-        });
+        m_nodeDao.save(builder.getMumbai());
+        m_nodeDao.save(builder.getChennai());
+        m_nodeDao.save(builder.getDelhi());
+        m_nodeDao.save(builder.getBangalore());
+        m_nodeDao.save(builder.getBagmane());
+        m_nodeDao.save(builder.getMysore());
+        m_nodeDao.save(builder.getSpaceExSw1());
+        m_nodeDao.save(builder.getSpaceExSw2());
+        m_nodeDao.save(builder.getJ635041());
+        m_nodeDao.save(builder.getJ635042());
+        m_nodeDao.save(builder.getSRX100());
+        m_nodeDao.save(builder.getSGG550());
+        m_nodeDao.flush();
 
         Package example1 = m_linkdConfig.getPackage("example1");
         assertEquals(false, example1.hasForceIpRouteDiscoveryOnEthernet());
@@ -240,7 +174,7 @@ public class Nms10205aTest extends Nms10205aNetworkBuilder implements Initializi
 
         final List<DataLinkInterface> links = m_dataLinkInterfaceDao.findAll();
         
-        assertEquals(19, links.size());
+        assertEquals(20, links.size());
         
         
         // Linkd is able to find partially the topology using the next hop router
@@ -324,8 +258,12 @@ public class Nms10205aTest extends Nms10205aNetworkBuilder implements Initializi
             } else if (start+9 == id ) {
                 checkLink(spaceexsw2, mumbai, 34, 508, datalinkinterface);
                 assertEquals(DiscoveryProtocol.iproute, datalinkinterface.getProtocol());
+            } else if (start+19 == id ) {
+//                checkLink(spaceexsw1,spaceexsw2, 1361, 501 , datalinkinterface);
+            	checkLink(spaceexsw2, spaceexsw1, 523,1361, datalinkinterface);
+                assertEquals(DiscoveryProtocol.bridge, datalinkinterface.getProtocol());
             } else {
-                checkLink(mumbai,mumbai,-1,-1,datalinkinterface);
+                assertEquals(-1, 0);
             }
 
         }
@@ -338,32 +276,32 @@ public class Nms10205aTest extends Nms10205aNetworkBuilder implements Initializi
      */
     @Test
     @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=MUMBAI_IP, port=161, resource="classpath:linkd/nms10205/"+MUMBAI_NAME+"_"+MUMBAI_IP+".txt"),
-            @JUnitSnmpAgent(host=CHENNAI_IP, port=161, resource="classpath:linkd/nms10205/"+CHENNAI_NAME+"_"+CHENNAI_IP+".txt"),
-            @JUnitSnmpAgent(host=DELHI_IP, port=161, resource="classpath:linkd/nms10205/"+DELHI_NAME+"_"+DELHI_IP+".txt"),
-            @JUnitSnmpAgent(host=BANGALORE_IP, port=161, resource="classpath:linkd/nms10205/"+BANGALORE_NAME+"_"+BANGALORE_IP+".txt"),
-            @JUnitSnmpAgent(host=BAGMANE_IP, port=161, resource="classpath:linkd/nms10205/"+BAGMANE_NAME+"_"+BAGMANE_IP+".txt"),
-            @JUnitSnmpAgent(host=MYSORE_IP, port=161, resource="classpath:linkd/nms10205/"+MYSORE_NAME+"_"+MYSORE_IP+".txt"),
-            @JUnitSnmpAgent(host=SPACE_EX_SW1_IP, port=161, resource="classpath:linkd/nms10205/"+SPACE_EX_SW1_NAME+"_"+SPACE_EX_SW1_IP+".txt"),
-            @JUnitSnmpAgent(host=SPACE_EX_SW2_IP, port=161, resource="classpath:linkd/nms10205/"+SPACE_EX_SW2_NAME+"_"+SPACE_EX_SW2_IP+".txt"),
-            @JUnitSnmpAgent(host=J6350_41_IP, port=161, resource="classpath:linkd/nms10205/"+J6350_41_NAME+"_"+J6350_41_IP+".txt"),
-            @JUnitSnmpAgent(host=J6350_42_IP, port=161, resource="classpath:linkd/nms10205/"+"J6350-42_"+J6350_42_IP+".txt"),
-            @JUnitSnmpAgent(host=SRX_100_IP, port=161, resource="classpath:linkd/nms10205/"+"SRX-100_"+SRX_100_IP+".txt"),
-            @JUnitSnmpAgent(host=SSG550_IP, port=161, resource="classpath:linkd/nms10205/"+SSG550_NAME+"_"+SSG550_IP+".txt")
+            @JUnitSnmpAgent(host=MUMBAI_IP, port=161, resource=MUMBAI_SNMP_RESOURCE),
+            @JUnitSnmpAgent(host=CHENNAI_IP, port=161, resource=CHENNAI_SNMP_RESOURCE),
+            @JUnitSnmpAgent(host=DELHI_IP, port=161, resource=DELHI_SNMP_RESOURCE),
+            @JUnitSnmpAgent(host=BANGALORE_IP, port=161, resource=BANGALORE_SNMP_RESOURCE),
+            @JUnitSnmpAgent(host=BAGMANE_IP, port=161, resource=BAGMANE_SNMP_RESOURCE),
+            @JUnitSnmpAgent(host=MYSORE_IP, port=161, resource=MYSORE_SNMP_RESOURCE),
+            @JUnitSnmpAgent(host=SPACE_EX_SW1_IP, port=161, resource=SPACE_EX_SW1_SNMP_RESOURCE),
+            @JUnitSnmpAgent(host=SPACE_EX_SW2_IP, port=161, resource=SPACE_EX_SW2_SNMP_RESOURCE),
+            @JUnitSnmpAgent(host=J6350_41_IP, port=161, resource=J6350_41_SNMP_RESOURCE),
+            @JUnitSnmpAgent(host=J6350_42_IP, port=161, resource=J6350_42_SNMP_RESOURCE),
+            @JUnitSnmpAgent(host=SRX_100_IP, port=161, resource=SRX_100_SNMP_RESOURCE),
+            @JUnitSnmpAgent(host=SSG550_IP, port=161, resource=SSG550_SNMP_RESOURCE)
     })
     public void testNetwork10205OspfLinks() throws Exception {
-        m_nodeDao.save(getMumbai());
-        m_nodeDao.save(getChennai());
-        m_nodeDao.save(getDelhi());
-        m_nodeDao.save(getBangalore());
-        m_nodeDao.save(getBagmane());
-        m_nodeDao.save(getMysore());
-        m_nodeDao.save(getSpaceExSw1());
-        m_nodeDao.save(getSpaceExSw2());
-        m_nodeDao.save(getJ635041());
-        m_nodeDao.save(getJ635042());
-        m_nodeDao.save(getSRX100());
-        m_nodeDao.save(getSGG550());
+        m_nodeDao.save(builder.getMumbai());
+        m_nodeDao.save(builder.getChennai());
+        m_nodeDao.save(builder.getDelhi());
+        m_nodeDao.save(builder.getBangalore());
+        m_nodeDao.save(builder.getBagmane());
+        m_nodeDao.save(builder.getMysore());
+        m_nodeDao.save(builder.getSpaceExSw1());
+        m_nodeDao.save(builder.getSpaceExSw2());
+        m_nodeDao.save(builder.getJ635041());
+        m_nodeDao.save(builder.getJ635042());
+        m_nodeDao.save(builder.getSRX100());
+        m_nodeDao.save(builder.getSGG550());
         m_nodeDao.flush();
 
         Package example1 = m_linkdConfig.getPackage("example1");
@@ -449,6 +387,61 @@ public class Nms10205aTest extends Nms10205aNetworkBuilder implements Initializi
                 checkLink(mysore, bagmane, 520, 654, datalinkinterface);
             } else {
                 checkLink(mumbai,mumbai,-1,-1,datalinkinterface);
+            }
+        }
+
+    }
+
+    /*
+     *  
+     *  Get only bridge links.
+     */
+    @Test
+    @JUnitSnmpAgents(value={
+            @JUnitSnmpAgent(host=SPACE_EX_SW1_IP, port=161, resource=SPACE_EX_SW1_SNMP_RESOURCE),
+            @JUnitSnmpAgent(host=SPACE_EX_SW2_IP, port=161, resource=SPACE_EX_SW2_SNMP_RESOURCE)
+    })
+    public void testNetwork10205BridgeLinks() throws Exception {
+        m_nodeDao.save(builder.getSpaceExSw1());
+        m_nodeDao.save(builder.getSpaceExSw2());
+        m_nodeDao.flush();
+
+        Package example1 = m_linkdConfig.getPackage("example1");
+        example1.setUseLldpDiscovery(false);
+        example1.setUseCdpDiscovery(false);
+        example1.setUseOspfDiscovery(false);
+        example1.setUseIpRouteDiscovery(false);
+        example1.setUseIsisDiscovery(false);
+        
+        example1.setSaveRouteTable(false);
+        
+        final OnmsNode spaceexsw1 = m_nodeDao.findByForeignId("linkd", SPACE_EX_SW1_NAME);
+        final OnmsNode spaceexsw2 = m_nodeDao.findByForeignId("linkd", SPACE_EX_SW2_NAME);
+
+        assertTrue(m_linkd.scheduleNodeCollection(spaceexsw1.getId()));
+        assertTrue(m_linkd.scheduleNodeCollection(spaceexsw2.getId()));
+
+        assertTrue(m_linkd.runSingleSnmpCollection(spaceexsw1.getId()));
+        assertTrue(m_linkd.runSingleSnmpCollection(spaceexsw2.getId()));
+             
+        assertEquals(0,m_dataLinkInterfaceDao.countAll());
+
+
+        assertTrue(m_linkd.runSingleLinkDiscovery("example1"));
+
+        final List<DataLinkInterface> links = m_dataLinkInterfaceDao.findAll();
+        
+        assertEquals(1, links.size());  
+        
+        int start = getStartPoint(links);
+        for (final DataLinkInterface datalinkinterface: links) {
+            int id = datalinkinterface.getId().intValue();
+            if (start == id ) {
+//            	checkLink(spaceexsw1, spaceexsw2, 1361, 501, datalinkinterface);
+            	checkLink(spaceexsw2, spaceexsw1, 523,1361, datalinkinterface);
+                assertEquals(DiscoveryProtocol.bridge, datalinkinterface.getProtocol());
+             } else {
+                checkLink(spaceexsw1,spaceexsw1,-1,-1,datalinkinterface);
             }
         }
 

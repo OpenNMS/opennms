@@ -27,7 +27,11 @@
  *******************************************************************************/
 package org.opennms.features.vaadin.api;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.vaadin.data.util.BeanContainer;
+import com.vaadin.data.util.BeanItem;
 
 /**
  * The Class OnmsBeanContainer.
@@ -70,8 +74,32 @@ public class OnmsBeanContainer<T> extends BeanContainer<Long, T> {
      * @return the itemId
      */
     public Object addOnmsBean(T bean) {
-        Long itemId = (Long) generateItemId();
+        Long itemId = generateItemId();
         addItem(itemId, bean);
         return itemId;
+    }
+
+    /**
+     * Gets the OpenNMS bean.
+     *
+     * @param itemId the item id
+     * @return the OpenNMS bean
+     */
+    public T getOnmsBean(Object itemId) {
+        BeanItem<T> item = getItem(itemId);
+        return item == null ? null : item.getBean();
+    }
+
+    /**
+     * Gets the OpenNMS beans.
+     *
+     * @return the OpenNMS beans
+     */
+    public List<T> getOnmsBeans() {
+        List<T> beans = new ArrayList<T>();
+        for (Object itemId : getItemIds()) {
+            beans.add(getOnmsBean(itemId));
+        }
+        return beans;
     }
 }

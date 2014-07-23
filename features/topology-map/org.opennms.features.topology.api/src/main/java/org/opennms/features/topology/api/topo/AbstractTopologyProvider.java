@@ -56,7 +56,7 @@ public abstract class AbstractTopologyProvider extends DelegatingVertexEdgeProvi
 	 * @author Markus von Rüden
 	 *
 	 */
-    protected static abstract class IdGenerator {
+    protected abstract static class IdGenerator {
         /** 
          * The topology provider. It is needed to initialize the counter.
          */
@@ -130,7 +130,7 @@ public abstract class AbstractTopologyProvider extends DelegatingVertexEdgeProvi
          */
         @SuppressWarnings("deprecation")
         private boolean isValid(String generatedId) {
-            return !provider.containsVertexId(new AbstractVertexRef(provider.getVertexNamespace(), generatedId));
+            return !provider.containsVertexId(new DefaultVertexRef(provider.getVertexNamespace(), generatedId));
         }
 
         public void reset() {
@@ -316,14 +316,14 @@ public abstract class AbstractTopologyProvider extends DelegatingVertexEdgeProvi
     @Override
 	public Edge connectVertices(VertexRef sourceVertextId, VertexRef targetVertextId) {
         String nextEdgeId = getNextEdgeId();
-        return connectVertices(nextEdgeId, sourceVertextId, targetVertextId);
+        return connectVertices(nextEdgeId, sourceVertextId, targetVertextId, getEdgeNamespace());
     }
 
-    protected final AbstractEdge connectVertices(String id, VertexRef sourceId, VertexRef targetId) {
-        SimpleConnector source = new SimpleConnector(getEdgeNamespace(), sourceId.getId()+"-"+id+"-connector", sourceId);
-        SimpleConnector target = new SimpleConnector(getEdgeNamespace(), targetId.getId()+"-"+id+"-connector", targetId);
+    protected final AbstractEdge connectVertices(String id, VertexRef sourceId, VertexRef targetId, String namespace) {
+        SimpleConnector source = new SimpleConnector(sourceId.getNamespace(), sourceId.getId()+"-"+id+"-connector", sourceId);
+        SimpleConnector target = new SimpleConnector(targetId.getNamespace(), targetId.getId()+"-"+id+"-connector", targetId);
 
-        AbstractEdge edge = new AbstractEdge(getEdgeNamespace(), id, source, target);
+        AbstractEdge edge = new AbstractEdge(namespace, id, source, target);
 
         addEdges(edge);
         

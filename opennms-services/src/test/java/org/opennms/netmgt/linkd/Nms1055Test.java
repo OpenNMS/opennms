@@ -30,395 +30,42 @@ package org.opennms.netmgt.linkd;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.AUSTIN_IP;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.AUSTIN_NAME;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.AUSTIN_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.DELAWARE_IP;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.DELAWARE_NAME;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.DELAWARE_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.PENROSE_IP;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.PENROSE_NAME;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.PENROSE_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.PHOENIX_IP;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.PHOENIX_NAME;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.PHOENIX_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.RIOVISTA_IP;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.RIOVISTA_NAME;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.RIOVISTA_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.SANJOSE_IP;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.SANJOSE_NAME;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.SANJOSE_SNMP_RESOURCE;
 
-import java.util.Collection;
 import java.util.List;
 
-import javax.sql.DataSource;
-
-import org.hibernate.SessionFactory;
-import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.opennms.core.spring.BeanUtils;
-import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.config.DatabaseSchemaConfigFactory;
-import org.opennms.netmgt.config.LinkdConfig;
-import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.config.linkd.Package;
-import org.opennms.netmgt.dao.api.DataLinkInterfaceDao;
-import org.opennms.netmgt.dao.api.NodeDao;
-import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
-import org.opennms.netmgt.dao.hibernate.Hibernate4SessionDataSource;
-import org.opennms.netmgt.dao.support.NewTransactionTemplate;
-import org.opennms.netmgt.filter.FilterDaoFactory;
-import org.opennms.netmgt.filter.JdbcFilterDao;
-import org.opennms.netmgt.linkd.snmp.Dot1dBaseGroup;
-import org.opennms.netmgt.linkd.snmp.LldpLocTable;
-import org.opennms.netmgt.linkd.snmp.LldpLocTableEntry;
-import org.opennms.netmgt.linkd.snmp.LldpLocalGroup;
-import org.opennms.netmgt.linkd.snmp.LldpRemTable;
-import org.opennms.netmgt.linkd.snmp.LldpRemTableEntry;
 import org.opennms.netmgt.model.DataLinkInterface;
 import org.opennms.netmgt.model.DataLinkInterface.DiscoveryProtocol;
 import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.snmp.CollectionTracker;
-import org.opennms.netmgt.snmp.SnmpAgentConfig;
-import org.opennms.netmgt.snmp.SnmpUtils;
-import org.opennms.netmgt.snmp.SnmpWalker;
-import org.opennms.test.JUnitConfigurationEnvironment;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
+import org.opennms.netmgt.nb.Nms1055NetworkBuilder;
 
-@RunWith(OpenNMSJUnit4ClassRunner.class)
-@ContextConfiguration(locations= {
-        "classpath:/META-INF/opennms/applicationContext-soa.xml",
-        "classpath:/META-INF/opennms/applicationContext-dao.xml",
-        "classpath:/META-INF/opennms/applicationContext-daemon.xml",
-        "classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml",
-        "classpath:/META-INF/opennms/mockEventIpcManager.xml",
-        "classpath:/META-INF/opennms/applicationContext-linkd.xml",
-        "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml"
-})
-@JUnitConfigurationEnvironment(systemProperties="org.opennms.provisiond.enableDiscovery=false")
-@JUnitTemporaryDatabase
-@Transactional
-public class Nms1055Test extends Nms1055NetworkBuilder implements InitializingBean {
+public class Nms1055Test extends LinkdTestBuilder {
 
-    @Autowired
-    DataSource m_dataSource;
+	Nms1055NetworkBuilder builder = new Nms1055NetworkBuilder();
 
-    @Autowired
-    SessionFactory m_sessionFactory;
-
-    @Autowired
-    private Linkd m_linkd;
-
-    private LinkdConfig m_linkdConfig;
-
-    @Autowired
-    private NodeDao m_nodeDao;
-
-    @Autowired
-    private SnmpInterfaceDao m_snmpInterfaceDao;
-
-    @Autowired
-    private DataLinkInterfaceDao m_dataLinkInterfaceDao;
-
-    @Autowired
-    private NewTransactionTemplate m_transactionTemplate;
-
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        BeanUtils.assertAutowiring(this);
-    }
-
-    @Before
-    public void setUp() throws Exception {
-        // Initialize Filter DAO
-        DatabaseSchemaConfigFactory.init();
-        JdbcFilterDao jdbcFilterDao = new JdbcFilterDao();
-        // You must wrap the data source in Spring's TransactionAwareDataSourceProxy so that it
-        // executes its queries inside the current transaction.
-        jdbcFilterDao.setDataSource(new Hibernate4SessionDataSource(m_dataSource, m_sessionFactory));
-        jdbcFilterDao.setDatabaseSchemaConfigFactory(DatabaseSchemaConfigFactory.getInstance());
-        jdbcFilterDao.afterPropertiesSet();
-        FilterDaoFactory.setInstance(jdbcFilterDao);
-    }
-
-    @Test
-    @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=PENROSE_IP, port=161, resource="classpath:linkd/nms1055/"+PENROSE_NAME+"_"+PENROSE_IP+".txt")
-    })
-    public void testPenroseLldpLocalBaseCollection() throws Exception {
-
-        String name = "lldpLocGroup";
-        LldpLocalGroup m_lLldpLocalGroup = new LldpLocalGroup(InetAddressUtils.addr(PENROSE_IP));
-        CollectionTracker[] tracker = new CollectionTracker[0];
-        tracker = new CollectionTracker[] {m_lLldpLocalGroup};
-        SnmpAgentConfig snmpAgent = SnmpPeerFactory.getInstance().getAgentConfig(InetAddressUtils.addr(PENROSE_IP));
-        SnmpWalker walker = SnmpUtils.createWalker(snmpAgent, name, tracker);
-        walker.start();
-
-        try {
-                walker.waitFor();
-        } catch (final InterruptedException e) {
-
-        }
-        
-        assertEquals(4, m_lLldpLocalGroup.getLldpLocChassisidSubType().intValue());
-        assertEquals(PENROSE_LLDP_CHASSISID,m_lLldpLocalGroup.getLldpLocChassisid());
-        assertEquals(PENROSE_NAME, m_lLldpLocalGroup.getLldpLocSysname());
-    }
-    
-    @Test
-    @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=DELAWARE_IP, port=161, resource="classpath:linkd/nms1055/"+DELAWARE_NAME+"_"+DELAWARE_IP+".txt")
-    })
-    public void testDelawareLldpLocalBaseCollection() throws Exception {
-
-        String name = "lldpLocGroup";
-        LldpLocalGroup m_lLldpLocalGroup = new LldpLocalGroup(InetAddressUtils.addr(DELAWARE_IP));
-        CollectionTracker[] tracker = new CollectionTracker[0];
-        tracker = new CollectionTracker[] {m_lLldpLocalGroup};
-        SnmpAgentConfig snmpAgent = SnmpPeerFactory.getInstance().getAgentConfig(InetAddressUtils.addr(DELAWARE_IP));
-        SnmpWalker walker = SnmpUtils.createWalker(snmpAgent, name, tracker);
-        walker.start();
-
-        try {
-                walker.waitFor();
-        } catch (final InterruptedException e) {
-
-        }
-        
-        assertEquals(4, m_lLldpLocalGroup.getLldpLocChassisidSubType().intValue());
-        assertEquals(DELAWARE_LLDP_CHASSISID,m_lLldpLocalGroup.getLldpLocChassisid());
-        assertEquals(DELAWARE_NAME, m_lLldpLocalGroup.getLldpLocSysname());
-    }
-
-    @Test
-    @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=PHOENIX_IP, port=161, resource="classpath:linkd/nms1055/"+PHOENIX_NAME+"_"+PHOENIX_IP+".txt")
-    })
-    public void testPhoenixLldpLocalBaseCollection() throws Exception {
-
-        String name = "lldpLocGroup";
-        LldpLocalGroup m_lLldpLocalGroup = new LldpLocalGroup(InetAddressUtils.addr(PHOENIX_IP));
-        CollectionTracker[] tracker = new CollectionTracker[0];
-        tracker = new CollectionTracker[] {m_lLldpLocalGroup};
-        SnmpAgentConfig snmpAgent = SnmpPeerFactory.getInstance().getAgentConfig(InetAddressUtils.addr(PHOENIX_IP));
-        SnmpWalker walker = SnmpUtils.createWalker(snmpAgent, name, tracker);
-        walker.start();
-
-        try {
-                walker.waitFor();
-        } catch (final InterruptedException e) {
-
-        }
-        
-        assertEquals(4, m_lLldpLocalGroup.getLldpLocChassisidSubType().intValue());
-        assertEquals(PHOENIX_LLDP_CHASSISID,m_lLldpLocalGroup.getLldpLocChassisid());
-        assertEquals(PHOENIX_NAME, m_lLldpLocalGroup.getLldpLocSysname());
-    }
-
-    @Test
-    @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=AUSTIN_IP, port=161, resource="classpath:linkd/nms1055/"+AUSTIN_NAME+"_"+AUSTIN_IP+".txt")
-    })
-    public void testAustinLldpLocalBaseCollection() throws Exception {
-
-        String name = "lldpLocGroup";
-        LldpLocalGroup m_lLldpLocalGroup = new LldpLocalGroup(InetAddressUtils.addr(AUSTIN_IP));
-        CollectionTracker[] tracker = new CollectionTracker[0];
-        tracker = new CollectionTracker[] {m_lLldpLocalGroup};
-        SnmpAgentConfig snmpAgent = SnmpPeerFactory.getInstance().getAgentConfig(InetAddressUtils.addr(AUSTIN_IP));
-        SnmpWalker walker = SnmpUtils.createWalker(snmpAgent, name, tracker);
-        walker.start();
-
-        try {
-                walker.waitFor();
-        } catch (final InterruptedException e) {
-
-        }
-        
-        assertEquals(4, m_lLldpLocalGroup.getLldpLocChassisidSubType().intValue());
-        assertEquals(AUSTIN_LLDP_CHASSISID,m_lLldpLocalGroup.getLldpLocChassisid());
-        assertEquals(AUSTIN_NAME, m_lLldpLocalGroup.getLldpLocSysname());
-    }
-
-    @Test
-    @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=SANJOSE_IP, port=161, resource="classpath:linkd/nms1055/"+SANJOSE_NAME+"_"+SANJOSE_IP+".txt")
-    })
-    public void testSanjoseLlldpLocalBaseCollection() throws Exception {
-
-        String name = "lldpLocGroup";
-        LldpLocalGroup m_lLldpLocalGroup = new LldpLocalGroup(InetAddressUtils.addr(SANJOSE_IP));
-        CollectionTracker[] tracker = new CollectionTracker[0];
-        tracker = new CollectionTracker[] {m_lLldpLocalGroup};
-        SnmpAgentConfig snmpAgent = SnmpPeerFactory.getInstance().getAgentConfig(InetAddressUtils.addr(SANJOSE_IP));
-        SnmpWalker walker = SnmpUtils.createWalker(snmpAgent, name, tracker);
-        walker.start();
-
-        try {
-                walker.waitFor();
-        } catch (final InterruptedException e) {
-
-        }
-        
-        assertEquals(4, m_lLldpLocalGroup.getLldpLocChassisidSubType().intValue());
-        assertEquals(SANJOSE_LLDP_CHASSISID,m_lLldpLocalGroup.getLldpLocChassisid());
-        assertEquals(SANJOSE_NAME, m_lLldpLocalGroup.getLldpLocSysname());
-    }
-
-    @Test
-    @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=RIOVISTA_IP, port=161, resource="classpath:linkd/nms1055/"+RIOVISTA_NAME+"_"+RIOVISTA_IP+".txt")
-    })
-    public void testRiovistaLldpLocalBaseCollection() throws Exception {
-
-        String name = "lldpLocGroup";
-        LldpLocalGroup m_lLldpLocalGroup = new LldpLocalGroup(InetAddressUtils.addr(RIOVISTA_IP));
-        CollectionTracker[] tracker = new CollectionTracker[0];
-        tracker = new CollectionTracker[] {m_lLldpLocalGroup};
-        SnmpAgentConfig snmpAgent = SnmpPeerFactory.getInstance().getAgentConfig(InetAddressUtils.addr(RIOVISTA_IP));
-        SnmpWalker walker = SnmpUtils.createWalker(snmpAgent, name, tracker);
-        walker.start();
-
-        try {
-                walker.waitFor();
-        } catch (final InterruptedException e) {
-
-        }
-        
-        assertEquals(4, m_lLldpLocalGroup.getLldpLocChassisidSubType().intValue());
-        assertEquals(RIOVISTA_LLDP_CHASSISID,m_lLldpLocalGroup.getLldpLocChassisid());
-        assertEquals(RIOVISTA_NAME, m_lLldpLocalGroup.getLldpLocSysname());
-    }
-
-
-    
-    @Test
-    @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=PENROSE_IP, port=161, resource="classpath:linkd/nms1055/"+PENROSE_NAME+"_"+PENROSE_IP+".txt")
-    })
-    public void testPenroseDot1dBaseCollection() throws Exception {
-
-        String name = "dot1dbase";
-        Dot1dBaseGroup m_lLldpLocalGroup = new Dot1dBaseGroup(InetAddressUtils.addr(PENROSE_IP));
-        CollectionTracker[] tracker = new CollectionTracker[0];
-        tracker = new CollectionTracker[] {m_lLldpLocalGroup};
-        SnmpAgentConfig snmpAgent = SnmpPeerFactory.getInstance().getAgentConfig(InetAddressUtils.addr(PENROSE_IP));
-        SnmpWalker walker = SnmpUtils.createWalker(snmpAgent, name, tracker);
-        walker.start();
-
-        try {
-                walker.waitFor();
-        } catch (final InterruptedException e) {
-            assertEquals(false, true);
-        }
-        
-        assertEquals("80711f8fafd0",m_lLldpLocalGroup.getBridgeAddress());
-    }
-
-    @Test
-    @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=DELAWARE_IP, port=161, resource="classpath:linkd/nms1055/"+DELAWARE_NAME+"_"+DELAWARE_IP+".txt")
-    })
-    public void testDelawareLldpLocTableCollection() throws Exception {
-
-        String name = "lldpLocTable";
-        LldpLocTable m_lldpRemTable = new LldpLocTable(InetAddressUtils.addr(DELAWARE_IP));
-        CollectionTracker[] tracker = new CollectionTracker[0];
-        tracker = new CollectionTracker[] {m_lldpRemTable};
-        SnmpAgentConfig snmpAgent = SnmpPeerFactory.getInstance().getAgentConfig(InetAddressUtils.addr(DELAWARE_IP));
-        SnmpWalker walker = SnmpUtils.createWalker(snmpAgent, name, tracker);
-        walker.start();
-
-        try {
-                walker.waitFor();
-        } catch (final InterruptedException e) {
-            assertEquals(false, true);
-        }
-        
-        final Collection<LldpLocTableEntry> lldpTableEntryCollection = m_lldpRemTable.getEntries();
-        assertEquals(5, lldpTableEntryCollection.size());
-        
-        for (final LldpLocTableEntry lldpLocTableEntry: lldpTableEntryCollection) {
-            checkRow(lldpLocTableEntry);
-        }
-    }
-
-
-    @Test
-    @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=DELAWARE_IP, port=161, resource="classpath:linkd/nms1055/"+DELAWARE_NAME+"_"+DELAWARE_IP+".txt")
-    })
-    public void testDelawareLldpRemTableCollection() throws Exception {
-
-        String name = "lldpRemTable";
-        LldpRemTable m_lldpRemTable = new LldpRemTable(InetAddressUtils.addr(DELAWARE_IP));
-        CollectionTracker[] tracker = new CollectionTracker[0];
-        tracker = new CollectionTracker[] {m_lldpRemTable};
-        SnmpAgentConfig snmpAgent = SnmpPeerFactory.getInstance().getAgentConfig(InetAddressUtils.addr(DELAWARE_IP));
-        SnmpWalker walker = SnmpUtils.createWalker(snmpAgent, name, tracker);
-        walker.start();
-
-        try {
-                walker.waitFor();
-        } catch (final InterruptedException e) {
-            assertEquals(false, true);
-        }
-        
-        final Collection<LldpRemTableEntry> lldpTableEntryCollection = m_lldpRemTable.getEntries();
-        assertEquals(4, lldpTableEntryCollection.size());
-        
-        for (final LldpRemTableEntry lldpRemTableEntry: lldpTableEntryCollection) {
-            checkRow(lldpRemTableEntry);
-        }
-    }
-    
-    private void checkRow(LldpRemTableEntry lldpRemTableEntry) {
-        final Integer lldpRemLocalPortNum = lldpRemTableEntry.getLldpRemLocalPortNum();
-        final String lldpRemSysname = lldpRemTableEntry.getLldpRemSysname();
-        final String lldpRemChassiid = lldpRemTableEntry.getLldpRemChassiid();
-        final Integer lldpRemChassisidSubtype = lldpRemTableEntry.getLldpRemChassisidSubtype();
-        String lldpRemPortid = lldpRemTableEntry.getLldpRemPortid();
-        Integer lldpRemPortidSubtype = lldpRemTableEntry.getLldpRemPortidSubtype();
-        printLldpRemRow(lldpRemLocalPortNum, lldpRemSysname, lldpRemChassiid, lldpRemChassisidSubtype, lldpRemPortid, lldpRemPortidSubtype);
-        assertEquals(4,lldpRemChassisidSubtype.intValue());
-        assertEquals(7,lldpRemPortidSubtype.intValue());
-        if (lldpRemLocalPortNum.intValue() == 574) {
-            assertEquals(PENROSE_NAME,lldpRemSysname);
-            assertEquals(PENROSE_LLDP_CHASSISID, lldpRemChassiid);
-            assertEquals("510", lldpRemPortid);
-        } else if (lldpRemLocalPortNum.intValue() == 522) {
-            assertEquals(PENROSE_NAME,lldpRemSysname);
-            assertEquals(PENROSE_LLDP_CHASSISID, lldpRemChassiid);
-            assertEquals("525", lldpRemPortid);
-        } else if (lldpRemLocalPortNum.intValue() == 575) {
-            assertEquals(AUSTIN_NAME,lldpRemSysname);
-            assertEquals(AUSTIN_LLDP_CHASSISID, lldpRemChassiid);
-            assertEquals("509", lldpRemPortid);
-        } else if (lldpRemLocalPortNum.intValue() == 540) {
-            assertEquals(RIOVISTA_NAME,lldpRemSysname);
-            assertEquals(RIOVISTA_LLDP_CHASSISID, lldpRemChassiid);
-            assertEquals("503", lldpRemPortid);
-        } else {
-            assertEquals(false, true);
-        }
-    }
-    
-    private void checkRow(LldpLocTableEntry lldpLocTableEntry) {
-        final Integer lldpLocPortNum = lldpLocTableEntry.getLldpLocPortNum();
-        String lldpLocPortid = lldpLocTableEntry.getLldpLocPortid();
-        Integer lldpLocPortidSubtype = lldpLocTableEntry.getLldpLocPortIdSubtype();
-        printLldpLocRow(lldpLocPortNum, lldpLocPortidSubtype, lldpLocPortid);
-        assertEquals(7,lldpLocPortidSubtype.intValue());
-
-        if (lldpLocPortNum.intValue() == 521) {
-            assertEquals("521",lldpLocPortid);
-        } else if (lldpLocPortNum.intValue() == 522) {
-            assertEquals("522",lldpLocPortid);
-        } else if (lldpLocPortNum.intValue() == 574) {
-            assertEquals("574",lldpLocPortid);
-        } else if (lldpLocPortNum.intValue() == 575) {
-            assertEquals("575",lldpLocPortid);
-        } else if (lldpLocPortNum.intValue() == 540) {
-            assertEquals("540",lldpLocPortid);
-        } else {
-            assertEquals(true,false);
-        }
-    }
-    
     /*
      * Penrose: baseBridgeAddress = 80711f8fafd0
      * Penrose: stpDesignatedRoot = 001f12373dc0
@@ -499,26 +146,22 @@ public class Nms1055Test extends Nms1055NetworkBuilder implements InitializingBe
      */
     @Test
     @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=PENROSE_IP, port=161, resource="classpath:linkd/nms1055/"+PENROSE_NAME+"_"+PENROSE_IP+".txt"),
-            @JUnitSnmpAgent(host=DELAWARE_IP, port=161, resource="classpath:linkd/nms1055/"+DELAWARE_NAME+"_"+DELAWARE_IP+".txt"),
-            @JUnitSnmpAgent(host=PHOENIX_IP, port=161, resource="classpath:linkd/nms1055/"+PHOENIX_NAME+"_"+PHOENIX_IP+".txt"),
-            @JUnitSnmpAgent(host=AUSTIN_IP, port=161, resource="classpath:linkd/nms1055/"+AUSTIN_NAME+"_"+AUSTIN_IP+".txt"),
-            @JUnitSnmpAgent(host=SANJOSE_IP, port=161, resource="classpath:linkd/nms1055/"+SANJOSE_NAME+"_"+SANJOSE_IP+".txt"),
-            @JUnitSnmpAgent(host=RIOVISTA_IP, port=161, resource="classpath:linkd/nms1055/"+RIOVISTA_NAME+"_"+RIOVISTA_IP+".txt")
+            @JUnitSnmpAgent(host=PENROSE_IP, port=161, resource=PENROSE_SNMP_RESOURCE),
+            @JUnitSnmpAgent(host=DELAWARE_IP, port=161, resource=DELAWARE_SNMP_RESOURCE),
+            @JUnitSnmpAgent(host=PHOENIX_IP, port=161, resource=PHOENIX_SNMP_RESOURCE),
+            @JUnitSnmpAgent(host=AUSTIN_IP, port=161, resource=AUSTIN_SNMP_RESOURCE),
+            @JUnitSnmpAgent(host=SANJOSE_IP, port=161, resource=SANJOSE_SNMP_RESOURCE),
+            @JUnitSnmpAgent(host=RIOVISTA_IP, port=161, resource=RIOVISTA_SNMP_RESOURCE)
     })
     @JUnitTemporaryDatabase
     public void testNetwork1055Links() throws Exception {
-        m_transactionTemplate.execute(new TransactionCallbackWithoutResult() {
-            @Override
-            protected void doInTransactionWithoutResult(TransactionStatus status) {
-                m_nodeDao.save(getPenrose());
-                m_nodeDao.save(getDelaware());
-                m_nodeDao.save(getPhoenix());
-                m_nodeDao.save(getAustin());
-                m_nodeDao.save(getSanjose());
-                m_nodeDao.save(getRiovista());
-            }
-        });
+        m_nodeDao.save(builder.getPenrose());
+        m_nodeDao.save(builder.getDelaware());
+        m_nodeDao.save(builder.getPhoenix());
+        m_nodeDao.save(builder.getAustin());
+        m_nodeDao.save(builder.getSanjose());
+        m_nodeDao.save(builder.getRiovista());
+        m_nodeDao.flush();
 
         HibernateEventWriter queryManager = (HibernateEventWriter)m_linkd.getQueryManager();
         /*
@@ -582,80 +225,80 @@ public class Nms1055Test extends Nms1055NetworkBuilder implements InitializingBe
             if ( linkid == start) {
                 checkLink(penrose,phoenix , 644, 564, datalinkinterface);
                 assertEquals(DiscoveryProtocol.iproute, datalinkinterface.getProtocol()); 
-            } else if (linkid == start+6 ) {
-                checkLink(phoenix, penrose, 564, 644, datalinkinterface);
-               assertEquals(DiscoveryProtocol.ospf, datalinkinterface.getProtocol()); 
             } else if (linkid == start+1 ) {
                 checkLink(penrose, delaware, 535, 598, datalinkinterface);
+                assertEquals(DiscoveryProtocol.iproute, datalinkinterface.getProtocol()); 
+            } else if (linkid == start+2) {
+                checkLink(phoenix,austin,565,554,datalinkinterface);
+                assertEquals(DiscoveryProtocol.iproute, datalinkinterface.getProtocol()); 
+            } else if (linkid == start+3) {
+                checkLink(sanjose,phoenix,564,566,datalinkinterface);
+                assertEquals(DiscoveryProtocol.iproute, datalinkinterface.getProtocol()); 
+            } else if (linkid == start+4) {
+                checkLink(sanjose,austin, 8562, 586, datalinkinterface);
                 assertEquals(DiscoveryProtocol.iproute, datalinkinterface.getProtocol()); 
             } else if (linkid == start+5 ) {
                 checkLink(delaware, penrose, 598, 535, datalinkinterface);
                 assertEquals(DiscoveryProtocol.ospf, datalinkinterface.getProtocol()); 
-            } else if (linkid == start+2) {
-                checkLink(phoenix,austin,565,554,datalinkinterface);
-                assertEquals(DiscoveryProtocol.iproute, datalinkinterface.getProtocol()); 
+            } else if (linkid == start+6 ) {
+                checkLink(phoenix, penrose, 564, 644, datalinkinterface);
+               assertEquals(DiscoveryProtocol.ospf, datalinkinterface.getProtocol()); 
             } else if (linkid == start+7) {
                 checkLink(austin,phoenix,554,565,datalinkinterface);
                 assertEquals(DiscoveryProtocol.ospf, datalinkinterface.getProtocol());
-            } else if (linkid == start+3) {
-                checkLink(sanjose,phoenix,564,566,datalinkinterface);
-                assertEquals(DiscoveryProtocol.iproute, datalinkinterface.getProtocol()); 
             } else if (linkid == start+8) {
                 checkLink(sanjose,phoenix,564,566,datalinkinterface);
                 assertEquals(DiscoveryProtocol.ospf, datalinkinterface.getProtocol());
-            } else if (linkid == start+4) {
-                checkLink(sanjose,austin, 8562, 586, datalinkinterface);
-                assertEquals(DiscoveryProtocol.iproute, datalinkinterface.getProtocol()); 
             } else if (linkid == start+9) {
                 checkLink(sanjose,austin, 8562, 586, datalinkinterface);
                 assertEquals(DiscoveryProtocol.ospf, datalinkinterface.getProtocol());
             } else if (linkid == start+10) {
+                checkLink(penrose,riovista,515,584,datalinkinterface);
+                assertEquals(DiscoveryProtocol.bridge, datalinkinterface.getProtocol());
+            } else if (linkid == start+11) {
+                checkLink(penrose,delaware,2693,658,datalinkinterface);
+                assertEquals(DiscoveryProtocol.bridge, datalinkinterface.getProtocol());
+            } else if (linkid == start+12) {
+                checkLink(delaware,riovista,540,503,datalinkinterface);
+                assertEquals(DiscoveryProtocol.bridge, datalinkinterface.getProtocol());
+            } else if (linkid == start+13) {
                 // penrose xe-1/0/0 -> delaware xe-1/0/0 --lldp
                 checkLink(delaware, penrose, 574, 510, datalinkinterface);
                 assertEquals(DiscoveryProtocol.lldp, datalinkinterface.getProtocol());
-            } else if (linkid == start+11) {
+            } else if (linkid == start+14) {
                 // penrose xe-1/0/1 -> phoenix xe-0/0/1  --lldp
                 checkLink(phoenix, penrose, 509, 511, datalinkinterface);   
                 assertEquals(DiscoveryProtocol.lldp, datalinkinterface.getProtocol());
-            } else if (linkid == start+12) {
+            } else if (linkid == start+15) {
                 // penrose ge-1/3/1 -> delaware ge-0/0/6 --lldp
                 checkLink(delaware, penrose, 522, 525, datalinkinterface);
                 assertEquals(DiscoveryProtocol.lldp, datalinkinterface.getProtocol());
-            } else if (linkid == start+13) {
+            } else if (linkid == start+16) {
                 // penrose ge-1/2/1 -> riovista ge-0/0/0.0  --lldp
                 // this link is also discovered using the bridge strategy
                 checkLink(riovista, penrose, 584, 515, datalinkinterface);
                 assertEquals(DiscoveryProtocol.lldp, datalinkinterface.getProtocol());
-            } else if ( linkid == start+14) {
+            } else if ( linkid == start+17) {
                 // delaware xe-1/0/1 -> austin xe-0/0/1  --lldp
                 checkLink(austin, delaware, 509, 575, datalinkinterface);                   
                 assertEquals(DiscoveryProtocol.lldp, datalinkinterface.getProtocol());
-            } else if (linkid == start+15 ) {
+            } else if (linkid == start+18) {
                 // delaware ge-0/2/0 -> riovista ge-0/0/46.0  --lldp
                 // this link is also discovered using the bridge strategy
                 checkLink(riovista, delaware, 503, 540, datalinkinterface);
                 assertEquals(DiscoveryProtocol.lldp, datalinkinterface.getProtocol());
-            } else if (linkid == start+16) {
+            } else if (linkid == start+19) {
                 // phoenix ge-1/0/3 -> sanjose ge-1/0/0  --lldp
                 checkLink(sanjose, phoenix, 516, 515, datalinkinterface);                   
                 assertEquals(DiscoveryProtocol.lldp, datalinkinterface.getProtocol());
-            } else if (linkid == start+17) {
+            } else if (linkid == start+20) {
                 // phoenix ge-0/2/0 -> austin ge-0/0/46.0  --lldp
                 checkLink(austin, phoenix, 508, 508, datalinkinterface);
                 assertEquals(DiscoveryProtocol.lldp, datalinkinterface.getProtocol());
-            } else if (linkid == start+18) {
+            } else if (linkid == start+21) {
                 // austin ge-1/0/3 -> sanjose ge-1/0/1  --lldp
                 checkLink(sanjose, austin, 517, 515, datalinkinterface);                
                 assertEquals(DiscoveryProtocol.lldp, datalinkinterface.getProtocol());
-            } else if (linkid == start+19) {
-                checkLink(penrose,riovista,515,584,datalinkinterface);
-                assertEquals(DiscoveryProtocol.bridge, datalinkinterface.getProtocol());
-            } else if (linkid == start+20) {
-                checkLink(penrose,delaware,2693,658,datalinkinterface);
-                assertEquals(DiscoveryProtocol.bridge, datalinkinterface.getProtocol());
-            } else if (linkid == start+21) {
-                checkLink(delaware,riovista,540,503,datalinkinterface);
-                assertEquals(DiscoveryProtocol.bridge, datalinkinterface.getProtocol());
             } else {
                 checkLink(penrose,penrose,-1,-1,datalinkinterface);
             }
@@ -668,13 +311,13 @@ public class Nms1055Test extends Nms1055NetworkBuilder implements InitializingBe
     */
    @Test
    @JUnitSnmpAgents(value={
-           @JUnitSnmpAgent(host=PENROSE_IP, port=161, resource="classpath:linkd/nms1055/"+PENROSE_NAME+"_"+PENROSE_IP+".txt"),
-           @JUnitSnmpAgent(host=DELAWARE_IP, port=161, resource="classpath:linkd/nms1055/"+DELAWARE_NAME+"_"+DELAWARE_IP+".txt")
+           @JUnitSnmpAgent(host=PENROSE_IP, port=161, resource=PENROSE_SNMP_RESOURCE),
+           @JUnitSnmpAgent(host=DELAWARE_IP, port=161, resource=DELAWARE_SNMP_RESOURCE)
    })
    @JUnitTemporaryDatabase
    public void testNetwork1055StpLinks() throws Exception {
-       m_nodeDao.save(getPenrose());
-       m_nodeDao.save(getDelaware());
+       m_nodeDao.save(builder.getPenrose());
+       m_nodeDao.save(builder.getDelaware());
        m_nodeDao.flush();
        
        Package example1 = m_linkdConfig.getPackage("example1");
@@ -705,8 +348,6 @@ public class Nms1055Test extends Nms1055NetworkBuilder implements InitializingBe
        assertEquals(1,m_dataLinkInterfaceDao.countAll());
 
    }
-   
-
     
     /*
      * We want to test that the next hop router discovered 
@@ -714,21 +355,21 @@ public class Nms1055Test extends Nms1055NetworkBuilder implements InitializingBe
      */
     @Test
     @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=PENROSE_IP, port=161, resource="classpath:linkd/nms1055/"+PENROSE_NAME+"_"+PENROSE_IP+".txt"),
-            @JUnitSnmpAgent(host=DELAWARE_IP, port=161, resource="classpath:linkd/nms1055/"+DELAWARE_NAME+"_"+DELAWARE_IP+".txt"),
-            @JUnitSnmpAgent(host=PHOENIX_IP, port=161, resource="classpath:linkd/nms1055/"+PHOENIX_NAME+"_"+PHOENIX_IP+".txt"),
-            @JUnitSnmpAgent(host=AUSTIN_IP, port=161, resource="classpath:linkd/nms1055/"+AUSTIN_NAME+"_"+AUSTIN_IP+".txt"),
-            @JUnitSnmpAgent(host=SANJOSE_IP, port=161, resource="classpath:linkd/nms1055/"+SANJOSE_NAME+"_"+SANJOSE_IP+".txt"),
-            @JUnitSnmpAgent(host=RIOVISTA_IP, port=161, resource="classpath:linkd/nms1055/"+RIOVISTA_NAME+"_"+RIOVISTA_IP+".txt")
+            @JUnitSnmpAgent(host=PENROSE_IP, port=161, resource=PENROSE_SNMP_RESOURCE),
+            @JUnitSnmpAgent(host=DELAWARE_IP, port=161, resource=DELAWARE_SNMP_RESOURCE),
+            @JUnitSnmpAgent(host=PHOENIX_IP, port=161, resource=PHOENIX_SNMP_RESOURCE),
+            @JUnitSnmpAgent(host=AUSTIN_IP, port=161, resource=AUSTIN_SNMP_RESOURCE),
+            @JUnitSnmpAgent(host=SANJOSE_IP, port=161, resource=SANJOSE_SNMP_RESOURCE),
+            @JUnitSnmpAgent(host=RIOVISTA_IP, port=161, resource=RIOVISTA_SNMP_RESOURCE)
     })
     @JUnitTemporaryDatabase
     public void testNetwork1055OspfLinks() throws Exception {
-        m_nodeDao.save(getPenrose());
-        m_nodeDao.save(getDelaware());
-        m_nodeDao.save(getPhoenix());
-        m_nodeDao.save(getAustin());
-        m_nodeDao.save(getSanjose());
-        m_nodeDao.save(getRiovista());
+        m_nodeDao.save(builder.getPenrose());
+        m_nodeDao.save(builder.getDelaware());
+        m_nodeDao.save(builder.getPhoenix());
+        m_nodeDao.save(builder.getAustin());
+        m_nodeDao.save(builder.getSanjose());
+        m_nodeDao.save(builder.getRiovista());
         m_nodeDao.flush();
 
         Package example1 = m_linkdConfig.getPackage("example1");

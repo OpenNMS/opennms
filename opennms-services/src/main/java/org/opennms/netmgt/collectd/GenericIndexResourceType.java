@@ -32,7 +32,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.opennms.netmgt.config.StorageStrategy;
+import org.opennms.netmgt.collection.api.StorageStrategy;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,11 +56,11 @@ public class GenericIndexResourceType extends ResourceType {
     /**
      * <p>Constructor for GenericIndexResourceType.</p>
      *
-     * @param agent a {@link org.opennms.netmgt.collectd.CollectionAgent} object.
+     * @param agent a {@link org.opennms.netmgt.collection.api.CollectionAgent} object.
      * @param snmpCollection a {@link org.opennms.netmgt.collectd.OnmsSnmpCollection} object.
      * @param resourceType a {@link org.opennms.netmgt.config.datacollection.ResourceType} object.
      */
-    public GenericIndexResourceType(CollectionAgent agent, OnmsSnmpCollection snmpCollection, org.opennms.netmgt.config.datacollection.ResourceType resourceType) throws IllegalArgumentException {
+    public GenericIndexResourceType(SnmpCollectionAgent agent, OnmsSnmpCollection snmpCollection, org.opennms.netmgt.config.datacollection.ResourceType resourceType) throws IllegalArgumentException {
         super(agent, snmpCollection);
 
         Assert.notNull(resourceType, "resourceType argument must not be null");
@@ -156,7 +156,7 @@ public class GenericIndexResourceType extends ResourceType {
     /**
      * <p>getStorageStrategy</p>
      *
-     * @return a {@link org.opennms.netmgt.config.StorageStrategy} object.
+     * @return a {@link org.opennms.netmgt.collection.api.StorageStrategy} object.
      */
     public StorageStrategy getStorageStrategy() {
         return m_storageStrategy;

@@ -37,13 +37,12 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.opennms.netmgt.collectd.AliasedResource;
 import org.opennms.netmgt.collectd.IfInfo;
-import org.opennms.netmgt.config.collector.CollectionAttribute;
-import org.opennms.netmgt.config.collector.CollectionResource;
-import org.opennms.netmgt.dao.support.DefaultResourceDao;
-import org.opennms.netmgt.dao.support.ResourceTypeUtils;
+import org.opennms.netmgt.collection.api.CollectionAttribute;
+import org.opennms.netmgt.collection.api.CollectionResource;
 import org.opennms.netmgt.model.OnmsResource;
-import org.opennms.netmgt.model.RrdRepository;
+import org.opennms.netmgt.model.ResourceTypeUtils;
 import org.opennms.netmgt.poller.LatencyCollectionResource;
+import org.opennms.netmgt.rrd.RrdRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -66,8 +65,8 @@ public class CollectionResourceWrapper {
     private final String m_hostAddress;
     private final String m_serviceName;
     private String m_dsLabel;
-    private String m_iflabel;
-    private String m_ifindex;
+    private final String m_iflabel;
+    private final String m_ifindex;
     private final RrdRepository m_repository;
     private final CollectionResource m_resource;
     private final Map<String, CollectionAttribute> m_attributes;
@@ -77,20 +76,27 @@ public class CollectionResourceWrapper {
      * 
      * This is necessary for the *correct* calculation of Counter rates, across variable collection times and possible
      * collection failures (see NMS-4244)
-     * 
-     * Just a holder class for two associated values; no need for the formality of accessors
      */
-    static class CacheEntry {
-        final Date timestamp;
-        final Double value;
+    public static class CacheEntry {
+        private final Date m_timestamp;
+        private final Double m_value;
+
         public CacheEntry(final Date timestamp, final Double value) {
             if (timestamp == null) {
                 throw new IllegalArgumentException("Illegal null timestamp in cache value");
             } else if (value == null) {
                 throw new IllegalArgumentException("Illegal null value in cache value");
             }
-            this.timestamp = timestamp;
-            this.value = value;
+            this.m_timestamp = timestamp;
+            this.m_value = value;
+        }
+
+        public Date getTimestamp() {
+            return m_timestamp;
+        }
+
+        public Double getValue() {
+            return m_value;
         }
     }
 
@@ -109,7 +115,7 @@ public class CollectionResourceWrapper {
     /*
      * Holds interface ifInfo data for interface resource only. This avoid multiple calls to database for same resource.
      */
-    private Map<String, String> m_ifInfo;
+    private final Map<String, String> m_ifInfo = new HashMap<String,String>();
     
     /*
 	 * Holds the timestamp of the collection being thresholded, for the calculation of counter rates
@@ -123,8 +129,8 @@ public class CollectionResourceWrapper {
      * @param nodeId a int.
      * @param hostAddress a {@link java.lang.String} object.
      * @param serviceName a {@link java.lang.String} object.
-     * @param repository a {@link org.opennms.netmgt.model.RrdRepository} object.
-     * @param resource a {@link org.opennms.netmgt.config.collector.CollectionResource} object.
+     * @param repository a {@link org.opennms.netmgt.rrd.RrdRepository} object.
+     * @param resource a {@link org.opennms.netmgt.collection.api.CollectionResource} object.
      * @param attributes a {@link java.util.Map} object.
      */
     public CollectionResourceWrapper(Date collectionTimestamp, int nodeId, String hostAddress, String serviceName, RrdRepository repository, CollectionResource resource, Map<String, CollectionAttribute> attributes) {
@@ -139,33 +145,35 @@ public class CollectionResourceWrapper {
         m_repository = repository;
         m_resource = resource;
         m_attributes = attributes;
+
         if (isAnInterfaceResource()) {
             if (resource instanceof AliasedResource) { // TODO What about AliasedResource's custom attributes?
-                m_iflabel = ((AliasedResource) resource).getLabel();
-                m_ifInfo = ((AliasedResource) resource).getIfInfo().getAttributesMap();
+                m_iflabel = ((AliasedResource) resource).getInterfaceLabel();
+                m_ifInfo.putAll(((AliasedResource) resource).getIfInfo().getAttributesMap());
                 m_ifInfo.put("domain", ((AliasedResource) resource).getDomain());
-            }
-            if (resource instanceof IfInfo) {
-                m_iflabel = ((IfInfo) resource).getLabel();
-                m_ifInfo = ((IfInfo) resource).getAttributesMap();
-            }
-            if (resource instanceof LatencyCollectionResource) {
+            } else if (resource instanceof IfInfo) {
+                m_iflabel = ((IfInfo) resource).getInterfaceLabel();
+                m_ifInfo.putAll(((IfInfo) resource).getAttributesMap());
+            } else if (resource instanceof LatencyCollectionResource) {
                 JdbcIfInfoGetter ifInfoGetter = new JdbcIfInfoGetter();
                 String ipAddress = ((LatencyCollectionResource) resource).getIpAddress();
                 m_iflabel = ifInfoGetter.getIfLabel(getNodeId(), ipAddress);
                 if (m_iflabel != null) { // See Bug 3488
-                    m_ifInfo = ifInfoGetter.getIfInfoForNodeAndLabel(getNodeId(), m_iflabel);
+                    m_ifInfo.putAll(ifInfoGetter.getIfInfoForNodeAndLabel(getNodeId(), m_iflabel));
                 } else {
                     LOG.info("Can't find ifLabel for latency resource {} on node {}", resource.getInstance(), getNodeId());
                 }
-            }
-            if (m_ifInfo != null) {
-                m_ifindex = m_ifInfo.get("snmpifindex");
             } else {
                 LOG.info("Can't find ifInfo for {}", resource);
+                m_iflabel = null;
             }
+
+            m_ifindex = m_ifInfo.get("snmpifindex");
+        } else {
+            m_ifindex = null;
+            m_iflabel = null;
         }
-    }    
+    }
     
     /**
      * <p>getNodeId</p>
@@ -197,7 +205,7 @@ public class CollectionResourceWrapper {
     /**
      * <p>getRepository</p>
      *
-     * @return a {@link org.opennms.netmgt.model.RrdRepository} object.
+     * @return a {@link org.opennms.netmgt.rrd.RrdRepository} object.
      */
     public RrdRepository getRepository() {
         return m_repository;
@@ -236,7 +244,7 @@ public class CollectionResourceWrapper {
      * @return a {@link java.lang.String} object.
      */
     public String getInstanceLabel() {
-        return m_resource != null ? m_resource.getLabel() : null;
+        return m_resource != null ? m_resource.getInterfaceLabel() : null;
     }
 
     /**
@@ -257,18 +265,19 @@ public class CollectionResourceWrapper {
     public String getResourceId() {
         String resourceType  = getResourceTypeName();
         String resourceLabel = getInstanceLabel();
-        if ("node".equals(resourceType)) {
+        if (CollectionResource.RESOURCE_TYPE_NODE.equals(resourceType)) {
             resourceType  = "nodeSnmp";
             resourceLabel = "";
         }
-        if ("if".equals(resourceType)) {
+        if (CollectionResource.RESOURCE_TYPE_IF.equals(resourceType)) {
             resourceType = "interfaceSnmp";
         }
-        String parentResourceTypeName = "node";
+        String parentResourceTypeName = CollectionResource.RESOURCE_TYPE_NODE;
         String parentResourceName = Integer.toString(getNodeId());
         // I can't find a better way to deal with this when storeByForeignSource is enabled        
-        if (m_resource != null && m_resource.getParent() != null && m_resource.getParent().startsWith(DefaultResourceDao.FOREIGN_SOURCE_DIRECTORY)) {
-            String[] parts = m_resource.getParent().split(File.separator);
+        if (m_resource != null && m_resource.getParent() != null && m_resource.getParent().startsWith(ResourceTypeUtils.FOREIGN_SOURCE_DIRECTORY)) {
+            // If separatorChar is backslash (like on Windows) use a double-escaped backslash in the regex
+            String[] parts = m_resource.getParent().split(File.separatorChar == '\\' ? "\\\\" : File.separator);
             if (parts.length == 3) {
                 parentResourceTypeName = "nodeSource";
                 parentResourceName = parts[1] + ":" + parts[2];
@@ -302,9 +311,11 @@ public class CollectionResourceWrapper {
      * @return a {@link java.lang.String} object.
      */
     protected String getIfInfoValue(String attribute) {
-        if (m_ifInfo != null)
+        if (m_ifInfo != null) {
             return m_ifInfo.get(attribute);
-        return null;
+        } else {
+            return null;
+        }
     }
     
     /**
@@ -313,7 +324,7 @@ public class CollectionResourceWrapper {
      * @return a boolean.
      */
     public boolean isAnInterfaceResource() {
-        return getResourceTypeName() != null && getResourceTypeName().equals("if");
+        return getResourceTypeName() != null && CollectionResource.RESOURCE_TYPE_IF.equals(getResourceTypeName());
     }
 
     /**
@@ -322,14 +333,12 @@ public class CollectionResourceWrapper {
      * @return a boolean.
      */
     public boolean isValidInterfaceResource() {
-        if (m_ifInfo == null) {
-            return false;
-        }
         try {
-            if(null == m_ifindex)
+            if(m_ifindex == null) {
                 return false;
-            if(Integer.parseInt(m_ifindex) < 0)
+            } else if(Integer.parseInt(m_ifindex) < 0) {
                 return false;
+            }
         } catch(Throwable e) {
             return false;
         }
@@ -363,7 +372,7 @@ public class CollectionResourceWrapper {
             return null;
         }
         // Generating a unique ID for the node/resourceType/resource/metric combination.
-        String id =  "node[" + m_nodeId + "].resourceType[" + m_resource.getResourceTypeName() + "].instance[" + m_resource.getLabel() + "].metric[" + ds + "]";
+        String id =  "node[" + m_nodeId + "].resourceType[" + m_resource.getResourceTypeName() + "].instance[" + m_resource.getInterfaceLabel() + "].metric[" + ds + "]";
         Double current = null;
         try {
             current = Double.parseDouble(numValue);
@@ -388,12 +397,12 @@ public class CollectionResourceWrapper {
         if (m_localCache.containsKey(id) == false) {
             // Atomically replace the CacheEntry with the new value
             CacheEntry last = s_cache.put(id, new CacheEntry(m_collectionTimestamp, current));
-            LOG.debug("getCounterValue: id={}, last={}, current={}", id, (last==null ? last : last.value +"@"+ last.timestamp), current);
+            LOG.debug("getCounterValue: id={}, last={}, current={}", id, (last==null ? last : last.m_value +"@"+ last.m_timestamp), current);
             if (last == null) {
                 m_localCache.put(id, Double.NaN);
                 LOG.info("getCounterValue: unknown last value for {}, ignoring current", id);
             } else {                
-                Double delta = current.doubleValue() - last.value.doubleValue();
+                Double delta = current.doubleValue() - last.m_value.doubleValue();
                 // wrapped counter handling(negative delta), rrd style
                 if (delta < 0) {
                     double newDelta = delta.doubleValue();
@@ -404,14 +413,14 @@ public class CollectionResourceWrapper {
                         // try 64-bit adjustment
                         newDelta += Math.pow(2, 64) - Math.pow(2, 32);
                     }
-                    LOG.info("getCounterValue: {}(counter) wrapped counter adjusted last={}@{}, current={}, olddelta={}, newdelta={}", id, last.value, last.timestamp, current, delta, newDelta);
+                    LOG.info("getCounterValue: {}(counter) wrapped counter adjusted last={}@{}, current={}, olddelta={}, newdelta={}", id, last.m_value, last.m_timestamp, current, delta, newDelta);
                     delta = newDelta;
                 }
                 // Get the interval between when this current collection was taken, and the last time this
                 // value was collected (and had a counter rate calculated for it).
                 // If the interval is zero, than the current rate must returned as 0.0 since there can be 
                 // no delta across a time interval of zero.
-                long interval = ( m_collectionTimestamp.getTime() - last.timestamp.getTime() ) / 1000;
+                long interval = ( m_collectionTimestamp.getTime() - last.m_timestamp.getTime() ) / 1000;
                 if (interval > 0) {
                     final Double value = (delta/interval);
                     LOG.debug("getCounterValue: id={}, value={}, delta={}, interval={}", id, value, delta, interval);

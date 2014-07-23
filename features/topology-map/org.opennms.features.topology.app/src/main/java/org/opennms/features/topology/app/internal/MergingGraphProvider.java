@@ -36,7 +36,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
-import org.opennms.features.topology.api.topo.AbstractVertexRef;
+import org.opennms.features.topology.api.topo.DefaultVertexRef;
 import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.EdgeListener;
@@ -486,11 +486,11 @@ public class MergingGraphProvider implements GraphProvider, VertexListener, Edge
 	 */
 	@Override
 	public boolean containsVertexId(String id) {
-		if (containsVertexId(new AbstractVertexRef(getVertexNamespace(), id))) {
+		if (containsVertexId(new DefaultVertexRef(getVertexNamespace(), id))) {
 			return true;
 		}
 		for (VertexProvider provider : m_vertexProviders.values()) {
-			if (containsVertexId(new AbstractVertexRef(provider.getVertexNamespace(), id))) {
+			if (containsVertexId(new DefaultVertexRef(provider.getVertexNamespace(), id))) {
 				return true;
 			}
 		}

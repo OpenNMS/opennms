@@ -37,7 +37,7 @@ import org.opennms.netmgt.config.poller.Downtime;
 import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.config.poller.Parameter;
 import org.opennms.netmgt.config.poller.Service;
-import org.opennms.netmgt.model.PollStatus;
+import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.scheduler.ScheduleInterval;
 import org.opennms.netmgt.scheduler.Timer;
@@ -60,7 +60,7 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
     private Package m_pkg;
     private Timer m_timer;
     private Service m_configService;
-	private ServiceMonitor m_serviceMonitor;
+    private ServiceMonitor m_serviceMonitor;
 
     /**
      * <p>Constructor for PollableServiceConfig.</p>
@@ -78,7 +78,7 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
         m_pkg = pkg;
         m_timer = timer;
         m_configService = findService(pkg);
-        
+
         ServiceMonitor monitor = getServiceMonitor();
         monitor.initialize(m_service);
     }
@@ -95,13 +95,13 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
         }
 
         throw new RuntimeException("Service name not part of package!");
-        
+
     }
 
     /**
      * <p>poll</p>
      *
-     * @return a {@link org.opennms.netmgt.model.PollStatus} object.
+     * @return a {@link org.opennms.netmgt.poller.PollStatus} object.
      */
     @Override
     public PollStatus poll() {
@@ -121,15 +121,19 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
         }
     }
 
-	private synchronized ServiceMonitor getServiceMonitor() {
-		if (m_serviceMonitor == null) {
-			ServiceMonitor monitor = m_pollerConfig.getServiceMonitor(m_service.getSvcName());
-			m_serviceMonitor = new LatencyStoringServiceMonitorAdaptor(monitor, m_pollerConfig, m_pkg);
-			
-		}
-		return m_serviceMonitor;
-	}
-    
+    private synchronized ServiceMonitor getServiceMonitor() {
+        if (m_serviceMonitor == null) {
+            ServiceMonitor monitor = m_pollerConfig.getServiceMonitor(m_service.getSvcName());
+            m_serviceMonitor = new LatencyStoringServiceMonitorAdaptor(monitor, m_pollerConfig, m_pkg);
+
+        }
+        return m_serviceMonitor;
+    }
+
+    void setServiceMonitor(final ServiceMonitor serviceMonitor) {
+        m_serviceMonitor = serviceMonitor;
+    }
+
     /**
      * Uses the existing package name to try and re-obtain the package from the poller config factory.
      * Should be called when the poller config has been reloaded.
@@ -143,9 +147,9 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
         m_pkg = newPkg;
         m_configService = findService(m_pkg);
         m_parameters = null;
-        
+
     }
-    
+
     /**
      * Should be called when thresholds configuration has been reloaded
      */
@@ -160,25 +164,24 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
      */
     private synchronized Map<String,Object> getParameters() {
         if (m_parameters == null) {
-            
-            m_parameters = createPropertyMap(m_configService);
+            m_parameters = createParameterMap(m_configService);
         }
         return m_parameters;
     }
 
-    private Map<String,Object> createPropertyMap(Service svc) {
-        Map<String,Object> m = new ConcurrentSkipListMap<String,Object>();
-        for (Parameter p : svc.getParameters()) {
-            String val = p.getValue();
+    private Map<String,Object> createParameterMap(final Service svc) {
+        final Map<String,Object> m = new ConcurrentSkipListMap<String,Object>();
+        for (final Parameter p : svc.getParameters()) {
+            Object val = p.getValue();
             if (val == null) {
-            	val = (p.getAnyObject() == null ? "" : p.getAnyObject().toString());
+                val = (p.getAnyObject() == null ? "" : p.getAnyObject());
             }
 
-           m.put(p.getKey(), val);
+            m.put(p.getKey(), val);
         }
         return m;
     }
-    
+
 
     /**
      * <p>getCurrentTime</p>
@@ -197,10 +200,10 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
      */
     @Override
     public synchronized long getInterval() {
-        
+
         if (m_service.isDeleted())
             return -1;
-        
+
         long when = m_configService.getInterval();
 
         if (m_service.getStatus().isDown()) {
@@ -225,18 +228,18 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
                 }
             }
             if (!matched) {
-                LOG.warn("getInterval: Could not locate downtime model, throwing runtime exception");
-                throw new RuntimeException("Downtime model is invalid, cannot schedule service " + m_service);
+                LOG.error("Downtime model is invalid on package " + m_pkg.getName() + ", cannot schedule service " + m_service);
+                return -1;
             }
         }
-        
+
         if (when < 0) {
             m_service.sendDeleteEvent();
         }
-        
+
         return when;
     }
-    
+
 
 
     /**
@@ -251,16 +254,16 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
             // Does the outage apply to the current time?
             if (m_pollOutagesConfig.isTimeInOutage(m_timer.getCurrentTime(), outageName)) {
                 // Does the outage apply to this interface?
-    
+
                 if (m_pollOutagesConfig.isNodeIdInOutage(nodeId, outageName) || 
-                    (m_pollOutagesConfig.isInterfaceInOutage(m_service.getIpAddr(), outageName)) || 
+                        (m_pollOutagesConfig.isInterfaceInOutage(m_service.getIpAddr(), outageName)) || 
                         (m_pollOutagesConfig.isInterfaceInOutage("match-any", outageName))) {
                     LOG.debug("scheduledOutage: configured outage '{}' applies, {} will not be polled.", outageName, m_configService);
                     return true;
                 }
             }
         }
-    
+
         //return outageFound;
         return false;
     }

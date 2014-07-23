@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -46,6 +46,7 @@ import org.hibernate.criterion.Restrictions;
 import org.hibernate.type.StringType;
 import org.opennms.core.utils.ByteArrayComparator;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.netmgt.config.siteStatusViews.Category;
 import org.opennms.netmgt.config.siteStatusViews.RowDef;
 import org.opennms.netmgt.config.siteStatusViews.Rows;
@@ -85,6 +86,11 @@ public class DefaultNodeListService implements NodeListService, InitializingBean
     /** {@inheritDoc} */
     @Override
     public NodeListModel createNodeList(NodeListCommand command) {
+        return createNodeList(command, true);
+    }
+    
+    /** {@inheritDoc} */
+    public NodeListModel createNodeList(NodeListCommand command, boolean sanitizeLabels) {
         Collection<OnmsNode> onmsNodes = null;
         
         /*
@@ -110,6 +116,12 @@ public class DefaultNodeListService implements NodeListService, InitializingBean
         if (command.getNodesWithDownAggregateStatus()) {
             AggregateStatus as = new AggregateStatus(onmsNodes);
             onmsNodes = as.getDownNodes();
+        }
+        
+        if (sanitizeLabels) {
+            for (OnmsNode node : onmsNodes) {
+                node.setLabel(WebSecurityUtils.sanitizeString(node.getLabel()));
+            }
         }
         
         return createModelForNodes(command, onmsNodes);

@@ -33,9 +33,6 @@ package org.opennms.reporting.datablock;
  *
  * @author <A HREF="mailto:jacinta@oculan.com">Jacinta Remedios </A>
  * @author <A HREF="http://www.oculan.com">oculan.com </A>
- * @author <A HREF="mailto:jacinta@oculan.com">Jacinta Remedios </A>
- * @author <A HREF="http://www.oculan.com">oculan.com </A>
- * @version $Id: $
  */
 public class StandardNamedObject extends Object {
     /**
@@ -47,7 +44,7 @@ public class StandardNamedObject extends Object {
      * Default Constructor.
      */
     public StandardNamedObject() {
-        m_name = new String();
+        m_name = "";
     }
 
     /**
@@ -56,7 +53,7 @@ public class StandardNamedObject extends Object {
      * @param name a {@link java.lang.String} object.
      */
     public StandardNamedObject(String name) {
-        m_name = new String(name);
+        m_name = name;
     }
 
     /**

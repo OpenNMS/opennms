@@ -1,0 +1,234 @@
+<features xmlns="http://karaf.apache.org/xmlns/features/v1.0.0" name="opennms-${project.version}">    
+    <!-- camel features -->
+    <repository>mvn:org.apache.camel.karaf/apache-camel/${camelVersion}/xml/features</repository>
+    
+    <!--  activemq features -->
+    <repository>mvn:org.apache.activemq/activemq-karaf/${activemqVersion}/xml/features</repository>
+
+    <!-- Dependency features -->
+    <feature name="atomikos" description="Atomikos :: TransactionEssentials" version="${atomikosVersion}">
+      <bundle>wrap:mvn:com.atomikos/atomikos-util/${atomikosVersion}</bundle>
+      <bundle>wrap:mvn:com.atomikos/transactions-api/${atomikosVersion}</bundle>
+      <bundle>wrap:mvn:com.atomikos/transactions/${atomikosVersion}</bundle>
+      <bundle>wrap:mvn:com.atomikos/transactions-jta/${atomikosVersion}</bundle>
+      <bundle>wrap:mvn:com.atomikos/transactions-jdbc/${atomikosVersion}</bundle>
+    </feature>
+
+    <feature name="c3p0" description="c3p0" version="0.9.1.2">
+      <bundle>wrap:mvn:c3p0/c3p0/0.9.1.2</bundle>
+    </feature>
+
+    <feature name="castor" description="Castor" version="1.1.2.1">
+      <!-- This castor.properties file overrides the default settings for Castor so that it works with JDK5+ -->
+      <bundle dependency="true">mvn:org.opennms.core/org.opennms.core.castor-properties/${project.version}</bundle>
+      <bundle dependency="true">wrap:mvn:oro/oro/${oroVersion}</bundle>
+      <!--
+        We must make sure that the Bundle-SymbolicName matches the Fragment-Host of org.opennms.core.castor-properties.
+      -->
+      <bundle>wrap:mvn:org.codehaus.castor/castor/1.1.2.1$Bundle-SymbolicName=org.codehaus.castor&amp;Bundle-Version=1.1.2.1&amp;Import-Package=javax.naming,javax.naming.directory,javax.xml.parsers,org.apache.commons.logging,org.apache.oro.text.regex,org.w3c.dom,org.xml.sax,org.xml.sax.helpers</bundle>
+    </feature>
+
+    <feature name="commons-codec" description="Apache :: commons-codec" version="${commonsCodecVersion}">
+      <bundle>mvn:commons-codec/commons-codec/${commonsCodecVersion}</bundle>
+    </feature>
+
+    <feature name="commons-collections" description="Apache :: commons-collections" version="${commonsCollectionsVersion}">
+      <bundle>mvn:commons-collections/commons-collections/${commonsCollectionsVersion}</bundle>
+    </feature>
+
+    <feature name="commons-io" description="Apache :: commons-io" version="${commonsIoVersion}">
+      <bundle>mvn:commons-io/commons-io/${commonsIoVersion}</bundle>
+    </feature>
+
+    <feature name="commons-lang" description="Apache :: commons-lang" version="${commonsLangVersion}">
+      <bundle>mvn:commons-lang/commons-lang/${commonsLangVersion}</bundle>
+    </feature>
+
+    <feature name="dnsjava" description="dnsjava" version="${dnsjavaVersion}">
+      <bundle dependency="true">wrap:mvn:org.dnsjava/dnsjava/${dnsjavaVersion}</bundle>
+    </feature>
+
+    <!-- Use name hibernate36 so that we don't collide with Karaf 2.3.5+'s hibernate feature -->
+    <feature name="hibernate36" description="Hibernate :: Hibernate ORM" version="3.6.10.Final">
+      <bundle dependency="true">wrap:mvn:antlr/antlr/2.7.7</bundle>
+      <bundle dependency="true">wrap:mvn:dom4j/dom4j/1.6.1</bundle>
+      <bundle dependency="true">wrap:mvn:javax.transaction/jta/1.1</bundle>
+      <bundle dependency="true">mvn:commons-collections/commons-collections/3.2.1</bundle>
+      <bundle>wrap:mvn:org.hibernate/hibernate-core/3.6.10.Final</bundle>
+      <bundle>wrap:mvn:org.hibernate/hibernate-commons-annotations/3.2.0.Final</bundle>
+    </feature>
+
+    <feature name="jaxb" description="Apache ServiceMix :: JAXB" version="2.2.0">
+      <bundle dependency="true">mvn:org.apache.geronimo.specs/geronimo-activation_1.1_spec/1.0.2</bundle>
+      <bundle dependency="true">wrap:mvn:javax.xml.stream/stax-api/1.0-2</bundle>
+      <bundle dependency="true">wrap:mvn:javax.activation/activation/1.1.1</bundle>
+      <bundle dependency="true">wrap:mvn:org.eclipse.persistence/eclipselink/2.5.1</bundle>
+      <bundle dependency="true">mvn:org.eclipse.persistence/javax.persistence/2.1.0</bundle>
+      <bundle dependency="true">mvn:org.eclipse.persistence/commonj.sdo/2.1.1</bundle>
+      <bundle dependency="true">mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.stax-api-1.0/2.2.0</bundle>
+      <bundle>mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.jaxb-api-2.2/2.2.0</bundle>
+      <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.jaxb-impl/2.2.6_1</bundle>
+    </feature>
+
+    <feature name="jrobin" description="JRobin" version="1.6.0-SNAPSHOT">
+      <bundle>mvn:org.jrobin/jrobin/1.6.0-SNAPSHOT</bundle>
+    </feature>
+
+    <feature name="postgresql" description="PostgreSQL :: JDBC Driver" version="9.3-1100-jdbc4">
+      <bundle>wrap:mvn:org.postgresql/postgresql/9.3-1100-jdbc4</bundle>
+    </feature>
+
+    <feature name="slf4j-api" description="slf4j :: API" version="${slf4jVersion}">
+      <bundle>mvn:org.slf4j/slf4j-api/${slf4jVersion}</bundle>
+    </feature>
+
+    <!-- OpenNMS features -->
+    <feature name="opennms-core" description="OpenNMS :: Core" version="${project.version}">
+      <feature version="[3.2,3.3)">spring</feature>
+      <feature version="[3.2,3.3)">spring-orm</feature>
+
+      <feature>castor</feature>
+      <feature>commons-io</feature>
+      <feature>dnsjava</feature>
+      <feature>jaxb</feature>
+
+      <bundle>mvn:org.opennms.core/org.opennms.core.api/${project.version}</bundle>
+      <bundle>mvn:org.opennms.core/org.opennms.core.criteria/${project.version}</bundle>
+      <bundle>mvn:org.opennms.core/org.opennms.core.lib/${project.version}</bundle>
+      <bundle>mvn:org.opennms.core/org.opennms.core.logging/${project.version}</bundle>
+      <bundle>mvn:org.opennms.core/org.opennms.core.soa/${project.version}</bundle>
+      <bundle>mvn:org.opennms.core/org.opennms.core.spring/${project.version}</bundle>
+      <bundle>mvn:org.opennms.core/org.opennms.core.xml/${project.version}</bundle>
+      <bundle>mvn:org.opennms/opennms-util/${project.version}</bundle>
+    </feature>
+
+    <feature name="opennms-core-db" description="OpenNMS :: Core :: Database" version="${project.version}">
+      <feature>atomikos</feature>
+      <feature>postgresql</feature>
+      <bundle>mvn:org.opennms.core/org.opennms.core.db/${project.version}</bundle>
+    </feature>
+
+    <feature name="opennms-model" description="OpenNMS :: Model" version="${project.version}">
+      <feature version="[3.2,3.3)">spring</feature>
+      <feature version="[3.2,3.3)">spring-jdbc</feature>
+      <feature version="[3.2,3.3)">spring-orm</feature>
+      <feature version="[3.2,3.3)">spring-tx</feature>
+
+      <!-- 
+        We can't use the Karaf spring-security feature because it pulls in the "war" feature
+        which conflicts with our bridge implementation of the "http" feature when loaded
+        in the OpenNMS Karaf container.
+      -->
+      <!--
+      <feature version="[3.1,3.2)">spring-security</feature>
+      -->
+
+      <!-- Hack in a replacement for spring-security -->
+      <!-- spring-web is necessary for HTTP remoting -->
+      <feature version="[3.2,3.3)">spring-web</feature>
+      <feature>commons-codec</feature>
+      <bundle dependency="true">mvn:org.springframework.security/spring-security-core/${springSecurityVersion}</bundle>
+      <bundle dependency="true">mvn:org.springframework.security/spring-security-remoting/${springSecurityVersion}</bundle>
+
+      <feature>castor</feature>
+      <feature>commons-io</feature>
+      <feature>commons-lang</feature>
+      <feature>dnsjava</feature>
+      <feature>hibernate36</feature>
+      <feature>jaxb</feature>
+
+      <feature>opennms-core</feature>
+      <feature>opennms-rrd-api</feature>
+      <feature>opennms-snmp</feature>
+
+      <!-- Needed for JSON annotations -->
+      <bundle dependency="true">mvn:org.codehaus.jackson/jackson-core-asl/${jacksonVersion}</bundle>
+
+      <bundle>mvn:org.opennms/opennms-model/${project.version}</bundle>
+    </feature>
+
+    <feature name="opennms-collection-api" description="OpenNMS :: Collection API" version="${project.version}">
+      <feature version="[3.2,3.3)">spring</feature>
+
+      <feature>opennms-config-api</feature>
+      <feature>opennms-poller-api</feature>
+      <feature>opennms-rrd-api</feature>
+
+      <bundle>mvn:org.opennms.features.collection/org.opennms.features.collection.api/${project.version}</bundle>
+    </feature>
+
+    <feature name="opennms-collection-persistence-rrd" description="OpenNMS :: Collection :: Persistence :: RRD" version="${project.version}">
+      <feature>opennms-collection-api</feature>
+      <feature>opennms-rrd-api</feature>
+
+      <bundle>mvn:org.opennms.features.collection/org.opennms.features.collection.persistence.rrd/${project.version}</bundle>
+    </feature>
+
+    <feature name="opennms-config-api" description="OpenNMS :: Configuration API" version="${project.version}">
+      <feature>opennms-core</feature>
+      <feature>opennms-model</feature>
+
+      <bundle>mvn:org.opennms/opennms-config-api/${project.version}</bundle>
+      <bundle>mvn:org.opennms/opennms-config-model/${project.version}</bundle>
+      <bundle>mvn:org.opennms/opennms-config-jaxb/${project.version}</bundle>
+    </feature>
+
+    <feature name="opennms-config-jaxb" description="OpenNMS :: Configuration :: JAXB" version="${project.version}">
+      <feature>opennms-core</feature>
+      <feature>opennms-snmp</feature>
+
+      <bundle>mvn:org.opennms/opennms-config-jaxb/${project.version}</bundle>
+    </feature>
+
+    <feature name="opennms-config" description="OpenNMS :: Configuration" version="${project.version}">
+      <feature>c3p0</feature>
+      <feature>opennms-config-api</feature>
+      <feature>opennms-core-db</feature>
+      <feature>opennms-poller-api</feature>
+      <feature>opennms-snmp</feature>
+
+      <bundle dependency="true">wrap:mvn:org.jasypt/jasypt/1.9.0</bundle>
+      <bundle>mvn:org.opennms/opennms-config/${project.version}</bundle>
+    </feature>
+
+    <feature name="opennms-dao-api" description="OpenNMS :: DAO API" version="${project.version}">
+      <feature>opennms-core</feature>
+      <feature>opennms-model</feature>
+      <feature>opennms-config-api</feature>
+
+      <bundle>mvn:org.opennms/opennms-dao-api/${project.version}</bundle>
+    </feature>
+
+    <feature name="opennms-poller-api" description="OpenNMS :: Poller API" version="${project.version}">
+      <feature version="[3.2,3.3)">spring</feature>
+
+      <feature>opennms-core</feature>
+
+      <bundle>mvn:org.opennms.features.poller/org.opennms.features.poller.api/${project.version}</bundle>
+    </feature>
+
+    <feature name="opennms-rrd-api" description="OpenNMS :: RRD API" version="${project.version}">
+      <feature version="[3.2,3.3)">spring</feature>
+
+      <feature>opennms-core</feature>
+
+      <bundle>mvn:org.opennms/opennms-rrd-api/${project.version}</bundle>
+    </feature>
+
+    <feature name="opennms-rrd-jrobin" description="OpenNMS :: RRD :: JRobin" version="${project.version}">
+      <feature version="[3.2,3.3)">spring</feature>
+
+      <feature>jrobin</feature>
+      <feature>opennms-rrd-api</feature>
+
+      <bundle>mvn:org.opennms/opennms-rrd-jrobin/${project.version}</bundle>
+    </feature>
+
+    <feature name="opennms-snmp" description="OpenNMS :: Core :: SNMP" version="${project.version}">
+      <bundle>mvn:org.opennms.core.snmp/org.opennms.core.snmp.api/${project.version}</bundle>
+      <bundle>mvn:org.opennms.core.snmp/org.opennms.core.snmp.commands/${project.version}</bundle>
+      <bundle>mvn:org.opennms.core.snmp/org.opennms.core.snmp.implementations.snmp4j/${project.version}</bundle>
+      <bundle>mvn:org.opennms.core.snmp/org.opennms.core.snmp.joesnmp/${project.version}</bundle>
+    </feature>
+
+</features>

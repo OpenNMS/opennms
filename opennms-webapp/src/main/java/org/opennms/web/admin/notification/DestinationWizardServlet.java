@@ -312,7 +312,7 @@ public class DestinationWizardServlet extends HttpServlet {
         } else if (sourcePage.equals(SOURCE_PAGE_INTERVALS)) {
             Path newPath = (Path) user.getAttribute(SESSION_ATTRIBUTE_NEW_PATH);
             int index = WebSecurityUtils.safeParseInt(request.getParameter("targetIndex"));
-            Target targets[] = null;
+            Target[] targets = null;
 
             try {
                 targets = DestinationPathFactory.getInstance().getTargetList(index, newPath);
@@ -333,7 +333,7 @@ public class DestinationWizardServlet extends HttpServlet {
         } else if (sourcePage.equals(SOURCE_PAGE_COMMANDS)) {
             Path newPath = (Path) user.getAttribute(SESSION_ATTRIBUTE_NEW_PATH);
             int index = WebSecurityUtils.safeParseInt(request.getParameter("targetIndex"));
-            Target targets[] = null;
+            Target[] targets = null;
 
             try {
                 targets = DestinationPathFactory.getInstance().getTargetList(index, newPath);

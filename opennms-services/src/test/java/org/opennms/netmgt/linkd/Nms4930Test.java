@@ -30,100 +30,41 @@ package org.opennms.netmgt.linkd;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.DLINK1_IP;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.DLINK1_NAME;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.DLINK1_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.DLINK2_IP;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.DLINK2_NAME;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.DLINK2_SNMP_RESOURCE;
 
 import java.util.List;
-import java.util.Properties;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.opennms.core.spring.BeanUtils;
-import org.opennms.core.test.MockLogAppender;
-import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
-import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
-import org.opennms.netmgt.config.LinkdConfig;
 import org.opennms.netmgt.config.LinkdConfigFactory;
 import org.opennms.netmgt.config.linkd.Package;
-import org.opennms.netmgt.dao.api.DataLinkInterfaceDao;
-import org.opennms.netmgt.dao.api.NodeDao;
-import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
-import org.opennms.netmgt.dao.support.NewTransactionTemplate;
 import org.opennms.netmgt.model.DataLinkInterface;
+import org.opennms.netmgt.model.DataLinkInterface.DiscoveryProtocol;
 import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.test.JUnitConfigurationEnvironment;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.opennms.netmgt.nb.Nms4930NetworkBuilder;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
-@RunWith(OpenNMSJUnit4ClassRunner.class)
-@ContextConfiguration(locations= {
-        "classpath:/META-INF/opennms/applicationContext-soa.xml",
-        "classpath:/META-INF/opennms/applicationContext-dao.xml",
-        "classpath:/META-INF/opennms/applicationContext-daemon.xml",
-        "classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml",
-        "classpath:/META-INF/opennms/mockEventIpcManager.xml",
-        "classpath:/META-INF/opennms/applicationContext-linkd.xml",
-        "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml"
-})
-@JUnitConfigurationEnvironment(systemProperties="org.opennms.provisiond.enableDiscovery=false")
-@JUnitTemporaryDatabase
-@Transactional
-public class Nms4930Test extends Nms4930NetworkBuilder implements InitializingBean {
+public class Nms4930Test extends LinkdTestBuilder {
 
-    @Autowired
-    private Linkd m_linkd;
-
-    private LinkdConfig m_linkdConfig;
-
-    @Autowired
-    private NodeDao m_nodeDao;
-
-    @Autowired
-    private SnmpInterfaceDao m_snmpInterfaceDao;
-
-    @Autowired
-    private DataLinkInterfaceDao m_dataLinkInterfaceDao;
-
-    @Autowired
-    private NewTransactionTemplate m_transactionTemplate;
-
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        BeanUtils.assertAutowiring(this);
-    }
-
+	Nms4930NetworkBuilder builder = new Nms4930NetworkBuilder();
     @Before
-    public void setUp() throws Exception {
-        // MockLogAppender.setupLogging(true);
-        Properties p = new Properties();
-        p.setProperty("log4j.logger.org.hibernate.SQL", "WARN");
-        p.setProperty("log4j.logger.org.hibernate.cfg", "WARN");
-        p.setProperty("log4j.logger.org.springframework","WARN");
-        p.setProperty("log4j.logger.com.mchange.v2.resourcepool", "WARN");
-        MockLogAppender.setupLogging(p);
-
-        m_transactionTemplate.execute(new TransactionCallbackWithoutResult() {
-            @Override
-            protected void doInTransactionWithoutResult(TransactionStatus status) {
-                buildNetwork4930();
-            }
-        });
+    public void setUpNetwork4930() throws Exception {
+    	builder.setNodeDao(m_nodeDao);
+        builder.buildNetwork4930();
     }
 
 	@Before
 	public void setUpLinkdConfiguration() throws Exception {
-	    LinkdConfigFactory.init();
 	    final Resource config = new ClassPathResource("etc/linkd-configuration.xml");
-	    final LinkdConfigFactory factory = new LinkdConfigFactory(-1L, config.getInputStream());
-	    LinkdConfigFactory.setInstance(factory);
-	    m_linkdConfig = LinkdConfigFactory.getInstance();
+	    m_linkdConfig = new LinkdConfigFactory(config.getInputStream());
 	}
 
     /*
@@ -138,8 +79,8 @@ public class Nms4930Test extends Nms4930NetworkBuilder implements InitializingBe
      */
     @Test
     @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host="10.1.1.2", port=161, resource="classpath:linkd/nms4930/dlink_DES-3026.properties"),
-            @JUnitSnmpAgent(host="10.1.2.2", port=161, resource="classpath:linkd/nms4930/dlink_DGS-3612G.properties")
+            @JUnitSnmpAgent(host=DLINK1_IP, port=161, resource=DLINK1_SNMP_RESOURCE),
+            @JUnitSnmpAgent(host=DLINK2_IP, port=161, resource=DLINK2_SNMP_RESOURCE)
     })
     public void testNms4930Network() throws Exception {
 
@@ -154,24 +95,62 @@ public class Nms4930Test extends Nms4930NetworkBuilder implements InitializingBe
         example1.setSaveRouteTable(false);
         example1.setEnableVlanDiscovery(false);
         
-    	final OnmsNode cisco1 = m_nodeDao.findByForeignId("linkd", "cisco1");
-        final OnmsNode cisco2 = m_nodeDao.findByForeignId("linkd", "cisco2");
+    	final OnmsNode dlink1 = m_nodeDao.findByForeignId("linkd", DLINK1_NAME);
+        final OnmsNode dlink2 = m_nodeDao.findByForeignId("linkd", DLINK2_NAME);
 
-        assertTrue(m_linkd.scheduleNodeCollection(cisco1.getId()));
-        assertTrue(m_linkd.scheduleNodeCollection(cisco2.getId()));
+        assertTrue(m_linkd.scheduleNodeCollection(dlink1.getId()));
+        assertTrue(m_linkd.scheduleNodeCollection(dlink2.getId()));
 
-        assertTrue(m_linkd.runSingleSnmpCollection(cisco1.getId()));
-        assertTrue(m_linkd.runSingleSnmpCollection(cisco2.getId()));
+        assertTrue(m_linkd.runSingleSnmpCollection(dlink1.getId()));
+        assertTrue(m_linkd.runSingleSnmpCollection(dlink2.getId()));
 
         assertTrue(m_linkd.runSingleLinkDiscovery("example1"));
 
         final List<DataLinkInterface> ifaces = m_dataLinkInterfaceDao.findAll();
-        for (final DataLinkInterface link: ifaces) {
-            printLink(link);
-        }
         
-        // Note By AR: I've inspected the snmp file, only the bridge mib are there
-        //             and no link is found
-        assertEquals("we should have found no links", 0, ifaces.size());
+        assertEquals("we should have found 1 link", 1, ifaces.size());
+        for (final DataLinkInterface link: ifaces) {
+            checkLink(dlink1, dlink2, 24, 10, link);
+            assertEquals(DiscoveryProtocol.bridge, link.getProtocol());
+        }
     }
+    
+    @Test
+    @JUnitSnmpAgents(value={
+            @JUnitSnmpAgent(host=DLINK1_IP, port=161, resource=DLINK1_SNMP_RESOURCE),
+            @JUnitSnmpAgent(host=DLINK2_IP, port=161, resource=DLINK2_SNMP_RESOURCE)
+    })
+    public void testNms4930NetworkReverse() throws Exception {
+
+        Package example1 = m_linkdConfig.getPackage("example1");
+        example1.setUseLldpDiscovery(false);
+        example1.setUseOspfDiscovery(false);
+        example1.setUseCdpDiscovery(false);
+        example1.setUseIpRouteDiscovery(false);
+        example1.setUseBridgeDiscovery(true);
+        example1.setUseIsisDiscovery(false);
+
+        example1.setSaveRouteTable(false);
+        example1.setEnableVlanDiscovery(false);
+        
+    	final OnmsNode dlink1 = m_nodeDao.findByForeignId("linkd", DLINK1_NAME);
+        final OnmsNode dlink2 = m_nodeDao.findByForeignId("linkd", DLINK2_NAME);
+
+        assertTrue(m_linkd.scheduleNodeCollection(dlink2.getId()));
+        assertTrue(m_linkd.scheduleNodeCollection(dlink1.getId()));
+
+        assertTrue(m_linkd.runSingleSnmpCollection(dlink2.getId()));
+        assertTrue(m_linkd.runSingleSnmpCollection(dlink1.getId()));
+
+        assertTrue(m_linkd.runSingleLinkDiscovery("example1"));
+
+        final List<DataLinkInterface> ifaces = m_dataLinkInterfaceDao.findAll();
+        assertEquals("we should have found one link", 1, ifaces.size());
+        for (final DataLinkInterface link: ifaces) {
+            checkLink(dlink1,dlink2 , 24, 10, link);
+            assertEquals(DiscoveryProtocol.bridge, link.getProtocol());
+        }
+
+    }
+
 }

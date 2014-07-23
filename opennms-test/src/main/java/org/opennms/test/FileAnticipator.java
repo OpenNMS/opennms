@@ -40,13 +40,12 @@ import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
-import java.util.Random;
 
-import org.junit.Assert;
 import junit.framework.AssertionFailedError;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.junit.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,18 +53,13 @@ import org.slf4j.LoggerFactory;
  * File anticipator.
  *
  * Example usage with late initialization:
- * <pre>
- * private FileAnticipator m_fileAnticipator;
  *
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
- * @version $Id: $
  */
 public class FileAnticipator extends Assert {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(FileAnticipator.class);
 
-    private static final String JAVA_IO_TMPDIR = "java.io.tmpdir";
-    
     private LinkedList<File> m_expecting = new LinkedList<File>();
     private LinkedList<File> m_deleteMe = new LinkedList<File>();
     private File m_tempDir = null;
@@ -92,10 +86,12 @@ public class FileAnticipator extends Assert {
         }
     }
     
-    /** {@inheritDoc} */
+    /** {@inheritDoc} 
+     * @throws Throwable */
     @Override
-    protected void finalize() {
+    protected void finalize() throws Throwable {
         tearDown();
+        super.finalize();
     }
 
     /**
@@ -150,7 +146,8 @@ public class FileAnticipator extends Assert {
     }
     
     /**
-     * <p>initialize</p>
+     * Create a temp directory where anticipated files will be stored for the
+     * duration of the unit test.
      *
      * @throws java.io.IOException if any.
      */
@@ -159,53 +156,20 @@ public class FileAnticipator extends Assert {
             return;
         }
         
-        String systemTempDir = System.getProperty(JAVA_IO_TMPDIR);
-        assertNotNull(JAVA_IO_TMPDIR + " system property is not set, but must be", systemTempDir);
+        // Create a temp file
+        m_tempDir = File.createTempFile("FileAnticipatorTemp","");
+        // Delete the empty file that is created
+        m_tempDir.delete();
+        // Make a directory at the location
+        m_tempDir.mkdir();
+        // Mark it as deleteOnExit
+        m_tempDir.deleteOnExit();
         
-        File f = new File(systemTempDir); 
-        assertTrue("path specified in system property " + JAVA_IO_TMPDIR + ", \"" +
-                 systemTempDir + "\" is not a directory", f.isDirectory());
-
-        String tempFileName = "FileAnticipator_temp_" + System.currentTimeMillis() + "_" + generateRandomHexString(8);
-        m_tempDir = internalTempDir(f, tempFileName);
+        //m_expecting.add(m_tempDir);
         
         m_initialized = true;
     }
 
-    /**
-     * <p>generateRandomHexString</p>
-     *
-     * @param length a int.
-     * @return a {@link java.lang.String} object.
-     */
-    protected static String generateRandomHexString(int length) {
-        if (length < 0) {
-            throw new IllegalArgumentException("length argument is " + length + " and cannot be below zero");
-        }
-        
-        Random random=new Random();
-        /*
-        SecureRandom sometimes gets tied up in knots in testing (the test process goes off into lala land and never returns from .nextBytes)
-        Slow debugging (with pauses) seems to work most of the time, but manual Thread.sleeps doesn't
-        Using Random instead of SecureRandom (which should be fine in this context) works much better.  Go figure
-        
-        SecureRandom random = null;
-        try {
-            random = SecureRandom.getInstance("SHA1PRNG");
-        } catch (NoSuchAlgorithmException e) {
-            fail("Could not initialize SecureRandom: " + e);
-        }*/
-        
-        byte bytes[] = new byte[length];
-        random.nextBytes(bytes);
-        
-        StringBuffer sb = new StringBuffer();
-        for (byte b : bytes) {
-            sb.append(String.format("%02x", b));
-        }
-        return sb.toString();
-    }
-    
     /**
      * <p>getTempDir</p>
      *
@@ -438,7 +402,7 @@ public class FileAnticipator extends Assert {
      * Delete expected files, throwing an AssertionFailedError if any of
      * the expected files don't exist.
      *
-     * @param ignoreNonExistantFiles if true, non-existant files will be
+     * @param ignoreNonExistantFiles if true, non-existent files will be
      *      ignored and will not throw an AssertionFailedError
      * @throws AssertionFailedError if ignoreNonExistantFiles is false
      *      and an expected file does not exist, or if a file cannot be deleted
@@ -453,7 +417,7 @@ public class FileAnticipator extends Assert {
             }
         });
         
-        List<String> errors = new ArrayList<String>();
+        final List<String> errors = new ArrayList<String>();
 
         for (ListIterator<File> i = m_expecting.listIterator(m_expecting.size()); i.hasPrevious(); ) {
             File f = i.previous();

@@ -168,6 +168,15 @@ public class Service implements Serializable {
         return m_parameters.remove(parameter);
     }
 
+    public Parameter getParameter(final String key) {
+        for (final Parameter parameter : m_parameters) {
+            if (key.equals(parameter.getKey())) {
+                return parameter;
+            }
+        }
+        return null;
+    }
+
     /**
      * Overrides the Object.equals method.
      * 

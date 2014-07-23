@@ -46,7 +46,6 @@ import org.opennms.web.filter.SQLType;
 public class ForeignSourceFilter extends EqualsFilter<String> {
     /** Constant <code>TYPE="foreignsource"</code> */
     public static final String TYPE = "foreignsource";
-    private ServletContext m_servletContext;
 
     /**
      * Constructor for ForeignSourceFilter.
@@ -55,7 +54,6 @@ public class ForeignSourceFilter extends EqualsFilter<String> {
      */
     public ForeignSourceFilter(String foreignSource, ServletContext servletContext) {
         super(TYPE, SQLType.STRING, "OUTAGES.NODEID", "NODE.foreignSource", foreignSource);
-        m_servletContext = servletContext;
     }
 
     /** {@inheritDoc} */
@@ -81,6 +79,8 @@ public class ForeignSourceFilter extends EqualsFilter<String> {
 
     /** {@inheritDoc} */
     public boolean equals(Object obj) {
+        if (obj == null) return false;
+        if (!(obj instanceof ForeignSourceFilter)) return false;
         return (this.toString().equals(obj.toString()));
     }
 }

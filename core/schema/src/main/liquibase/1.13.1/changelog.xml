@@ -1,0 +1,778 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+  xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+  xsi:schemaLocation="
+    http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd
+    http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd
+  ">
+
+  <changeSet author="david@opennms.org" id="1.13.1-newLinkdSearchProviderIndexes">
+
+    <createIndex indexName="node_sysoid_idx" tableName="node" unique="false">
+      <column name="nodesysoid" />
+    </createIndex>
+    <createIndex indexName="node_sysdescr_idx" tableName="node" unique="false">
+      <column name="nodesysdescription" />
+    </createIndex>
+
+    <rollback>
+      <dropIndex tableName="node" indexName="node_sysoid_idx" />
+      <dropIndex tableName="node" indexName="node_sysdescr_idx" />
+    </rollback>
+
+  </changeSet>
+
+  <changeSet author="rssntn67" id="1.13.1-lldpelement">
+    <validCheckSum>ANY</validCheckSum>
+
+    <createTable tableName="lldpelement">
+      <column name="id" type="integer">
+        <constraints primaryKey="true" nullable="false" />
+      </column>
+      <column name="nodeid" type="integer">
+        <constraints nullable="false" />
+      </column>
+      <column name="lldpchassisid" type="varchar(255)">
+        <constraints nullable="false" />
+      </column>
+      <column name="lldpchassisidsubtype" type="integer">
+        <constraints nullable="false" />
+      </column>
+      <column name="lldpsysname" type="varchar(255)">
+        <constraints nullable="false" />
+      </column>
+      <column name="lldpnodecreatetime" type="DATETIME">
+        <constraints nullable="false" />
+      </column>
+      <column name="lldpnodelastpolltime" type="DATETIME">
+        <constraints nullable="false" />
+      </column>
+    </createTable>
+
+    <ext:addAutoIncrement tableName="lldpelement" columnName="id" sequenceName="opennmsNxtId" />
+    <addForeignKeyConstraint constraintName="fk_lldpelement_nodeid" onDelete="CASCADE" baseTableName="lldpelement" baseColumnNames="nodeid" referencedTableName="node" referencedColumnNames="nodeid" />
+    <createIndex tableName="lldpelement" indexName="lldpelement_nodeid_idx">
+      <column name="nodeid" />
+    </createIndex>
+    <createIndex tableName="lldpelement" indexName="lldp_chassis_idx">
+      <column name="lldpchassisid" />
+    </createIndex>
+    <createIndex tableName="lldpelement" indexName="lldp_sysname_idx">
+      <column name="lldpsysname" />
+    </createIndex>
+
+    <rollback>
+      <dropTable tableName="lldpelement" />
+    </rollback>
+
+  </changeSet>
+
+  <changeSet author="rssntn67" id="1.13.1-lldplink">
+    <validCheckSum>ANY</validCheckSum>
+
+    <createTable tableName="lldplink">
+      <column name="id" type="integer">
+        <constraints primaryKey="true" nullable="false" />
+      </column>
+      <column name="nodeid" type="integer">
+        <constraints nullable="false" />
+      </column>
+      <column name="lldplocalportnum" type="integer">
+        <constraints nullable="false" />
+      </column>
+      <column name="lldpportid" type="varchar(255)">
+        <constraints nullable="false" />
+      </column>
+      <column name="lldpportidsubtype" type="integer">
+        <constraints nullable="false" />
+      </column>
+      <column name="lldpportdescr" type="varchar(255)">
+        <constraints nullable="false" />
+      </column>
+      <column name="lldpportifindex" type="integer" />
+      <column name="lldpremchassisid" type="varchar(255)">
+        <constraints nullable="false" />
+      </column>
+      <column name="lldpremchassisidsubtype" type="integer">
+        <constraints nullable="false" />
+      </column>
+      <column name="lldpremsysname" type="varchar(255)">
+        <constraints nullable="false" />
+      </column>
+      <column name="lldpremportid" type="varchar(255)">
+        <constraints nullable="false" />
+      </column>
+      <column name="lldpremportidsubtype" type="integer">
+        <constraints nullable="false" />
+      </column>
+      <column name="lldpremportdescr" type="varchar(255)">
+        <constraints nullable="false" />
+      </column>
+      <column name="lldplinkcreatetime" type="DATETIME">
+        <constraints nullable="false" />
+      </column>
+      <column name="lldplinklastpolltime" type="DATETIME">
+        <constraints nullable="false" />
+      </column>
+    </createTable>
+
+    <ext:addAutoIncrement tableName="lldplink" columnName="id" sequenceName="opennmsNxtId" />
+    <addForeignKeyConstraint constraintName="fk_lldplink_nodeid" onDelete="CASCADE" baseTableName="lldplink" baseColumnNames="nodeid" referencedTableName="node" referencedColumnNames="nodeid" />
+    <createIndex tableName="lldplink" indexName="lldplink_nodeid_idx">
+      <column name="nodeid" />
+    </createIndex>
+    <createIndex tableName="lldplink" indexName="lldplink_lastpoll_idx">
+      <column name="lldplinklastpolltime" />
+    </createIndex>
+    <createIndex tableName="lldplink" indexName="lldplink_pk_idx">
+      <column name="nodeid" />
+      <column name="lldplocalportnum" />
+    </createIndex>
+
+    <rollback>
+      <dropTable tableName="lldplink" />
+    </rollback>
+
+  </changeSet>
+
+  <changeSet author="rssntn67" id="1.13.1-ospfelement">
+    <validCheckSum>ANY</validCheckSum>
+
+    <createTable tableName="ospfelement">
+      <column name="id" type="integer">
+        <constraints primaryKey="true" nullable="false" />
+      </column>
+      <column name="nodeid" type="integer">
+        <constraints nullable="false" />
+      </column>
+      <column name="ospfrouterid" type="varchar(16)">
+        <constraints nullable="false" />
+      </column>
+      <column name="ospfadminstat" type="integer">
+        <constraints nullable="false" />
+      </column>
+      <column name="ospfversionnumber" type="integer">
+        <constraints nullable="false" />
+      </column>
+      <column name="ospfbdrrtrstatus" type="integer">
+        <constraints nullable="false" />
+      </column>
+      <column name="ospfasbdrrtrstatus" type="integer">
+        <constraints nullable="false" />
+      </column>
+      <column name="ospfrouteridnetmask" type="varchar(16)">
+        <constraints nullable="false" />
+      </column>
+      <column name="ospfrouteridifindex" type="integer">
+        <constraints nullable="false" />
+      </column>
+      <column name="ospfnodecreatetime" type="DATETIME">
+        <constraints nullable="false" />
+      </column>
+      <column name="ospfnodelastpolltime" type="DATETIME">
+        <constraints nullable="false" />
+      </column>
+    </createTable>
+
+    <ext:addAutoIncrement tableName="ospfelement" columnName="id" sequenceName="opennmsNxtId" />
+    <addForeignKeyConstraint constraintName="fk_ospfelement_nodeid" onDelete="CASCADE" baseTableName="ospfelement" baseColumnNames="nodeid" referencedTableName="node" referencedColumnNames="nodeid" />
+    <createIndex tableName="ospfelement" indexName="ospfelement_nodeid_idx">
+      <column name="nodeid" />
+    </createIndex>
+    <createIndex tableName="ospfelement" indexName="ospfelement_routerid_idx">
+      <column name="ospfrouterid" />
+    </createIndex>
+
+    <rollback>
+      <dropTable tableName="ospfelement" />
+    </rollback>
+
+  </changeSet>
+
+  <changeSet author="rssntn67" id="1.13.1-ospflink">
+    <validCheckSum>ANY</validCheckSum>
+
+    <createTable tableName="ospflink">
+      <column name="id" type="integer">
+        <constraints primaryKey="true" nullable="false" />
+      </column>
+      <column name="nodeid" type="integer">
+        <constraints nullable="false" />
+      </column>
+      <column name="ospfipaddr" type="varchar(16)">
+        <constraints nullable="true" />
+      </column>
+      <column name="ospfipmask" type="varchar(16)">
+        <constraints nullable="true" />
+      </column>
+      <column name="ospfaddresslessindex" type="integer">
+        <constraints nullable="true" />
+      </column>
+      <column name="ospfifindex" type="integer">
+        <constraints nullable="true" />
+      </column>
+      <column name="ospfremrouterid" type="varchar(16)">
+        <constraints nullable="false" />
+      </column>
+      <column name="ospfremipaddr" type="varchar(16)">
+        <constraints nullable="false" />
+      </column>
+      <column name="ospfremaddresslessindex" type="integer">
+        <constraints nullable="false" />
+      </column>
+      <column name="ospflinkcreatetime" type="DATETIME">
+        <constraints nullable="false" />
+      </column>
+      <column name="ospflinklastpolltime" type="DATETIME">
+        <constraints nullable="false" />
+      </column>
+    </createTable>
+
+    <ext:addAutoIncrement tableName="ospflink" columnName="id" sequenceName="opennmsNxtId" />
+    <addForeignKeyConstraint constraintName="fk_ospflink_nodeid" onDelete="CASCADE" baseTableName="ospflink" baseColumnNames="nodeid" referencedTableName="node" referencedColumnNames="nodeid" />
+    <createIndex tableName="ospflink" indexName="ospflink_nodeid_idx">
+      <column name="nodeid" />
+    </createIndex>
+    <createIndex tableName="ospflink" indexName="ospflink_lastpoll_idx">
+      <column name="ospflinklastpolltime" />
+    </createIndex>
+    <createIndex tableName="ospflink" indexName="ospflink_pk_idx">
+      <column name="nodeid" />
+      <column name="ospfremrouterid" />
+      <column name="ospfremipaddr" />
+      <column name="ospfremaddresslessindex" />
+    </createIndex>
+
+    <rollback>
+      <dropTable tableName="ospflink" />
+    </rollback>
+
+  </changeSet>
+
+  <changeSet author="rssntn67" id="1.13.1-isiselement">
+    <validCheckSum>ANY</validCheckSum>
+
+    <createTable tableName="isiselement">
+      <column name="id" type="integer">
+        <constraints primaryKey="true" nullable="false" />
+      </column>
+      <column name="nodeid" type="integer">
+        <constraints nullable="false" />
+      </column>
+      <column name="isissysid" type="varchar(32)">
+        <constraints nullable="false" />
+      </column>
+      <column name="isissysadminstate" type="integer">
+        <constraints nullable="false" />
+      </column>
+      <column name="isisnodecreatetime" type="DATETIME">
+        <constraints nullable="false" />
+      </column>
+      <column name="isisnodelastpolltime" type="DATETIME">
+        <constraints nullable="false" />
+      </column>
+    </createTable>
+
+    <ext:addAutoIncrement tableName="isiselement" columnName="id" sequenceName="opennmsNxtId" />
+    <addForeignKeyConstraint constraintName="fk_isiselement_nodeid" onDelete="CASCADE" baseTableName="isiselement" baseColumnNames="nodeid" referencedTableName="node" referencedColumnNames="nodeid" />
+    <createIndex tableName="isiselement" indexName="isiselement_nodeid_idx">
+      <column name="nodeid" />
+    </createIndex>
+    <createIndex tableName="isiselement" indexName="isiselement_sysid_idx">
+      <column name="isissysid" />
+    </createIndex>
+
+    <rollback>
+      <dropTable tableName="isiselement" />
+    </rollback>
+
+  </changeSet>
+
+  <changeSet author="rssntn67" id="1.13.1-isislink">
+    <validCheckSum>ANY</validCheckSum>
+
+    <createTable tableName="isislink">
+      <column name="id" type="integer">
+        <constraints primaryKey="true" nullable="false" />
+      </column>
+      <column name="nodeid" type="integer">
+        <constraints nullable="false" />
+      </column>
+      <column name="isiscircindex" type="integer">
+        <constraints nullable="false" />
+      </column>
+      <column name="isisisadjindex" type="integer">
+        <constraints nullable="false" />
+      </column>
+      <column name="isiscircifindex" type="integer">
+        <constraints nullable="true" />
+      </column>
+      <column name="isiscircadminstate" type="integer">
+        <constraints nullable="true" />
+      </column>
+      <column name="isisisadjstate" type="integer">
+        <constraints nullable="false" />
+      </column>
+      <column name="isisisadjneighsnpaaddress" type="varchar(80)">
+        <constraints nullable="false" />
+      </column>
+      <column name="isisisadjneighsysyype" type="integer">
+        <constraints nullable="false" />
+      </column>
+      <column name="isisisadjneighsysid" type="varchar(32)">
+        <constraints nullable="false" />
+      </column>
+      <column name="isisisadjnbrextendedcircid" type="integer">
+        <constraints nullable="false" />
+      </column>
+      <column name="isislinkcreatetime" type="DATETIME">
+        <constraints nullable="false" />
+      </column>
+      <column name="isislinklastpolltime" type="DATETIME">
+        <constraints nullable="false" />
+      </column>
+    </createTable>
+
+    <ext:addAutoIncrement tableName="isislink" columnName="id" sequenceName="opennmsNxtId" />
+    <addForeignKeyConstraint constraintName="fk_isislink_nodeid" onDelete="CASCADE" baseTableName="isislink" baseColumnNames="nodeid" referencedTableName="node" referencedColumnNames="nodeid" />
+    <createIndex tableName="isislink" indexName="isislink_nodeid_idx">
+      <column name="nodeid" />
+    </createIndex>
+    <createIndex tableName="isislink" indexName="isislink_lastpoll_idx">
+      <column name="isislinklastpolltime" />
+    </createIndex>
+    <createIndex tableName="isislink" indexName="isislink_pk_idx">
+      <column name="nodeid" />
+      <column name="isiscircindex" />
+      <column name="isisisadjindex" />
+    </createIndex>
+
+    <rollback>
+      <dropTable tableName="isislink" />
+    </rollback>
+
+  </changeSet>
+
+  <changeSet author="rssntn67" id="1.13.1-ipnettomedia">
+    <validCheckSum>ANY</validCheckSum>
+
+    <createTable tableName="ipnettomedia">
+      <column name="id" type="integer">
+        <constraints primaryKey="true" nullable="false" />
+      </column>
+      <column name="netaddress" type="text">
+        <constraints nullable="false" />
+      </column>
+      <column name="physaddress" type="varchar(32)">
+        <constraints nullable="false" />
+      </column>
+      <column name="sourcenodeid" type="integer">
+        <constraints nullable="false" />
+      </column>
+      <column name="sourceifindex" type="integer">
+        <constraints nullable="false" />
+      </column>
+      <column name="createtime" type="DATETIME">
+        <constraints nullable="false" />
+      </column>
+      <column name="lastpolltime" type="DATETIME">
+        <constraints nullable="false" />
+      </column>
+    </createTable>
+
+    <ext:addAutoIncrement tableName="ipnettomedia" columnName="id" sequenceName="opennmsNxtId" />
+    <addForeignKeyConstraint constraintName="fk_ipnettomedia_sourcenodeid" onDelete="CASCADE" baseTableName="ipnettomedia" baseColumnNames="sourcenodeid" referencedTableName="node" referencedColumnNames="nodeid" />
+    <createIndex tableName="ipnettomedia" indexName="ipnettomedia_nodeid_idx">
+      <column name="sourcenodeid" />
+    </createIndex>
+    <createIndex tableName="ipnettomedia" indexName="ipnettomedia_lastpoll_idx">
+      <column name="lastpolltime" />
+    </createIndex>
+    <createIndex tableName="ipnettomedia" indexName="ipnettomedia_pk_idx">
+      <column name="netaddress" />
+      <column name="physaddress" />
+    </createIndex>
+
+    <rollback>
+      <dropTable tableName="ipnettomedia" />
+    </rollback>
+
+  </changeSet>
+
+  <changeSet author="rssntn67" id="1.13.1-bridgeelement">
+    <validCheckSum>ANY</validCheckSum>
+
+    <createTable tableName="bridgeelement">
+      <column name="id" type="integer">
+        <constraints primaryKey="true" nullable="false" />
+      </column>
+      <column name="nodeid" type="integer">
+        <constraints nullable="false" />
+      </column>
+      <column name="basebridgeaddress" type="varchar(12)">
+        <constraints nullable="false" />
+      </column>
+      <column name="basenumports" type="integer">
+        <constraints nullable="false" />
+      </column>
+      <column name="basetype" type="integer">
+        <constraints nullable="false" />
+      </column>
+      <column name="vlan" type="integer">
+        <constraints nullable="true" />
+      </column>
+      <column name="vlanname" type="varchar(64)">
+        <constraints nullable="true" />
+      </column>
+      <column name="stpprotocolspecification" type="integer">
+        <constraints nullable="true" />
+      </column>
+      <column name="stppriority" type="integer">
+        <constraints nullable="true" />
+      </column>
+      <column name="stpdesignatedroot" type="varchar(16)">
+        <constraints nullable="true" />
+      </column>
+      <column name="stprootcost" type="integer">
+        <constraints nullable="true" />
+      </column>
+      <column name="stprootport" type="integer">
+        <constraints nullable="true" />
+      </column>
+      <column name="bridgenodecreatetime" type="DATETIME">
+        <constraints nullable="false" />
+      </column>
+      <column name="bridgenodelastpolltime" type="DATETIME">
+        <constraints nullable="false" />
+      </column>
+    </createTable>
+
+    <ext:addAutoIncrement tableName="bridgeelement" columnName="id" sequenceName="opennmsNxtId" />
+    <addForeignKeyConstraint constraintName="fk_bridgeelement_nodeid" onDelete="CASCADE" baseTableName="bridgeelement" baseColumnNames="nodeid" referencedTableName="node" referencedColumnNames="nodeid" />
+    <createIndex tableName="bridgeelement" indexName="bridgeelement_nodeid_idx">
+      <column name="nodeid" />
+    </createIndex>
+    <createIndex tableName="bridgeelement" indexName="bridgeelement_lastpoll_idx">
+      <column name="bridgenodelastpolltime" />
+    </createIndex>
+    <createIndex tableName="bridgeelement" indexName="bridgeelement_pk_idx">
+      <column name="nodeid" />
+      <column name="basebridgeaddress" />
+    </createIndex>
+
+    <rollback>
+      <dropTable tableName="bridgeelement" />
+    </rollback>
+
+  </changeSet>
+
+  <changeSet author="rssntn67" id="1.13.1-bridgemaclink">
+    <validCheckSum>ANY</validCheckSum>
+
+    <createTable tableName="bridgemaclink">
+      <column name="id" type="integer">
+        <constraints primaryKey="true" nullable="false" />
+      </column>
+      <column name="nodeid" type="integer">
+        <constraints nullable="false" />
+      </column>
+      <column name="bridgeport" type="integer">
+        <constraints nullable="false" />
+      </column>
+      <column name="bridgeportifindex" type="integer">
+        <constraints nullable="true" />
+      </column>
+      <column name="bridgeportifname" type="varchar(32)">
+        <constraints nullable="true" />
+      </column>
+      <column name="vlan" type="integer">
+        <constraints nullable="true" />
+      </column>
+      <column name="macaddress" type="varchar(12)">
+        <constraints nullable="false" />
+      </column>
+      <column name="bridgemaclinkcreatetime" type="DATETIME">
+        <constraints nullable="false" />
+      </column>
+      <column name="bridgemaclinklastpolltime" type="DATETIME">
+        <constraints nullable="false" />
+      </column>
+    </createTable>
+
+    <ext:addAutoIncrement tableName="bridgemaclink" columnName="id" sequenceName="opennmsNxtId" />
+    <addForeignKeyConstraint constraintName="fk_bridgemaclink_nodeid" onDelete="CASCADE" baseTableName="bridgemaclink" baseColumnNames="nodeid" referencedTableName="node" referencedColumnNames="nodeid" />
+    <createIndex tableName="bridgemaclink" indexName="bridgemaclink_nodeid_idx">
+      <column name="nodeid" />
+    </createIndex>
+    <createIndex tableName="bridgemaclink" indexName="bridgemaclink_lastpoll_idx">
+      <column name="bridgemaclinklastpolltime" />
+    </createIndex>
+    <createIndex tableName="bridgemaclink" indexName="bridgemaclink_pk_idx1">
+      <column name="nodeid" />
+      <column name="bridgeport" />
+    </createIndex>
+    <createIndex tableName="bridgemaclink" indexName="bridgemaclink_pk_idx2">
+      <column name="macaddress" />
+    </createIndex>
+
+    <rollback>
+      <dropTable tableName="bridgemaclink" />
+    </rollback>
+
+  </changeSet>
+
+  <changeSet author="rssntn67" id="1.13.1-bridgestplink">
+    <validCheckSum>ANY</validCheckSum>
+
+    <createTable tableName="bridgestplink">
+      <column name="id" type="integer">
+        <constraints primaryKey="true" nullable="false" />
+      </column>
+      <column name="nodeid" type="integer">
+        <constraints nullable="false" />
+      </column>
+      <column name="stpport" type="integer">
+        <constraints nullable="false" />
+      </column>
+      <column name="stpportpriority" type="integer">
+        <constraints nullable="false" />
+      </column>
+      <column name="stpportstate" type="integer">
+        <constraints nullable="false" />
+      </column>
+      <column name="stpportenable" type="integer">
+        <constraints nullable="false" />
+      </column>
+      <column name="stpportpathcost" type="integer">
+        <constraints nullable="false" />
+      </column>
+      <column name="stpportifindex" type="integer">
+        <constraints nullable="true" />
+      </column>
+      <column name="stpportifname" type="varchar(32)">
+        <constraints nullable="true" />
+      </column>
+      <column name="vlan" type="integer">
+        <constraints nullable="true" />
+      </column>
+      <column name="designatedroot" type="varchar(16)">
+        <constraints nullable="false" />
+      </column>
+      <column name="designatedcost" type="integer">
+        <constraints nullable="false" />
+      </column>
+      <column name="designatedbridge" type="varchar(16)">
+        <constraints nullable="false" />
+      </column>
+      <column name="designatedport" type="varchar(4)">
+        <constraints nullable="false" />
+      </column>
+      <column name="bridgestplinkcreatetime" type="DATETIME">
+        <constraints nullable="false" />
+      </column>
+      <column name="bridgestplinklastpolltime" type="DATETIME">
+        <constraints nullable="false" />
+      </column>
+    </createTable>
+
+    <ext:addAutoIncrement tableName="bridgestplink" columnName="id" sequenceName="opennmsNxtId" />
+    <addForeignKeyConstraint constraintName="fk_bridgestplink_nodeid" onDelete="CASCADE" baseTableName="bridgestplink" baseColumnNames="nodeid" referencedTableName="node" referencedColumnNames="nodeid" />
+    <createIndex tableName="bridgestplink" indexName="bridgestplink_nodeid_idx">
+      <column name="nodeid" />
+    </createIndex>
+    <createIndex tableName="bridgestplink" indexName="bridgestplink_lastpoll_idx">
+      <column name="bridgestplinklastpolltime" />
+    </createIndex>
+    <createIndex tableName="bridgestplink" indexName="bridgestplink_pk_idx1">
+      <column name="nodeid" />
+      <column name="stpport" />
+    </createIndex>
+    <createIndex tableName="bridgestplink" indexName="bridgestplink_pk_idx2">
+      <column name="designatedbridge" />
+    </createIndex>
+
+    <rollback>
+      <dropTable tableName="bridgestplink" />
+    </rollback>
+
+  </changeSet>
+
+  <changeSet author="rssntn67" id="1.13.1-bridgebridgelink">
+    <validCheckSum>ANY</validCheckSum>
+
+    <createTable tableName="bridgebridgelink">
+      <column name="id" type="integer">
+        <constraints primaryKey="true" nullable="false" />
+      </column>
+      <column name="nodeid" type="integer">
+        <constraints nullable="false" />
+      </column>
+      <column name="bridgeport" type="integer">
+        <constraints nullable="true" />
+      </column>
+      <column name="bridgeportifindex" type="integer">
+        <constraints nullable="true" />
+      </column>
+      <column name="bridgeportifname" type="varchar(32)">
+        <constraints nullable="true" />
+      </column>
+      <column name="vlan" type="integer">
+        <constraints nullable="true" />
+      </column>
+      <column name="designatednodeid" type="integer">
+        <constraints nullable="false" />
+      </column>
+      <column name="designatedbridgeport" type="integer">
+        <constraints nullable="true" />
+      </column>
+      <column name="designatedbridgeportifindex" type="integer">
+        <constraints nullable="true" />
+      </column>
+      <column name="designatedbridgeportifname" type="varchar(32)">
+        <constraints nullable="true" />
+      </column>
+      <column name="designatedvlan" type="integer">
+        <constraints nullable="true" />
+      </column>
+      <column name="bridgebridgelinkcreatetime" type="DATETIME">
+        <constraints nullable="false" />
+      </column>
+      <column name="bridgebridgelinklastpolltime" type="DATETIME">
+        <constraints nullable="false" />
+      </column>
+    </createTable>
+
+    <ext:addAutoIncrement tableName="bridgebridgelink" columnName="id" sequenceName="opennmsNxtId" />
+    <addForeignKeyConstraint constraintName="fk_bridgebridgelink_nodeid" onDelete="CASCADE" baseTableName="bridgebridgelink" baseColumnNames="nodeid" referencedTableName="node" referencedColumnNames="nodeid" />
+    <addForeignKeyConstraint constraintName="fk_bridgebridgelink_designatednodeid" onDelete="CASCADE" baseTableName="bridgebridgelink" baseColumnNames="designatednodeid" referencedTableName="node" referencedColumnNames="nodeid" />
+    <createIndex tableName="bridgebridgelink" indexName="bridgebridgelink_nodeid_idx">
+      <column name="nodeid" />
+    </createIndex>
+    <createIndex tableName="bridgebridgelink" indexName="bridgebridgelink_lastpoll_idx">
+      <column name="bridgebridgelinklastpolltime" />
+    </createIndex>
+    <createIndex tableName="bridgebridgelink" indexName="bridgebridgelink_pk_idx">
+      <column name="nodeid" />
+      <column name="bridgeport" />
+    </createIndex>
+
+    <rollback>
+      <dropTable tableName="bridgebridgelink" />
+    </rollback>
+
+  </changeSet>
+
+  <changeSet author="rssntn67" id="1.13.1-cdpelement">
+    <validCheckSum>ANY</validCheckSum>
+
+    <createTable tableName="cdpelement">
+      <column name="id" type="integer">
+        <constraints primaryKey="true" nullable="false" />
+      </column>
+      <column name="nodeid" type="integer">
+        <constraints nullable="false" />
+      </column>
+      <column name="cdpglobalrun" type="integer">
+        <constraints nullable="false" />
+      </column>
+      <column name="cdpglobaldeviceid" type="varchar(255)">
+        <constraints nullable="false" />
+      </column>
+      <column name="cdpnodecreatetime" type="DATETIME">
+        <constraints nullable="false" />
+      </column>
+      <column name="cdpnodelastpolltime" type="DATETIME">
+        <constraints nullable="false" />
+      </column>
+    </createTable>
+
+    <ext:addAutoIncrement tableName="cdpelement" columnName="id" sequenceName="opennmsNxtId" />
+    <addForeignKeyConstraint constraintName="fk_cdpelement_nodeid" onDelete="CASCADE" baseTableName="cdpelement" baseColumnNames="nodeid" referencedTableName="node" referencedColumnNames="nodeid" />
+    <createIndex tableName="cdpelement" indexName="cdpelement_nodeid_idx">
+      <column name="nodeid" />
+    </createIndex>
+    <createIndex tableName="cdpelement" indexName="cdp_deviceid_idx">
+      <column name="cdpglobaldeviceid" />
+    </createIndex>
+
+    <rollback>
+      <dropTable tableName="celement" />
+    </rollback>
+
+  </changeSet>
+
+  <changeSet author="rssntn67" id="1.13.1-cdplink">
+    <validCheckSum>ANY</validCheckSum>
+
+    <createTable tableName="cdplink">
+      <column name="id" type="integer">
+        <constraints primaryKey="true" nullable="false" />
+      </column>
+      <column name="nodeid" type="integer">
+        <constraints nullable="false" />
+      </column>
+      <column name="cdpcacheifindex" type="integer">
+        <constraints nullable="false" />
+      </column>
+      <column name="cdpinterfacename" type="varchar(96)">
+        <constraints nullable="false" />
+      </column>
+      <column name="cdpcacheaddresstype" type="integer">
+        <constraints nullable="false" />
+      </column>
+      <column name="cdpcacheaddress" type="varchar(64)">
+        <constraints nullable="false" />
+      </column>
+      <column name="cdpcacheversion" type="varchar(255)">
+        <constraints nullable="false" />
+      </column>
+      <column name="cdpcachedeviceid" type="varchar(64)">
+        <constraints nullable="false" />
+      </column>
+      <column name="cdpcachedeviceport" type="varchar(96)">
+        <constraints nullable="false" />
+      </column>
+      <column name="cdpcachedeviceplatform" type="varchar(96)">
+        <constraints nullable="false" />
+      </column>
+      <column name="cdplinkcreatetime" type="DATETIME">
+        <constraints nullable="false" />
+      </column>
+      <column name="cdplinklastpolltime" type="DATETIME">
+        <constraints nullable="false" />
+      </column>
+    </createTable>
+
+    <ext:addAutoIncrement tableName="cdplink" columnName="id" sequenceName="opennmsNxtId" />
+    <addForeignKeyConstraint constraintName="fk_cdplink_nodeid" onDelete="CASCADE" baseTableName="cdplink" baseColumnNames="nodeid" referencedTableName="node" referencedColumnNames="nodeid" />
+    <createIndex tableName="cdplink" indexName="cdplink_nodeid_idx">
+      <column name="nodeid" />
+    </createIndex>
+    <createIndex tableName="cdplink" indexName="cdplink_lastpoll_idx">
+      <column name="cdplinklastpolltime" />
+    </createIndex>
+    <createIndex tableName="cdplink" indexName="cdplink_pk_idx">
+      <column name="nodeid" />
+      <column name="cdpcachedeviceid" />
+      <column name="cdpcachedeviceport" />
+    </createIndex>
+    <createIndex tableName="cdplink" indexName="cdplink_address_idx">
+      <column name="cdpcacheaddress" />
+    </createIndex>
+
+    <rollback>
+      <dropTable tableName="cdplink" />
+    </rollback>
+
+  </changeSet>
+
+  <changeSet author="ranger@opennms.org" id="fix-typo-in-isis-table">
+    <renameColumn tableName="isislink" oldColumnName="isisisadjneighsysyype" newColumnName="isisisadjneighsystype" />
+    <rollback>
+      <renameColumn tableName="isislink" oldColumnName="isisisadjneighsystype" newColumnName="isisisadjneighsysyype" />
+    </rollback>
+  </changeSet>
+
+</databaseChangeLog>

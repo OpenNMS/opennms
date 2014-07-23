@@ -42,11 +42,11 @@ import java.util.Properties;
 import org.opennms.core.utils.DBTools;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.TimeoutTracker;
-import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.NetworkInterface;
 import org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException;
+import org.opennms.netmgt.poller.PollStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -290,7 +290,7 @@ public class JDBCMonitor extends AbstractServiceMonitor {
 	 *
 	 * @param con a {@link java.sql.Connection} object.
 	 * @param parameters a {@link java.util.Map} object.
-	 * @return a {@link org.opennms.netmgt.model.PollStatus} object.
+	 * @return a {@link org.opennms.netmgt.poller.PollStatus} object.
 	 */
 	public PollStatus checkDatabaseStatus( Connection con, Map<String,Object> parameters )
 	{

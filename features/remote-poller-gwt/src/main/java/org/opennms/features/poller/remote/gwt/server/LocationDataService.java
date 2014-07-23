@@ -56,28 +56,28 @@ public interface LocationDataService {
      * @param locationName a {@link java.lang.String} object.
      * @return a {@link org.opennms.features.poller.remote.gwt.client.location.LocationInfo} object.
      */
-    public LocationInfo getLocationInfo(final String locationName);
+    LocationInfo getLocationInfo(final String locationName);
     /**
      * <p>getLocationInfo</p>
      *
      * @param def a {@link org.opennms.netmgt.model.OnmsMonitoringLocationDefinition} object.
      * @return a {@link org.opennms.features.poller.remote.gwt.client.location.LocationInfo} object.
      */
-    public LocationInfo getLocationInfo(final OnmsMonitoringLocationDefinition def);
+    LocationInfo getLocationInfo(final OnmsMonitoringLocationDefinition def);
     /**
      * <p>getApplicationInfo</p>
      *
      * @param applicationName a {@link java.lang.String} object.
      * @return a {@link org.opennms.features.poller.remote.gwt.client.ApplicationInfo} object.
      */
-    public ApplicationInfo getApplicationInfo(final String applicationName);
+    ApplicationInfo getApplicationInfo(final String applicationName);
     /**
      * <p>getApplicationInfo</p>
      *
      * @param app a {@link org.opennms.netmgt.model.OnmsApplication} object.
      * @return a {@link org.opennms.features.poller.remote.gwt.client.ApplicationInfo} object.
      */
-    public ApplicationInfo getApplicationInfo(final OnmsApplication app);
+    ApplicationInfo getApplicationInfo(final OnmsApplication app);
     /**
      * <p>getApplicationInfo</p>
      *
@@ -85,35 +85,35 @@ public interface LocationDataService {
      * @param status a {@link org.opennms.features.poller.remote.gwt.client.StatusDetails} object.
      * @return a {@link org.opennms.features.poller.remote.gwt.client.ApplicationInfo} object.
      */
-    public ApplicationInfo getApplicationInfo(final OnmsApplication app, final StatusDetails status);
+    ApplicationInfo getApplicationInfo(final OnmsApplication app, final StatusDetails status);
     /**
      * <p>getLocationDetails</p>
      *
      * @param locationName a {@link java.lang.String} object.
      * @return a {@link org.opennms.features.poller.remote.gwt.client.location.LocationDetails} object.
      */
-    public LocationDetails getLocationDetails(final String locationName);
+    LocationDetails getLocationDetails(final String locationName);
     /**
      * <p>getLocationDetails</p>
      *
      * @param def a {@link org.opennms.netmgt.model.OnmsMonitoringLocationDefinition} object.
      * @return a {@link org.opennms.features.poller.remote.gwt.client.location.LocationDetails} object.
      */
-    public LocationDetails getLocationDetails(final OnmsMonitoringLocationDefinition def);
+    LocationDetails getLocationDetails(final OnmsMonitoringLocationDefinition def);
     /**
      * <p>getApplicationDetails</p>
      *
      * @param applicationName a {@link java.lang.String} object.
      * @return a {@link org.opennms.features.poller.remote.gwt.client.ApplicationDetails} object.
      */
-    public ApplicationDetails getApplicationDetails(final String applicationName);
+    ApplicationDetails getApplicationDetails(final String applicationName);
     /**
      * <p>getApplicationDetails</p>
      *
      * @param app a {@link org.opennms.netmgt.model.OnmsApplication} object.
      * @return a {@link org.opennms.features.poller.remote.gwt.client.ApplicationDetails} object.
      */
-    public ApplicationDetails getApplicationDetails(final OnmsApplication app);
+    ApplicationDetails getApplicationDetails(final OnmsApplication app);
     /**
      * <p>getUpdatedLocationsBetween</p>
      *
@@ -121,7 +121,7 @@ public interface LocationDataService {
      * @param endDate a {@link java.util.Date} object.
      * @return a {@link java.util.Collection} object.
      */
-    public Collection<LocationInfo> getUpdatedLocationsBetween(final Date startDate, final Date endDate);
+    Collection<LocationInfo> getUpdatedLocationsBetween(final Date startDate, final Date endDate);
     /**
      * <p>getLatLng</p>
      *
@@ -129,67 +129,67 @@ public interface LocationDataService {
      * @param geocode a boolean.
      * @return a {@link org.opennms.features.poller.remote.gwt.client.GWTLatLng} object.
      */
-    public GWTLatLng getLatLng(final OnmsMonitoringLocationDefinition def, boolean geocode);
+    GWTLatLng getLatLng(final OnmsMonitoringLocationDefinition def, boolean geocode);
     /**
      * <p>handleAllMonitoringLocationDefinitions</p>
      *
      * @param handlers a {@link java.util.Collection} object.
      */
-    public void handleAllMonitoringLocationDefinitions(final Collection<LocationDefHandler> handlers);
+    void handleAllMonitoringLocationDefinitions(final Collection<LocationDefHandler> handlers);
     /**
      * <p>handleAllApplications</p>
      *
      * @param appHandlers a {@link java.util.Collection} object.
      */
-    public void handleAllApplications(final Collection<ApplicationHandler> appHandlers);
+    void handleAllApplications(final Collection<ApplicationHandler> appHandlers);
     /**
      * <p>getLocationInfoForMonitor</p>
      *
      * @param monitorId a {@link java.lang.Integer} object.
      * @return a {@link org.opennms.features.poller.remote.gwt.client.location.LocationInfo} object.
      */
-    public LocationInfo getLocationInfoForMonitor(final Integer monitorId);
+    LocationInfo getLocationInfoForMonitor(final Integer monitorId);
     /**
      * <p>getApplicationsForLocation</p>
      *
      * @param info a {@link org.opennms.features.poller.remote.gwt.client.location.LocationInfo} object.
      * @return a {@link java.util.Collection} object.
      */
-    public Collection<ApplicationInfo> getApplicationsForLocation(final LocationInfo info);
+    Collection<ApplicationInfo> getApplicationsForLocation(final LocationInfo info);
     
     /**
      * <p>getInfoForAllLocations</p>
      *
      * @return a {@link java.util.List} object.
      */
-    public List<LocationInfo> getInfoForAllLocations();
+    List<LocationInfo> getInfoForAllLocations();
 
     /**
      * <p>getStatusDetailsForAllLocations</p>
      *
      */
-    public Map<String, StatusDetails> getStatusDetailsForAllLocations();
+    Map<String, StatusDetails> getStatusDetailsForAllLocations();
 
     /**
      * <p>getInfoForAllApplications</p>
      *
      * @return a {@link java.util.List} object.
      */
-    public List<ApplicationInfo> getInfoForAllApplications();
+    List<ApplicationInfo> getInfoForAllApplications();
     /**
      * <p>getStatusDetailsForLocation</p>
      *
      * @param def a {@link org.opennms.netmgt.model.OnmsMonitoringLocationDefinition} object.
      * @return a {@link org.opennms.features.poller.remote.gwt.client.StatusDetails} object.
      */
-    public StatusDetails getStatusDetailsForLocation(OnmsMonitoringLocationDefinition def);
+    StatusDetails getStatusDetailsForLocation(OnmsMonitoringLocationDefinition def);
     /**
      * <p>getStatusDetailsForApplication</p>
      *
      * @param app a {@link org.opennms.netmgt.model.OnmsApplication} object.
      * @return a {@link org.opennms.features.poller.remote.gwt.client.StatusDetails} object.
      */
-    public StatusDetails getStatusDetailsForApplication(OnmsApplication app);
+    StatusDetails getStatusDetailsForApplication(OnmsApplication app);
     
 
 }

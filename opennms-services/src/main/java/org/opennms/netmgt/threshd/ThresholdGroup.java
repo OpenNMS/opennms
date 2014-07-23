@@ -31,6 +31,7 @@ package org.opennms.netmgt.threshd;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 /**
@@ -168,15 +169,16 @@ public class ThresholdGroup {
 	        buf.append(getIfResourceType().getThresholdMap().values());
 	    }
 	    if (getGenericResourceTypeMap() != null) {
-	        for (String rType : getGenericResourceTypeMap().keySet()) {
+	        for (final Entry<String, ThresholdResourceType> entry : getGenericResourceTypeMap().entrySet()) {
+	            final String rType = entry.getKey();
 	            buf.append("}; " + rType + ":{");
-	            buf.append(getGenericResourceTypeMap().get(rType).getThresholdMap().values());
+	            final ThresholdResourceType value = entry.getValue();
+                    buf.append(value.getThresholdMap().values());
 	            buf.append("}");
 	        }
 	    }
 	    buf.append("}");
-	    String toString = buf.toString();
-	    return toString;
+	    return buf.toString();
 	}
 	
 	/**
@@ -185,15 +187,19 @@ public class ThresholdGroup {
 	public void delete() {
 	    delete(getNodeResourceType());
 	    delete(getIfResourceType());
-	    for (String type : getGenericResourceTypeMap().keySet())
-	        delete(getGenericResourceTypeMap().get(type));
+	    for (final Entry<String, ThresholdResourceType> entry : getGenericResourceTypeMap().entrySet()) {
+	        final ThresholdResourceType value = entry.getValue();
+	        delete(value);
+	    }
 	}
 
 	private void delete(ThresholdResourceType type) {
-	    Map<String,Set<ThresholdEntity>> entityMap = type.getThresholdMap();
-	    for (String key : entityMap.keySet()) 
-	        for (ThresholdEntity e : entityMap.get(key))
+	    final Map<String,Set<ThresholdEntity>> entityMap = type.getThresholdMap();
+	    for (final Entry<String, Set<ThresholdEntity>> entry : entityMap.entrySet()) {
+	        for (final ThresholdEntity e : entry.getValue()) {
 	            e.delete();
+	        }
+	    }
 	}
 	
 }

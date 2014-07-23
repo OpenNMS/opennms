@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.ncs.persistence;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.opennms.netmgt.dao.hibernate.AbstractDaoHibernate;
@@ -53,11 +54,19 @@ public class NCSComponentDao extends AbstractDaoHibernate<NCSComponent, Long> im
 
 	@Override
 	public List<NCSComponent> findComponentsThatDependOn(NCSComponent component) {
-		return find("from NCSComponent as ncs where ? in elements(ncs.subcomponents)", component);
+		if (component == null) {
+			return Collections.emptyList();
+		} else {
+			return find("from NCSComponent as ncs where ? in elements(ncs.subcomponents)", component);
+		}
 	}
 
 	public List<NCSComponent> findComponentsWithChild(final NCSComponent component) {
-		return find("from NCSComponent as ncs where ? in elements(ncs.parentcomponents)", component);
+		if (component == null) {
+			return Collections.emptyList();
+		} else {
+			return find("from NCSComponent as ncs where ? in elements(ncs.parentComponents)", component);
+		}
 	}
 	
 	@Override
@@ -80,7 +89,6 @@ public class NCSComponentDao extends AbstractDaoHibernate<NCSComponent, Long> im
 	public void saveOrUpdate(final NCSComponent entity) throws DataAccessException {
 		validateEntity(entity);
 		super.saveOrUpdate(entity);
-		
 	}
 
 	// enforcing no colons seems to be not very feasible in The Real World

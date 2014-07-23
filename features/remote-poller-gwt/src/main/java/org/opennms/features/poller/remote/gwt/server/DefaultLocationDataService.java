@@ -75,7 +75,7 @@ import org.opennms.netmgt.model.OnmsLocationSpecificStatus;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsMonitoringLocationDefinition;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
-import org.opennms.netmgt.model.PollStatus;
+import org.opennms.netmgt.poller.PollStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -96,7 +96,7 @@ public class DefaultLocationDataService implements LocationDataService, Initiali
      *
      * @author brozow
      */
-    public class MonitorTracker {
+    public static class MonitorTracker {
         
         Map<String, List<OnmsLocationMonitor>> m_monitors = new HashMap<String, List<OnmsLocationMonitor>>();
         
@@ -860,9 +860,9 @@ public class DefaultLocationDataService implements LocationDataService, Initiali
 
 
     private static class MonitorStatusTracker implements StatusTracker {
-        private transient final Map<Integer, OnmsLocationSpecificStatus> m_statuses = new HashMap<Integer, OnmsLocationSpecificStatus>();
+        private final transient Map<Integer, OnmsLocationSpecificStatus> m_statuses = new HashMap<Integer, OnmsLocationSpecificStatus>();
 
-        private transient final String m_locationName;
+        private final transient String m_locationName;
 
         public MonitorStatusTracker(final String locationName) {
             m_locationName = locationName;

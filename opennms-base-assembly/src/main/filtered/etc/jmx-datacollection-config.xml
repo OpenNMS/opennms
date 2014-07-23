@@ -91,9 +91,65 @@
       </mbean>
       <mbean name="OpenNMS Pollerd" objectname="OpenNMS:Name=Pollerd">
         <attrib name="NumPolls" alias="ONMSPollCount" type="counter"/>
+        <attrib name="ActiveThreads"  alias="ONMSPollerThreadAct" type="gauge"/>
+        <attrib name="TasksTotal"     alias="ONMSPollerTasksTot"  type="counter"/>
+        <attrib name="TasksCompleted" alias="ONMSPollerTasksCpt"  type="counter"/>
       </mbean>
       <mbean name="OpenNMS Vacuumd" objectname="OpenNMS:Name=Vacuumd">
         <attrib name="NumAutomations" alias="ONMSAutomCount" type="counter"/>
+      </mbean>
+      <mbean name="OpenNMS Collectd" objectname="OpenNMS:Name=Collectd">
+        <attrib name="ActiveThreads"  alias="ONMSCollectThrdAct" type="gauge"/>
+        <attrib name="NumPoolThreads"  alias="ONMSCollectPoolThrd" type="gauge"/>
+        <attrib name="MaxPoolThreads"  alias="ONMSCollectPoolMax" type="gauge"/>
+        <attrib name="PeakPoolThreads"  alias="ONMSCollectPoolPeak" type="gauge"/>
+        <attrib name="TasksTotal"     alias="ONMSCollectTasksTot"  type="counter"/>
+        <attrib name="TasksCompleted" alias="ONMSCollectTasksCpt"  type="counter"/>
+      </mbean>
+      <mbean name="OpenNMS.Capsd" objectname="OpenNMS:Name=Capsd">
+        <attrib name="ActiveSuspectThreads" alias="ActiveSuspecThreads" type="gauge"/>
+        <attrib name="ActiveRescanThreads" alias="ActiveRescanThreads" type="gauge"/>
+        <attrib name="SuspectCompletedTasks" alias="SuspectCompletTasks" type="counter"/>
+        <attrib name="RescanCompletedTasks" alias="RescanCompletTasks" type="counter"/>
+        <attrib name="SuspectTotalTasks" alias="SuspectTotalTasks" type="counter"/>
+        <attrib name="RescanTotalTasks" alias="RescanTotalTasks" type="counter"/>
+        <attrib name="SuspectTaskCompletionRatio" alias="SuspTaskComplRatio" type="gauge"/>
+        <attrib name="RescanTaskCompletionRatio" alias="RescTaskComplRatio" type="gauge"/>
+        <attrib name="SuspectQueueSize" alias="SuspectQueueSize" type="gauge"/>
+        <attrib name="RescanQueueSize" alias="RescanQueueSize" type="gauge"/>
+      </mbean>
+      <mbean name="OpenNMS.JettyServer" objectname="OpenNMS:Name=JettyServer">
+        <attrib name="HttpsConnectionsTotal" alias="HttpsConnTotal" type="counter"/>
+        <attrib name="HttpsConnectionsOpen" alias="HttpsConnOpen" type="gauge"/>
+        <attrib name="HttpsConnectionsOpenMax" alias="HttpsConnOpenMax" type="gauge"/>
+        <attrib name="HttpConnectionsTotal" alias="HttpConnTotal" type="counter"/>
+        <attrib name="HttpConnectionsOpen" alias="HttpConnOpen" type="gauge"/>
+        <attrib name="HttpConnectionsOpenMax" alias="HttpConnOpenMax" type="gauge"/>
+      </mbean>
+      <mbean name="OpenNMS.Statsd" objectname="OpenNMS:Name=Statsd">
+        <attrib name="ReportsStarted" alias="StaReportsStarted" type="counter"/>
+        <attrib name="ReportsCompleted" alias="StaReportsCompleted" type="counter"/>
+        <attrib name="ReportsPersisted" alias="StaReportsPersisted" type="counter"/>
+        <attrib name="ReportRunTime" alias="StaReportRunTime" type="counter"/>
+      </mbean>
+      <mbean name="OpenNMS.Trapd" objectname="OpenNMS:Name=Trapd">
+        <attrib name="TrapsDiscarded" alias="TrapsDiscarded" type="counter"/>
+        <attrib name="TrapsErrored" alias="TrapsErrored" type="counter"/>
+        <attrib name="V1TrapsReceived" alias="V1TrapsReceived" type="counter"/>
+        <attrib name="V2cTrapsReceived" alias="V2cTrapsReceived" type="counter"/>
+        <attrib name="V3TrapsReceived" alias="V3TrapsReceived" type="counter"/>
+      </mbean>
+      <mbean name="OpenNMS.Notifd" objectname="OpenNMS:Name=Notifd">
+        <attrib name="NotificationTasksQueued" alias="NotificTasksQueued" type="counter"/>
+        <attrib name="BinaryNoticesAttempted" alias="BinaryNoticeAttemp" type="counter"/>
+        <attrib name="JavaNoticesAttempted" alias="JavaNoticesAttempt" type="counter"/>
+        <attrib name="BinaryNoticesSucceeded" alias="BinaryNoticeSuccee" type="counter"/>
+        <attrib name="JavaNoticesSucceeded" alias="JavaNoticesSucceed" type="counter"/>
+        <attrib name="BinaryNoticesFailed" alias="BinaryNoticeFailed" type="counter"/>
+        <attrib name="JavaNoticesFailed" alias="JavaNoticesFailed" type="counter"/>
+        <attrib name="BinaryNoticesInterrupted" alias="BinaryNoticeInterr" type="counter"/>
+        <attrib name="JavaNoticesInterrupted" alias="JavaNoticesInterru" type="counter"/>
+        <attrib name="UnknownNoticesInterrupted" alias="UnknowNoticeInterr" type="counter"/>
       </mbean>
       <mbean name="JVM Memory" objectname="java.lang:type=OperatingSystem">
         <attrib name="FreePhysicalMemorySize" alias="FreeMemory" type="gauge"/>

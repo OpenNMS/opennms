@@ -103,7 +103,7 @@ public class ByteBufferTest {
         
     }
     
-    @Test
+    @Test(timeout=30000)
     public void testPassing() throws Exception {
         Server server = new Server(7777);
         server.start();

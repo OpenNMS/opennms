@@ -34,7 +34,7 @@ import java.util.Set;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 
-import org.opennms.features.topology.api.topo.AbstractVertexRef;
+import org.opennms.features.topology.api.topo.DefaultVertexRef;
 import org.opennms.features.topology.api.topo.VertexRef;
 
 /**
@@ -78,7 +78,7 @@ public class VertexRefSetAdapter extends XmlAdapter<VertexRefSetAdapter.VertexRe
 		} else {
 			Set<VertexRef> retval = new HashSet<VertexRef>();
 			for (VertexRefEntry entry : v.entry) {
-				VertexRef ref = new AbstractVertexRef(entry.namespace, entry.id, entry.label);
+				VertexRef ref = new DefaultVertexRef(entry.namespace, entry.id, entry.label);
 				retval.add(ref);
 			}
 			return retval;

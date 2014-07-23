@@ -38,9 +38,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import org.opennms.core.utils.PropertiesCache;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.opennms.core.utils.PropertiesCache;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -74,10 +74,29 @@ public abstract class RrdUtils {
 
     private static RrdStrategy<?, ?> m_rrdStrategy = null;
 
-    private static BeanFactory m_context = new ClassPathXmlApplicationContext(new String[]{
-            // Default RRD configuration context
-            "org/opennms/netmgt/rrd/rrd-configuration.xml"
-    });
+    /**
+     * Use the {@link ClassPathXmlApplicationContext#ClassPathXmlApplicationContext(String[], Class)}
+     * constructor so that we make sure to load the XML resources from the same classloader as the
+     * class itself so that classloading works under OSGi.
+     */
+    private static final BeanFactory m_context;
+
+    static {
+        ClassLoader old = null;
+        try {
+            old = Thread.currentThread().getContextClassLoader();
+            Thread.currentThread().setContextClassLoader(RrdUtils.class.getClassLoader());
+            m_context = new ClassPathXmlApplicationContext(new String[]{
+                // Default RRD configuration context
+                //
+                // Use an absolute path, otherwise Spring will try to resolve the resource relative
+                // to the RrdUtils class package.
+                "/org/opennms/netmgt/rrd/rrd-configuration.xml"
+            }, RrdUtils.class);
+        } finally {
+            Thread.currentThread().setContextClassLoader(old);
+        }
+    }
 
     /**
      * Writes a file with the attribute to rrd track mapping next to the rrd file.
@@ -272,8 +291,8 @@ public abstract class RrdUtils {
             return true;
         } catch (Throwable e) {
             String path = directory + File.separator + rrdName + getStrategy().getDefaultFileExtension();
-            LOG.error("createRRD: An error occured creating rrdfile {}", path, e);
-            throw new org.opennms.netmgt.rrd.RrdException("An error occured creating rrdfile " + path + ": " + e, e);
+            LOG.error("createRRD: An error occurred creating rrdfile {}", path, e);
+            throw new org.opennms.netmgt.rrd.RrdException("An error occurred creating rrdfile " + path + ": " + e, e);
         }
     }
 

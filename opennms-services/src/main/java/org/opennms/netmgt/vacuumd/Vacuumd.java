@@ -89,11 +89,20 @@ public class Vacuumd extends AbstractServiceDaemon implements Runnable, EventLis
      *
      * @return a {@link org.opennms.netmgt.vacuumd.Vacuumd} object.
      */
-    public synchronized static Vacuumd getSingleton() {
+    public static synchronized Vacuumd getSingleton() {
         if (m_singleton == null) {
             m_singleton = new Vacuumd();
         }
         return m_singleton;
+    }
+
+    /**
+     */
+    static synchronized void destroySingleton() {
+        if (m_singleton != null) {
+            m_singleton.stop();
+            m_singleton = null;
+        }
     }
 
     /**
@@ -152,7 +161,7 @@ public class Vacuumd extends AbstractServiceDaemon implements Runnable, EventLis
     @Override
     protected void onStop() {
         m_stopped = true;
-        if (m_scheduler != null) {
+        if (m_scheduler != null && m_scheduler.getStatus() == RUNNING) {
             m_scheduler.stop();
         }
     }

@@ -7,7 +7,7 @@
 		<relativePath>../../poms/compiled/</relativePath>
 		<groupId>org.opennms.features.topology.build</groupId>
 		<artifactId>compiled-bundle-settings</artifactId>
-		<version>1.13.1-SNAPSHOT</version>
+		<version>1.13.4-SNAPSHOT</version>
 	</parent>
 
 	<groupId>org.opennms.features.topology</groupId>
@@ -35,8 +35,8 @@
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-compiler-plugin</artifactId>
 						<configuration>
-							<source>1.5</source>
-							<target>1.5</target>
+							<source>1.7</source>
+							<target>1.7</target>
 						</configuration>
 					</plugin>
 

@@ -34,6 +34,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.Arrays;
 
 /**
  * <p>VMTaskFiber class.</p>
@@ -50,7 +51,7 @@ public class VMTaskFiber implements Fiber, Runnable {
     /**
      * The list of classes that are passed as entry arguments.
      */
-    private static final String MAIN_PARAMETER_TYPES[] = { "[Ljava.lang.String;" };
+    private static final String[] MAIN_PARAMETER_TYPES = { "[Ljava.lang.String;" };
 
     /**
      * The return type for the entry method.
@@ -161,12 +162,12 @@ public class VMTaskFiber implements Fiber, Runnable {
 
     {
         m_taskName = taskName;
-        m_mainArgs = entryArguments;
+        m_mainArgs = Arrays.copyOf(entryArguments, entryArguments.length);
 
         m_thrGroup = new ThreadGroup(THREADGROUP_NAME_PREFIX + m_taskName);
         m_thrGroup.setDaemon(false);
 
-        m_classLoader = new URLClassLoader(searchPaths);
+        m_classLoader = new URLClassLoader(Arrays.copyOf(searchPaths, searchPaths.length));
 
         Class<?> m_entryClass = m_classLoader.loadClass(entryClassName);
         m_entryMethod = findMain(m_entryClass);

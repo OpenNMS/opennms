@@ -30,7 +30,6 @@ package org.opennms.netmgt.poller;
 
 import java.util.Map;
 
-import org.opennms.netmgt.model.PollStatus;
 
 /**
  * <p>
@@ -59,9 +58,6 @@ import org.opennms.netmgt.model.PollStatus;
  *
  * @author <A HREF="mailto:weave@oculan.com">Brian Weaver </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @author <A HREF="mailto:weave@oculan.com">Brian Weaver </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @version $Id: $
  */
 public interface ServiceMonitor {
 	

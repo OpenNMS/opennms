@@ -44,7 +44,7 @@ import org.opennms.xmlns.xsd.config.jmx_datacollection.Mbean;
 //TODO mvonrued -> comment
 class MBeansItemStrategyHandler {
 
-	final private Map<Class<?>, ItemStrategy> propertyStrategy = new HashMap<Class<?>, ItemStrategy>();
+	private final Map<Class<?>, ItemStrategy> propertyStrategy = new HashMap<Class<?>, ItemStrategy>();
 	private final Map<Class<?>, StringRenderer<?>> extractors = new HashMap<Class<?>, StringRenderer<?>>();
 
 	public MBeansItemStrategyHandler() {

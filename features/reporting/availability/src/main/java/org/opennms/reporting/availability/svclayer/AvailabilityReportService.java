@@ -37,7 +37,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -222,7 +221,6 @@ public class AvailabilityReportService implements ReportService {
 
                     LOG.debug("set availability calculator report category to: {}", calculator.getCategoryName());
 
-                    calculator.setCalendar(new GregorianCalendar());
                     calculator.setPeriodEndDate((Date) reportParms.get("endDate"));
 
                     LOG.debug("set availability calculator end date to: {}", calculator.getPeriodEndDate());
@@ -282,7 +280,6 @@ public class AvailabilityReportService implements ReportService {
                     LOG.debug("set availability calculator report category to: {}", calculator.getCategoryName());
     
     
-                    calculator.setCalendar(new GregorianCalendar());
                     calculator.setPeriodEndDate((Date) reportParms.get("endDate"));
     
                     LOG.debug("set availability calculator end date to: {}", calculator.getPeriodEndDate());

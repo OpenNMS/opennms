@@ -80,7 +80,7 @@ public class ManagerDefaultImpl implements Manager {
 	private static final Logger LOG = LoggerFactory.getLogger(ManagerDefaultImpl.class);
 
 
-    private class AlarmInfo {
+    private static class AlarmInfo {
         int status;
         int severity;
 
@@ -801,10 +801,11 @@ public class ManagerDefaultImpl implements Manager {
             String iconname, int x, int y) throws MapsException {
         VElement velem = newElement(mapId, elementId, type);
         if (iconname == null ) {
-            if (type == MapsConstants.MAP_TYPE)
+            if (MapsConstants.MAP_TYPE.equals(type)) {
                 iconname = mapsPropertiesFactory.getDefaultMapIcon();
-            else 
+            } else {
                 iconname = mapsPropertiesFactory.getDefaultNodeIcon();
+            }
         }
         velem.setIcon(iconname);
         velem.setX(x);
@@ -841,7 +842,7 @@ public class ManagerDefaultImpl implements Manager {
      *             the map to delete doesn't exist.
      * @throws org.opennms.web.map.MapNotFoundException if any.
      */
-    synchronized public void deleteMap(VMap map) throws MapsException,
+    public synchronized void deleteMap(VMap map) throws MapsException,
             MapNotFoundException {
         deleteMap(map.getId());
         deleteFromMapInfo(map.getId());
@@ -863,7 +864,7 @@ public class ManagerDefaultImpl implements Manager {
      * @throws org.opennms.web.map.MapsException if any.
      * @param mapId a int.
      */
-    synchronized public void deleteMap(int mapId) throws MapsException {
+    public synchronized void deleteMap(int mapId) throws MapsException {
         if (sessionMap == null) {
             throw new MapNotFoundException("session map in null");
         }
@@ -886,7 +887,7 @@ public class ManagerDefaultImpl implements Manager {
      *            to delete
      * @throws org.opennms.web.map.MapsException if any.
      */
-    synchronized public void deleteMaps(VMap[] maps) throws MapsException {
+    public synchronized void deleteMaps(VMap[] maps) throws MapsException {
         for (VMap map : maps) {
             deleteMap(map);
         }
@@ -898,7 +899,7 @@ public class ManagerDefaultImpl implements Manager {
      * @throws org.opennms.web.map.MapsException if any.
      * @param maps an array of int.
      */
-    synchronized public void deleteMaps(int[] maps) throws MapsException {
+    public synchronized void deleteMaps(int[] maps) throws MapsException {
         for (int map : maps) {
             deleteMap(map);
         }
@@ -910,7 +911,7 @@ public class ManagerDefaultImpl implements Manager {
      * save the map in input
      */
     @Override
-    synchronized public int save(VMap map) throws MapsException {
+    public synchronized int save(VMap map) throws MapsException {
         Collection<DbElement> dbe = new ArrayList<DbElement>();
         for (VElement velem : map.getElements().values()) {
             dbe.add(new DbElement(velem));
@@ -924,7 +925,7 @@ public class ManagerDefaultImpl implements Manager {
      *
      * @throws org.opennms.web.map.MapsException if any.
      */
-    synchronized public void deleteAllNodeElements() throws MapsException {
+    public synchronized void deleteAllNodeElements() throws MapsException {
         dbManager.deleteNodeTypeElementsFromAllMaps();
     }
 
@@ -933,7 +934,7 @@ public class ManagerDefaultImpl implements Manager {
      *
      * @throws org.opennms.web.map.MapsException if any.
      */
-    synchronized public void deleteAllMapElements() throws MapsException {
+    public synchronized void deleteAllMapElements() throws MapsException {
         dbManager.deleteMapTypeElementsFromAllMaps();
     }
 

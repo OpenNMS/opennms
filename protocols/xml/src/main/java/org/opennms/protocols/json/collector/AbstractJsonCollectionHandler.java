@@ -49,8 +49,8 @@ import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
-import org.opennms.netmgt.collectd.CollectionAgent;
-import org.opennms.netmgt.config.collector.AttributeGroupType;
+import org.opennms.netmgt.collection.api.AttributeGroupType;
+import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.protocols.xml.collector.AbstractXmlCollectionHandler;
 import org.opennms.protocols.xml.collector.UrlFactory;
 import org.opennms.protocols.xml.collector.XmlCollectionAttributeType;
@@ -132,8 +132,7 @@ public abstract class AbstractJsonCollectionHandler extends AbstractXmlCollectio
         }
         // Processing single-key resource name.
         LOG.debug("getResourceName: getting key for resource's name using {}", group.getKeyXpath());
-        String keyName = (String)context.getValue(group.getKeyXpath());
-        return keyName;
+        return (String)context.getValue(group.getKeyXpath());
     }
 
     /**
@@ -170,19 +169,20 @@ public abstract class AbstractJsonCollectionHandler extends AbstractXmlCollectio
      */
     protected JSONObject getJSONObject(String urlString, Request request) {
         InputStream is = null;
+        URLConnection c = null;
         try {
             URL url = UrlFactory.getUrl(urlString, request);
-            URLConnection c = url.openConnection();
+            c = url.openConnection();
             is = c.getInputStream();
             StringWriter writer = new StringWriter();
             IOUtils.copy(is, writer);
-            JSONObject jsonObject = JSONObject.fromObject(writer.toString());
-            UrlFactory.disconnect(c);
+            final JSONObject jsonObject = JSONObject.fromObject(writer.toString());
             return jsonObject;
         } catch (Exception e) {
             throw new XmlCollectorException(e.getMessage(), e);
         } finally {
             IOUtils.closeQuietly(is);
+            UrlFactory.disconnect(c);
         }
     }
 

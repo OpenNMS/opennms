@@ -33,12 +33,11 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.collectd.AliasedResource;
-import org.opennms.netmgt.collectd.IfInfo;
-import org.opennms.netmgt.config.collector.CollectionAttribute;
-import org.opennms.netmgt.config.collector.CollectionResource;
-import org.opennms.netmgt.model.RrdRepository;
+import org.opennms.netmgt.collection.api.CollectionAttribute;
+import org.opennms.netmgt.collection.api.CollectionResource;
+import org.opennms.netmgt.collection.api.ServiceParameters;
+import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.netmgt.xml.event.Event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,19 +53,22 @@ public class CollectorThresholdingSet extends ThresholdingSet {
 
     // CollectionSpecification parameters
     boolean storeByIfAlias = false;
-    
+    ServiceParameters svcParams;
+
     /**
      * <p>Constructor for CollectorThresholdingSet.</p>
      *
      * @param nodeId a int.
      * @param hostAddress a {@link java.lang.String} object.
      * @param serviceName a {@link java.lang.String} object.
-     * @param repository a {@link org.opennms.netmgt.model.RrdRepository} object.
+     * @param repository a {@link org.opennms.netmgt.rrd.RrdRepository} object.
+     * @param svcParams a {@link org.opennms.netmgt.collection.api.ServiceParameters} object.
      */
-    public CollectorThresholdingSet(int nodeId, String hostAddress, String serviceName, RrdRepository repository, Map<String, Object> roProps) {
+    public CollectorThresholdingSet(int nodeId, String hostAddress, String serviceName, RrdRepository repository, ServiceParameters svcParams) {
         super(nodeId, hostAddress, serviceName, repository);
-        String storeByIfAliasString = ParameterMap.getKeyedString(roProps, "storeByIfAlias", null);
-        storeByIfAlias = storeByIfAliasString != null && storeByIfAliasString.toLowerCase().equals("true");
+        String storeByIfAliasString = svcParams.getStoreByIfAlias();
+        storeByIfAlias = storeByIfAliasString != null && "true".equalsIgnoreCase(storeByIfAliasString);
+        this.svcParams = svcParams;
     }
     
     /*
@@ -75,7 +77,7 @@ public class CollectorThresholdingSet extends ThresholdingSet {
     /**
      * <p>hasThresholds</p>
      *
-     * @param attribute a {@link org.opennms.netmgt.config.collector.CollectionAttribute} object.
+     * @param attribute a {@link org.opennms.netmgt.collection.api.CollectionAttribute} object.
      * @return a boolean.
      */
     public boolean hasThresholds(CollectionAttribute attribute) {
@@ -117,10 +119,7 @@ public class CollectorThresholdingSet extends ThresholdingSet {
     }
     
     protected boolean isCollectionEnabled(CollectionResource resource) {
-        if (resource instanceof IfInfo) {
-            return ((IfInfo) resource).isScheduledForCollection();
-        }
-        return true;
+        return resource.shouldPersist(svcParams);
     }
 
 }

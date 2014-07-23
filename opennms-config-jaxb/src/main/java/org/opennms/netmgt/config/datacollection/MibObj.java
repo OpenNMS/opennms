@@ -35,6 +35,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
 import org.opennms.core.xml.ValidateUsing;
+import org.opennms.netmgt.config.internal.collection.DatacollectionConfigVisitor;
 
 /**
  * a MIB object
@@ -76,8 +77,8 @@ public class MibObj implements java.io.Serializable {
      * SNMP data type SNMP supported types: counter, gauge, timeticks,
      * integer, octetstring, string. The SNMP type is mapped to one of two RRD
      * supported data types COUNTER or GAUGE, or the string.properties file.
-     * The mapping is as follows: SNMP counter -> RRD COUNTER; SNMP gauge,
-     * timeticks, integer, octetstring -> RRD GAUGE; SNMP string -> String
+     * The mapping is as follows: SNMP counter -&gt; RRD COUNTER; SNMP gauge,
+     * timeticks, integer, octetstring -&gt; RRD GAUGE; SNMP string -&gt; String
      * properties file
      */
     @XmlAttribute(name="type", required=true)
@@ -155,8 +156,8 @@ public class MibObj implements java.io.Serializable {
      * SNMP data type SNMP supported types: counter, gauge, timeticks,
      * integer, octetstring, string. The SNMP type is mapped to one of two RRD
      * supported data types COUNTER or GAUGE, or the string.properties file.
-     * The mapping is as follows: SNMP counter -> RRD COUNTER; SNMP gauge,
-     * timeticks, integer, octetstring -> RRD GAUGE; SNMP string -> String
+     * The mapping is as follows: SNMP counter -&gt; RRD COUNTER; SNMP gauge,
+     * timeticks, integer, octetstring -&gt; RRD GAUGE; SNMP string -&gt; String
      * properties file
      */
     public String getType() {
@@ -265,6 +266,11 @@ public class MibObj implements java.io.Serializable {
     @Override
     public String toString() {
         return "MibObj [oid=" + m_oid + ", instance=" + m_instance + ", alias=" + m_alias + ", type=" + m_type + ", maxval=" + m_maxval + ", minval=" + m_minval + "]";
+    }
+
+    public void visit(final DatacollectionConfigVisitor visitor) {
+        visitor.visitMibObj(this);
+        visitor.visitMibObjComplete();
     }
 
 }

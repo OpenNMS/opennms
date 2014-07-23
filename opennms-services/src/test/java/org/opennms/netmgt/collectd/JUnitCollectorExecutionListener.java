@@ -34,6 +34,7 @@ import java.lang.reflect.Method;
 
 import org.apache.commons.io.IOUtils;
 import org.opennms.core.test.ConfigurationTestUtils;
+import org.opennms.netmgt.collection.api.ServiceCollector;
 import org.opennms.netmgt.config.DataCollectionConfigFactory;
 import org.opennms.netmgt.config.DatabaseSchemaConfigFactory;
 import org.opennms.netmgt.config.DefaultDataCollectionConfigDao;
@@ -69,14 +70,6 @@ public class JUnitCollectorExecutionListener extends AbstractTestExecutionListen
             return;
         }
 
-        // FIXME: Is there a better way to inject the instance into the test class?
-        if (testContext.getTestInstance() instanceof TestContextAware) {
-            System.err.println("injecting TestContext into TestContextAware test: "
-                            + testContext.getTestInstance().getClass().getSimpleName() + "."
-                            + testContext.getTestMethod().getName());
-            ((TestContextAware) testContext.getTestInstance()).setTestContext(testContext);
-        }
-        
         RrdUtils.setStrategy(new JRobinRrdStrategy());
 
         // make a fake database schema with hibernate

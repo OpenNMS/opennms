@@ -28,44 +28,32 @@
 
 package org.opennms.features.topology.app.internal;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
-
-import javax.servlet.http.HttpServletRequest;
-
-import org.opennms.features.topology.api.CheckedOperation;
-import org.opennms.features.topology.api.GraphContainer;
-import org.opennms.features.topology.api.HasExtraComponents;
-import org.opennms.features.topology.api.HistoryManager;
-import org.opennms.features.topology.api.HistoryOperation;
-import org.opennms.features.topology.api.IViewContribution;
-import org.opennms.features.topology.api.MapViewManager;
-import org.opennms.features.topology.api.MapViewManagerListener;
-import org.opennms.features.topology.api.OperationContext;
+import com.github.wolfie.refresher.Refresher;
+import com.vaadin.annotations.JavaScript;
+import com.vaadin.annotations.PreserveOnRefresh;
+import com.vaadin.annotations.Theme;
+import com.vaadin.data.Property;
+import com.vaadin.event.FieldEvents;
+import com.vaadin.server.*;
+import com.vaadin.server.Page.UriFragmentChangedEvent;
+import com.vaadin.server.Page.UriFragmentChangedListener;
+import com.vaadin.shared.ui.slider.SliderOrientation;
+import com.vaadin.ui.*;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.MenuBar.MenuItem;
+import com.vaadin.ui.TabSheet.SelectedTabChangeEvent;
+import com.vaadin.ui.TabSheet.SelectedTabChangeListener;
+import org.opennms.features.topology.api.*;
 import org.opennms.features.topology.api.OperationContext.DisplayLocation;
-import org.opennms.features.topology.api.SelectionContext;
-import org.opennms.features.topology.api.SelectionListener;
-import org.opennms.features.topology.api.SelectionManager;
-import org.opennms.features.topology.api.SelectionNotifier;
-import org.opennms.features.topology.api.VerticesUpdateManager;
-import org.opennms.features.topology.api.WidgetContext;
-import org.opennms.features.topology.api.WidgetManager;
-import org.opennms.features.topology.api.WidgetUpdateListener;
 import org.opennms.features.topology.api.support.VertexHopGraphProvider;
 import org.opennms.features.topology.api.support.VertexHopGraphProvider.FocusNodeHopCriteria;
-import org.opennms.features.topology.api.topo.AbstractVertexRef;
 import org.opennms.features.topology.api.topo.Criteria;
+import org.opennms.features.topology.api.topo.DefaultVertexRef;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.app.internal.CommandManager.DefaultOperationContext;
 import org.opennms.features.topology.app.internal.TopologyComponent.VertexUpdateListener;
-import org.opennms.features.topology.app.internal.gwt.client.HudDisplayState;
-import org.opennms.features.topology.app.internal.jung.FRLayoutAlgorithm;
+import org.opennms.features.topology.app.internal.jung.TopoFRLayoutAlgorithm;
 import org.opennms.features.topology.app.internal.support.CategoryHopCriteria;
 import org.opennms.features.topology.app.internal.support.FontAwesomeIcons;
 import org.opennms.features.topology.app.internal.support.IconRepositoryManager;
@@ -73,54 +61,18 @@ import org.opennms.features.topology.app.internal.ui.HudDisplay;
 import org.opennms.features.topology.app.internal.ui.LastUpdatedLabel;
 import org.opennms.features.topology.app.internal.ui.NoContentAvailableWindow;
 import org.opennms.features.topology.app.internal.ui.SearchBox;
-import org.opennms.osgi.EventConsumer;
-import org.opennms.osgi.OnmsServiceManager;
-import org.opennms.osgi.VaadinApplicationContext;
-import org.opennms.osgi.VaadinApplicationContextCreator;
-import org.opennms.osgi.VaadinApplicationContextImpl;
+import org.opennms.osgi.*;
 import org.opennms.osgi.locator.OnmsServiceManagerLocator;
 import org.opennms.web.api.OnmsHeaderProvider;
 import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.github.wolfie.refresher.Refresher;
-import com.vaadin.annotations.JavaScript;
-import com.vaadin.annotations.PreserveOnRefresh;
-import com.vaadin.annotations.Theme;
-import com.vaadin.data.Property;
-import com.vaadin.event.FieldEvents;
-import com.vaadin.server.DefaultErrorHandler;
-import com.vaadin.server.Page;
-import com.vaadin.server.Page.UriFragmentChangedEvent;
-import com.vaadin.server.Page.UriFragmentChangedListener;
-import com.vaadin.server.RequestHandler;
-import com.vaadin.server.ThemeResource;
-import com.vaadin.server.VaadinRequest;
-import com.vaadin.server.VaadinResponse;
-import com.vaadin.server.VaadinSession;
-import com.vaadin.shared.ui.slider.SliderOrientation;
-import com.vaadin.ui.AbsoluteLayout;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.CustomLayout;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.MenuBar;
-import com.vaadin.ui.MenuBar.MenuItem;
-import com.vaadin.ui.NativeButton;
-import com.vaadin.ui.Notification;
-import com.vaadin.ui.Slider;
-import com.vaadin.ui.TabSheet;
-import com.vaadin.ui.TabSheet.SelectedTabChangeEvent;
-import com.vaadin.ui.TabSheet.SelectedTabChangeListener;
-import com.vaadin.ui.TextField;
-import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.VerticalSplitPanel;
-import com.vaadin.ui.Window;
+import javax.servlet.http.HttpServletRequest;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.*;
 
 @SuppressWarnings("serial")
 @Theme("topo_default")
@@ -136,7 +88,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
     private static final String PARAMETER_GRAPH_PROVIDER = "provider";
 
     private class DynamicUpdateRefresher implements Refresher.RefreshListener {
-        private final Object lockObject = "lockObject";
+        private final Object lockObject = new Object();
         private boolean m_refreshInProgress = false;
         private long m_lastUpdateTime = 0;
 
@@ -265,7 +217,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
 
         // Set the algorithm last so that the criteria and SZLs are
         // in place before we run the layout algorithm.
-        m_graphContainer.setLayoutAlgorithm(new FRLayoutAlgorithm());
+        m_graphContainer.setLayoutAlgorithm(new TopoFRLayoutAlgorithm());
 
         loadUserSettings(m_applicationContext);
 
@@ -318,7 +270,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
                 if (criteria.size() == refs.size()) {
                     boolean criteriaChanged = false;
                     for (Integer ref : refs) {
-                        if (!criteria.contains(new AbstractVertexRef("nodes", String.valueOf(ref)))) {
+                        if (!criteria.contains(new DefaultVertexRef("nodes", String.valueOf(ref)))) {
                             criteriaChanged = true;
                         }
                     }
@@ -333,7 +285,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
                 criteria.clear();
                 for (Integer ref : refs) {
                     // Add a new focus node reference to the VertexHopCriteria
-                    criteria.add(new AbstractVertexRef("nodes", String.valueOf(ref)));
+                    criteria.add(new DefaultVertexRef("nodes", String.valueOf(ref)));
                 }
                 // Set the semantic zoom level to 1 by default
                 graphContainer.setSemanticZoomLevel(1);
@@ -391,6 +343,8 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
                 } catch (ClassCastException e) {}
             }
         }
+        //Initialize the Base Topology provider just in case
+        getGraphContainer().getBaseTopology().refresh();
     }
 
     private void createLayouts() {

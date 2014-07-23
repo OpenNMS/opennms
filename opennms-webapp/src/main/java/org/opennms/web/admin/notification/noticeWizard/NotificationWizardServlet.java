@@ -45,6 +45,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.opennms.core.db.DataSourceFactory;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.DBUtils;
 import org.opennms.netmgt.config.NotifdConfigFactory;
 import org.opennms.netmgt.config.NotificationFactory;
@@ -588,7 +589,7 @@ public class NotificationWizardServlet extends HttpServlet {
             final PreparedStatement stmt = conn.prepareStatement(SQL_SET_CRITICAL_PATH);
             d.watch(stmt);
             stmt.setInt(1, node);
-            stmt.setString(2, criticalIp);
+            stmt.setString(2, InetAddressUtils.normalize(criticalIp));
             stmt.setString(3, criticalSvc);
             stmt.execute();
         } finally {

@@ -55,12 +55,13 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
-
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.opennms.netmgt.model.OnmsArpInterface.StatusType;
 
 @XmlRootElement(name = "vlan")
 @Entity
 @Table(name="vlan", uniqueConstraints = {@UniqueConstraint(columnNames={"nodeId", "vlanId"})})
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class OnmsVlan {
 
     @Embeddable
@@ -72,23 +73,23 @@ public class OnmsVlan {
          */ 
         public static final int VLAN_STATUS_UNKNOWN = 0;
     	/** Constant <code>CISCOVTP_VLAN_STATUS_OPERATIONAL=1</code> */
-    	public final static int CISCOVTP_VLAN_STATUS_OPERATIONAL = 1;
+    	public static final int CISCOVTP_VLAN_STATUS_OPERATIONAL = 1;
     	/** Constant <code>CISCOVTP_VLAN_STATUS_SUSPENDED=2</code> */
-    	public final static int CISCOVTP_VLAN_STATUS_SUSPENDED = 2;
+    	public static final int CISCOVTP_VLAN_STATUS_SUSPENDED = 2;
     	/** Constant <code>CISCOVTP_VLAN_STATUS_mtuTooBigForDevice=3</code> */
-    	public final static int CISCOVTP_VLAN_STATUS_mtuTooBigForDevice = 3;
+    	public static final int CISCOVTP_VLAN_STATUS_mtuTooBigForDevice = 3;
     	/** Constant <code>CISCOVTP_VLAN_STATUS_mtuTooBigForTrunk=4</code> */
-    	public final static int CISCOVTP_VLAN_STATUS_mtuTooBigForTrunk = 4;
+    	public static final int CISCOVTP_VLAN_STATUS_mtuTooBigForTrunk = 4;
 
     	// RowStatus Definition and mapping
-    	public final static int ROWSTATUS_STARTING_INDEX = 4;
+    	public static final int ROWSTATUS_STARTING_INDEX = 4;
         
-    	public final static int SNMPV2C_ROWSTATUS_ACTIVE = 5;
-        public final static int SNMPV2C_ROWSTATUS_NOTINSERVICE = 6;
-        public final static int SNMPV2C_ROWSTATUS_NOTREADY = 7;
-        public final static int SNMPV2C_ROWSTATUS_CREATEANDGO = 8;
-        public final static int SNMPV2C_ROWSTATUS_CREATEANDWAIT = 9;
-        public final static int SNMPV2C_ROWSTATUS_DESTROY = 10;
+    	public static final int SNMPV2C_ROWSTATUS_ACTIVE = 5;
+        public static final int SNMPV2C_ROWSTATUS_NOTINSERVICE = 6;
+        public static final int SNMPV2C_ROWSTATUS_NOTREADY = 7;
+        public static final int SNMPV2C_ROWSTATUS_CREATEANDGO = 8;
+        public static final int SNMPV2C_ROWSTATUS_CREATEANDWAIT = 9;
+        public static final int SNMPV2C_ROWSTATUS_DESTROY = 10;
 
         private static final Integer[] s_order = {0,1,2,3,4,5,6,7,8,9,10};
 

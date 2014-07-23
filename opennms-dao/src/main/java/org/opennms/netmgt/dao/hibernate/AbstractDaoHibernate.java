@@ -35,6 +35,7 @@ import java.util.List;
 import javax.persistence.Table;
 
 import org.hibernate.Criteria;
+import org.hibernate.EntityMode;
 import org.hibernate.Hibernate;
 import org.hibernate.LockOptions;
 import org.hibernate.Query;

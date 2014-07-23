@@ -59,6 +59,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
+
 
 @Entity
 @Table(name="ncscomponent")
@@ -187,8 +189,8 @@ public class NCSComponent {
     private Set<NCSComponent> m_subcomponents = new LinkedHashSet<NCSComponent>();
 
     @XmlTransient
-	private Set<NCSComponent> m_parents = new LinkedHashSet<NCSComponent>();
-    
+    private Set<NCSComponent> m_parents = new LinkedHashSet<NCSComponent>();
+
     /**
      * @param type
      * @param foreignSource
@@ -294,20 +296,21 @@ public class NCSComponent {
 	@ManyToMany
 	@JoinTable(name="subcomponents", joinColumns = { @JoinColumn(name="subcomponent_id") }, inverseJoinColumns = { @JoinColumn(name="component_id") })
 	public Set<NCSComponent> getParentComponents() {
-		return m_parents ;
+		return m_parents;
 	}
 
 	public void setParentComponents(final Set<NCSComponent> parents) {
 		m_parents = parents;
 	}
 
+	// We need this cascade so that saves are cascaded
     @ManyToMany(cascade=CascadeType.ALL)
     @JoinTable(name="subcomponents", joinColumns = { @JoinColumn(name="component_id") }, inverseJoinColumns = { @JoinColumn(name="subcomponent_id") })
 	public Set<NCSComponent> getSubcomponents() {
         return m_subcomponents;
 	}
 
-	public void setSubcomponents(Set<NCSComponent> subComponents) {
+	public void setSubcomponents(final Set<NCSComponent> subComponents) {
 		m_subcomponents = subComponents;
 	}
 	
@@ -371,5 +374,16 @@ public class NCSComponent {
 	    
 	    // complete visiting this component
 	    visitor.completeComponent(this);
+	}
+	
+	@Override
+	public String toString() {
+		return new ToStringBuilder(this)
+		.append("id", m_id)
+		.append("type", m_type)
+		.append("foreignSource", m_foreignSource)
+		.append("foreignId", m_foreignId)
+		.append("name", m_name)
+		.toString();
 	}
 }

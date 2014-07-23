@@ -66,7 +66,6 @@ public interface FileReloadCallback<T> {
      *  used for reloading
      * @return the new object, or null if the old object should continue
      *  being used
-     * @param <T> a T object.
      */
     public T reload(T object, Resource resource) throws IOException;
 }

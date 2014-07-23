@@ -29,8 +29,11 @@
 package org.opennms.smoketest;
 
 import org.junit.Before;
+import org.junit.FixMethodOrder;
 import org.junit.Test;
+import org.junit.runners.MethodSorters;
 
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class ChartsPageTest extends OpenNMSSeleniumTestCase {
     @Before
     public void setUp() throws Exception {
@@ -39,7 +42,7 @@ public class ChartsPageTest extends OpenNMSSeleniumTestCase {
     }
 
     @Test
-    public void testChartsPage() throws Exception {
+    public void a_testChartsPage() throws Exception {
         waitForText("Charts");
         waitForElement("css=img[alt=sample-bar-chart]");
         waitForElement("css=img[alt=sample-bar-chart2]");

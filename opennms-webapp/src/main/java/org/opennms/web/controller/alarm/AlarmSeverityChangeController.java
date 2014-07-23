@@ -58,9 +58,9 @@ import org.springframework.web.servlet.view.RedirectView;
 public class AlarmSeverityChangeController extends AbstractController implements InitializingBean {
     
     /** Constant <code>ESCALATE_ACTION="1"</code> */
-    public final static String ESCALATE_ACTION = "1";
+    public static final String ESCALATE_ACTION = "1";
     /** Constant <code>CLEAR_ACTION="2"</code> */
-    public final static String CLEAR_ACTION = "2";
+    public static final String CLEAR_ACTION = "2";
 
     private AlarmRepository m_webAlarmRepository;
     

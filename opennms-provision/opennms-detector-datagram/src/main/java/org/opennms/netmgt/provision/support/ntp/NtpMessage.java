@@ -85,6 +85,7 @@ package org.opennms.netmgt.provision.support.ntp;
 
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Random;
 public class NtpMessage {
@@ -282,7 +283,7 @@ public class NtpMessage {
         this.precision = precision;
         this.rootDelay = rootDelay;
         this.rootDispersion = rootDispersion;
-        this.referenceIdentifier = referenceIdentifier;
+        this.referenceIdentifier = Arrays.copyOf(referenceIdentifier, referenceIdentifier.length);
         this.referenceTimestamp = referenceTimestamp;
         this.originateTimestamp = originateTimestamp;
         this.receiveTimestamp = receiveTimestamp;

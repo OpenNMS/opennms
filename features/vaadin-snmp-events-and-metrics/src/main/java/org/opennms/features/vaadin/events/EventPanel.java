@@ -76,6 +76,9 @@ public abstract class EventPanel extends Panel {
     /** The Events File. */
     private File eventFile;
 
+    /** The selected Event ID. */
+    private Object selectedEventId;
+
     /**
      * Instantiates a new event panel.
      *
@@ -87,11 +90,13 @@ public abstract class EventPanel extends Panel {
      */
     public EventPanel(final EventConfDao eventConfDao, final EventProxy eventProxy, final File eventFile, final Events events, final Logger logger) {
 
-        if (eventProxy == null)
+        if (eventProxy == null) {
             throw new RuntimeException("eventProxy cannot be null.");
+        }
 
-        if (eventConfDao == null)
+        if (eventConfDao == null) {
             throw new RuntimeException("eventConfDao cannot be null.");
+        }
 
         this.eventConfDao = eventConfDao;
         this.eventProxy = eventProxy;
@@ -122,21 +127,23 @@ public abstract class EventPanel extends Panel {
 
         final EditorToolbar bottomToolbar = new EditorToolbar() {
             @Override
-            public void save() {
+            public boolean save() {
                 org.opennms.netmgt.xml.eventconf.Event event = eventForm.getEvent();
                 logger.info("Event " + event.getUei() + " has been " + (isNew ? "created." : "updated."));
                 try {
-                    eventForm.getFieldGroup().commit();
+                    eventForm.commit();
                     eventForm.setReadOnly(true);
                     eventTable.refreshRowCache();
                 } catch (CommitException e) {
                     String msg = "Can't save the changes: " + e.getMessage();
                     logger.error(msg);
                     Notification.show(msg, Notification.Type.ERROR_MESSAGE);
+                    return false;
                 }
+                return true;
             }
             @Override
-            public void delete() {
+            public boolean delete() {
                 Object eventId = eventTable.getValue();
                 if (eventId != null) {
                     org.opennms.netmgt.xml.eventconf.Event event = eventTable.getEvent(eventId);
@@ -145,15 +152,18 @@ public abstract class EventPanel extends Panel {
                     eventTable.removeItem(eventId);
                     eventTable.refreshRowCache();
                 }
+                return true;
             }
             @Override
-            public void edit() {
+            public boolean edit() {
                 eventForm.setReadOnly(false);
+                return true;
             }
             @Override
-            public void cancel() {
-                eventForm.getFieldGroup().discard();
+            public boolean cancel() {
+                eventForm.discard();
                 eventForm.setReadOnly(true);
+                return true;
             }
         };
         bottomToolbar.setVisible(false);
@@ -161,14 +171,20 @@ public abstract class EventPanel extends Panel {
         eventTable.addValueChangeListener(new Property.ValueChangeListener() {
             @Override
             public void valueChange(ValueChangeEvent event) {
-                Object eventId = eventTable.getValue();
-                if (eventId != null) {
-                    eventForm.setEvent(eventTable.getEvent(eventId));
+                if (eventForm.isVisible() && !eventForm.isReadOnly()) {
+                    eventTable.select(selectedEventId);
+                    Notification.show("An event seems to be being edited.\nPlease save or cancel your current changes.", Notification.Type.WARNING_MESSAGE);
+                } else {
+                    Object eventId = eventTable.getValue();
+                    if (eventId != null) {
+                        selectedEventId = eventId;
+                        eventForm.setEvent(eventTable.getEvent(eventId));
+                    }
+                    eventForm.setReadOnly(true);
+                    eventForm.setVisible(eventId != null);
+                    bottomToolbar.setReadOnly(true);
+                    bottomToolbar.setVisible(eventId != null);
                 }
-                eventForm.setReadOnly(true);
-                eventForm.setVisible(eventId != null);
-                bottomToolbar.setReadOnly(true);
-                bottomToolbar.setVisible(eventId != null);
             }
         });   
 
@@ -265,7 +281,7 @@ public abstract class EventPanel extends Panel {
         } else {
             ConfirmDialog.show(getUI(),
                                "Are you sure?",
-                               eventCount + " of the new events are already on the configuration files.\nDo you really want to override those events ?",
+                               eventCount + " of the new events are already on the configuration files.\nIf you click 'Yes', the existing definitions are going to be ignored.",
                                "Yes",
                                "No",
                                new ConfirmDialog.Listener() {
@@ -292,13 +308,14 @@ public abstract class EventPanel extends Panel {
             for (org.opennms.netmgt.xml.eventconf.Event event : events.getEventCollection()) {
                 logger.debug("Normalizing event " + event.getUei());
                 AlarmData ad = event.getAlarmData();
-                if (ad != null && (ad.getReductionKey() == null || ad.getReductionKey().trim().isEmpty()))
+                if (ad != null && (ad.getReductionKey() == null || ad.getReductionKey().trim().isEmpty())) {
                     event.setAlarmData(null);
+                }
             }
             // Save the XML of the new events
             saveEvents(events, file, logger);
             // Add a reference to the new file into eventconf.xml if there are events
-            String fileName = file.getAbsolutePath().replaceFirst(".*\\/events\\/(.*)", "events/$1");
+            String fileName = file.getAbsolutePath().replaceFirst(".*\\" + File.separatorChar + "events\\" + File.separatorChar + "(.*)", "events" + File.separatorChar + "$1");
             final Events rootEvents = eventConfDao.getRootEvents();
             final File rootFile = ConfigFileConstants.getFile(ConfigFileConstants.EVENT_CONF_FILE_NAME);
             if (events.getEventCount() > 0) {

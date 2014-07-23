@@ -28,8 +28,8 @@
 
 package org.opennms.netmgt.collectd;
 
-import org.opennms.netmgt.config.collector.CollectionResource;
-import org.opennms.netmgt.config.collector.ServiceParameters;
+import org.opennms.netmgt.collection.api.CollectionResource;
+import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.snmp.SnmpValue;
 
 /**
@@ -44,50 +44,20 @@ public class AliasedAttribute extends SnmpAttribute {
 	/**
 	 * <p>Constructor for AliasedAttribute.</p>
 	 *
-	 * @param resource a {@link org.opennms.netmgt.config.collector.CollectionResource} object.
+	 * @param resource a {@link org.opennms.netmgt.collection.api.CollectionResource} object.
 	 * @param attr a {@link org.opennms.netmgt.collectd.SnmpAttribute} object.
 	 */
 	public AliasedAttribute(CollectionResource resource, SnmpAttribute attr) {
-		super(resource, attr.getAttributeType(), attr.getValue());
+		super(resource, (SnmpAttributeType)attr.getAttributeType(), attr.getValue());
 		m_attr = attr;
 	}
 
-	private SnmpAttribute m_attr;
+	private final SnmpAttribute m_attr;
 
 	/** {@inheritDoc} */
         @Override
 	public boolean equals(Object obj) {
 		return m_attr.equals(obj);
-	}
-
-	/**
-	 * <p>getAttributeType</p>
-	 *
-	 * @return a {@link org.opennms.netmgt.collectd.SnmpAttributeType} object.
-	 */
-        @Override
-	public SnmpAttributeType getAttributeType() {
-		return m_attr.getAttributeType();
-	}
-
-	/**
-	 * <p>getName</p>
-	 *
-	 * @return a {@link java.lang.String} object.
-	 */
-        @Override
-	public String getName() {
-		return m_attr.getName();
-	}
-
-	/**
-	 * <p>getType</p>
-	 *
-	 * @return a {@link java.lang.String} object.
-	 */
-        @Override
-	public String getType() {
-		return m_attr.getType();
 	}
 
 	/**

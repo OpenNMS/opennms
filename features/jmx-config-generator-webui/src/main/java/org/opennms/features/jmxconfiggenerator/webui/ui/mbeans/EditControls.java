@@ -126,7 +126,7 @@ class EditControls<T extends Component> extends HorizontalLayout implements Read
 	 * @param <T>
 	 *            Type of the outer component.
 	 */
-	public static abstract class AbstractButtonHandler<T extends Component> implements ButtonHandler<T> {
+	public abstract static class AbstractButtonHandler<T extends Component> implements ButtonHandler<T> {
 
 		private final T outer;
 
@@ -150,7 +150,7 @@ class EditControls<T extends Component> extends HorizontalLayout implements Read
 	 * 
 	 * @author Markus von Rüden
 	 */
-	public static class FormButtonHandler<T extends AbstractField> extends AbstractButtonHandler<T> {
+	public static class FormButtonHandler<T extends AbstractField<?>> extends AbstractButtonHandler<T> {
 
 		public FormButtonHandler(T outer) {
 			super(outer);
@@ -228,7 +228,7 @@ class EditControls<T extends Component> extends HorizontalLayout implements Read
 	 * If a component uses the EditControls, we may want to do something after
 	 * clicking one of the buttons.
 	 */
-	private final Map<Button, List<Callback<?>>> hooks = new HashMap<Button, List<Callback<?>>>();
+	private final Map<Button, List<Callback<T>>> hooks = new HashMap<Button, List<Callback<T>>>();
 	/**
 	 * Default edit handler. It encapsulates what happens on a button click.
 	 * 
@@ -250,7 +250,7 @@ class EditControls<T extends Component> extends HorizontalLayout implements Read
 		this.buttonHandler = buttonHandler;
 		// we need to do this, otherwise we don't notice when to hide/show
 		// buttons
-		callback.addListener((ReadOnlyStatusChangeListener) this);
+		callback.addReadOnlyStatusChangeListener(this);
 		save = UIHelper.createButton("save", IconProvider.BUTTON_SAVE);
 		cancel = UIHelper.createButton("cancel", IconProvider.BUTTON_CANCEL);
 		edit = UIHelper.createButton("edit", IconProvider.BUTTON_EDIT);
@@ -267,15 +267,15 @@ class EditControls<T extends Component> extends HorizontalLayout implements Read
 	 * Adds an empty list to the buttons.
 	 */
 	private void initHooks() {
-		hooks.put(cancel, new ArrayList<Callback<?>>());
-		hooks.put(save, new ArrayList<Callback<?>>());
-		hooks.put(edit, new ArrayList<Callback<?>>());
+		hooks.put(cancel, new ArrayList<Callback<T>>());
+		hooks.put(save, new ArrayList<Callback<T>>());
+		hooks.put(edit, new ArrayList<Callback<T>>());
 	}
 
 	private void initFooterButtonActions() {
-		edit.addListener((Button.ClickListener) this);
-		save.addListener((Button.ClickListener) this);
-		cancel.addListener((Button.ClickListener) this);
+		edit.addClickListener(this);
+		save.addClickListener(this);
+		cancel.addClickListener(this);
 	}
 
 	/**
@@ -321,21 +321,21 @@ class EditControls<T extends Component> extends HorizontalLayout implements Read
 	 *            {@link #save}, {@link #edit}, {@link #cancel}
 	 * @param listener
 	 */
-	private void addHook(ButtonType button, Callback callback) {
+	private void addHook(ButtonType button, Callback<T> callback) {
 		Button b = getButton(button);
 		if (hooks.get(b) == null) return;
 		hooks.get(b).add(callback);
 	}
 
-	public void addSaveHook(Callback<?> callback) {
+	public void addSaveHook(Callback<T> callback) {
 		addHook(ButtonType.save, callback);
 	}
 
-	public void addEditHook(Callback<?> callback) {
+	public void addEditHook(Callback<T> callback) {
 		addHook(ButtonType.edit, callback);
 	}
 
-	public void addCancelHook(Callback<?> callback) {
+	public void addCancelHook(Callback<T> callback) {
 		addHook(ButtonType.cancel, callback);
 	}
 
@@ -347,7 +347,7 @@ class EditControls<T extends Component> extends HorizontalLayout implements Read
 	private void executeHooks(final Button.ClickEvent event) {
 		if (hooks.get(event.getButton()) == null) return; // nothing to do
 															// //nothing to do
-		for (Callback callback : hooks.get(event.getButton())) {
+		for (Callback<T> callback : hooks.get(event.getButton())) {
 			callback.callback(getButtonType(event.getButton()), buttonHandler.getOuter());
 		}
 	}

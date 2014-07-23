@@ -59,16 +59,15 @@ package org.opennms.netmgt.protocols.xmp.collector;
 
 import org.krupczak.xmp.Xmp;
 import org.krupczak.xmp.XmpVar;
-
-import org.opennms.netmgt.config.collector.AttributeGroupType;
-import org.opennms.netmgt.config.collector.CollectionAttribute;
-import org.opennms.netmgt.config.collector.CollectionAttributeType;
-import org.opennms.netmgt.config.collector.Persister;
+import org.opennms.netmgt.collection.api.AttributeGroupType;
+import org.opennms.netmgt.collection.api.CollectionAttribute;
+import org.opennms.netmgt.collection.api.Persister;
+import org.opennms.netmgt.collection.support.AbstractCollectionAttributeType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
-class XmpCollectionAttributeType implements CollectionAttributeType {
+class XmpCollectionAttributeType extends AbstractCollectionAttributeType {
     /* class variables and methods *********************** */
 	private static final Logger LOG = LoggerFactory.getLogger(XmpCollectionAttributeType.class);
 
@@ -76,26 +75,18 @@ class XmpCollectionAttributeType implements CollectionAttributeType {
     /* instance variables ******************************** */
     //MibObj mibObj; // this might need to be MibObj
     XmpVar aVar;
-    AttributeGroupType groupType;
 
     /* constructors  ************************************* */
     XmpCollectionAttributeType(XmpVar aVar, AttributeGroupType groupType)
-    { 
+    {
+        super(groupType);
         this.aVar = aVar;
-        this.groupType = groupType;
     }
 
     /* private methods *********************************** */
    
 
     /* public methods ************************************ */
-    /**
-     * <p>Getter for the field <code>groupType</code>.</p>
-     *
-     * @return a {@link org.opennms.netmgt.config.collector.AttributeGroupType} object.
-     */
-    @Override
-    public AttributeGroupType getGroupType() { return groupType; }
 
     /** {@inheritDoc} */
     @Override

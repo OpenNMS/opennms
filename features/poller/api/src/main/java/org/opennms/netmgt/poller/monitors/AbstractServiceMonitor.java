@@ -30,8 +30,8 @@ package org.opennms.netmgt.poller.monitors;
 
 import java.util.Map;
 
-import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.MonitoredService;
+import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.ServiceMonitor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,7 +48,7 @@ import org.slf4j.LoggerFactory;
  * @author <A HREF="weave@oculan.com">Weave</A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
  */
-abstract public class AbstractServiceMonitor implements ServiceMonitor {
+public abstract class AbstractServiceMonitor implements ServiceMonitor {
     private static final Logger LOG = LoggerFactory.getLogger(AbstractServiceMonitor.class);
 
     /**
@@ -144,7 +144,7 @@ abstract public class AbstractServiceMonitor implements ServiceMonitor {
 
     /** {@inheritDoc} */
     @Override
-    abstract public PollStatus poll(MonitoredService svc, Map<String, Object> parameters);
+    public abstract PollStatus poll(MonitoredService svc, Map<String, Object> parameters);
 
     public static Object getKeyedObject(final Map<String, Object> parameterMap, final String key, final Object defaultValue) {
         if (key == null) return defaultValue;
@@ -160,7 +160,7 @@ abstract public class AbstractServiceMonitor implements ServiceMonitor {
         if (value == null) return defaultValue;
 
         if (value instanceof String) {
-            return Boolean.valueOf("true".equalsIgnoreCase((String)value));
+            return "true".equalsIgnoreCase((String)value) ? Boolean.TRUE : Boolean.FALSE;
         } else if (value instanceof Boolean) {
             return (Boolean)value;
         }

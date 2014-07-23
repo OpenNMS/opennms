@@ -25,7 +25,7 @@ import org.opennms.features.topology.api.support.VertexHopGraphProvider.FocusNod
 import org.opennms.features.topology.api.support.VertexHopGraphProvider.VertexHopCriteria;
 import org.opennms.features.topology.api.topo.AbstractEdgeRef;
 import org.opennms.features.topology.api.topo.AbstractVertex;
-import org.opennms.features.topology.api.topo.AbstractVertexRef;
+import org.opennms.features.topology.api.topo.DefaultVertexRef;
 import org.opennms.features.topology.api.topo.CollapsibleCriteria;
 import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.Edge;
@@ -49,6 +49,14 @@ public class VEProviderGraphContainerTest {
 
 	private static abstract class TestCollapsibleCriteria extends VertexHopCriteria implements CollapsibleCriteria {
 
+		public TestCollapsibleCriteria() {
+			super("Collapsed vertex");
+		}
+		
+		public TestCollapsibleCriteria(String label) {
+			super(label);
+		}
+		
 		@Override
 		public boolean isCollapsed() {
 			return true;
@@ -94,8 +102,8 @@ public class VEProviderGraphContainerTest {
 
 		public Set<VertexRef> getVertices() {
 			Set<VertexRef> retval = new HashSet<VertexRef>();
-			retval.add(new AbstractVertexRef("nodes", "v2", "vertex2"));
-			retval.add(new AbstractVertexRef("nodes", "v4", "vertex4"));
+			retval.add(new DefaultVertexRef("nodes", "v2", "vertex2"));
+			retval.add(new DefaultVertexRef("nodes", "v4", "vertex4"));
 			return retval;
 		}
 	}
@@ -108,7 +116,7 @@ public class VEProviderGraphContainerTest {
 
 		public Set<VertexRef> getVertices() {
 			Set<VertexRef> retval = new HashSet<VertexRef>();
-			retval.add(new AbstractVertexRef("nodes", "v3", "vertex3"));
+			retval.add(new DefaultVertexRef("nodes", "v3", "vertex3"));
 			return retval;
 		}
 	}
@@ -178,8 +186,8 @@ public class VEProviderGraphContainerTest {
 		assertEquals(0, graph.getDisplayEdges().size());
 
 		// Add one focus vertex
-		FocusNodeHopCriteria focusNodes = new FocusNodeHopCriteria();
-		focusNodes.add(new AbstractVertexRef("nodes", "v1"));
+		FocusNodeHopCriteria focusNodes = new FocusNodeHopCriteria("vertex");
+		focusNodes.add(new DefaultVertexRef("nodes", "v1"));
 		m_graphContainer.addCriteria(focusNodes);
 		// This needs to be 2 because there is a SemanticZoomLevelCriteria in there also
 		assertEquals(2, m_graphContainer.getCriteria().length);
@@ -252,10 +260,10 @@ public class VEProviderGraphContainerTest {
 		Map<VertexRef,Set<Vertex>> collapsed = VertexHopGraphProvider.getMapOfVerticesToCollapsedVertices(
 				VertexHopGraphProvider.getCollapsedCriteria(m_graphContainer.getCriteria())
 		);
-		assertTrue(collapsed.containsKey(new AbstractVertexRef("nodes", "v2")));
-		assertTrue(collapsed.containsKey(new AbstractVertexRef("nodes", "v4")));
-		assertTrue(collapsed.get(new AbstractVertexRef("nodes", "v2")).equals(Collections.singleton(new AbstractVertexRef("nodes", "test"))));
-		assertTrue(collapsed.get(new AbstractVertexRef("nodes", "v4")).equals(Collections.singleton(new AbstractVertexRef("nodes", "test"))));
+		assertTrue(collapsed.containsKey(new DefaultVertexRef("nodes", "v2")));
+		assertTrue(collapsed.containsKey(new DefaultVertexRef("nodes", "v4")));
+		assertTrue(collapsed.get(new DefaultVertexRef("nodes", "v2")).equals(Collections.singleton(new DefaultVertexRef("nodes", "test"))));
+		assertTrue(collapsed.get(new DefaultVertexRef("nodes", "v4")).equals(Collections.singleton(new DefaultVertexRef("nodes", "test"))));
 
 		assertEquals(
 			ArrayUtils.toString(m_graphContainer.getGraph().getDisplayVertices()), 
@@ -452,7 +460,7 @@ public class VEProviderGraphContainerTest {
 	
 
 	private void expectVertex(String namespace, String vertexId, String styles) {
-		AbstractVertexRef vertexRef = new AbstractVertexRef(namespace, vertexId);
+		DefaultVertexRef vertexRef = new DefaultVertexRef(namespace, vertexId);
 		m_expectedVertices.add(vertexRef);
 		m_expectedVertexStyles.put(vertexRef, styles);
 	}

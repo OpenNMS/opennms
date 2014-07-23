@@ -35,7 +35,7 @@ import org.opennms.netmgt.provision.service.ProvisionService;
 public abstract class ImportOperation {
     private static final Logger LOG = LoggerFactory.getLogger(ImportOperation.class);
     
-    final private ProvisionService m_provisionService;
+    private final ProvisionService m_provisionService;
     
     /**
      * <p>Constructor for ImportOperation.</p>
@@ -50,7 +50,7 @@ public abstract class ImportOperation {
     /**
      * <p>scan</p>
      */
-    abstract public void scan();
+    public abstract void scan();
 
     /**
      * <p>getProvisionService</p>

@@ -30,54 +30,44 @@ package org.opennms.netmgt.linkd;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.R1_NAME;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.R2_NAME;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.R3_NAME;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.R4_NAME;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.test.MockLogAppender;
-import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
 import org.opennms.netmgt.config.LinkdConfig;
-import org.opennms.netmgt.config.LinkdConfigFactory;
 import org.opennms.netmgt.config.linkd.Package;
 import org.opennms.netmgt.dao.api.DataLinkInterfaceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
-import org.opennms.netmgt.dao.support.NewTransactionTemplate;
 import org.opennms.netmgt.model.DataLinkInterface;
 import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.test.JUnitConfigurationEnvironment;
-import org.springframework.beans.factory.InitializingBean;
+import org.opennms.netmgt.nb.Nms4005NetworkBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
-import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.annotation.NotTransactional;
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
+import org.springframework.transaction.support.TransactionTemplate;
 
-@RunWith(OpenNMSJUnit4ClassRunner.class)
-@ContextConfiguration(locations= {
-        "classpath:/META-INF/opennms/applicationContext-soa.xml",
-        "classpath:/META-INF/opennms/applicationContext-dao.xml",
-        "classpath:/META-INF/opennms/applicationContext-daemon.xml",
-        "classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml",
-        "classpath:/META-INF/opennms/mockEventIpcManager.xml",
-        "classpath:/META-INF/opennms/applicationContext-linkd.xml",
-        "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml"
-})
-@JUnitConfigurationEnvironment(systemProperties="org.opennms.provisiond.enableDiscovery=false")
-@JUnitTemporaryDatabase
-@Transactional
-public class Nms4005Test extends Nms4005NetworkBuilder implements InitializingBean {
+public class Nms4005Test extends LinkdTestBuilder {
+
+    @Autowired
+    TransactionTemplate m_transactionTemplate; 
+
+    Nms4005NetworkBuilder builder = new Nms4005NetworkBuilder();
 
     @Autowired
     private Linkd m_linkd;
@@ -92,9 +82,6 @@ public class Nms4005Test extends Nms4005NetworkBuilder implements InitializingBe
 
     @Autowired
     private DataLinkInterfaceDao m_dataLinkInterfaceDao;
-
-    @Autowired
-    private NewTransactionTemplate m_transactionTemplate;
 
     @Override
     public void afterPropertiesSet() throws Exception {
@@ -112,46 +99,51 @@ public class Nms4005Test extends Nms4005NetworkBuilder implements InitializingBe
 
         for (Package pkg : Collections.list(m_linkdConfig.enumeratePackage())) {
             pkg.setForceIpRouteDiscoveryOnEthernet(true);
-        }
+        }        
 
         m_transactionTemplate.execute(new TransactionCallbackWithoutResult() {
             @Override
             protected void doInTransactionWithoutResult(TransactionStatus status) {
-                m_nodeDao.save(getR1());
-                m_nodeDao.save(getR2());
-                m_nodeDao.save(getR3());
-                m_nodeDao.save(getR4());
+                m_nodeDao.save(builder.getR1());
+                m_nodeDao.save(builder.getR2());
+                m_nodeDao.save(builder.getR3());
+                m_nodeDao.save(builder.getR4());
                 m_nodeDao.flush();
             }
         });
     }
 
-	@Before
-	public void setUpLinkdConfiguration() throws Exception {
-	    LinkdConfigFactory.init();
-	    final Resource config = new ClassPathResource("etc/linkd-configuration.xml");
-	    final LinkdConfigFactory factory = new LinkdConfigFactory(-1L, config.getInputStream());
-	    LinkdConfigFactory.setInstance(factory);
-	    m_linkdConfig = LinkdConfigFactory.getInstance();
-	}
+    @After
+    @Override // Override this so that we can manually wrap it in a transaction if necessary
+    public void tearDown() throws Exception {
+        m_transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus status) {
+                for (final OnmsNode node : m_nodeDao.findAll()) {
+                    m_nodeDao.delete(node);
+                }
+                m_nodeDao.flush();
+            }
+        });
+    }
 
 /*
  *  (3)10.1.1.2<>R1<>10.1.3.1 (2)---(1) 10.1.3.2 <>R3<>
- *        	   10.1.2.1                          <>R3<>
- *          	 (1)                             <>R3<>                                  
+ *                10.1.2.1                          <>R3<>
+ *               (1)                             <>R3<>
  *                |                              <>R3<>10.1.4.1 (2)---(1) 10.1.4.2<>R4
  *               (1)                             <>R3<>
  *             10.1.2.2                          <>R3<>
- * 			   <>R2<>10.1.5.1 (2)---(3) 10.1.5.2 <>R3<>
+ *                <>R2<>10.1.5.1 (2)---(3) 10.1.5.2 <>R3<>
  */
-    @Test
-    @JUnitTemporaryDatabase
+    @Test(timeout=60000)
     @JUnitSnmpAgents(value={
             @JUnitSnmpAgent(host="10.1.1.2", port=161, resource="classpath:linkd/nms4005/10.1.1.2-walk.txt"),
             @JUnitSnmpAgent(host="10.1.2.2", port=161, resource="classpath:linkd/nms4005/10.1.2.2-walk.txt"),
             @JUnitSnmpAgent(host="10.1.3.2", port=161, resource="classpath:linkd/nms4005/10.1.3.2-walk.txt"),
             @JUnitSnmpAgent(host="10.1.4.2", port=161, resource="classpath:linkd/nms4005/10.1.4.2-walk.txt")
     })
+    @JUnitTemporaryDatabase
     public void testNms4005Network() throws Exception {
         final OnmsNode cisco1 = m_nodeDao.findByForeignId("linkd", R1_NAME);
         final OnmsNode cisco2 = m_nodeDao.findByForeignId("linkd", R2_NAME);
@@ -169,7 +161,7 @@ public class Nms4005Test extends Nms4005NetworkBuilder implements InitializingBe
         assertTrue(m_linkd.runSingleSnmpCollection(cisco4.getId()));
 
         assertTrue(m_linkd.runSingleLinkDiscovery("example1"));
-        
+
         final List<DataLinkInterface> ifaces = m_dataLinkInterfaceDao.findAll();
         for (final DataLinkInterface link: ifaces) {
             printLink(link);
@@ -182,7 +174,7 @@ public class Nms4005Test extends Nms4005NetworkBuilder implements InitializingBe
         assertTrue(m_linkd.runSingleSnmpCollection(cisco4.getId()));
 
         assertTrue(m_linkd.runSingleLinkDiscovery("example1"));
-        
+
         assertEquals("we should have found 4 data links", 4, ifaces.size());
 
     }
@@ -191,91 +183,102 @@ public class Nms4005Test extends Nms4005NetworkBuilder implements InitializingBe
      * This test is the same as {@link #testNms4005Network()} except that it spawns multiple threads
      * for each scan to ensure that the upsert code is working properly.
      */
-    @Test
-    @JUnitTemporaryDatabase
+    @Test(timeout=60000)
     @JUnitSnmpAgents(value={
             @JUnitSnmpAgent(host="10.1.1.2", port=161, resource="classpath:linkd/nms4005/10.1.1.2-walk.txt"),
             @JUnitSnmpAgent(host="10.1.2.2", port=161, resource="classpath:linkd/nms4005/10.1.2.2-walk.txt"),
             @JUnitSnmpAgent(host="10.1.3.2", port=161, resource="classpath:linkd/nms4005/10.1.3.2-walk.txt"),
             @JUnitSnmpAgent(host="10.1.4.2", port=161, resource="classpath:linkd/nms4005/10.1.4.2-walk.txt")
     })
+    @JUnitTemporaryDatabase
+    @NotTransactional
     public void testNms4005NetworkWithThreads() throws Exception {
-        final OnmsNode cisco1 = m_nodeDao.findByForeignId("linkd", R1_NAME);
-        final OnmsNode cisco2 = m_nodeDao.findByForeignId("linkd", R2_NAME);
-        final OnmsNode cisco3 = m_nodeDao.findByForeignId("linkd", R3_NAME);
-        final OnmsNode cisco4 = m_nodeDao.findByForeignId("linkd", R4_NAME);
 
-        assertTrue(m_linkd.scheduleNodeCollection(cisco1.getId()));
-        assertTrue(m_linkd.scheduleNodeCollection(cisco2.getId()));
-        assertTrue(m_linkd.scheduleNodeCollection(cisco3.getId()));
-        assertTrue(m_linkd.scheduleNodeCollection(cisco4.getId()));
+        // Run this test in a separate transaction from the @Before method to make sure
+        // that all of the data is present in the database before the test begins.
+        m_transactionTemplate.execute(new TransactionCallbackWithoutResult() {
 
-        final int NUMBER_OF_THREADS = 20;
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus arg0) {
+                final OnmsNode cisco1 = m_nodeDao.findByForeignId("linkd", R1_NAME);
+                final OnmsNode cisco2 = m_nodeDao.findByForeignId("linkd", R2_NAME);
+                final OnmsNode cisco3 = m_nodeDao.findByForeignId("linkd", R3_NAME);
+                final OnmsNode cisco4 = m_nodeDao.findByForeignId("linkd", R4_NAME);
 
-        List<Thread> waitForMe = new ArrayList<Thread>();
-        for (int i = 0; i < NUMBER_OF_THREADS; i++) {
-            Thread thread = new Thread("NMS-4005-Test-Thread-" + i) {
-                @Override
-                public void run() {
-                    assertTrue(m_linkd.runSingleSnmpCollection(cisco1.getId()));
+
+                assertTrue(m_linkd.scheduleNodeCollection(cisco1.getId()));
+                assertTrue(m_linkd.scheduleNodeCollection(cisco2.getId()));
+                assertTrue(m_linkd.scheduleNodeCollection(cisco3.getId()));
+                assertTrue(m_linkd.scheduleNodeCollection(cisco4.getId()));
+
+                final int NUMBER_OF_THREADS = 20;
+
+                List<Thread> waitForMe = new ArrayList<Thread>();
+                for (int i = 0; i < NUMBER_OF_THREADS; i++) {
+                    Thread thread = new Thread("NMS-4005-Test-Thread-" + i) {
+                        @Override
+                        public void run() {
+                            assertTrue(m_linkd.runSingleSnmpCollection(cisco1.getId()));
+                        }
+                    };
+                    thread.start();
+                    waitForMe.add(thread);
                 }
-            };
-            thread.start();
-            waitForMe.add(thread);
-        }
-        for (Thread thread : waitForMe) {
-            thread.join();
-        }
-        waitForMe.clear();
-        for (int i = 0; i < NUMBER_OF_THREADS; i++) {
-            Thread thread = new Thread("NMS-4005-Test-Thread-" + i) {
-                @Override
-                public void run() {
-                    assertTrue(m_linkd.runSingleSnmpCollection(cisco2.getId()));
+                for (Thread thread : waitForMe) {
+                    try { thread.join(); } catch (InterruptedException e) {}
                 }
-            };
-            thread.start();
-            waitForMe.add(thread);
-        }
-        for (Thread thread : waitForMe) {
-            thread.join();
-        }
-        waitForMe.clear();
-        for (int i = 0; i < NUMBER_OF_THREADS; i++) {
-            Thread thread = new Thread("NMS-4005-Test-Thread-" + i) {
-                @Override
-                public void run() {
-                    assertTrue(m_linkd.runSingleSnmpCollection(cisco3.getId()));
+                waitForMe.clear();
+                for (int i = 0; i < NUMBER_OF_THREADS; i++) {
+                    Thread thread = new Thread("NMS-4005-Test-Thread-" + i) {
+                        @Override
+                        public void run() {
+                            assertTrue(m_linkd.runSingleSnmpCollection(cisco2.getId()));
+                        }
+                    };
+                    thread.start();
+                    waitForMe.add(thread);
                 }
-            };
-            thread.start();
-            waitForMe.add(thread);
-        }
-        for (Thread thread : waitForMe) {
-            thread.join();
-        }
-        waitForMe.clear();
-        for (int i = 0; i < NUMBER_OF_THREADS; i++) {
-            Thread thread = new Thread("NMS-4005-Test-Thread-" + i) {
-                @Override
-                public void run() {
-                    assertTrue(m_linkd.runSingleSnmpCollection(cisco4.getId()));
+                for (Thread thread : waitForMe) {
+                    try { thread.join(); } catch (InterruptedException e) {}
                 }
-            };
-            thread.start();
-            waitForMe.add(thread);
-        }
-        for (Thread thread : waitForMe) {
-            thread.join();
-        }
-        waitForMe.clear();
+                waitForMe.clear();
+                for (int i = 0; i < NUMBER_OF_THREADS; i++) {
+                    Thread thread = new Thread("NMS-4005-Test-Thread-" + i) {
+                        @Override
+                        public void run() {
+                            assertTrue(m_linkd.runSingleSnmpCollection(cisco3.getId()));
+                        }
+                    };
+                    thread.start();
+                    waitForMe.add(thread);
+                }
+                for (Thread thread : waitForMe) {
+                    try { thread.join(); } catch (InterruptedException e) {}
+                }
+                waitForMe.clear();
+                for (int i = 0; i < NUMBER_OF_THREADS; i++) {
+                    Thread thread = new Thread("NMS-4005-Test-Thread-" + i) {
+                        @Override
+                        public void run() {
+                            assertTrue(m_linkd.runSingleSnmpCollection(cisco4.getId()));
+                        }
+                    };
+                    thread.start();
+                    waitForMe.add(thread);
+                }
+                for (Thread thread : waitForMe) {
+                    try { thread.join(); } catch (InterruptedException e) {}
+                }
+                waitForMe.clear();
 
-        assertTrue(m_linkd.runSingleLinkDiscovery("example1"));
+                assertTrue(m_linkd.runSingleLinkDiscovery("example1"));
 
-        final List<DataLinkInterface> ifaces = m_dataLinkInterfaceDao.findAll();
-        for (final DataLinkInterface link: ifaces) {
-            printLink(link);
-        }
-        assertEquals("we should have found 4 data links", 4, ifaces.size());
+                final List<DataLinkInterface> ifaces = m_dataLinkInterfaceDao.findAll();
+                for (final DataLinkInterface link: ifaces) {
+                    printLink(link);
+                }
+                assertEquals("we should have found 4 data links", 4, ifaces.size());
+            }
+        });
     }
 }

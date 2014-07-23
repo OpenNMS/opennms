@@ -207,6 +207,7 @@ public final class TcpEventProxy implements EventProxy {
         @Override
         protected void finalize() throws Throwable {
             close();
+            super.finalize();
         }
     }
 }

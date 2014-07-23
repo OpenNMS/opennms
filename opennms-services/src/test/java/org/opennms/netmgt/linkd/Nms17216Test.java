@@ -30,1025 +30,74 @@ package org.opennms.netmgt.linkd;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.ROUTER1_IP;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.ROUTER1_NAME;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.ROUTER1_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.ROUTER2_IP;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.ROUTER2_NAME;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.ROUTER2_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.ROUTER3_IP;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.ROUTER3_NAME;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.ROUTER3_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.ROUTER4_IP;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.ROUTER4_NAME;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.ROUTER4_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.SWITCH1_IP;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.SWITCH1_NAME;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.SWITCH1_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.SWITCH2_IP;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.SWITCH2_NAME;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.SWITCH2_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.SWITCH3_IP;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.SWITCH3_NAME;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.SWITCH3_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.SWITCH4_IP;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.SWITCH4_NAME;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.SWITCH4_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.SWITCH5_IP;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.SWITCH5_NAME;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.SWITCH5_SNMP_RESOURCE;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Properties;
 
-import javax.sql.DataSource;
-
-import org.hibernate.SessionFactory;
-import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.opennms.core.spring.BeanUtils;
-import org.opennms.core.test.MockLogAppender;
-import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
-import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.config.DatabaseSchemaConfigFactory;
-import org.opennms.netmgt.config.LinkdConfig;
-import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.config.linkd.Package;
-import org.opennms.netmgt.dao.api.DataLinkInterfaceDao;
-import org.opennms.netmgt.dao.api.NodeDao;
-import org.opennms.netmgt.dao.hibernate.Hibernate4SessionDataSource;
-import org.opennms.netmgt.dao.support.NewTransactionTemplate;
-import org.opennms.netmgt.filter.FilterDaoFactory;
-import org.opennms.netmgt.filter.JdbcFilterDao;
-import org.opennms.netmgt.linkd.snmp.CdpCacheTable;
-import org.opennms.netmgt.linkd.snmp.CdpCacheTableEntry;
-import org.opennms.netmgt.linkd.snmp.CdpInterfaceTable;
-import org.opennms.netmgt.linkd.snmp.CdpInterfaceTableEntry;
-import org.opennms.netmgt.linkd.snmp.CiscoVlanTable;
-import org.opennms.netmgt.linkd.snmp.CiscoVlanTableEntry;
-import org.opennms.netmgt.linkd.snmp.LldpLocTable;
-import org.opennms.netmgt.linkd.snmp.LldpLocTableEntry;
-import org.opennms.netmgt.linkd.snmp.LldpLocalGroup;
-import org.opennms.netmgt.linkd.snmp.LldpRemTable;
-import org.opennms.netmgt.linkd.snmp.LldpRemTableEntry;
 import org.opennms.netmgt.model.DataLinkInterface;
 import org.opennms.netmgt.model.DataLinkInterface.DiscoveryProtocol;
 import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.snmp.CollectionTracker;
-import org.opennms.netmgt.snmp.SnmpAgentConfig;
-import org.opennms.netmgt.snmp.SnmpStore;
-import org.opennms.netmgt.snmp.SnmpUtils;
-import org.opennms.netmgt.snmp.SnmpWalker;
-import org.opennms.test.JUnitConfigurationEnvironment;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
+import org.opennms.netmgt.model.topology.LinkableNode;
+import org.opennms.netmgt.nb.Nms17216NetworkBuilder;
 
-@RunWith(OpenNMSJUnit4ClassRunner.class)
-@ContextConfiguration(locations= {
-        "classpath:/META-INF/opennms/applicationContext-soa.xml",
-        "classpath:/META-INF/opennms/applicationContext-dao.xml",
-        "classpath:/META-INF/opennms/applicationContext-daemon.xml",
-        "classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml",
-        "classpath:/META-INF/opennms/mockEventIpcManager.xml",
-        "classpath:/META-INF/opennms/applicationContext-linkd.xml",
-        "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml"
-})
-@JUnitConfigurationEnvironment(systemProperties="org.opennms.provisiond.enableDiscovery=false")
-@JUnitTemporaryDatabase
-@Transactional
-public class Nms17216Test extends Nms17216NetworkBuilder implements InitializingBean {
+public class Nms17216Test extends LinkdTestBuilder {
 
-    @Autowired
-    private DataSource m_dataSource;
-
-    @Autowired
-    private SessionFactory m_sessionFactory;
-
-    @Autowired
-    private Linkd m_linkd;
-
-    @Autowired
-    private LinkdConfig m_linkdConfig;
-
-    @Autowired
-    private NodeDao m_nodeDao;
-
-    @Autowired
-    private DataLinkInterfaceDao m_dataLinkInterfaceDao;
-
-    @Autowired
-    private NewTransactionTemplate m_transactionTemplate;
-
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        BeanUtils.assertAutowiring(this);
-    }
-
-    @Before
-    public void setUp() throws Exception {
-        Properties p = new Properties();
-        p.setProperty("log4j.logger.org.hibernate.SQL", "WARN");
-        p.setProperty("log4j.logger.org.hibernate.cfg", "WARN");
-        p.setProperty("log4j.logger.org.springframework","WARN");
-        p.setProperty("log4j.logger.com.mchange.v2.resourcepool", "WARN");
-        MockLogAppender.setupLogging(p);
-
-        // Initialize Filter DAO
-        DatabaseSchemaConfigFactory.init();
-        JdbcFilterDao jdbcFilterDao = new JdbcFilterDao();
-        // You must wrap the data source in Spring's TransactionAwareDataSourceProxy so that it
-        // executes its queries inside the current transaction.
-        jdbcFilterDao.setDataSource(new Hibernate4SessionDataSource(m_dataSource, m_sessionFactory));
-        jdbcFilterDao.setDatabaseSchemaConfigFactory(DatabaseSchemaConfigFactory.getInstance());
-        jdbcFilterDao.afterPropertiesSet();
-        FilterDaoFactory.setInstance(jdbcFilterDao);
-    }
-
-    @Test
-    @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=SWITCH1_IP, port=161, resource="classpath:linkd/nms17216/switch1-walk.txt")
-    })
-    public void testSwitch1CdpCacheTableCollection() throws Exception {
-
-        String name = "cdpCacheTable";
-        CdpCacheTable m_cdpCacheTable = new CdpCacheTable(InetAddressUtils.addr(SWITCH1_IP));
-        CollectionTracker[] tracker = new CollectionTracker[0];
-        tracker = new CollectionTracker[] {m_cdpCacheTable};
-        SnmpAgentConfig snmpAgent = SnmpPeerFactory.getInstance().getAgentConfig(InetAddressUtils.addr(SWITCH1_IP));
-        SnmpWalker walker = SnmpUtils.createWalker(snmpAgent, name, tracker);
-        walker.start();
-
-        try {
-                walker.waitFor();
-        } catch (final InterruptedException e) {
-
-        }
-        
-        assertEquals(5, m_cdpCacheTable.size());
-        for (CdpCacheTableEntry cdpCacheTableEntry: m_cdpCacheTable) {
-            printCdpRow(cdpCacheTableEntry);
-        }
-    }        
-
-    @Test
-    @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=SWITCH2_IP, port=161, resource="classpath:linkd/nms17216/switch2-walk.txt")
-    })
-    public void testSwitch2CdpCacheTableCollection() throws Exception {
-
-        String name = "cdpCacheTable";
-        CdpCacheTable m_cdpCacheTable = new CdpCacheTable(InetAddressUtils.addr(SWITCH2_IP));
-        CollectionTracker[] tracker = new CollectionTracker[0];
-        tracker = new CollectionTracker[] {m_cdpCacheTable};
-        SnmpAgentConfig snmpAgent = SnmpPeerFactory.getInstance().getAgentConfig(InetAddressUtils.addr(SWITCH2_IP));
-        SnmpWalker walker = SnmpUtils.createWalker(snmpAgent, name, tracker);
-        walker.start();
-
-        try {
-                walker.waitFor();
-        } catch (final InterruptedException e) {
-
-        }
-        
-        assertEquals(6, m_cdpCacheTable.size());
-        for (CdpCacheTableEntry cdpCacheTableEntry: m_cdpCacheTable) {
-            printCdpRow(cdpCacheTableEntry);
-        }
-    }        
-
-    @Test
-    @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=SWITCH3_IP, port=161, resource="classpath:linkd/nms17216/switch3-walk.txt")
-    })
-    public void testSwitch3CdpCacheTableCollection() throws Exception {
-
-        String name = "cdpCacheTable";
-        CdpCacheTable m_cdpCacheTable = new CdpCacheTable(InetAddressUtils.addr(SWITCH3_IP));
-        CollectionTracker[] tracker = new CollectionTracker[0];
-        tracker = new CollectionTracker[] {m_cdpCacheTable};
-        SnmpAgentConfig snmpAgent = SnmpPeerFactory.getInstance().getAgentConfig(InetAddressUtils.addr(SWITCH3_IP));
-        SnmpWalker walker = SnmpUtils.createWalker(snmpAgent, name, tracker);
-        walker.start();
-
-        try {
-                walker.waitFor();
-        } catch (final InterruptedException e) {
-
-        }
-        
-        assertEquals(4, m_cdpCacheTable.size());
-        for (CdpCacheTableEntry cdpCacheTableEntry: m_cdpCacheTable) {
-            printCdpRow(cdpCacheTableEntry);
-        }
-    }        
-
-    @Test
-    @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=SWITCH4_IP, port=161, resource="classpath:linkd/nms17216/switch4-walk.txt")
-    })
-    public void testSwitch4CdpCacheTableCollection() throws Exception {
-
-        String name = "cdpCacheTable";
-        CdpCacheTable m_cdpCacheTable = new CdpCacheTable(InetAddressUtils.addr(SWITCH4_IP));
-        CollectionTracker[] tracker = new CollectionTracker[0];
-        tracker = new CollectionTracker[] {m_cdpCacheTable};
-        SnmpAgentConfig snmpAgent = SnmpPeerFactory.getInstance().getAgentConfig(InetAddressUtils.addr(SWITCH4_IP));
-        SnmpWalker walker = SnmpUtils.createWalker(snmpAgent, name, tracker);
-        walker.start();
-
-        try {
-                walker.waitFor();
-        } catch (final InterruptedException e) {
-
-        }
-        
-        assertEquals(1, m_cdpCacheTable.size());
-        for (CdpCacheTableEntry cdpCacheTableEntry: m_cdpCacheTable) {
-            printCdpRow(cdpCacheTableEntry);
-        }
-    }        
-
-    @Test
-    @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=SWITCH5_IP, port=161, resource="classpath:linkd/nms17216/switch5-walk.txt")
-    })
-    public void testSwitch5CdpCacheTableCollection() throws Exception {
-
-        String name = "cdpCacheTable";
-        CdpCacheTable m_cdpCacheTable = new CdpCacheTable(InetAddressUtils.addr(SWITCH5_IP));
-        CollectionTracker[] tracker = new CollectionTracker[0];
-        tracker = new CollectionTracker[] {m_cdpCacheTable};
-        SnmpAgentConfig snmpAgent = SnmpPeerFactory.getInstance().getAgentConfig(InetAddressUtils.addr(SWITCH5_IP));
-        SnmpWalker walker = SnmpUtils.createWalker(snmpAgent, name, tracker);
-        walker.start();
-
-        try {
-                walker.waitFor();
-        } catch (final InterruptedException e) {
-
-        }
-        
-        assertEquals(2, m_cdpCacheTable.size());
-        for (CdpCacheTableEntry cdpCacheTableEntry: m_cdpCacheTable) {
-            printCdpRow(cdpCacheTableEntry);
-        }
-    }        
-
-    @Test
-    @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=ROUTER1_IP, port=161, resource="classpath:linkd/nms17216/router1-walk.txt")
-    })
-    public void testRouter1CdpCacheTableCollection() throws Exception {
-
-        String name = "cdpCacheTable";
-        CdpCacheTable m_cdpCacheTable = new CdpCacheTable(InetAddressUtils.addr(ROUTER1_IP));
-        CollectionTracker[] tracker = new CollectionTracker[0];
-        tracker = new CollectionTracker[] {m_cdpCacheTable};
-        SnmpAgentConfig snmpAgent = SnmpPeerFactory.getInstance().getAgentConfig(InetAddressUtils.addr(ROUTER1_IP));
-        SnmpWalker walker = SnmpUtils.createWalker(snmpAgent, name, tracker);
-        walker.start();
-
-        try {
-                walker.waitFor();
-        } catch (final InterruptedException e) {
-
-        }
-        
-        assertEquals(2, m_cdpCacheTable.size());
-        for (CdpCacheTableEntry cdpCacheTableEntry: m_cdpCacheTable) {
-            printCdpRow(cdpCacheTableEntry);
-        }
-    }        
-
-    @Test
-    @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=ROUTER2_IP, port=161, resource="classpath:linkd/nms17216/router2-walk.txt")
-    })
-    public void testRouter2CdpCacheTableCollection() throws Exception {
-
-        String name = "cdpCacheTable";
-        CdpCacheTable m_cdpCacheTable = new CdpCacheTable(InetAddressUtils.addr(ROUTER2_IP));
-        CollectionTracker[] tracker = new CollectionTracker[0];
-        tracker = new CollectionTracker[] {m_cdpCacheTable};
-        SnmpAgentConfig snmpAgent = SnmpPeerFactory.getInstance().getAgentConfig(InetAddressUtils.addr(ROUTER2_IP));
-        SnmpWalker walker = SnmpUtils.createWalker(snmpAgent, name, tracker);
-        walker.start();
-
-        try {
-                walker.waitFor();
-        } catch (final InterruptedException e) {
-
-        }
-        
-        assertEquals(2, m_cdpCacheTable.size());
-        for (CdpCacheTableEntry cdpCacheTableEntry: m_cdpCacheTable) {
-            printCdpRow(cdpCacheTableEntry);
-        }
-    }        
-
-    @Test
-    @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=ROUTER3_IP, port=161, resource="classpath:linkd/nms17216/router3-walk.txt")
-    })
-    public void testRouter3CdpCacheTableCollection() throws Exception {
-
-        String name = "cdpCacheTable";
-        CdpCacheTable m_cdpCacheTable = new CdpCacheTable(InetAddressUtils.addr(ROUTER3_IP));
-        CollectionTracker[] tracker = new CollectionTracker[0];
-        tracker = new CollectionTracker[] {m_cdpCacheTable};
-        SnmpAgentConfig snmpAgent = SnmpPeerFactory.getInstance().getAgentConfig(InetAddressUtils.addr(ROUTER3_IP));
-        SnmpWalker walker = SnmpUtils.createWalker(snmpAgent, name, tracker);
-        walker.start();
-
-        try {
-                walker.waitFor();
-        } catch (final InterruptedException e) {
-
-        }
-        
-        assertEquals(3, m_cdpCacheTable.size());
-        for (CdpCacheTableEntry cdpCacheTableEntry: m_cdpCacheTable) {
-            printCdpRow(cdpCacheTableEntry);
-        }
-    }        
-
-    @Test
-    @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=ROUTER4_IP, port=161, resource="classpath:linkd/nms17216/router4-walk.txt")
-    })
-    public void testRouter4CdpCacheTableCollection() throws Exception {
-
-        String name = "cdpCacheTable";
-        CdpCacheTable m_cdpCacheTable = new CdpCacheTable(InetAddressUtils.addr(ROUTER4_IP));
-        CollectionTracker[] tracker = new CollectionTracker[0];
-        tracker = new CollectionTracker[] {m_cdpCacheTable};
-        SnmpAgentConfig snmpAgent = SnmpPeerFactory.getInstance().getAgentConfig(InetAddressUtils.addr(ROUTER4_IP));
-        SnmpWalker walker = SnmpUtils.createWalker(snmpAgent, name, tracker);
-        walker.start();
-
-        try {
-                walker.waitFor();
-        } catch (final InterruptedException e) {
-
-        }
-        
-        assertEquals(1, m_cdpCacheTable.size());
-        for (CdpCacheTableEntry cdpCacheTableEntry: m_cdpCacheTable) {
-            printCdpRow(cdpCacheTableEntry);
-        }
-    }        
-
-    @Test
-    @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=SWITCH1_IP, port=161, resource="classpath:linkd/nms17216/switch1-walk.txt")
-    })
-    public void testSwicth1CiscoVlanTableCollection() throws Exception {
-        
-        String name = "vlanTable";
-        CiscoVlanTable m_vlan = new CiscoVlanTable(InetAddressUtils.addr(SWITCH1_IP));
-        CollectionTracker[] tracker = new CollectionTracker[0];
-        tracker = new CollectionTracker[] {m_vlan};
-        SnmpAgentConfig snmpAgent = SnmpPeerFactory.getInstance().getAgentConfig(InetAddressUtils.addr(SWITCH1_IP));
-        SnmpWalker walker = SnmpUtils.createWalker(snmpAgent, name, tracker);
-        walker.start();
-
-        try {
-                walker.waitFor();
-        } catch (final InterruptedException e) {
-
-        }
-
-        for (SnmpStore store: m_vlan) {
-                CiscoVlanTableEntry ent = (CiscoVlanTableEntry) store;
-            System.out.println("VLAN-----Start");
-                System.out.println("vlan index: " + ent.getVlanIndex());
-            System.out.println("vlan name: " + ent.getVlanName());
-            System.out.println("vlan type: " + ent.getVlanType());
-            System.out.println("vlan status: " + ent.getVlanStatus()); 
-            System.out.println("VLAN-----End");
-            
-        }
-
-        
-        assertEquals(10, m_vlan.size());
-        assertEquals(6, m_vlan.getVlansForSnmpCollection().size());
-    }        
-
-    @Test
-    @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=SWITCH1_IP, port=161, resource="classpath:linkd/nms17216/switch1-walk.txt")
-    })
-    public void testSwitch1CdpInterfaceTableCollection() throws Exception {
-        
-        String name = "cdpInterfaceTable";
-        CdpInterfaceTable m_cdpinterface = new CdpInterfaceTable(InetAddressUtils.addr(SWITCH1_IP));
-        CollectionTracker[] tracker = new CollectionTracker[0];
-        tracker = new CollectionTracker[] {m_cdpinterface};
-        SnmpAgentConfig snmpAgent = SnmpPeerFactory.getInstance().getAgentConfig(InetAddressUtils.addr(SWITCH1_IP));
-        SnmpWalker walker = SnmpUtils.createWalker(snmpAgent, name, tracker);
-        walker.start();
-
-        try {
-                walker.waitFor();
-        } catch (final InterruptedException e) {
-
-        }
-
-        for (SnmpStore store: m_cdpinterface) {
-                CdpInterfaceTableEntry ent = (CdpInterfaceTableEntry) store;
-            System.out.println("-----Cdp Interface----");
-                System.out.println("cdpInterfaceIfIndex: " + ent.getCdpInterfaceIfIndex());
-            System.out.println("cdpInterfaceIfName: " + ent.getCdpInterfaceName());
-            System.out.println("");
-        }
-
-        
-        assertEquals(28, m_cdpinterface.size());
-    }        
-
-    @Test
-    @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=SWITCH1_IP, port=161, resource="classpath:linkd/nms17216/switch1-walk.txt")
-    })
-    public void testSwitch1LldpLocalBaseCollection() throws Exception {
-
-        String name = "lldpLocGroup";
-        LldpLocalGroup m_lLldpLocalGroup = new LldpLocalGroup(InetAddressUtils.addr(SWITCH1_IP));
-        CollectionTracker[] tracker = new CollectionTracker[0];
-        tracker = new CollectionTracker[] {m_lLldpLocalGroup};
-        SnmpAgentConfig snmpAgent = SnmpPeerFactory.getInstance().getAgentConfig(InetAddressUtils.addr(SWITCH1_IP));
-        SnmpWalker walker = SnmpUtils.createWalker(snmpAgent, name, tracker);
-        walker.start();
-
-        try {
-                walker.waitFor();
-        } catch (final InterruptedException e) {
-
-        }
-        
-        assertEquals(4, m_lLldpLocalGroup.getLldpLocChassisidSubType().intValue());
-        assertEquals(SWITCH1_LLDP_CHASSISID,m_lLldpLocalGroup.getLldpLocChassisid());
-        assertEquals(SWITCH1_NAME, m_lLldpLocalGroup.getLldpLocSysname());
-    }
-    
-    @Test
-    @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=SWITCH2_IP, port=161, resource="classpath:linkd/nms17216/switch2-walk.txt")
-    })
-    public void testSwitch2LldpLocalBaseCollection() throws Exception {
-
-        String name = "lldpLocGroup";
-        LldpLocalGroup m_lLldpLocalGroup = new LldpLocalGroup(InetAddressUtils.addr(SWITCH2_IP));
-        CollectionTracker[] tracker = new CollectionTracker[0];
-        tracker = new CollectionTracker[] {m_lLldpLocalGroup};
-        SnmpAgentConfig snmpAgent = SnmpPeerFactory.getInstance().getAgentConfig(InetAddressUtils.addr(SWITCH2_IP));
-        SnmpWalker walker = SnmpUtils.createWalker(snmpAgent, name, tracker);
-        walker.start();
-
-        try {
-                walker.waitFor();
-        } catch (final InterruptedException e) {
-
-        }
-        
-        assertEquals(4, m_lLldpLocalGroup.getLldpLocChassisidSubType().intValue());
-        assertEquals(SWITCH2_LLDP_CHASSISID,m_lLldpLocalGroup.getLldpLocChassisid());
-        assertEquals(SWITCH2_NAME, m_lLldpLocalGroup.getLldpLocSysname());
-    }
-
-    @Test
-    @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=SWITCH3_IP, port=161, resource="classpath:linkd/nms17216/switch3-walk.txt")
-    })
-    public void testSwitch3LldpLocalBaseCollection() throws Exception {
-
-        String name = "lldpLocGroup";
-        LldpLocalGroup m_lLldpLocalGroup = new LldpLocalGroup(InetAddressUtils.addr(SWITCH3_IP));
-        CollectionTracker[] tracker = new CollectionTracker[0];
-        tracker = new CollectionTracker[] {m_lLldpLocalGroup};
-        SnmpAgentConfig snmpAgent = SnmpPeerFactory.getInstance().getAgentConfig(InetAddressUtils.addr(SWITCH3_IP));
-        SnmpWalker walker = SnmpUtils.createWalker(snmpAgent, name, tracker);
-        walker.start();
-
-        try {
-                walker.waitFor();
-        } catch (final InterruptedException e) {
-
-        }
-        
-        assertEquals(4, m_lLldpLocalGroup.getLldpLocChassisidSubType().intValue());
-        assertEquals(SWITCH3_LLDP_CHASSISID,m_lLldpLocalGroup.getLldpLocChassisid());
-        assertEquals(SWITCH3_NAME, m_lLldpLocalGroup.getLldpLocSysname());
-    }
-
-    @Test
-    @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=SWITCH4_IP, port=161, resource="classpath:linkd/nms17216/switch4-walk.txt")
-    })
-    public void testSwitch4LldpLocalBaseCollection() throws Exception {
-
-        String name = "lldpLocGroup";
-        LldpLocalGroup m_lLldpLocalGroup = new LldpLocalGroup(InetAddressUtils.addr(SWITCH4_IP));
-        CollectionTracker[] tracker = new CollectionTracker[0];
-        tracker = new CollectionTracker[] {m_lLldpLocalGroup};
-        SnmpAgentConfig snmpAgent = SnmpPeerFactory.getInstance().getAgentConfig(InetAddressUtils.addr(SWITCH4_IP));
-        SnmpWalker walker = SnmpUtils.createWalker(snmpAgent, name, tracker);
-        walker.start();
-
-        try {
-                walker.waitFor();
-        } catch (final InterruptedException e) {
-
-        }
-        
-        assertEquals(4, m_lLldpLocalGroup.getLldpLocChassisidSubType().intValue());
-        assertEquals(SWITCH4_LLDP_CHASSISID,m_lLldpLocalGroup.getLldpLocChassisid());
-        assertEquals(SWITCH4_NAME, m_lLldpLocalGroup.getLldpLocSysname());
-    }
-
-    @Test
-    @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=SWITCH5_IP, port=161, resource="classpath:linkd/nms17216/switch5-walk.txt")
-    })
-    public void testSwitch5LldpLocalBaseCollection() throws Exception {
-
-        String name = "lldpLocGroup";
-        LldpLocalGroup m_lLldpLocalGroup = new LldpLocalGroup(InetAddressUtils.addr(SWITCH5_IP));
-        CollectionTracker[] tracker = new CollectionTracker[0];
-        tracker = new CollectionTracker[] {m_lLldpLocalGroup};
-        SnmpAgentConfig snmpAgent = SnmpPeerFactory.getInstance().getAgentConfig(InetAddressUtils.addr(SWITCH5_IP));
-        SnmpWalker walker = SnmpUtils.createWalker(snmpAgent, name, tracker);
-        walker.start();
-
-        try {
-                walker.waitFor();
-        } catch (final InterruptedException e) {
-
-        }
-        
-        assertEquals(4, m_lLldpLocalGroup.getLldpLocChassisidSubType().intValue());
-        assertEquals(SWITCH5_LLDP_CHASSISID,m_lLldpLocalGroup.getLldpLocChassisid());
-        assertEquals(SWITCH5_NAME, m_lLldpLocalGroup.getLldpLocSysname());
-    }
-
-    @Test
-    @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=SWITCH1_IP, port=161, resource="classpath:linkd/nms17216/switch1-walk.txt")
-    })
-    public void testSwitch1LldpRemTableCollection() throws Exception {
-
-        String name = "lldpRemTable";
-        LldpRemTable m_lldpRemTable = new LldpRemTable(InetAddressUtils.addr(SWITCH1_IP));
-        CollectionTracker[] tracker = new CollectionTracker[0];
-        tracker = new CollectionTracker[] {m_lldpRemTable};
-        SnmpAgentConfig snmpAgent = SnmpPeerFactory.getInstance().getAgentConfig(InetAddressUtils.addr(SWITCH1_IP));
-        SnmpWalker walker = SnmpUtils.createWalker(snmpAgent, name, tracker);
-        walker.start();
-
-        try {
-                walker.waitFor();
-        } catch (final InterruptedException e) {
-            assertEquals(false, true);
-        }
-        
-        final Collection<LldpRemTableEntry> lldpTableEntryCollection = m_lldpRemTable.getEntries();
-        assertEquals(4, lldpTableEntryCollection.size());
-        
-        for (final LldpRemTableEntry lldpRemTableEntry: lldpTableEntryCollection) {
-            checkSwitch1Row(lldpRemTableEntry);
-        }
-    }
-
-    @Test
-    @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=SWITCH2_IP, port=161, resource="classpath:linkd/nms17216/switch2-walk.txt")
-    })
-    public void testSwitch2LldpRemTableCollection() throws Exception {
-
-        String name = "lldpRemTable";
-        LldpRemTable m_lldpRemTable = new LldpRemTable(InetAddressUtils.addr(SWITCH2_IP));
-        CollectionTracker[] tracker = new CollectionTracker[0];
-        tracker = new CollectionTracker[] {m_lldpRemTable};
-        SnmpAgentConfig snmpAgent = SnmpPeerFactory.getInstance().getAgentConfig(InetAddressUtils.addr(SWITCH2_IP));
-        SnmpWalker walker = SnmpUtils.createWalker(snmpAgent, name, tracker);
-        walker.start();
-
-        try {
-                walker.waitFor();
-        } catch (final InterruptedException e) {
-            assertEquals(false, true);
-        }
-        
-        final Collection<LldpRemTableEntry> lldpTableEntryCollection = m_lldpRemTable.getEntries();
-        assertEquals(6, lldpTableEntryCollection.size());
-        
-        for (final LldpRemTableEntry lldpRemTableEntry: lldpTableEntryCollection) {
-            checkSwitch2Row(lldpRemTableEntry);
-        }
-    }
-
-    @Test
-    @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=SWITCH3_IP, port=161, resource="classpath:linkd/nms17216/switch3-walk.txt")
-    })
-    public void testSwitch3LldpRemTableCollection() throws Exception {
-
-        String name = "lldpRemTable";
-        LldpRemTable m_lldpRemTable = new LldpRemTable(InetAddressUtils.addr(SWITCH3_IP));
-        CollectionTracker[] tracker = new CollectionTracker[0];
-        tracker = new CollectionTracker[] {m_lldpRemTable};
-        SnmpAgentConfig snmpAgent = SnmpPeerFactory.getInstance().getAgentConfig(InetAddressUtils.addr(SWITCH3_IP));
-        SnmpWalker walker = SnmpUtils.createWalker(snmpAgent, name, tracker);
-        walker.start();
-
-        try {
-                walker.waitFor();
-        } catch (final InterruptedException e) {
-            assertEquals(false, true);
-        }
-        
-        final Collection<LldpRemTableEntry> lldpTableEntryCollection = m_lldpRemTable.getEntries();
-        assertEquals(2, lldpTableEntryCollection.size());
-        
-        for (final LldpRemTableEntry lldpRemTableEntry: lldpTableEntryCollection) {
-            checkSwitch3Row(lldpRemTableEntry);
-        }
-    }
-
-    @Test
-    @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=SWITCH4_IP, port=161, resource="classpath:linkd/nms17216/switch4-walk.txt")
-    })
-    public void testSwitch4LldpRemTableCollection() throws Exception {
-
-        String name = "lldpRemTable";
-        LldpRemTable m_lldpRemTable = new LldpRemTable(InetAddressUtils.addr(SWITCH4_IP));
-        CollectionTracker[] tracker = new CollectionTracker[0];
-        tracker = new CollectionTracker[] {m_lldpRemTable};
-        SnmpAgentConfig snmpAgent = SnmpPeerFactory.getInstance().getAgentConfig(InetAddressUtils.addr(SWITCH4_IP));
-        SnmpWalker walker = SnmpUtils.createWalker(snmpAgent, name, tracker);
-        walker.start();
-
-        try {
-                walker.waitFor();
-        } catch (final InterruptedException e) {
-            assertEquals(false, true);
-        }
-        
-        final Collection<LldpRemTableEntry> lldpTableEntryCollection = m_lldpRemTable.getEntries();
-        assertEquals(0, lldpTableEntryCollection.size());        
-    }
-
-    @Test
-    @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=SWITCH5_IP, port=161, resource="classpath:linkd/nms17216/switch5-walk.txt")
-    })
-    public void testSwitch5LldpRemTableCollection() throws Exception {
-
-        String name = "lldpRemTable";
-        LldpRemTable m_lldpRemTable = new LldpRemTable(InetAddressUtils.addr(SWITCH5_IP));
-        CollectionTracker[] tracker = new CollectionTracker[0];
-        tracker = new CollectionTracker[] {m_lldpRemTable};
-        SnmpAgentConfig snmpAgent = SnmpPeerFactory.getInstance().getAgentConfig(InetAddressUtils.addr(SWITCH5_IP));
-        SnmpWalker walker = SnmpUtils.createWalker(snmpAgent, name, tracker);
-        walker.start();
-
-        try {
-                walker.waitFor();
-        } catch (final InterruptedException e) {
-            assertEquals(false, true);
-        }
-        
-        final Collection<LldpRemTableEntry> lldpTableEntryCollection = m_lldpRemTable.getEntries();
-        assertEquals(0, lldpTableEntryCollection.size());        
-    }
-
-    private void checkSwitch1Row(LldpRemTableEntry lldpRemTableEntry) {
-        final Integer lldpRemLocalPortNum = lldpRemTableEntry.getLldpRemLocalPortNum();
-        final String lldpRemSysname = lldpRemTableEntry.getLldpRemSysname();
-        final String lldpRemChassiid = lldpRemTableEntry.getLldpRemChassiid();
-        final Integer lldpRemChassisidSubtype = lldpRemTableEntry.getLldpRemChassisidSubtype();
-        String lldpRemPortid = lldpRemTableEntry.getLldpRemPortid();
-        Integer lldpRemPortidSubtype = lldpRemTableEntry.getLldpRemPortidSubtype();
-        printLldpRemRow(lldpRemLocalPortNum, lldpRemSysname, lldpRemChassiid, lldpRemChassisidSubtype, lldpRemPortid, lldpRemPortidSubtype);
-        assertEquals(4,lldpRemChassisidSubtype.intValue());
-        assertEquals(5,lldpRemPortidSubtype.intValue());
-        
-        if (lldpRemLocalPortNum.intValue() == 9 ) {
-            assertEquals(SWITCH2_NAME,lldpRemSysname);
-            assertEquals(SWITCH2_LLDP_CHASSISID, lldpRemChassiid);
-            assertEquals("Gi0/1", lldpRemPortid);
-        } else if (lldpRemLocalPortNum.intValue() == 10) {
-            assertEquals(SWITCH2_NAME,lldpRemSysname);
-            assertEquals(SWITCH2_LLDP_CHASSISID, lldpRemChassiid);
-            assertEquals("Gi0/2", lldpRemPortid);
-        } else if (lldpRemLocalPortNum.intValue() == 11) {
-            assertEquals(SWITCH2_NAME,lldpRemSysname);
-            assertEquals(SWITCH2_LLDP_CHASSISID, lldpRemChassiid);
-            assertEquals("Gi0/3", lldpRemPortid);
-        } else if (lldpRemLocalPortNum.intValue() == 12) {
-            assertEquals(SWITCH2_NAME,lldpRemSysname);
-            assertEquals(SWITCH2_LLDP_CHASSISID, lldpRemChassiid);
-            assertEquals("Gi0/4", lldpRemPortid);
-        } else {
-            assertEquals(false, true);
-        }
-    }
-
-    private void checkSwitch2Row(LldpRemTableEntry lldpRemTableEntry) {
-        final Integer lldpRemLocalPortNum = lldpRemTableEntry.getLldpRemLocalPortNum();
-        final String lldpRemSysname = lldpRemTableEntry.getLldpRemSysname();
-        final String lldpRemChassiid = lldpRemTableEntry.getLldpRemChassiid();
-        final Integer lldpRemChassisidSubtype = lldpRemTableEntry.getLldpRemChassisidSubtype();
-        String lldpRemPortid = lldpRemTableEntry.getLldpRemPortid();
-        Integer lldpRemPortidSubtype = lldpRemTableEntry.getLldpRemPortidSubtype();
-        printLldpRemRow(lldpRemLocalPortNum, lldpRemSysname, lldpRemChassiid, lldpRemChassisidSubtype, lldpRemPortid, lldpRemPortidSubtype);
-        assertEquals(4,lldpRemChassisidSubtype.intValue());
-        assertEquals(5,lldpRemPortidSubtype.intValue());
-        
-        if (lldpRemLocalPortNum.intValue() == 1 ) {
-            assertEquals(SWITCH1_NAME,lldpRemSysname);
-            assertEquals(SWITCH1_LLDP_CHASSISID, lldpRemChassiid);
-            assertEquals("Gi0/9", lldpRemPortid);
-        } else if (lldpRemLocalPortNum.intValue() == 2) {
-            assertEquals(SWITCH1_NAME,lldpRemSysname);
-            assertEquals(SWITCH1_LLDP_CHASSISID, lldpRemChassiid);
-            assertEquals("Gi0/10", lldpRemPortid);
-        } else if (lldpRemLocalPortNum.intValue() == 3) {
-            assertEquals(SWITCH1_NAME,lldpRemSysname);
-            assertEquals(SWITCH1_LLDP_CHASSISID, lldpRemChassiid);
-            assertEquals("Gi0/11", lldpRemPortid);
-        } else if (lldpRemLocalPortNum.intValue() == 4) {
-            assertEquals(SWITCH1_NAME,lldpRemSysname);
-            assertEquals(SWITCH1_LLDP_CHASSISID, lldpRemChassiid);
-            assertEquals("Gi0/12", lldpRemPortid);
-        } else if (lldpRemLocalPortNum.intValue() == 19) {
-            assertEquals(SWITCH3_NAME,lldpRemSysname);
-            assertEquals(SWITCH3_LLDP_CHASSISID, lldpRemChassiid);
-            assertEquals("Fa0/19", lldpRemPortid);
-        } else if (lldpRemLocalPortNum.intValue() == 20) {
-            assertEquals(SWITCH3_NAME,lldpRemSysname);
-            assertEquals(SWITCH3_LLDP_CHASSISID, lldpRemChassiid);
-            assertEquals("Fa0/20", lldpRemPortid);
-        } else {
-            assertEquals(false, true);
-        }
-
-    }
-
-    private void checkSwitch3Row(LldpRemTableEntry lldpRemTableEntry) {
-        final Integer lldpRemLocalPortNum = lldpRemTableEntry.getLldpRemLocalPortNum();
-        final String lldpRemSysname = lldpRemTableEntry.getLldpRemSysname();
-        final String lldpRemChassiid = lldpRemTableEntry.getLldpRemChassiid();
-        final Integer lldpRemChassisidSubtype = lldpRemTableEntry.getLldpRemChassisidSubtype();
-        String lldpRemPortid = lldpRemTableEntry.getLldpRemPortid();
-        Integer lldpRemPortidSubtype = lldpRemTableEntry.getLldpRemPortidSubtype();
-        printLldpRemRow(lldpRemLocalPortNum, lldpRemSysname, lldpRemChassiid, lldpRemChassisidSubtype, lldpRemPortid, lldpRemPortidSubtype);
-        assertEquals(4,lldpRemChassisidSubtype.intValue());
-        assertEquals(5,lldpRemPortidSubtype.intValue());
-        
-        if (lldpRemLocalPortNum.intValue() == 19) {
-            assertEquals(SWITCH2_NAME,lldpRemSysname);
-            assertEquals(SWITCH2_LLDP_CHASSISID, lldpRemChassiid);
-            assertEquals("Gi0/19", lldpRemPortid);
-        } else if (lldpRemLocalPortNum.intValue() == 20) {
-            assertEquals(SWITCH2_NAME,lldpRemSysname);
-            assertEquals(SWITCH2_LLDP_CHASSISID, lldpRemChassiid);
-            assertEquals("Gi0/20", lldpRemPortid);
-        } else {
-            assertEquals(false, true);
-        }
-
-    }
-    
-    @Test
-    @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=SWITCH1_IP, port=161, resource="classpath:linkd/nms17216/switch1-walk.txt")
-    })
-    public void testSwitch1LldpLocTableCollection() throws Exception {
-
-        String name = "lldpLocTable";
-        LldpLocTable m_lldpLocTable = new LldpLocTable(InetAddressUtils.addr(SWITCH1_IP));
-        CollectionTracker[] tracker = new CollectionTracker[0];
-        tracker = new CollectionTracker[] {m_lldpLocTable};
-        SnmpAgentConfig snmpAgent = SnmpPeerFactory.getInstance().getAgentConfig(InetAddressUtils.addr(SWITCH1_IP));
-        SnmpWalker walker = SnmpUtils.createWalker(snmpAgent, name, tracker);
-        walker.start();
-
-        try {
-                walker.waitFor();
-        } catch (final InterruptedException e) {
-            assertEquals(false, true);
-        }
-        
-        final Collection<LldpLocTableEntry> lldpTableEntryCollection = m_lldpLocTable.getEntries();
-        assertEquals(30, lldpTableEntryCollection.size());
-        
-        for (final LldpLocTableEntry lldpLocTableEntry: lldpTableEntryCollection) {
-            checkSwitch1Row(lldpLocTableEntry);
-        }
-    }
-
-    @Test
-    @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=SWITCH2_IP, port=161, resource="classpath:linkd/nms17216/switch2-walk.txt")
-    })
-    public void testSwitch2LldpLocTableCollection() throws Exception {
-
-        String name = "lldpLocTable";
-        LldpLocTable m_lldpLocTable = new LldpLocTable(InetAddressUtils.addr(SWITCH2_IP));
-        CollectionTracker[] tracker = new CollectionTracker[0];
-        tracker = new CollectionTracker[] {m_lldpLocTable};
-        SnmpAgentConfig snmpAgent = SnmpPeerFactory.getInstance().getAgentConfig(InetAddressUtils.addr(SWITCH2_IP));
-        SnmpWalker walker = SnmpUtils.createWalker(snmpAgent, name, tracker);
-        walker.start();
-
-        try {
-                walker.waitFor();
-        } catch (final InterruptedException e) {
-            assertEquals(false, true);
-        }
-        
-        final Collection<LldpLocTableEntry> lldpTableEntryCollection = m_lldpLocTable.getEntries();
-        assertEquals(27, lldpTableEntryCollection.size());
-        
-        for (final LldpLocTableEntry lldpLocTableEntry: lldpTableEntryCollection) {
-            checkSwitch2Row(lldpLocTableEntry);
-        }
-    }
-
-    @Test
-    @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=SWITCH3_IP, port=161, resource="classpath:linkd/nms17216/switch3-walk.txt")
-    })
-    public void testSwitch3LldpLocTableCollection() throws Exception {
-
-        String name = "lldpLocTable";
-        LldpLocTable m_lldpLocTable = new LldpLocTable(InetAddressUtils.addr(SWITCH3_IP));
-        CollectionTracker[] tracker = new CollectionTracker[0];
-        tracker = new CollectionTracker[] {m_lldpLocTable};
-        SnmpAgentConfig snmpAgent = SnmpPeerFactory.getInstance().getAgentConfig(InetAddressUtils.addr(SWITCH3_IP));
-        SnmpWalker walker = SnmpUtils.createWalker(snmpAgent, name, tracker);
-        walker.start();
-
-        try {
-                walker.waitFor();
-        } catch (final InterruptedException e) {
-            assertEquals(false, true);
-        }
-        
-        final Collection<LldpLocTableEntry> lldpTableEntryCollection = m_lldpLocTable.getEntries();
-        assertEquals(28, lldpTableEntryCollection.size());
-        
-        for (final LldpLocTableEntry lldpLocTableEntry: lldpTableEntryCollection) {
-            checkSwitch3Row(lldpLocTableEntry);
-        }
-    }
-
-    @Test
-    @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=SWITCH4_IP, port=161, resource="classpath:linkd/nms17216/switch4-walk.txt")
-    })
-    public void testSwitch4LldpLocTableCollection() throws Exception {
-
-        String name = "lldpLocTable";
-        LldpLocTable m_lldpLocTable = new LldpLocTable(InetAddressUtils.addr(SWITCH4_IP));
-        CollectionTracker[] tracker = new CollectionTracker[0];
-        tracker = new CollectionTracker[] {m_lldpLocTable};
-        SnmpAgentConfig snmpAgent = SnmpPeerFactory.getInstance().getAgentConfig(InetAddressUtils.addr(SWITCH4_IP));
-        SnmpWalker walker = SnmpUtils.createWalker(snmpAgent, name, tracker);
-        walker.start();
-
-        try {
-                walker.waitFor();
-        } catch (final InterruptedException e) {
-            assertEquals(false, true);
-        }
-        
-        final Collection<LldpLocTableEntry> lldpTableEntryCollection = m_lldpLocTable.getEntries();
-        assertEquals(27, lldpTableEntryCollection.size());
-        
-        for (final LldpLocTableEntry lldpLocTableEntry: lldpTableEntryCollection) {
-            checkSwitch4Row(lldpLocTableEntry);
-        }
-    }
-
-    @Test
-    @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=SWITCH5_IP, port=161, resource="classpath:linkd/nms17216/switch5-walk.txt")
-    })
-    public void testSwitch5LldpLocTableCollection() throws Exception {
-
-        String name = "lldpLocTable";
-        LldpLocTable m_lldpLocTable = new LldpLocTable(InetAddressUtils.addr(SWITCH5_IP));
-        CollectionTracker[] tracker = new CollectionTracker[0];
-        tracker = new CollectionTracker[] {m_lldpLocTable};
-        SnmpAgentConfig snmpAgent = SnmpPeerFactory.getInstance().getAgentConfig(InetAddressUtils.addr(SWITCH5_IP));
-        SnmpWalker walker = SnmpUtils.createWalker(snmpAgent, name, tracker);
-        walker.start();
-
-        try {
-                walker.waitFor();
-        } catch (final InterruptedException e) {
-            assertEquals(false, true);
-        }
-        
-        final Collection<LldpLocTableEntry> lldpTableEntryCollection = m_lldpLocTable.getEntries();
-        assertEquals(27, lldpTableEntryCollection.size());
-        
-        for (final LldpLocTableEntry lldpLocTableEntry: lldpTableEntryCollection) {
-            checkSwitch5Row(lldpLocTableEntry);
-        }
-    }
-
-    private void checkSwitch1Row(LldpLocTableEntry lldpLocTableEntry) {
-        final Integer lldpLocPortNum = lldpLocTableEntry.getLldpLocPortNum();
-        String lldpLocPortid = lldpLocTableEntry.getLldpLocPortid();
-        Integer lldpLocPortidSubtype = lldpLocTableEntry.getLldpLocPortIdSubtype();
-        printLldpLocRow(lldpLocPortNum, lldpLocPortidSubtype, lldpLocPortid);
-        assertEquals(5,lldpLocPortidSubtype.intValue());
-        
-        if (lldpLocPortNum.intValue() >= 1 && lldpLocPortNum.intValue() <= 28) {
-            assertEquals("Gi0/"+lldpLocPortNum,lldpLocPortid);
-        } else if (lldpLocPortNum.intValue() == 64) {
-            assertEquals("Po1",lldpLocPortid);
-        } else if (lldpLocPortNum.intValue() == 448) {
-            assertEquals("St1",lldpLocPortid);
-        } else {
-            assertEquals(true,false);
-        }
-    }
-
-    private void checkSwitch2Row(LldpLocTableEntry lldpLocTableEntry) {
-        final Integer lldpLocPortNum = lldpLocTableEntry.getLldpLocPortNum();
-        String lldpLocPortid = lldpLocTableEntry.getLldpLocPortid();
-        Integer lldpLocPortidSubtype = lldpLocTableEntry.getLldpLocPortIdSubtype();
-        printLldpLocRow(lldpLocPortNum, lldpLocPortidSubtype, lldpLocPortid);
-        assertEquals(5,lldpLocPortidSubtype.intValue());
-        
-        if (lldpLocPortNum.intValue() >= 1 && lldpLocPortNum.intValue() <= 24) {
-            assertEquals("Gi0/"+lldpLocPortNum,lldpLocPortid);
-        } else if (lldpLocPortNum.intValue() == 64) {
-            assertEquals("Po1",lldpLocPortid);
-        } else if (lldpLocPortNum.intValue() == 72) {
-            assertEquals("Po2",lldpLocPortid);
-        } else if (lldpLocPortNum.intValue() == 112) {
-            assertEquals("St1",lldpLocPortid);
-        } else {
-            assertEquals(true,false);
-        }
-    }
-
-    private void checkSwitch3Row(LldpLocTableEntry lldpLocTableEntry) {
-        final Integer lldpLocPortNum = lldpLocTableEntry.getLldpLocPortNum();
-        String lldpLocPortid = lldpLocTableEntry.getLldpLocPortid();
-        Integer lldpLocPortidSubtype = lldpLocTableEntry.getLldpLocPortIdSubtype();
-        printLldpLocRow(lldpLocPortNum, lldpLocPortidSubtype, lldpLocPortid);
-        assertEquals(5,lldpLocPortidSubtype.intValue());
-        
-        if (lldpLocPortNum.intValue() >= 1 && lldpLocPortNum.intValue() <= 24) {
-            assertEquals("Fa0/"+lldpLocPortNum,lldpLocPortid);
-        } else if (lldpLocPortNum.intValue() == 25) {
-            assertEquals("Gi0/1",lldpLocPortid);
-        } else if (lldpLocPortNum.intValue() == 26) {
-            assertEquals("Gi0/2",lldpLocPortid);
-        } else if (lldpLocPortNum.intValue() == 56) {
-            assertEquals("Po1",lldpLocPortid);
-        } else if (lldpLocPortNum.intValue() == 104) {
-            assertEquals("St1",lldpLocPortid);
-        } else {
-            assertEquals(true,false);
-        }
-    }
-
-    private void checkSwitch4Row(LldpLocTableEntry lldpLocTableEntry) {
-        final Integer lldpLocPortNum = lldpLocTableEntry.getLldpLocPortNum();
-        String lldpLocPortid = lldpLocTableEntry.getLldpLocPortid();
-        Integer lldpLocPortidSubtype = lldpLocTableEntry.getLldpLocPortIdSubtype();
-        printLldpLocRow(lldpLocPortNum, lldpLocPortidSubtype, lldpLocPortid);
-        assertEquals(5,lldpLocPortidSubtype.intValue());
-        
-        if (lldpLocPortNum.intValue() >= 1 && lldpLocPortNum.intValue() <= 24) {
-            assertEquals("Fa0/"+lldpLocPortNum,lldpLocPortid);
-        } else if (lldpLocPortNum.intValue() == 25) {
-            assertEquals("Gi0/1",lldpLocPortid);
-        } else if (lldpLocPortNum.intValue() == 26) {
-            assertEquals("Gi0/2",lldpLocPortid);
-        } else if (lldpLocPortNum.intValue() == 104) {
-            assertEquals("St1",lldpLocPortid);
-        } else {
-            assertEquals(true,false);
-        }
-    }
-    
-    private void checkSwitch5Row(LldpLocTableEntry lldpLocTableEntry) {
-        checkSwitch4Row(lldpLocTableEntry);
-    }
-
+	Nms17216NetworkBuilder builder = new Nms17216NetworkBuilder();
     /*
-     * These are the links among the following nodes discovered using 
+     * These are the links among the following nodes discovered using
      * only the lldp protocol
      * switch1 Gi0/9 Gi0/10 Gi0/11 Gi0/12 ----> switch2 Gi0/1 Gi0/2 Gi0/3 Gi0/4
      * switch2 Gi0/19 Gi0/20              ----> switch3 Fa0/19 Fa0/20
-     * 
+     *
      * here are the corresponding ifindex:
      * switch1 Gi0/9 --> 10109
      * switch1 Gi0/10 --> 10110
      * switch1 Gi0/11 --> 10111
      * switch1 Gi0/12 --> 10112
-     * 
+     *
      * switch2 Gi0/1 --> 10101
      * switch2 Gi0/2 --> 10102
      * switch2 Gi0/3 --> 10103
      * switch2 Gi0/4 --> 10104
      * switch2 Gi0/19 --> 10119
      * switch2 Gi0/20 --> 10120
-     * 
+     *
      * switch3 Fa0/19 -->  10019
      * switch3 Fa0/20 -->  10020
-     * 
+     *
      * Here we add cdp discovery and all test lab devices
      * To the previuos links discovered by lldp
      * should be added the followings discovered with cdp:
@@ -1058,61 +107,58 @@ public class Nms17216Test extends Nms17216NetworkBuilder implements Initializing
      * router3 Serial0/0/1 ----> router2 Serial0/0/1
      * router4 GigabitEthernet0/1 ----> router3   GigabitEthernet0/0
      * switch4 FastEthernet0/1    ----> router3   GigabitEthernet0/1
-     * 
+     *
      * here are the corresponding ifindex:
      * switch1 Gi0/1 -->  10101
-     * 
+     *
      * switch3 Fa0/23 -->  10023
      * switch3 Fa0/24 -->  10024
      *
      * switch5 Fa0/1 -->  10001
      * switch5 Fa0/13 -->  10013
-     * 
+     *
      * router1 Fa0/0 -->  7
      * router1 Serial0/0/0 --> 13
      * router1 Serial0/0/1 --> 14
-     * 
+     *
      * router2 Serial0/0/0 --> 12
      * router2 Serial0/0/1 --> 13
-     * 
+     *
      * router3 Serial0/0/1 --> 13
      * router3 GigabitEthernet0/0 --> 8
      * router3 GigabitEthernet0/1 --> 9
-     * 
+     *
      * router4 GigabitEthernet0/1  --> 3
-     * 
+     *
      * switch4 FastEthernet0/1 --> 10001
-     * 
+     *
      */
     @Test
     @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=SWITCH1_IP, port=161, resource="classpath:linkd/nms17216/switch1-walk.txt"),
-            @JUnitSnmpAgent(host=SWITCH2_IP, port=161, resource="classpath:linkd/nms17216/switch2-walk.txt"),
-            @JUnitSnmpAgent(host=SWITCH3_IP, port=161, resource="classpath:linkd/nms17216/switch3-walk.txt"),
-            @JUnitSnmpAgent(host=SWITCH4_IP, port=161, resource="classpath:linkd/nms17216/switch4-walk.txt"),
-            @JUnitSnmpAgent(host=SWITCH5_IP, port=161, resource="classpath:linkd/nms17216/switch5-walk.txt"),
-            @JUnitSnmpAgent(host=ROUTER1_IP, port=161, resource="classpath:linkd/nms17216/router1-walk.txt"),
-            @JUnitSnmpAgent(host=ROUTER2_IP, port=161, resource="classpath:linkd/nms17216/router2-walk.txt"),
-            @JUnitSnmpAgent(host=ROUTER3_IP, port=161, resource="classpath:linkd/nms17216/router3-walk.txt"),
-            @JUnitSnmpAgent(host=ROUTER4_IP, port=161, resource="classpath:linkd/nms17216/router4-walk.txt")
+            @JUnitSnmpAgent(host=SWITCH1_IP, port=161, resource=SWITCH1_SNMP_RESOURCE),
+            @JUnitSnmpAgent(host=SWITCH2_IP, port=161, resource=SWITCH2_SNMP_RESOURCE),
+            @JUnitSnmpAgent(host=SWITCH3_IP, port=161, resource=SWITCH3_SNMP_RESOURCE),
+            @JUnitSnmpAgent(host=SWITCH4_IP, port=161, resource=SWITCH4_SNMP_RESOURCE),
+            @JUnitSnmpAgent(host=SWITCH5_IP, port=161, resource=SWITCH5_SNMP_RESOURCE),
+            @JUnitSnmpAgent(host=ROUTER1_IP, port=161, resource=ROUTER1_SNMP_RESOURCE),
+            @JUnitSnmpAgent(host=ROUTER2_IP, port=161, resource=ROUTER2_SNMP_RESOURCE),
+            @JUnitSnmpAgent(host=ROUTER3_IP, port=161, resource=ROUTER3_SNMP_RESOURCE),
+            @JUnitSnmpAgent(host=ROUTER4_IP, port=161, resource=ROUTER4_SNMP_RESOURCE)
     })
     @JUnitTemporaryDatabase
     public void testNetwork17216Links() throws Exception {
-        m_transactionTemplate.execute(new TransactionCallbackWithoutResult() {
-            @Override
-            protected void doInTransactionWithoutResult(TransactionStatus status) {
-                m_nodeDao.save(getSwitch1());
-                m_nodeDao.save(getSwitch2());
-                m_nodeDao.save(getSwitch3());
-                m_nodeDao.save(getSwitch4());
-                m_nodeDao.save(getSwitch5());
-                m_nodeDao.save(getRouter1());
-                m_nodeDao.save(getRouter2());
-                m_nodeDao.save(getRouter3());
-                m_nodeDao.save(getRouter4());
-                m_nodeDao.flush();
-            }
-        });
+
+        m_nodeDao.save(builder.getSwitch1());
+        m_nodeDao.save(builder.getSwitch2());
+        m_nodeDao.save(builder.getSwitch3());
+        m_nodeDao.save(builder.getSwitch4());
+        m_nodeDao.save(builder.getSwitch5());
+        m_nodeDao.save(builder.getRouter1());
+        m_nodeDao.save(builder.getRouter2());
+        m_nodeDao.save(builder.getRouter3());
+        m_nodeDao.save(builder.getRouter4());
+
+        m_nodeDao.flush();
 
         Package example1 = m_linkdConfig.getPackage("example1");
         assertEquals(false, example1.hasForceIpRouteDiscoveryOnEthernet());
@@ -1131,67 +177,77 @@ public class Nms17216Test extends Nms17216NetworkBuilder implements Initializing
         final OnmsNode router2 = m_nodeDao.findByForeignId("linkd", ROUTER2_NAME);
         final OnmsNode router3 = m_nodeDao.findByForeignId("linkd", ROUTER3_NAME);
         final OnmsNode router4 = m_nodeDao.findByForeignId("linkd", ROUTER4_NAME);
-        
-        assertTrue(m_linkd.scheduleNodeCollection(switch1.getId()));
-        assertTrue(m_linkd.scheduleNodeCollection(switch2.getId()));
-        assertTrue(m_linkd.scheduleNodeCollection(switch3.getId()));
-        assertTrue(m_linkd.scheduleNodeCollection(switch4.getId()));
-        assertTrue(m_linkd.scheduleNodeCollection(switch5.getId()));
-        assertTrue(m_linkd.scheduleNodeCollection(router1.getId()));
-        assertTrue(m_linkd.scheduleNodeCollection(router2.getId()));
-        assertTrue(m_linkd.scheduleNodeCollection(router3.getId()));
-        assertTrue(m_linkd.scheduleNodeCollection(router4.getId()));
 
-        assertTrue(m_linkd.runSingleSnmpCollection(switch1.getId()));
-        assertTrue(m_linkd.runSingleSnmpCollection(switch2.getId()));
-        assertTrue(m_linkd.runSingleSnmpCollection(switch3.getId()));
-        assertTrue(m_linkd.runSingleSnmpCollection(switch4.getId()));
-        assertTrue(m_linkd.runSingleSnmpCollection(switch5.getId()));
-        assertTrue(m_linkd.runSingleSnmpCollection(router1.getId()));
-        assertTrue(m_linkd.runSingleSnmpCollection(router2.getId()));
-        assertTrue(m_linkd.runSingleSnmpCollection(router3.getId()));
-        assertTrue(m_linkd.runSingleSnmpCollection(router4.getId()));
-       
+        final Integer switch1id = switch1.getId();
+        final Integer switch2id = switch2.getId();
+        final Integer switch3id = switch3.getId();
+        final Integer switch4id = switch4.getId();
+        final Integer switch5id = switch5.getId();
+        final Integer router1id = router1.getId();
+        final Integer router2id = router2.getId();
+        final Integer router3id = router3.getId();
+        final Integer router4id = router4.getId();
+
+        assertTrue(m_linkd.scheduleNodeCollection(switch1id));
+        assertTrue(m_linkd.scheduleNodeCollection(switch2id));
+        assertTrue(m_linkd.scheduleNodeCollection(switch3id));
+        assertTrue(m_linkd.scheduleNodeCollection(switch4id));
+        assertTrue(m_linkd.scheduleNodeCollection(switch5id));
+        assertTrue(m_linkd.scheduleNodeCollection(router1id));
+        assertTrue(m_linkd.scheduleNodeCollection(router2id));
+        assertTrue(m_linkd.scheduleNodeCollection(router3id));
+        assertTrue(m_linkd.scheduleNodeCollection(router4id));
+
+        assertTrue(m_linkd.runSingleSnmpCollection(switch1id));
+        assertTrue(m_linkd.runSingleSnmpCollection(switch2id));
+        assertTrue(m_linkd.runSingleSnmpCollection(switch3id));
+        assertTrue(m_linkd.runSingleSnmpCollection(switch4id));
+        assertTrue(m_linkd.runSingleSnmpCollection(switch5id));
+        assertTrue(m_linkd.runSingleSnmpCollection(router1id));
+        assertTrue(m_linkd.runSingleSnmpCollection(router2id));
+        assertTrue(m_linkd.runSingleSnmpCollection(router3id));
+        assertTrue(m_linkd.runSingleSnmpCollection(router4id));
+
         assertEquals(0,m_dataLinkInterfaceDao.countAll());
-        
+
         final Collection<LinkableNode> nodes = m_linkd.getLinkableNodesOnPackage("example1");
 
         assertEquals(9, nodes.size());
-        
+
         for (LinkableNode node: nodes) {
-            switch(node.getNodeId()) {
-                case 1: assertEquals(5, node.getCdpInterfaces().size());
+            final int nodeId = node.getNodeId();
+            if (nodeId == switch1id) {
+                assertEquals(5, node.getCdpInterfaces().size());
                 assertEquals(SWITCH1_NAME, node.getCdpDeviceId());
-                break;
-                case 2: assertEquals(6, node.getCdpInterfaces().size());
+            } else if (nodeId == switch2id) {
+                assertEquals(6, node.getCdpInterfaces().size());
                 assertEquals(SWITCH2_NAME, node.getCdpDeviceId());
-                break;
-                case 3: assertEquals(4, node.getCdpInterfaces().size());
+            } else if (nodeId == switch3id) {
+                assertEquals(4, node.getCdpInterfaces().size());
                 assertEquals(SWITCH3_NAME, node.getCdpDeviceId());
-                break;
-                case 4: assertEquals(1, node.getCdpInterfaces().size());
+            } else if (nodeId == switch4id) {
+                assertEquals(1, node.getCdpInterfaces().size());
                 assertEquals(SWITCH4_NAME, node.getCdpDeviceId());
-                break;
-                case 5: assertEquals(2, node.getCdpInterfaces().size());
+            } else if (nodeId == switch5id) {
+                assertEquals(2, node.getCdpInterfaces().size());
                 assertEquals(SWITCH5_NAME, node.getCdpDeviceId());
-                break;
-                case 6: assertEquals(2, node.getCdpInterfaces().size());
+            } else if (nodeId == router1id) {
+                assertEquals(2, node.getCdpInterfaces().size());
                 assertEquals(ROUTER1_NAME, node.getCdpDeviceId());
-                break;
-                case 7: assertEquals(2, node.getCdpInterfaces().size());
+            } else if (nodeId == router2id) {
+                assertEquals(2, node.getCdpInterfaces().size());
                 assertEquals(ROUTER2_NAME, node.getCdpDeviceId());
-                break;
-                case 8: assertEquals(3, node.getCdpInterfaces().size());
+            } else if (nodeId == router3id) {
+                assertEquals(3, node.getCdpInterfaces().size());
                 assertEquals(ROUTER3_NAME, node.getCdpDeviceId());
-                break;
-                case 9: assertEquals(1, node.getCdpInterfaces().size());
+            } else if (nodeId == router4id) {
+                assertEquals(1, node.getCdpInterfaces().size());
                 assertEquals(ROUTER4_NAME, node.getCdpDeviceId());
-                break;
-                default: assertEquals(-1, node.getNodeId());
-                break;
+            } else {
+                fail(nodeId + " did not match any known nodes.");
             }
-        }        
-        
+        }
+
         assertTrue(m_linkd.runSingleLinkDiscovery("example1"));
 
         assertEquals(19,m_dataLinkInterfaceDao.countAll());
@@ -1274,52 +330,46 @@ public class Nms17216Test extends Nms17216NetworkBuilder implements Initializing
                 checkLink(switch5, switch3, 10013, 10024, datalinkinterface);
                 assertEquals(DiscoveryProtocol.cdp, datalinkinterface.getProtocol());
             } else {
-                // error
-                checkLink(switch1,switch1,-1,-1,datalinkinterface);
-            }      
+                fail("link ID " + linkid + " was not in the expected range " + start + "-" + (start+18));
+            }
         }
     }
 
     /*
-     * These are the links among the following nodes discovered using 
+     * These are the links among the following nodes discovered using
      * only the lldp protocol
      * switch1 Gi0/9 Gi0/10 Gi0/11 Gi0/12 ----> switch2 Gi0/1 Gi0/2 Gi0/3 Gi0/4
      * switch2 Gi0/19 Gi0/20              ----> switch3 Fa0/19 Fa0/20
-     * 
+     *
      * here are the corresponding ifindex:
      * switch1 Gi0/9 --> 10109
      * switch1 Gi0/10 --> 10110
      * switch1 Gi0/11 --> 10111
      * switch1 Gi0/12 --> 10112
-     * 
+     *
      * switch2 Gi0/1 --> 10101
      * switch2 Gi0/2 --> 10102
      * switch2 Gi0/3 --> 10103
      * switch2 Gi0/4 --> 10104
      * switch2 Gi0/19 --> 10119
      * switch2 Gi0/20 --> 10120
-     * 
+     *
      * switch3 Fa0/19 -->  10019
      * switch3 Fa0/20 -->  10020
-     * 
+     *
      */
     @Test
     @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=SWITCH1_IP, port=161, resource="classpath:linkd/nms17216/switch1-walk.txt"),
-            @JUnitSnmpAgent(host=SWITCH2_IP, port=161, resource="classpath:linkd/nms17216/switch2-walk.txt"),
-            @JUnitSnmpAgent(host=SWITCH3_IP, port=161, resource="classpath:linkd/nms17216/switch3-walk.txt")
+            @JUnitSnmpAgent(host=SWITCH1_IP, port=161, resource=SWITCH1_SNMP_RESOURCE),
+            @JUnitSnmpAgent(host=SWITCH2_IP, port=161, resource=SWITCH2_SNMP_RESOURCE),
+            @JUnitSnmpAgent(host=SWITCH3_IP, port=161, resource=SWITCH3_SNMP_RESOURCE)
     })
     @JUnitTemporaryDatabase
     public void testNetwork17216LldpLinks() throws Exception {
-        m_transactionTemplate.execute(new TransactionCallbackWithoutResult() {
-            @Override
-            protected void doInTransactionWithoutResult(TransactionStatus status) {
-                m_nodeDao.save(getSwitch1());
-                m_nodeDao.save(getSwitch2());
-                m_nodeDao.save(getSwitch3());
-                m_nodeDao.flush();
-            }
-        });
+        m_nodeDao.save(builder.getSwitch1());
+        m_nodeDao.save(builder.getSwitch2());
+        m_nodeDao.save(builder.getSwitch3());
+        m_nodeDao.flush();
 
         Package example1 = m_linkdConfig.getPackage("example1");
         assertEquals(false, example1.hasForceIpRouteDiscoveryOnEthernet());
@@ -1333,15 +383,19 @@ public class Nms17216Test extends Nms17216NetworkBuilder implements Initializing
         final OnmsNode switch1 = m_nodeDao.findByForeignId("linkd", SWITCH1_NAME);
         final OnmsNode switch2 = m_nodeDao.findByForeignId("linkd", SWITCH2_NAME);
         final OnmsNode switch3 = m_nodeDao.findByForeignId("linkd", SWITCH3_NAME);
-        
-        assertTrue(m_linkd.scheduleNodeCollection(switch1.getId()));
-        assertTrue(m_linkd.scheduleNodeCollection(switch2.getId()));
-        assertTrue(m_linkd.scheduleNodeCollection(switch3.getId()));
- 
-        assertTrue(m_linkd.runSingleSnmpCollection(switch1.getId()));
-        assertTrue(m_linkd.runSingleSnmpCollection(switch2.getId()));
-        assertTrue(m_linkd.runSingleSnmpCollection(switch3.getId()));
-               
+
+        final Integer switch1id = switch1.getId();
+        final Integer switch2id = switch2.getId();
+        final Integer switch3id = switch3.getId();
+
+        assertTrue(m_linkd.scheduleNodeCollection(switch1id));
+        assertTrue(m_linkd.scheduleNodeCollection(switch2id));
+        assertTrue(m_linkd.scheduleNodeCollection(switch3id));
+
+        assertTrue(m_linkd.runSingleSnmpCollection(switch1id));
+        assertTrue(m_linkd.runSingleSnmpCollection(switch2id));
+        assertTrue(m_linkd.runSingleSnmpCollection(switch3id));
+
         assertEquals(0,m_dataLinkInterfaceDao.countAll());
 
 
@@ -1373,27 +427,23 @@ public class Nms17216Test extends Nms17216NetworkBuilder implements Initializing
                 // switch2 gi0/20 -> switch3 Fa0/20 --lldp
                 checkLink(switch3, switch2, 10020, 10120, link);
             } else {
-                // error
-                checkLink(switch1,switch1,-1,-1,link);
-            }   
+                fail("link ID " + linkid + " was not in the expected range " + startid + "-" + (startid+5));
+            }
         }
     }
 
     @Test
     @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=SWITCH4_IP, port=161, resource="classpath:linkd/nms17216/switch4-walk.txt"),
-            @JUnitSnmpAgent(host=ROUTER3_IP, port=161, resource="classpath:linkd/nms17216/router3-walk.txt")
+            @JUnitSnmpAgent(host=SWITCH4_IP, port=161, resource=SWITCH4_SNMP_RESOURCE),
+            @JUnitSnmpAgent(host=ROUTER3_IP, port=161, resource=ROUTER3_SNMP_RESOURCE)
     })
     @JUnitTemporaryDatabase
     public void testNetwork17216Switch4Router4CdpLinks() throws Exception {
-        m_transactionTemplate.execute(new TransactionCallbackWithoutResult() {
-            @Override
-            protected void doInTransactionWithoutResult(TransactionStatus status) {
-                m_nodeDao.save(getSwitch4());
-                m_nodeDao.save(getRouter3());
-                m_nodeDao.flush();
-            }
-        });
+
+        m_nodeDao.save(builder.getSwitch4());
+        m_nodeDao.save(builder.getRouter3());
+
+        m_nodeDao.flush();
 
         Package example1 = m_linkdConfig.getPackage("example1");
         assertEquals(false, example1.hasForceIpRouteDiscoveryOnEthernet());
@@ -1408,35 +458,34 @@ public class Nms17216Test extends Nms17216NetworkBuilder implements Initializing
         example1.setSaveStpNodeTable(false);
         example1.setUseIsisDiscovery(false);
 
-        
         final OnmsNode switch4 = m_nodeDao.findByForeignId("linkd", SWITCH4_NAME);
         final OnmsNode router3 = m_nodeDao.findByForeignId("linkd", ROUTER3_NAME);
-        
-        assertTrue(m_linkd.scheduleNodeCollection(switch4.getId()));
-        assertTrue(m_linkd.scheduleNodeCollection(router3.getId()));
 
-        assertTrue(m_linkd.runSingleSnmpCollection(switch4.getId()));
-        assertTrue(m_linkd.runSingleSnmpCollection(router3.getId()));
-       
+        final Integer switch4id = switch4.getId();
+        final Integer router3id = router3.getId();
+
+        assertTrue(m_linkd.scheduleNodeCollection(switch4id));
+        assertTrue(m_linkd.scheduleNodeCollection(router3id));
+
+        assertTrue(m_linkd.runSingleSnmpCollection(switch4id));
+        assertTrue(m_linkd.runSingleSnmpCollection(router3id));
+
         assertEquals(0,m_dataLinkInterfaceDao.countAll());
 
-
-        
         final Collection<LinkableNode> nodes = m_linkd.getLinkableNodesOnPackage("example1");
 
         assertEquals(2, nodes.size());
-        
+
         for (LinkableNode node: nodes) {
             assertEquals(1, node.getCdpInterfaces().size());
         }
-        
+
         assertTrue(m_linkd.runSingleLinkDiscovery("example1"));
 
         assertEquals(1,m_dataLinkInterfaceDao.countAll());
         final List<DataLinkInterface> datalinkinterfaces = m_dataLinkInterfaceDao.findAll();
-                
-        for (final DataLinkInterface datalinkinterface: datalinkinterfaces) {
 
+        for (final DataLinkInterface datalinkinterface: datalinkinterfaces) {
                 checkLink(router3, switch4, 9, 10001, datalinkinterface);
         }
     }

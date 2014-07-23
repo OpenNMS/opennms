@@ -36,16 +36,16 @@ import java.util.Map;
 
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.utils.ParameterMap;
-import org.opennms.netmgt.collectd.Collectd;
-import org.opennms.netmgt.collectd.CollectionAgent;
-import org.opennms.netmgt.collectd.CollectionException;
-import org.opennms.netmgt.collectd.CollectionInitializationException;
-import org.opennms.netmgt.collectd.ServiceCollector;
+import org.opennms.netmgt.collectd.SnmpCollectionAgent;
 import org.opennms.netmgt.collectd.tca.dao.TcaDataCollectionConfigDao;
+import org.opennms.netmgt.collection.api.CollectionAgent;
+import org.opennms.netmgt.collection.api.CollectionException;
+import org.opennms.netmgt.collection.api.CollectionInitializationException;
+import org.opennms.netmgt.collection.api.CollectionSet;
+import org.opennms.netmgt.collection.api.ServiceCollector;
 import org.opennms.netmgt.config.SnmpPeerFactory;
-import org.opennms.netmgt.config.collector.CollectionSet;
-import org.opennms.netmgt.model.RrdRepository;
 import org.opennms.netmgt.model.events.EventProxy;
+import org.opennms.netmgt.rrd.RrdRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,9 +58,6 @@ import org.slf4j.LoggerFactory;
  */
 public class TcaCollector implements ServiceCollector {
 	private static final Logger LOG = LoggerFactory.getLogger(TcaCollector.class);
-
-	/** The service name. */
-	private String m_serviceName;
 
 	/** The TCA Data Collection Configuration DAO. */
 	private TcaDataCollectionConfigDao m_configDao;
@@ -118,7 +115,6 @@ public class TcaCollector implements ServiceCollector {
 	@Override
 	public void initialize(CollectionAgent agent, Map<String, Object> parameters) throws CollectionInitializationException {
 		LOG.debug("initialize: initializing TCA collection handling using {} for collection agent {}", parameters, agent);
-		m_serviceName = ParameterMap.getKeyedString(parameters, "SERVICE", "TCA");
 	}
 
 	/* (non-Javadoc)
@@ -150,17 +146,12 @@ public class TcaCollector implements ServiceCollector {
 			if (collectionName == null) {
 				throw new CollectionException("Parameter collection is required for the TCA Collector!");
 			}
-			Collectd.instrumentation().beginCollectingServiceData(agent.getNodeId(), agent.getHostAddress(), m_serviceName);
-			TcaCollectionSet collectionSet = new TcaCollectionSet(agent, getRrdRepository(collectionName));
+			TcaCollectionSet collectionSet = new TcaCollectionSet((SnmpCollectionAgent)agent, getRrdRepository(collectionName));
 			collectionSet.setCollectionTimestamp(new Date());
 			collectionSet.collect();
 			return collectionSet;
 		} catch (Throwable t) {
-			CollectionException e = new CollectionException("Unexpected error during node TCA collection for: " + agent.getHostAddress() + ": " + t, t);
-			Collectd.instrumentation().reportCollectionException(agent.getNodeId(), agent.getHostAddress(), m_serviceName, e);
-			throw e;
-		} finally {
-			Collectd.instrumentation().endCollectingServiceData(agent.getNodeId(), agent.getHostAddress(), m_serviceName);
+			throw new CollectionException("Unexpected error during node TCA collection for: " + agent.getHostAddress() + ": " + t, t);
 		}
 	}
 

@@ -28,12 +28,12 @@
 
 package org.opennms.netmgt.collectd.vmware.cim;
 
-import org.opennms.netmgt.collectd.CollectionAgent;
-import org.opennms.netmgt.model.RrdRepository;
+import java.io.File;
+
+import org.opennms.netmgt.collection.api.CollectionAgent;
+import org.opennms.netmgt.rrd.RrdRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.File;
 
 public class VmwareCimMultiInstanceCollectionResource extends VmwareCimCollectionResource {
 
@@ -42,8 +42,8 @@ public class VmwareCimMultiInstanceCollectionResource extends VmwareCimCollectio
      */
     private final Logger logger = LoggerFactory.getLogger("OpenNMS.VMware." + VmwareCimMultiInstanceCollectionResource.class.getName());
 
-    private String m_inst;
-    private String m_name;
+    private final String m_inst;
+    private final String m_name;
 
     public VmwareCimMultiInstanceCollectionResource(final CollectionAgent agent, final String instance, final String name) {
         super(agent);

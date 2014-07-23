@@ -110,7 +110,7 @@ public class PhysInterfaceTableTracker extends TableTracker {
         IF_HIGH_SPEED
     };
     
-    class PhysicalInterfaceRow extends SnmpRowResult {
+    static class PhysicalInterfaceRow extends SnmpRowResult {
 
         public PhysicalInterfaceRow(final int columnCount, final SnmpInstId instance) {
             super(columnCount, instance);
@@ -222,6 +222,7 @@ public class PhysInterfaceTableTracker extends TableTracker {
             snmpIface.setIfSpeed(getSpeed());
             snmpIface.setIfType(getIfType());
             snmpIface.setPhysAddr(getPhysAddr());
+            snmpIface.setPoll("N");
             return snmpIface;
         }
 

@@ -37,7 +37,7 @@ import java.util.Map;
 
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
-import org.opennms.netmgt.model.PollStatus;
+import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.scheduler.ReadyRunnable;
 import org.opennms.netmgt.scheduler.Schedule;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
@@ -69,11 +69,11 @@ public class PollableSnmpInterface implements ReadyRunnable {
         
     private SnmpAgentConfig m_agentConfig;
     
-    public class SnmpMinimalPollInterface {
+    public static class SnmpMinimalPollInterface {
         
-        final static int IF_UP=1;
-        final static int IF_DOWN=2;
-        final static int IF_UNKNOWN=0;
+    	static final int IF_UP=1;
+    	static final int IF_DOWN=2;
+    	static final int IF_UNKNOWN=0;
         
         private final String[] s_statusNames = {"Unknown","InterfaceUp", "InterfaceDown"}; 
         

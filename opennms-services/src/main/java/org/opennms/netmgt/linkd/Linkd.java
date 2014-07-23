@@ -50,12 +50,14 @@ import org.opennms.netmgt.config.LinkdConfig;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.config.linkd.Package;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
-import org.opennms.netmgt.dao.support.DefaultTransactionTemplate;
 import org.opennms.netmgt.linkd.scheduler.ReadyRunnable;
 import org.opennms.netmgt.linkd.scheduler.Scheduler;
 import org.opennms.netmgt.model.OnmsArpInterface.StatusType;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventForwarder;
+import org.opennms.netmgt.model.topology.AtInterface;
+import org.opennms.netmgt.model.topology.LinkableNode;
+import org.opennms.netmgt.model.topology.LinkableSnmpNode;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,6 +66,7 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
+import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.util.Assert;
 
 /**
@@ -84,7 +87,7 @@ public class Linkd extends AbstractServiceDaemon {
     protected static final String LOG_PREFIX = "linkd";
 
     @Autowired
-    private DefaultTransactionTemplate m_transTemplate;
+    private TransactionTemplate m_transTemplate;
 
     /**
      *  scheduler thread
@@ -662,6 +665,7 @@ public class Linkd extends AbstractServiceDaemon {
         LinkableNode node = removeNode(snmpcoll.getPackageName(),snmpcoll.getTarget());
         if (node == null) {
             LOG.error("No linkable node found for SNMP collection: {}!", snmpcoll.getInfo());
+            return;
         }
 
         LinkableSnmpNode snmpNode = m_queryMgr.getSnmpNode(node.getNodeId());

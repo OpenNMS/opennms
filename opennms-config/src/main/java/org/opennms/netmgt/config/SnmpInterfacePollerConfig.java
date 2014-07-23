@@ -48,52 +48,52 @@ public interface SnmpInterfacePollerConfig {
 	 * @return the Default interval
 	 * 
 	 */
-	public long getInterval();
+	long getInterval();
     /**
      * <p>getThreads</p>
      *
      * @return a int.
      */
-    public int getThreads();
+    int getThreads();
     /**
      * <p>useCriteriaFilters</p>
      *
      * @return a boolean.
      */
-    public boolean useCriteriaFilters();
+    boolean useCriteriaFilters();
     /**
      * <p>getService</p>
      *
      * @return a {@link java.lang.String} object.
      */
-    public String getService();
+    String getService();
     /**
      * <p>getCriticalServiceIds</p>
      *
      * @return an array of {@link java.lang.String} objects.
      */
-    public String[] getCriticalServiceIds();
+    String[] getCriticalServiceIds();
     /**
      * <p>getAllPackageMatches</p>
      *
      * @param ipaddr a {@link java.lang.String} object.
      * @return a {@link java.util.List} object.
      */
-    public List<String> getAllPackageMatches(String ipaddr);
+    List<String> getAllPackageMatches(String ipaddr);
     /**
      * <p>getPackageName</p>
      *
      * @param ipaddr a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
      */
-    public String getPackageName(String ipaddr);
+    String getPackageName(String ipaddr);
     /**
      * <p>getInterfaceOnPackage</p>
      *
      * @param pkgName a {@link java.lang.String} object.
      * @return a {@link java.util.Set} object.
      */
-    public Set<String> getInterfaceOnPackage(String pkgName);
+    Set<String> getInterfaceOnPackage(String pkgName);
     /**
      * <p>getStatus</p>
      *
@@ -101,7 +101,7 @@ public interface SnmpInterfacePollerConfig {
      * @param pkgInterfaceName a {@link java.lang.String} object.
      * @return a boolean.
      */
-    public boolean getStatus(String pkgName,String pkgInterfaceName);
+    boolean getStatus(String pkgName,String pkgInterfaceName);
     /**
      * <p>getInterval</p>
      *
@@ -109,7 +109,7 @@ public interface SnmpInterfacePollerConfig {
      * @param pkgInterfaceName a {@link java.lang.String} object.
      * @return a long.
      */
-    public long getInterval(String pkgName,String pkgInterfaceName);
+    long getInterval(String pkgName,String pkgInterfaceName);
     /**
      * <p>getCriteria</p>
      *
@@ -117,7 +117,7 @@ public interface SnmpInterfacePollerConfig {
      * @param pkgInterfaceName a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
      */
-    public String getCriteria(String pkgName,String pkgInterfaceName);
+    String getCriteria(String pkgName,String pkgInterfaceName);
     /**
      * <p>hasPort</p>
      *
@@ -125,7 +125,7 @@ public interface SnmpInterfacePollerConfig {
      * @param pkgInterfaceName a {@link java.lang.String} object.
      * @return a boolean.
      */
-    public boolean hasPort(String pkgName,String pkgInterfaceName);
+    boolean hasPort(String pkgName,String pkgInterfaceName);
     /**
      * <p>getPort</p>
      *
@@ -133,7 +133,7 @@ public interface SnmpInterfacePollerConfig {
      * @param pkgInterfaceName a {@link java.lang.String} object.
      * @return a int.
      */
-    public int getPort(String pkgName,String pkgInterfaceName);
+    int getPort(String pkgName,String pkgInterfaceName);
     /**
      * <p>hasTimeout</p>
      *
@@ -141,7 +141,7 @@ public interface SnmpInterfacePollerConfig {
      * @param pkgInterfaceName a {@link java.lang.String} object.
      * @return a boolean.
      */
-    public boolean hasTimeout(String pkgName,String pkgInterfaceName);
+    boolean hasTimeout(String pkgName,String pkgInterfaceName);
     /**
      * <p>getTimeout</p>
      *
@@ -149,7 +149,7 @@ public interface SnmpInterfacePollerConfig {
      * @param pkgInterfaceName a {@link java.lang.String} object.
      * @return a int.
      */
-    public int getTimeout(String pkgName,String pkgInterfaceName);
+    int getTimeout(String pkgName,String pkgInterfaceName);
     /**
      * <p>hasRetries</p>
      *
@@ -157,7 +157,7 @@ public interface SnmpInterfacePollerConfig {
      * @param pkgInterfaceName a {@link java.lang.String} object.
      * @return a boolean.
      */
-    public boolean hasRetries(String pkgName,String pkgInterfaceName);
+    boolean hasRetries(String pkgName,String pkgInterfaceName);
     /**
      * <p>getRetries</p>
      *
@@ -165,7 +165,7 @@ public interface SnmpInterfacePollerConfig {
      * @param pkgInterfaceName a {@link java.lang.String} object.
      * @return a int.
      */
-    public int getRetries(String pkgName,String pkgInterfaceName);
+    int getRetries(String pkgName,String pkgInterfaceName);
     /**
      * <p>hasMaxVarsPerPdu</p>
      *
@@ -173,7 +173,7 @@ public interface SnmpInterfacePollerConfig {
      * @param pkgInterfaceName a {@link java.lang.String} object.
      * @return a boolean.
      */
-    public boolean hasMaxVarsPerPdu(String pkgName,String pkgInterfaceName);
+    boolean hasMaxVarsPerPdu(String pkgName,String pkgInterfaceName);
     /**
      * <p>getMaxVarsPerPdu</p>
      *
@@ -181,11 +181,11 @@ public interface SnmpInterfacePollerConfig {
      * @param pkgInterfaceName a {@link java.lang.String} object.
      * @return a int.
      */
-    public int getMaxVarsPerPdu(String pkgName,String pkgInterfaceName);
+    int getMaxVarsPerPdu(String pkgName,String pkgInterfaceName);
     /**
      * <p>rebuildPackageIpListMap</p>
      */
-    public void rebuildPackageIpListMap();
+    void rebuildPackageIpListMap();
     /**
      * <p>update</p>
      *
@@ -193,5 +193,5 @@ public interface SnmpInterfacePollerConfig {
      * @throws org.exolab.castor.xml.MarshalException if any.
      * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    public void update() throws IOException, MarshalException, ValidationException;
+    void update() throws IOException, MarshalException, ValidationException;
 }

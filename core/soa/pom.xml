@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>org.opennms.core</artifactId>
-    <version>1.13.1-SNAPSHOT</version>
+    <version>1.13.4-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.core</groupId>
@@ -52,9 +52,16 @@
         <extensions>true</extensions>
         <configuration>
           <instructions>
-            <Bundle-RequiredExecutionEnvironment>JavaSE-1.6</Bundle-RequiredExecutionEnvironment>
+            <Bundle-RequiredExecutionEnvironment>JavaSE-1.7</Bundle-RequiredExecutionEnvironment>
             <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
             <Bundle-Version>${project.version}</Bundle-Version>
+            <!-- 
+              We need to use DynamicImport-Package because we will be exposing service interfaces 
+              that we have no compile-time knowledge of.
+
+              @see http://wiki.osgi.org/wiki/DynamicImport-Package
+            -->
+            <DynamicImport-Package>*</DynamicImport-Package>
             <Export-Package>org.opennms.core.soa.*;version="${project.version}"</Export-Package>
 
             <!-- Launch the Spring context when this bundle is loaded in OSGi -->

@@ -13,44 +13,44 @@ import org.opennms.netmgt.scheduler.Scheduler;
 
 public interface PollingContext extends ReadyRunnable {
 
-    public void init();
+    void init();
 
-    public void release();
+    void release();
 
-    public void setPackage(Package pkg);
+    void setPackage(Package pkg);
 
-    public Package getPackage();
+    Package getPackage();
 
-    public void setIpInterfaceDao(IpInterfaceDao ipInterfaceDao);
+    void setIpInterfaceDao(IpInterfaceDao ipInterfaceDao);
 
-    public IpInterfaceDao getIpInterfaceDao();
+    IpInterfaceDao getIpInterfaceDao();
 
-    public NodeDao getNodeDao();
+    NodeDao getNodeDao();
 
-    public void setNodeDao(NodeDao nodeDao);
+    void setNodeDao(NodeDao nodeDao);
 
-    public void setAccessPointDao(AccessPointDao accessPointDao);
+    void setAccessPointDao(AccessPointDao accessPointDao);
 
-    public AccessPointDao getAccessPointDao();
+    AccessPointDao getAccessPointDao();
 
-    public void setEventManager(EventIpcManager eventMgr);
+    void setEventManager(EventIpcManager eventMgr);
 
-    public EventIpcManager getEventManager();
+    EventIpcManager getEventManager();
 
-    public void setScheduler(Scheduler scheduler);
+    void setScheduler(Scheduler scheduler);
 
-    public Scheduler getScheduler();
+    Scheduler getScheduler();
 
-    public void setPollerConfig(AccessPointMonitorConfig accesspointmonitorConfig);
+    void setPollerConfig(AccessPointMonitorConfig accesspointmonitorConfig);
 
-    public AccessPointMonitorConfig getPollerConfig();
+    AccessPointMonitorConfig getPollerConfig();
 
-    public void setInterval(long interval);
+    void setInterval(long interval);
 
-    public long getInterval();
+    long getInterval();
 
-    public void setPropertyMap(Map<String, String> parameters);
+    void setPropertyMap(Map<String, String> parameters);
 
-    public Map<String, String> getPropertyMap();
+    Map<String, String> getPropertyMap();
 
 }

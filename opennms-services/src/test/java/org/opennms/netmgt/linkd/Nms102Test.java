@@ -28,74 +28,38 @@
 
 package org.opennms.netmgt.linkd;
 
+import static org.opennms.netmgt.nb.TestNetworkBuilder.MAC1_IP;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.MAC1_NAME;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.MAC1_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.MAC2_IP;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.MAC2_NAME;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.MAC2_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.MIKROTIK_IP;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.MIKROTIK_NAME;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.MIKROTIK_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.SAMSUNG_IP;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.SAMSUNG_NAME;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.SAMSUNG_SNMP_RESOURCE;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import java.util.Collection;
 import java.util.List;
 
 import org.junit.Test;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
-import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.config.linkd.Filter;
 import org.opennms.netmgt.config.linkd.IncludeRange;
 import org.opennms.netmgt.config.linkd.Package;
-import org.opennms.netmgt.linkd.snmp.MtxrWlRtabTable;
-import org.opennms.netmgt.linkd.snmp.MtxrWlRtabTableEntry;
 import org.opennms.netmgt.model.DataLinkInterface;
 import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.snmp.CollectionTracker;
-import org.opennms.netmgt.snmp.SnmpAgentConfig;
-import org.opennms.netmgt.snmp.SnmpUtils;
-import org.opennms.netmgt.snmp.SnmpWalker;
+import org.opennms.netmgt.nb.Nms102NetworkBuilder;
 
-public class Nms102Test extends Nms102NetworkBuilder {
+public class Nms102Test extends LinkdTestBuilder {
 	    
-    @Test
-    @JUnitSnmpAgents(value={
-        @JUnitSnmpAgent(host=MIKROTIK_IP, port=161, resource="classpath:linkd/nms102/"+MIKROTIK_NAME+"-"+MIKROTIK_IP+"-walk.txt")
-    })
-    public void testMtxrWlRtabTableCollection() throws Exception {
-        
-        String name = "mtxrWlRtabTable";
+	Nms102NetworkBuilder builder = new Nms102NetworkBuilder();
 
-        // froh
-        MtxrWlRtabTable m_mtxrWlRtabTable = new MtxrWlRtabTable(InetAddressUtils.addr(MIKROTIK_IP));
-        CollectionTracker[] tracker = new CollectionTracker[0];
-        tracker = new CollectionTracker[]{m_mtxrWlRtabTable};
-        SnmpAgentConfig snmpAgent = SnmpPeerFactory.getInstance().getAgentConfig(InetAddressUtils.addr(MIKROTIK_IP));
-        SnmpWalker walker = SnmpUtils.createWalker(snmpAgent, name, tracker);
-        walker.start();
-
-        try {
-            walker.waitFor();
-        } catch (final InterruptedException e) {
-
-        }
-        
-        Collection<MtxrWlRtabTableEntry> m_m_mtxrWlRtabTableEntryCollection = m_mtxrWlRtabTable.getEntries();
-        assertEquals(4, m_m_mtxrWlRtabTableEntryCollection.size());
-        
-        int i=0;
-        for (MtxrWlRtabTableEntry entry: m_m_mtxrWlRtabTableEntryCollection) {
-            assertEquals(2, entry.getMtxrWlRtabIface().intValue());
-            switch (i) {
-                case 0: assertEquals("0015999f07ef", entry.getMtxrWlRtabAddr());
-                        break;
-                case 1: assertEquals("001b63cda9fd", entry.getMtxrWlRtabAddr());
-                        break;
-                case 2: assertEquals("60334b0817a8", entry.getMtxrWlRtabAddr());
-                        break;
-                case 3: assertEquals("f0728c99994d", entry.getMtxrWlRtabAddr());
-                        break;
-                default: assertEquals(true, false);
-                        break;
-            }
-            i++;
-        }
-    }
     /*
      *  Discover the following topology
      * 
@@ -108,18 +72,18 @@ public class Nms102Test extends Nms102NetworkBuilder {
      */
     @Test
     @JUnitSnmpAgents(value={
-        @JUnitSnmpAgent(host=MIKROTIK_IP, port=161, resource="classpath:linkd/nms102/"+MIKROTIK_NAME+"-"+MIKROTIK_IP+"-walk.txt"),
-        @JUnitSnmpAgent(host=SAMSUNG_IP, port=161, resource="classpath:linkd/nms102/"+SAMSUNG_NAME+"-"+SAMSUNG_IP+"-walk.txt"),
-        @JUnitSnmpAgent(host=MAC1_IP, port=161, resource="classpath:linkd/nms102/"+"mac-"+MAC1_IP+"-walk.txt"),
-        @JUnitSnmpAgent(host=MAC2_IP, port=161, resource="classpath:linkd/nms102/"+"mac-"+MAC2_IP+"-walk.txt")
+        @JUnitSnmpAgent(host=MIKROTIK_IP, port=161, resource=MIKROTIK_SNMP_RESOURCE),
+        @JUnitSnmpAgent(host=SAMSUNG_IP, port=161, resource=SAMSUNG_SNMP_RESOURCE),
+        @JUnitSnmpAgent(host=MAC1_IP, port=161, resource=MAC1_SNMP_RESOURCE),
+        @JUnitSnmpAgent(host=MAC2_IP, port=161, resource=MAC2_SNMP_RESOURCE)
     })
     public void testWifiLinksWithExclusiveConf() throws Exception {
 
-    	m_nodeDao.save(getMac1());
-        m_nodeDao.save(getMac2());
-        m_nodeDao.save(getMikrotik());
-   	m_nodeDao.save(getSamsung());
-   	m_nodeDao.save(getNodeWithoutSnmp("mobile", "192.168.0.13"));
+    	m_nodeDao.save(builder.getMac1());
+        m_nodeDao.save(builder.getMac2());
+        m_nodeDao.save(builder.getMikrotik());
+        m_nodeDao.save(builder.getSamsung());
+        m_nodeDao.save(builder.getNodeWithoutSnmp("mobile", "192.168.0.13"));
     	m_nodeDao.flush();
     	
         final OnmsNode mac1 = m_nodeDao.findByForeignId("linkd", MAC1_NAME);
@@ -160,18 +124,18 @@ public class Nms102Test extends Nms102NetworkBuilder {
 
     @Test
     @JUnitSnmpAgents(value={
-        @JUnitSnmpAgent(host=MIKROTIK_IP, port=161, resource="classpath:linkd/nms102/"+MIKROTIK_NAME+"-"+MIKROTIK_IP+"-walk.txt"),
-        @JUnitSnmpAgent(host=SAMSUNG_IP, port=161, resource="classpath:linkd/nms102/"+SAMSUNG_NAME+"-"+SAMSUNG_IP+"-walk.txt"),
-        @JUnitSnmpAgent(host=MAC1_IP, port=161, resource="classpath:linkd/nms102/"+"mac-"+MAC1_IP+"-walk.txt"),
-        @JUnitSnmpAgent(host=MAC2_IP, port=161, resource="classpath:linkd/nms102/"+"mac-"+MAC2_IP+"-walk.txt")
+            @JUnitSnmpAgent(host=MIKROTIK_IP, port=161, resource=MIKROTIK_SNMP_RESOURCE),
+            @JUnitSnmpAgent(host=SAMSUNG_IP, port=161, resource=SAMSUNG_SNMP_RESOURCE),
+            @JUnitSnmpAgent(host=MAC1_IP, port=161, resource=MAC1_SNMP_RESOURCE),
+            @JUnitSnmpAgent(host=MAC2_IP, port=161, resource=MAC2_SNMP_RESOURCE)
     })
     public void testWifiLinksWithDefaultConf() throws Exception {
 
-        m_nodeDao.save(getMac1());
-        m_nodeDao.save(getMac2());
-        m_nodeDao.save(getMikrotik());
-        m_nodeDao.save(getSamsung());
-        m_nodeDao.save(getNodeWithoutSnmp("mobile", "192.168.0.13"));
+        m_nodeDao.save(builder.getMac1());
+        m_nodeDao.save(builder.getMac2());
+        m_nodeDao.save(builder.getMikrotik());
+        m_nodeDao.save(builder.getSamsung());
+        m_nodeDao.save(builder.getNodeWithoutSnmp("mobile", "192.168.0.13"));
         m_nodeDao.flush();
         
         final OnmsNode mac1 = m_nodeDao.findByForeignId("linkd", MAC1_NAME);
@@ -203,18 +167,18 @@ public class Nms102Test extends Nms102NetworkBuilder {
 
     @Test
     @JUnitSnmpAgents(value={
-        @JUnitSnmpAgent(host=MIKROTIK_IP, port=161, resource="classpath:linkd/nms102/"+MIKROTIK_NAME+"-"+MIKROTIK_IP+"-walk.txt"),
-        @JUnitSnmpAgent(host=SAMSUNG_IP, port=161, resource="classpath:linkd/nms102/"+SAMSUNG_NAME+"-"+SAMSUNG_IP+"-walk.txt"),
-        @JUnitSnmpAgent(host=MAC1_IP, port=161, resource="classpath:linkd/nms102/"+"mac-"+MAC1_IP+"-walk.txt"),
-        @JUnitSnmpAgent(host=MAC2_IP, port=161, resource="classpath:linkd/nms102/"+"mac-"+MAC2_IP+"-walk.txt")
+            @JUnitSnmpAgent(host=MIKROTIK_IP, port=161, resource=MIKROTIK_SNMP_RESOURCE),
+            @JUnitSnmpAgent(host=SAMSUNG_IP, port=161, resource=SAMSUNG_SNMP_RESOURCE),
+            @JUnitSnmpAgent(host=MAC1_IP, port=161, resource=MAC1_SNMP_RESOURCE),
+            @JUnitSnmpAgent(host=MAC2_IP, port=161, resource=MAC2_SNMP_RESOURCE)
     })
     public void testLinksWithIpRoute() throws Exception {
 
-        m_nodeDao.save(getMac1());
-        m_nodeDao.save(getMac2());
-        m_nodeDao.save(getMikrotik());
-        m_nodeDao.save(getSamsung());
-        m_nodeDao.save(getNodeWithoutSnmp("mobile", "192.168.0.13"));
+        m_nodeDao.save(builder.getMac1());
+        m_nodeDao.save(builder.getMac2());
+        m_nodeDao.save(builder.getMikrotik());
+        m_nodeDao.save(builder.getSamsung());
+        m_nodeDao.save(builder.getNodeWithoutSnmp("mobile", "192.168.0.13"));
         m_nodeDao.flush();
         
         final OnmsNode mac1 = m_nodeDao.findByForeignId("linkd", MAC1_NAME);
@@ -250,18 +214,18 @@ public class Nms102Test extends Nms102NetworkBuilder {
 
     @Test
     @JUnitSnmpAgents(value={
-        @JUnitSnmpAgent(host=MIKROTIK_IP, port=161, resource="classpath:linkd/nms102/"+MIKROTIK_NAME+"-"+MIKROTIK_IP+"-walk.txt"),
-        @JUnitSnmpAgent(host=SAMSUNG_IP, port=161, resource="classpath:linkd/nms102/"+SAMSUNG_NAME+"-"+SAMSUNG_IP+"-walk.txt"),
-        @JUnitSnmpAgent(host=MAC1_IP, port=161, resource="classpath:linkd/nms102/"+"mac-"+MAC1_IP+"-walk.txt"),
-        @JUnitSnmpAgent(host=MAC2_IP, port=161, resource="classpath:linkd/nms102/"+"mac-"+MAC2_IP+"-walk.txt")
+            @JUnitSnmpAgent(host=MIKROTIK_IP, port=161, resource=MIKROTIK_SNMP_RESOURCE),
+            @JUnitSnmpAgent(host=SAMSUNG_IP, port=161, resource=SAMSUNG_SNMP_RESOURCE),
+            @JUnitSnmpAgent(host=MAC1_IP, port=161, resource=MAC1_SNMP_RESOURCE),
+            @JUnitSnmpAgent(host=MAC2_IP, port=161, resource=MAC2_SNMP_RESOURCE)
     })
     public void testLinksTwoPackage() throws Exception {
 
-        m_nodeDao.save(getMac1());
-        m_nodeDao.save(getMac2());
-        m_nodeDao.save(getMikrotik());
-        m_nodeDao.save(getSamsung());
-        m_nodeDao.save(getNodeWithoutSnmp("mobile", "192.168.0.13"));
+        m_nodeDao.save(builder.getMac1());
+        m_nodeDao.save(builder.getMac2());
+        m_nodeDao.save(builder.getMikrotik());
+        m_nodeDao.save(builder.getSamsung());
+        m_nodeDao.save(builder.getNodeWithoutSnmp("mobile", "192.168.0.13"));
         m_nodeDao.flush();
         
         final OnmsNode mac1 = m_nodeDao.findByForeignId("linkd", MAC1_NAME);

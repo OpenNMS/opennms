@@ -57,7 +57,7 @@ import org.springframework.transaction.annotation.Transactional;
         "classpath:/org/opennms/web/svclayer/applicationContext-svclayer-test.xml"
 })
 @JUnitConfigurationEnvironment
-@JUnitTemporaryDatabase
+@JUnitTemporaryDatabase(dirtiesContext=false)
 @Transactional
 public class FilterFavoriteServiceTest {
 
@@ -108,6 +108,7 @@ public class FilterFavoriteServiceTest {
     }
 
     @Test
+    @JUnitTemporaryDatabase
     public void testGetFavorites() {
         // favorites exist
         Assert.assertTrue(!service.getFavorites("mvr", OnmsFilterFavorite.Page.EVENT).isEmpty());
@@ -119,6 +120,7 @@ public class FilterFavoriteServiceTest {
     }
 
     @Test
+    @JUnitTemporaryDatabase
     public void testCreateAndDeleteFavorites() throws FilterFavoriteService.FilterFavoriteException {
         List<OnmsFilterFavorite> alarmFavorites = service.getFavorites("mvr", OnmsFilterFavorite.Page.ALARM);
         List<OnmsFilterFavorite> eventFavorites = service.getFavorites("mvr", OnmsFilterFavorite.Page.EVENT);

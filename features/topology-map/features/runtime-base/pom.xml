@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.opennms.features.topology</groupId>
     <artifactId>features</artifactId>
-    <version>1.13.1-SNAPSHOT</version>
+    <version>1.13.4-SNAPSHOT</version>
   </parent>
 
   <modelVersion>4.0.0</modelVersion>
@@ -28,6 +28,7 @@
             <repository>mvn:${project.groupId}/opennms-topology-api/${project.version}/xml/features</repository>
           </repositories>
           <features>
+            <feature>opennms-core</feature>
             <feature>opennms-topology-api</feature>
           </features>
           <configs>

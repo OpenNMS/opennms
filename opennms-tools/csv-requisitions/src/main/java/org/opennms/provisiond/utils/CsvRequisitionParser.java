@@ -47,7 +47,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.dbcp.PoolingConnection;
-
 import org.opennms.netmgt.model.PrimaryType;
 import org.opennms.netmgt.provision.persist.FilesystemForeignSourceRepository;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
@@ -491,7 +490,7 @@ public class CsvRequisitionParser {
 		iface.setManaged(true);
 		iface.setSnmpPrimary(PrimaryType.PRIMARY);
 		iface.setStatus(Integer.valueOf(1));
-		iface.setMonitoredServices(services);
+		iface.setMonitoredServices(services.getObjects());
 		
 		RequisitionInterfaceCollection ric = new RequisitionInterfaceCollection();
 		ric.add(iface);
@@ -514,11 +513,11 @@ public class CsvRequisitionParser {
 		rn.setBuilding(foreignSource);
 		
 		if (rcc.size() >= 1) {
-			rn.setCategories(rcc);
+			rn.setCategories(rcc.getObjects());
 		}
 		
 		rn.setForeignId(rd.getForeignId());
-		rn.setInterfaces(ric);
+		rn.setInterfaces(ric.getObjects());
 		
 		String nodeLabel = rd.getNodeLabel();
 		if (m_resolveIps) {

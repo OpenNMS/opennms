@@ -79,12 +79,12 @@ public class ArgumentParser {
         
     }
     public void printHelpOptions() {
-        out.printf("Usage: %s <options> <arguments> \n", m_programName);
-        out.printf("   where <arguments> is %s\n", m_argHelp);
-        out.printf("Options: \n");
-        out.printf("   -%-5s or --%-15s : %s\n", "h", "help", "print this help");
+        out.printf("Usage: %s <options> <arguments> %n", m_programName);
+        out.printf("   where <arguments> is %s%n", m_argHelp);
+        out.printf("Options: %n");
+        out.printf("   -%-5s or --%-15s : %s%n", "h", "help", "print this help");
         for(Option o : m_options.keySet()){
-            out.printf("   -%-5s or --%-15s : %s\n", o.shortName(), o.longName(), o.help());
+            out.printf("   -%-5s or --%-15s : %s%n", o.shortName(), o.longName(), o.help());
         }
       
         

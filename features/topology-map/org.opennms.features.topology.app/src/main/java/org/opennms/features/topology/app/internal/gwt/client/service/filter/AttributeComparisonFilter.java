@@ -23,9 +23,9 @@ public abstract class AttributeComparisonFilter extends AbstractFilter {
         }
     }
 
-    abstract protected boolean valueMatches(String value);
+    protected abstract boolean valueMatches(String value);
 
     @Override
-    abstract public String toString();
+    public abstract String toString();
 
 }

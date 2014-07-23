@@ -28,6 +28,7 @@
 package org.opennms.features.vaadin.events;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.opennms.features.vaadin.api.OnmsBeanContainer;
 import org.opennms.netmgt.xml.eventconf.Maskelement;
@@ -36,6 +37,7 @@ import org.vaadin.dialogs.ConfirmDialog;
 import com.vaadin.data.Container;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomField;
 import com.vaadin.ui.DefaultFieldFactory;
@@ -52,7 +54,7 @@ import com.vaadin.ui.VerticalLayout;
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a> 
  */
 @SuppressWarnings("serial")
-public class MaskElementField extends CustomField<ArrayList<Maskelement>> implements Button.ClickListener {
+public class MaskElementField extends CustomField<List<Maskelement>> implements Button.ClickListener {
 
     /** The Container. */
     private final OnmsBeanContainer<Maskelement> container = new OnmsBeanContainer<Maskelement>(Maskelement.class);
@@ -88,6 +90,26 @@ public class MaskElementField extends CustomField<ArrayList<Maskelement>> implem
         table.setTableFieldFactory(new DefaultFieldFactory() {
             @Override
             public Field<?> createField(Container container, Object itemId, Object propertyId, Component uiContext) {
+                if (propertyId.equals("mename")) {
+                    final ComboBox field = new ComboBox();
+                    field.setSizeFull();
+                    field.setRequired(true);
+                    field.setImmediate(true);
+                    field.setNullSelectionAllowed(false);
+                    field.setNewItemsAllowed(false);
+                    field.addItem(Maskelement.TAG_UEI);
+                    field.addItem(Maskelement.TAG_SOURCE);
+                    field.addItem(Maskelement.TAG_NODEID);
+                    field.addItem(Maskelement.TAG_HOST);
+                    field.addItem(Maskelement.TAG_INTERFACE);
+                    field.addItem(Maskelement.TAG_SNMPHOST);
+                    field.addItem(Maskelement.TAG_SERVICE);
+                    field.addItem(Maskelement.TAG_SNMP_EID);
+                    field.addItem(Maskelement.TAG_SNMP_SPECIFIC);
+                    field.addItem(Maskelement.TAG_SNMP_GENERIC);
+                    field.addItem(Maskelement.TAG_SNMP_COMMUNITY);
+                    return field;
+                }
                 if (propertyId.equals("mevalueCollection")) {
                     final TextField field = new TextField();
                     field.setConverter(new CsvListConverter());
@@ -118,16 +140,15 @@ public class MaskElementField extends CustomField<ArrayList<Maskelement>> implem
      */
     @Override
     @SuppressWarnings("unchecked")
-    public Class<? extends ArrayList<Maskelement>> getType() {
-        return (Class<? extends ArrayList<Maskelement>>) new ArrayList<Maskelement>().getClass();
+    public Class<? extends List<Maskelement>> getType() {
+        return (Class<? extends List<Maskelement>>) new ArrayList<Maskelement>().getClass();
     }
 
     /* (non-Javadoc)
      * @see com.vaadin.ui.AbstractField#setInternalValue(java.lang.Object)
      */
     @Override
-    protected void setInternalValue(ArrayList<Maskelement> maskElements) {
-        super.setInternalValue(maskElements); // TODO Is this required ?
+    protected void setInternalValue(List<Maskelement> maskElements) {
         container.removeAllItems();
         container.addAll(maskElements);
     }
@@ -136,12 +157,8 @@ public class MaskElementField extends CustomField<ArrayList<Maskelement>> implem
      * @see com.vaadin.ui.AbstractField#getInternalValue()
      */
     @Override
-    protected ArrayList<Maskelement> getInternalValue() {
-        ArrayList<Maskelement> beans = new ArrayList<Maskelement>();
-        for (Object itemId: container.getItemIds()) {
-            beans.add(container.getItem(itemId).getBean());
-        }
-        return beans;
+    protected List<Maskelement> getInternalValue() {
+        return container.getOnmsBeans();
     }
 
     /* (non-Javadoc)

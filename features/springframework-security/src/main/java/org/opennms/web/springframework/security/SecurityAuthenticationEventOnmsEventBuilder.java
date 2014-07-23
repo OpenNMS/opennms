@@ -72,6 +72,8 @@ public class SecurityAuthenticationEventOnmsEventBuilder implements ApplicationL
             AuthenticationSuccessEvent authEvent = (AuthenticationSuccessEvent) event;
 
             EventBuilder builder = createEvent(SUCCESS_UEI, authEvent);
+            // Sync the timestamp
+            builder.setTime(new Date(event.getTimestamp()));
             if (!"true".equalsIgnoreCase(System.getProperty("org.opennms.security.disableLoginSuccessEvent"))) {
                 sendEvent(builder.getEvent());
             }
@@ -82,6 +84,8 @@ public class SecurityAuthenticationEventOnmsEventBuilder implements ApplicationL
             
             LOG.debug("AbstractAuthenticationFailureEvent was received, exception message - {}", authEvent.getException().getMessage());
             EventBuilder builder = createEvent(FAILURE_UEI, authEvent);
+            // Sync the timestamp
+            builder.setTime(new Date(event.getTimestamp()));
             builder.addParam("exceptionName", authEvent.getException().getClass().getSimpleName());
             builder.addParam("exceptionMessage", authEvent.getException().getMessage());
             sendEvent(builder.getEvent());

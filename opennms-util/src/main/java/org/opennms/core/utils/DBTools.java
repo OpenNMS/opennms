@@ -130,7 +130,7 @@ public class DBTools {
     /**
      * Constructs a JDBC url given a set of fragments. The resulting Url will
      * have the form: <br>
-     * <code>jdbc:<protocol:<b>hostname</b>:<b>4100</b></code>
+     * <code>jdbc:&lt;protocol&gt;:<b>hostname</b>:<b>4100</b></code>
      *
      * @param hostname_
      *            The hostname where the database server is

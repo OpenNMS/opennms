@@ -96,8 +96,6 @@ public class IncludeURL {
 	 *   a '&lt;space&gt;#' in a line.
 	 * </pre>
 	 * 
-	 * @param url
-	 *            The url file to read
 	 * @param addr
 	 *            The interface to test against the package's URL
 	 * @return True if the interface is included in the url, false otherwise.

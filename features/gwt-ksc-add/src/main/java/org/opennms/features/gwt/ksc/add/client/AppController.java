@@ -40,7 +40,6 @@ import com.google.gwt.user.client.ui.PopupPanel;
 
 public class AppController implements Presenter {
     private List<KscReport> m_reports;
-    private HasWidgets m_container;
     private PopupPanel m_popupPanel;
     private KscAddGraphView<KscReport> m_addGraphView;
     private GraphInfo m_graphInfo;
@@ -52,8 +51,6 @@ public class AppController implements Presenter {
     
     @Override
     public void go(final HasWidgets container) {
-        m_container = container;
-
         if (m_addGraphView == null) {
             m_addGraphView = new KscAddGraphViewImpl();
             m_addGraphView.setTitle(m_graphInfo.getTitle() == null? "" : m_graphInfo.getTitle());
@@ -71,7 +68,7 @@ public class AppController implements Presenter {
             m_popupPanel.hide();
         }
 
-        new KscAddGraphPresenter(m_popupPanel, m_addGraphView, m_reports, m_graphInfo).go(m_container);
+        new KscAddGraphPresenter(m_popupPanel, m_addGraphView, m_reports, m_graphInfo).go(container);
     }
 
 }

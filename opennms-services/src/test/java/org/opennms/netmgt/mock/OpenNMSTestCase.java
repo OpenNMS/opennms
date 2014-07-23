@@ -49,7 +49,6 @@ import org.opennms.netmgt.eventd.BroadcastEventProcessor;
 import org.opennms.netmgt.eventd.DefaultEventHandlerImpl;
 import org.opennms.netmgt.eventd.EventExpander;
 import org.opennms.netmgt.eventd.EventIpcManagerDefaultImpl;
-import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 import org.opennms.netmgt.eventd.Eventd;
 import org.opennms.netmgt.eventd.JdbcEventdServiceManager;
 import org.opennms.netmgt.eventd.adaptors.EventHandler;
@@ -60,6 +59,7 @@ import org.opennms.netmgt.eventd.adaptors.udp.UdpEventReceiver;
 import org.opennms.netmgt.eventd.processor.EventIpcBroadcastProcessor;
 import org.opennms.netmgt.eventd.processor.JdbcEventWriter;
 import org.opennms.netmgt.model.events.EventIpcManager;
+import org.opennms.netmgt.model.events.EventIpcManagerFactory;
 import org.opennms.netmgt.model.events.EventProcessor;
 import org.opennms.netmgt.model.events.EventProxy;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
@@ -78,6 +78,7 @@ public class OpenNMSTestCase {
     protected static Eventd m_eventd;
     protected static EventIpcManagerDefaultImpl m_eventdIpcMgr;
 
+    protected static boolean m_allowWarnings = false;
     protected static boolean m_runSupers = true;
     public static int PROXY_PORT = Integer.getInteger("proxy.port", 5837);
 
@@ -239,8 +240,13 @@ public class OpenNMSTestCase {
     
     @After
     public void runTest() throws Throwable {
-        MockLogAppender.assertNoWarningsOrGreater();
-        MockUtil.println("------------ End Test "+this+" --------------------------");
+        try {
+            if (!m_allowWarnings) {
+                MockLogAppender.assertNoWarningsOrGreater();
+            }
+        } finally {
+            MockUtil.println("------------ End Test "+this+" --------------------------");
+        }
     }
 
     @After

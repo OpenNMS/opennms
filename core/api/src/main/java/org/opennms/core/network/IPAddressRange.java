@@ -65,8 +65,8 @@ public class IPAddressRange implements Comparable<IPAddressRange>, Iterable<IPAd
     /**
      * <p>Constructor for IPAddressRange.</p>
      *
-     * @param begin a {@link org.opennms.netmgt.model.discovery.IPAddress} object.
-     * @param end a {@link org.opennms.netmgt.model.discovery.IPAddress} object.
+     * @param begin a {@link org.opennms.core.network.IPAddress} object.
+     * @param end a {@link org.opennms.core.network.IPAddress} object.
      */
     public IPAddressRange(IPAddress begin, IPAddress end) {
         if (begin.isGreaterThan(end)) {
@@ -79,7 +79,7 @@ public class IPAddressRange implements Comparable<IPAddressRange>, Iterable<IPAd
     /**
      * <p>getBegin</p>
      *
-     * @return a {@link org.opennms.netmgt.model.discovery.IPAddress} object.
+     * @return a {@link org.opennms.core.network.IPAddress} object.
      */
     public IPAddress getBegin() {
         return m_begin;
@@ -88,7 +88,7 @@ public class IPAddressRange implements Comparable<IPAddressRange>, Iterable<IPAd
     /**
      * <p>getEnd</p>
      *
-     * @return a {@link org.opennms.netmgt.model.discovery.IPAddress} object.
+     * @return a {@link org.opennms.core.network.IPAddress} object.
      */
     public IPAddress getEnd() {
         return m_end;
@@ -103,14 +103,14 @@ public class IPAddressRange implements Comparable<IPAddressRange>, Iterable<IPAd
         BigInteger size = m_end.toBigInteger();
         size = size.subtract(m_begin.toBigInteger());
         // Add 1 because the range is inclusive of beginning and end
-        size = size.add(new BigInteger("1"));
+        size = size.add(BigInteger.ONE);
         return size;
     }
 
     /**
      * <p>contains</p>
      *
-     * @param addr a {@link org.opennms.netmgt.model.discovery.IPAddress} object.
+     * @param addr a {@link org.opennms.core.network.IPAddress} object.
      * @return a boolean.
      */
     public boolean contains(IPAddress addr) {
@@ -123,7 +123,7 @@ public class IPAddressRange implements Comparable<IPAddressRange>, Iterable<IPAd
     /**
      * <p>contains</p>
      *
-     * @param addr a {@link org.opennms.netmgt.model.discovery.IPAddress} object.
+     * @param addr a {@link org.opennms.core.network.IPAddress} object.
      * @return a boolean.
      */
     public boolean contains(String addr) {
@@ -154,7 +154,7 @@ public class IPAddressRange implements Comparable<IPAddressRange>, Iterable<IPAd
     /**
      * <p>comesBefore</p>
      *
-     * @param addr a {@link org.opennms.netmgt.model.discovery.IPAddress} object.
+     * @param addr a {@link org.opennms.core.network.IPAddress} object.
      * @return a boolean.
      */
     public boolean comesBefore(IPAddress addr) {
@@ -174,7 +174,7 @@ public class IPAddressRange implements Comparable<IPAddressRange>, Iterable<IPAd
     /**
      * <p>comesAfter</p>
      *
-     * @param addr a {@link org.opennms.netmgt.model.discovery.IPAddress} object.
+     * @param addr a {@link org.opennms.core.network.IPAddress} object.
      * @return a boolean.
      */
     public boolean comesAfter(IPAddress addr) {

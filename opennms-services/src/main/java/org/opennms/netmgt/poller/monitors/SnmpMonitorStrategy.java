@@ -32,8 +32,8 @@ import java.math.BigInteger;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.MonitoredService;
+import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.snmp.SnmpValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,7 +44,7 @@ import org.slf4j.LoggerFactory;
  * @author david
  * @version $Id: $
  */
-abstract public class SnmpMonitorStrategy extends AbstractServiceMonitor {
+public abstract class SnmpMonitorStrategy extends AbstractServiceMonitor {
     
     
     private static final Logger LOG = LoggerFactory.getLogger(SnmpMonitorStrategy.class);
@@ -75,7 +75,7 @@ abstract public class SnmpMonitorStrategy extends AbstractServiceMonitor {
 
     /** {@inheritDoc} */
     @Override
-    abstract public PollStatus poll(MonitoredService svc, Map<String, Object> parameters);
+    public abstract PollStatus poll(MonitoredService svc, Map<String, Object> parameters);
     
 
     public String getStringValue(SnmpValue result) {

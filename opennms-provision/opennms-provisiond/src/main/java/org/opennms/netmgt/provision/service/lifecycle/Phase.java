@@ -33,6 +33,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.Arrays;
 
 import org.opennms.core.tasks.BatchTask;
 import org.opennms.core.tasks.ContainerTask;
@@ -66,7 +67,7 @@ public class Phase extends BatchTask {
         super(lifecycle.getCoordinator(), parent);
         m_lifecycle = lifecycle;
         m_name = name;
-        m_providers = providers;
+        m_providers = Arrays.copyOf(providers, providers.length);
 
         addPhaseMethods();
     }

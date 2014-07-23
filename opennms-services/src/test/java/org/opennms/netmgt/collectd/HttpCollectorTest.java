@@ -42,22 +42,23 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.spring.BeanUtils;
-import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.core.test.TestContextAware;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.http.annotations.JUnitHttpServer;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.config.CollectdConfigFactory;
+import org.opennms.netmgt.collection.api.CollectionAgent;
+import org.opennms.netmgt.collection.api.CollectionInitializationException;
+import org.opennms.netmgt.collection.api.CollectionSet;
+import org.opennms.netmgt.collection.api.ServiceCollector;
 import org.opennms.netmgt.config.collectd.Filter;
 import org.opennms.netmgt.config.collectd.Package;
 import org.opennms.netmgt.config.collectd.Parameter;
 import org.opennms.netmgt.config.collectd.Service;
-import org.opennms.netmgt.config.collector.CollectionSet;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.ServiceTypeDao;
-import org.opennms.netmgt.dao.support.NewTransactionTemplate;
 import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsIpInterface;
@@ -70,20 +71,16 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestContext;
-import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
+import org.springframework.transaction.support.TransactionTemplate;
 
 /**
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  *
  */
-
 @RunWith(OpenNMSJUnit4ClassRunner.class)
-@TestExecutionListeners({
-    JUnitCollectorExecutionListener.class
-})
 @ContextConfiguration(locations={
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
@@ -100,6 +97,9 @@ import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 public class HttpCollectorTest implements TestContextAware, InitializingBean {
 
     @Autowired
+    private TransactionTemplate m_transactionTemplate;
+
+    @Autowired
     private NodeDao m_nodeDao;
 
     @Autowired
@@ -110,9 +110,6 @@ public class HttpCollectorTest implements TestContextAware, InitializingBean {
 
     @Autowired
     private Collectd m_collectd;
-
-    @Autowired
-    private NewTransactionTemplate m_transactionTemplate;
 
     private TestContext m_context;
 
@@ -150,9 +147,11 @@ public class HttpCollectorTest implements TestContextAware, InitializingBean {
     public void setUp() throws Exception {
         MockLogAppender.setupLogging();
 
+        m_transactionTemplate.setPropagationBehavior(TransactionTemplate.PROPAGATION_REQUIRES_NEW);
         m_transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+
             @Override
-            protected void doInTransactionWithoutResult(TransactionStatus status) {
+            protected void doInTransactionWithoutResult(TransactionStatus arg0) {
                 if (m_nodeDao.findByLabel("testnode").size() == 0) {
                     NetworkBuilder builder = new NetworkBuilder(m_distPoller);
                     builder.addNode("testnode");
@@ -163,23 +162,27 @@ public class HttpCollectorTest implements TestContextAware, InitializingBean {
                     OnmsNode n = builder.getCurrentNode();
                     assertNotNull(n);
                     m_nodeDao.save(n);
+                    m_nodeDao.flush();
                 }
+                m_collector = new HttpCollector();
+
+                Collection<OnmsIpInterface> ifaces = m_ipInterfaceDao.findByIpAddress(m_testHostName);
+                assertEquals(1, ifaces.size());
+                OnmsIpInterface iface = ifaces.iterator().next();
+
+                Map<String, String> parameters = new HashMap<String, String>();
+                parameters.put("collection", "default");
+                try {
+                    m_collector.initialize(parameters);
+                } catch (CollectionInitializationException e) {
+                    throw new IllegalStateException("Couldn't initialize collector", e);
+                }
+
+                m_collectionSpecification = CollectorTestUtils.createCollectionSpec("HTTP", m_collector, "default");
+                m_httpsCollectionSpecification = CollectorTestUtils.createCollectionSpec("HTTPS", m_collector, "default");
+                m_collectionAgent = DefaultCollectionAgent.create(iface.getId(), m_ipInterfaceDao);
             }
         });
-
-        m_collector = new HttpCollector();
-
-        Collection<OnmsIpInterface> ifaces = m_ipInterfaceDao.findByIpAddress(m_testHostName);
-        assertEquals(1, ifaces.size());
-        OnmsIpInterface iface = ifaces.iterator().next();
-        
-        Map<String, String> parameters = new HashMap<String, String>();
-        parameters.put("collection", "default");
-        m_collector.initialize(parameters);
-
-        m_collectionSpecification = CollectorTestUtils.createCollectionSpec("HTTP", m_collector, "default");
-        m_httpsCollectionSpecification = CollectorTestUtils.createCollectionSpec("HTTPS", m_collector, "default");
-        m_collectionAgent = DefaultCollectionAgent.create(iface.getId(), m_ipInterfaceDao);
     }
 
     @After
@@ -189,7 +192,7 @@ public class HttpCollectorTest implements TestContextAware, InitializingBean {
 
     /**
      * Test method for {@link org.opennms.netmgt.collectd.HttpCollector#collect(
-     *   org.opennms.netmgt.collectd.CollectionAgent, org.opennms.netmgt.model.events.EventProxy, Map)}.
+     *   org.opennms.netmgt.collection.api.CollectionAgent, org.opennms.netmgt.model.events.EventProxy, Map)}.
      */
     @Test
     @JUnitTemporaryDatabase
@@ -342,10 +345,7 @@ public class HttpCollectorTest implements TestContextAware, InitializingBean {
             "1/IdleWorkers"
         }
     )
-    public void testPersistApacheStatsViaCollectd() throws Exception {
-        // TODO: Do we need this init? applicationContext-collectdTest.xml should take care of this
-        CollectdConfigFactory collectdConfig = new CollectdConfigFactory(ConfigurationTestUtils.getInputStreamForResource(this, "/org/opennms/netmgt/capsd/collectd-configuration.xml"), "nms1", false);
-
+    public void testPersistApacheStatsViaCapsd() throws Exception {
         // Add the HTTP collector to capsd
         m_collectd.setServiceCollector("HTTP", m_collector);
         m_collectd.init();

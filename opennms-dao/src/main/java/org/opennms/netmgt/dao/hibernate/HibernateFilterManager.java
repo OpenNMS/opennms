@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.dao.hibernate;
 
+import java.util.Arrays;
+
 import org.hibernate.SessionFactory;
 import org.opennms.netmgt.model.FilterManager;
 
@@ -84,7 +86,7 @@ public class HibernateFilterManager implements FilterManager {
      */
     @Override
     public void enableAuthorizationFilter(final String[] authorizationGroups) {
-        m_authorizationGroups = authorizationGroups;
-        m_sessionFactory.getCurrentSession().enableFilter(AUTH_FILTER_NAME).setParameterList("userGroups", authorizationGroups);
+        m_authorizationGroups = Arrays.copyOf(authorizationGroups, authorizationGroups.length);
+        m_sessionFactory.getCurrentSession().enableFilter(AUTH_FILTER_NAME).setParameterList("userGroups", m_authorizationGroups);
     }
 }

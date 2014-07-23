@@ -32,6 +32,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.util.StringUtils;
@@ -44,7 +45,7 @@ import org.springframework.util.StringUtils;
  */
 public class FtpResponse {
     private int m_code;
-    private String m_response[];
+    private String[] m_response;
 
     /**
      * Creates an empty FTP response.
@@ -59,7 +60,7 @@ public class FtpResponse {
      */
     public FtpResponse(int code, String[] response) {
         m_code = code;
-        m_response = response;
+        m_response = Arrays.copyOf(response, response.length);
     }
 
     /**

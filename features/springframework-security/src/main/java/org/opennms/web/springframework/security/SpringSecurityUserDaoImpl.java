@@ -38,6 +38,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Properties;
 
 import org.opennms.core.utils.BundleLists;
@@ -171,7 +172,7 @@ public class SpringSecurityUserDaoImpl implements SpringSecurityUserDao, Initial
      * username to password, and from magic role to authorized users of that
      * role.
      */
-    private void parseMagicUsers() throws DataRetrievalFailureException {
+    public void parseMagicUsers() throws DataRetrievalFailureException {
         HashMap<String, OnmsUser> magicUsers = new HashMap<String, OnmsUser>();
         Map<String, Collection<? extends GrantedAuthority>> roles = new HashMap<String, Collection<? extends GrantedAuthority>>();
 
@@ -219,12 +220,14 @@ public class SpringSecurityUserDaoImpl implements SpringSecurityUserDao, Initial
         for (String role : configuredRoles) {
             String rolename = properties.getProperty("role." + role + ".name");
             if (rolename == null) {
-                throw new DataRetrievalFailureException("Role configuration for '" + role + "' does not have 'name' parameter.  Expecting a 'role." + role + ".name' property");
+                  LOG.warn("Role configuration for '{}' does not have 'name' parameter.  Expecting a 'role.{}.name' property. The role will not be usable.", role, role);
+                  continue;
             }
 
             String userList = properties.getProperty("role." + role + ".users");
             if (userList == null) {
-                throw new DataRetrievalFailureException("Role configuration for '" + role + "' does not have 'users' parameter.  Expecting a 'role." + role + ".users' property");
+                LOG.warn("Role configuration for '{}' does not have 'users' parameter.  Expecting a 'role.{}.users' property. The role will not be usable.", role, role);
+                continue;
             }
             String[] authUsers = BundleLists.parseBundleList(userList);
 
@@ -246,8 +249,8 @@ public class SpringSecurityUserDaoImpl implements SpringSecurityUserDao, Initial
             roleAddDefaultMap.put(securityRole, !notInDefaultGroup);
         }
 
-        for (String user : roleMap.keySet()) {
-            roles.put(user, getAuthorityListFromRoleList(roleMap.get(user), roleAddDefaultMap));
+        for (final Entry<String, LinkedList<String>> entry : roleMap.entrySet()) {
+            roles.put(entry.getKey(), getAuthorityListFromRoleList(entry.getValue(), roleAddDefaultMap));
         }
         
         LOG.debug("Loaded the magic-users.properties file with {} magic users, {} roles, and {} user roles", magicUsers.size(), configuredRoles.length, roles.size());

@@ -35,7 +35,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.opennms.core.criteria.Alias;
 import org.opennms.core.criteria.Alias.JoinType;
@@ -56,6 +58,10 @@ import org.opennms.netmgt.dao.support.UpsertTemplate;
 import org.opennms.netmgt.model.DataLinkInterface;
 import org.opennms.netmgt.model.DataLinkInterface.DiscoveryProtocol;
 import org.opennms.netmgt.model.OnmsArpInterface.StatusType;
+import org.opennms.netmgt.model.topology.LinkableNode;
+import org.opennms.netmgt.model.topology.LinkableSnmpNode;
+import org.opennms.netmgt.model.topology.NodeToNodeLink;
+import org.opennms.netmgt.model.topology.RouterInterface;
 import org.opennms.netmgt.model.OnmsAtInterface;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsIpRouteInterface;
@@ -261,9 +267,12 @@ public class HibernateEventWriter extends AbstractQueryManager implements Initia
             processVlanTable(onmsNode,node, snmpColl,scanTime);
         }
 
-        for (final OnmsVlan vlan : snmpColl.getSnmpVlanCollections().keySet()) {
-            LOG.debug("storeSnmpCollection: parsing bridge data on VLAN {}/{}", vlan.getVlanId(), vlan.getVlanName());
-            storeSnmpVlanCollection(onmsNode, node, vlan, snmpColl.getSnmpVlanCollections().get(vlan), scanTime);
+        if (!snmpColl.getSnmpVlanCollections().isEmpty()) {
+            node.setMacIdentifiers(getPhysAddrs(node.getNodeId()));
+            for (final OnmsVlan vlan : snmpColl.getSnmpVlanCollections().keySet()) {
+                LOG.debug("storeSnmpCollection: parsing bridge data on VLAN {}/{}", vlan.getVlanId(), vlan.getVlanName());
+                storeSnmpVlanCollection(onmsNode, node, vlan, snmpColl.getSnmpVlanCollections().get(vlan), scanTime);
+            }
         }
 
         markOldDataInactive(scanTime, node.getNodeId());
@@ -428,22 +437,25 @@ public class HibernateEventWriter extends AbstractQueryManager implements Initia
     }
 
     @Override
-    protected List<String> getPhysAddrs(int nodeId) {
+    protected Map<Integer,String> getPhysAddrs(int nodeId) {
         final CriteriaBuilder builder = new CriteriaBuilder(OnmsSnmpInterface.class);
         builder.alias("node", "node");
         builder.eq("node.id", nodeId);
 
-        final List<String> addrs = new ArrayList<String>();
+        final Map<Integer,String> addrMap = new HashMap<Integer, String>();
 
         for (final OnmsSnmpInterface snmpInterface : m_snmpInterfaceDao.findMatching(builder.toCriteria())) {
-            addrs.add(snmpInterface.getPhysAddr());
+        	Integer ifindex = snmpInterface.getIfIndex();
+        	if (ifindex == null) 
+        		ifindex = -1;
+            addrMap.put(ifindex,snmpInterface.getPhysAddr());
         }
 
-        return addrs;
+        return addrMap;
     }
 
     @Override
-    protected synchronized void saveIpRouteInterface(final OnmsIpRouteInterface saveMe) {
+    protected void saveIpRouteInterface(final OnmsIpRouteInterface saveMe) {
         new UpsertTemplate<OnmsIpRouteInterface, IpRouteInterfaceDao>(m_transactionManager, m_ipRouteInterfaceDao) {
 
             @Override
@@ -527,7 +539,7 @@ public class HibernateEventWriter extends AbstractQueryManager implements Initia
     }
 
     @Override
-    protected synchronized void saveStpNode(final OnmsStpNode saveMe) {
+    protected void saveStpNode(final OnmsStpNode saveMe) {
         new UpsertTemplate<OnmsStpNode, StpNodeDao>(m_transactionManager, m_stpNodeDao) {
 
             @Override

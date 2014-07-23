@@ -35,11 +35,11 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.collection.api.CollectionInitializationException;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
-import org.opennms.netmgt.dao.support.DefaultResourceDao;
-import org.opennms.netmgt.dao.support.ResourceTypeUtils;
 import org.opennms.netmgt.model.PrimaryType;
+import org.opennms.netmgt.model.ResourceTypeUtils;
 import org.opennms.netmgt.poller.InetNetworkInterface;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.slf4j.Logger;
@@ -51,7 +51,7 @@ import org.slf4j.LoggerFactory;
  * @author ranger
  * @version $Id: $
  */
-public class DefaultCollectionAgent extends InetNetworkInterface implements CollectionAgent {
+public class DefaultCollectionAgent extends InetNetworkInterface implements SnmpCollectionAgent {
     private static final Logger LOG = LoggerFactory.getLogger(DefaultCollectionAgent.class);
 
     /**
@@ -64,9 +64,10 @@ public class DefaultCollectionAgent extends InetNetworkInterface implements Coll
      *
      * @param ifaceId a {@link java.lang.Integer} object.
      * @param ifaceDao a {@link org.opennms.netmgt.dao.api.IpInterfaceDao} object.
-     * @return a {@link org.opennms.netmgt.collectd.CollectionAgent} object.
+     * @param transMgr a {@link org.springframework.transaction.PlatformTransactionManager} object.
+     * @return a {@link org.opennms.netmgt.collection.api.CollectionAgent} object.
      */
-    public static CollectionAgent create(final Integer ifaceId, final IpInterfaceDao ifaceDao) {
+    public static SnmpCollectionAgent create(final Integer ifaceId, final IpInterfaceDao ifaceDao) {
         return new DefaultCollectionAgent(DefaultCollectionAgentService.create(ifaceId, ifaceDao));
     }
 
@@ -98,12 +99,6 @@ public class DefaultCollectionAgent extends InetNetworkInterface implements Coll
     /** {@inheritDoc} */
     @Override
     public InetAddress getAddress() {
-        return getInetAddress();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public InetAddress getInetAddress() {
         if (m_inetAddress == null) {
             m_inetAddress = m_agentService.getInetAddress();
         }
@@ -133,7 +128,7 @@ public class DefaultCollectionAgent extends InetNetworkInterface implements Coll
      */
     @Override
     public String getHostAddress() {
-        return InetAddressUtils.str(getInetAddress());
+        return InetAddressUtils.str(getAddress());
     }
 
     /* (non-Javadoc)
@@ -218,7 +213,7 @@ public class DefaultCollectionAgent extends InetNetworkInterface implements Coll
     public File getStorageDir() {
        File dir = new File(String.valueOf(getNodeId()));
        if(isStoreByForeignSource() && !(getForeignSource() == null) && !(getForeignId() == null)) {
-               File fsDir = new File(DefaultResourceDao.FOREIGN_SOURCE_DIRECTORY, m_foreignSource);
+               File fsDir = new File(ResourceTypeUtils.FOREIGN_SOURCE_DIRECTORY, m_foreignSource);
                dir = new File(fsDir, m_foreignId);
        }
         LOG.debug("getStorageDir: isStoreByForeignSource = {}, foreignSource = {}, foreignId = {}, dir = {}", isStoreByForeignSource(), m_foreignSource, m_foreignId, dir);
@@ -332,7 +327,7 @@ public class DefaultCollectionAgent extends InetNetworkInterface implements Coll
      */
     @Override
     public SnmpAgentConfig getAgentConfig() {
-        return SnmpPeerFactory.getInstance().getAgentConfig(getInetAddress());
+        return SnmpPeerFactory.getInstance().getAgentConfig(getAddress());
     }
     
     private Set<SnmpIfData> getSnmpInterfaceData() {

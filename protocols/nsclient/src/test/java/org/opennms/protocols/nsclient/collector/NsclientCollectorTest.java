@@ -37,12 +37,13 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.opennms.netmgt.collectd.AbstractCollectionSetVisitor;
-import org.opennms.netmgt.collectd.CollectionAgent;
+import org.opennms.core.test.MockPlatformTransactionManager;
 import org.opennms.netmgt.collectd.DefaultCollectionAgent;
-import org.opennms.netmgt.collectd.ServiceCollector;
-import org.opennms.netmgt.config.collector.CollectionAttribute;
-import org.opennms.netmgt.config.collector.CollectionSet;
+import org.opennms.netmgt.collection.api.CollectionAgent;
+import org.opennms.netmgt.collection.api.CollectionAttribute;
+import org.opennms.netmgt.collection.api.CollectionSet;
+import org.opennms.netmgt.collection.api.ServiceCollector;
+import org.opennms.netmgt.collection.support.AbstractCollectionSetVisitor;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsIpInterface;
@@ -66,7 +67,7 @@ public class NsclientCollectorTest extends AbstractNsclientTest {
 
     private CollectionAgent m_collectionAgent;
 
-    private class CountResourcesVisitor extends AbstractCollectionSetVisitor {
+    private static final class CountResourcesVisitor extends AbstractCollectionSetVisitor {
 
         private int count = 0;
 

@@ -48,13 +48,15 @@ public enum SortStyle {
     INTERFACE("interface"),
     SERVICE("service"),
     ID("id"),
+    SEVERITY("severity"),
     REVERSE_RESPONDER("rev_responder"),
     REVERSE_PAGETIME("rev_pagetime"),
     REVERSE_RESPONDTIME("rev_respondtime"),
     REVERSE_NODE("rev_node"),
     REVERSE_INTERFACE("rev_interface"),
     REVERSE_SERVICE("rev_service"),
-    REVERSE_ID("rev_id");
+    REVERSE_ID("rev_id"),
+    REVERSE_SEVERITY("rev_severity");
 
     /** Constant <code>DEFAULT_SORT_STYLE</code> */
     public static final SortStyle DEFAULT_SORT_STYLE = SortStyle.ID;
@@ -179,6 +181,14 @@ public enum SortStyle {
 
         case REVERSE_ID:
             clause = " ORDER BY NOTIFYID ASC";
+            break;
+
+        case SEVERITY:
+            clause = " ORDER BY EVENT.EVENTSEVERITY DESC";
+            break;
+
+        case REVERSE_SEVERITY:
+            clause = " ORDER BY EVENT.EVENTSEVERITY ASC";
             break;
 
         default:

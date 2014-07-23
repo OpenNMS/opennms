@@ -29,12 +29,12 @@
 package org.opennms.netmgt.model;
 
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.List;
 
-import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+
+import org.opennms.core.config.api.JaxbListWrapper;
 
 /**
  * <p>OnmsOutageCollection class.</p>
@@ -43,77 +43,16 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @version $Id: $
  */
 @XmlRootElement(name="outages")
-public class OnmsOutageCollection extends LinkedList<OnmsOutage> {
+public class OnmsOutageCollection extends JaxbListWrapper<OnmsOutage> {
+    private static final long serialVersionUID = 1L;
 
-	/**
-     * 
-     */
-    private static final long serialVersionUID = -12993787944327060L;
-    private long m_totalCount;
-
-    /**
-	 * <p>Constructor for OnmsOutageCollection.</p>
-	 */
-	public OnmsOutageCollection() {
-        super();
+    public OnmsOutageCollection() { super(); }
+    public OnmsOutageCollection(final Collection<? extends OnmsOutage> outages) {
+        super(outages);
     }
 
-    /**
-     * <p>Constructor for OnmsOutageCollection.</p>
-     *
-     * @param c a {@link java.util.Collection} object.
-     */
-    public OnmsOutageCollection(Collection<? extends OnmsOutage> c) {
-        super(c);
-    }
-
-    /**
-     * <p>getNotifications</p>
-     *
-     * @return a {@link java.util.List} object.
-     */
     @XmlElement(name="outage")
-    public List<OnmsOutage> getNotifications() {
-        return this;
-    }
-
-    /**
-     * <p>setEvents</p>
-     *
-     * @param events a {@link java.util.List} object.
-     */
-    public void setEvents(List<OnmsOutage> events) {
-        if (events == this) return;
-        clear();
-        addAll(events);
-    }
-    
-    /**
-     * <p>getCount</p>
-     *
-     * @return a {@link java.lang.Integer} object.
-     */
-    @XmlAttribute(name="count")
-    public Integer getCount() {
-    	return this.size();
-    }
-
-    /**
-     * <p>getTotalCount</p>
-     *
-     * @return a int.
-     */
-    @XmlAttribute(name="totalCount")
-    public long getTotalCount() {
-        return m_totalCount;
-    }
-
-    /**
-     * <p>setTotalCount</p>
-     *
-     * @param l a int.
-     */
-    public void setTotalCount(long l) {
-        m_totalCount = l;
+    public List<OnmsOutage> getObjects() {
+        return super.getObjects();
     }
 }

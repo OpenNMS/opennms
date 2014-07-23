@@ -30,12 +30,14 @@ package org.opennms.netmgt.poller.pollables;
 
 import java.net.InetAddress;
 import java.util.Date;
+import java.util.Map;
 
+import org.opennms.core.logging.Logging;
 import org.opennms.netmgt.EventConstants;
-import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.InetNetworkInterface;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.NetworkInterface;
+import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.scheduler.PostponeNecessary;
 import org.opennms.netmgt.scheduler.ReadyRunnable;
 import org.opennms.netmgt.scheduler.Schedule;
@@ -182,7 +184,7 @@ public class PollableService extends PollableElement implements ReadyRunnable, M
     /**
      * <p>poll</p>
      *
-     * @return a {@link org.opennms.netmgt.model.PollStatus} object.
+     * @return a {@link org.opennms.netmgt.poller.PollStatus} object.
      */
     @Override
     public PollStatus poll() {
@@ -389,20 +391,22 @@ public class PollableService extends PollableElement implements ReadyRunnable, M
     /**
      * <p>doRun</p>
      *
-     * @return a {@link org.opennms.netmgt.model.PollStatus} object.
+     * @return a {@link org.opennms.netmgt.poller.PollStatus} object.
      */
     public PollStatus doRun() {
     	return doRun(0);
     }
 
-	private PollStatus doRun(int timeout) {
-		long startDate = System.currentTimeMillis();
+    private PollStatus doRun(int timeout) {
+        final Map<String,String> mdc = Logging.getCopyOfContextMap();
+        Logging.putPrefix("poller");
+        long startDate = System.currentTimeMillis();
         LOG.debug("Start Scheduled Poll of service {}", this);
         PollStatus status;
         if (getContext().isNodeProcessingEnabled()) {
             PollRunner r = new PollRunner();
             try {
-				withTreeLock(r, timeout);
+                withTreeLock(r, timeout);
             } catch (LockUnavailable e) {
                 LOG.info("Postponing poll for {}", this, e);
                 throw new PostponeNecessary("LockUnavailable postpone poll");
@@ -415,8 +419,9 @@ public class PollableService extends PollableElement implements ReadyRunnable, M
             status = getStatus();
         }
         LOG.debug("Finish Scheduled Poll of service {}, started at {}", this, new Date(startDate));
+        Logging.setContextMap(mdc);
         return status;
-	}
+    }
 
 	/**
      * <p>delete</p>

@@ -115,7 +115,7 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
 
     private String m_collect = "N";
     
-    private String m_poll = "N";
+    private String m_poll;
 
     private Date m_lastSnmpPoll;
 
@@ -129,7 +129,7 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
      * @param ifIndex a int.
      */
     public OnmsSnmpInterface(OnmsNode node, int ifIndex) {
-        this(node, new Integer(ifIndex));
+        this(node, Integer.valueOf(ifIndex));
     }
 
     /**

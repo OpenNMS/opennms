@@ -64,7 +64,7 @@ public final class ServletPipeline
         return null;
     }
 
-    private final class Dispatcher
+    private static final class Dispatcher
         implements RequestDispatcher
     {
         private final String path;
@@ -95,7 +95,7 @@ public final class ServletPipeline
         }
     }
 
-    private final class RequestWrapper
+    private final static class RequestWrapper
         extends HttpServletRequestWrapper
     {
         private final String requestUri;

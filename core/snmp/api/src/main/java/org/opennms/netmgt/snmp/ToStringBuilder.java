@@ -10,7 +10,7 @@ class ToStringBuilder {
 	public ToStringBuilder(Object o) {
 		buf = new StringBuilder(512);
 		
-		buf.append(prettyClassName(o.getClass()));
+		buf.append(o.getClass().getSimpleName());
 		buf.append('@');
 		buf.append(String.format("%x", System.identityHashCode(o)));
 		buf.append('[');
@@ -48,10 +48,4 @@ class ToStringBuilder {
 		}
 	}
 	
-	private String prettyClassName(Class<?> c) {
-		String className = c.getName();
-		int lastDot = className.lastIndexOf('.');
-		return lastDot > 0 ? className.substring(lastDot+1) : className;
-	}
-
 }

@@ -30,7 +30,8 @@ package org.opennms.netmgt.dao.support;
 
 import java.util.StringTokenizer;
 
-import org.opennms.netmgt.config.collector.CollectionResource;
+import org.opennms.netmgt.collection.api.CollectionResource;
+import org.opennms.netmgt.collection.support.IndexStorageStrategy;
 
 /**
  * This class use the new implementation of SnmpStorageStrategy extending the new
@@ -58,7 +59,7 @@ public class FrameRelayStorageStrategy extends IndexStorageStrategy {
      * @return a {@link java.lang.String} object.
      */
     public String getInterfaceName(String nodeId, String ifIndex) {
-       String label = m_storageStrategyService.getSnmpInterfaceLabel(new Integer(ifIndex));
+       String label = m_storageStrategyService.getSnmpInterfaceLabel(Integer.valueOf(ifIndex));
        return label != null ? label : ifIndex;
     }
 

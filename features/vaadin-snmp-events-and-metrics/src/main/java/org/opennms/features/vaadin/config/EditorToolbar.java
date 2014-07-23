@@ -82,17 +82,14 @@ public abstract class EditorToolbar extends HorizontalLayout implements ClickLis
     @Override
     public void buttonClick(ClickEvent event) {
         Button source = event.getButton();
-        if (source == saveBtn) {
+        if (source == saveBtn && save()) {
             setReadOnly(true);
-            save();
         }
-        if (source == cancelBtn) {
+        if (source == cancelBtn && cancel()) {
             setReadOnly(true);
-            cancel();
         }
-        if (source == editBtn) {
+        if (source == editBtn && edit()) {
             setReadOnly(false);
-            edit();
         }
         if (source == deleteBtn) {
             ConfirmDialog.show(getUI(),
@@ -102,9 +99,8 @@ public abstract class EditorToolbar extends HorizontalLayout implements ClickLis
                                "No",
                                new ConfirmDialog.Listener() {
                 public void onClose(ConfirmDialog dialog) {
-                    if (dialog.isConfirmed()) {
+                    if (dialog.isConfirmed() && delete()) {
                         setVisible(false);
-                        delete();
                     }
                 }
             });
@@ -113,21 +109,29 @@ public abstract class EditorToolbar extends HorizontalLayout implements ClickLis
 
     /**
      * Edit.
+     *
+     * @return true, if successful
      */
-    public abstract void edit();
+    public abstract boolean edit();
 
     /**
      * Cancel.
+     * 
+     * @return true, if successful
      */
-    public abstract void cancel();
+    public abstract boolean cancel();
 
     /**
      * Save.
+     * 
+     * @return true, if successful
      */
-    public abstract void save();
+    public abstract boolean save();
 
     /**
      * Delete.
+     * 
+     * @return true, if successful
      */
-    public abstract void delete();
+    public abstract boolean delete();
 }

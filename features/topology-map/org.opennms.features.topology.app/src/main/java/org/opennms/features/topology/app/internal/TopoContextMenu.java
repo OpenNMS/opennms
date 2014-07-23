@@ -109,9 +109,10 @@ public class TopoContextMenu extends ContextMenu {
 		 */
 		public void addItemToMenu(TopoContextMenu menu, OperationContext operationContext) {
 			// Construct a new ContextMenuItem in the surrounding ContextMenu
-			if (m_operation == null || m_operation.display(asVertexList(menu.getTarget()), operationContext)) {
+            List<VertexRef> targets = asVertexList(menu.getTarget());
+            if (m_operation == null || m_operation.display(targets, operationContext)) {
 				ContextMenuItem item = menu.addItem(m_name);
-				item.setEnabled(m_operation == null || m_operation.enabled(asVertexList(menu.getTarget()), operationContext));
+				item.setEnabled(m_operation == null || m_operation.enabled(targets, operationContext));
 				item.setSeparatorVisible(m_separatorVisible);
 				if (m_operation != null) {
 					item.addItemClickListener(new ContextMenuListener(operationContext, menu, item, m_operation));
@@ -119,10 +120,28 @@ public class TopoContextMenu extends ContextMenu {
 
 				// Add all children to the menu as well
 				for (TopoContextMenuItem child : getChildren()) {
-					child.addItemToMenu(menu, operationContext);
-				}
-			}
+                    child.addSubItemToMenu(menu, item, operationContext);
+                    //child.addItemToMenu(menu, operationContext);
+                }
+            }
 		}
+
+        private void addSubItemToMenu(TopoContextMenu menu, ContextMenuItem parentMenuItem, OperationContext operationContext) {
+            List<VertexRef> targets = asVertexList(menu.getTarget());
+            if (m_operation == null || m_operation.display(targets, operationContext)) {
+                ContextMenuItem item = parentMenuItem.addItem(getName());
+                item.setEnabled(m_operation == null || m_operation.enabled(targets, operationContext));
+                item.setSeparatorVisible(m_separatorVisible);
+
+                if (m_operation != null) {
+                    item.addItemClickListener(new ContextMenuListener(operationContext, menu, item, m_operation));
+                }
+
+                for(TopoContextMenuItem child : getChildren()){
+                    child.addSubItemToMenu(menu, item, operationContext);
+                }
+            }
+        }
 
 		public boolean hasChildren() {
 			return m_children == null || m_children.size() == 0 ? false : true;

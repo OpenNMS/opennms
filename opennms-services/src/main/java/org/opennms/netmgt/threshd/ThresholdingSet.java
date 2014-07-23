@@ -37,19 +37,21 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
+import org.opennms.netmgt.collection.api.CollectionAttribute;
+import org.opennms.netmgt.collection.api.CollectionResource;
 import org.opennms.netmgt.config.PollOutagesConfigFactory;
 import org.opennms.netmgt.config.ThreshdConfigFactory;
 import org.opennms.netmgt.config.ThreshdConfigManager;
 import org.opennms.netmgt.config.ThresholdingConfigFactory;
-import org.opennms.netmgt.config.collector.CollectionAttribute;
 import org.opennms.netmgt.config.poller.outages.Outage;
 import org.opennms.netmgt.config.threshd.ResourceFilter;
-import org.opennms.netmgt.model.RrdRepository;
+import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.netmgt.xml.event.Event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -82,7 +84,7 @@ public class ThresholdingSet {
      * @param nodeId a int.
      * @param hostAddress a {@link java.lang.String} object.
      * @param serviceName a {@link java.lang.String} object.
-     * @param repository a {@link org.opennms.netmgt.model.RrdRepository} object.
+     * @param repository a {@link org.opennms.netmgt.rrd.RrdRepository} object.
      * @param interval a long.
      */
     public ThresholdingSet(int nodeId, String hostAddress, String serviceName, RrdRepository repository) {
@@ -213,9 +215,10 @@ public class ThresholdingSet {
             for (ThresholdGroup group : m_thresholdGroups) {
                 Map<String,Set<ThresholdEntity>> entityMap = getEntityMap(group, resourceTypeName);
                 if (entityMap != null) {
-                    for(String key : entityMap.keySet()) {
-                        for (ThresholdEntity thresholdEntity : entityMap.get(key)) {
-                            Collection<String> requiredDatasources = thresholdEntity.getRequiredDatasources();
+                    for (final Entry<String, Set<ThresholdEntity>> entry : entityMap.entrySet()) {
+                        final Set<ThresholdEntity> value = entry.getValue();
+                        for (final ThresholdEntity thresholdEntity : value) {
+                            final Collection<String> requiredDatasources = thresholdEntity.getRequiredDatasources();
                             if (requiredDatasources.contains(attributeName)) {
                                 ok = true;
                                 LOG.debug("hasThresholds: {}@{}? {}", resourceTypeName, attributeName, ok);
@@ -268,16 +271,18 @@ public class ThresholdingSet {
             for (ThresholdGroup group : m_thresholdGroups) {
                 Map<String,Set<ThresholdEntity>> entityMap = getEntityMap(group, resourceWrapper.getResourceTypeName());
                 if (entityMap != null) {
-                    for(String key : entityMap.keySet()) {
-                        for (ThresholdEntity thresholdEntity : entityMap.get(key)) {
+                    for (final Entry<String, Set<ThresholdEntity>> entry : entityMap.entrySet()) {
+                        final String key = entry.getKey();
+                        final Set<ThresholdEntity> value = entry.getValue();
+                        for (final ThresholdEntity thresholdEntity : value) {
                             if (passedThresholdFilters(resourceWrapper, thresholdEntity)) {
                                 LOG.info("applyThresholds: Processing threshold {} : {} on resource {}", key, thresholdEntity, resourceWrapper);
                                 Collection<String> requiredDatasources = thresholdEntity.getThresholdConfig().getRequiredDatasources();
-                                Map<String, Double> values = new HashMap<String,Double>();
+                                final Map<String, Double> values = new HashMap<String,Double>();
                                 boolean valueMissing = false;
                                 boolean relaxed = thresholdEntity.getThresholdConfig().getBasethresholddef().isRelaxed();
-                                for(String ds: requiredDatasources) {
-                                    Double dsValue = resourceWrapper.getAttributeValue(ds);
+                                for(final String ds : requiredDatasources) {
+                                    final Double dsValue = resourceWrapper.getAttributeValue(ds);
                                     if(dsValue == null) {
                                         LOG.info("applyThresholds: Could not get data source value for '{}', {}", ds, (relaxed ? "but the expression will be evaluated (relaxed mode enabled)" : "not evaluating threshold"));
                                         valueMissing = true;
@@ -452,9 +457,9 @@ public class ThresholdingSet {
     private static Map<String, Set<ThresholdEntity>> getEntityMap(ThresholdGroup thresholdGroup, String resourceType) {
         LOG.trace("getEntityMap: checking if the resourceType '{}' exists on threshold group {}", resourceType, thresholdGroup);
         Map<String, Set<ThresholdEntity>> entityMap = null;
-        if ("node".equals(resourceType)) {
+        if (CollectionResource.RESOURCE_TYPE_NODE.equals(resourceType)) {
             entityMap = thresholdGroup.getNodeResourceType().getThresholdMap();
-        } else if ("if".equals(resourceType)) {
+        } else if (CollectionResource.RESOURCE_TYPE_IF.equals(resourceType)) {
             entityMap = thresholdGroup.getIfResourceType().getThresholdMap();
         } else {
             Map<String, ThresholdResourceType> typeMap = thresholdGroup.getGenericResourceTypeMap();

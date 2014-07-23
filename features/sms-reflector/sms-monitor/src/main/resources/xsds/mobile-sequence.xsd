@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<xs:schema elementFormDefault="qualified" version="1.0" targetNamespace="http://xmlns.opennms.org/xsd/config/mobile-sequence" xmlns:tns="http://xmlns.opennms.org/xsd/config/mobile-sequence" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+  <xs:element name="from-recipient" type="tns:smsFromRecipientResponseMatcher"/>
+
+  <xs:element name="match" type="tns:sequenceOperationMatch"/>
+
+  <xs:element name="matches" type="tns:textResponseMatcher"/>
+
+  <xs:element name="mobile-sequence" type="tns:mobileSequenceConfig"/>
+
+  <xs:element name="parameter" type="tns:sequenceParameter"/>
+
+  <xs:element name="parameters" type="tns:sequenceParameterList"/>
+
+  <xs:element name="request" type="tns:mobileSequenceRequest"/>
+
+  <xs:element name="session-status" type="tns:ussdSessionStatusMatcher"/>
+
+  <xs:element name="session-variable" type="tns:SequenceSessionVariableType"/>
+
+  <xs:element name="sms-request" type="tns:smsSequenceRequest"/>
+
+  <xs:element name="sms-response" type="tns:smsSequenceResponse"/>
+
+  <xs:element name="transaction" type="tns:mobileSequenceTransaction"/>
+
+  <xs:element name="ussd-request" type="tns:ussdSequenceRequest"/>
+
+  <xs:element name="ussd-response" type="tns:ussdSequenceResponse"/>
+
+  <xs:element name="validate-source" type="tns:smsSourceMatcher"/>
+
+  <xs:complexType name="mobileSequenceConfig">
+    <xs:sequence>
+      <xs:element ref="tns:session-variable" maxOccurs="unbounded" minOccurs="0"/>
+      <xs:element ref="tns:transaction" maxOccurs="unbounded" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="SequenceSessionVariableType">
+    <xs:sequence>
+      <xs:element name="parameters" minOccurs="0">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element ref="tns:parameter" maxOccurs="unbounded" minOccurs="0"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+    <xs:attribute name="name" type="xs:string"/>
+    <xs:attribute name="class" type="xs:string"/>
+  </xs:complexType>
+
+  <xs:complexType name="sequenceParameter">
+    <xs:sequence/>
+    <xs:attribute name="key" type="xs:string"/>
+    <xs:attribute name="value" type="xs:string"/>
+  </xs:complexType>
+
+  <xs:complexType name="mobileSequenceTransaction">
+    <xs:sequence>
+      <xs:element ref="tns:request"/>
+      <xs:element ref="tns:sms-request"/>
+      <xs:element ref="tns:ussd-request"/>
+      <xs:choice maxOccurs="unbounded">
+        <xs:element ref="tns:sms-response"/>
+        <xs:element ref="tns:ussd-response"/>
+      </xs:choice>
+    </xs:sequence>
+    <xs:attribute name="gatewayId" type="xs:string"/>
+    <xs:attribute name="label" type="xs:string" use="required"/>
+  </xs:complexType>
+
+  <xs:complexType name="mobileSequenceRequest" abstract="true">
+    <xs:complexContent>
+      <xs:extension base="tns:mobileSequenceOperation">
+        <xs:sequence/>
+        <xs:attribute name="text" type="xs:string"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="mobileSequenceOperation" abstract="true">
+    <xs:sequence/>
+    <xs:attribute name="gatewayId" type="xs:string"/>
+    <xs:attribute name="label" type="xs:string"/>
+  </xs:complexType>
+
+  <xs:complexType name="mobileSequenceResponse" abstract="true">
+    <xs:complexContent>
+      <xs:extension base="tns:mobileSequenceOperation">
+        <xs:sequence>
+          <xs:choice maxOccurs="unbounded">
+            <xs:element ref="tns:from-recipient"/>
+            <xs:element ref="tns:validate-source"/>
+            <xs:element ref="tns:matches"/>
+            <xs:element ref="tns:session-status"/>
+          </xs:choice>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="sequenceResponseMatcher">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute name="dummy" type="xs:string"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+
+  <xs:complexType name="mobileSequenceNamespacePrefixMapper"/>
+
+  <xs:complexType name="sequenceConfigFactory"/>
+
+  <xs:complexType name="sequenceOperationMatch">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute name="type" type="xs:string"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+
+  <xs:complexType name="sequenceParameterList">
+    <xs:sequence>
+      <xs:element ref="tns:parameter" maxOccurs="unbounded" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="smsFromRecipientResponseMatcher">
+    <xs:complexContent>
+      <xs:extension base="tns:sequenceResponseMatcher">
+        <xs:sequence/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="smsSequenceRequest">
+    <xs:complexContent>
+      <xs:extension base="tns:mobileSequenceRequest">
+        <xs:sequence/>
+        <xs:attribute name="recipient" type="xs:string"/>
+        <xs:attribute name="validity-in-hours" type="xs:int" use="required"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="smsSequenceResponse">
+    <xs:complexContent>
+      <xs:extension base="tns:mobileSequenceResponse">
+        <xs:sequence/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="smsSourceMatcher">
+    <xs:complexContent>
+      <xs:extension base="tns:sequenceResponseMatcher">
+        <xs:sequence/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="textResponseMatcher">
+    <xs:complexContent>
+      <xs:extension base="tns:sequenceResponseMatcher">
+        <xs:sequence/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="transactionTypeCollection"/>
+
+  <xs:complexType name="triggeredList">
+    <xs:complexContent>
+      <xs:extension base="abstractList">
+        <xs:sequence/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="ussdSequenceRequest">
+    <xs:complexContent>
+      <xs:extension base="tns:mobileSequenceRequest">
+        <xs:sequence/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="ussdSequenceResponse">
+    <xs:complexContent>
+      <xs:extension base="tns:mobileSequenceResponse">
+        <xs:sequence/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="ussdSessionStatusMatcher">
+    <xs:complexContent>
+      <xs:extension base="tns:sequenceResponseMatcher">
+        <xs:sequence/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="abstractList" abstract="true">
+    <xs:complexContent>
+      <xs:extension base="abstractCollection">
+        <xs:sequence/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="abstractCollection" abstract="true"/>
+
+</xs:schema>
+

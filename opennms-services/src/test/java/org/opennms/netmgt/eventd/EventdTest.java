@@ -116,7 +116,7 @@ public class EventdTest implements InitializingBean {
         //MockLogAppender.assertNoWarningsOrGreater();
     }
 
-    @Test
+    @Test(timeout=30000)
     public void testPersistEvent() throws Exception {
         CriteriaBuilder cb = new CriteriaBuilder(OnmsEvent.class);
         cb.eq("eventuei", EventConstants.NODE_DOWN_EVENT_UEI);
@@ -125,7 +125,10 @@ public class EventdTest implements InitializingBean {
         OnmsNode node = m_databasePopulator.getNode1();
         assertNotNull(node);
         sendNodeDownEvent(null, node);
-        Thread.sleep(SLEEP_TIME);
+
+        while(m_eventDao.countMatching(cb.toCriteria()) < 1) {
+            Thread.sleep(SLEEP_TIME);
+        }
 
         final List<OnmsEvent> matching = m_eventDao.findMatching(cb.toCriteria());
         System.err.println("matching = " + matching);
@@ -134,7 +137,10 @@ public class EventdTest implements InitializingBean {
         node = m_databasePopulator.getNode2();
         assertNotNull(node);
         Event generatedEvent = sendNodeDownEvent(null, node);
-        Thread.sleep(SLEEP_TIME);
+
+        while(m_eventDao.countMatching(cb.toCriteria()) < 2) {
+            Thread.sleep(SLEEP_TIME);
+        }
 
         assertEquals(2, m_eventDao.countMatching(cb.toCriteria()));
 
@@ -146,7 +152,7 @@ public class EventdTest implements InitializingBean {
     /**
      * Test that eventd's service ID lookup works properly.
      */
-    @Test
+    @Test(timeout=30000)
     public void testPersistEventWithService() throws Exception {
         CriteriaBuilder cb = new CriteriaBuilder(OnmsEvent.class);
         cb.eq("eventuei", EventConstants.SERVICE_UNRESPONSIVE_EVENT_UEI);
@@ -164,7 +170,9 @@ public class EventdTest implements InitializingBean {
         final Integer serviceId = svc.getServiceId();
         sendServiceDownEvent(null, svc);
 
-        Thread.sleep(SLEEP_TIME);
+        while(m_eventDao.countMatching(cb.toCriteria()) != 1) {
+            Thread.sleep(SLEEP_TIME);
+        }
         assertEquals(1, m_eventDao.countMatching(cb.toCriteria()));
         assertEquals("service ID for event", serviceId, m_eventDao.findMatching(cb.toCriteria()).get(0).getServiceType().getId());
     }

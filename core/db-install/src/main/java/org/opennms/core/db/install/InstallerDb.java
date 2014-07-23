@@ -178,7 +178,7 @@ public class InstallerDb {
 
 	private final SimpleDateFormat m_dateFormatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
-	private final char m_spins[] = { '/', '-', '\\', '|' };
+	private final char[] m_spins = { '/', '-', '\\', '|' };
 
 	private List<Constraint> m_constraints;
 

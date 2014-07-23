@@ -29,36 +29,24 @@
 package org.opennms.netmgt.model;
 
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.opennms.core.config.api.JaxbListWrapper;
+
 @XmlRootElement
-public class OnmsMonitoringLocationDefinitionList extends LinkedList<OnmsMonitoringLocationDefinition> {
-    
-    /**
-     * 
-     */
+public class OnmsMonitoringLocationDefinitionList extends JaxbListWrapper<OnmsMonitoringLocationDefinition> {
     private static final long serialVersionUID = 1L;
-    
-    public OnmsMonitoringLocationDefinitionList() {
-        super();
+
+    public OnmsMonitoringLocationDefinitionList() { super(); }
+    public OnmsMonitoringLocationDefinitionList(final Collection<? extends OnmsMonitoringLocationDefinition> definitions) {
+        super(definitions);
     }
-    
-    public OnmsMonitoringLocationDefinitionList(Collection<? extends OnmsMonitoringLocationDefinition> c) {
-        super(c);
-    }
-    
+
     @XmlElement(name="locations")
-    public List<OnmsMonitoringLocationDefinition> getDefinitions(){
-        return this;
-    }
-    
-    public void setDefinitions(List<OnmsMonitoringLocationDefinition> defs) {
-        if (defs == this) return;
-        clear();
-        addAll(defs);
+    public List<OnmsMonitoringLocationDefinition> getObjects() {
+        return super.getObjects();
     }
 }

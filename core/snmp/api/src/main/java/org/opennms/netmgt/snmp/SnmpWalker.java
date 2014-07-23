@@ -41,12 +41,12 @@ public abstract class SnmpWalker implements Closeable {
 	
 	private static final transient Logger LOG = LoggerFactory.getLogger(SnmpWalker.class);
     
-    protected static abstract class WalkerPduBuilder extends PduBuilder {
+    protected abstract static class WalkerPduBuilder extends PduBuilder {
         protected WalkerPduBuilder(int maxVarsPerPdu) {
             super(maxVarsPerPdu);
         }
         
-        abstract public void reset();
+        public abstract void reset();
     }
     
     private final String m_name;
@@ -156,7 +156,7 @@ public abstract class SnmpWalker implements Closeable {
     }
 
     private void finish() {
-        signal();
+        m_signal.countDown();
         try {
             close();
         } catch (IOException e) {
@@ -171,15 +171,6 @@ public abstract class SnmpWalker implements Closeable {
         return m_name;
     }
 
-    private void signal() {
-        synchronized (this) {
-            notifyAll();
-        }
-        if (m_signal != null) {
-            m_signal.countDown();
-        }
-    }
-
     public void waitFor() throws InterruptedException {
         m_signal.await();
     }
@@ -190,6 +181,14 @@ public abstract class SnmpWalker implements Closeable {
         } else {
             handleTimeout("Timeout of " + timeout + " expired while waiting for " + getClass().getSimpleName() + " to finish");
         }
+    }
+    
+    /**
+     * This function allows direct access to the {@link CountDownLatch#await(long, TimeUnit)}
+     * method so that listeners can wait without triggering a timeout.
+     */
+    public boolean await(long timeout) throws InterruptedException {
+        return m_signal.await(timeout, TimeUnit.MILLISECONDS);
     }
     
     // processErrors returns true if we need to retry the request and false otherwise

@@ -94,6 +94,8 @@ public class BeforeDateFilter extends LessThanFilter<Date> {
     /** {@inheritDoc} */
     @Override
     public boolean equals(Object obj) {
+        if (obj == null) return false;
+        if (!(obj instanceof BeforeDateFilter)) return false;
         return (this.toString().equals(obj.toString()));
     }
 }

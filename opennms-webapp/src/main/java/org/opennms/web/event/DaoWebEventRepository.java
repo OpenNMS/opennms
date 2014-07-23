@@ -235,13 +235,15 @@ public class DaoWebEventRepository implements WebEventRepository, InitializingBe
         List<OnmsEvent> events = m_eventDao.findMatching(getOnmsCriteria(criteria));
         
         Iterator<OnmsEvent> eventsIt = events.iterator();
+        boolean updated = false;
         while(eventsIt.hasNext()){
             OnmsEvent event = eventsIt.next();
             event.setEventAckUser(user);
             event.setEventAckTime(timestamp);
             m_eventDao.update(event);
+            updated = true;
         }
-        m_eventDao.flush();
+        if (updated) m_eventDao.flush();
     }
     
     /** {@inheritDoc} */
@@ -310,13 +312,15 @@ public class DaoWebEventRepository implements WebEventRepository, InitializingBe
     @Override
     public void unacknowledgeMatchingEvents(EventCriteria criteria) {
         List<OnmsEvent> events = m_eventDao.findMatching(getOnmsCriteria(criteria));
-        
+
+        boolean updated = false;
         for(OnmsEvent event : events) {
             event.setEventAckUser(null);
             event.setEventAckTime(null);
             m_eventDao.update(event);
+            updated = true;
         }
-        m_eventDao.flush();
+        if (updated) m_eventDao.flush();
     }
     
 

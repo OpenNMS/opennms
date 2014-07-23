@@ -46,6 +46,6 @@ public @interface EventHandler {
     /** Constant <code>ALL_UEIS="*"</code> */
     public static final String ALL_UEIS = "*";
 
-    String uei();
-
+    String uei() default "";
+    String[] ueis() default {};
 }

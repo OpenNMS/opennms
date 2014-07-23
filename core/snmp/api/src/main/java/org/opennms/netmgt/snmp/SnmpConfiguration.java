@@ -43,6 +43,7 @@ public class SnmpConfiguration {
     public static final int VERSION1 = 1;
     public static final int VERSION2C = 2;
     public static final int VERSION3 = 3;
+    public static final int VERSION_UNSPECIFIED = -1;
     public static final int DEFAULT_VERSION = VERSION1;
     public static final int DEFAULT_RETRIES = 1;
     public static final int DEFAULT_MAX_REQUEST_SIZE = 65535;

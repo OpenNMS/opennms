@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -37,14 +37,13 @@ import org.opennms.core.logging.Logging;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
-import org.opennms.netmgt.dao.support.DefaultTransactionTemplate;
 import org.opennms.netmgt.model.events.StoppableEventListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
+import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.util.Assert;
 
 /**
@@ -114,7 +113,7 @@ public class Capsd extends AbstractServiceDaemon {
     private CapsdDbSyncer m_capsdDbSyncer;
 
     @Autowired
-    private DefaultTransactionTemplate m_transactionTemplate;
+    private TransactionTemplate m_transactionTemplate;
 
     /**
      * <P>
@@ -325,6 +324,17 @@ public class Capsd extends AbstractServiceDaemon {
     public void setEventListener(StoppableEventListener eventListener) {
         m_eventListener = eventListener;
     }
+    
+    public ExecutorService getSuspectRunner() {
+        return m_suspectRunner;
+    }
+    
+    public ExecutorService getRescanRunner() {
+        return m_rescanRunner;
+    }
 
+    public Scheduler getScheduler() {
+        return m_scheduler;
+    }
 } // end Capsd class
 

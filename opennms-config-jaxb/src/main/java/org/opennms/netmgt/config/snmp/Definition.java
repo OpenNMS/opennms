@@ -57,7 +57,6 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(propOrder={"m_ranges","m_specifics","m_ipMatches"})
 public class Definition extends Configuration implements Serializable {
     private static final long serialVersionUID = 5646937263626185373L;
-
     /**
      * IP address range to which this definition
      *  applies.
@@ -188,9 +187,26 @@ public class Definition extends Configuration implements Serializable {
         return true;
     }
 
-    @Override
-    public String toString() {
-        return "Definition [ranges=" + m_ranges + ", specifics=" + m_specifics + ", ipMatches=" + m_ipMatches + "]";
+    public void visit(final SnmpConfigVisitor visitor) {
+        visitor.visitDefinition(this);
+
+        visitor.visitSpecifics(this.getSpecifics());
+        visitor.visitSpecificsFinished();
+        visitor.visitRanges(this.getRanges());
+        visitor.visitRangesFinished();
+        visitor.visitIpMatches(this.getIpMatches());
+        visitor.visitIpMatchesFinished();
+
+        visitor.visitDefinitionFinished();
     }
 
+    @Override
+    public String toString() {
+        return "Definition [authPassphrase=" + getAuthPassphrase() + ", authProtocol=" + getAuthProtocol() + ", contextEngineId=" + getContextEngineId() + ", contextName="
+                + getContextName() + ", engineId=" + getEngineId() + ", enterpriseId=" + getEnterpriseId() + ", maxRepetitions=" + getMaxRepetitions() + ", maxRequestSize="
+                + getMaxRequestSize() + ", maxVarsPerPdu=" + getMaxVarsPerPdu() + ", port=" + getPort() + ", privacyPassphrase=" + getPrivacyPassphrase() + ", privacyProtocol="
+                + getPrivacyProtocol() + ", proxyHost=" + getProxyHost() + ", readCommunity=" + getReadCommunity() + ", retries=" + getRetry() + ", securityLevel="
+                + getSecurityLevel() + ", securityName=" + getSecurityName() + ", timeout=" + getTimeout() + ", version=" + getVersion() + ", writeCommunity="
+                + getWriteCommunity() + ", ranges=" + m_ranges + ", specifics=" + m_specifics + ", ipMatches=" + m_ipMatches + "]";
+    }
 }

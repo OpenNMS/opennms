@@ -280,9 +280,10 @@ public class PropertiesGraphDao implements GraphDao, InitializingBean {
                     return (name.endsWith(".properties"));
                 }
             };
-            File[] propertyFiles = includeDirectory.listFiles(propertyFilesFilter);
+            final File[] propertyFiles = includeDirectory.listFiles(propertyFilesFilter);
+            Arrays.sort(propertyFiles);
 
-            for (File file : propertyFiles) {
+            for (final File file : propertyFiles) {
                 loadIncludedFile(type, file);
             }
         }
@@ -660,7 +661,7 @@ public class PropertiesGraphDao implements GraphDao, InitializingBean {
         }
 
         try {
-            return new Integer(value);
+            return Integer.valueOf(value);
         } catch (NumberFormatException e) {
             throw new DataAccessResourceFailureException(
                                                          "Property value for '"

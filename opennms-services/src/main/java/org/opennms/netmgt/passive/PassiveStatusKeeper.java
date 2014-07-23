@@ -40,10 +40,10 @@ import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.PassiveStatusKey;
 import org.opennms.netmgt.config.PassiveStatusValue;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
-import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.model.events.EventIpcManager;
 import org.opennms.netmgt.model.events.EventListener;
 import org.opennms.netmgt.model.events.EventUtils;
+import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.xml.event.Event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -91,7 +91,7 @@ public class PassiveStatusKeeper extends AbstractServiceDaemon implements EventL
      *
      * @param psk a {@link org.opennms.netmgt.passive.PassiveStatusKeeper} object.
      */
-    public synchronized static void setInstance(PassiveStatusKeeper psk) {
+    public static synchronized void setInstance(PassiveStatusKeeper psk) {
         s_instance = psk;
     }
     
@@ -100,7 +100,7 @@ public class PassiveStatusKeeper extends AbstractServiceDaemon implements EventL
      *
      * @return a {@link org.opennms.netmgt.passive.PassiveStatusKeeper} object.
      */
-    public synchronized static PassiveStatusKeeper getInstance() {
+    public static synchronized PassiveStatusKeeper getInstance() {
         return s_instance;
     }
 
@@ -166,7 +166,7 @@ public class PassiveStatusKeeper extends AbstractServiceDaemon implements EventL
      * @param nodeLabel a {@link java.lang.String} object.
      * @param ipAddr a {@link java.lang.String} object.
      * @param svcName a {@link java.lang.String} object.
-     * @param pollStatus a {@link org.opennms.netmgt.model.PollStatus} object.
+     * @param pollStatus a {@link org.opennms.netmgt.poller.PollStatus} object.
      */
     public void setStatus(String nodeLabel, String ipAddr, String svcName, PollStatus pollStatus) {
         checkInit();
@@ -177,7 +177,7 @@ public class PassiveStatusKeeper extends AbstractServiceDaemon implements EventL
      * <p>setStatus</p>
      *
      * @param key a {@link org.opennms.netmgt.config.PassiveStatusKey} object.
-     * @param pollStatus a {@link org.opennms.netmgt.model.PollStatus} object.
+     * @param pollStatus a {@link org.opennms.netmgt.poller.PollStatus} object.
      */
     public void setStatus(PassiveStatusKey key, PollStatus pollStatus) {
         checkInit();
@@ -195,7 +195,7 @@ public class PassiveStatusKeeper extends AbstractServiceDaemon implements EventL
      * @param nodeLabel a {@link java.lang.String} object.
      * @param ipAddr a {@link java.lang.String} object.
      * @param svcName a {@link java.lang.String} object.
-     * @return a {@link org.opennms.netmgt.model.PollStatus} object.
+     * @return a {@link org.opennms.netmgt.poller.PollStatus} object.
      */
     public PollStatus getStatus(String nodeLabel, String ipAddr, String svcName) {
         //FIXME: Throw a log or exception here if this method is called and the this class hasn't been initialized

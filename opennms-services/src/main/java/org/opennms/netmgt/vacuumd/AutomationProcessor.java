@@ -62,7 +62,7 @@ import org.slf4j.LoggerFactory;
  * This class used to process automations configured in
  * the vacuumd-configuration.xml file.  Automations are
  * identified by a name and they reference
- * Triggers and Actions by name, as well.  Autmations also
+ * Triggers and Actions by name, as well.  Automations also
  * have an interval attribute that determines how often
  * they run.
  *

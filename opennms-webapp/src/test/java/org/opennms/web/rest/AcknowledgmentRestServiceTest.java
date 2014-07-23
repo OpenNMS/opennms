@@ -43,7 +43,6 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.rest.AbstractSpringJerseyRestTestCase;
 import org.opennms.netmgt.dao.DatabasePopulator;
-import org.opennms.netmgt.dao.support.NewTransactionTemplate;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -51,8 +50,6 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
-import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.context.support.WebApplicationContextUtils;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @WebAppConfiguration
@@ -78,17 +75,18 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 @JUnitTemporaryDatabase
 public class AcknowledgmentRestServiceTest extends AbstractSpringJerseyRestTestCase {
 	@Autowired
-	NewTransactionTemplate m_template;
+	TransactionTemplate m_template;
+	
+	@Autowired
+	private DatabasePopulator m_populator;
 
 	@Override
 	protected void afterServletStart() {
-		final WebApplicationContext context = WebApplicationContextUtils.getWebApplicationContext(getServletContext());
-		final DatabasePopulator dbp = context.getBean("databasePopulator", DatabasePopulator.class);
 		m_template.execute(new TransactionCallbackWithoutResult() {
 
 			@Override
 			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				dbp.populateDatabase();
+				m_populator.populateDatabase();
 			}
 		});
 	}

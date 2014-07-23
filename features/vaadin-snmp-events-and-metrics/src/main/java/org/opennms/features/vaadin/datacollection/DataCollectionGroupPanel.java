@@ -38,6 +38,7 @@ import org.opennms.core.xml.JaxbUtils;
 import org.opennms.features.vaadin.api.Logger;
 import org.opennms.netmgt.config.DataCollectionConfigDao;
 import org.opennms.netmgt.config.datacollection.DatacollectionGroup;
+import org.slf4j.LoggerFactory;
 import org.vaadin.dialogs.ConfirmDialog;
 
 import com.vaadin.data.util.ObjectProperty;
@@ -58,10 +59,13 @@ import com.vaadin.ui.VerticalLayout;
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a> 
  */
-// TODO When renaming a group, all the SNMP collections must be updated.
+// FIXME: When renaming a datacollection-group, all the SNMP collections must be updated.
+// FIXME: When a different group is selected and the current one is being edited, warn about discard the changes or save them before continue
 @SuppressWarnings("serial")
 public abstract class DataCollectionGroupPanel extends Panel implements TabSheet.SelectedTabChangeListener {
 
+	private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(DataCollectionGroupPanel.class);
+	
     /** The group name. */
     private final TextField groupName = new TextField("Data Collection Group Name");
 
@@ -151,12 +155,12 @@ public abstract class DataCollectionGroupPanel extends Panel implements TabSheet
      * @return the OpenNMS data collection group
      */
     public DatacollectionGroup getOnmsDataCollection() {
-        final DatacollectionGroup dto = new DatacollectionGroup();
-        dto.setName((String) groupName.getValue());
-        dto.getGroups().addAll(groups.getGroups());
-        dto.getResourceTypes().addAll(resourceTypes.getResourceTypes());
-        dto.getSystemDefs().addAll(systemDefs.getSystemDefs());
-        return dto;
+        final DatacollectionGroup group = new DatacollectionGroup();
+        group.setName((String) groupName.getValue());
+        group.setGroups(groups.getGroups());
+        group.setResourceTypes(resourceTypes.getResourceTypes());
+        group.setSystemDefs(systemDefs.getSystemDefs());
+        return group;
     }
 
     /**
@@ -184,7 +188,7 @@ public abstract class DataCollectionGroupPanel extends Panel implements TabSheet
      */
     private void processDataCollection(final DataCollectionConfigDao dataCollectionConfigDao, final Logger logger) {
         final DatacollectionGroup dcGroup = getOnmsDataCollection();
-        final File configDir = new File(ConfigFileConstants.getHome(), "etc/datacollection/");
+        final File configDir = new File(ConfigFileConstants.getHome(), "etc" + File.separatorChar + "datacollection");
         final File file = new File(configDir, dcGroup.getName().replaceAll(" ", "_") + ".xml");
         if (file.exists()) {
             ConfirmDialog.show(getUI(),
@@ -224,7 +228,9 @@ public abstract class DataCollectionGroupPanel extends Panel implements TabSheet
             // Force reload datacollection-config.xml to be able to configure SNMP collections.
             try {
                 final File configFile = ConfigFileConstants.getFile(ConfigFileConstants.DATA_COLLECTION_CONF_FILE_NAME);
-                configFile.setLastModified(System.currentTimeMillis());
+                if(!configFile.setLastModified(System.currentTimeMillis())) {
+                	LOG.warn("Could not set last modified: {}",configFile.getPath());
+                }
             } catch (IOException e) {
                 logger.warn("Can't reach datacollection-config.xml: " + e.getMessage());
             }

@@ -97,8 +97,7 @@ public class AcknowledgmentRestService extends OnmsRestService {
     public OnmsAcknowledgment getAcknowledgment(@PathParam("id") String alarmId) {
         readLock();
         try {
-            OnmsAcknowledgment result = m_ackDao.get(new Integer(alarmId));
-        	return result;
+            return m_ackDao.get(new Integer(alarmId));
         } finally {
             readUnlock();
         }

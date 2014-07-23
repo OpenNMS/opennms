@@ -50,15 +50,15 @@ public class IfResourceType extends ResourceType {
     
     private static final Logger LOG = LoggerFactory.getLogger(IfResourceType.class);
     
-    private TreeMap<Integer, IfInfo> m_ifMap;
+    private Map<Integer, IfInfo> m_ifMap;
 
     /**
      * <p>Constructor for IfResourceType.</p>
      *
-     * @param agent a {@link org.opennms.netmgt.collectd.CollectionAgent} object.
+     * @param agent a {@link org.opennms.netmgt.collection.api.CollectionAgent} object.
      * @param snmpCollection a {@link org.opennms.netmgt.collectd.OnmsSnmpCollection} object.
      */
-    public IfResourceType(CollectionAgent agent, OnmsSnmpCollection snmpCollection) {
+    public IfResourceType(SnmpCollectionAgent agent, OnmsSnmpCollection snmpCollection) {
         super(agent, snmpCollection);
         m_ifMap = new TreeMap<Integer, IfInfo>();
         addKnownIfResources();

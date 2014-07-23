@@ -51,6 +51,10 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
+import org.springframework.transaction.support.TransactionTemplate;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations= {
@@ -63,7 +67,7 @@ import org.springframework.transaction.annotation.Transactional;
 		"classpath:/META-INF/opennms/applicationContext-setupIpLike-enabled.xml",
 		"classpath*:/META-INF/opennms/provisiond-extensions.xml",
 		"classpath*:/META-INF/opennms/component-dao.xml",
-	        "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml"
+		"classpath:/META-INF/opennms/applicationContext-minimal-conf.xml"
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
@@ -75,6 +79,9 @@ public class SnmpAssetProvisioningAdapterTest implements InitializingBean {
 
 	@Autowired
 	private NodeDao m_nodeDao;
+
+	@Autowired
+	private TransactionTemplate m_transactionTemplate;
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
@@ -90,11 +97,16 @@ public class SnmpAssetProvisioningAdapterTest implements InitializingBean {
 		m_adapter.setDelay(1);
 		m_adapter.setTimeUnit(TimeUnit.SECONDS);
 
-		NetworkBuilder nb = new NetworkBuilder();
-		nb.addNode("test.example.com").setForeignSource("rancid").setForeignId("1").setSysObjectId(".1.3");
-		nb.addInterface("192.168.0.1");
-		m_nodeDao.save(nb.getCurrentNode());
-		m_nodeDao.flush();
+		m_transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus arg0) {
+				NetworkBuilder nb = new NetworkBuilder();
+				nb.addNode("test.example.com").setForeignSource("rancid").setForeignId("1").setSysObjectId(".1.3");
+				nb.addInterface("192.168.0.1");
+				m_nodeDao.save(nb.getCurrentNode());
+				m_nodeDao.flush();
+			}
+		});
 
 		// Make sure that the localhost SNMP connection config factory has overridden
 		// the normal config factory
@@ -107,7 +119,12 @@ public class SnmpAssetProvisioningAdapterTest implements InitializingBean {
 	public void testAdd() throws Exception {
 		AdapterOperationChecker verifyOperations = new AdapterOperationChecker(1);
 		m_adapter.getOperationQueue().addListener(verifyOperations);
-		OnmsNode n = m_nodeDao.findByForeignId("rancid", "1");
+		OnmsNode n = m_transactionTemplate.execute(new TransactionCallback<OnmsNode>() {
+			@Override
+			public OnmsNode doInTransaction(TransactionStatus status) {
+				return m_nodeDao.findByForeignId("rancid", "1");
+			}
+		});
 		assertNotNull(n);
 		m_adapter.addNode(n.getId());
 
@@ -125,7 +142,12 @@ public class SnmpAssetProvisioningAdapterTest implements InitializingBean {
 	public void testDelete() throws Exception {
 		AdapterOperationChecker verifyOperations = new AdapterOperationChecker(1);
 		m_adapter.getOperationQueue().addListener(verifyOperations);
-		OnmsNode n = m_nodeDao.findByForeignId("rancid", "1");
+		OnmsNode n = m_transactionTemplate.execute(new TransactionCallback<OnmsNode>() {
+			@Override
+			public OnmsNode doInTransaction(TransactionStatus status) {
+				return m_nodeDao.findByForeignId("rancid", "1");
+			}
+		});
 		assertNotNull(n);
 		m_adapter.deleteNode(n.getId());
 

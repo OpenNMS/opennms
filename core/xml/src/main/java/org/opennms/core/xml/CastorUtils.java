@@ -360,7 +360,7 @@ public abstract class CastorUtils {
      *      Unmarshaller.unmarshal() call throws a MarshalException or
      *      ValidationException.  The underlying exception will be translated
      *      using MarshallingExceptionTranslator and will include information about
-     *      the resource from its {@link Resource#toString() toString()} method.
+     *      the resource from its toString() method.
      */
     public static <T> T unmarshalWithTranslatedExceptions(Class<T> clazz, Resource resource) {
         return unmarshalWithTranslatedExceptions(clazz, resource, DEFAULT_PRESERVATION_BEHAVIOR);
@@ -378,7 +378,7 @@ public abstract class CastorUtils {
      *      Unmarshaller.unmarshal() call throws a MarshalException or
      *      ValidationException.  The underlying exception will be translated
      *      using MarshallingExceptionTranslator and will include information about
-     *      the resource from its {@link Resource#toString() toString()} method.
+     *      the resource from its toString() method.
      */
     public static <T> T unmarshalWithTranslatedExceptions(Class<T> clazz, Resource resource, boolean preserveWhitespace) {
         // TODO It might be useful to add code to test for readability on real files; the code below is from DefaultManualProvisioningDao - dj@opennms.org 

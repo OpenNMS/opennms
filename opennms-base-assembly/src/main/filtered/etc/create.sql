@@ -1305,7 +1305,7 @@ CREATE UNIQUE INDEX catenode_unique_idx on category_node(categoryId, nodeId);
 
 create table pathOutage (
 	nodeID			integer,
-	criticalPathIp		varchar(16) not null,
+	criticalPathIp		text not null,
 	criticalPathServiceName	varchar(255),
 
 	constraint fk_nodeID8 foreign key (nodeID) references node ON DELETE CASCADE
@@ -2245,6 +2245,228 @@ CREATE INDEX catid_idx3 on category_group(categoryId);
 CREATE INDEX catgroup_idx on category_group(groupId);
 CREATE UNIQUE INDEX catgroup_unique_idx on category_group(categoryId, groupId);
 
+--# Begin enlinkd table
+drop table lldpElement cascade;
+drop table lldpLink cascade;
+drop table cdpElement cascade;
+drop table cdpLink cascade;
+drop table ospfElement cascade;
+drop table ospfLink cascade;
+drop table isisElement cascade;
+drop table isisLink cascade;
+drop table ipNetToMedia cascade;
+drop table bridgeElement cascade;
+drop table bridgeMacLink cascade;
+drop table bridgeBridgeLink cascade;
+drop table bridgeStpLink cascade;
+
+create table lldpElement (
+      id integer default nextval('opennmsnxtid') not null,
+      nodeid          integer not null,
+      lldpChassisId varchar(255) not null,
+      lldpChassisIdSubType integer not null,
+      lldpSysname varchar(255) not null,
+      lldpNodeCreateTime	timestamp not null,
+      lldpNodeLastPollTime	timestamp not null,
+      constraint pk_lldpelement_id primary key (id),
+      constraint fk_nodeIDlldpelem foreign key (nodeid) references node ON DELETE CASCADE
+);
+
+create table lldpLink (
+      id integer default nextval('opennmsnxtid') not null,
+      nodeid          integer not null,
+      lldpLocalPortNum integer not null,
+      lldpPortId varchar(255) not null,
+      lldpPortIdSubType integer not null,
+      lldpPortDescr varchar(255) not null,
+      lldpPortIfindex integer,
+      lldpRemChassisId varchar(255) not null,
+      lldpRemChassisIdSubType integer not null,
+      lldpRemSysname varchar(255) not null,
+      lldpRemPortId varchar(255) not null,
+      lldpRemPortIdSubType integer not null,
+      lldpRemPortDescr varchar(255) not null,
+      lldpLinkCreateTime	timestamp not null,
+      lldpLinkLastPollTime	timestamp not null,
+      constraint pk_lldplink_id primary key (id),
+      constraint fk_nodeIDlldplink foreign key (nodeid) references node ON DELETE CASCADE
+);
+
+create table cdpElement (
+      id integer default nextval('opennmsnxtid') not null,
+      nodeid          integer not null,
+      cdpGlobalRun    integer not null,
+      cdpGlobalDeviceId varchar(255) not null,
+      cdpNodeCreateTime	timestamp not null,
+      cdpNodeLastPollTime	timestamp not null,
+      constraint pk_cdpelement_id primary key (id),
+      constraint fk_nodeIDcdpelem foreign key (nodeid) references node ON DELETE CASCADE
+);
+
+create table cdpLink (
+      id integer default nextval('opennmsnxtid') not null,
+      nodeid          integer not null,
+      cdpCacheIfIndex integer not null,
+      cdpInterfaceName varchar(96) not null,
+      cdpCacheAddressType integer not null,
+      cdpCacheAddress varchar(64) not null,
+      cdpCacheVersion varchar(255) not null,
+      cdpCacheDeviceId varchar(64) not null,
+      cdpCacheDevicePort varchar(96) not null,
+      cdpCacheDevicePlatform varchar(96) not null,
+      cdpLinkCreateTime	timestamp not null,
+      cdpLinkLastPollTime timestamp not null,
+      constraint pk_cdplink_id primary key (id),
+      constraint fk_nodeIDcdplink foreign key (nodeid) references node ON DELETE CASCADE
+);
+
+create table ospfElement (
+      id integer default nextval('opennmsnxtid') not null,
+      nodeid          integer not null,
+      ospfRouterId varchar(16) not null,
+      ospfAdminStat      integer not null,
+      ospfVersionNumber  integer not null,
+      ospfBdrRtrStatus   integer not null,
+      ospfASBdrRtrStatus integer not null,
+      ospfRouterIdNetmask varchar(16) not null,
+      ospfRouterIdIfindex      integer not null,
+      ospfNodeCreateTime	timestamp not null,
+      ospfNodeLastPollTime	timestamp not null,
+      constraint pk_ospfelement_id primary key (id),
+      constraint fk_nodeIDospfelem foreign key (nodeid) references node ON DELETE CASCADE
+);
+
+create table ospfLink (
+      id integer default nextval('opennmsnxtid') not null,
+      nodeid          integer not null,
+      ospfIpAddr varchar(16),
+      ospfIpMask varchar(16),
+      ospfAddressLessIndex integer,
+      ospfIfIndex integer,
+      ospfRemRouterId varchar(16) not null,
+      ospfRemIpAddr varchar(16) not null,
+      ospfRemAddressLessIndex integer not null,
+      ospfLinkCreateTime	timestamp not null,
+      ospfLinkLastPollTime	timestamp not null,
+      constraint pk_ospflink_id primary key (id),
+      constraint fk_nodeIDospflink foreign key (nodeid) references node ON DELETE CASCADE
+);
+
+create table isisElement (
+      id integer default nextval('opennmsnxtid') not null,
+      nodeid          integer not null,
+      isisSysID varchar(32) not null,
+      isisSysAdminState integer not null,
+      isisNodeCreateTime	timestamp not null,
+      isisNodeLastPollTime	timestamp not null,
+      constraint pk_isiselement_id primary key (id),
+      constraint fk_nodeIDisiselem foreign key (nodeid) references node ON DELETE CASCADE
+);
+
+create table isisLink (
+      id integer default nextval('opennmsnxtid') not null,
+      nodeid          integer not null,
+      isisCircIndex   integer not null,
+      isisISAdjIndex  integer not null,
+      isisCircIfIndex    integer,
+      isisCircAdminState integer,
+      isisISAdjState  integer not null,
+      isisISAdjNeighSNPAAddress varchar(80) not null,
+      isisISAdjNeighSysType integer not null,
+      isisISAdjNeighSysID varchar(32) not null,
+      isisISAdjNbrExtendedCircID integer,
+      isisLinkCreateTime	timestamp not null,
+      isisLinkLastPollTime	timestamp not null,
+      constraint pk_isislink_id primary key (id),
+      constraint fk_nodeIDisislink foreign key (nodeid) references node ON DELETE CASCADE
+);
+
+create table ipNetToMedia (
+    id                      integer default nextval('opennmsNxtId') not null,
+    netAddress              text not null,
+    physAddress             varchar(32) not null,
+    sourceNodeId            integer not null,
+    sourceIfIndex           integer not null,
+    createTime     timestamp not null,
+    lastPollTime   timestamp not null,
+    constraint pk_ipnettomedia_id primary key (id),
+    constraint fk_sourcenodeid_ipnettomedia foreign key (sourcenodeid) references node (nodeid) 
+);
+
+create table bridgeElement (
+    id                  integer default nextval('opennmsNxtId') not null,
+    nodeid                   integer not null,
+    baseBridgeAddress        varchar(12) not null,
+    baseNumPorts             integer not null,
+    basetype                 integer not null,
+    vlan                     integer,
+    vlanname                 varchar(64),
+    stpProtocolSpecification integer,
+    stpPriority              integer,
+    stpdesignatedroot        varchar(16),
+    stprootcost              integer,
+    stprootport              integer,
+    bridgeNodeCreateTime     timestamp not null,
+    bridgeNodeLastPollTime   timestamp not null,
+    constraint pk_bridgeelement_id primary key (id),
+    constraint fk_nodeIDbridgeelement foreign key (nodeid) references node on delete cascade
+);
+
+create table bridgeMacLink (
+    id                  integer default nextval('opennmsNxtId') not null,
+    nodeid              integer not null,
+    bridgePort          integer not null,
+    bridgePortIfIndex   integer,
+    bridgePortIfName    varchar(32),
+    vlan                integer,
+    macAdreess          varchar(12) not null,
+    bridgeMacLinkCreateTime     timestamp not null,
+    bridgeMacLinkLastPollTime   timestamp not null,
+    constraint pk_bridgemaclink_id primary key (id),
+    constraint fk_nodeIDbridgemaclink foreign key (nodeid) references node on delete cascade
+);
+
+create table bridgeBridgeLink (
+    id                      integer default nextval('opennmsNxtId') not null,
+    nodeid                  integer not null,
+    bridgePort              integer,
+    bridgePortIfIndex       integer,
+    bridgePortIfName        varchar(32),
+    vlan                    integer,
+    designatedNodeid        integer not null,
+    designatedPort          integer,
+    designatedPortIfIndex   integer,
+    designatedPortIfName    varchar(32),
+    designatedVlan          integer,
+    bridgeBridgeLinkCreateTime     timestamp not null,
+    bridgeBridgeLinkLastPollTime   timestamp not null,
+    constraint pk_bridgebridgelink_id primary key (id),
+    constraint fk_nodeIDbridgebridgelink foreign key (nodeid) references node on delete cascade,
+    constraint fk_desnodeIDbridgemaclink foreign key (designatednodeid) references node (nodeid) 
+);
+
+create table bridgeStpLink (
+    id                   integer default nextval('opennmsNxtId') not null,
+    nodeid               integer not null,
+    stpPort              integer not null,
+    stpPortPriority      integer not null,
+    stpPortState         integer not null,
+    stpPortEnable        integer not null,
+    stpPortPathCost      integer not null,
+    stpPortIfIndex       integer,
+    stpPortIfName        varchar(32),
+    vlan                 integer,
+    designatedCost       integer not null,
+    designatedRoot       varchar(16) not null,
+    designatedBridge     varchar(16) not null,
+    designatedPort       varchar(4) not null,
+    bridgeStpLinkCreateTime     timestamp not null,
+    bridgeStpLinkLastPollTime   timestamp not null,
+    constraint pk_bridgestplink_id primary key (id),
+    constraint fk_nodeIDbridgestplink foreign key (nodeid) references node on delete cascade
+);
+--# End enlinkd table
+
 --# Begin Quartz persistence tables
 
 CREATE TABLE qrtz_job_details
@@ -2436,3 +2658,40 @@ CREATE TABLE filterfavorites (
   CONSTRAINT pk_filterid PRIMARY KEY (filterid)
 );
 CREATE INDEX filternamesidx ON filterfavorites (username, filtername, page);
+
+--##################################################################
+--# The following command should populate the ncscomponent table
+--##################################################################
+CREATE TABLE ncscomponent (
+    id integer NOT NULL,
+    version integer,
+    name character varying(255),
+    type character varying(255),
+    foreignsource character varying(255),
+    foreignid character varying(255),
+    depsrequired character varying(12),
+    nodeforeignsource character varying(64),
+    nodeforeignid character varying(64),
+    upeventuei character varying(255),
+    downeventuei character varying(255)
+);
+ALTER TABLE ONLY ncscomponent ADD CONSTRAINT ncscomponent_type_foreignsource_foreignid_key UNIQUE (type, foreignsource, foreignid);
+ALTER TABLE ONLY ncscomponent ADD CONSTRAINT pk_ncsid PRIMARY KEY (id);
+
+CREATE TABLE subcomponents (
+    component_id integer NOT NULL,
+    subcomponent_id integer NOT NULL
+);
+ALTER TABLE ONLY subcomponents ADD CONSTRAINT subcomponents_component_id_subcomponent_id_key UNIQUE (component_id, subcomponent_id);
+ALTER TABLE ONLY subcomponents ADD CONSTRAINT subcomponents_pkey PRIMARY KEY (component_id, subcomponent_id);
+ALTER TABLE ONLY subcomponents ADD CONSTRAINT fk_subcomp_comp_id FOREIGN KEY (component_id) REFERENCES ncscomponent(id);
+ALTER TABLE ONLY subcomponents ADD CONSTRAINT fk_subcomp_subcomp_id FOREIGN KEY (subcomponent_id) REFERENCES ncscomponent(id);
+
+CREATE TABLE ncs_attributes (
+    ncscomponent_id integer NOT NULL,
+    key character varying(255) NOT NULL,
+    value character varying(255) NOT NULL
+);
+ALTER TABLE ONLY ncs_attributes ADD CONSTRAINT ncs_attributes_pkey PRIMARY KEY (ncscomponent_id, key);
+ALTER TABLE ONLY ncs_attributes ADD CONSTRAINT fk_ncs_attr_comp_id FOREIGN KEY (ncscomponent_id) REFERENCES ncscomponent(id);
+

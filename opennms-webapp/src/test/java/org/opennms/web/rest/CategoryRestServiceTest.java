@@ -58,7 +58,7 @@ public class CategoryRestServiceTest extends AbstractSpringJerseyRestTestCase {
         String xml = sendRequest("GET", "/categories", 200);
         assertNotNull(xml);
         OnmsCategoryCollection categories = JAXB.unmarshal(new StringReader(xml), OnmsCategoryCollection.class);
-        int initialSize = categories.size();
+        long initialSize = categories.size();
         assertNotNull(categories);
         assertEquals(initialSize,categories.size());
 

@@ -86,10 +86,7 @@ import org.opennms.web.svclayer.AggregateStatus;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionCallback;
-import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
 /**
@@ -1337,25 +1334,9 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
     }
     
 
-
     /* (non-Javadoc)
-	 * @see org.opennms.web.element.NetworkElementFactoryInterface#getNodesWithCategories(org.springframework.transaction.support.TransactionTemplate, java.lang.String[], boolean)
-	 */
-    @Override
-    public List<OnmsNode> getNodesWithCategories(TransactionTemplate transTemplate, final String[] categories1, final boolean onlyNodesWithDownAggregateStatus) {
-        return transTemplate.execute(new TransactionCallback<List<OnmsNode>>() {
-
-            @Override
-            public List<OnmsNode> doInTransaction(TransactionStatus arg0) {
-                return getNodesWithCategories(categories1, onlyNodesWithDownAggregateStatus);
-            }
-            
-        });
-    }
-    
-    /* (non-Javadoc)
-	 * @see org.opennms.web.element.NetworkElementFactoryInterface#getNodesWithCategories(java.lang.String[], boolean)
-	 */
+     * @see org.opennms.web.element.NetworkElementFactoryInterface#getNodesWithCategories(java.lang.String[], boolean)
+     */
     @Override
     public List<OnmsNode> getNodesWithCategories(String[] categories, boolean onlyNodesWithDownAggregateStatus) {
         List<OnmsNode> ourNodes = getNodesInCategories(categories);
@@ -1383,23 +1364,8 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
     }
 
     /* (non-Javadoc)
-	 * @see org.opennms.web.element.NetworkElementFactoryInterface#getNodesWithCategories(org.springframework.transaction.support.TransactionTemplate, java.lang.String[], java.lang.String[], boolean)
-	 */
-    @Override
-    public List<OnmsNode> getNodesWithCategories(TransactionTemplate transTemplate, final String[] categories1, final String[] categories2, final boolean onlyNodesWithDownAggregateStatus) {
-        return transTemplate.execute(new TransactionCallback<List<OnmsNode>>() {
-
-            @Override
-            public List<OnmsNode> doInTransaction(TransactionStatus status) {
-                return getNodesWithCategories(categories1, categories2, onlyNodesWithDownAggregateStatus);
-            }
-            
-        });
-    }
-    
-    /* (non-Javadoc)
-	 * @see org.opennms.web.element.NetworkElementFactoryInterface#getNodesWithCategories(java.lang.String[], java.lang.String[], boolean)
-	 */
+     * @see org.opennms.web.element.NetworkElementFactoryInterface#getNodesWithCategories(java.lang.String[], java.lang.String[], boolean)
+     */
     @Override
     public List<OnmsNode> getNodesWithCategories(String[] categories1, String[] categories2, boolean onlyNodesWithDownAggregateStatus) {
         ArrayList<OnmsCategory> c1 = new ArrayList<OnmsCategory>(categories1.length);

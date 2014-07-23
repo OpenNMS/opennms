@@ -1,0 +1,13 @@
+[Unit]
+Description=OpenNMS server
+After=postgresql.target
+
+[Service]
+Type=forking
+User=root
+PIDFile=${install.daemonlogs.dir}/opennms.pid
+ExecStart=${install.dir}/bin/opennms -Q start
+ExecStop=${install.dir}/bin/opennms stop
+
+[Install]
+WantedBy=multi-user.target

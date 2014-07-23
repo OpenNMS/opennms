@@ -237,7 +237,7 @@ public class MockLogAppender {
     /**
      * <p>receivedLogLevel</p>
      *
-     * @param level a {@link org.apache.log4j.Level} object.
+     * @param level a {@link Level} object.
      */
     public static void receivedLogLevel(final Level level) {
         if (level.gt(s_highestLoggedLevel)) {

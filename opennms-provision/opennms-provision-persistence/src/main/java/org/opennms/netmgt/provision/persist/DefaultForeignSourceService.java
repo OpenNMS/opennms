@@ -34,10 +34,10 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
-import java.util.Map.Entry;
 
 import org.apache.commons.beanutils.MethodUtils;
 import org.opennms.core.soa.ServiceRegistry;
@@ -344,13 +344,14 @@ public class DefaultForeignSourceService implements ForeignSourceService, Initia
         }
     }
 
-    private void normalizePluginConfig(PluginConfig pc) {
+    private void normalizePluginConfig(final PluginConfig pc) {
         if (m_wrappers.containsKey(pc.getPluginClass())) {
-            PluginWrapper w = m_wrappers.get(pc.getPluginClass());
+            final PluginWrapper w = m_wrappers.get(pc.getPluginClass());
             if (w != null) {
-                Map<String,String> parameters = pc.getParameterMap();
-                Map<String,Set<String>> required = w.getRequiredItems();
-                for (String key : required.keySet()) {
+                final Map<String,String> parameters = pc.getParameterMap();
+                final Map<String,Set<String>> required = w.getRequiredItems();
+                for (final Entry<String, Set<String>> entry : required.entrySet()) {
+                    final String key = entry.getKey();
                     String value = "";
                     if (!parameters.containsKey(key)) {
                         if (required.get(key).size() > 0) {

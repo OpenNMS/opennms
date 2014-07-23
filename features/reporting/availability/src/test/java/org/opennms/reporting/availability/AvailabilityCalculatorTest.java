@@ -210,7 +210,6 @@ public class AvailabilityCalculatorTest extends TestCase {
             calculator.setAvailabilityData(data);
             calculator.setPeriodEndDate(m_calendar.getTime());
             calculator.setLogoURL("wahtever");
-            calculator.setCalendar(calendar);
             calculator.setReportFormat("PDF");
             calculator.setMonthFormat(calFormat);
             calculator.setCategoryName("Network Interfaces");

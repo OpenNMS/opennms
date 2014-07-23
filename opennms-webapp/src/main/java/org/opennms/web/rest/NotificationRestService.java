@@ -39,10 +39,12 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 
+import org.opennms.core.criteria.Alias.JoinType;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.netmgt.dao.api.NotificationDao;
 import org.opennms.netmgt.model.OnmsNotification;
@@ -88,8 +90,7 @@ public class NotificationRestService extends OnmsRestService {
     public OnmsNotification getNotification(@PathParam("notifId") String notifId) {
         readLock();
         try {
-            OnmsNotification result= m_notifDao.get(new Integer(notifId));
-            return result;
+            return m_notifDao.get(Integer.valueOf(notifId));
         } finally {
             readUnlock();
         }
@@ -125,8 +126,7 @@ public class NotificationRestService extends OnmsRestService {
         readLock();
         
         try {
-            final CriteriaBuilder builder = new CriteriaBuilder(OnmsNotification.class);
-            applyQueryFilters(m_uriInfo.getQueryParameters(), builder);
+            final CriteriaBuilder builder = getCriteriaBuilder(m_uriInfo.getQueryParameters());
             builder.orderBy("notifyId").desc();
     
             OnmsNotificationCollection coll = new OnmsNotificationCollection(m_notifDao.findMatching(builder.toCriteria()));
@@ -153,7 +153,7 @@ public class NotificationRestService extends OnmsRestService {
         writeLock();
         
         try {
-            OnmsNotification notif=m_notifDao.get(new Integer(notifId));
+            OnmsNotification notif=m_notifDao.get(Integer.valueOf(notifId));
             if(ack==null) {
                 throw new  IllegalArgumentException("Must supply the 'ack' parameter, set to either 'true' or 'false'");
             }
@@ -182,8 +182,7 @@ public class NotificationRestService extends OnmsRestService {
                 params.remove("ack");
             }
 
-            final CriteriaBuilder builder = new CriteriaBuilder(OnmsNotification.class);
-            applyQueryFilters(params, builder);
+            final CriteriaBuilder builder = getCriteriaBuilder(params);
             
             for (final OnmsNotification notif : m_notifDao.findMatching(builder.toCriteria())) {
                 processNotifAck(notif, ack);
@@ -194,7 +193,6 @@ public class NotificationRestService extends OnmsRestService {
         }
     }
 
-
     private void processNotifAck(final OnmsNotification notif, final Boolean ack) {
         if(ack) {
             notif.setRespondTime(new Date());
@@ -204,6 +202,18 @@ public class NotificationRestService extends OnmsRestService {
             notif.setAnsweredBy(null);
         }
         m_notifDao.save(notif);
+    }
+
+    private CriteriaBuilder getCriteriaBuilder(final MultivaluedMap<String, String> params) {
+        final CriteriaBuilder builder = new CriteriaBuilder(OnmsNotification.class);
+        builder.alias("node", "node", JoinType.LEFT_JOIN);
+        builder.alias("node.snmpInterfaces", "snmpInterface", JoinType.LEFT_JOIN);
+        builder.alias("node.ipInterfaces", "ipInterface", JoinType.LEFT_JOIN);
+        builder.alias("event", "event", JoinType.LEFT_JOIN);
+        builder.alias("usersNotified", "usersNotified", JoinType.LEFT_JOIN);
+
+        applyQueryFilters(params, builder);
+        return builder;
     }
 
 }

@@ -35,7 +35,7 @@ import org.slf4j.LoggerFactory;
 
 public class IconRepositoryManager {
 
-    private class ConfigIconRepository implements IconRepository{
+    private static class ConfigIconRepository implements IconRepository{
 
         private Map<String, String> m_iconMap = new HashMap<String, String>();
 

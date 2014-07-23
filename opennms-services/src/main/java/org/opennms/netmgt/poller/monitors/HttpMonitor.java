@@ -53,11 +53,11 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.SocketWrapper;
 import org.opennms.core.utils.TimeoutTracker;
-import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.NetworkInterface;
 import org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException;
+import org.opennms.netmgt.poller.PollStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -144,6 +144,9 @@ public class HttpMonitor extends AbstractServiceMonitor {
             LOG.debug("Port = {}, Address = {}, {}", currentPort, (iface.getAddress()), httpClient.getTimeoutTracker());
             
             httpClient.setCurrentPort(currentPort);
+            String serviceInfo = new StringBuilder(iface.getAddress().toString())
+            .append(":").append(svc.getSvcName()).append(":").append(currentPort)
+            .toString();
 
             for(httpClient.getTimeoutTracker().reset();
                 httpClient.getTimeoutTracker().shouldRetry() && httpClient.getPollStatus() != PollStatus.SERVICE_AVAILABLE; 
@@ -174,30 +177,32 @@ public class HttpMonitor extends AbstractServiceMonitor {
                         httpClient.read();
 
                         if (!httpClient.isResponseTextFound()) {
-                            String message = "Matching text: ["+httpClient.getResponseText()+"] not found in body of HTTP response";
+                            String message = "Matching text: ["+httpClient.getResponseText()+"] not found in body of HTTP response for " + serviceInfo;
                             LOG.debug(message);
                             httpClient.setReason("Matching text: ["+httpClient.getResponseText()+"] not found in body of HTTP response");
                         }
                     }
                     
                 } catch (NoRouteToHostException e) {
-                    LOG.warn("checkStatus: No route to host exception for address {}", iface.getAddress(), e);
+                    LOG.warn("checkStatus: No route to host exception while polling {}", serviceInfo, e);
                     portIndex = determinePorts(httpClient.getParameters()).length; // Will cause outer for(;;) to terminate
                     httpClient.setReason("No route to host exception");
                 } catch (SocketTimeoutException e) {
-                    LOG.info("checkStatus: HTTP socket connection timed out with {}", httpClient.getTimeoutTracker().toString());
+                    LOG.info("checkStatus: HTTP socket connection for service {} timed out with {}", serviceInfo, httpClient.getTimeoutTracker().toString());
                     httpClient.setReason("HTTP connection timeout");
                 } catch (InterruptedIOException e) {
-                    LOG.info(String.format("checkStatus: HTTP connection interrupted after {} bytes transferred with {}", e.bytesTransferred, httpClient.getTimeoutTracker().toString()), e);
+                    LOG.info(String.format("checkStatus: HTTP connection for service {} interrupted after {} bytes transferred with {}", serviceInfo, e.bytesTransferred, httpClient.getTimeoutTracker().toString()), e);
                     httpClient.setReason(String.format("HTTP connection interrupted, %d bytes transferred", e.bytesTransferred));
                 } catch (ConnectException e) {
-                    LOG.warn("Connection exception for {}:{}", iface.getAddress(), determinePorts(httpClient.getParameters())[portIndex], e);
+                    LOG.warn("Connection exception for {}", serviceInfo, e);
                     httpClient.setReason("HTTP connection exception on port: "+determinePorts(httpClient.getParameters())[portIndex]+": "+e.getMessage());
                 } catch (IOException e) {
-                    LOG.warn("IOException while polling address {}", iface.getAddress(), e);
+                    String exceptionClass = e.getClass().getSimpleName();
+                    LOG.warn("{} while polling {}", exceptionClass, serviceInfo, e);
                     httpClient.setReason("IOException while polling address: "+(iface.getAddress())+": "+e.getMessage());
                 } catch (Throwable e) {
-                    LOG.warn("Unexpected exception while polling address {}", iface.getAddress(), e);
+                    String exceptionClass = e.getClass().getSimpleName();
+                    LOG.warn("Unexpected {} while polling {}", exceptionClass, serviceInfo, e);
                     httpClient.setReason("Unexpected exception while polling address: "+(iface.getAddress())+": "+e.getMessage());
                 } finally {
                     httpClient.closeConnection();

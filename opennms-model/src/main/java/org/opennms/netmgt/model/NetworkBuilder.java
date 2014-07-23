@@ -108,7 +108,7 @@ public class NetworkBuilder {
         return new NodeBuilder(m_currentNode);
     }
 
-    public class NodeBuilder {
+    public static class NodeBuilder {
         OnmsNode m_node;
 
         NodeBuilder(final OnmsNode node) {
@@ -215,7 +215,7 @@ public class NetworkBuilder {
         }
     }
 
-    public class AtInterfaceBuilder {
+    public static class AtInterfaceBuilder {
         final OnmsArpInterface m_iface;
 
         AtInterfaceBuilder(final OnmsArpInterface iface) {

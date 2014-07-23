@@ -25,14 +25,14 @@ import org.opennms.netmgt.model.ncs.NCSComponentRepository;
 
 public class NCSSearchProvider extends AbstractSearchProvider implements SearchProvider {
 
-    public static class NCSHopCriteria extends VertexHopCriteria{
+    public static class NCSHopCriteria extends VertexHopCriteria {
 
         private final Set<VertexRef> m_vertices;
 
         public NCSHopCriteria(String id, Set<VertexRef> vertexRefs, String label) {
+        	super(label);
             setId(id);
             m_vertices = vertexRefs;
-            setLabel(label);
         }
 
         @Override
@@ -115,7 +115,7 @@ public class NCSSearchProvider extends AbstractSearchProvider implements SearchP
         List<NCSComponent> components = m_ncsComponentRepository.findByType("Service");
         for (NCSComponent component : components) {
             if(searchQuery.matches(component.getName())) {
-                searchResults.add(new SearchResult(NAMESPACE, String.valueOf(component.getId()), component.getName()));
+                searchResults.add(new SearchResult(NAMESPACE, String.valueOf(component.getId()), component.getName(), searchQuery.getQueryString()));
             }
 
         }
@@ -149,7 +149,7 @@ public class NCSSearchProvider extends AbstractSearchProvider implements SearchP
     }
 
     @Override
-    public Set<VertexRef> getVertexRefsBy(SearchResult searchResult) {
+    public Set<VertexRef> getVertexRefsBy(SearchResult searchResult, GraphContainer container) {
         Criteria criteria = NCSEdgeProvider.createCriteria(Collections.singletonList(Long.parseLong(searchResult.getId())));
         return getVertexRefsForEdges(m_ncsEdgeProvider, criteria);
     }

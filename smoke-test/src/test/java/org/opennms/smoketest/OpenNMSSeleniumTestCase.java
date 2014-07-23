@@ -35,9 +35,7 @@ import java.util.List;
 
 import org.junit.After;
 import org.junit.Before;
-import org.opennms.core.test.MockLogAppender;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebDriverBackedSelenium;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.phantomjs.PhantomJSDriver;
 import org.openqa.selenium.phantomjs.PhantomJSDriverService;
@@ -47,43 +45,48 @@ import org.slf4j.LoggerFactory;
 
 import com.thoughtworks.selenium.SeleneseTestBase;
 import com.thoughtworks.selenium.SeleniumException;
+import com.thoughtworks.selenium.webdriven.WebDriverBackedSelenium;
 
 public class OpenNMSSeleniumTestCase extends SeleneseTestBase {
     protected static final Logger LOG = LoggerFactory.getLogger(OpenNMSSeleniumTestCase.class);
     protected static final long LOAD_TIMEOUT = 60000;
     protected static final String BASE_URL = "http://localhost:8980/";
+    private WebDriver m_driver = null;
     private static final boolean usePhantomJS = Boolean.getBoolean("smoketest.usePhantomJS");
 
     @Before
     public void setUp() throws Exception {
         final String logLevel = System.getProperty("org.opennms.smoketest.logLevel", "DEBUG");
-        MockLogAppender.setupLogging(true, logLevel);
-
-        WebDriver driver = null;
+        //ch.qos.logback.classic.Logger root = (ch.qos.logback.classic.Logger) org.slf4j.LoggerFactory.getLogger(ch.qos.logback.classic.Logger.ROOT_LOGGER_NAME);
+        final Logger logger = org.slf4j.LoggerFactory.getLogger(ch.qos.logback.classic.Logger.ROOT_LOGGER_NAME);
+        if (logger instanceof ch.qos.logback.classic.Logger) {
+            final ch.qos.logback.classic.Logger logbackLogger = (ch.qos.logback.classic.Logger) logger;
+            logbackLogger.setLevel(ch.qos.logback.classic.Level.valueOf(logLevel));
+        }
 
         final String driverClass = System.getProperty("webdriver.class");
         if (driverClass != null) {
-            driver = (WebDriver)Class.forName(driverClass).newInstance();
+            m_driver = (WebDriver)Class.forName(driverClass).newInstance();
         }
 
         // otherwise, PhantomJS if found, or fall back to Firefox
-        if (driver == null) {
+        if (m_driver == null) {
             if (usePhantomJS) {
                 final File phantomJS = findPhantomJS();
                 if (phantomJS != null) {
                     final DesiredCapabilities caps = new DesiredCapabilities();
                     caps.setCapability(PhantomJSDriverService.PHANTOMJS_EXECUTABLE_PATH_PROPERTY, phantomJS.toString());
-                    driver = new PhantomJSDriver(caps);
+                    m_driver = new PhantomJSDriver(caps);
                 }
             }
-            if (driver == null) {
-                driver = new FirefoxDriver();
+            if (m_driver == null) {
+                m_driver = new FirefoxDriver();
             }
         }
 
-        LOG.debug("Using driver: {}", driver);
+        LOG.debug("Using driver: {}", m_driver);
 
-        selenium = new WebDriverBackedSelenium(driver, BASE_URL);
+        selenium = new WebDriverBackedSelenium(m_driver, BASE_URL);
         selenium.open("/opennms/login.jsp");
         selenium.type("name=j_username", "admin");
         selenium.type("name=j_password", "admin");
@@ -120,7 +123,7 @@ public class OpenNMSSeleniumTestCase extends SeleneseTestBase {
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void shutDownSelenium() throws Exception {
         if (selenium != null) {
             try {
                 if (selenium.isElementPresent("link=Log out")) selenium.click("link=Log out");
@@ -128,6 +131,10 @@ public class OpenNMSSeleniumTestCase extends SeleneseTestBase {
                 // don't worry about it, this is just for logging out
             }
             selenium.stop();
+            if (m_driver != null) {
+                m_driver.quit();
+            }
+            Thread.sleep(3000);
         }
     }
 
@@ -145,7 +152,7 @@ public class OpenNMSSeleniumTestCase extends SeleneseTestBase {
     protected void clickAndVerifyText(final String pattern, final String expectedText) {
         LOG.debug("clickAndVerifyText({}, {})", pattern, expectedText);
         clickAndWait(pattern);
-        assertTrue("'" + expectedText + " must exist in page", selenium.isTextPresent(expectedText));
+        assertTrue("'" + expectedText + "' must exist in page text: " + selenium.getHtmlSource(), selenium.isTextPresent(expectedText));
     }
 
     protected void goBack() {
@@ -168,14 +175,12 @@ public class OpenNMSSeleniumTestCase extends SeleneseTestBase {
 
     protected void waitForText(final String expectedText, final long timeout, boolean failOnError) throws InterruptedException {
         LOG.debug("waitForText({}, {}, {})", expectedText, timeout, failOnError);
-        if (!selenium.isTextPresent(expectedText)) {
-            final long timeoutTime = System.currentTimeMillis() + timeout;
-            while (!selenium.isTextPresent(expectedText) && System.currentTimeMillis() <= timeoutTime) {
-                Thread.sleep(timeout / 10);
-            }
+        final long timeoutTime = System.currentTimeMillis() + timeout;
+        while (!selenium.isTextPresent(expectedText) && System.currentTimeMillis() <= timeoutTime) {
+            Thread.sleep(timeout / 10);
         }
         try {
-            assertTrue("Expected text not found: " + expectedText, selenium.isTextPresent(expectedText));
+            assertTrue(String.format("Failed to find text %s after %d milliseconds", expectedText, timeout), selenium.isTextPresent(expectedText));
         } catch (final AssertionError e) {
             if (failOnError) {
                 throw e;
@@ -196,14 +201,12 @@ public class OpenNMSSeleniumTestCase extends SeleneseTestBase {
 
     protected void waitForHtmlSource(final String expectedText, final long timeout, boolean failOnError) throws InterruptedException {
         LOG.debug("waitForHtmlSource({}, {}, {})", expectedText, timeout, failOnError);
-        if (!selenium.getHtmlSource().contains(expectedText)) {
-            final long timeoutTime = System.currentTimeMillis() + timeout;
-            while (!selenium.getHtmlSource().contains(expectedText) && System.currentTimeMillis() <= timeoutTime) {
-                Thread.sleep(timeout / 10);
-            }
+        final long timeoutTime = System.currentTimeMillis() + timeout;
+        while (!selenium.getHtmlSource().contains(expectedText) && System.currentTimeMillis() <= timeoutTime) {
+            Thread.sleep(timeout / 10);
         }
         try {
-            assertTrue("HTML source not found: " + expectedText, selenium.getHtmlSource().contains(expectedText));
+            assertTrue(String.format("Failed to find text %s after %d milliseconds", expectedText, timeout), selenium.getHtmlSource().contains(expectedText));
         } catch (final AssertionError e) {
             if (failOnError) {
                 throw e;
@@ -219,21 +222,18 @@ public class OpenNMSSeleniumTestCase extends SeleneseTestBase {
     }
 
     protected void waitForElement(final String specification, final long timeout) throws InterruptedException {
-        if (!selenium.isElementPresent(specification)) {
-            final long timeoutTime = System.currentTimeMillis() + timeout;
-            while (!selenium.isElementPresent(specification) && System.currentTimeMillis() <= timeoutTime) {
-                Thread.sleep(timeout / 10);
-            }
+        final long timeoutTime = System.currentTimeMillis() + timeout;
+        while (!selenium.isElementPresent(specification) && System.currentTimeMillis() <= timeoutTime) {
+            Thread.sleep(timeout / 10);
         }
         try {
-            assertTrue("Element not found: " + specification, selenium.isElementPresent(specification));
+            assertTrue(String.format("Failed to find element %s after %d milliseconds", specification, timeout), selenium.isElementPresent(specification));
         } catch (final AssertionError e) {
             throw e;
             //LOG.error("Failed to find element {} after {} milliseconds.", specification, timeout);
             //LOG.error("Page body was:\n{}", selenium.getBodyText());
         }
     }
-
 
     protected void handleVaadinErrorButtons() throws InterruptedException {
         if (selenium.isAlertPresent()) {
@@ -246,5 +246,4 @@ public class OpenNMSSeleniumTestCase extends SeleneseTestBase {
             selenium.click("//button[contains(text(), 'OK')]");
         }
     }
-
 }

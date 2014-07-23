@@ -380,7 +380,7 @@ public class SearchControl extends AbsolutePanel implements FilteredMarkersUpdat
         setIdIfMissing(m_autoComplete, "searchControl.autoComplete");
     }
 
-    private class HistoryWrapper implements ValueItem {
+    private static class HistoryWrapper implements ValueItem {
         @Override
         public String getValue() {
             return History.getToken();

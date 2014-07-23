@@ -177,7 +177,7 @@ public class AsteriskOriginator {
         m_dialTimeout = PropertiesUtils.getProperty(m_amiProps, "org.opennms.asterisk.originate.legadialtimeout", DEFAULT_LEGA_TIMEOUT);
         m_legBContext = PropertiesUtils.getProperty(m_amiProps, "org.opennms.asterisk.originate.legbcontext", DEFAULT_LEGB_CONTEXT);
         m_legBExtension = PropertiesUtils.getProperty(m_amiProps, "org.opennms.asterisk.originate.legbextension", DEFAULT_LEGB_EXTENSION);
-        String legBPriorityStr = PropertiesUtils.getProperty(m_amiProps, "org.opennms.asterisk.originate.legbpriority", new Integer(DEFAULT_LEGB_PRIORITY).toString());
+        String legBPriorityStr = PropertiesUtils.getProperty(m_amiProps, "org.opennms.asterisk.originate.legbpriority", Integer.valueOf(DEFAULT_LEGB_PRIORITY).toString());
         m_legBPriority = Integer.parseInt(legBPriorityStr);
         m_legBAppPattern = PropertiesUtils.getProperty(m_amiProps, "org.opennms.asterisk.originate.legbapp", null);
         m_legBAppDataPattern = PropertiesUtils.getProperty(m_amiProps, "org.opennms.asterisk.originate.legbappdata", null);

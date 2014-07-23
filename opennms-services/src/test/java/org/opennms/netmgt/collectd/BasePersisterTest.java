@@ -41,15 +41,17 @@ import org.junit.Test;
 import org.junit.rules.TestName;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.collection.api.AttributeGroupType;
+import org.opennms.netmgt.collection.api.CollectionAttribute;
+import org.opennms.netmgt.collection.api.ServiceParameters;
+import org.opennms.netmgt.collection.persistence.rrd.BasePersister;
 import org.opennms.netmgt.config.MibObject;
-import org.opennms.netmgt.config.collector.AttributeGroupType;
-import org.opennms.netmgt.config.collector.CollectionAttribute;
-import org.opennms.netmgt.config.collector.ServiceParameters;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.mock.MockDataCollectionConfig;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.model.RrdRepository;
+import org.opennms.netmgt.model.ResourceTypeUtils;
+import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.test.FileAnticipator;
 import org.opennms.test.mock.EasyMockUtils;
@@ -109,7 +111,7 @@ public class BasePersisterTest {
         initPersister();
         
         File nodeDir = m_fileAnticipator.tempDir(getSnmpRrdDirectory(), m_node.getId().toString());
-        m_fileAnticipator.tempFile(nodeDir, "strings.properties", "#just a test");
+        m_fileAnticipator.tempFile(nodeDir, ResourceTypeUtils.STRINGS_PROPERTIES_FILE_NAME, "#just a test");
         
         CollectionAttribute attribute = buildStringAttribute();
         m_persister.persistStringAttribute(attribute);
@@ -120,7 +122,7 @@ public class BasePersisterTest {
         initPersister();
         
         File nodeDir = m_fileAnticipator.tempDir(getSnmpRrdDirectory(), m_node.getId().toString());
-        m_fileAnticipator.expecting(nodeDir, "strings.properties");
+        m_fileAnticipator.expecting(nodeDir, ResourceTypeUtils.STRINGS_PROPERTIES_FILE_NAME);
         
         CollectionAttribute attribute = buildStringAttribute();
         m_persister.persistStringAttribute(attribute);
@@ -131,7 +133,7 @@ public class BasePersisterTest {
         initPersister();
         
         File nodeDir = m_fileAnticipator.expecting(getSnmpRrdDirectory(), m_node.getId().toString());
-        m_fileAnticipator.expecting(nodeDir, "strings.properties");
+        m_fileAnticipator.expecting(nodeDir, ResourceTypeUtils.STRINGS_PROPERTIES_FILE_NAME);
         
         CollectionAttribute attribute = buildStringAttribute();
         m_persister.persistStringAttribute(attribute);
@@ -146,7 +148,7 @@ public class BasePersisterTest {
         initPersister();
         
         File nodeDir = m_fileAnticipator.expecting(getSnmpRrdDirectory(), m_node.getId().toString());
-        m_fileAnticipator.expecting(nodeDir, "strings.properties");
+        m_fileAnticipator.expecting(nodeDir, ResourceTypeUtils.STRINGS_PROPERTIES_FILE_NAME);
         
         CollectionAttribute attribute = buildStringAttribute();
 
@@ -176,7 +178,7 @@ public class BasePersisterTest {
         
         m_easyMockUtils.replayAll();
         
-        CollectionAgent agent = DefaultCollectionAgent.create(m_intf.getId(), m_ifDao);
+        SnmpCollectionAgent agent = DefaultCollectionAgent.create(m_intf.getId(), m_ifDao);
         
         MockDataCollectionConfig dataCollectionConfig = new MockDataCollectionConfig();
         
@@ -194,7 +196,7 @@ public class BasePersisterTest {
         mibObject.setMaxval(null);
         mibObject.setMinval(null);
         
-        SnmpAttributeType attributeType = new StringAttributeType(resourceType, "some-collection", mibObject, new AttributeGroupType("mibGroup", "ignore"));
+        SnmpAttributeType attributeType = new StringAttributeType(resourceType, "some-collection", mibObject, new AttributeGroupType("mibGroup", AttributeGroupType.IF_TYPE_IGNORE));
         
         return new SnmpAttribute(resource, attributeType, SnmpUtils.getValueFactory().getOctetString("foo".getBytes()));
     }

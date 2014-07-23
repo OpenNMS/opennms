@@ -71,7 +71,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Transactional;
@@ -89,14 +88,10 @@ import org.springframework.transaction.annotation.Transactional;
     "classpath:META-INF/opennms/applicationContext-minimal-conf.xml"
 })
 @JUnitConfigurationEnvironment
-@JUnitTemporaryDatabase(reuseDatabase = false)
-@DirtiesContext
+@JUnitTemporaryDatabase
 @Transactional
 public class InstanceStrategyIntegrationTest implements InitializingBean {
     private static final Logger LOG = LoggerFactory.getLogger(InstanceStrategyIntegrationTest.class);
-
-    @Autowired
-    private PlatformTransactionManager m_transactionManager;
 
     @Autowired
     private NodeDao m_nodeDao;
@@ -114,7 +109,7 @@ public class InstanceStrategyIntegrationTest implements InitializingBean {
     private AccessPointDao m_accessPointDao;
 
     @Autowired
-    AccessPointMonitord m_apm;
+    private AccessPointMonitord m_apm;
 
     AnnotationBasedEventListenerAdapter m_adapter;
     AccessPointMonitorConfigFactory m_apmdConfigFactory;
@@ -134,7 +129,6 @@ public class InstanceStrategyIntegrationTest implements InitializingBean {
 
     @Override
     public void afterPropertiesSet() {
-        assertNotNull(m_transactionManager);
         assertNotNull(m_nodeDao);
         assertNotNull(m_ipInterfaceDao);
         assertNotNull(m_serviceTypeDao);

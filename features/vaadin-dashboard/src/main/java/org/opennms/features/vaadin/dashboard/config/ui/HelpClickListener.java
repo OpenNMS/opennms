@@ -191,7 +191,7 @@ public class HelpClickListener implements Button.ClickListener {
         sb.append("");
         sb.append("<div class='help-content'>");
         sb.append("On this configuration page you can create, edit, preview or delete ");
-        sb.append("Wallboard configurations. Each Wallboard configuration consists of ");
+        sb.append("Ops Board configurations. Each Ops Board configuration consists of ");
         sb.append("multiple Dashlet entries. Each Dashlet entry requires to set at least ");
         sb.append("four parameters:<br/><br/>");
         sb.append("");

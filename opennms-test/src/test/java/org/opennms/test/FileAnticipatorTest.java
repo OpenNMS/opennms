@@ -378,32 +378,5 @@ public class FileAnticipatorTest extends TestCase {
         FileAnticipator fa = new FileAnticipator(false);
         fa.tearDown();
     }
-    
-    public void testGenerateRandomHexString() {
-        /*
-         * Generate a very long string, in hopes that one of the bytes will
-         * have a value < 16 so that we can test the "02" part of the format
-         * string.
-         */
-        final int length = 1024;
-        
-        String s = FileAnticipator.generateRandomHexString(length);
-        assertNotNull("random hex string should not be null", s);
-        assertEquals("random hex string length", length * 2, s.length());
-    }
-    
-    public void testGenerateRandomHexStringNoDuplication() {
-        // This should be long enough to have a very low change of dups
-        final int length = 8;
-        
-        String s1 = FileAnticipator.generateRandomHexString(length);
-        assertNotNull("random hex string s1 should not be null", s1);
-        assertEquals("random hex string s1 length", length * 2, s1.length());
-        
-        String s2 = FileAnticipator.generateRandomHexString(length);
-        assertNotNull("random hex string s2 should not be null", s2);
-        assertEquals("random hex string s2 length", length * 2, s2.length());
-        
-        assertNotSame("random hex strings s1 and s2 should not be equal", s1, s2);
-    }
+
 }

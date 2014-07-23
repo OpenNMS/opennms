@@ -37,6 +37,7 @@ import javax.sql.DataSource;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
+import org.hibernate.SessionFactory;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -75,6 +76,7 @@ import org.springframework.transaction.annotation.Transactional;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase(reuseDatabase=false)
+@Transactional
 public class NotificationManagerTest implements InitializingBean {
 	@Autowired
 	private DataSource m_dataSource;
@@ -94,7 +96,10 @@ public class NotificationManagerTest implements InitializingBean {
 	@Autowired
 	private CategoryDao m_categoryDao;
 
-    private NotificationManagerImpl m_notificationManager;
+	@Autowired
+	private SessionFactory m_sessionFactory;
+
+	private NotificationManagerImpl m_notificationManager;
     private NotifdConfigManager m_configManager;
 
     @Override
@@ -104,6 +109,7 @@ public class NotificationManagerTest implements InitializingBean {
 
     @Before
     public void setUp() throws Exception {
+
         m_configManager = new MockNotifdConfigManager(ConfigurationTestUtils.getConfigForResourceWithReplacements(this, "notifd-configuration.xml"));
         m_notificationManager = new NotificationManagerImpl(m_configManager, m_dataSource);
         

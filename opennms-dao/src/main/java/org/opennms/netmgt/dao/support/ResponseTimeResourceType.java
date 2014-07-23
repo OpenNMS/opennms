@@ -43,6 +43,7 @@ import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.OnmsResourceType;
+import org.opennms.netmgt.model.ResourceTypeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.orm.ObjectRetrievalFailureException;
@@ -118,7 +119,7 @@ public class ResponseTimeResourceType implements OnmsResourceType {
     }
 
     private File getInterfaceDirectory(final String ipAddr, final boolean verify) {
-    	final File response = new File(m_resourceDao.getRrdDirectory(verify), DefaultResourceDao.RESPONSE_DIRECTORY);
+    	final File response = new File(m_resourceDao.getRrdDirectory(verify), ResourceTypeUtils.RESPONSE_DIRECTORY);
         
     	final File intfDir = new File(response, ipAddr);
         if (verify && !intfDir.isDirectory()) {
@@ -129,7 +130,7 @@ public class ResponseTimeResourceType implements OnmsResourceType {
     }
     
     private String getRelativeInterfacePath(final String ipAddr) {
-        return DefaultResourceDao.RESPONSE_DIRECTORY + File.separator + ipAddr;
+        return ResourceTypeUtils.RESPONSE_DIRECTORY + File.separator + ipAddr;
     }
     
     private OnmsResource createResource(final OnmsIpInterface ipInterface) {

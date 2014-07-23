@@ -37,10 +37,10 @@ import org.opennms.core.utils.ParameterMap;
 import org.opennms.sms.phonebook.Phonebook;
 import org.opennms.sms.phonebook.PhonebookException;
 import org.opennms.sms.phonebook.PropertyPhonebook;
-import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.MonitoredService;
+import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.monitors.AbstractServiceMonitor;
 import org.opennms.sms.ping.PingConstants;
 import org.opennms.sms.ping.SmsPinger;
@@ -53,7 +53,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
  * @version $Id: $
  */
 @Distributable(DistributionContext.DAEMON)
-final public class SMSPingMonitor extends AbstractServiceMonitor {
+public final class SMSPingMonitor extends AbstractServiceMonitor {
     private static final Logger LOG = LoggerFactory.getLogger(SMSPingMonitor.class);
 	Phonebook phonebook = new PropertyPhonebook();
 

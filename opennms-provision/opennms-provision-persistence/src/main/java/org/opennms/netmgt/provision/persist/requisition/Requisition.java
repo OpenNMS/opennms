@@ -47,6 +47,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Map.Entry;
 
 import javax.persistence.Transient;
 import javax.xml.bind.ValidationException;
@@ -462,8 +463,9 @@ public class Requisition implements Serializable, Comparable<Requisition> {
 			foreignSourceCounts.put(foreignId, count == null? 1 : ++count);
     	}
     	
-    	for (final String foreignId : foreignSourceCounts.keySet()) {
-    		final Integer count = foreignSourceCounts.get(foreignId);
+    	for (final Entry<String,Integer> entry : foreignSourceCounts.entrySet()) {
+    	    final String foreignId = entry.getKey();
+    		final Integer count = entry.getValue();
     		if (count > 1) {
     			errors.add( foreignId + " (" + count + " found)");
     		}

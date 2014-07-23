@@ -45,6 +45,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.hibernate.annotations.Filter;
 import org.springframework.core.style.ToStringCreator;
 
@@ -55,6 +56,7 @@ import org.springframework.core.style.ToStringCreator;
 @Entity
 @Table(name="categories")
 @Filter(name=FilterManager.AUTH_FILTER_NAME, condition="categoryid in (select distinct cn.categoryId from category_node cn join category_node cn2 on cn.nodeid = cn2.nodeid join category_group cg on cn2.categoryId = cg.categoryId where cg.groupId in (:userGroups))")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class OnmsCategory implements Serializable, Comparable<OnmsCategory> {
 
     private static final long serialVersionUID = 4694348093332239377L;

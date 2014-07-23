@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.model;
 
+import org.opennms.netmgt.poller.PollStatus;
+
 /**
  * <p>PollResult class.</p>
  */
@@ -93,7 +95,7 @@ public class PollResult {
 	/**
 	 * <p>getStatus</p>
 	 *
-	 * @return a {@link org.opennms.netmgt.model.PollStatus} object.
+	 * @return a {@link org.opennms.netmgt.poller.PollStatus} object.
 	 */
 	public PollStatus getStatus() {
 		return m_status;
@@ -102,7 +104,7 @@ public class PollResult {
 	/**
 	 * <p>setStatus</p>
 	 *
-	 * @param status a {@link org.opennms.netmgt.model.PollStatus} object.
+	 * @param status a {@link org.opennms.netmgt.poller.PollStatus} object.
 	 */
 	public void setStatus(PollStatus status) {
 		m_status = status;

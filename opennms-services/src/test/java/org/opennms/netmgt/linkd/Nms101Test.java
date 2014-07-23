@@ -30,242 +30,58 @@ package org.opennms.netmgt.linkd;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.CISCO1700B_IP;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.CISCO1700B_NAME;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.CISCO1700B_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.CISCO1700_IP;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.CISCO1700_NAME;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.CISCO1700_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.CISCO2691_IP;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.CISCO2691_NAME;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.CISCO2691_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.CISCO3600_IP;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.CISCO3600_NAME;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.CISCO3600_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.CISCO3700_IP;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.CISCO3700_NAME;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.CISCO3700_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.CISCO7200A_IP;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.CISCO7200A_NAME;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.CISCO7200A_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.CISCO7200B_IP;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.CISCO7200B_NAME;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.CISCO7200B_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.LAPTOP_IP;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.LAPTOP_NAME;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.LAPTOP_SNMP_RESOURCE;
 
 import java.util.Collections;
-import java.util.Enumeration;
 import java.util.List;
 
-import javax.sql.DataSource;
-
-import org.hibernate.SessionFactory;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.opennms.core.spring.BeanUtils;
-import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
-import org.opennms.netmgt.config.DatabaseSchemaConfigFactory;
-import org.opennms.netmgt.config.LinkdConfig;
-import org.opennms.netmgt.config.LinkdConfigFactory;
 import org.opennms.netmgt.config.linkd.Package;
-import org.opennms.netmgt.dao.api.DataLinkInterfaceDao;
-import org.opennms.netmgt.dao.api.NodeDao;
-import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
-import org.opennms.netmgt.dao.hibernate.Hibernate4SessionDataSource;
-import org.opennms.netmgt.dao.support.NewTransactionTemplate;
-import org.opennms.netmgt.filter.FilterDaoFactory;
-import org.opennms.netmgt.filter.JdbcFilterDao;
 import org.opennms.netmgt.model.DataLinkInterface;
 import org.opennms.netmgt.model.DataLinkInterface.DiscoveryProtocol;
 import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.test.JUnitConfigurationEnvironment;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
+import org.opennms.netmgt.model.topology.CdpInterface;
+import org.opennms.netmgt.model.topology.LinkableNode;
+import org.opennms.netmgt.model.topology.RouterInterface;
+import org.opennms.netmgt.nb.Nms101NetworkBuilder;
 
-@RunWith(OpenNMSJUnit4ClassRunner.class)
-@ContextConfiguration(locations= {
-        "classpath:/META-INF/opennms/applicationContext-soa.xml",
-        "classpath:/META-INF/opennms/applicationContext-dao.xml",
-        "classpath:/META-INF/opennms/applicationContext-daemon.xml",
-        "classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml",
-        "classpath:/META-INF/opennms/mockEventIpcManager.xml",
-        "classpath:/META-INF/opennms/applicationContext-linkd.xml",
-        "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml"
-})
-@JUnitConfigurationEnvironment(systemProperties="org.opennms.provisiond.enableDiscovery=false")
-@JUnitTemporaryDatabase
-@Transactional
-public class Nms101Test extends Nms101NetworkBuilder implements InitializingBean {
-    private static final Logger LOG = LoggerFactory.getLogger(Nms101Test.class);
-
-    @Autowired
-    DataSource m_dataSource;
-
-    @Autowired
-    SessionFactory m_sessionFactory;
-
-    @Autowired
-    private Linkd m_linkd;
-
-    @Autowired
-    private NodeDao m_nodeDao;
-
-    @Autowired
-    private SnmpInterfaceDao m_snmpInterfaceDao;
-
-    @Autowired
-    private DataLinkInterfaceDao m_dataLinkInterfaceDao;
-
-    @Autowired
-    private NewTransactionTemplate m_transactionTemplate;
-
-    private LinkdConfig m_linkdConfig;
-
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        BeanUtils.assertAutowiring(this);
-    }
-
-	@Before
-    public void setUp() throws Exception {
-        // Initialize Filter DAO
-        DatabaseSchemaConfigFactory.init();
-        JdbcFilterDao jdbcFilterDao = new JdbcFilterDao();
-        // You must wrap the data source in Spring's TransactionAwareDataSourceProxy so that it
-        // executes its queries inside the current transaction.
-        jdbcFilterDao.setDataSource(new Hibernate4SessionDataSource(m_dataSource, m_sessionFactory));
-        jdbcFilterDao.setDatabaseSchemaConfigFactory(DatabaseSchemaConfigFactory.getInstance());
-        jdbcFilterDao.afterPropertiesSet();
-        FilterDaoFactory.setInstance(jdbcFilterDao);
-
-        for (Package pkg : Collections.list(m_linkdConfig.enumeratePackage())) {
+public class Nms101Test extends LinkdTestBuilder {
+	
+	Nms101NetworkBuilder builder = new Nms101NetworkBuilder();
+    @Before
+    public void setUpForceDisvoeryOnEthernet() {
+    for (Package pkg : Collections.list(m_linkdConfig.enumeratePackage())) {
             pkg.setForceIpRouteDiscoveryOnEthernet(true);
         }
     }
 
-	@Before
-	public void setUpLinkdConfiguration() throws Exception {
-	    LinkdConfigFactory.init();
-	    final Resource config = new ClassPathResource("etc/linkd-configuration.xml");
-	    final LinkdConfigFactory factory = new LinkdConfigFactory(-1L, config.getInputStream());
-	    LinkdConfigFactory.setInstance(factory);
-	    m_linkdConfig = LinkdConfigFactory.getInstance();
-	}
-
-    @Test
-    @JUnitTemporaryDatabase
-    public void testDefaultConfiguration() throws Exception {
-        m_transactionTemplate.execute(new TransactionCallbackWithoutResult() {
-            @Override
-            protected void doInTransactionWithoutResult(TransactionStatus status) {
-                m_nodeDao.save(getExampleCom());
-                m_nodeDao.save(getLaptop());
-                m_nodeDao.save(getCisco7200a());
-                m_nodeDao.save(getCisco7200b());
-                m_nodeDao.save(getCisco3700());
-                m_nodeDao.save(getCisco2691());
-                m_nodeDao.save(getCisco1700());
-                m_nodeDao.save(getCisco3600());
-                m_nodeDao.flush();
-            }
-        });
-
-        assertEquals(true,m_linkdConfig.useBridgeDiscovery());
-        assertEquals(true,m_linkdConfig.useOspfDiscovery());
-        assertEquals(true,m_linkdConfig.useIpRouteDiscovery());
-        assertEquals(true,m_linkdConfig.useLldpDiscovery());
-        assertEquals(true,m_linkdConfig.useCdpDiscovery());
-        assertEquals(true,m_linkdConfig.useIsIsDiscovery());
-        
-        assertEquals(true,m_linkdConfig.saveRouteTable());
-        assertEquals(true,m_linkdConfig.saveStpNodeTable());
-        assertEquals(true,m_linkdConfig.saveStpInterfaceTable());
-        
-        assertEquals(true, m_linkdConfig.isVlanDiscoveryEnabled());
-
-
-        assertEquals(false, m_linkdConfig.isAutoDiscoveryEnabled());
-        assertEquals(false, m_linkdConfig.forceIpRouteDiscoveryOnEthernet());
-
-        assertEquals(false, m_linkdConfig.hasClassName(".1.3.6.1.4.1.2636.1.1.1.1.9"));
-                
-        assertEquals("org.opennms.netmgt.linkd.snmp.ThreeComVlanTable", m_linkdConfig.getVlanClassName(".1.3.6.1.4.1.43.1.9.13.3.1"));
-        assertEquals("org.opennms.netmgt.linkd.snmp.ThreeComVlanTable", m_linkdConfig.getVlanClassName(".1.3.6.1.4.1.43.10.27.4.1.2.4"));
-        assertEquals("org.opennms.netmgt.linkd.snmp.ThreeComVlanTable", m_linkdConfig.getVlanClassName(".1.3.6.1.4.1.43.10.27.4.1.2.2"));
-        assertEquals("org.opennms.netmgt.linkd.snmp.ThreeComVlanTable", m_linkdConfig.getVlanClassName(".1.3.6.1.4.1.43.10.27.4.1.2.11"));
-        assertEquals("org.opennms.netmgt.linkd.snmp.ThreeComVlanTable", m_linkdConfig.getVlanClassName(".1.3.6.1.4.1.43.1.16.4.3.5"));
-        assertEquals("org.opennms.netmgt.linkd.snmp.ThreeComVlanTable", m_linkdConfig.getVlanClassName(".1.3.6.1.4.1.43.1.16.4.3.6"));
-
-        assertEquals("org.opennms.netmgt.linkd.snmp.Dot1qStaticVlanTable", m_linkdConfig.getVlanClassName(".1.3.6.1.4.1.43.1.8.43"));
-        assertEquals("org.opennms.netmgt.linkd.snmp.Dot1qStaticVlanTable", m_linkdConfig.getVlanClassName(".1.3.6.1.4.1.43.1.8.61"));
-
-        assertEquals("org.opennms.netmgt.linkd.snmp.RapidCityVlanTable", m_linkdConfig.getVlanClassName(".1.3.6.1.4.1.45.3.61.1"));
-        assertEquals("org.opennms.netmgt.linkd.snmp.RapidCityVlanTable", m_linkdConfig.getVlanClassName(".1.3.6.1.4.1.45.3.35.1"));
-        assertEquals("org.opennms.netmgt.linkd.snmp.RapidCityVlanTable", m_linkdConfig.getVlanClassName(".1.3.6.1.4.1.45.3.53.1"));
-        
-        assertEquals("org.opennms.netmgt.linkd.snmp.IntelVlanTable", m_linkdConfig.getVlanClassName(".1.3.6.1.4.1.343.5.1.5"));
-
-        assertEquals("org.opennms.netmgt.linkd.snmp.Dot1qStaticVlanTable", m_linkdConfig.getVlanClassName(".1.3.6.1.4.1.11.2.3.7.11.1"));
-        assertEquals("org.opennms.netmgt.linkd.snmp.Dot1qStaticVlanTable", m_linkdConfig.getVlanClassName(".1.3.6.1.4.1.11.2.3.7.11.3"));
-        assertEquals("org.opennms.netmgt.linkd.snmp.Dot1qStaticVlanTable", m_linkdConfig.getVlanClassName(".1.3.6.1.4.1.11.2.3.7.11.7"));
-        assertEquals("org.opennms.netmgt.linkd.snmp.Dot1qStaticVlanTable", m_linkdConfig.getVlanClassName(".1.3.6.1.4.1.11.2.3.7.11.8"));
-        assertEquals("org.opennms.netmgt.linkd.snmp.Dot1qStaticVlanTable", m_linkdConfig.getVlanClassName(".1.3.6.1.4.1.11.2.3.7.11.11"));
-        assertEquals("org.opennms.netmgt.linkd.snmp.Dot1qStaticVlanTable", m_linkdConfig.getVlanClassName(".1.3.6.1.4.1.11.2.3.7.11.6"));
-        assertEquals("org.opennms.netmgt.linkd.snmp.Dot1qStaticVlanTable", m_linkdConfig.getVlanClassName(".1.3.6.1.4.1.11.2.3.7.11.50"));
-
-        
-        assertEquals("org.opennms.netmgt.linkd.snmp.CiscoVlanTable", m_linkdConfig.getVlanClassName(".1.3.6.1.4.1.9.1.300"));
-        assertEquals("org.opennms.netmgt.linkd.snmp.CiscoVlanTable", m_linkdConfig.getVlanClassName(".1.3.6.1.4.1.9.1.122"));
-        assertEquals("org.opennms.netmgt.linkd.snmp.CiscoVlanTable", m_linkdConfig.getVlanClassName(".1.3.6.1.4.1.9.1.616"));
-        assertEquals("org.opennms.netmgt.linkd.snmp.CiscoVlanTable", m_linkdConfig.getVlanClassName(".1.3.6.1.4.1.9.5.42"));
-        assertEquals("org.opennms.netmgt.linkd.snmp.CiscoVlanTable", m_linkdConfig.getVlanClassName(".1.3.6.1.4.1.9.5.59"));
-
-        assertEquals("org.opennms.netmgt.linkd.snmp.ExtremeNetworkVlanTable", m_linkdConfig.getVlanClassName(".1.3.6.1.4.1.1916.2.11"));
-        assertEquals("org.opennms.netmgt.linkd.snmp.ExtremeNetworkVlanTable", m_linkdConfig.getVlanClassName(".1.3.6.1.4.1.1916.2.14"));
-        assertEquals("org.opennms.netmgt.linkd.snmp.ExtremeNetworkVlanTable", m_linkdConfig.getVlanClassName(".1.3.6.1.4.1.1916.2.63"));
-
-        assertEquals("org.opennms.netmgt.linkd.snmp.IpCidrRouteTable", m_linkdConfig.getDefaultIpRouteClassName());
-        assertEquals("org.opennms.netmgt.linkd.snmp.IpRouteTable", m_linkdConfig.getIpRouteClassName(".1.3.6.1.4.1.3224.1.51"));
-        assertEquals("org.opennms.netmgt.linkd.snmp.IpRouteTable", m_linkdConfig.getIpRouteClassName(".1.3.6.1.4.1.9.1.569"));
-        assertEquals("org.opennms.netmgt.linkd.snmp.IpRouteTable", m_linkdConfig.getIpRouteClassName(".1.3.6.1.4.1.9.5.42"));
-        assertEquals("org.opennms.netmgt.linkd.snmp.IpRouteTable", m_linkdConfig.getIpRouteClassName(".1.3.6.1.4.1.8072.3.2.255"));
-
-        final OnmsNode laptop = m_nodeDao.findByForeignId("linkd", "laptop");
-        final OnmsNode cisco3600 = m_nodeDao.findByForeignId("linkd", "cisco3600");
-        
-        assertTrue(m_linkd.scheduleNodeCollection(laptop.getId()));
-        assertTrue(m_linkd.scheduleNodeCollection(cisco3600.getId()));
-
-        SnmpCollection snmpCollLaptop = m_linkd.getSnmpCollection(laptop.getId(), laptop.getPrimaryInterface().getIpAddress(), laptop.getSysObjectId(), "example1");
-        assertEquals(true, snmpCollLaptop.getCollectBridge());
-        assertEquals(true, snmpCollLaptop.getCollectStp());
-        assertEquals(true, snmpCollLaptop.getCollectCdp());
-        assertEquals(true, snmpCollLaptop.getCollectIpRoute());
-        assertEquals(true, snmpCollLaptop.getCollectOspf());
-        assertEquals(true, snmpCollLaptop.getCollectLldp());
-
-        assertEquals(false, snmpCollLaptop.collectVlanTable());
-        
-        assertEquals("org.opennms.netmgt.linkd.snmp.IpRouteTable", snmpCollLaptop.getIpRouteClass());
-        assertEquals("example1", snmpCollLaptop.getPackageName());
-        assertEquals(true, m_linkd.saveRouteTable("example1"));
-        assertEquals(true, m_linkd.saveStpNodeTable("example1"));
-        assertEquals(true, m_linkd.saveStpInterfaceTable("example1"));
-
-        SnmpCollection snmpCollcisco3600 = m_linkd.getSnmpCollection(cisco3600.getId(), cisco3600.getPrimaryInterface().getIpAddress(), cisco3600.getSysObjectId(), "example1");
-
-        assertEquals(true, snmpCollcisco3600.getCollectBridge());
-        assertEquals(true, snmpCollcisco3600.getCollectStp());
-        assertEquals(true, snmpCollcisco3600.getCollectCdp());
-        assertEquals(true, snmpCollcisco3600.getCollectIpRoute());
-        assertEquals(true, snmpCollcisco3600.getCollectOspf());
-        assertEquals(true, snmpCollcisco3600.getCollectLldp());
-
-        assertEquals(true, snmpCollcisco3600.collectVlanTable());
-        assertEquals("org.opennms.netmgt.linkd.snmp.CiscoVlanTable", snmpCollcisco3600.getVlanClass());
-        
-        assertEquals("org.opennms.netmgt.linkd.snmp.IpCidrRouteTable", snmpCollcisco3600.getIpRouteClass());
-        assertEquals("example1", snmpCollcisco3600.getPackageName());
-
-        Package example1 = m_linkdConfig.getPackage("example1");
-        assertEquals(true, example1.getForceIpRouteDiscoveryOnEthernet());
-        
-        final Enumeration<Package> pkgs = m_linkdConfig.enumeratePackage();
-        example1 = pkgs.nextElement();
-        assertEquals("example1", example1.getName());
-        assertEquals(false, pkgs.hasMoreElements());
-    }
-    
     /*
      * cisco1700 --- cisco1700b ??????
      * cisco1700b clearly does not have relation with this net...it has the same address
@@ -278,19 +94,14 @@ public class Nms101Test extends Nms101NetworkBuilder implements InitializingBean
 	@Test
 	@JUnitTemporaryDatabase
     @JUnitSnmpAgents(value={
-        @JUnitSnmpAgent(host="10.1.5.1", port=161, resource="classpath:linkd/nms101/cisco1700b.properties"),
-        @JUnitSnmpAgent(host="10.1.5.2", port=161, resource="classpath:linkd/nms101/cisco1700.properties")
+        @JUnitSnmpAgent(host=CISCO1700B_IP, port=161, resource=CISCO1700B_SNMP_RESOURCE),
+        @JUnitSnmpAgent(host=CISCO1700_IP, port=161, resource=CISCO1700_SNMP_RESOURCE)
     })
     public void testSimpleFakeConnection() throws Exception {
-        m_transactionTemplate.execute(new TransactionCallbackWithoutResult() {
-            @Override
-            protected void doInTransactionWithoutResult(TransactionStatus status) {
-                m_nodeDao.save(getCisco1700());
-                m_nodeDao.save(getCisco1700b());
-                m_nodeDao.save(getExampleCom());
-                m_nodeDao.flush();
-            }
-        });
+	m_nodeDao.save(builder.getCisco1700());
+	m_nodeDao.save(builder.getCisco1700b());
+	m_nodeDao.save(builder.getExampleCom());
+        m_nodeDao.flush();
 
         final OnmsNode cisco1700 = m_nodeDao.findByForeignId("linkd", CISCO1700_NAME);
         final OnmsNode cisco1700b = m_nodeDao.findByForeignId("linkd", CISCO1700B_NAME);
@@ -338,20 +149,15 @@ public class Nms101Test extends Nms101NetworkBuilder implements InitializingBean
     @Test
     @JUnitTemporaryDatabase
     @JUnitSnmpAgents(value={
-        @JUnitSnmpAgent(host="10.1.1.1", port=161, resource="classpath:linkd/nms101/cisco7200a.properties"),
-        @JUnitSnmpAgent(host="10.1.2.2", port=161, resource="classpath:linkd/nms101/cisco7200b.properties")
+        @JUnitSnmpAgent(host=CISCO7200A_IP, port=161, resource=CISCO7200A_SNMP_RESOURCE),
+        @JUnitSnmpAgent(host=CISCO7200B_IP, port=161, resource=CISCO7200B_SNMP_RESOURCE)
     })
     public void testsimpleLinkCisco7200aCisco7200b() throws Exception {
 
-        m_transactionTemplate.execute(new TransactionCallbackWithoutResult() {
-            @Override
-            protected void doInTransactionWithoutResult(TransactionStatus status) {
-                m_nodeDao.save(getCisco7200a());
-                m_nodeDao.save(getCisco7200b());
-                m_nodeDao.flush();
-            }
-        });
-
+    	m_nodeDao.save(builder.getCisco7200a());
+    	m_nodeDao.save(builder.getCisco7200b());
+    	m_nodeDao.flush();
+    	
         final OnmsNode cisco7200a = m_nodeDao.findByForeignId("linkd", CISCO7200A_NAME);
         final OnmsNode cisco7200b = m_nodeDao.findByForeignId("linkd", CISCO7200B_NAME);
         assertTrue(m_linkd.scheduleNodeCollection(cisco7200a.getId()));
@@ -389,20 +195,15 @@ public class Nms101Test extends Nms101NetworkBuilder implements InitializingBean
     @Test
     @JUnitTemporaryDatabase
     @JUnitSnmpAgents(value={
-        @JUnitSnmpAgent(host="10.1.1.1", port=161, resource="classpath:linkd/nms101/cisco7200a.properties"),
-        @JUnitSnmpAgent(host="10.1.1.2", port=161, resource="classpath:linkd/nms101/laptop.properties")
+        @JUnitSnmpAgent(host=CISCO7200A_IP, port=161, resource=CISCO7200A_SNMP_RESOURCE),
+        @JUnitSnmpAgent(host=LAPTOP_IP, port=161, resource=LAPTOP_SNMP_RESOURCE)
     })
     public void testsimpleLinkCisco7200alaptop() throws Exception {
 
-        m_transactionTemplate.execute(new TransactionCallbackWithoutResult() {
-            @Override
-            protected void doInTransactionWithoutResult(TransactionStatus status) {
-                m_nodeDao.save(getCisco7200a());
-                m_nodeDao.save(getLaptop());
-                m_nodeDao.flush();
-            }
-        });
-
+    	m_nodeDao.save(builder.getCisco7200a());
+    	m_nodeDao.save(builder.getLaptop());
+    	m_nodeDao.flush();
+    	
         final OnmsNode cisco7200a = m_nodeDao.findByForeignId("linkd", CISCO7200A_NAME);
         final OnmsNode laptop = m_nodeDao.findByForeignId("linkd", LAPTOP_NAME);
         assertTrue(m_linkd.scheduleNodeCollection(cisco7200a.getId()));
@@ -437,20 +238,15 @@ public class Nms101Test extends Nms101NetworkBuilder implements InitializingBean
     @Test
     @JUnitTemporaryDatabase
     @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host="10.1.3.2", port=161, resource="classpath:linkd/nms101/cisco3700.properties"),
-            @JUnitSnmpAgent(host="10.1.6.2", port=161, resource="classpath:linkd/nms101/cisco3600.properties")
+            @JUnitSnmpAgent(host=CISCO3700_IP, port=161, resource=CISCO3700_SNMP_RESOURCE),
+            @JUnitSnmpAgent(host=CISCO3600_IP, port=161, resource=CISCO3600_SNMP_RESOURCE)
     })
     public void testsimpleLinkCisco3600aCisco3700() throws Exception {
 
-        m_transactionTemplate.execute(new TransactionCallbackWithoutResult() {
-            @Override
-            protected void doInTransactionWithoutResult(TransactionStatus status) {
-                m_nodeDao.save(getCisco3700());
-                m_nodeDao.save(getCisco3600());
-                m_nodeDao.flush();
-            }
-        });
-
+    	m_nodeDao.save(builder.getCisco3700());
+    	m_nodeDao.save(builder.getCisco3600());
+    	m_nodeDao.flush();
+    	
         final OnmsNode cisco3600 = m_nodeDao.findByForeignId("linkd", CISCO3600_NAME);
         final OnmsNode cisco3700 = m_nodeDao.findByForeignId("linkd", CISCO3700_NAME);
         assertTrue(m_linkd.scheduleNodeCollection(cisco3700.getId()));
@@ -489,31 +285,26 @@ public class Nms101Test extends Nms101NetworkBuilder implements InitializingBean
     @Test
     @JUnitTemporaryDatabase
     @JUnitSnmpAgents(value={
-        @JUnitSnmpAgent(host="10.1.1.1", port=161, resource="classpath:linkd/nms101/cisco7200a.properties"),
-        @JUnitSnmpAgent(host="10.1.1.2", port=161, resource="classpath:linkd/nms101/laptop.properties"),
-        @JUnitSnmpAgent(host="10.1.2.2", port=161, resource="classpath:linkd/nms101/cisco7200b.properties"),
-        @JUnitSnmpAgent(host="10.1.3.2", port=161, resource="classpath:linkd/nms101/cisco3700.properties"),
-        @JUnitSnmpAgent(host="10.1.4.2", port=161, resource="classpath:linkd/nms101/cisco2691.properties"),
-        @JUnitSnmpAgent(host="10.1.5.2", port=161, resource="classpath:linkd/nms101/cisco1700.properties"),
-        @JUnitSnmpAgent(host="10.1.6.2", port=161, resource="classpath:linkd/nms101/cisco3600.properties")
+        @JUnitSnmpAgent(host=CISCO7200A_IP, port=161, resource=CISCO7200A_SNMP_RESOURCE),
+        @JUnitSnmpAgent(host=LAPTOP_IP, port=161, resource=LAPTOP_SNMP_RESOURCE),
+        @JUnitSnmpAgent(host=CISCO7200B_IP, port=161, resource=CISCO7200B_SNMP_RESOURCE),
+        @JUnitSnmpAgent(host=CISCO3700_IP, port=161, resource=CISCO3700_SNMP_RESOURCE),
+        @JUnitSnmpAgent(host=CISCO2691_IP, port=161, resource=CISCO2691_SNMP_RESOURCE),
+        @JUnitSnmpAgent(host=CISCO1700_IP, port=161, resource=CISCO1700_SNMP_RESOURCE),
+        @JUnitSnmpAgent(host=CISCO3600_IP, port=161, resource=CISCO3600_SNMP_RESOURCE)
     })
     public void testCiscoNetwork() throws Exception {
 
-        m_transactionTemplate.execute(new TransactionCallbackWithoutResult() {
-            @Override
-            protected void doInTransactionWithoutResult(TransactionStatus status) {
-                m_nodeDao.save(getExampleCom());
-                m_nodeDao.save(getLaptop());
-                m_nodeDao.save(getCisco7200a());
-                m_nodeDao.save(getCisco7200b());
-                m_nodeDao.save(getCisco3700());
-                m_nodeDao.save(getCisco2691());
-                m_nodeDao.save(getCisco1700());
-                m_nodeDao.save(getCisco3600());
-                m_nodeDao.flush();
-            }
-        });
-
+    	m_nodeDao.save(builder.getExampleCom());
+    	m_nodeDao.save(builder.getLaptop());
+    	m_nodeDao.save(builder.getCisco7200a());
+    	m_nodeDao.save(builder.getCisco7200b());
+    	m_nodeDao.save(builder.getCisco3700());
+    	m_nodeDao.save(builder.getCisco2691());
+    	m_nodeDao.save(builder.getCisco1700());
+    	m_nodeDao.save(builder.getCisco3600());
+    	m_nodeDao.flush();
+    	
         final OnmsNode laptop = m_nodeDao.findByForeignId("linkd", LAPTOP_NAME);
         final OnmsNode cisco7200a = m_nodeDao.findByForeignId("linkd", CISCO7200A_NAME);
         final OnmsNode cisco7200b = m_nodeDao.findByForeignId("linkd", CISCO7200B_NAME);
@@ -605,8 +396,8 @@ public class Nms101Test extends Nms101NetworkBuilder implements InitializingBean
     @Test
     @JUnitTemporaryDatabase
     @JUnitSnmpAgents(value={
-        @JUnitSnmpAgent(host="10.1.1.1", port=161, resource="classpath:linkd/nms101/cisco7200a.properties"),
-        @JUnitSnmpAgent(host="10.1.2.2", port=161, resource="classpath:linkd/nms101/cisco7200b.properties")
+        @JUnitSnmpAgent(host=CISCO7200A_IP, port=161, resource=CISCO7200A_SNMP_RESOURCE),
+        @JUnitSnmpAgent(host=CISCO7200B_IP, port=161, resource=CISCO7200B_SNMP_RESOURCE)
     })
     public void testsimpleCdpLinkCisco7200aCisco7200b() throws Exception {
 
@@ -622,15 +413,10 @@ public class Nms101Test extends Nms101NetworkBuilder implements InitializingBean
             pkg.setUseIsisDiscovery(false);
         }
 
-        m_transactionTemplate.execute(new TransactionCallbackWithoutResult() {
-            @Override
-            protected void doInTransactionWithoutResult(TransactionStatus status) {
-                m_nodeDao.save(getCisco7200a());
-                m_nodeDao.save(getCisco7200b());
-                m_nodeDao.flush();
-            }
-        });
-
+    	m_nodeDao.save(builder.getCisco7200a());
+    	m_nodeDao.save(builder.getCisco7200b());
+    	m_nodeDao.flush();
+    	
         final OnmsNode cisco7200a = m_nodeDao.findByForeignId("linkd", CISCO7200A_NAME);
         final OnmsNode cisco7200b = m_nodeDao.findByForeignId("linkd", CISCO7200B_NAME);
         assertTrue(m_linkd.scheduleNodeCollection(cisco7200a.getId()));

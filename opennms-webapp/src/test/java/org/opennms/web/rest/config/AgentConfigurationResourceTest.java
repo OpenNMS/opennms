@@ -55,10 +55,10 @@ import org.opennms.netmgt.dao.mock.UnimplementedSnmpConfigDao;
 import org.opennms.netmgt.filter.FilterParseException;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
+import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpConfiguration;
-import org.opennms.web.rest.config.AgentConfigurationResource;
 import org.springframework.core.io.ClassPathResource;
 
 @RunWith(BlockJUnit4ClassRunner.class)
@@ -98,7 +98,12 @@ public class AgentConfigurationResourceTest {
         final List<InetAddress> addresses = Arrays.asList(oneNinetyTwo);
         m_filterDao.setActiveIPAddressList(addresses);
 
-        final OnmsIpInterface iface = new OnmsIpInterface(oneNinetyTwo, null);
+        final OnmsNode node = new OnmsNode(null, "foo");
+        node.setId(1);
+        node.setForeignSource("foo");
+        node.setForeignId("bar");
+        node.setSysObjectId(".1.2.3.4.5");
+        final OnmsIpInterface iface = new OnmsIpInterface(oneNinetyTwo, node);
         final OnmsServiceType serviceType = new OnmsServiceType("SNMP");
         final OnmsMonitoredService service = new OnmsMonitoredService(iface, serviceType);
         m_monitoredServiceDao.setMatching(Arrays.asList(service));
@@ -110,9 +115,14 @@ public class AgentConfigurationResourceTest {
         assertTrue(entity instanceof GenericEntity<?>);
         @SuppressWarnings("unchecked")
         final List<AgentResponse> agentResponses = (List<AgentResponse>) ((GenericEntity<?>)entity).getEntity();
+        System.err.println(agentResponses);
         assertEquals(1, agentResponses.size());
         assertEquals(oneNinetyTwo, agentResponses.get(0).getAddress());
         assertEquals(1161, agentResponses.get(0).getPort().intValue());
+        assertEquals(".1.2.3.4.5", agentResponses.get(0).getParameters().get("sysObjectId"));
+        assertEquals("1", agentResponses.get(0).getParameters().get("nodeId"));
+        assertEquals("foo", agentResponses.get(0).getParameters().get("foreignSource"));
+        assertEquals("bar", agentResponses.get(0).getParameters().get("foreignId"));
     }
     
     private static final class TestMonitoredServiceDao extends UnimplementedMonitoredServiceDao {

@@ -33,10 +33,10 @@ import java.net.InetAddress;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.DiscoveryConfigFactory;
-import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 import org.opennms.netmgt.icmp.EchoPacket;
 import org.opennms.netmgt.icmp.PingResponseCallback;
 import org.opennms.netmgt.model.events.EventBuilder;
+import org.opennms.netmgt.model.events.EventIpcManagerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,7 +50,7 @@ public class DiscoveryPingResponseCallback implements PingResponseCallback {
     
     private static final Logger LOG = LoggerFactory.getLogger(DiscoveryPingResponseCallback.class);
     
-    final static String EVENT_SOURCE_VALUE = "OpenNMS.Discovery";
+    static final String EVENT_SOURCE_VALUE = "OpenNMS.Discovery";
     
     private DiscoveryConfigFactory m_discoveryFactory;
 

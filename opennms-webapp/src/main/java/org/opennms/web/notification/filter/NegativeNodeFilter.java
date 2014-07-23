@@ -85,6 +85,8 @@ public class NegativeNodeFilter extends NotEqualOrNullFilter<Integer> {
     /** {@inheritDoc} */
     @Override
     public boolean equals(Object obj) {
+        if (obj == null) return false;
+        if (!(obj instanceof NegativeNodeFilter)) return false;
         return (this.toString().equals(obj.toString()));
     }
 }

@@ -38,7 +38,7 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
         <argument ref="providerManager" />
         <property name="bundleContext" ref="blueprintBundleContext" />
         <property name="autoRefreshSupport" ref="defaultAutoRefreshSupport"/>
-        <property name="statusProvider" ref="statusProvider"/>
+        <property name="vertexStatusProvider" ref="statusProvider"/>
     </bean>
 
     <!--  Header reference -->
@@ -51,6 +51,7 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
 
     <reference id="categoryDao" interface="org.opennms.netmgt.dao.api.CategoryDao" availability="mandatory" />
     <reference id="nodeDao" interface="org.opennms.netmgt.dao.api.NodeDao" availability="mandatory" />
+    <reference id="ipInterfaceDao" interface="org.opennms.netmgt.dao.api.IpInterfaceDao" availability="mandatory" />
 
     <bean id="categoryHopCriteriaFactory" class="org.opennms.features.topology.app.internal.support.CategoryHopCriteriaFactory">
         <argument ref="categoryDao"/>
@@ -64,12 +65,33 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
             <property name="hiddenCategoryPrefix" value="${hiddenCategoryPrefix}" />
         </bean>
     </service>
+    
+    <bean id="categoryHistoryOperation" class=" org.opennms.features.topology.app.internal.support.CategoryHopCriteriaHistoryOperation" >
+        <property name="categoryHopCriteriaFactory" ref="categoryHopCriteriaFactory" />
+    </bean>
+    
+    <service interface="org.opennms.features.topology.api.HistoryOperation" ref="categoryHistoryOperation"/>
 
-	<bean id="categoryHistoryOperation" class=" org.opennms.features.topology.app.internal.support.CategoryHopCriteriaHistoryOperation">
-		<property name="categoryHopCriteriaFactory" ref="categoryHopCriteriaFactory"/>
-	</bean>
-	
-	<service interface="org.opennms.features.topology.api.HistoryOperation" ref="categoryHistoryOperation"/>
+    <bean id="ipLikeHopCriteriaFactory" class="org.opennms.features.topology.app.internal.support.IpLikeHopCriteriaFactory">
+        <argument ref="ipInterfaceDao"/>
+    </bean>
+    
+    <service id="ipLikeSearchProvider" interface="org.opennms.features.topology.api.topo.SearchProvider" >
+        <bean class="org.opennms.features.topology.app.internal.IpLikeSearchProvider" >
+            <argument ref="ipInterfaceDao" />
+        </bean>
+    </service>
+    
+    <bean id="AlarmHopCriteriaFactory" class="org.opennms.features.topology.app.internal.support.AlarmHopCriteriaFactory">
+        <argument ref="alarmDao"/>
+    </bean>
+    
+    <service id="AlarmSearchProvider" interface="org.opennms.features.topology.api.topo.SearchProvider" >
+        <bean class="org.opennms.features.topology.app.internal.AlarmSearchProvider" >
+            <argument ref="alarmDao" />
+        </bean>
+    </service>
+
 
     <!-- status provider -->
     <reference id="alarmDao" interface="org.opennms.netmgt.dao.api.AlarmDao" availability="mandatory" />
@@ -207,12 +229,31 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
         <bean class="org.opennms.features.topology.app.internal.operations.CircleLayoutOperation"/>
     </service>
     
+    <!--
     <service interface="org.opennms.features.topology.api.CheckedOperation" >
         <service-properties>
             <entry key="operation.menuLocation" value="View"/>
             <entry key="operation.label" value="FR Layout?group=layout"/>
         </service-properties>
         <bean class="org.opennms.features.topology.app.internal.operations.FRLayoutOperation"/>
+    </service>
+    -->
+
+    <service interface="org.opennms.features.topology.api.CheckedOperation" >
+        <service-properties>
+            <entry key="operation.menuLocation" value="View"/>
+            <entry key="operation.label" value="FR Layout?group=layout"/>
+        </service-properties>
+        <bean class="org.opennms.features.topology.app.internal.operations.TopoFRLayoutOperation"/>
+    </service>
+
+    <!-- D3 Layout-->
+    <service interface="org.opennms.features.topology.api.CheckedOperation" >
+        <service-properties>
+            <entry key="operation.menuLocation" value="View"/>
+            <entry key="operation.label" value="D3 Layout?group=layout"/>
+        </service-properties>
+        <bean class="org.opennms.features.topology.app.internal.operations.D3TopoLayoutOperation"/>
     </service>
 
 

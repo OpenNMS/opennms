@@ -37,6 +37,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Vector;
@@ -173,7 +174,7 @@ public final class XmlRpcNotifier {
      * @param localServer a {@link java.lang.String} object.
      */
     public XmlRpcNotifier(final XmlrpcServer[] rpcServers, final int retries, final int elapseTime, final boolean verifyServer, final String localServer) {
-        m_rpcServers = rpcServers;
+        m_rpcServers = Arrays.copyOf(rpcServers, rpcServers.length);
         m_retries = retries;
         m_elapseTime = elapseTime;
         createConnection();

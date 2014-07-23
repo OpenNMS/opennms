@@ -92,6 +92,7 @@ public class WillItUnmarshalCoverageMetaTest {
         ignoreFile(new File(droolsDirectory, "nodeParentRules-context.xml"));
         ignoreFile(new File(droolsDirectory, "locationMonitorRules-context.xml"));
         ignoreFile(new File(getDaemonEtcDirectory(), "examples/nsclient-config.xml"));
+        ignoreFile(new File(getDaemonEtcDirectory(), "examples/jetty.xml"));
 
         ignoreFile(new File(getDaemonEtcDirectory(), "syslog/ApacheHTTPD.syslog.xml"));
         ignoreFile(new File(getDaemonEtcDirectory(), "syslog/LinuxKernel.syslog.xml"));

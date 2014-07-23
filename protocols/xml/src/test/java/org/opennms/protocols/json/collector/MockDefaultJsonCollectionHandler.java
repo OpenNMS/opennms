@@ -30,7 +30,7 @@ package org.opennms.protocols.json.collector;
 
 import net.sf.json.JSONObject;
 
-import org.opennms.netmgt.collectd.CollectionAgent;
+import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.protocols.xml.collector.XmlResourceType;
 import org.opennms.protocols.xml.config.Request;
 import org.opennms.protocols.xml.config.XmlResourceUtils;

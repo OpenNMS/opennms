@@ -1,35 +1,49 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <features>
 
-    <feature name="dashlet-alarms" version="${pom.version}">
-        <bundle>mvn:org.opennms.features.vaadin-dashlets/dashlet-alarms/${pom.version}</bundle>
-    </feature>
-    <feature name="dashlet-summary" version="${pom.version}">
-        <bundle>mvn:org.opennms.features.vaadin-dashlets/dashlet-summary/${pom.version}</bundle>
-    </feature>
-    <feature name="dashlet-map" version="${pom.version}">
-        <bundle>mvn:org.opennms.features.vaadin-dashlets/dashlet-map/${pom.version}</bundle>
-    </feature>
-    <feature name="dashlet-image" version="${pom.version}">
-        <bundle>mvn:org.opennms.features.vaadin-dashlets/dashlet-image/${pom.version}</bundle>
-    </feature>
-    <feature name="dashlet-charts" version="${pom.version}">
-        <bundle>mvn:org.opennms.features.vaadin-dashlets/dashlet-charts/${pom.version}</bundle>
-    </feature>
-    <feature name="dashlet-rtc" version="${pom.version}">
-        <bundle>mvn:org.opennms.features.vaadin-dashlets/dashlet-rtc/${pom.version}</bundle>
-    </feature>
-    <feature name="dashlet-rrd" version="${pom.version}">
-        <bundle>mvn:org.opennms.features.vaadin-dashlets/dashlet-rrd/${pom.version}</bundle>
-    </feature>
-    <feature name="dashlet-ksc" version="${pom.version}">
-        <bundle>mvn:org.opennms.features.vaadin-dashlets/dashlet-ksc/${pom.version}</bundle>
-    </feature>
-    <feature name="dashlet-topology" version="${pom.version}">
-        <bundle>mvn:org.opennms.features.vaadin-dashlets/dashlet-topology/${pom.version}</bundle>
-    </feature>
-    <feature name="dashlet-surveillance" version="${pom.version}">
-        <bundle>mvn:org.opennms.features.vaadin-dashlets/dashlet-surveillance/${pom.version}</bundle>
-    </feature>
+  <feature name="dashlet-alarms" version="${pom.version}">
+    <feature>opennms-core</feature>
+    <bundle>mvn:org.opennms.features.vaadin-dashlets/dashlet-alarms/${pom.version}</bundle>
+  </feature>
+  <feature name="dashlet-summary" version="${pom.version}">
+    <feature>opennms-core</feature>
+    <bundle>mvn:org.opennms.features.vaadin-dashlets/dashlet-summary/${pom.version}</bundle>
+  </feature>
+  <feature name="dashlet-map" version="${pom.version}">
+    <feature>opennms-core</feature>
+    <bundle>mvn:org.opennms.features.vaadin-dashlets/dashlet-map/${pom.version}</bundle>
+  </feature>
+  <feature name="dashlet-image" version="${pom.version}">
+    <feature>opennms-core</feature>
+    <bundle>mvn:org.opennms.features.vaadin-dashlets/dashlet-image/${pom.version}</bundle>
+  </feature>
+  <feature name="dashlet-charts" version="${pom.version}">
+    <feature>opennms-core</feature>
+    <bundle>mvn:org.opennms.features.vaadin-dashlets/dashlet-charts/${pom.version}</bundle>
+  </feature>
+  <feature name="dashlet-rtc" version="${pom.version}">
+    <feature>opennms-core</feature>
+    <bundle>mvn:org.opennms.features.vaadin-dashlets/dashlet-rtc/${pom.version}</bundle>
+  </feature>
+  <feature name="dashlet-rrd" version="${pom.version}">
+    <feature>opennms-core</feature>
+    <bundle>mvn:org.opennms.features.vaadin-dashlets/dashlet-rrd/${pom.version}</bundle>
+  </feature>
+  <feature name="dashlet-ksc" version="${pom.version}">
+    <feature>opennms-core</feature>
+    <bundle>mvn:org.opennms.features.vaadin-dashlets/dashlet-ksc/${pom.version}</bundle>
+  </feature>
+  <feature name="dashlet-topology" version="${pom.version}">
+    <feature>opennms-core</feature>
+    <bundle>mvn:org.opennms.features.vaadin-dashlets/dashlet-topology/${pom.version}</bundle>
+  </feature>
+  <feature name="dashlet-surveillance" version="${pom.version}">
+    <feature>opennms-core</feature>
+    <bundle>mvn:org.opennms.features.vaadin-dashlets/dashlet-surveillance/${pom.version}</bundle>
+  </feature>
+  <feature name="dashlet-url" version="${pom.version}">
+    <feature>opennms-core</feature>
+    <bundle>mvn:org.opennms.features.vaadin-dashlets/dashlet-url/${pom.version}</bundle>
+  </feature>
 
 </features>

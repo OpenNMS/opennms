@@ -280,7 +280,7 @@ public class SendmailTest implements Serializable {
      * @return the value of field 'AttemptInterval'.
      */
     public Long getAttemptInterval() {
-        return m_attemptInterval == null? 3000l : m_attemptInterval;
+        return m_attemptInterval == null? 3000L : m_attemptInterval;
     }
 
     /**

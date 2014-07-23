@@ -44,7 +44,7 @@ import org.slf4j.LoggerFactory;
 import org.opennms.core.xml.CastorUtils;
 import org.opennms.netmgt.config.httpdatacollection.HttpCollection;
 import org.opennms.netmgt.config.httpdatacollection.HttpDatacollectionConfig;
-import org.opennms.netmgt.model.RrdRepository;
+import org.opennms.netmgt.rrd.RrdRepository;
 
 /**
  * <p>HttpCollectionConfigFactory class.</p>
@@ -182,7 +182,7 @@ public class HttpCollectionConfigFactory {
      *
      * @return a {@link org.opennms.netmgt.config.httpdatacollection.HttpDatacollectionConfig} object.
      */
-    public synchronized static HttpDatacollectionConfig getConfig() {
+    public static synchronized HttpDatacollectionConfig getConfig() {
         return m_config;
     }
 
@@ -191,7 +191,7 @@ public class HttpCollectionConfigFactory {
      *
      * @param m_config a {@link org.opennms.netmgt.config.httpdatacollection.HttpDatacollectionConfig} object.
      */
-    public synchronized static void setConfig(HttpDatacollectionConfig m_config) {
+    public static synchronized void setConfig(HttpDatacollectionConfig m_config) {
         HttpCollectionConfigFactory.m_config = m_config;
     }
 
@@ -221,7 +221,7 @@ public class HttpCollectionConfigFactory {
      * <p>getRrdRepository</p>
      *
      * @param collectionName a {@link java.lang.String} object.
-     * @return a {@link org.opennms.netmgt.model.RrdRepository} object.
+     * @return a {@link org.opennms.netmgt.rrd.RrdRepository} object.
      */
     public RrdRepository getRrdRepository(String collectionName) {
         RrdRepository repo = new RrdRepository();

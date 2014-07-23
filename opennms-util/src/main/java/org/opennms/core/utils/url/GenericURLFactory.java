@@ -76,7 +76,6 @@ public class GenericURLFactory implements URLStreamHandlerFactory {
 
     /**
      * <p>initialize</p>
-     * <p/>
      * Initializing the URL Factory
      */
     public static void initialize() {
@@ -89,7 +88,6 @@ public class GenericURLFactory implements URLStreamHandlerFactory {
 
     /**
      * <p>getInstance</p>
-     * <p/>
      * Implement the GenericURLFactory as singleton
      *
      * @return a {org.opennms.core.utils.url.GenericURLFactory} object.
@@ -100,7 +98,6 @@ public class GenericURLFactory implements URLStreamHandlerFactory {
 
     /**
      * <p>addURLConnection</p>
-     * <p/>
      * Add protocol URL connection handler with specific class name
      *
      * @param protocol    name as {@link java.lang.String} object.
@@ -114,7 +111,6 @@ public class GenericURLFactory implements URLStreamHandlerFactory {
 
     /**
      * <p>addURLConnection</p>
-     * <p/>
      * Add protocol URL connection handler with specific class name
      *
      * @param protocol  name as {@link java.lang.String} object.
@@ -126,7 +122,6 @@ public class GenericURLFactory implements URLStreamHandlerFactory {
 
     /**
      * <p>removeURLConnection</p>
-     * <p/>
      * Remove a protocol URL connection handler
      *
      * @param protocol name as {@link java.lang.String} object.
@@ -141,7 +136,6 @@ public class GenericURLFactory implements URLStreamHandlerFactory {
 
     /**
      * <p>getURLConnections</p>
-     * <p/>
      * Get the map with protocol and implementation classes for customized URL connections
      *
      * @return a {@link java.util.HashMap} object
@@ -152,7 +146,6 @@ public class GenericURLFactory implements URLStreamHandlerFactory {
 
     /**
      * <p>createURLStreamHandler</p>
-     * <p/>
      * Create stream handler
      *
      * @param protocol name as {@link java.lang.String} object.

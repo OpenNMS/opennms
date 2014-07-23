@@ -44,12 +44,12 @@ import java.util.regex.PatternSyntaxException;
 import org.opennms.netmgt.dao.api.GraphDao;
 import org.opennms.netmgt.dao.api.ResourceDao;
 import org.opennms.netmgt.dao.api.RrdDao;
-import org.opennms.netmgt.dao.support.RrdFileConstants;
 import org.opennms.netmgt.model.AdhocGraphType;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.PrefabGraph;
 import org.opennms.netmgt.model.PrefabGraphType;
 import org.opennms.netmgt.model.RrdGraphAttribute;
+import org.opennms.netmgt.rrd.RrdFileConstants;
 import org.opennms.web.graph.Graph;
 import org.opennms.web.svclayer.RrdGraphService;
 import org.slf4j.Logger;
@@ -390,7 +390,7 @@ public class DefaultRrdGraphService implements RrdGraphService, InitializingBean
             for (Map.Entry<String, String> translation : translationMap.entrySet()) {
                 // replace s1 with s2
                 final Matcher matcher = Pattern.compile(translation.getKey(), Pattern.LITERAL).matcher(command);
-                matcher.replaceAll(translation.getValue());
+                command = matcher.replaceAll(translation.getValue());
             }
         } catch (PatternSyntaxException e) {
             throw new IllegalArgumentException("Invalid regular expression syntax, check rrd-properties file", e);

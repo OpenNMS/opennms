@@ -34,7 +34,7 @@ import java.util.concurrent.Executors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.opennms.netmgt.model.PollStatus;
+import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.xml.event.Event;
 
 /**
@@ -43,7 +43,7 @@ import org.opennms.netmgt.xml.event.Event;
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @version $Id: $
  */
-abstract public class PollableElement {
+public abstract class PollableElement {
     private static final Logger LOG = LoggerFactory.getLogger(PollableElement.class);
     private final Scope m_scope; 
 
@@ -116,7 +116,7 @@ abstract public class PollableElement {
     /**
      * <p>getStatus</p>
      *
-     * @return a {@link org.opennms.netmgt.model.PollStatus} object.
+     * @return a {@link org.opennms.netmgt.poller.PollStatus} object.
      */
     public PollStatus getStatus() {
         return m_status;
@@ -138,7 +138,7 @@ abstract public class PollableElement {
     /**
      * <p>updateStatus</p>
      *
-     * @param newStatus a {@link org.opennms.netmgt.model.PollStatus} object.
+     * @param newStatus a {@link org.opennms.netmgt.poller.PollStatus} object.
      */
     public void updateStatus(PollStatus newStatus) {
         PollStatus oldStatus = getStatus();
@@ -173,7 +173,7 @@ abstract public class PollableElement {
      * <p>doPoll</p>
      *
      * @param elem a {@link org.opennms.netmgt.poller.pollables.PollableElement} object.
-     * @return a {@link org.opennms.netmgt.model.PollStatus} object.
+     * @return a {@link org.opennms.netmgt.poller.PollStatus} object.
      */
     public PollStatus doPoll(PollableElement elem) {
         if (getParent() == null) {
@@ -276,15 +276,15 @@ abstract public class PollableElement {
     /**
      * <p>poll</p>
      *
-     * @return a {@link org.opennms.netmgt.model.PollStatus} object.
+     * @return a {@link org.opennms.netmgt.poller.PollStatus} object.
      */
-    abstract public PollStatus poll();
+    public abstract PollStatus poll();
 
     /**
      * <p>poll</p>
      *
      * @param elem a {@link org.opennms.netmgt.poller.pollables.PollableElement} object.
-     * @return a {@link org.opennms.netmgt.model.PollStatus} object.
+     * @return a {@link org.opennms.netmgt.poller.PollStatus} object.
      */
     protected PollStatus poll(PollableElement elem) {
         if (elem != this)

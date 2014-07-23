@@ -64,7 +64,7 @@ public interface PausableFiber extends Fiber {
     public static final int RESUME_PENDING = 7;
 
     /**
-     * This method is used to suspend a currently running <code>Fiber<code>.
+     * This method is used to suspend a currently running <code>Fiber</code>.
      * When invoked the <code>Fiber</code> will begin the transition to
      * a <code>PAUSED</code> status after changing its internal state, if
      * applicable.

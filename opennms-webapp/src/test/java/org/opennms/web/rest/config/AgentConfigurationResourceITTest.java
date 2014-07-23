@@ -44,6 +44,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.transaction.annotation.Transactional;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @WebAppConfiguration
@@ -68,6 +69,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
+@Transactional
 public class AgentConfigurationResourceITTest extends AbstractSpringJerseyRestTestCase {
     @SuppressWarnings("unused")
     private static final Logger LOG = LoggerFactory.getLogger(AgentConfigurationResourceITTest.class);
@@ -81,12 +83,8 @@ public class AgentConfigurationResourceITTest extends AbstractSpringJerseyRestTe
         m_databasePopulator.populateDatabase();
     }
     
-    @Override
-    protected void afterServletDestroy() throws Exception {
-        m_databasePopulator.resetDatabase();
-    }
-    
     @Test
+    @JUnitTemporaryDatabase
     public void testAgentConfig() throws Exception {
         sendRequest(GET, "/config/agents/foo/SNMP", 404);
         String xml = sendRequest(GET, "/config/agents/example1/SNMP", 200);
@@ -94,6 +92,7 @@ public class AgentConfigurationResourceITTest extends AbstractSpringJerseyRestTe
     }
 
     @Test
+    @JUnitTemporaryDatabase
     public void testJsonResponse() throws Exception {
         final MockHttpServletRequest req = createRequest(getServletContext(), GET, "/config/agents/example1/SNMP");
         req.addHeader("Accept", "application/json");

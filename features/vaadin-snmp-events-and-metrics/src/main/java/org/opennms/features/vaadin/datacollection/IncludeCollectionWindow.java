@@ -33,9 +33,8 @@ import org.opennms.features.vaadin.api.OnmsBeanContainer;
 import org.opennms.netmgt.config.DataCollectionConfigDao;
 
 import com.vaadin.data.Property;
-import com.vaadin.data.fieldgroup.FieldGroup;
+import com.vaadin.data.fieldgroup.BeanFieldGroup;
 import com.vaadin.data.fieldgroup.FieldGroup.CommitException;
-import com.vaadin.data.util.BeanItem;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
@@ -50,6 +49,7 @@ import com.vaadin.ui.Window;
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a> 
  */
+// FIXME: What about exclude fields ?
 @SuppressWarnings("serial")
 public abstract class IncludeCollectionWindow extends Window implements Button.ClickListener {
 
@@ -57,7 +57,7 @@ public abstract class IncludeCollectionWindow extends Window implements Button.C
     private final FormLayout formLayout = new FormLayout();
     
     /** The form editor. */
-    private final FieldGroup formEditor = new FieldGroup();
+    private final BeanFieldGroup<IncludeCollectionWrapper> formEditor = new BeanFieldGroup<IncludeCollectionWrapper>(IncludeCollectionWrapper.class);
     
     /** The OK button. */
     private final Button okButton = new Button("Update", this);
@@ -79,7 +79,7 @@ public abstract class IncludeCollectionWindow extends Window implements Button.C
         setCaption("Include SystemDef/DataCollectionGroup");
         setModal(true);
         setWidth("400px");
-        setHeight("180px");
+        setHeight("2000px");
         setResizable(false);
         setClosable(false);
         addStyleName("dialog");
@@ -110,8 +110,7 @@ public abstract class IncludeCollectionWindow extends Window implements Button.C
                 List<String> values = selected.equals(IncludeCollectionWrapper.SYSTEM_DEF) ? dataCollectionConfigDao.getAvailableSystemDefs()
                     : dataCollectionConfigDao.getAvailableDataCollectionGroups();
                 // Remove already selected
-                for (Object itemId : container.getItemIds()) {
-                    IncludeCollectionWrapper obj = container.getItem(itemId).getBean();
+                for (IncludeCollectionWrapper obj : container.getOnmsBeans()) {
                     if (obj.getType().equals(selected)) {
                         values.remove(obj.getValue());
                     }
@@ -135,7 +134,7 @@ public abstract class IncludeCollectionWindow extends Window implements Button.C
 
         formEditor.bind(typeField, "type");
         formEditor.bind(valueField, "value");
-        formEditor.setItemDataSource(new BeanItem<IncludeCollectionWrapper>(wrapper));
+        formEditor.setItemDataSource(wrapper);
 
         final HorizontalLayout toolbar = new HorizontalLayout();
         toolbar.addComponent(okButton);
@@ -167,7 +166,7 @@ public abstract class IncludeCollectionWindow extends Window implements Button.C
     }
 
     /**
-     * Fired when the field has been chaned.
+     * Fired when the field has been changed.
      */
     public abstract void fieldChanged();
 

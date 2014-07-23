@@ -38,8 +38,8 @@ import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.db.DataSourceFactory;
 import org.opennms.netmgt.config.EventTranslatorConfigFactory;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
-import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 import org.opennms.netmgt.model.events.EventIpcManager;
+import org.opennms.netmgt.model.events.EventIpcManagerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -62,7 +62,7 @@ public class EventTranslator extends AbstractServiceDaemon implements EventTrans
         super(NAME);
     }
 
-    public final static String NAME = "event-translator";
+    public static final String NAME = "event-translator";
 
     /**
      * <p>onInit</p>

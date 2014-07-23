@@ -56,7 +56,7 @@ public class MapStoreIdGetterReplacement implements ColumnChangeReplacement {
     public MapStoreIdGetterReplacement(AutoIntegerIdMapStoreReplacement storeFoo,
             String[] columns, boolean noMatchOkay) {
         m_storeFoo = storeFoo;
-        m_indexColumns = columns;
+        m_indexColumns = columns == null? null : columns.clone();
         m_noMatchOkay = noMatchOkay;
     }
 

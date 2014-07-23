@@ -192,10 +192,12 @@ public class Transaction {
 
     /**
      * <p>finalize</p>
+     * @throws Throwable 
      */
     @Override
-    protected void finalize() {
+    protected void finalize() throws Throwable {
         m_dbUtils.cleanUp();
+        super.finalize();
     }
 
 }

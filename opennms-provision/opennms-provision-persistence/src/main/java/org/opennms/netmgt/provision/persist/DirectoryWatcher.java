@@ -10,8 +10,12 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import org.opennms.core.spring.FileReloadCallback;
 import org.opennms.core.spring.FileReloadContainer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class DirectoryWatcher<T> {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(DirectoryWatcher.class);
 	
 	private File m_directory;
 	private FileReloadCallback<T> m_loader;
@@ -20,7 +24,9 @@ public class DirectoryWatcher<T> {
 
 	public DirectoryWatcher(File directory, FileReloadCallback<T> loader) {
 		m_directory = directory;
-		m_directory.mkdirs();
+		if(!m_directory.mkdirs()) {
+			LOG.warn("Could not make directory: {}",m_directory.getPath());
+		}
 		m_loader = loader;
 	}
 	

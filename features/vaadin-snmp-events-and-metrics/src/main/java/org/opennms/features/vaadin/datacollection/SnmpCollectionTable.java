@@ -27,7 +27,6 @@
  *******************************************************************************/
 package org.opennms.features.vaadin.datacollection;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.opennms.features.vaadin.api.OnmsBeanContainer;
@@ -106,11 +105,7 @@ public class SnmpCollectionTable extends Table {
      * @return the SNMP collections
      */
     public List<SnmpCollection> getSnmpCollections() {
-        List<SnmpCollection> snmpCollections = new ArrayList<SnmpCollection>();
-        for (Object itemId : container.getItemIds()) {
-            snmpCollections.add(container.getItem(itemId).getBean());
-        }
-        return snmpCollections;
+        return container.getOnmsBeans();
     }
 
 }

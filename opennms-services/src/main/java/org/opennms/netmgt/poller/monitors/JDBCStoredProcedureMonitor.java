@@ -34,7 +34,7 @@ import java.sql.SQLException;
 import java.util.Map;
 
 import org.opennms.core.utils.ParameterMap;
-import org.opennms.netmgt.model.PollStatus;
+import org.opennms.netmgt.poller.PollStatus;
 
 /**
  * This class implements a basic JDBC monitoring framework; The idea is than

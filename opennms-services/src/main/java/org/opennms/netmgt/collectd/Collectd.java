@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -49,6 +49,8 @@ import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.capsd.EventUtils;
 import org.opennms.netmgt.capsd.InsufficientInformationException;
+import org.opennms.netmgt.collection.api.CollectionInitializationException;
+import org.opennms.netmgt.collection.api.ServiceCollector;
 import org.opennms.netmgt.config.CollectdConfigFactory;
 import org.opennms.netmgt.config.DataCollectionConfigFactory;
 import org.opennms.netmgt.config.SnmpEventInfo;
@@ -301,7 +303,7 @@ public class Collectd extends AbstractServiceDaemon implements
     }
 
     private void createScheduler() {
-        Logging.withPrefix("collectd", new Runnable() {
+        Logging.withPrefix(LOG4J_CATEGORY, new Runnable() {
             @Override
             public void run() {
                 // Create a scheduler
@@ -1378,7 +1380,12 @@ public class Collectd extends AbstractServiceDaemon implements
         m_scheduler = scheduler;
     }
 
-    private Scheduler getScheduler() {
+    /**
+     * <p>getScheduler</p>
+     *
+     * @param scheduler a {@link org.opennms.netmgt.scheduler.Scheduler} object.
+     */
+    public Scheduler getScheduler() {
         if (m_scheduler == null) {
             createScheduler();
         }
@@ -1435,7 +1442,7 @@ public class Collectd extends AbstractServiceDaemon implements
      * <p>setServiceCollector</p>
      *
      * @param svcName a {@link java.lang.String} object.
-     * @param collector a {@link org.opennms.netmgt.collectd.ServiceCollector} object.
+     * @param collector a {@link org.opennms.netmgt.collection.api.ServiceCollector} object.
      */
     public void setServiceCollector(String svcName, ServiceCollector collector) {
         m_collectors.put(svcName, collector);
@@ -1445,7 +1452,7 @@ public class Collectd extends AbstractServiceDaemon implements
      * <p>getServiceCollector</p>
      *
      * @param svcName a {@link java.lang.String} object.
-     * @return a {@link org.opennms.netmgt.collectd.ServiceCollector} object.
+     * @return a {@link org.opennms.netmgt.collection.api.ServiceCollector} object.
      */
     public ServiceCollector getServiceCollector(String svcName) {
         return m_collectors.get(svcName);

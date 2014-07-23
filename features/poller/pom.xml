@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>org.opennms.features</artifactId>
-    <version>1.13.1-SNAPSHOT</version>
+    <version>1.13.4-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features</groupId>
@@ -12,6 +12,7 @@
   <name>OpenNMS Features Poller</name>
   <modules>
     <module>api</module>
+    <module>remote</module>
     <module>runtime</module>
   </modules>
 </project>

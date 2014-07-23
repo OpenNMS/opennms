@@ -1,17 +1,39 @@
 package org.opennms.netmgt.config.poller;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 import java.io.File;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Properties;
 
+import org.apache.commons.io.IOUtils;
+import org.junit.Test;
 import org.junit.runners.Parameterized.Parameters;
+import org.opennms.core.test.MockLogAppender;
+import org.opennms.core.test.MockLogger;
 import org.opennms.core.test.xml.XmlTestNoCastor;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.pagesequence.Page;
 import org.opennms.netmgt.config.pagesequence.PageSequence;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class PollerConfigurationTest extends XmlTestNoCastor<PollerConfiguration> {
+    private static final Logger LOG = LoggerFactory.getLogger(PollerConfigurationTest.class);
+
     public PollerConfigurationTest(final PollerConfiguration sampleObject, final Object sampleXml) {
         super(sampleObject, sampleXml, null);
+    }
+
+    @Override
+    public void setUp() {
+        super.setUp();
+        final Properties props = new Properties();
+        props.put(MockLogger.LOG_KEY_PREFIX + "org.opennms.core.xml", "TRACE");
+        MockLogAppender.setupLogging(true, props);
     }
 
     @Override
@@ -46,16 +68,41 @@ public class PollerConfigurationTest extends XmlTestNoCastor<PollerConfiguration
                 },
                 {
                     getSimplePollerConfiguration(),
-                    new File("target/test-classes/org/opennms/netmgt/config/poller/simple-poller-configuration.xml")
+                    new File(PollerConfigurationTest.class.getResource("simple-poller-configuration.xml").getFile())
                 },
                 {
                     get18PollerConfiguration(),
-                    new File("target/test-classes/org/opennms/netmgt/config/poller/poller-configuration-1.8.xml")
+                    new File(PollerConfigurationTest.class.getResource("poller-configuration-1.8.xml").getFile())
                 }
         });
     }
 
-    private static PollerConfiguration getMinimalPollerConfiguration() {
+    @Test
+    public void testNms6490() throws IOException {
+        final String originalPollerConfigXml = IOUtils.toString(PollerConfigurationTest.class.getResource("poller-configuration-NMS-6490.xml"));
+
+        LOG.debug("original poller config XML: {}", originalPollerConfigXml);
+        final PollerConfiguration pollerConfig = JaxbUtils.unmarshal(PollerConfiguration.class, originalPollerConfigXml);
+        assertNotNull(pollerConfig);
+        assertEquals(2, pollerConfig.getPackages().size());
+        final Package pack = pollerConfig.getPackage("example1");
+        assertNotNull(pack);
+        final Service hyperic = pack.getService("HypericHQ");
+        assertNotNull(hyperic);
+        final Parameter psmParam = hyperic.getParameter("page-sequence");
+        assertNotNull(psmParam);
+        final PageSequence ps = (PageSequence) psmParam.getAnyObject();
+        assertNotNull(ps);
+        assertNotNull(ps.getPages());
+        assertEquals(3, ps.getPages().size());
+
+        final String marshalledPollerConfigXml = JaxbUtils.marshal(pollerConfig);
+        LOG.debug("marshalled poller config XML: {}", marshalledPollerConfigXml);
+
+        assertXmlEquals(originalPollerConfigXml, marshalledPollerConfigXml);
+    }
+
+    protected static PollerConfiguration getMinimalPollerConfiguration() {
         final PollerConfiguration config = new PollerConfiguration();
         final NodeOutage no = new NodeOutage();
         no.setStatus("on");

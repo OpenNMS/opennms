@@ -29,6 +29,7 @@
 package org.opennms.netmgt.jasper.resource;
 
 import java.io.File;
+import java.util.Arrays;
 
 public class ResourceQuery {
     private String m_rrdDir;
@@ -62,7 +63,7 @@ public class ResourceQuery {
         return m_filters;
     }
     public void setFilters(String[] filters) {
-        m_filters = filters;
+        m_filters = Arrays.copyOf(filters, filters.length);
     }
     
     public String constructBasePath() {
@@ -74,6 +75,6 @@ public class ResourceQuery {
     }
     
     public void setStringProperties(String[] strProperties) {
-        m_strProperties = strProperties;
+        m_strProperties = Arrays.copyOf(strProperties, strProperties.length);
     }
 }

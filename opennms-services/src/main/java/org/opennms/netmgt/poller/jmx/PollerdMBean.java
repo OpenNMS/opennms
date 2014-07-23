@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -43,4 +43,35 @@ public interface PollerdMBean extends BaseOnmsMBean {
      * @return the number of polls that have been executed
      */
     public long getNumPolls();
+
+    /**
+     * @return The number of currently active poller threads
+     */
+    public long getActiveThreads();
+    
+    /**
+     * @return The cumulative number of polling tasks scheduled since poller startup
+     */
+    public long getTasksTotal();
+    
+    /**
+     * @return The cumulative number of polling tasks completed since poller startup
+     */
+    public long getTasksCompleted();
+    
+    /**
+     * @return The ratio of completed to scheduled polling tasks since poller startup
+     */
+    public double getTaskCompletionRatio();
+    
+    /**
+     * 
+     * @return The largest size of the poller thread pool since poller startup
+     */
+    public long getPeakPoolThreads();
+    
+    /**
+     * @return The maximum number of threads allowed in the poller's thread pool
+     */
+    public long getMaxPoolThreads();
 }

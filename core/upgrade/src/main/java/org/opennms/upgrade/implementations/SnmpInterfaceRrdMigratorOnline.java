@@ -50,6 +50,8 @@ import org.opennms.netmgt.rrd.model.v1.RRDv1;
 import org.opennms.netmgt.rrd.model.v3.RRDv3;
 import org.opennms.upgrade.api.AbstractOnmsUpgrade;
 import org.opennms.upgrade.api.OnmsUpgradeException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.io.FileSystemResource;
 
 /**
@@ -70,6 +72,8 @@ import org.springframework.core.io.FileSystemResource;
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a> 
  */
 public class SnmpInterfaceRrdMigratorOnline extends AbstractOnmsUpgrade {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(SnmpInterfaceRrdMigratorOnline.class);
 
     /** The interfaces to merge. */
     private List<SnmpInterfaceUpgrade> interfacesToMerge;
@@ -150,7 +154,9 @@ public class SnmpInterfaceRrdMigratorOnline extends AbstractOnmsUpgrade {
                 File zip = new File(target.getAbsolutePath() + ZIP_EXT);
                 if (zip.exists()) {
                     log("Removing backup: %s\n", zip);
-                    zip.delete();
+                    if (!zip.delete()) {
+                    	LOG.warn("Could not delete file: {}", zip.getPath());
+                    }
                 }
             }
         }
@@ -185,9 +191,13 @@ public class SnmpInterfaceRrdMigratorOnline extends AbstractOnmsUpgrade {
                     } catch (IOException e1) {
                         log("Warning: can't delete directory %s\n", target);
                     }
-                    target.mkdirs();
+                    if(!target.mkdirs()) {
+                    	LOG.warn("Could not make directory: {}", target.getPath());
+                    }
                     unzipFile(zip, target);
-                    zip.delete();
+                    if(!zip.delete()) {
+                    	LOG.warn("Could not delete file: {}", zip.getPath());
+                    }
                 }
             }
         }
@@ -238,15 +248,19 @@ public class SnmpInterfaceRrdMigratorOnline extends AbstractOnmsUpgrade {
         try {
             Statement st = conn.createStatement();
             db.watch(st);
-            String query = "SELECT n.nodeid, n.foreignsource, n.foreignid, i.snmpifdescr, i.snmpifname, i.snmpphysaddr from node n, snmpinterface i where n.nodeid = i.nodeid and i.snmpcollect in ('C','UC') and i.snmpphysaddr is not null";
+            String query = "SELECT n.nodeid, n.foreignsource, n.foreignid, i.snmpifdescr, i.snmpifname, i.snmpphysaddr from node n, snmpinterface i where n.nodeid = i.nodeid and i.snmpphysaddr is not null order by n.nodeid, i.snmpifdescr";
             ResultSet rs = st.executeQuery(query);
             db.watch(rs);
+            int count = 0;
             while (rs.next()) {
+                count++;
                 SnmpInterfaceUpgrade intf = new SnmpInterfaceUpgrade(rs, isStoreByForeignSourceEnabled());
                 if (intf.shouldMerge()) {
                     interfacesToMerge.add(intf);
                 }
+                log("  Should merge %s ? %s\n", intf, intf.shouldMerge());
             }
+            log("  Found %s of %s SNMP interfaces that require a merge.\n", interfacesToMerge.size(), count);
         } catch (Throwable t) {
             log("Error: can't retrieve the required data from the OpenNMS Database or there were problems while processing them.\n");
             String reason = t.getMessage();

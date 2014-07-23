@@ -28,33 +28,15 @@
 
 package org.opennms.netmgt.collectd.jdbc;
 
-import org.opennms.netmgt.collectd.AbstractCollectionAttribute;
-import org.opennms.netmgt.config.collector.CollectionAttribute;
-import org.opennms.netmgt.config.collector.CollectionAttributeType;
-import org.opennms.netmgt.config.collector.CollectionResource;
-import org.opennms.netmgt.config.collector.ServiceParameters;
+import org.opennms.netmgt.collection.api.CollectionAttributeType;
+import org.opennms.netmgt.collection.support.AbstractCollectionAttribute;
 
-public class JdbcCollectionAttribute extends AbstractCollectionAttribute implements CollectionAttribute {
-    String m_alias;
-    String m_value;
-    JdbcCollectionResource m_resource;
-    CollectionAttributeType m_attribType;
+public class JdbcCollectionAttribute extends AbstractCollectionAttribute {
+    private final String m_value;
     
-    public JdbcCollectionAttribute(JdbcCollectionResource resource, CollectionAttributeType attribType, String alias, String value) {
-        m_resource=resource;
-        m_attribType=attribType;
-        m_alias = alias;
+    public JdbcCollectionAttribute(JdbcCollectionResource resource, CollectionAttributeType attribType, String value) {
+        super(attribType, resource);
         m_value = value;
-    }
-    
-    @Override
-    public CollectionAttributeType getAttributeType() {
-        return m_attribType;
-    }
-    
-    @Override
-    public String getName() {
-        return m_alias;
     }
     
     @Override
@@ -63,28 +45,13 @@ public class JdbcCollectionAttribute extends AbstractCollectionAttribute impleme
     }
     
     @Override
-    public CollectionResource getResource() {
-        return m_resource;
-    }
-    
-    @Override
     public String getStringValue() {
         return m_value; //Should this be null instead?
     }
     
     @Override
-    public boolean shouldPersist(ServiceParameters params) {
-        return true;
-    }
-    
-    @Override
-    public String getType() {
-        return m_attribType.getType();
-    }
-    
-    @Override
     public String toString() {
-        return "JdbcCollectionAttribute " + m_alias+"=" + m_value;
+        return "JdbcCollectionAttribute " + getName()+"=" + m_value;
     }
 
     @Override

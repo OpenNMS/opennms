@@ -91,14 +91,6 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
     private TransactionTemplate m_template;
     
     /**
-     * <p>getTemplate</p>
-     *
-     * @return a {@link org.springframework.transaction.support.TransactionTemplate} object.
-     */
-    public TransactionTemplate getTemplate() {
-        return m_template;
-    }
-    /**
      * <p>setTemplate</p>
      *
      * @param template a {@link org.springframework.transaction.support.TransactionTemplate} object.
@@ -113,8 +105,8 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
 
     /** Constant <code>NAME="RancidProvisioningAdapter"</code> */
     public static final String NAME = "RancidProvisioningAdapter";
-    private volatile static ConcurrentMap<Integer, RancidNode> m_onmsNodeRancidNodeMap;
-    private volatile static ConcurrentMap<Integer, String> m_onmsNodeIpMap;
+    private static volatile  ConcurrentMap<Integer, RancidNode> m_onmsNodeRancidNodeMap;
+    private static volatile ConcurrentMap<Integer, String> m_onmsNodeIpMap;
     
 
     @Override
@@ -163,7 +155,7 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
             public void doInTransactionWithoutResult(TransactionStatus arg0) {
                 buildRancidNodeMap();
             }
-        });        
+        });
     }
 
     private void getRancidCategories() {
@@ -219,6 +211,9 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
      * @throws org.opennms.netmgt.provision.ProvisioningAdapterException if any.
      */
     public void doAdd(int nodeId, ConnectionProperties cp, boolean retry) throws ProvisioningAdapterException {
+        if (! isAdapterConfigured()) {
+            return;
+        }
         LOG.debug("doAdd: adding nodeid: {}", nodeId);
 
         final OnmsNode node = m_nodeDao.get(nodeId);                                                                                                                                                                                            
@@ -276,6 +271,9 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
      * @throws org.opennms.netmgt.provision.ProvisioningAdapterException if any.
      */
     public void doUpdate(int nodeId, ConnectionProperties cp, boolean retry) throws ProvisioningAdapterException {
+        if (! isAdapterConfigured()) {
+            return;
+        }
         LOG.debug("doUpdate: updating nodeid: {}", nodeId);
             
         RancidNode rLocalNode = m_onmsNodeRancidNodeMap.get(Integer.valueOf(nodeId));
@@ -385,6 +383,9 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
      * @throws org.opennms.netmgt.provision.ProvisioningAdapterException if any.
      */
     public void doDelete(int nodeId,ConnectionProperties cp, boolean retry) throws ProvisioningAdapterException {
+        if (! isAdapterConfigured()) {
+            return;
+        }
 
         LOG.debug("doDelete: deleting nodeid: {}", nodeId);
         
@@ -429,12 +430,15 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
      * @throws org.opennms.netmgt.provision.ProvisioningAdapterException if any.
      */
     public void doNodeConfigChanged(int nodeId,ConnectionProperties cp, boolean retry) throws ProvisioningAdapterException {
+        if (! isAdapterConfigured()) {
+            return;
+        }
         LOG.debug("doNodeConfigChanged: nodeid: {}", nodeId);
-            if (m_onmsNodeRancidNodeMap.containsKey(Integer.valueOf(nodeId))) {
-                updateConfiguration(nodeId,m_onmsNodeRancidNodeMap.get(Integer.valueOf(nodeId)),cp, retry);
-            } else {
-                LOG.warn("doNodeConfigChanged: No node found in nodeRancid Map for nodeid: {}", nodeId);
-            }
+        if (m_onmsNodeRancidNodeMap.containsKey(Integer.valueOf(nodeId))) {
+            updateConfiguration(nodeId,m_onmsNodeRancidNodeMap.get(Integer.valueOf(nodeId)),cp, retry);
+        } else {
+            LOG.warn("doNodeConfigChanged: No node found in nodeRancid Map for nodeid: {}", nodeId);
+        }
     }
 
     private void updateConfiguration(int nodeid, RancidNode rNode,ConnectionProperties cp, boolean retry) throws ProvisioningAdapterException {
@@ -713,6 +717,7 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
     @EventHandler(uei = EventConstants.RELOAD_DAEMON_CONFIG_UEI)
     public void handleReloadConfigEvent(Event event) {
         if (isReloadConfigEventTarget(event)) {
+            EventBuilder ebldr = null;
             LOG.debug("reloading the rancid adapter configuration");
             try {
                 RancidAdapterConfigFactory.init();
@@ -729,8 +734,16 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
                 } finally {
                     factory.getWriteLock().unlock();
                 }
+                ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_SUCCESSFUL_UEI, "Provisiond.RancidProvisioningAdapter");
+                ebldr.addParam(EventConstants.PARM_DAEMON_NAME, "Provisiond.RancidProvisioningAdapter");
             } catch (Throwable e) {
                 LOG.info("unable to reload rancid adapter configuration", e);
+                ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_FAILED_UEI, "Provisiond.RancidProvisioningAdapter");
+                ebldr.addParam(EventConstants.PARM_DAEMON_NAME, "Provisiond.RancidProvisioningAdapter");
+                ebldr.addParam(EventConstants.PARM_REASON, e.getLocalizedMessage().substring(1, 128));
+            }
+            if (ebldr != null) {
+                getEventForwarder().sendNow(ebldr.getEvent());
             }
         }
     }
@@ -832,5 +845,13 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
         if (localNode.isAutoEnable()) return !remoteNode.isAutoEnable();
         if (!localNode.isAutoEnable()) return remoteNode.isAutoEnable();
         return false;
+    }
+    
+    private boolean isAdapterConfigured() {
+        if ("http://rws-not-configured".equals(m_rwsConfig.getBaseUrl().getServer_url())) {
+            LOG.debug("Not taking any action because server_url is set to http://rws-not-configured");
+            return false;
+        }
+        return true;
     }
 }

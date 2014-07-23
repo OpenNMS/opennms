@@ -28,10 +28,9 @@
 
 package org.opennms.netmgt.collectd;
 
-import org.opennms.netmgt.config.collector.CollectionResource;
-import org.opennms.netmgt.config.collector.CollectionSetVisitor;
-import org.opennms.netmgt.config.collector.Persister;
-import org.opennms.netmgt.config.collector.ServiceParameters;
+import org.opennms.netmgt.collection.api.CollectionResource;
+import org.opennms.netmgt.collection.api.Persister;
+import org.opennms.netmgt.collection.support.AbstractCollectionAttribute;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpValue;
@@ -48,21 +47,17 @@ public class SnmpAttribute extends AbstractCollectionAttribute {
     
     public static final Logger LOG = LoggerFactory.getLogger(SnmpAttribute.class);
 
-    private CollectionResource m_resource;
-    private SnmpAttributeType m_type;
     private SnmpValue m_val;
 
     /**
      * <p>Constructor for SnmpAttribute.</p>
      *
-     * @param resource a {@link org.opennms.netmgt.config.collector.CollectionResource} object.
+     * @param resource a {@link org.opennms.netmgt.collection.api.CollectionResource} object.
      * @param type a {@link org.opennms.netmgt.collectd.SnmpAttributeType} object.
      * @param val a {@link org.opennms.netmgt.snmp.SnmpValue} object.
      */
     public SnmpAttribute(CollectionResource resource, SnmpAttributeType type, SnmpValue val) {
-        super();
-        m_resource = resource;
-        m_type = type;
+        super(type, resource);
         m_val = val;
     }
 
@@ -71,7 +66,7 @@ public class SnmpAttribute extends AbstractCollectionAttribute {
     public boolean equals(Object obj) {
         if (obj instanceof SnmpAttribute) {
             SnmpAttribute attr = (SnmpAttribute) obj;
-            return (m_resource.equals(attr.m_resource) && m_type.equals(attr.m_type));
+            return (m_resource.equals(attr.m_resource) && m_attribType.equals(attr.m_attribType));
         }
         return false;
     }
@@ -83,35 +78,7 @@ public class SnmpAttribute extends AbstractCollectionAttribute {
      */
     @Override
     public int hashCode() {
-        return (m_resource.hashCode() ^ m_type.hashCode());
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void visit(CollectionSetVisitor visitor) {
-        LOG.debug("Visiting attribute {}", this);
-        visitor.visitAttribute(this);
-        visitor.completeAttribute(this);
-    }
-
-    /**
-     * <p>getAttributeType</p>
-     *
-     * @return a {@link org.opennms.netmgt.collectd.SnmpAttributeType} object.
-     */
-    @Override
-    public SnmpAttributeType getAttributeType() {
-        return m_type;
-    }
-
-    /**
-     * <p>getResource</p>
-     *
-     * @return a {@link org.opennms.netmgt.config.collector.CollectionResource} object.
-     */
-    @Override
-    public CollectionResource getResource() {
-        return m_resource;
+        return (m_resource.hashCode() ^ m_attribType.hashCode());
     }
 
     /**
@@ -121,10 +88,6 @@ public class SnmpAttribute extends AbstractCollectionAttribute {
      */
     public SnmpValue getValue() {
         return m_val;
-    }
-
-    void store(Persister persister) {
-        getAttributeType().storeAttribute(this, persister);
     }
 
     /** {@inheritDoc} */
@@ -143,40 +106,14 @@ public class SnmpAttribute extends AbstractCollectionAttribute {
         return getResource()+"."+getAttributeType()+" = "+getValue();
     }
 
-    /**
-     * <p>getType</p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    @Override
-    public String getType() {
-        return getAttributeType().getType();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public boolean shouldPersist(ServiceParameters params) {
-        return true;
-    }
-
-    /**
-     * <p>getName</p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    @Override
-    public String getName() {
-        return getAttributeType().getName();
-    }
-    
-    
     @Override
     public String getMetricIdentifier() {
         String instance = m_resource.getInstance();
+        SnmpAttributeType type = (SnmpAttributeType)m_attribType;
         if (instance == null) {
-            instance = m_type.getInstance();
+            instance = type.getInstance();
         }
-        return "SNMP_"+SnmpObjId.get(m_type.getSnmpObjId(), instance);
+        return "SNMP_"+SnmpObjId.get(type.getSnmpObjId(), instance);
     }
     
     /**
@@ -191,21 +128,25 @@ public class SnmpAttribute extends AbstractCollectionAttribute {
             return null;
         } else if (getValue().isNumeric()) {
             return Long.toString(getValue().toLong());
-        } else if (getValue().getBytes().length == 8) {
-            return Long.toString(SnmpUtils.getProtoCounter64Value(getValue()));
         } else {
+            // Check to see if this is a 63-bit counter packed into an octetstring
+            Long value = SnmpUtils.getProtoCounter63Value(getValue());
+            if (value != null) {
+                return value.toString();
+            }
+
             try {
                 return Double.valueOf(getValue().toString()).toString();
             } catch(NumberFormatException e) {
                 LOG.trace("Unable to process data received for attribute {} maybe this is not a number? See bug 1473 for more information. Skipping.", this);
-		if (getValue().getType() == SnmpValue.SNMP_OCTET_STRING) {
-		    try {
-			return Long.valueOf(getValue().toHexString(), 16).toString();
-		    } catch(NumberFormatException ex) {
-			LOG.trace("Unable to process data received for attribute {} maybe this is not a number? See bug 1473 for more information. Skipping.", this);
-		    }
-		}
-	    }
+                if (getValue().getType() == SnmpValue.SNMP_OCTET_STRING) {
+                    try {
+                        return Long.valueOf(getValue().toHexString(), 16).toString();
+                    } catch(NumberFormatException ex) {
+                        LOG.trace("Unable to process data received for attribute {} maybe this is not a number? See bug 1473 for more information. Skipping.", this);
+                    }
+                }
+            }
             return null;
         }
     }

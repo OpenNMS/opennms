@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -37,4 +37,18 @@ import org.opennms.netmgt.daemon.BaseOnmsMBean;
  * @version $Id: $
  */
 public interface TrapdMBean extends BaseOnmsMBean {
+    /** @return The number of SNMPv1 traps received since Trapd was last started */
+    public long getV1TrapsReceived();
+    
+    /** @return The number of SNMPv2c traps received since Trapd was last started */
+    public long getV2cTrapsReceived();
+    
+    /** @return The number of SNMPv3 traps received since Trapd was last started */
+    public long getV3TrapsReceived();
+    
+    /** @return The number of traps discarded, at user request, since Trapd was last started */
+    public long getTrapsDiscarded();
+    
+    /** @return The number of traps not processed due to errors since Trapd was last started */
+    public long getTrapsErrored();
 }

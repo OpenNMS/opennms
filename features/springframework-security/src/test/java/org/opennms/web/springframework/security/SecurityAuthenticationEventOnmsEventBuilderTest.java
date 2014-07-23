@@ -34,6 +34,7 @@ import static org.easymock.EasyMock.replay;
 import static org.easymock.EasyMock.verify;
 
 import java.util.Arrays;
+import java.util.Date;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -42,6 +43,7 @@ import junit.framework.TestCase;
 
 import org.easymock.EasyMock;
 import org.easymock.IArgumentMatcher;
+import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.dao.mock.EventWrapper;
 import org.opennms.netmgt.mock.MockEventUtil;
 import org.opennms.netmgt.model.events.EventBuilder;
@@ -92,6 +94,9 @@ public class SecurityAuthenticationEventOnmsEventBuilderTest extends TestCase {
         eventBuilder.addParam("user", userName);
         eventBuilder.addParam("ip", ip);
         
+        Event expectedEvent = eventBuilder.getEvent();
+        // Make sure the timestamps are synchronized
+        expectedEvent.setTime(EventConstants.formatToString(new Date(authEvent.getTimestamp())));
         m_eventProxy.send(EventEquals.eqEvent(eventBuilder.getEvent()));
         
         m_mocks.replayAll();

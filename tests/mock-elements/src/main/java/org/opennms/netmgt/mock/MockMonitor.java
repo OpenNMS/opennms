@@ -30,13 +30,17 @@ package org.opennms.netmgt.mock;
 
 import java.util.Map;
 
-
-import org.opennms.netmgt.model.PollStatus;
+import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.MonitoredService;
+import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.ServiceMonitor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ *  Mark this as {@link Distributable} so that we can reuse it for the remote poller tests.
+ */
+@Distributable
 public class MockMonitor implements ServiceMonitor {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(MockMonitor.class);
@@ -82,7 +86,7 @@ public class MockMonitor implements ServiceMonitor {
             } else {
                 LOG.info("Poll: [{}{}{}]", svc.getInterface().getNode().getLabel(), ipAddr, m_svcName);
                 PollStatus pollStatus = svc.poll();
-				return PollStatus.get(pollStatus.getStatusCode(), pollStatus.getReason());
+                return PollStatus.get(pollStatus.getStatusCode(), pollStatus.getReason());
             }
         }
     }

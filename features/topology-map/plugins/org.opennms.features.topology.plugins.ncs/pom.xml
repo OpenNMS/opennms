@@ -6,7 +6,7 @@
         <relativePath>../../poms/compiled/</relativePath>
         <groupId>org.opennms.features.topology.build</groupId>
         <artifactId>compiled-bundle-settings</artifactId>
-        <version>1.13.1-SNAPSHOT</version>
+        <version>1.13.4-SNAPSHOT</version>
     </parent>
 
     <properties>
@@ -161,10 +161,20 @@
             <scope>test</scope>
             <exclusions>
                 <exclusion>
+                    <groupId>asm</groupId>
+                    <artifactId>asm</artifactId>
+                </exclusion>
+                <exclusion>
                     <groupId>commons-logging</groupId>
                     <artifactId>commons-logging</artifactId>
                 </exclusion>
             </exclusions>
+        </dependency>
+        <!-- override asm/asm from container -->
+        <dependency>
+            <groupId>org.ow2.asm</groupId>
+            <artifactId>asm-all</artifactId>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.karaf.tooling.exam</groupId>
@@ -255,6 +265,10 @@
             <groupId>org.opennms.dependencies</groupId>
             <artifactId>camel-dependencies</artifactId>
             <type>pom</type>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.core</groupId>
+            <artifactId>org.opennms.core.camel</artifactId>
         </dependency>
 
         <dependency>

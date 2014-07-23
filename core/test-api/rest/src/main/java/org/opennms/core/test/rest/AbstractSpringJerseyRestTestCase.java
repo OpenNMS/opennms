@@ -40,9 +40,14 @@ import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -60,9 +65,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.db.XADataSourceFactory;
-import org.opennms.core.test.db.MockDatabase;
 import org.opennms.core.utils.StringUtils;
-import org.opennms.test.DaoTestConfigBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -104,16 +107,14 @@ public abstract class AbstractSpringJerseyRestTestCase {
     private Filter filter;
     private WebApplicationContext m_webAppContext;
 
+    private String m_username = "admin";
+    private Set<String> m_roles = Collections.synchronizedSet(new HashSet<String>(Collections.singletonList("ROLE_ADMIN")));
+
     @Before
     public void setUp() throws Throwable {
+        clearUserInfo();
+
         beforeServletStart();
-
-        DaoTestConfigBean bean = new DaoTestConfigBean();
-        bean.afterPropertiesSet();
-
-        MockDatabase db = new MockDatabase(true);
-        DataSourceFactory.setInstance(db);
-        XADataSourceFactory.setInstance(db);
 
         setServletConfig(new MockServletConfig(getServletContext(), "dispatcher"));    
         getServletConfig().addInitParameter("com.sun.jersey.config.property.resourceConfigClass", "com.sun.jersey.api.core.PackagesResourceConfig");
@@ -131,7 +132,7 @@ public abstract class AbstractSpringJerseyRestTestCase {
         } catch (ServletException se) {
             throw se.getRootCause();
         }
-        
+
         setWebAppContext(WebApplicationContextUtils.getWebApplicationContext(getServletContext()));
         afterServletStart();
         System.err.println("------------------------------------------------------------------------------");
@@ -140,12 +141,14 @@ public abstract class AbstractSpringJerseyRestTestCase {
     protected static void cleanUpImports() {
         final Iterator<File> fileIterator = FileUtils.iterateFiles(new File("target/test/opennms-home/etc/imports"), null, true);
         while (fileIterator.hasNext()) {
-            fileIterator.next().delete();
+            if(!fileIterator.next().delete()) {
+            	LOG.warn("Could not delete file: {}", fileIterator.next().getPath());
+            }
         }
     }
 
     protected ServletContext getServletContext() {
-    	return servletContext;
+        return servletContext;
     }
 
     /**
@@ -199,25 +202,58 @@ public abstract class AbstractSpringJerseyRestTestCase {
             filterChain.doFilter(request, response);
         }
     }
-    
+
     protected static MockHttpServletResponse createResponse() {
         return new MockHttpServletResponse();
     }
 
-	protected static MockHttpServletRequest createRequest(final ServletContext context, final String requestType, final String urlPath) {
-		final MockHttpServletRequest request = new MockHttpServletRequest(context, requestType, contextPath + urlPath) {
+    protected static MockHttpServletRequest createRequest(final ServletContext context, final String requestType, final String urlPath) {
+        final Set<String> emptySet = Collections.emptySet();
+        return createRequest(context, requestType, urlPath, "admin", emptySet);
+    }
 
-			@Override
-			// FIXME: remove when we update to Spring 3.1
-			public void setContentType(final String contentType) {
-				super.setContentType(contentType);
-			}
+    protected static MockHttpServletRequest createRequest(final ServletContext context, final String requestType, final String urlPath, final String username, final Collection<String> roles) {
+        final MockHttpServletRequest request = new MockHttpServletRequest(context, requestType, contextPath + urlPath) {
 
-		};
-		request.setContextPath(contextPath);
-		request.setUserPrincipal(MockUserPrincipal.getInstance());
-		return request;
-	}
+            @Override
+            // FIXME: remove when we update to Spring 3.1
+            public void setContentType(final String contentType) {
+                super.setContentType(contentType);
+            }
+
+        };
+        request.setContextPath(contextPath);
+        request.setUserPrincipal(MockUserPrincipal.getInstance());
+        MockUserPrincipal.setName(username);
+        if (username != null) {
+            for (final String role : roles) {
+                request.addUserRole(role);
+            }
+        }
+        return request;
+    }
+
+    protected void setUser(final String user) {
+        m_username = user;
+    }
+
+    protected String getUser() {
+        return m_username;
+    }
+
+    protected Collection<String> getUserRoles() {
+        return Collections.unmodifiableSet(new HashSet<String>(m_roles));
+    }
+
+    protected void addUserRole(final String role) {
+        m_roles.add(role);
+    }
+
+    protected void clearUserInfo() {
+        m_username = "admin";
+        m_roles.clear();
+    }
+
 
     /**
      * @param url
@@ -274,7 +310,7 @@ public abstract class AbstractSpringJerseyRestTestCase {
     protected MockHttpServletResponse sendPut(String url, String formData, int statusCode) throws Exception {
         return sendData(PUT, MediaType.APPLICATION_FORM_URLENCODED, url, formData, statusCode);
     }
-    
+
     /**
      * @param url
      * @param formData
@@ -290,7 +326,7 @@ public abstract class AbstractSpringJerseyRestTestCase {
         }
         return response;
     }
-    
+
     /**
      * @param requestType
      * @param contentType
@@ -298,9 +334,9 @@ public abstract class AbstractSpringJerseyRestTestCase {
      * @param data
      */
     protected MockHttpServletResponse sendData(String requestType, String contentType, String url, String data) throws Exception {
-    	return sendData(requestType, contentType, url, data, 200);
+        return sendData(requestType, contentType, url, data, 200);
     }
-    
+
     /**
      * @param requestType
      * @param contentType
@@ -309,7 +345,7 @@ public abstract class AbstractSpringJerseyRestTestCase {
      * @param statusCode
      */
     protected MockHttpServletResponse sendData(String requestType, String contentType, String url, String data, int statusCode) throws Exception {
-        MockHttpServletRequest request = createRequest(getServletContext(), requestType, url);
+        MockHttpServletRequest request = createRequest(getServletContext(), requestType, url, getUser(), getUserRoles());
         request.setContentType(contentType);
 
         if(contentType.equals(MediaType.APPLICATION_FORM_URLENCODED)){
@@ -324,38 +360,38 @@ public abstract class AbstractSpringJerseyRestTestCase {
 
         LOG.debug("Received response: {}", stringifyResponse(response));
         assertEquals(response.getErrorMessage(), statusCode, response.getStatus());
-        
+
         return response;
     }
 
     protected String stringifyResponse(final MockHttpServletResponse response) {
-    	final StringBuilder string = new StringBuilder();
-    	try {
-			string.append("HttpServletResponse[")
-				.append("status=").append(response.getStatus())
-				.append(",content=").append(response.getContentAsString())
-				.append(",headers=[");
-			boolean first = true;
-			for (final Iterator<String> i = response.getHeaderNames().iterator(); i.hasNext(); first = false) {
-				if (!first) {
-					string.append(",");
-				}
-				final String name = i.next();
-				string.append("name=").append(response.getHeader(name));
-			}
-			string.append("]").append("]");
-		} catch (UnsupportedEncodingException e) {
-			LOG.warn("Unable to get response content", e);
-		}
-    	return string.toString();
-	}
+        final StringBuilder string = new StringBuilder();
+        try {
+            string.append("HttpServletResponse[")
+            .append("status=").append(response.getStatus())
+            .append(",content=").append(response.getContentAsString())
+            .append(",headers=[");
+            boolean first = true;
+            for (final Iterator<String> i = response.getHeaderNames().iterator(); i.hasNext(); first = false) {
+                if (!first) {
+                    string.append(",");
+                }
+                final String name = i.next();
+                string.append("name=").append(response.getHeader(name));
+            }
+            string.append("]").append("]");
+        } catch (UnsupportedEncodingException e) {
+            LOG.warn("Unable to get response content", e);
+        }
+        return string.toString();
+    }
 
-	protected static Map<String, String> parseParamData(String data) throws UnsupportedEncodingException {
+    protected static Map<String, String> parseParamData(String data) throws UnsupportedEncodingException {
         Map<String, String> retVal = new HashMap<String, String>();
         for (String item : data.split("&")) {
-            int idx = item.indexOf("=");
-            if (idx > 0) {
-                retVal.put(URLDecoder.decode(item.substring(0, idx), "UTF-8"), URLDecoder.decode(item.substring(idx + 1), "UTF-8"));
+            String[] kv = item.split("=");
+            if(kv.length > 1){
+                retVal.put(URLDecoder.decode(kv[0], "UTF-8"), URLDecoder.decode(kv[1], "UTF-8"));
             }
         }
         return retVal;
@@ -366,45 +402,46 @@ public abstract class AbstractSpringJerseyRestTestCase {
     }
 
     protected String sendRequest(final String requestType, final String url, final Map<?,?> parameters, final int expectedStatus, final String expectedUrlSuffix) throws Exception {
-        final MockHttpServletRequest request = createRequest(getServletContext(), requestType, url);
+        final MockHttpServletRequest request = createRequest(getServletContext(), requestType, url, getUser(), getUserRoles());
         request.setParameters(parameters);
         request.setQueryString(getQueryString(parameters));
         return sendRequest(request, expectedStatus, expectedUrlSuffix);
     }
-    
+
     protected static String getQueryString(final Map<?,?> parameters) {
-    	final StringBuffer sb = new StringBuffer();
+        final StringBuffer sb = new StringBuffer();
 
-		try {
-	    	for (final Object key : parameters.keySet()) {
-	    		if (key instanceof String) {
-	    			final Object value = parameters.get(key);
-	    			String[] valueEntries = null;
-	    			if (value instanceof String[]) {
-	    				valueEntries = (String[])value;
-	    			} else if (value instanceof String) {
-	    				valueEntries = new String[] { (String)value };
-	    			} else {
-					LOG.warn("value was not a string or string array! ({})", value);
-	    				continue;
-	    			}
+        try {
+            for (final Entry<?,?> entry : parameters.entrySet()) {
+                final Object key = entry.getKey();
+                if (key instanceof String) {
+                    final Object value = entry.getValue();
+                    String[] valueEntries = null;
+                    if (value instanceof String[]) {
+                        valueEntries = (String[])value;
+                    } else if (value instanceof String) {
+                        valueEntries = new String[] { (String)value };
+                    } else {
+                        LOG.warn("value was not a string or string array! ({})", value);
+                        continue;
+                    }
 
-	    			for (final String valueEntry : valueEntries) {
-	    				sb.append(URLEncoder.encode((String)key, "UTF-8")).append("=").append(URLEncoder.encode((String)valueEntry, "UTF-8")).append("&");
-	    			}
-	    		} else {
-				LOG.warn("key was not a string! ({})", key);
-	    		}
-	    	}
-		} catch (final UnsupportedEncodingException e) {
-			LOG.warn("unsupported encoding UTF-8?!?  WTF??!", e);
-		}
-    	
-    	return sb.toString();
+                    for (final String valueEntry : valueEntries) {
+                        sb.append(URLEncoder.encode((String)key, "UTF-8")).append("=").append(URLEncoder.encode((String)valueEntry, "UTF-8")).append("&");
+                    }
+                } else {
+                    LOG.warn("key was not a string! ({})", key);
+                }
+            }
+        } catch (final UnsupportedEncodingException e) {
+            LOG.warn("unsupported encoding UTF-8?!?  WTF??!", e);
+        }
+
+        return sb.toString();
     }
 
     protected String sendRequest(String requestType, String url, int expectedStatus) throws Exception {
-    	final MockHttpServletRequest request = createRequest(getServletContext(), requestType, url);
+        final MockHttpServletRequest request = createRequest(getServletContext(), requestType, url, getUser(), getUserRoles());
         return sendRequest(request, expectedStatus);
     }
 
@@ -431,32 +468,32 @@ public abstract class AbstractSpringJerseyRestTestCase {
         Thread.sleep(50);
         return xml;
     }
-    
+
     protected <T> T getXmlObject(JAXBContext context, String url, int expectedStatus, Class<T> expectedClass) throws Exception {
-        MockHttpServletRequest request = createRequest(getServletContext(), GET, url);
+        MockHttpServletRequest request = createRequest(getServletContext(), GET, url, getUser(), getUserRoles());
         MockHttpServletResponse response = createResponse();
         dispatch(request, response);
         assertEquals(expectedStatus, response.getStatus());
-        
-        System.err.printf("xml: %s\n", response.getContentAsString());
-        
+
+        System.err.printf("xml: %s%n", response.getContentAsString());
+
         InputStream in = new ByteArrayInputStream(response.getContentAsByteArray());
-        
+
         Unmarshaller unmarshaller = context.createUnmarshaller();
-        
+
         T result = expectedClass.cast(unmarshaller.unmarshal(in));
-        
+
         return result;
 
     }
-    
+
     protected void putXmlObject(final JAXBContext context, final String url, final int expectedStatus, final Object object, final String expectedUrlSuffix) throws Exception {
-    	final ByteArrayOutputStream out = new ByteArrayOutputStream(); 
+        final ByteArrayOutputStream out = new ByteArrayOutputStream(); 
         final Marshaller marshaller = context.createMarshaller();
         marshaller.marshal(object, out);
         final byte[] content = out.toByteArray();
-        
-        final MockHttpServletRequest request = createRequest(getServletContext(), PUT, url);
+
+        final MockHttpServletRequest request = createRequest(getServletContext(), PUT, url, getUser(), getUserRoles());
         request.setContentType(MediaType.APPLICATION_XML);
         request.setContent(content);
         final MockHttpServletResponse response = createResponse();
@@ -467,63 +504,63 @@ public abstract class AbstractSpringJerseyRestTestCase {
         assertTrue("location '" + location + "' should end with '" + expectedUrlSuffix + "'", location.endsWith(expectedUrlSuffix));
     }
 
-	protected void createNode() throws Exception {
-	    String node = "<node type=\"A\" label=\"TestMachine\">" +
-	            "<labelSource>H</labelSource>" +
-	            "<sysContact>The Owner</sysContact>" +
-	            "<sysDescription>" +
-	            "Darwin TestMachine 9.4.0 Darwin Kernel Version 9.4.0: Mon Jun  9 19:30:53 PDT 2008; root:xnu-1228.5.20~1/RELEASE_I386 i386" +
-	            "</sysDescription>" +
-	            "<sysLocation>DevJam</sysLocation>" +
-	            "<sysName>TestMachine</sysName>" +
-	            "<sysObjectId>.1.3.6.1.4.1.8072.3.2.255</sysObjectId>" +
-	            "</node>";
-	    sendPost("/nodes", node, 303, "/nodes/1");
-	}
+    protected void createNode() throws Exception {
+        String node = "<node type=\"A\" label=\"TestMachine\">" +
+                "<labelSource>H</labelSource>" +
+                "<sysContact>The Owner</sysContact>" +
+                "<sysDescription>" +
+                "Darwin TestMachine 9.4.0 Darwin Kernel Version 9.4.0: Mon Jun  9 19:30:53 PDT 2008; root:xnu-1228.5.20~1/RELEASE_I386 i386" +
+                "</sysDescription>" +
+                "<sysLocation>DevJam</sysLocation>" +
+                "<sysName>TestMachine</sysName>" +
+                "<sysObjectId>.1.3.6.1.4.1.8072.3.2.255</sysObjectId>" +
+                "</node>";
+        sendPost("/nodes", node, 303, "/nodes/1");
+    }
 
-	protected void createIpInterface() throws Exception {
-	    createNode();
-	    String ipInterface = "<ipInterface isManaged=\"M\" snmpPrimary=\"P\">" +
-	    "<ipAddress>10.10.10.10</ipAddress>" +
-	    "<hostName>TestMachine</hostName>" +
-	    "<ipStatus>1</ipStatus>" +
-	    "</ipInterface>";
-	    sendPost("/nodes/1/ipinterfaces", ipInterface, 303, "/nodes/1/ipinterfaces/10.10.10.10");
-	}
+    protected void createIpInterface() throws Exception {
+        createNode();
+        String ipInterface = "<ipInterface isManaged=\"M\" snmpPrimary=\"P\">" +
+                "<ipAddress>10.10.10.10</ipAddress>" +
+                "<hostName>TestMachine</hostName>" +
+                "<ipStatus>1</ipStatus>" +
+                "</ipInterface>";
+        sendPost("/nodes/1/ipinterfaces", ipInterface, 303, "/nodes/1/ipinterfaces/10.10.10.10");
+    }
 
-	protected void createSnmpInterface() throws Exception {
-	    createIpInterface();
-	    String snmpInterface = "<snmpInterface ifIndex=\"6\">" +
-	    "<ifAdminStatus>1</ifAdminStatus>" +
-	    "<ifDescr>en1</ifDescr>" +
-	    "<ifName>en1</ifName>" +
-	    "<ifOperStatus>1</ifOperStatus>" +
-	    "<ifSpeed>10000000</ifSpeed>" +
-	    "<ifType>6</ifType>" +
-	    "<netMask>255.255.255.0</netMask>" +
-	    "<physAddr>001e5271136d</physAddr>" +
-	    "</snmpInterface>";
-	    sendPost("/nodes/1/snmpinterfaces", snmpInterface, 303, "/nodes/1/snmpinterfaces/6");
-	}
+    protected void createSnmpInterface() throws Exception {
+        createIpInterface();
+        String snmpInterface = "<snmpInterface ifIndex=\"6\">" +
+                "<ifAdminStatus>1</ifAdminStatus>" +
+                "<ifDescr>en1</ifDescr>" +
+                "<ifName>en1</ifName>" +
+                "<ifOperStatus>1</ifOperStatus>" +
+                "<ifSpeed>10000000</ifSpeed>" +
+                "<ifType>6</ifType>" +
+                "<netMask>255.255.255.0</netMask>" +
+                "<physAddr>001e5271136d</physAddr>" +
+                "</snmpInterface>";
+        sendPost("/nodes/1/snmpinterfaces", snmpInterface, 303, "/nodes/1/snmpinterfaces/6");
+    }
 
-	protected void createService() throws Exception {
-	    createIpInterface();
-	    String service = "<service source=\"P\" status=\"N\">" +
-	    "<notify>Y</notify>" +
-	    "<serviceType>" +
-	    "<name>ICMP</name>" +
-	    "</serviceType>" +
-	    "</service>";
-	    sendPost("/nodes/1/ipinterfaces/10.10.10.10/services", service, 303, "/nodes/1/ipinterfaces/10.10.10.10/services/ICMP");
-	}
+    protected void createService() throws Exception {
+        createIpInterface();
+        String service = "<service source=\"P\" status=\"N\">" +
+                "<notify>Y</notify>" +
+                "<serviceType>" +
+                "<name>ICMP</name>" +
+                "</serviceType>" +
+                "</service>";
+        sendPost("/nodes/1/ipinterfaces/10.10.10.10/services", service, 303, "/nodes/1/ipinterfaces/10.10.10.10/services/ICMP");
+    }
 
-	protected void createCategory() throws Exception {
-	    createNode();
-	    String service = "<category name=\"Routers\">" +
-	        "<description>Core Routers</description>" +
-	        "</category>";
-	    sendPost("/categories", service, 303, "/categories/Routers");
-	}
+    protected void createCategory() throws Exception {
+        createNode();
+        String service = "<category name=\"Routers\">" +
+                "<description>Core Routers</description>" +
+                "</category>";
+        sendPost("/categories", service, 303, "/categories/Routers");
+    }
 
     public void setWebAppContext(WebApplicationContext webAppContext) {
         m_webAppContext = webAppContext;
@@ -532,7 +569,7 @@ public abstract class AbstractSpringJerseyRestTestCase {
     public WebApplicationContext getWebAppContext() {
         return m_webAppContext;
     }
-    
+
     public <T> T getBean(String name, Class<T> beanClass) {
         return m_webAppContext.getBean(name, beanClass);
     }

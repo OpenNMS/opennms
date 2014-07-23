@@ -28,30 +28,17 @@
 
 package org.opennms.netmgt.collectd.tca;
 
-import org.opennms.netmgt.collectd.AbstractCollectionAttribute;
-import org.opennms.netmgt.config.collector.CollectionAttribute;
-import org.opennms.netmgt.config.collector.CollectionAttributeType;
-import org.opennms.netmgt.config.collector.CollectionResource;
-import org.opennms.netmgt.config.collector.ServiceParameters;
+import org.opennms.netmgt.collection.support.AbstractCollectionAttribute;
 
 /**
  * The Class TcaCollectionAttribute.
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
-public class TcaCollectionAttribute extends AbstractCollectionAttribute implements CollectionAttribute {
-
-	/** The Attribute Name. */
-	private String m_name;
+public class TcaCollectionAttribute extends AbstractCollectionAttribute {
 
 	/** The Attribute Value. */
-	private String m_value;
-
-	/** The TCA Collection Resource associated with this attribute. */
-	private TcaCollectionResource m_resource;
-
-	/** The Attribute Type. */
-	private TcaCollectionAttributeType m_attribType;
+	private final String m_value;
 
 	/**
 	 * Instantiates a new XML collection attribute.
@@ -61,43 +48,17 @@ public class TcaCollectionAttribute extends AbstractCollectionAttribute implemen
 	 * @param name the attribute name
 	 * @param value the attribute value
 	 */
-	public TcaCollectionAttribute(TcaCollectionResource resource, TcaCollectionAttributeType attribType, String name, String value) {
-		m_resource = resource;
-		m_attribType = attribType;
-		m_name = name;
+	public TcaCollectionAttribute(TcaCollectionResource resource, TcaCollectionAttributeType attribType, String value) {
+		super(attribType, resource);
 		m_value = value;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.opennms.netmgt.collectd.AbstractCollectionAttribute#getAttributeType()
-	 */
-        @Override
-	public CollectionAttributeType getAttributeType() {
-		return m_attribType;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.opennms.netmgt.collectd.AbstractCollectionAttribute#getName()
-	 */
-        @Override
-	public String getName() {
-		return m_name;
-	}
-	
 	/* (non-Javadoc)
 	 * @see org.opennms.netmgt.collectd.AbstractCollectionAttribute#getNumericValue()
 	 */
         @Override
 	public String getNumericValue() {
 		return m_value;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.opennms.netmgt.collectd.AbstractCollectionAttribute#getResource()
-	 */
-        @Override
-	public CollectionResource getResource() {
-		return m_resource;
 	}
 
 	/* (non-Javadoc)
@@ -109,32 +70,16 @@ public class TcaCollectionAttribute extends AbstractCollectionAttribute implemen
 	}
 
 	/* (non-Javadoc)
-	 * @see org.opennms.netmgt.collectd.AbstractCollectionAttribute#shouldPersist(org.opennms.netmgt.config.collector.ServiceParameters)
-	 */
-        @Override
-	public boolean shouldPersist(ServiceParameters params) {
-		return true;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.opennms.netmgt.config.collector.CollectionAttribute#getType()
-	 */
-        @Override
-	public String getType() {
-		return m_attribType.getType();
-	}
-
-	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()
 	 */
         @Override
 	public String toString() {
-		return "TcaCollectionAttribute " + m_name + "=" + m_value;
+		return "TcaCollectionAttribute " + getName() + "=" + m_value;
 	}
 
     @Override
     public String getMetricIdentifier() {
-        return "TCA_" + m_attribType.getAttributeObjectId() + '_' + getName();
+        return "TCA_" + ((TcaCollectionAttributeType)m_attribType).getAttributeObjectId() + '_' + getName();
     }
 
 }

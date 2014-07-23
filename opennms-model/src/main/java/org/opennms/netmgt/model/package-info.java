@@ -21,13 +21,16 @@
  *      http://www.gnu.org/licenses/
  *
  * For more information contact:
- *     OpenNMS(R) Licensing <license@opennms.org>
+ *     OpenNMS(R) Licensing &lt;license@opennms.org&gt;
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
 
 @FilterDef( name=FilterManager.AUTH_FILTER_NAME, parameters=@ParamDef( name="userGroups", type="string" ) )
+@XmlSchema(elementFormDefault=javax.xml.bind.annotation.XmlNsForm.QUALIFIED)
 package org.opennms.netmgt.model;
+import javax.xml.bind.annotation.XmlSchema;
+
 import org.hibernate.annotations.FilterDef;
 import org.hibernate.annotations.ParamDef;
 

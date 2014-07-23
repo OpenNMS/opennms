@@ -238,8 +238,7 @@ public class Triggers implements Serializable {
      * @return true if the object was removed from the collection.
      */
     public boolean removeTrigger(final Trigger vTrigger) {
-        boolean removed = _triggerList.remove(vTrigger);
-        return removed;
+    	return _triggerList.remove(vTrigger);
     }
 
     /**
@@ -249,8 +248,7 @@ public class Triggers implements Serializable {
      * @return the element removed from the collection
      */
     public Trigger removeTriggerAt(final int index) {
-        Object obj = this._triggerList.remove(index);
-        return (Trigger) obj;
+    	return (Trigger) this._triggerList.remove(index);
     }
 
     /**

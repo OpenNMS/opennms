@@ -28,12 +28,15 @@
 
 package org.opennms.netmgt.ncs.rest;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 import javax.ws.rs.core.MediaType;
@@ -42,7 +45,10 @@ import org.junit.After;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.opennms.core.test.MockLogAppender;
+import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.rest.AbstractSpringJerseyRestTestCase;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.dao.mock.EventAnticipator;
@@ -54,10 +60,32 @@ import org.opennms.netmgt.ncs.persistence.NCSComponentDao;
 import org.opennms.netmgt.ncs.persistence.NCSComponentService;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
+import org.opennms.test.JUnitConfigurationEnvironment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.transaction.annotation.Transactional;
 
+@RunWith(OpenNMSJUnit4ClassRunner.class)
+@WebAppConfiguration
+@ContextConfiguration(locations={
+        "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
+        "classpath:/META-INF/opennms/applicationContext-soa.xml",
+        "classpath:/META-INF/opennms/applicationContext-dao.xml",
+        "classpath*:/META-INF/opennms/component-service.xml",
+        "classpath*:/META-INF/opennms/component-dao.xml",
+        "classpath:/META-INF/opennms/applicationContext-daemon.xml",
+        "classpath:/META-INF/opennms/mockEventIpcManager.xml",
+        "classpath:/META-INF/opennms/applicationContext-mockEventProxy.xml",
+        "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml"
+})
+@JUnitConfigurationEnvironment
+@JUnitTemporaryDatabase
+@Transactional
 public class NCSRestServiceTest extends AbstractSpringJerseyRestTestCase {
 	private static final Logger LOG = LoggerFactory.getLogger(NCSRestServiceTest.class);
 
@@ -74,7 +102,7 @@ public class NCSRestServiceTest extends AbstractSpringJerseyRestTestCase {
 		setupLogging("ERROR");
 	}
 
-	private static final String m_serviceXML = "" +
+	private static final String SERVICE_XML = "" +
 			"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
 			"<component xmlns=\"http://xmlns.opennms.org/xsd/model/ncs\" type=\"Service\" foreignId=\"123\" foreignSource=\"NA-Service\">\n" +
 			"    <name>CokeP2P</name>\n" +
@@ -187,15 +215,27 @@ public class NCSRestServiceTest extends AbstractSpringJerseyRestTestCase {
 			"    <name>Blah</name>\n" +
 			"</component>\n";
 
+	@Autowired
 	private MockEventIpcManager m_eventIpcManager;
+
 	private EventAnticipator m_eventAnticipator;
+	
+	@Autowired
+	private NCSComponentRepository m_ncsComponentRepository;
+
+	@Autowired
+	private NCSComponentService m_ncsComponentService;
+
+	@Autowired
+	private NCSComponentDao m_ncsComponentDao;
+
+	@Autowired
+	private JdbcTemplate m_jdbcTemplate;
 
 	@Override
 	protected void afterServletStart() throws Exception {
-		m_eventIpcManager = getWebAppContext().getBean(MockEventIpcManager.class);
 		m_eventAnticipator = m_eventIpcManager.getEventAnticipator();
-		final NCSComponentService service = getWebAppContext().getBean(NCSComponentService.class);
-		service.setEventProxy(m_eventIpcManager);
+		m_ncsComponentService.setEventProxy(m_eventIpcManager);
 	}
 
 	@After
@@ -210,8 +250,7 @@ public class NCSRestServiceTest extends AbstractSpringJerseyRestTestCase {
 		m_eventAnticipator.verifyAnticipated();
 		m_eventAnticipator.reset();
 
-		final NCSComponentDao dao = getWebAppContext().getBean(NCSComponentDao.class);
-		dao.flush();
+		m_ncsComponentDao.flush();
 		
 		super.tearDown();
 	}
@@ -222,10 +261,9 @@ public class NCSRestServiceTest extends AbstractSpringJerseyRestTestCase {
 
 		anticipateEvents(EventConstants.COMPONENT_ADDED_UEI);
 
-		sendPost("/NCS", m_serviceXML);
+		sendPost("/NCS", SERVICE_XML, 200);
 
-		final NCSComponentRepository repo = getBean("ncsComponentRepository", NCSComponentRepository.class);
-		for (final NCSComponent component : repo.findAll()) {
+		for (final NCSComponent component : m_ncsComponentRepository.findAll()) {
 			LOG.debug("Found Component: {}/{}/{}", component.getType(), component.getForeignSource(), component.getForeignId());
 		}
 		String url = "/NCS/ServiceElementComponent/NA-SvcElemComp:9876%2Cvcid(50)";
@@ -233,12 +271,37 @@ public class NCSRestServiceTest extends AbstractSpringJerseyRestTestCase {
 		System.err.println("GET!!!");
 		String xml = sendRequest(GET, url, 200);
 
-		assertTrue(xml.contains("jnxVpnPwVpnName"));
+		assertTrue(xml, xml.contains("jnxVpnPwVpnName"));
 	}
 
 	@Test
 	public void testDeleteAComponent() throws Exception {
-		sendPost("/NCS", m_serviceXML);
+		sendPost("/NCS", SERVICE_XML, 200);
+
+		m_ncsComponentDao.flush();
+
+		for (NCSComponent component : m_ncsComponentDao.findAll()) {
+			LOG.error(component.toString());
+			assertNotNull(m_ncsComponentDao.findByTypeAndForeignIdentity(component.getType(), component.getForeignSource(), component.getForeignId()));
+		}
+		NCSComponent parent = m_ncsComponentDao.findByTypeAndForeignIdentity("Service", "NA-Service", "123");
+		assertNotNull(parent);
+		assertEquals(0, parent.getParentComponents().size());
+		assertEquals(2, parent.getSubcomponents().size());
+		for (NCSComponent subcomponent : parent.getSubcomponents()) {
+			assertTrue("PE1,ge-1/0/2".equals(subcomponent.getName()) || "PE2,ge-3/1/4".equals(subcomponent.getName()));
+		}
+
+		List<Map<String,Object>> relations = m_jdbcTemplate.queryForList("select * from subcomponents");
+		for (Map<String,Object> relation : relations) {
+			LOG.error("Relationship: Parent {} -> child {}", relation.get("component_id"), relation.get("subcomponent_id"));
+		}
+		
+		
+		NCSComponent child87651234 = m_ncsComponentDao.findByTypeAndForeignIdentity("ServiceElement", "NA-ServiceElement", "8765,1234");
+		assertEquals(2, child87651234.getSubcomponents().size());
+		assertEquals(1, child87651234.getParentComponents().size());
+		assertEquals(parent, child87651234.getParentComponents().iterator().next());
 
 		m_eventAnticipator.reset();
 
@@ -251,7 +314,7 @@ public class NCSRestServiceTest extends AbstractSpringJerseyRestTestCase {
 		// Testing GET Collection
 		String xml = sendRequest(GET, url, 200);
 
-		assertTrue(xml.contains("jnxVpnPwVpnName"));
+		assertTrue(xml, xml.contains("jnxVpnPwVpnName"));
 
 		sendRequest(DELETE, url, 200);
 		sendRequest(GET, url, 400);
@@ -273,7 +336,7 @@ public class NCSRestServiceTest extends AbstractSpringJerseyRestTestCase {
 
 	@Test
 	public void testFindAServiceByAttribute() throws Exception {
-		sendPost("/NCS", m_serviceXML);
+		sendPost("/NCS", SERVICE_XML, 200);
 
 		m_eventAnticipator.reset();
 
@@ -283,12 +346,12 @@ public class NCSRestServiceTest extends AbstractSpringJerseyRestTestCase {
 		// Testing GET Collection
 		String xml = sendRequest(GET, url, 200);
 
-		assertTrue(xml.contains("jnxVpnPwVpnName"));
+		assertTrue(xml, xml.contains("jnxVpnPwVpnName"));
 	}
 
 	@Test
 	public void testAddComponents() throws Exception {
-		sendPost("/NCS", m_serviceXML);
+		sendPost("/NCS", SERVICE_XML, 200);
 
 		m_eventAnticipator.reset();
 		anticipateEvent(EventConstants.COMPONENT_UPDATED_UEI, new String[] { "ServiceElement",          "PE2,ge-3/1/4", "NA-ServiceElement", "9876,4321" });
@@ -299,16 +362,16 @@ public class NCSRestServiceTest extends AbstractSpringJerseyRestTestCase {
 
 		String url = "/NCS/ServiceElement/NA-ServiceElement:9876,4321";
 
-		sendPost(url, m_extraXML);
+		sendPost(url, m_extraXML, 200);
 
 		String xml = sendRequest(GET, url, 200);
-		assertTrue(xml.contains("monkey1"));
+		assertTrue(xml, xml.contains("monkey1"));
 
 	}
 
 	@Test
 	public void testDeleteOrphans() throws Exception {
-		sendPost("/NCS", m_serviceXML);
+		sendPost("/NCS", SERVICE_XML, 200);
 
 		m_eventAnticipator.reset();
 		anticipateEvent(EventConstants.COMPONENT_UPDATED_UEI, new String[] { "ServiceElementComponent", "PE2,vcid(50)", "NA-SvcElementComp", "9876,vcid(50)" });
@@ -317,7 +380,7 @@ public class NCSRestServiceTest extends AbstractSpringJerseyRestTestCase {
 
 		setupLogging("DEBUG");
 
-		final MockHttpServletRequest request = createRequest(getServletContext(), POST, "/NCS");
+		final MockHttpServletRequest request = createRequest(servletContext, POST, "/NCS");
 		request.setContentType(MediaType.APPLICATION_XML);
 		request.setContent(m_serviceXMLFragment.getBytes());
 		request.setQueryString("deleteOrphans=true");
@@ -329,7 +392,7 @@ public class NCSRestServiceTest extends AbstractSpringJerseyRestTestCase {
 	 */
 	@Test
 	public void testDeleteOrphansRecursive() throws Exception {
-		sendPost("/NCS", m_serviceXML);
+		sendPost("/NCS", SERVICE_XML, 200);
 
 		m_eventAnticipator.reset();
 
@@ -341,7 +404,7 @@ public class NCSRestServiceTest extends AbstractSpringJerseyRestTestCase {
 		}
 		anticipateEvent(EventConstants.COMPONENT_UPDATED_UEI, new String[] { "Service", "CokeP2P", "NA-Service", "123" });
 
-		final MockHttpServletRequest request = createRequest(getServletContext(), POST, "/NCS");
+		final MockHttpServletRequest request = createRequest(servletContext, POST, "/NCS");
 		request.setContentType(MediaType.APPLICATION_XML);
 		request.setContent(m_serviceXMLTopFragment.getBytes());
 		request.setQueryString("deleteOrphans=true");
@@ -353,13 +416,13 @@ public class NCSRestServiceTest extends AbstractSpringJerseyRestTestCase {
 		createMultiParent();
 
 		final String xml = sendRequest(GET, "/NCS/top/topFs1:topFd1", 200);
-		assertTrue(xml.contains("topFs1"));
-		assertTrue(xml.contains("topFd1"));
-		assertTrue(xml.contains("child1Fs1"));
-		assertTrue(xml.contains("child1Fd1"));
-		assertTrue(xml.contains("child1Fd2"));
-		assertTrue(xml.contains("child2Fs1"));
-		assertTrue(xml.contains("child2Fd1"));
+		assertTrue(xml, xml.contains("topFs1"));
+		assertTrue(xml, xml.contains("topFd1"));
+		assertTrue(xml, xml.contains("child1Fs1"));
+		assertTrue(xml, xml.contains("child1Fd1"));
+		assertTrue(xml, xml.contains("child1Fd2"));
+		assertTrue(xml, xml.contains("child2Fs1"));
+		assertTrue(xml, xml.contains("child2Fd1"));
 	}
 
 	@Test
@@ -390,8 +453,8 @@ public class NCSRestServiceTest extends AbstractSpringJerseyRestTestCase {
 		sendRequest(DELETE, "/NCS/child1/child1Fs1:child1Fd1", parseParamData("deleteOrphans=true"), 200);
 
 		String xml = sendRequest(GET, "/NCS/top/topFs1:topFd1", 200);
-		assertFalse(xml.contains("child1Fd1"));
-		assertTrue(xml.contains("child2Fd1"));
+		assertFalse(xml, xml.contains("child1Fd1"));
+		assertTrue(xml, xml.contains("child2Fd1"));
 	}
 
 	private void createMultiParent() throws Exception {

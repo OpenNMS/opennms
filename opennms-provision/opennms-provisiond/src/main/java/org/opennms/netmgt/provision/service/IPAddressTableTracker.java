@@ -86,7 +86,7 @@ public class IPAddressTableTracker extends TableTracker {
         IP_ADDRESS_TYPE_INDEX
     };
     
-    class IPAddressRow extends SnmpRowResult {
+    static class IPAddressRow extends SnmpRowResult {
 
         public IPAddressRow(final int columnCount, final SnmpInstId instance) {
             super(columnCount, instance);

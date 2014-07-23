@@ -232,7 +232,7 @@ public class ScheduleEditorServlet extends HttpServlet {
         }
     }
     
-    class DisplayOp implements ScheduleOp {
+    static class DisplayOp implements ScheduleOp {
         @Override
         public String doOp(HttpServletRequest request, HttpServletResponse response, ScheduleMapping map) throws ServletException {
             // FIXME: schedMgr isn't used

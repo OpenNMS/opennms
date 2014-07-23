@@ -68,40 +68,40 @@ public class BaseLogMessageTest {
                     timestamp("2010-05-26 12:12:40,785"),
                     "CollectdScheduler-50 Pool-fiber4",
                     MsgType.BEGIN_COLLECTION,
-                    "7/172.20.1.12/SNMP",
-                    "2010-05-26 12:12:40,785 DEBUG [CollectdScheduler-50 Pool-fiber4] Collectd: collector.collect: begin:7/172.20.1.12/SNMP"
+                    "example1/7/172.20.1.12/SNMP",
+                    "2010-05-26 12:12:40,785 DEBUG [CollectdScheduler-50 Pool-fiber4] Collectd: collector.collect: begin:example1/7/172.20.1.12/SNMP"
                 }, 
                 { 
                     true,
                     timestamp("2010-05-26 12:12:47,672"), 
                     "CollectdScheduler-50 Pool-fiber12",
                     MsgType.END_COLLECTION,
-                    "83/172.20.1.15/SNMP",
-                    "2010-05-26 12:12:47,672 DEBUG [CollectdScheduler-50 Pool-fiber12] Collectd: collector.collect: end:83/172.20.1.15/SNMP"
+                    "example1/83/172.20.1.15/SNMP",
+                    "2010-05-26 12:12:47,672 DEBUG [CollectdScheduler-50 Pool-fiber12] Collectd: collector.collect: end:example1/83/172.20.1.15/SNMP"
                 }, 
                 { 
                     true,
                     timestamp("2010-05-26 12:12:47,776"),
                     "CollectdScheduler-50 Pool-fiber4",
                     MsgType.ERROR,
-                    "7/172.20.1.12/SNMP",
-                    "2010-05-26 12:12:47,776 DEBUG [CollectdScheduler-50 Pool-fiber4] Collectd: collector.collect: error: 7/172.20.1.12/SNMP: org.opennms.netmgt.collectd.CollectionTimedOut: Timeout retrieving SnmpCollectors for 172.20.1.12 for kenny.internal.opennms.com/172.20.1.12: SnmpCollectors for 172.20.1.12: snmpTimeoutError for: kenny.internal.opennms.com/172.20.1.12" 
+                    "example1/7/172.20.1.12/SNMP",
+                    "2010-05-26 12:12:47,776 DEBUG [CollectdScheduler-50 Pool-fiber4] Collectd: collector.collect: error: example1/7/172.20.1.12/SNMP: org.opennms.netmgt.collectd.CollectionTimedOut: Timeout retrieving SnmpCollectors for 172.20.1.12 for kenny.internal.opennms.com/172.20.1.12: SnmpCollectors for 172.20.1.12: snmpTimeoutError for: kenny.internal.opennms.com/172.20.1.12" 
                 }, 
                 {
                     true,
                     timestamp("2010-05-26 12:12:48,027"),
                     "CollectdScheduler-50 Pool-fiber11",
                     MsgType.BEGIN_PERSIST,
-                    "24/216.216.217.254/SNMP",
-                    "2010-05-26 12:12:48,027 DEBUG [CollectdScheduler-50 Pool-fiber11] Collectd: collector.collect: persistDataQueueing: begin: 24/216.216.217.254/SNMP"  
+                    "example1/24/216.216.217.254/SNMP",
+                    "2010-05-26 12:12:48,027 DEBUG [CollectdScheduler-50 Pool-fiber11] Collectd: collector.collect: persistDataQueueing: begin: example1/24/216.216.217.254/SNMP"  
                 },
                 {
                     true,
                     timestamp("2010-05-26 12:12:48,166"),
                     "CollectdScheduler-50 Pool-fiber3",
                     MsgType.END_PERSIST,
-                    "63/172.20.1.205/SNMP",
-                    "2010-05-26 12:12:48,166 DEBUG [CollectdScheduler-50 Pool-fiber3] Collectd: collector.collect: persistDataQueueing: end: 63/172.20.1.205/SNMP"
+                    "example1/63/172.20.1.205/SNMP",
+                    "2010-05-26 12:12:48,166 DEBUG [CollectdScheduler-50 Pool-fiber3] Collectd: collector.collect: persistDataQueueing: end: example1/63/172.20.1.205/SNMP"
                 },
                 {
                     false,
@@ -125,15 +125,15 @@ public class BaseLogMessageTest {
                     null,
                     null,
                     null,
-                    "2013-07-23 11:38:51,997 DEBUG [LegacyScheduler-Thread-1-of-50] o.o.n.c.DefaultCollectdInstrumentation: scheduleInterfaceWithService: begin: 2647/10.152.128.34/SNMP"
+                    "2013-07-23 11:38:51,997 DEBUG [LegacyScheduler-Thread-1-of-50] o.o.n.c.DefaultCollectdInstrumentation: scheduleInterfaceWithService: begin: example1/2647/10.152.128.34/SNMP"
                 },
                 {
                     true,
                     timestamp("2013-07-23 11:39:22,287"),
                     "LegacyScheduler-Thread-10-of-50",
                     MsgType.BEGIN_COLLECTION,
-                    "4489/10.151.27.1/SNMP",
-                    "2013-07-23 11:39:22,287 DEBUG [LegacyScheduler-Thread-10-of-50] o.o.n.c.DefaultCollectdInstrumentation: collector.collect: begin:4489/10.151.27.1/SNMP"
+                    "example1/4489/10.151.27.1/SNMP",
+                    "2013-07-23 11:39:22,287 DEBUG [LegacyScheduler-Thread-10-of-50] o.o.n.c.DefaultCollectdInstrumentation: collector.collect: begin:example1/4489/10.151.27.1/SNMP"
                 }
         });
 

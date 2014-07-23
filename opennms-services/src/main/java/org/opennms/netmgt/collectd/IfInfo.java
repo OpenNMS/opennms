@@ -35,8 +35,10 @@ import java.io.FileNotFoundException;
 import java.util.Map;
 
 import org.opennms.core.utils.AlphaNumeric;
-import org.opennms.netmgt.config.collector.ServiceParameters;
-import org.opennms.netmgt.model.RrdRepository;
+import org.opennms.netmgt.collection.api.CollectionAgent;
+import org.opennms.netmgt.collection.api.CollectionResource;
+import org.opennms.netmgt.collection.api.ServiceParameters;
+import org.opennms.netmgt.rrd.RrdRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,13 +58,13 @@ public final class IfInfo extends SnmpCollectionResource {
     
     private SNMPCollectorEntry m_entry;
     private String m_ifAlias;
-    private SnmpIfData m_snmpIfData;
+    private final SnmpIfData m_snmpIfData;
 
     /**
      * <p>Constructor for IfInfo.</p>
      *
      * @param def a {@link org.opennms.netmgt.collectd.ResourceType} object.
-     * @param agent a {@link org.opennms.netmgt.collectd.CollectionAgent} object.
+     * @param agent a {@link org.opennms.netmgt.collection.api.CollectionAgent} object.
      * @param snmpIfData a {@link org.opennms.netmgt.collectd.SnmpIfData} object.
      */
     public IfInfo(ResourceType def, CollectionAgent agent, SnmpIfData snmpIfData) {
@@ -90,7 +92,7 @@ public final class IfInfo extends SnmpCollectionResource {
      * @return a int.
      */
     @Override
-    public int getType() {
+    public int getSnmpIfType() {
         return m_snmpIfData.getIfType();
     }
 
@@ -100,7 +102,7 @@ public final class IfInfo extends SnmpCollectionResource {
      * @return a {@link java.lang.String} object.
      */
     @Override
-    public String getLabel() {
+    public String getInterfaceLabel() {
         return m_snmpIfData.getLabelForRRD();
     }
 
@@ -218,12 +220,12 @@ public final class IfInfo extends SnmpCollectionResource {
      * @throws FileNotFoundException */
     @Override
     public File getResourceDir(RrdRepository repository) throws FileNotFoundException {
-        String label = getLabel();
-        File rrdBaseDir = repository.getRrdBaseDir();
-        File dir = new File(rrdBaseDir, getCollectionAgent().getStorageDir().toString());
+        String label = getInterfaceLabel();
         if (label == null || "".equals(label)) {
-            throw new FileNotFoundException("Could not construct resource directory because label is null or blank: nodeId: " + getNodeId() + ", rrdRepository: " + repository.toString());
+            throw new FileNotFoundException("Could not construct resource directory because interface label is null or blank: nodeId: " + getNodeId() + ", rrdRepository: " + repository.toString());
         } else {
+            File rrdBaseDir = repository.getRrdBaseDir();
+            File dir = new File(rrdBaseDir, getCollectionAgent().getStorageDir().toString());
             return new File(dir, label);
         }
     }
@@ -235,14 +237,14 @@ public final class IfInfo extends SnmpCollectionResource {
      */
     @Override
     public String toString() {
-        return "node["+ getNodeId() + "].interfaceSnmp[" + getLabel() + ']';
+        return "node["+ getNodeId() + "].interfaceSnmp[" + getInterfaceLabel() + ']';
     }
 
     boolean shouldStore(ServiceParameters serviceParameters) {
-        if (serviceParameters.getStoreByNodeID().equals("normal")) {
+        if ("normal".equalsIgnoreCase(serviceParameters.getStoreByNodeID())) {
             return isScheduledForCollection();
         } else {
-            return serviceParameters.getStoreByNodeID().equals("true");
+            return "true".equalsIgnoreCase(serviceParameters.getStoreByNodeID());
         }
     }
 
@@ -262,7 +264,7 @@ public final class IfInfo extends SnmpCollectionResource {
      */
     @Override
     public String getResourceTypeName() {
-        return "if"; //This is IfInfo, must be an interface
+        return CollectionResource.RESOURCE_TYPE_IF; //This is IfInfo, must be an interface
     }
     
     /**

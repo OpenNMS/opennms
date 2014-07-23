@@ -268,7 +268,7 @@ public class User implements Cloneable {
      *            Array containing the bytes to convert
      * @return the converted string, or null if encoding failed
      */
-    private static String hexToString(byte data[]) {
+    private static String hexToString(byte[] data) {
         char[] hexadecimals = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
 
         // check to see if the byte array has an even number of elements

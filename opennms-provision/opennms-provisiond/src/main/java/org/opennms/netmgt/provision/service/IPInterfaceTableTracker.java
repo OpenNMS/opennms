@@ -72,7 +72,7 @@ public class IPInterfaceTableTracker extends TableTracker {
         IP_ADDR_ENT_BCASTADDR
     };
     
-    class IPInterfaceRow extends SnmpRowResult {
+    static class IPInterfaceRow extends SnmpRowResult {
 
         public IPInterfaceRow(int columnCount, SnmpInstId instance) {
             super(columnCount, instance);

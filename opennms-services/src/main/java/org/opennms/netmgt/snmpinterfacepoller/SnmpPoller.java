@@ -59,9 +59,9 @@ import org.slf4j.LoggerFactory;
 @EventListener(name="snmpPoller", logPrefix="snmp-poller")
 public class SnmpPoller extends AbstractServiceDaemon {
     
-    private final static Logger LOG = LoggerFactory.getLogger(SnmpPoller.class);
+    private static final Logger LOG = LoggerFactory.getLogger(SnmpPoller.class);
     
-    private final static SnmpPoller m_singleton = new SnmpPoller();
+    private static final SnmpPoller m_singleton = new SnmpPoller();
 
     private boolean m_initialized = false;
 

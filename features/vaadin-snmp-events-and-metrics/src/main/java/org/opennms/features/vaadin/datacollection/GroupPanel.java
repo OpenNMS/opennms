@@ -29,6 +29,8 @@ package org.opennms.features.vaadin.datacollection;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 import org.opennms.features.vaadin.api.Logger;
 import org.opennms.features.vaadin.config.EditorToolbar;
@@ -36,6 +38,8 @@ import org.opennms.netmgt.config.DataCollectionConfigDao;
 import org.opennms.netmgt.config.datacollection.DatacollectionGroup;
 import org.opennms.netmgt.config.datacollection.Group;
 import org.opennms.netmgt.config.datacollection.ResourceType;
+import org.opennms.netmgt.config.datacollection.SnmpCollection;
+import org.opennms.netmgt.config.datacollection.SystemDef;
 
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
@@ -61,6 +65,9 @@ public class GroupPanel extends Panel {
     /** The group table. */
     private final GroupTable groupTable;
 
+    /** The selected group ID. */
+    private Object selectedGroupId;
+
     /**
      * Instantiates a new group panel.
      *
@@ -70,11 +77,13 @@ public class GroupPanel extends Panel {
      */
     public GroupPanel(final DataCollectionConfigDao dataCollectionConfigDao, final DatacollectionGroup source, final Logger logger) {
 
-        if (dataCollectionConfigDao == null)
+        if (dataCollectionConfigDao == null) {
             throw new RuntimeException("dataCollectionConfigDao cannot be null.");
+        }
 
-        if (source == null)
+        if (source == null) {
             throw new RuntimeException("source cannot be null.");
+        }
 
         addStyleName("light");
 
@@ -94,38 +103,57 @@ public class GroupPanel extends Panel {
 
         final EditorToolbar bottomToolbar = new EditorToolbar() {
             @Override
-            public void save() {
+            public boolean save() {
                 Group group = groupForm.getGroup();
+                if (!isNew && !group.getName().equals(groupForm.getGroupName())) {
+                    Set<String> systemDefMap = getParentSystemDefs(dataCollectionConfigDao, group.getName());
+                    if (!systemDefMap.isEmpty()) {
+                        final String msg = "The group cannot be renamed because it is being referenced by:\n" + systemDefMap.toString();
+                        Notification.show(msg, Notification.Type.WARNING_MESSAGE);
+                        return false;
+                    }
+                }
                 logger.info("SNMP Group " + group.getName() + " has been " + (isNew ? "created." : "updated."));
                 try {
-                    groupForm.getFieldGroup().commit();
+                    groupForm.commit();
                     groupForm.setReadOnly(true);
                     groupTable.refreshRowCache();
+                    return true;
                 } catch (CommitException e) {
                     String msg = "Can't save the changes: " + e.getMessage();
                     logger.error(msg);
                     Notification.show(msg, Notification.Type.ERROR_MESSAGE);
+                    return false;
                 }
             }
             @Override
-            public void delete() {
+            public boolean delete() {
                 Object groupId = groupTable.getValue();
                 if (groupId != null) {
                     Group group = groupTable.getGroup(groupId);
+                    Set<String> systemDefMap = getParentSystemDefs(dataCollectionConfigDao, group.getName());
+                    if (!systemDefMap.isEmpty()) {
+                        final String msg = "The group cannot be deleted because it is being referenced by:\n" + systemDefMap.toString();
+                        Notification.show(msg, Notification.Type.WARNING_MESSAGE);
+                        return false;
+                    }
                     logger.info("SNMP Group " + group.getName() + " has been removed.");
                     groupTable.select(null);
                     groupTable.removeItem(groupId);
                     groupTable.refreshRowCache();
                 }
+                return true;
             }
             @Override
-            public void edit() {
+            public boolean edit() {
                 groupForm.setReadOnly(false);
+                return true;
             }
             @Override
-            public void cancel() {
-                groupForm.getFieldGroup().discard();
+            public boolean cancel() {
+                groupForm.discard();
                 groupForm.setReadOnly(true);
+                return true;
             }
         };
         bottomToolbar.setVisible(false);
@@ -133,14 +161,20 @@ public class GroupPanel extends Panel {
         groupTable.addValueChangeListener(new Property.ValueChangeListener() {
             @Override
             public void valueChange(ValueChangeEvent event) {
-                Object groupId = groupTable.getValue();
-                if (groupId != null) {
-                    groupForm.setGroup(groupTable.getGroup(groupId));
+                if (groupForm.isVisible() && !groupForm.isReadOnly()) {
+                    groupTable.select(selectedGroupId);
+                    Notification.show("A group seems to be being edited.\nPlease save or cancel your current changes.", Notification.Type.WARNING_MESSAGE);
+                } else {
+                    Object groupId = groupTable.getValue();
+                    if (groupId != null) {
+                        selectedGroupId = groupId;
+                        groupForm.setGroup(groupTable.getGroup(groupId));
+                    }
+                    groupForm.setReadOnly(true);
+                    groupForm.setVisible(groupId != null);
+                    bottomToolbar.setReadOnly(true);
+                    bottomToolbar.setVisible(groupId != null);
                 }
-                groupForm.setReadOnly(true);
-                groupForm.setVisible(groupId != null);
-                bottomToolbar.setReadOnly(true);
-                bottomToolbar.setVisible(groupId != null);
             }
         });   
 
@@ -181,6 +215,28 @@ public class GroupPanel extends Panel {
      */
     public List<Group> getGroups() {
         return groupTable.getGroups();
+    }
+
+    /**
+     * Gets the parent system definitions.
+     * <p>The list of systemDef per SNMP collection that are referencing a given groupName</p>
+     *
+     * @param dataCollectionConfigDao the data collection configuration DAO
+     * @param groupName the group name
+     * @return the parent system definitions.
+     */
+    private Set<String> getParentSystemDefs(final DataCollectionConfigDao dataCollectionConfigDao, String groupName) {
+        Set<String> systemDefMap = new TreeSet<String>();
+        for (final SnmpCollection collection : dataCollectionConfigDao.getRootDataCollection().getSnmpCollections()) {
+            for (final SystemDef systemDef : collection.getSystems().getSystemDefs()) {
+                for (final String group : systemDef.getCollect().getIncludeGroups()) {
+                    if (group.equals(groupName)) {
+                        systemDefMap.add(systemDef.getName() + '@' + collection.getName());
+                    }
+                }
+            }
+        }
+        return systemDefMap;
     }
 
 }

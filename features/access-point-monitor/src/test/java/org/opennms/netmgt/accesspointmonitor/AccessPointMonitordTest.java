@@ -62,7 +62,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
@@ -78,11 +79,9 @@ import org.springframework.transaction.PlatformTransactionManager;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
+@Transactional
 public class AccessPointMonitordTest implements InitializingBean {
     private static final Logger LOG = LoggerFactory.getLogger(AccessPointMonitordTest.class);
-
-    @Autowired
-    private PlatformTransactionManager m_transactionManager;
 
     @Autowired
     private NodeDao m_nodeDao;
@@ -97,7 +96,7 @@ public class AccessPointMonitordTest implements InitializingBean {
     private AccessPointDao m_accessPointDao;
 
     @Autowired
-    AccessPointMonitord m_apm;
+    private AccessPointMonitord m_apm;
 
     AnnotationBasedEventListenerAdapter m_adapter;
     AccessPointMonitorConfigFactory m_apmdConfigFactory;
@@ -109,10 +108,10 @@ public class AccessPointMonitordTest implements InitializingBean {
     private final static String AP2_MAC = "07:08:09:0A:0B:0C";
     private final static String AP3_MAC = "F0:05:BA:11:00:FF";
     private final static int PACKAGE_SCAN_INTERVAL = 1000;
+    private final static int PACKAGE_WAIT_INTERVAL = PACKAGE_SCAN_INTERVAL * 4;
 
     @Override
     public void afterPropertiesSet() {
-        assertNotNull(m_transactionManager);
         assertNotNull(m_nodeDao);
         assertNotNull(m_ipInterfaceDao);
         assertNotNull(m_serviceTypeDao);
@@ -181,7 +180,8 @@ public class AccessPointMonitordTest implements InitializingBean {
         m_eventMgr.send(bldr.getEvent());
     }
 
-    private void addNewAccessPoint(String name, String mac, String pkg) {
+    @Transactional(propagation=Propagation.MANDATORY)
+    public void addNewAccessPoint(String name, String mac, String pkg) {
         NetworkBuilder nb = new NetworkBuilder();
 
         nb.addNode(name).setForeignSource("apmd").setForeignId(name);
@@ -196,6 +196,18 @@ public class AccessPointMonitordTest implements InitializingBean {
         m_accessPointDao.flush();
     }
 
+    // it's not the SIZE of the package...
+    private void awaitPackageSize(final int size) throws InterruptedException {
+        final long end = System.currentTimeMillis() + PACKAGE_WAIT_INTERVAL;
+        Thread.sleep(PACKAGE_SCAN_INTERVAL + 200);
+        do {
+            if (m_apm.getActivePackageNames().size() == size) {
+                return;
+            }
+            Thread.sleep(200);
+        } while (System.currentTimeMillis() <= end);
+    }
+
     @Test
     public void testDynamicPackages() throws Exception {
         // A package name that matches the mask
@@ -203,7 +215,7 @@ public class AccessPointMonitordTest implements InitializingBean {
 
         initApmdWithConfig(getDynamicPackageConfig());
         m_apm.start();
-        sleep(PACKAGE_SCAN_INTERVAL * 2);
+        sleep(PACKAGE_WAIT_INTERVAL);
         assertEquals(1, m_apm.getActivePackageNames().size());
 
         // Another package name that matches the mask
@@ -212,8 +224,7 @@ public class AccessPointMonitordTest implements InitializingBean {
         // A package name that does not match the mask
         addNewAccessPoint("ap3", AP3_MAC, "default");
 
-        sleep(PACKAGE_SCAN_INTERVAL * 2);
-        assertEquals(2, m_apm.getActivePackageNames().size());
+        awaitPackageSize(2);
 
         // Change the package name for AP1 - the package should be unscheduled
         OnmsAccessPoint ap1 = m_accessPointDao.get(AP1_MAC);
@@ -224,23 +235,19 @@ public class AccessPointMonitordTest implements InitializingBean {
         List<String> packageNames = m_accessPointDao.findDistinctPackagesLike("dynamic-pkg-%");
         assertEquals(1, packageNames.size());
 
-        sleep(PACKAGE_SCAN_INTERVAL * 2);
-        assertEquals(1, m_apm.getActivePackageNames().size());
+        awaitPackageSize(1);
 
         // Change the package name for AP1 - the package should be unscheduled
         ap1.setPollingPackage("dynamic-pkg-2");
         m_accessPointDao.update(ap1);
         m_accessPointDao.flush();
 
-        sleep(PACKAGE_SCAN_INTERVAL * 2);
-        assertEquals(1, m_apm.getActivePackageNames().size());
+        awaitPackageSize(1);
 
         // Reload the daemon
         updateConfigAndReloadDaemon(getDynamicPackageConfig(), true);
 
-        sleep(PACKAGE_SCAN_INTERVAL * 2);
-
-        assertEquals(1, m_apm.getActivePackageNames().size());
+        awaitPackageSize(1);
     }
 
     private void sleep(long millis) {

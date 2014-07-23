@@ -67,9 +67,10 @@
 		<table>
 			<thead>
 				<tr>
-					<th>trigger name</th>
-					<th>next fire time</th>
-					<th>select</th>
+					<th>Trigger Name</th>
+					<th>Next fire time</th>
+					<th>Report Parameters</th>
+					<th>Select</th>
 				</tr>
 			</thead>
 			<%-- // show only current page worth of data --%>
@@ -77,6 +78,20 @@
 				<tr>
 					<td>${trigger.triggerName}</td>
 					<td>${trigger.nextFireTime}</td>
+					<td><table>
+						<tr><th>Report ID</th><td>${trigger.reportId}</td></tr>
+						<tr><th>Format</th><td>${trigger.deliveryOptions.format}</td></tr>
+						<tr><th>Persist</th><td>${trigger.deliveryOptions.persist}</td></tr>
+						<tr><th>Mail</th><td>
+							<c:choose>
+								<c:when test="${trigger.deliveryOptions.sendMail}">${trigger.deliveryOptions.mailTo}</c:when>
+								<c:otherwise>false</c:otherwise>
+							</c:choose>
+						</td></tr>
+						<c:forEach items="${trigger.reportParameters}" var="entry">
+							<tr><th>${entry.key}</th><td>${entry.value}</td></tr>
+						</c:forEach>
+					</table></td>
 					<td><form:checkbox path="triggerNames" value="${trigger.triggerName}"/></td>
 				</tr>
 			</c:forEach>

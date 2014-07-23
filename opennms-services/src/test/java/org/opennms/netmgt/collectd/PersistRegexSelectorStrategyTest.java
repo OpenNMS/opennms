@@ -38,12 +38,13 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.opennms.core.test.MockPlatformTransactionManager;
+import org.opennms.netmgt.collection.api.AttributeGroupType;
+import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.config.MibObject;
 import org.opennms.netmgt.config.collectd.Filter;
 import org.opennms.netmgt.config.collectd.Package;
 import org.opennms.netmgt.config.collectd.Service;
-import org.opennms.netmgt.config.collector.AttributeGroupType;
-import org.opennms.netmgt.config.collector.ServiceParameters;
 import org.opennms.netmgt.config.datacollection.Parameter;
 import org.opennms.netmgt.config.datacollection.PersistenceSelectorStrategy;
 import org.opennms.netmgt.config.datacollection.StorageStrategy;
@@ -59,6 +60,7 @@ import org.springframework.expression.Expression;
 import org.springframework.expression.ExpressionParser;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
+import org.springframework.transaction.PlatformTransactionManager;
 
 /**
  * Test class for PersistRegexSelectorStrategy
@@ -102,7 +104,7 @@ public class PersistRegexSelectorStrategyTest {
         map.put("collection", "default");
         serviceParams = new ServiceParameters(map);
 
-        CollectionAgent agent = DefaultCollectionAgent.create(1, ipInterfaceDao);
+        SnmpCollectionAgent agent = DefaultCollectionAgent.create(1, ipInterfaceDao);
         OnmsSnmpCollection snmpCollection = new OnmsSnmpCollection(agent, serviceParams);
 
         org.opennms.netmgt.config.datacollection.ResourceType rt = new org.opennms.netmgt.config.datacollection.ResourceType();
@@ -121,7 +123,7 @@ public class PersistRegexSelectorStrategyTest {
 
         resourceA = new GenericIndexResource(resourceType, rt.getName(), new SnmpInstId("1.2.3.4.5.6.7.8.9.1.1"));
         
-        AttributeGroupType groupType = new AttributeGroupType("mib2-interfaces", "all");
+        AttributeGroupType groupType = new AttributeGroupType("mib2-interfaces", AttributeGroupType.IF_TYPE_ALL);
         MibObject mibObject = new MibObject();
         mibObject.setOid(".1.2.3.4.5.6.7.8.9.2.1");
         mibObject.setInstance("1");

@@ -91,7 +91,7 @@ public abstract class OnmsDaoContainer<T,K extends Serializable> implements Cont
             this.reloadStrategy = reloadStrategy;
         }
 
-        synchronized public int getValue() {
+        public synchronized int getValue() {
             if (isOutdated()) reloadSize();
             return value;
         }
@@ -100,7 +100,7 @@ public abstract class OnmsDaoContainer<T,K extends Serializable> implements Cont
             return lastUpdate == null || lastUpdate.getTime() + reloadTimer < new Date().getTime();
         }
 
-        synchronized private void reloadSize() {
+        private synchronized void reloadSize() {
             value = reloadStrategy.reload();
             lastUpdate = new Date();
         }

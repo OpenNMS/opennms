@@ -53,7 +53,10 @@ import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
+import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.util.Assert;
 
 /**
@@ -72,7 +75,7 @@ import org.springframework.util.Assert;
 		"classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
 		"classpath*:/META-INF/opennms/provisiond-extensions.xml",
 		"classpath*:/META-INF/opennms/component-dao.xml",
-	        "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml"
+		"classpath:/META-INF/opennms/applicationContext-minimal-conf.xml"
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
@@ -88,6 +91,9 @@ public class SnmpAssetProvisioningAdapterIntegrationTest implements Initializing
 
 	@Autowired
 	private MockEventIpcManager m_mockEventIpcManager;
+
+	@Autowired
+	private TransactionTemplate m_transactionTemplate;
 
 	@Autowired
 	private DatabasePopulator m_populator;
@@ -121,12 +127,18 @@ public class SnmpAssetProvisioningAdapterIntegrationTest implements Initializing
 		// the normal config factory
 		assertTrue(m_adapter.getSnmpPeerFactory() instanceof ProxySnmpAgentConfigFactory);
 
-		m_populator.populateDatabase();
-
-		OnmsNode node = m_nodeDao.get(NODE_ID);
-		assertNotNull(node);
-		node.setSysObjectId(".1.3");
-		m_nodeDao.saveOrUpdate(node);
+		m_transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus arg0) {
+				// Populate the database
+				m_populator.populateDatabase();
+				// Edit the sysoid on one node
+				OnmsNode node = m_nodeDao.get(NODE_ID);
+				assertNotNull(node);
+				node.setSysObjectId(".1.3");
+				m_nodeDao.saveOrUpdate(node);
+			}
+		});
 	}
 
 	@Test
@@ -134,25 +146,35 @@ public class SnmpAssetProvisioningAdapterIntegrationTest implements Initializing
 	public void testAddNode() throws InterruptedException {
 		AdapterOperationChecker verifyOperations = new AdapterOperationChecker(1);
 		m_adapter.getOperationQueue().addListener(verifyOperations);
-		
+
 		try {
-			OnmsNode node = m_nodeDao.get(NODE_ID);
-			assertNotNull(node);
-			int firstNodeId = node.getId();
-	
+			final Integer firstNodeId = m_transactionTemplate.execute(new TransactionCallback<Integer>() {
+				@Override
+				public Integer doInTransaction(TransactionStatus arg0) {
+					OnmsNode node = m_nodeDao.get(NODE_ID);
+					assertNotNull(node);
+					return node.getId();
+				}
+			});
+
 			m_adapter.addNode(firstNodeId);
-	
+
 			assertTrue(verifyOperations.enqueueLatch.await(4, TimeUnit.SECONDS));
 			assertTrue(verifyOperations.dequeueLatch.await(4, TimeUnit.SECONDS));
 			assertTrue(verifyOperations.executeLatch.await(4, TimeUnit.SECONDS));
 			assertEquals(0, m_adapter.getOperationQueue().getOperationQueueForNode(firstNodeId).size());
-	
-			node = m_nodeDao.get(firstNodeId);
-			assertNotNull(node);
-			System.out.println("ID: " + node.getAssetRecord().getId());
-			System.out.println("Comment: " + node.getAssetRecord().getComment());
-			assertNotNull("AssetRecord comment is null", node.getAssetRecord().getComment());
-			assertEquals(EXPECTED_COMMENT_FIELD, node.getAssetRecord().getComment());
+
+			m_transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+				@Override
+				protected void doInTransactionWithoutResult(TransactionStatus arg0) {
+					OnmsNode node = m_nodeDao.get(firstNodeId);
+					assertNotNull(node);
+					System.out.println("ID: " + node.getAssetRecord().getId());
+					System.out.println("Comment: " + node.getAssetRecord().getComment());
+					assertNotNull("AssetRecord comment is null", node.getAssetRecord().getComment());
+					assertEquals(EXPECTED_COMMENT_FIELD, node.getAssetRecord().getComment());
+				}
+			});
 		} finally {
 			m_adapter.getOperationQueue().removeListener(verifyOperations);
 		}
@@ -160,18 +182,32 @@ public class SnmpAssetProvisioningAdapterIntegrationTest implements Initializing
 
 	@Test
 	@JUnitTemporaryDatabase // Relies on records created in @Before so we need a fresh database
-	@Transactional
 	public void testAddNodeDirectly() throws InterruptedException {
-		OnmsNode node = m_nodeDao.get(NODE_ID);
-		assertNotNull(node);
-		int firstNodeId = node.getId();
+		final Integer firstNodeId = m_transactionTemplate.execute(new TransactionCallback<Integer>() {
+			@Override
+			public Integer doInTransaction(TransactionStatus arg0) {
+				OnmsNode node = m_nodeDao.get(NODE_ID);
+				assertNotNull(node);
+				return node.getId();
+			}
+		});
 
-		m_adapter.doAddNode(firstNodeId);
+		m_transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus arg0) {
+				m_adapter.doAddNode(firstNodeId);
+			}
+		});
 
-		node = m_nodeDao.get(firstNodeId);
-		assertNotNull(node);
-		assertNotNull("AssetRecord comment is null", node.getAssetRecord().getComment());
-		assertEquals(EXPECTED_COMMENT_FIELD, node.getAssetRecord().getComment());
+		m_transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus arg0) {
+				OnmsNode node = m_nodeDao.get(firstNodeId);
+				assertNotNull(node);
+				assertNotNull("AssetRecord comment is null", node.getAssetRecord().getComment());
+				assertEquals(EXPECTED_COMMENT_FIELD, node.getAssetRecord().getComment());
+			}
+		});
 	}
 
 	@Test
@@ -179,27 +215,37 @@ public class SnmpAssetProvisioningAdapterIntegrationTest implements Initializing
 	public void testAddSameOperationTwice() throws InterruptedException {
 		AdapterOperationChecker verifyOperations = new AdapterOperationChecker(2);
 		m_adapter.getOperationQueue().addListener(verifyOperations);
-		
+
 		try {
-			OnmsNode node = m_nodeDao.get(NODE_ID);
-			assertNotNull(node);
-			int firstNodeId = node.getId();
-	
+			final Integer firstNodeId = m_transactionTemplate.execute(new TransactionCallback<Integer>() {
+				@Override
+				public Integer doInTransaction(TransactionStatus arg0) {
+					OnmsNode node = m_nodeDao.get(NODE_ID);
+					assertNotNull(node);
+					return node.getId();
+				}
+			});
+
 			m_adapter.addNode(firstNodeId);
 			m_adapter.addNode(firstNodeId); // should get deduplicated
 			m_adapter.updateNode(firstNodeId);
-	
+
 			assertTrue(verifyOperations.enqueueLatch.await(4, TimeUnit.SECONDS));
 			assertTrue(verifyOperations.dequeueLatch.await(4, TimeUnit.SECONDS));
 			assertTrue(verifyOperations.executeLatch.await(4, TimeUnit.SECONDS));
 			assertEquals(0, m_adapter.getOperationQueue().getOperationQueueForNode(firstNodeId).size());
-	
-			node = m_nodeDao.get(firstNodeId);
-			assertNotNull(node);
-			System.out.println("ID: " + node.getAssetRecord().getId());
-			System.out.println("Comment: " + node.getAssetRecord().getComment());
-			assertNotNull("AssetRecord comment is null", node.getAssetRecord().getComment());
-			assertEquals(EXPECTED_COMMENT_FIELD, node.getAssetRecord().getComment());
+
+			m_transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+				@Override
+				protected void doInTransactionWithoutResult(TransactionStatus arg0) {
+					OnmsNode node = m_nodeDao.get(firstNodeId);
+					assertNotNull(node);
+					System.out.println("ID: " + node.getAssetRecord().getId());
+					System.out.println("Comment: " + node.getAssetRecord().getComment());
+					assertNotNull("AssetRecord comment is null", node.getAssetRecord().getComment());
+					assertEquals(EXPECTED_COMMENT_FIELD, node.getAssetRecord().getComment());
+				}
+			});
 		} finally {
 			m_adapter.getOperationQueue().removeListener(verifyOperations);
 		}
@@ -210,27 +256,37 @@ public class SnmpAssetProvisioningAdapterIntegrationTest implements Initializing
 	public void testUpdateNode() throws InterruptedException {
 		AdapterOperationChecker verifyOperations = new AdapterOperationChecker(2);
 		m_adapter.getOperationQueue().addListener(verifyOperations);
-		
+
 		try {
-			OnmsNode node = m_nodeDao.get(NODE_ID);
-			assertNotNull(node);
-			int firstNodeId = node.getId();
-	
-			assertNull(node.getAssetRecord().getComment());
+			final Integer firstNodeId = m_transactionTemplate.execute(new TransactionCallback<Integer>() {
+				@Override
+				public Integer doInTransaction(TransactionStatus arg0) {
+					OnmsNode node = m_nodeDao.get(NODE_ID);
+					assertNotNull(node);
+					assertNull(node.getAssetRecord().getComment());
+					return node.getId();
+				}
+			});
+
 			m_adapter.addNode(firstNodeId);
 			m_adapter.updateNode(firstNodeId);
-	
+
 			assertTrue(verifyOperations.enqueueLatch.await(4, TimeUnit.SECONDS));
 			assertTrue(verifyOperations.dequeueLatch.await(4, TimeUnit.SECONDS));
 			assertTrue(verifyOperations.executeLatch.await(4, TimeUnit.SECONDS));
 			assertEquals(0, m_adapter.getOperationQueue().getOperationQueueForNode(firstNodeId).size());
-	
-			node = m_nodeDao.get(firstNodeId);
-			assertNotNull(node);
-			System.out.println("ID: " + node.getAssetRecord().getId());
-			System.out.println("Comment: " + node.getAssetRecord().getComment());
-			assertNotNull("AssetRecord comment is null", node.getAssetRecord().getComment());
-			assertEquals(EXPECTED_COMMENT_FIELD, node.getAssetRecord().getComment());
+
+			m_transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+				@Override
+				protected void doInTransactionWithoutResult(TransactionStatus arg0) {
+					OnmsNode node = m_nodeDao.get(firstNodeId);
+					assertNotNull(node);
+					System.out.println("ID: " + node.getAssetRecord().getId());
+					System.out.println("Comment: " + node.getAssetRecord().getComment());
+					assertNotNull("AssetRecord comment is null", node.getAssetRecord().getComment());
+					assertEquals(EXPECTED_COMMENT_FIELD, node.getAssetRecord().getComment());
+				}
+			});
 		} finally {
 			m_adapter.getOperationQueue().removeListener(verifyOperations);
 		}
@@ -241,12 +297,17 @@ public class SnmpAssetProvisioningAdapterIntegrationTest implements Initializing
 	public void testNodeConfigChanged() throws InterruptedException {
 		AdapterOperationChecker verifyOperations = new AdapterOperationChecker(1);
 		m_adapter.getOperationQueue().addListener(verifyOperations);
-		
+
 		try {
-			OnmsNode node = m_nodeDao.get(NODE_ID);
-			assertNotNull(node);
-			int firstNodeId = node.getId();
-	
+			final Integer firstNodeId = m_transactionTemplate.execute(new TransactionCallback<Integer>() {
+				@Override
+				public Integer doInTransaction(TransactionStatus arg0) {
+					OnmsNode node = m_nodeDao.get(NODE_ID);
+					assertNotNull(node);
+					return node.getId();
+				}
+			});
+
 			m_adapter.nodeConfigChanged(firstNodeId);
 		} finally {
 			m_adapter.getOperationQueue().removeListener(verifyOperations);
@@ -258,14 +319,19 @@ public class SnmpAssetProvisioningAdapterIntegrationTest implements Initializing
 	public void testDeleteNode() throws InterruptedException {
 		AdapterOperationChecker verifyOperations = new AdapterOperationChecker(1);
 		m_adapter.getOperationQueue().addListener(verifyOperations);
-		
+
 		try {
-			OnmsNode node = m_nodeDao.get(NODE_ID);
-			assertNotNull(node);
-			int firstNodeId = node.getId();
-	
+			final Integer firstNodeId = m_transactionTemplate.execute(new TransactionCallback<Integer>() {
+				@Override
+				public Integer doInTransaction(TransactionStatus arg0) {
+					OnmsNode node = m_nodeDao.get(NODE_ID);
+					assertNotNull(node);
+					return node.getId();
+				}
+			});
+
 			m_adapter.deleteNode(firstNodeId);
-	
+
 			assertTrue(verifyOperations.enqueueLatch.await(4, TimeUnit.SECONDS));
 			assertTrue(verifyOperations.dequeueLatch.await(4, TimeUnit.SECONDS));
 			assertTrue(verifyOperations.executeLatch.await(4, TimeUnit.SECONDS));

@@ -69,7 +69,7 @@ public class EventTable extends Table {
      * @return the event
      */
     public org.opennms.netmgt.xml.eventconf.Event getEvent(Object eventId) {
-        return container.getItem(eventId).getBean();
+        return container.getOnmsBean(eventId);
     }
 
     /**

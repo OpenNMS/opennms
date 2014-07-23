@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -47,5 +47,35 @@ public class Trapd extends AbstractSpringContextJmxServiceDaemon<org.opennms.net
     @Override
     protected String getSpringContext() {
         return "trapDaemonContext";       
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public long getV1TrapsReceived() {
+        return getDaemon().getV1TrapsReceived();
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public long getV2cTrapsReceived() {
+        return getDaemon().getV2cTrapsReceived();
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public long getV3TrapsReceived() {
+        return getDaemon().getV3TrapsReceived();
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public long getTrapsDiscarded() {
+        return getDaemon().getTrapsDiscarded();
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public long getTrapsErrored() {
+        return getDaemon().getTrapsErrored();
     }
 }

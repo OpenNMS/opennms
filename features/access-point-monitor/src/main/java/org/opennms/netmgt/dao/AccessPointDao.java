@@ -66,4 +66,6 @@ public interface AccessPointDao extends OnmsDao<OnmsAccessPoint, String> {
      */
     public List<String> findDistinctPackagesLike(final String pkg);
 
+    //@Override
+    void merge(OnmsAccessPoint entity);
 }

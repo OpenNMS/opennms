@@ -29,6 +29,7 @@
 package org.opennms.netmgt.collectd;
 
 import org.opennms.core.logging.Logging;
+import org.opennms.netmgt.collection.api.CollectionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -94,91 +95,91 @@ public class DefaultCollectdInstrumentation implements CollectdInstrumentation {
     }
 
     @Override
-    public void beginCollectingServiceData(final int nodeId, final String ipAddress, final String svcName) {
+    public void beginCollectingServiceData(final String packageName, final int nodeId, final String ipAddress, final String svcName) {
         Logging.withPrefix("instrumentation", new Runnable() {
             @Override public void run() {
-                LOG.debug("collector.collect: collectData: begin: {}/{}/{}", nodeId, ipAddress, svcName);
+                LOG.debug("collector.collect: collectData: begin: {}/{}/{}/{}", packageName, nodeId, ipAddress, svcName);
             }
         });
     }
 
     @Override
-    public void endCollectingServiceData(final int nodeId, final String ipAddress, final String svcName) {
+    public void endCollectingServiceData(final String packageName, final int nodeId, final String ipAddress, final String svcName) {
         Logging.withPrefix("instrumentation", new Runnable() {
             @Override public void run() {
-                LOG.debug("collector.collect: collectData: end: {}/{}/{}", nodeId, ipAddress, svcName);
+                LOG.debug("collector.collect: collectData: end: {}/{}/{}/{}", packageName, nodeId, ipAddress, svcName);
             }
         });
     }
 
     @Override
-    public void beginCollectorCollect(final int nodeId, final String ipAddress, final String svcName) {
+    public void beginCollectorCollect(final String packageName, final int nodeId, final String ipAddress, final String svcName) {
         Logging.withPrefix("instrumentation", new Runnable() {
             @Override public void run() {
-                LOG.debug("collector.collect: begin:{}/{}/{}", nodeId, ipAddress, svcName);
+                LOG.debug("collector.collect: begin:{}/{}/{}/{}", packageName, nodeId, ipAddress, svcName);
             }
         });
     }
 
     @Override
-    public void endCollectorCollect(final int nodeId, final String ipAddress, final String svcName) {
+    public void endCollectorCollect(final String packageName, final int nodeId, final String ipAddress, final String svcName) {
         Logging.withPrefix("instrumentation", new Runnable() {
             @Override public void run() {
-                LOG.debug("collector.collect: end:{}/{}/{}", nodeId, ipAddress, svcName);
+                LOG.debug("collector.collect: end:{}/{}/{}/{}", packageName, nodeId, ipAddress, svcName);
             }
         });
     }
 
     @Override
-    public void beginCollectorRelease(final int nodeId, final String ipAddress, final String svcName) {
+    public void beginCollectorRelease(final String packageName, final int nodeId, final String ipAddress, final String svcName) {
         Logging.withPrefix("instrumentation", new Runnable() {
             @Override public void run() {
-                LOG.debug("collector.release: begin: {}/{}/{}", nodeId, ipAddress, svcName);
+                LOG.debug("collector.release: begin: {}/{}/{}/{}", packageName, nodeId, ipAddress, svcName);
             }
         });
     }
 
     @Override
-    public void endCollectorRelease(final int nodeId, final String ipAddress, final String svcName) {
+    public void endCollectorRelease(final String packageName, final int nodeId, final String ipAddress, final String svcName) {
         Logging.withPrefix("instrumentation", new Runnable() {
             @Override public void run() {
-                LOG.debug("collector.release: end: {}/{}/{}", nodeId, ipAddress, svcName);
+                LOG.debug("collector.release: end: {}/{}/{}/{}", packageName, nodeId, ipAddress, svcName);
             }
         });
     }
 
     @Override
-    public void beginPersistingServiceData(final int nodeId, final String ipAddress, final String svcName) {
+    public void beginPersistingServiceData(final String packageName, final int nodeId, final String ipAddress, final String svcName) {
         Logging.withPrefix("instrumentation", new Runnable() {
             @Override public void run() {
-                LOG.debug("collector.collect: persistDataQueueing: begin: {}/{}/{}", nodeId, ipAddress, svcName);
+                LOG.debug("collector.collect: persistDataQueueing: begin: {}/{}/{}/{}", packageName, nodeId, ipAddress, svcName);
             }
         });
     }
 
     @Override
-    public void endPersistingServiceData(final int nodeId, final String ipAddress, final String svcName) {
+    public void endPersistingServiceData(final String packageName, final int nodeId, final String ipAddress, final String svcName) {
         Logging.withPrefix("instrumentation", new Runnable() {
             @Override public void run() {
-                LOG.debug("collector.collect: persistDataQueueing: end: {}/{}/{}", nodeId, ipAddress, svcName);
+                LOG.debug("collector.collect: persistDataQueueing: end: {}/{}/{}/{}", packageName, nodeId, ipAddress, svcName);
             }
         });
     }
 
     @Override
-    public void beginCollectorInitialize(final int nodeId, final String ipAddress, final String svcName) {
+    public void beginCollectorInitialize(final String packageName, final int nodeId, final String ipAddress, final String svcName) {
         Logging.withPrefix("instrumentation", new Runnable() {
             @Override public void run() {
-                LOG.debug("collector.initialize: begin: {}/{}/{}", nodeId, ipAddress, svcName);
+                LOG.debug("collector.initialize: begin: {}/{}/{}/{}", packageName, nodeId, ipAddress, svcName);
             }
         });
     }
 
     @Override
-    public void endCollectorInitialize(final int nodeId, final String ipAddress, final String svcName) {
+    public void endCollectorInitialize(final String packageName, final int nodeId, final String ipAddress, final String svcName) {
         Logging.withPrefix("instrumentation", new Runnable() {
             @Override public void run() {
-                LOG.debug("collector.initialize: end: {}/{}/{}", nodeId, ipAddress, svcName);
+                LOG.debug("collector.initialize: end: {}/{}/{}/{}", packageName, nodeId, ipAddress, svcName);
             }
         });
     }
@@ -202,10 +203,10 @@ public class DefaultCollectdInstrumentation implements CollectdInstrumentation {
     }
 
     @Override
-    public void reportCollectionException(final int nodeId, final String ipAddress, final String svcName, final CollectionException e) {
+    public void reportCollectionException(final String packageName, final int nodeId, final String ipAddress, final String svcName, final CollectionException e) {
         Logging.withPrefix("instrumentation", new Runnable() {
             @Override public void run() {
-                LOG.debug("collector.collect: error: {}/{}/{}", nodeId, ipAddress, svcName, e);
+                LOG.debug("collector.collect: error: {}/{}/{}/{}: {}", packageName, nodeId, ipAddress, svcName, e.getMessage());
             }
         });
     }

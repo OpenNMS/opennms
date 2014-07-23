@@ -80,7 +80,7 @@ public interface IpInterfaceDao extends LegacyOnmsDao<OnmsIpInterface, Integer> 
      * @return a {@link java.util.Collection} object.
      */
     List<OnmsIpInterface> findByIpAddress(String ipAddress);
-
+    
     /**
      * <p>findByNodeId</p>
      *

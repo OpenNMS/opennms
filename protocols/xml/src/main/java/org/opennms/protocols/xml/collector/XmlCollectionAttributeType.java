@@ -28,10 +28,10 @@
 
 package org.opennms.protocols.xml.collector;
 
-import org.opennms.netmgt.config.collector.AttributeGroupType;
-import org.opennms.netmgt.config.collector.CollectionAttribute;
-import org.opennms.netmgt.config.collector.CollectionAttributeType;
-import org.opennms.netmgt.config.collector.Persister;
+import org.opennms.netmgt.collection.api.AttributeGroupType;
+import org.opennms.netmgt.collection.api.CollectionAttribute;
+import org.opennms.netmgt.collection.api.Persister;
+import org.opennms.netmgt.collection.support.AbstractCollectionAttributeType;
 import org.opennms.protocols.xml.config.XmlObject;
 
 /**
@@ -39,13 +39,10 @@ import org.opennms.protocols.xml.config.XmlObject;
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
-public class XmlCollectionAttributeType implements CollectionAttributeType {
+public class XmlCollectionAttributeType extends AbstractCollectionAttributeType {
 
     /** The associated XML Object. */
-    private XmlObject m_object;
-
-    /** The Attribute Group Type. */
-    private AttributeGroupType m_groupType;
+    private final XmlObject m_object;
 
     /**
      * Instantiates a new XML collection attribute type.
@@ -54,16 +51,8 @@ public class XmlCollectionAttributeType implements CollectionAttributeType {
      * @param groupType the group type
      */
     public XmlCollectionAttributeType(XmlObject object, AttributeGroupType groupType) {
-        m_groupType = groupType;
+        super(groupType);
         m_object = object;
-    }
-
-    /* (non-Javadoc)
-     * @see org.opennms.netmgt.config.collector.CollectionAttributeType#getGroupType()
-     */
-    @Override
-    public AttributeGroupType getGroupType() {
-        return m_groupType;
     }
 
     /* (non-Javadoc)
@@ -71,7 +60,7 @@ public class XmlCollectionAttributeType implements CollectionAttributeType {
      */
     @Override
     public void storeAttribute(CollectionAttribute attribute, Persister persister) {
-        if (m_object.getDataType().equalsIgnoreCase("string")) {
+        if ("string".equalsIgnoreCase(m_object.getDataType())) {
             persister.persistStringAttribute(attribute);
         } else {
             persister.persistNumericAttribute(attribute);

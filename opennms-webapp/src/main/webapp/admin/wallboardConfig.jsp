@@ -35,11 +35,11 @@
         %>
 
 <jsp:include page="/includes/header.jsp" flush="false" >
-    <jsp:param name="title" value="Wallboard Config Web UI" />
-    <jsp:param name="headTitle" value="Wallboard Config Web UI" />
+    <jsp:param name="title" value="Ops Board Config Web UI" />
+    <jsp:param name="headTitle" value="Ops Board Config Web UI" />
     <jsp:param name="location" value="admin" />
     <jsp:param name="breadcrumb" value="<a href='admin/index.jsp'>Admin</a>" />
-    <jsp:param name="breadcrumb" value="Wallboard Config Web UI" />
+    <jsp:param name="breadcrumb" value="Ops Board Config Web UI" />
     <jsp:param name="vaadinEmbeddedStyles" value="true" />
 </jsp:include>
 

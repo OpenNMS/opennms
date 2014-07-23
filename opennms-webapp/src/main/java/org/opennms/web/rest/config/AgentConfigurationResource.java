@@ -4,6 +4,8 @@ import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 import javax.annotation.Resource;
 import javax.ws.rs.GET;
@@ -28,7 +30,9 @@ import org.opennms.netmgt.config.collectd.Filter;
 import org.opennms.netmgt.config.collectd.Service;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.filter.FilterDao;
+import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
+import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -90,9 +94,20 @@ public class AgentConfigurationResource implements InitializingBean {
     }
 
     @GET
+    @Path("{filterName}/{serviceName}.xml")
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_ATOM_XML})
+    public Response getAgentsXmlWithExtension(@PathParam("filterName") final String filterName, @PathParam("serviceName") final String serviceName) throws ConfigurationResourceException {
+        return getAgentsXml(filterName, serviceName);
+    }
+
+    @GET
     @Path("{filterName}/{serviceName}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_ATOM_XML})
-    public Response getAgentsXml(@PathParam("filterName") final String filterName, @PathParam("serviceName") final String serviceName) throws ConfigurationResourceException {
+    public Response getAgentsXmlWithoutExtension(@PathParam("filterName") final String filterName, @PathParam("serviceName") final String serviceName) throws ConfigurationResourceException {
+        return getAgentsXml(filterName, serviceName);
+    }
+
+    public Response getAgentsXml(final String filterName, final String serviceName) throws ConfigurationResourceException {
         final List<AgentResponse> responses = getResponses(filterName, serviceName);
 
         if (responses.size() == 0) {
@@ -103,9 +118,20 @@ public class AgentConfigurationResource implements InitializingBean {
     }
 
     @GET
+    @Path("{filterName}/{serviceName}.json")
+    @Produces({MediaType.APPLICATION_JSON})
+    public Response getAgentsJsonWithExtension(@PathParam("filterName") final String filterName, @PathParam("serviceName") final String serviceName) throws ConfigurationResourceException {
+        return getAgentsJson(filterName, serviceName);
+    }
+
+    @GET
     @Path("{filterName}/{serviceName}")
     @Produces({MediaType.APPLICATION_JSON})
-    public Response getAgentsJson(@PathParam("filterName") final String filterName, @PathParam("serviceName") final String serviceName) throws ConfigurationResourceException {
+    public Response getAgentsJsonWithoutExtension(@PathParam("filterName") final String filterName, @PathParam("serviceName") final String serviceName) throws ConfigurationResourceException {
+        return getAgentsJson(filterName, serviceName);
+    }
+
+    public Response getAgentsJson(final String filterName, final String serviceName) throws ConfigurationResourceException {
         final List<AgentResponse> responses = getResponses(filterName, serviceName);
 
         if (responses.size() == 0) {
@@ -138,6 +164,7 @@ public class AgentConfigurationResource implements InitializingBean {
         final CriteriaBuilder builder = new CriteriaBuilder(OnmsMonitoredService.class);
         builder.createAlias("ipInterface", "iface");
         builder.createAlias("serviceType", "type");
+        builder.createAlias("iface.node", "node");
         builder.in("iface.ipAddress", addresses);
         builder.eq("type.name", serviceName);
         final List<OnmsMonitoredService> services = m_monitoredServiceDao.findMatching(builder.toCriteria());
@@ -170,16 +197,37 @@ public class AgentConfigurationResource implements InitializingBean {
 
         for (final OnmsMonitoredService service : services) {
             final InetAddress ipAddress = service.getIpAddress();
+            final OnmsIpInterface iface = service.getIpInterface();
+            OnmsNode node = null;
+            if (iface != null) {
+                node = iface.getNode();
+            }
+            final Map<String,String> parameters = new TreeMap<String,String>();
 
             int port = defaultPort;
             if ("SNMP".equals(serviceName)) {
+                final String sysObjectId = node == null? null : node.getSysObjectId();
+                if (sysObjectId != null) {
+                    parameters.put("sysObjectId", sysObjectId);
+                }
                 final SnmpAgentConfig config = m_agentConfigFactory.getAgentConfig(ipAddress);
                 if (config != null) {
                     port = config.getPort();
                 }
             }
+            if (node != null) {
+                if (node.getNodeId() != null && !node.getNodeId().trim().isEmpty()) {
+                    parameters.put("nodeId", node.getNodeId());
+                }
+                if (node.getForeignSource() != null && !node.getForeignSource().trim().isEmpty()) {
+                    parameters.put("foreignSource", node.getForeignSource());
+                }
+                if (node.getForeignId() != null && !node.getForeignId().trim().isEmpty()) {
+                    parameters.put("foreignId", node.getForeignId());
+                }
+            }
 
-            responses.add(new AgentResponse(ipAddress, port, service.getServiceName()));
+            responses.add(new AgentResponse(ipAddress, port, service.getServiceName(), parameters));
         }
         return responses;
     }

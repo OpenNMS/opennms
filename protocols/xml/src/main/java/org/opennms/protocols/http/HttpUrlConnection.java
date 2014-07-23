@@ -74,6 +74,7 @@ import org.slf4j.LoggerFactory;
  */
 public class HttpUrlConnection extends URLConnection {
 
+    /** The Constant LOG. */
     private static final Logger LOG = LoggerFactory.getLogger(HttpUrlConnection.class);
 
     /** The URL. */
@@ -130,7 +131,7 @@ public class HttpUrlConnection extends URLConnection {
                 });
             }
             String disableSslVerification = m_request.getParameter("disable-ssl-verification");
-            if (Boolean.getBoolean(disableSslVerification)) {
+            if (Boolean.parseBoolean(disableSslVerification)) {
                 final SchemeRegistry registry = m_client.getConnectionManager().getSchemeRegistry();
                 final Scheme https = registry.getScheme("https");
                 try {

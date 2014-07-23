@@ -38,7 +38,7 @@ import org.opennms.protocols.snmp.asn1.AsnEncodingException;
 
 /**
  * <P>
- * The trap session is used to send and receives SNMPv1 & v2 trap messages. The
+ * The trap session is used to send and receives SNMPv1 &amp; v2 trap messages. The
  * messages are received on the configured port, or the default(162) port and
  * then decoded using the set ASN.1 codec. When messages are sent they are
  * encoded using the passed SnmpParameters object that is part of the SnmpPeer
@@ -68,7 +68,7 @@ public final class SnmpTrapSession extends Object {
      * @see SnmpTrapHandler#snmpTrapSessionError
      * 
      */
-    public final static int ERROR_EXCEPTION = -1;
+    public static final int ERROR_EXCEPTION = -1;
 
     /**
      * <P>
@@ -79,14 +79,14 @@ public final class SnmpTrapSession extends Object {
      * 
      * @see SnmpTrapHandler#snmpTrapSessionError
      */
-    public final static int ERROR_INVALID_PDU = -2;
+    public static final int ERROR_INVALID_PDU = -2;
 
     /**
      * This is the default port where traps should be sent and received as
      * defined by the RFC.
      * 
      */
-    public final static int DEFAULT_PORT = 162;
+    public static final int DEFAULT_PORT = 162;
 
     /**
      * The default SNMP trap callback handler. If this is not set and it is

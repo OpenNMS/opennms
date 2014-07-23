@@ -28,18 +28,12 @@
 
 package org.opennms.protocols.xml.collector;
 
-import java.util.Date;
-import java.util.Map;
-
-import org.opennms.netmgt.collectd.CollectionAgent;
-import org.opennms.netmgt.collectd.CollectionException;
-import org.opennms.netmgt.collectd.ServiceCollector;
-import org.opennms.netmgt.config.collector.AttributeGroupType;
-
+import org.opennms.netmgt.collection.api.AttributeGroupType;
+import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.protocols.xml.config.Request;
-import org.opennms.protocols.xml.config.XmlDataCollection;
 import org.opennms.protocols.xml.config.XmlSource;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 
 /**
@@ -49,33 +43,23 @@ import org.w3c.dom.Document;
  */
 public class DefaultXmlCollectionHandler extends AbstractXmlCollectionHandler {
 
-    /* (non-Javadoc)
-     * @see org.opennms.protocols.xml.collector.XmlCollectionHandler#collect(org.opennms.netmgt.collectd.CollectionAgent, org.opennms.protocols.xml.config.XmlDataCollection, java.util.Map)
-     */
-    @Override
-    public XmlCollectionSet collect(CollectionAgent agent, XmlDataCollection collection, Map<String, Object> parameters) throws CollectionException {
-        XmlCollectionSet collectionSet = new XmlCollectionSet(agent);
-        collectionSet.setCollectionTimestamp(new Date());
-        collectionSet.setStatus(ServiceCollector.COLLECTION_UNKNOWN);
-        try {
-            for (XmlSource source : collection.getXmlSources()) {
-                String urlStr = parseUrl(source.getUrl(), agent, collection.getXmlRrd().getStep());
-                Request request = parseRequest(source.getRequest(), agent);
-                Document doc = getXmlDocument(urlStr, request);
-                fillCollectionSet(agent, collectionSet, source, doc);
-            }
-            collectionSet.setStatus(ServiceCollector.COLLECTION_SUCCEEDED);
-            return collectionSet;
-        } catch (Exception e) {
-            collectionSet.setStatus(ServiceCollector.COLLECTION_FAILED);
-            throw new CollectionException(e.getMessage(), e);
-        }
-    }
+    /** The Constant LOG. */
+    private static final Logger LOG = LoggerFactory.getLogger(DefaultXmlCollectionHandler.class);
 
     /* (non-Javadoc)
      * @see org.opennms.protocols.xml.collector.AbstractXmlCollectionHandler#processXmlResource(org.opennms.protocols.xml.collector.XmlCollectionResource, org.opennms.netmgt.config.collector.AttributeGroupType)
      */
     @Override
     protected void processXmlResource(XmlCollectionResource collectionResource, AttributeGroupType attribGroupType) {}
+
+    /* (non-Javadoc)
+     * @see org.opennms.protocols.xml.collector.AbstractXmlCollectionHandler#fillCollectionSet(java.lang.String, org.opennms.protocols.xml.config.Request, org.opennms.netmgt.collection.api.CollectionAgent, org.opennms.protocols.xml.collector.XmlCollectionSet, org.opennms.protocols.xml.config.XmlSource)
+     */
+    @Override
+    protected void fillCollectionSet(String urlString, Request request, CollectionAgent agent, XmlCollectionSet collectionSet, XmlSource source) throws Exception {
+        final Document doc = getXmlDocument(urlString, request);
+        LOG.debug("collect: parsed document for source url '{}' collection", source.getUrl());
+        fillCollectionSet(agent, collectionSet, source, doc);
+    }
 
 }

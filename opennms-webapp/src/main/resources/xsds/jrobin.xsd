@@ -1,0 +1,502 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- target package ::= org.opennms.netmgmt.xml.event -->
+<schema targetNamespace="http://xmlns.opennms.org/xsd/rrd"
+        xmlns="http://www.w3.org/2001/XMLSchema"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:this="http://xmlns.opennms.org/xsd/rrd"
+        xmlns:ns2="http://www.w3.org/1999/xhtml"
+        xmlns:ns="http://www.w3.org/2001/XMLSchema"
+		  xmlns:hfp="http://www.w3.org/2001/XMLSchema-hasFacetAndProperty"
+		  elementFormDefault="qualified">
+  <annotation>
+    <documentation>XML Schema for RRD graphing</documentation>
+  </annotation>
+
+  <simpleType name="timeStamp">
+    <restriction base="string">
+      <pattern value="\d+|\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}"/>
+    </restriction>
+  </simpleType>
+
+  <simpleType name="color">
+    <restriction base="string">
+      <pattern value="#[0-9a-fA-F]{6}"/>
+    </restriction>
+  </simpleType>
+
+  <simpleType name="fontStyle">
+    <restriction base="string">
+      <enumeration value="PLAIN"/>
+
+      <enumeration value="BOLD"/>
+
+      <enumeration value="ITALIC"/>
+
+      <enumeration value="BOLD ITALIC"/>
+    </restriction>
+  </simpleType>
+
+  <complexType name="font">
+    <sequence>
+      <element maxOccurs="1" minOccurs="1" name="name" type="string"/>
+
+      <element maxOccurs="1" minOccurs="1" name="style" type="this:fontStyle"/>
+
+      <element maxOccurs="1" minOccurs="1" name="size" >
+        <simpleType>
+          <restriction base="int">
+            <minInclusive value="1"/>
+          </restriction>
+        </simpleType> 
+      </element>
+    </sequence>
+  </complexType>
+
+  <complexType name="gridRange">
+    <sequence>
+      <element maxOccurs="1" minOccurs="1" name="lower" type="double"/>
+
+      <element maxOccurs="1" minOccurs="1" name="upper" type="double"/>
+
+      <element maxOccurs="1" minOccurs="1" name="rigid" type="boolean"/>
+    </sequence>
+  </complexType>
+
+  <complexType name="optionBorder">
+    <sequence>
+      <element maxOccurs="1" minOccurs="1" name="color" type="this:color"/>
+
+      <element maxOccurs="1" minOccurs="1" name="width">
+        <simpleType>
+          <restriction base="int">
+            <minInclusive value="1"/>
+          </restriction>
+        </simpleType>      
+      </element>
+    </sequence>
+  </complexType>
+
+  <simpleType name="gridTimeUnit">
+    <restriction base="string">
+      <enumeration value="SECOND"/>
+
+      <enumeration value="MINUTE"/>
+
+      <enumeration value="HOUR"/>
+
+      <enumeration value="DAY"/>
+
+      <enumeration value="WEEK"/>
+
+      <enumeration value="MONTH"/>
+
+      <enumeration value="YEAR"/>
+    </restriction>
+  </simpleType>
+
+  <simpleType name="dayOfWeek">
+    <restriction base="string">
+      <enumeration value="MONDAY"/>
+
+      <enumeration value="TUESDAY"/>
+
+      <enumeration value="WEDNESDAY"/>
+
+      <enumeration value="THURSDAY"/>
+
+      <enumeration value="FRIDAY"/>
+
+      <enumeration value="SATURDAY"/>
+
+      <enumeration value="SUNDAY"/>
+    </restriction>
+  </simpleType>
+
+  <complexType name="timeAxis">
+    <sequence>
+      <element maxOccurs="1" minOccurs="1" name="min_grid_time_unit"
+               type="this:gridTimeUnit"/>
+
+      <element maxOccurs="1" minOccurs="1" name="min_grid_unit_steps">
+        <simpleType>
+          <restriction base="int">
+            <minInclusive value="1"/>
+          </restriction>
+        </simpleType>      
+      </element>
+
+      <element maxOccurs="1" minOccurs="1" name="maj_grid_time_unit"
+               type="this:gridTimeUnit"/>
+
+      <element maxOccurs="1" minOccurs="1" name="maj_grid_unit_steps">
+        <simpleType>
+          <restriction base="int">
+            <minInclusive value="1"/>
+          </restriction>
+        </simpleType>      
+      </element>
+
+      <element maxOccurs="1" minOccurs="1" name="date_format" type="string">
+        <annotation>
+          <documentation>XXX: the type should probably be a simpleType that we
+          define with a pattern of allowable formats.</documentation>
+        </annotation>
+      </element>
+
+      <element maxOccurs="1" minOccurs="1" name="center_labels" type="boolean"/>
+
+      <element maxOccurs="1" minOccurs="1" name="first_day_of_week"
+               type="this:dayOfWeek"/>
+    </sequence>
+  </complexType>
+
+  <complexType name="valueAxis">
+    <sequence>
+      <element maxOccurs="1" minOccurs="1" name="grid_step">
+        <simpleType>
+          <restriction base="int">
+            <minInclusive value="1"/>
+          </restriction>
+        </simpleType>      
+      </element>
+
+      <element maxOccurs="1" minOccurs="1" name="label_step">
+        <simpleType>
+          <restriction base="int">
+            <minInclusive value="1"/>
+          </restriction>
+        </simpleType>      
+      </element>
+    </sequence>
+  </complexType>
+
+  <simpleType name="cf">
+    <restriction base="string">
+      <enumeration value="AVERAGE"/>
+
+      <enumeration value="MAX"/>
+
+      <enumeration value="MIN"/>
+
+      <enumeration value="LAST"/>
+
+      <enumeration value="TOTAL"/>
+    </restriction>
+  </simpleType>
+
+  <simpleType name="backend">
+    <restriction base="string">
+      <enumeration value="FILE"/>
+
+      <enumeration value="NIO"/>
+
+      <enumeration value="MEMORY"/>
+    </restriction>
+  </simpleType>
+
+  <complexType name="dataSourceDef">
+    <sequence>
+      <element maxOccurs="1" minOccurs="1" name="name" type="string"/>
+
+      <element maxOccurs="1" minOccurs="0" name="rrd" type="string"/>
+
+      <element maxOccurs="1" minOccurs="0" name="source" type="string"/>
+
+      <element maxOccurs="1" minOccurs="0" name="cf" type="this:cf"/>
+
+      <element maxOccurs="1" minOccurs="0" name="backend" type="this:backend"/>
+
+      <element maxOccurs="1" minOccurs="0" name="rpn" type="string"/>
+    </sequence>
+  </complexType>
+
+  <complexType name="exportData">
+    <sequence>
+      <element maxOccurs="1" minOccurs="1" name="grid_step">
+        <simpleType>
+          <restriction base="int">
+            <minInclusive value="1"/>
+          </restriction>
+        </simpleType>      
+      </element>
+
+      <element maxOccurs="1" minOccurs="1" name="label_step">
+        <simpleType>
+          <restriction base="int">
+            <minInclusive value="1"/>
+          </restriction>
+        </simpleType>      
+      </element>
+    </sequence>
+  </complexType>
+
+  <complexType name="graphLine">
+    <sequence>
+      <element maxOccurs="1" minOccurs="0" name="datasource" type="string"/>
+
+      <element maxOccurs="1" minOccurs="0" name="time1" type="this:timeStamp"/>
+
+      <element maxOccurs="1" minOccurs="0" name="time2" type="this:timeStamp"/>
+
+      <element maxOccurs="1" minOccurs="0" name="value1" type="double"/>
+
+      <element maxOccurs="1" minOccurs="0" name="value2" type="double"/>
+
+      <element maxOccurs="1" minOccurs="0" name="color" type="this:color"/>
+
+      <element maxOccurs="1" minOccurs="0" name="legend" type="string"/>
+
+      <element maxOccurs="1" minOccurs="0" name="width">
+        <simpleType>
+          <restriction base="int">
+            <minInclusive value="0"/>
+          </restriction>
+        </simpleType>            
+      </element>
+    </sequence>
+  </complexType>
+
+  <complexType name="graphGprint">
+    <sequence>
+      <element maxOccurs="1" minOccurs="0" name="datasource" type="string"/>
+
+      <element maxOccurs="1" minOccurs="0" name="cf" type="this:cf"/>
+
+      <element maxOccurs="1" minOccurs="0" name="format" type="string"/>
+
+      <element maxOccurs="1" minOccurs="0" name="base">
+        <simpleType>
+          <restriction base="int">
+            <minInclusive value="1"/>
+          </restriction>
+        </simpleType>      
+      </element>
+    </sequence>
+  </complexType>
+
+  <complexType name="graphHrule">
+    <sequence>
+      <element maxOccurs="1" minOccurs="0" name="value" type="double"/>
+
+      <element maxOccurs="1" minOccurs="0" name="color" type="this:color"/>
+
+      <element maxOccurs="1" minOccurs="0" name="legend" type="string"/>
+
+      <element maxOccurs="1" minOccurs="0" name="width">
+        <simpleType>
+          <restriction base="int">
+            <minInclusive value="1"/>
+          </restriction>
+        </simpleType>      
+      </element>
+    </sequence>
+  </complexType>
+
+  <complexType name="graphVrule">
+    <sequence>
+      <element maxOccurs="1" minOccurs="0" name="time" type="this:timeStamp"/>
+
+      <element maxOccurs="1" minOccurs="0" name="color" type="this:color"/>
+
+      <element maxOccurs="1" minOccurs="0" name="legend" type="string"/>
+
+      <element maxOccurs="1" minOccurs="0" name="width">
+        <simpleType>
+          <restriction base="int">
+            <minInclusive value="1"/>
+          </restriction>
+        </simpleType>      
+      </element>
+    </sequence>
+  </complexType>
+
+  <complexType name="graphTime">
+    <sequence>
+      <element maxOccurs="1" minOccurs="0" name="format" type="string"/>
+
+      <element maxOccurs="1" minOccurs="0" name="pattern" type="string"/>
+
+      <element maxOccurs="1" minOccurs="0" name="value" type="this:timeStamp"/>
+    </sequence>
+  </complexType>
+
+  <complexType name="graphChoice">
+    <choice>
+      <element maxOccurs="1" minOccurs="0" name="area" type="this:graphLine"/>
+
+      <element maxOccurs="1" minOccurs="0" name="stack" type="this:graphLine"/>
+
+      <element maxOccurs="1" minOccurs="0" name="line" type="this:graphLine"/>
+
+      <element maxOccurs="1" minOccurs="0" name="gprint"
+               type="this:graphGprint"/>
+
+      <element maxOccurs="1" minOccurs="0" name="hrule" type="this:graphHrule"/>
+
+      <element maxOccurs="1" minOccurs="0" name="vrule" type="this:graphVrule"/>
+
+      <element maxOccurs="1" minOccurs="0" name="time" type="this:graphTime"/>
+
+      <element maxOccurs="1" minOccurs="0" name="comment" type="string"/>
+    </choice>
+  </complexType>
+
+  <element name="rrd_graph_def">
+    <complexType>
+      <sequence>
+        <element ref="this:span"/>
+
+        <element ref="this:options"/>
+
+        <element ref="this:datasources"/>
+
+        <element ref="this:graph"/>
+      </sequence>
+    </complexType>
+  </element>
+
+  <element name="span">
+    <complexType>
+      <sequence>
+        <element maxOccurs="1" minOccurs="0" name="start"
+                 type="this:timeStamp"/>
+
+        <element maxOccurs="1" minOccurs="0" name="end" type="this:timeStamp"/>
+      </sequence>
+    </complexType>
+  </element>
+
+  <element name="options">
+    <complexType>
+      <sequence>
+        <element maxOccurs="1" minOccurs="0" name="anti_aliasing"
+                 type="boolean"/>
+
+        <element maxOccurs="1" minOccurs="0" name="arrow_color"
+                 type="this:color"/>
+
+        <element maxOccurs="1" minOccurs="0" name="axis_color"
+                 type="this:color"/>
+
+        <element maxOccurs="1" minOccurs="0" name="back_color"
+                 type="this:color"/>
+
+        <element maxOccurs="1" minOccurs="0" name="background"
+                 type="this:color"/>
+
+        <element maxOccurs="1" minOccurs="0" name="base_value">
+          <simpleType>
+            <restriction base="int">
+              <minInclusive value="1"/>
+            </restriction>
+          </simpleType>      
+        </element>
+
+        <element maxOccurs="1" minOccurs="0" name="canvas" type="this:color"/>
+
+        <element maxOccurs="1" minOccurs="0" name="left_padding">
+          <simpleType>
+            <restriction base="int">
+              <minInclusive value="0"/>
+            </restriction>
+          </simpleType>      
+        </element>
+
+        <element maxOccurs="1" minOccurs="0" name="default_font"
+                 type="this:font"/>
+
+        <element maxOccurs="1" minOccurs="0" name="default_font_color"
+                 type="this:color"/>
+
+        <element maxOccurs="1" minOccurs="0" name="frame_color"
+                 type="this:color"/>
+
+        <element maxOccurs="1" minOccurs="0" name="front_grid" type="boolean"/>
+
+        <element maxOccurs="1" minOccurs="0" name="grid_range"
+                 type="this:gridRange"/>
+
+        <element maxOccurs="1" minOccurs="0" name="grid_x" type="boolean"/>
+
+        <element maxOccurs="1" minOccurs="0" name="grid_y" type="boolean"/>
+
+        <element maxOccurs="1" minOccurs="0" name="border"
+                 type="this:optionBorder"/>
+
+        <element maxOccurs="1" minOccurs="0" name="major_grid_color"
+                 type="this:color"/>
+
+        <element maxOccurs="1" minOccurs="0" name="major_grid_x"
+                 type="boolean"/>
+
+        <element maxOccurs="1" minOccurs="0" name="major_grid_y"
+                 type="boolean"/>
+
+        <element maxOccurs="1" minOccurs="0" name="minor_grid_color"
+                 type="this:color"/>
+
+        <element maxOccurs="1" minOccurs="0" name="minor_grid_x"
+                 type="boolean"/>
+
+        <element maxOccurs="1" minOccurs="0" name="minor_grid_y"
+                 type="boolean"/>
+
+        <element maxOccurs="1" minOccurs="0" name="overlay" type="string"/>
+
+        <element maxOccurs="1" minOccurs="0" name="show_legend" type="boolean"/>
+
+        <element maxOccurs="1" minOccurs="0" name="show_signature"
+                 type="boolean"/>
+
+        <element maxOccurs="1" minOccurs="0" name="time_axis"
+                 type="this:timeAxis"/>
+
+        <element maxOccurs="1" minOccurs="0" name="time_axis_label"
+                 type="string"/>
+
+        <element maxOccurs="1" minOccurs="0" name="title" type="string"/>
+
+        <element maxOccurs="1" minOccurs="0" name="title_font"
+                 type="this:font"/>
+
+        <element maxOccurs="1" minOccurs="0" name="title_font_color"
+                 type="this:color"/>
+
+        <element maxOccurs="1" minOccurs="0" name="units_exponent">
+          <simpleType>
+            <restriction base="int">
+              <minInclusive value="1"/>
+            </restriction>
+          </simpleType>      
+        </element>
+
+        <element maxOccurs="1" minOccurs="0" name="value_axis"
+                 type="this:valueAxis"/>
+
+        <element maxOccurs="1" minOccurs="0" name="vertical_label"
+                 type="string"/>
+      </sequence>
+    </complexType>
+  </element>
+
+  <element name="datasources">
+    <complexType>
+      <sequence>
+        <element maxOccurs="unbounded" minOccurs="0" name="def"
+                 type="this:dataSourceDef"/>
+
+        <element maxOccurs="unbounded" minOccurs="0" name="export_data"
+                 type="this:exportData"/>
+      </sequence>
+    </complexType>
+  </element>
+
+  <element name="graph">
+    <complexType>
+      <sequence>
+        <element maxOccurs="unbounded" minOccurs="1" name="graph_element"
+                 type="this:graphChoice"/>
+      </sequence>
+    </complexType>
+  </element>
+</schema>

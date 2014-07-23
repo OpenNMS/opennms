@@ -29,18 +29,21 @@
 package org.opennms.smoketest;
 
 import org.junit.Before;
+import org.junit.FixMethodOrder;
 import org.junit.Test;
+import org.junit.runners.MethodSorters;
 
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class DistributedMapTest extends OpenNMSSeleniumTestCase {
     @Before
     public void setUp() throws Exception {
-    	super.setUp();
-    	clickAndWait("//a[@href='maps.htm']");
+        super.setUp();
+        clickAndWait("//a[@href='maps.htm']");
         clickAndWait("//div[@id='content']//a[contains(@href,'RemotePollerMap')]");
     }
 
     @Test
-    public void testDistributedMap() throws Exception {
+    public void a_testDistributedMap() throws Exception {
         assertEquals("Applications", selenium.getTable("css=td > table.0.2"));
         assertEquals("off", selenium.getValue("id=gwt-uid-6"));
         assertEquals("on", selenium.getValue("id=gwt-uid-1"));

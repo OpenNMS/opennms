@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,7 +28,10 @@
 
 package org.opennms.netmgt.poller.jmx;
 
+import java.util.concurrent.ThreadPoolExecutor;
+
 import org.opennms.netmgt.daemon.AbstractSpringContextJmxServiceDaemon;
+import org.opennms.netmgt.scheduler.LegacyScheduler;
 
 /**
  * <p>Pollerd class.</p>
@@ -49,10 +52,81 @@ public class Pollerd extends AbstractSpringContextJmxServiceDaemon<org.opennms.n
     protected String getSpringContext() {
         return "pollerdContext";
     }
+    
+    /** {@inheritDoc} */
+    @Override
+    public long getActiveThreads() {
+        if (getThreadPoolStatsStatus()) {
+            return getExecutor().getActiveCount();
+        } else {
+            return 0L;
+        }
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public long getTasksTotal() {
+        if (getThreadPoolStatsStatus()) {
+            return getExecutor().getTaskCount();
+        } else {
+            return 0L;
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public long getTasksCompleted() {
+        if (getThreadPoolStatsStatus()) {
+            return getExecutor().getTaskCount();
+        } else {
+            return 0L;
+        }
+    }
 
     /** {@inheritDoc} */
     @Override
     public long getNumPolls() {
         return getDaemon().getNumPolls();
+    }
+
+    public double getTaskCompletionRatio() {
+        if (getThreadPoolStatsStatus()) {
+            if (getExecutor().getTaskCount() > 0) {
+                return new Double(getExecutor().getCompletedTaskCount() / new Double(getExecutor().getTaskCount()));
+            } else {
+                return new Double(0);
+            }
+        } else {
+            return new Double(0);
+        }
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public long getPeakPoolThreads() {
+        if (getThreadPoolStatsStatus()) {
+            return getExecutor().getLargestPoolSize();
+        } else {
+            return 0L;
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public long getMaxPoolThreads() {
+        if (getThreadPoolStatsStatus()) {
+            return getExecutor().getMaximumPoolSize();
+        } else {
+            return 0L;
+        }
+    }
+
+    
+    private ThreadPoolExecutor getExecutor() {
+        return (ThreadPoolExecutor) ((LegacyScheduler) getDaemon().getScheduler()).getRunner();
+    }
+    
+    private boolean getThreadPoolStatsStatus() {
+        return (getDaemon().getScheduler() instanceof LegacyScheduler);
     }
 }

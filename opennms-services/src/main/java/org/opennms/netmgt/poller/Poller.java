@@ -45,7 +45,6 @@ import org.opennms.netmgt.config.PollOutagesConfig;
 import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
-import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.model.events.EventIpcManager;
 import org.opennms.netmgt.poller.pollables.DbPollEvent;
 import org.opennms.netmgt.poller.pollables.PollEvent;
@@ -70,9 +69,9 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 public class Poller extends AbstractServiceDaemon {
     
-    private final static Logger LOG = LoggerFactory.getLogger(Poller.class);
+    private static final Logger LOG = LoggerFactory.getLogger(Poller.class);
 
-    private final static String LOG4J_CATEGORY = "poller";
+    private static final String LOG4J_CATEGORY = "poller";
 
     private boolean m_initialized = false;
 

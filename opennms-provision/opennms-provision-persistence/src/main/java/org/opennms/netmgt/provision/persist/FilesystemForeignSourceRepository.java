@@ -53,19 +53,16 @@ import org.springframework.util.Assert;
 
 /**
  * <p>FilesystemForeignSourceRepository class.</p>
- *
- * @author ranger
- * @version $Id: $
  */
 public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepository implements InitializingBean {
     
     private static final Logger LOG = LoggerFactory.getLogger(FilesystemForeignSourceRepository.class);
-    private String m_requisitionPath;
-    private String m_foreignSourcePath;
+    protected String m_requisitionPath;
+    protected String m_foreignSourcePath;
     
-    private final ReadWriteLock m_globalLock = new ReentrantReadWriteLock();
-    private final Lock m_readLock = m_globalLock.readLock();
-    private final Lock m_writeLock = m_globalLock.writeLock();
+    protected final ReadWriteLock m_globalLock = new ReentrantReadWriteLock();
+    protected final Lock m_readLock = m_globalLock.readLock();
+    protected final Lock m_writeLock = m_globalLock.writeLock();
 
     /**
      * <p>Constructor for FilesystemForeignSourceRepository.</p>
@@ -178,7 +175,7 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
 
     /** {@inheritDoc} */
     @Override
-    public void save(final ForeignSource foreignSource) throws ForeignSourceRepositoryException {
+    public final void save(final ForeignSource foreignSource) throws ForeignSourceRepositoryException {
     	if (foreignSource == null) {
             throw new ForeignSourceRepositoryException("can't save a null foreign source!");
         }
@@ -212,14 +209,14 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
 
     /** {@inheritDoc} */
     @Override
-    public void delete(final ForeignSource foreignSource) throws ForeignSourceRepositoryException {
+    public final void delete(final ForeignSource foreignSource) throws ForeignSourceRepositoryException {
         m_writeLock.lock();
         try {
             LOG.debug("Deleting foreign source {} from {} (if necessary)", foreignSource.getName(), m_foreignSourcePath);
-            final File deleteFile = RequisitionFileUtils.getOutputFileForForeignSource(m_foreignSourcePath, foreignSource);
-            if (deleteFile.exists()) {
-                if (!deleteFile.delete()) {
-                    throw new ForeignSourceRepositoryException("unable to delete foreign source file " + deleteFile);
+            final File fileToDelete = RequisitionFileUtils.getOutputFileForForeignSource(m_foreignSourcePath, foreignSource);
+            if (fileToDelete.exists()) {
+                if (!fileToDelete.delete()) {
+                    throw new ForeignSourceRepositoryException("unable to delete foreign source file " + fileToDelete);
                 }
             }
         } finally {
@@ -283,7 +280,7 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
      * @throws org.opennms.netmgt.provision.persist.ForeignSourceRepositoryException if any.
      */
     @Override
-    public Requisition getRequisition(final ForeignSource foreignSource) throws ForeignSourceRepositoryException {
+    public final Requisition getRequisition(final ForeignSource foreignSource) throws ForeignSourceRepositoryException {
         if (foreignSource == null) {
             throw new ForeignSourceRepositoryException("can't get a requisition with a null foreign source name!");
         }
@@ -302,7 +299,7 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
      * @throws org.opennms.netmgt.provision.persist.ForeignSourceRepositoryException if any.
      */
     @Override
-    public void save(final Requisition requisition) throws ForeignSourceRepositoryException {
+    public final void save(final Requisition requisition) throws ForeignSourceRepositoryException {
         if (requisition == null) {
             throw new ForeignSourceRepositoryException("can't save a null requisition!");
         }
@@ -337,7 +334,7 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
      * @throws org.opennms.netmgt.provision.persist.ForeignSourceRepositoryException if any.
      */
     @Override
-    public void delete(final Requisition requisition) throws ForeignSourceRepositoryException {
+    public final void delete(final Requisition requisition) throws ForeignSourceRepositoryException {
         if (requisition == null) {
             throw new ForeignSourceRepositoryException("can't delete a null requisition!");
         }
@@ -362,7 +359,7 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
      *
      * @param path a {@link java.lang.String} object.
      */
-    public void setRequisitionPath(final String path) {
+    public final void setRequisitionPath(final String path) {
         m_writeLock.lock();
         try {
             m_requisitionPath = path;
@@ -375,7 +372,7 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
      *
      * @param path a {@link java.lang.String} object.
      */
-    public void setForeignSourcePath(final String path) {
+    public final void setForeignSourcePath(final String path) {
         m_writeLock.lock();
         try {
             m_foreignSourcePath = path;
@@ -386,7 +383,7 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
 
     /** {@inheritDoc} */
     @Override
-    public Date getRequisitionDate(final String foreignSource) throws ForeignSourceRepositoryException {
+    public final Date getRequisitionDate(final String foreignSource) throws ForeignSourceRepositoryException {
         m_readLock.lock();
         try {
             final Requisition requisition = getRequisition(foreignSource);
@@ -413,7 +410,7 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
     }
 
     @Override
-    public void flush() throws ForeignSourceRepositoryException {
+    public final void flush() throws ForeignSourceRepositoryException {
         // Unnecessary, there is no caching/delayed writes in FilesystemForeignSourceRepository
         LOG.debug("flush() called");
     }
