@@ -14,7 +14,7 @@ The StrafePing monitor performs multiple ICMP echo (ping) requests and stores th
 
 ==== Configuration and Usage
 
-.Monitor specific parameters for the {monitorname}
+Monitor specific parameters for the StrafePingMonitor
 [options="header, autowidth"]
 |===
 | Parameter           | Description                                                 | Required | Default value
