@@ -1,7 +1,8 @@
 
 === DnsMonitor
 This monitor is build to test the availability of the _DNS service_ on remote IP interfaces.
-The test for availability is done by sending a specific _DNS lookup_ request against the DNS server to test.
+The monitor tests the service availability by sending a DNS query for A resource record types against the DNS server to test.
+
 The monitor is marked as _up_ if the _DNS Server_ is able to send a valid response to the monitor.
 For multiple records it is possible to test if the number of responses are within a given boundary.
 
