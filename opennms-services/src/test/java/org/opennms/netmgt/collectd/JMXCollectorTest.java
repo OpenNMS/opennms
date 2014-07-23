@@ -28,21 +28,6 @@
 
 package org.opennms.netmgt.collectd;
 
-import static org.junit.Assert.assertEquals;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.lang.management.ManagementFactory;
-import java.net.InetAddress;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.management.MBeanServer;
-import javax.management.MBeanServerConnection;
-import javax.management.ObjectName;
-
 import org.easymock.EasyMock;
 import org.junit.After;
 import org.junit.Before;
@@ -59,9 +44,22 @@ import org.opennms.netmgt.collection.support.SingleResourceCollectionSet;
 import org.opennms.netmgt.config.BeanInfo;
 import org.opennms.netmgt.config.JMXDataCollectionConfigFactory;
 import org.opennms.netmgt.config.collectd.jmx.Attrib;
-import org.opennms.protocols.jmx.connectors.ConnectionWrapper;
+import org.opennms.netmgt.jmx.connection.Connections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.management.MBeanServer;
+import javax.management.ObjectName;
+import java.io.File;
+import java.io.FileInputStream;
+import java.lang.management.ManagementFactory;
+import java.net.InetAddress;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  *
@@ -290,22 +288,12 @@ public class JMXCollectorTest {
             logger.debug("Attrubute Value  '{}'", collectionAttribute.getStringValue());
         }
     }
-    
+
+    // TODO MVR lets find out, if we can still connect to the this.platformMbeanServer
     public class JMXCollectorImpl extends JMXCollector {
-
         @Override
-        public ConnectionWrapper getMBeanServerConnection(Map<String, Object> map, InetAddress address) {
-            return new ConnectionWrapper() {
-
-                @Override
-                public MBeanServerConnection getMBeanServer() {
-                    return platformMBeanServer;
-                }
-
-                @Override
-                public void close() {
-                }
-            };
+        protected String getConnectionName() {
+            return Connections.JSR160;
         }
     }
 }

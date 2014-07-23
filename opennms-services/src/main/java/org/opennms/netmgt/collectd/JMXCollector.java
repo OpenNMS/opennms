@@ -47,22 +47,26 @@ import org.opennms.netmgt.collection.support.AbstractCollectionResource;
 import org.opennms.netmgt.collection.support.SingleResourceCollectionSet;
 import org.opennms.netmgt.config.JMXDataCollectionConfigFactory;
 import org.opennms.netmgt.config.collectd.jmx.Attrib;
+import org.opennms.netmgt.config.collectd.jmx.Mbean;
+import org.opennms.netmgt.jmx.AttributeSample;
+import org.opennms.netmgt.jmx.CompositeSample;
+import org.opennms.netmgt.jmx.JmxSampleProcessor;
+import org.opennms.netmgt.jmx.JmxUtils;
+import org.opennms.netmgt.jmx.WiuDefaultJmxCollector;
+import org.opennms.netmgt.jmx.WiuJmxCollector;
+import org.opennms.netmgt.jmx.WiuJmxConfig;
 import org.opennms.netmgt.model.events.EventProxy;
 import org.opennms.netmgt.rrd.RrdRepository;
-import org.opennms.protocols.jmx.connectors.ConnectionWrapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.management.MBeanServerConnection;
-import javax.management.MalformedObjectNameException;
-import javax.management.ObjectName;
 import java.io.File;
-import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.net.InetAddress;
+import java.util.Date;
 import java.util.HashMap;
-import java.util.Set;
-import java.util.StringTokenizer;
+import java.util.List;
+import java.util.Map;
 
 /**
  * This class performs the collection and storage of data. The derived class
@@ -115,12 +119,6 @@ public abstract class JMXCollector implements ServiceCollector {
     private static final Logger LOG = LoggerFactory.getLogger(JMXCollector.class);
 
     /**
-     * Interface attribute key used to store the map of IfInfo objects which
-     * hold data about each interface on a particular node.
-     */
-    static String IF_MAP_KEY = "org.opennms.netmgt.collectd.JBossCollector.ifMap";
-
-    /**
      * RRD data source name max length.
      */
     private static final int MAX_DS_NAME_LENGTH = 19;
@@ -136,7 +134,7 @@ public abstract class JMXCollector implements ServiceCollector {
      * Interface attribute key used to store a JMXNodeInfo object which holds
      * data about the node being polled.
      */
-    static String NODE_INFO_KEY =
+    private static final String NODE_INFO_KEY =
             "org.opennms.netmgt.collectd.JMXCollector.nodeInfo";
 
     /**
@@ -272,22 +270,9 @@ public abstract class JMXCollector implements ServiceCollector {
         // Nothing to release...
     }
 
-    /**
-     * <p>getMBeanServerConnection</p>
-     *
-     * @param map     a {@link java.util.Map} object.
-     * @param address a {@link java.net.InetAddress} object.
-     * @return a {@link org.opennms.protocols.jmx.connectors.ConnectionWrapper} object.
-     */
-    public abstract ConnectionWrapper getMBeanServerConnection(Map<String, Object> map, InetAddress address);
-
-    private ConnectionWrapper getMBeanServerConnectionNotNull(Map<String, Object> map, InetAddress address) throws MBeanServerConnectionException {
-        ConnectionWrapper connection = getMBeanServerConnection(map, address);
-        if (connection == null) {
-            throw new MBeanServerConnectionException();
-        }
-        return connection;
-    }
+    // TODO mvr make abstract
+    // we need this to determine which connection type/manager should be used to connect to the jvm
+    protected abstract String getConnectionName();
 
     /**
      * {@inheritDoc}
@@ -296,70 +281,88 @@ public abstract class JMXCollector implements ServiceCollector {
      */
     @Override
     public CollectionSet collect(CollectionAgent agent, EventProxy eproxy, Map<String, Object> map) {
-//        final InetAddress ipaddr = agent.getAddress();
+        final InetAddress ipaddr = agent.getAddress();
         final JMXNodeInfo nodeInfo = agent.getAttribute(NODE_INFO_KEY);
-//        Map<String, BeanInfo> mbeans = nodeInfo.getMBeans();
-        String port = ParameterMap.getKeyedString(map, ParameterName.PORT.toString(), null);
-        String friendlyName = ParameterMap.getKeyedString(map, ParameterName.FRIENDLY_NAME.toString(), port);
-        String collDir = serviceName;
-        if (useFriendlyName) {
-            collDir = friendlyName;
-        }
+        final String collectionName = agent.getAttribute("collectionName");
+        final boolean useMbeanForRrds = ParameterMap.getKeyedBoolean(map, ParameterName.USE_MBEAN_NAME_FOR_RRDS.toString(), false);
+        final String port = ParameterMap.getKeyedString(map, ParameterName.PORT.toString(), null);
+        final String friendlyName = ParameterMap.getKeyedString(map, ParameterName.FRIENDLY_NAME.toString(), port);
+        final String collDir = useFriendlyName ? friendlyName : serviceName;
+        final int retries = ParameterMap.getKeyedInteger(map, ParameterName.RETRY.toString(), 3);
 
+        // result objects
         final JMXCollectionResource collectionResource = new JMXCollectionResource(agent, collDir);
         final SingleResourceCollectionSet collectionSet = new SingleResourceCollectionSet(collectionResource, new Date());
 
-        LOG.debug("collecting {} on node ID {}", InetAddressUtils.str(agent.getAddress()), nodeInfo.getNodeId());
+        LOG.debug("collecting {} on node ID {}", InetAddressUtils.str(ipaddr), nodeInfo.getNodeId());
+        try {
+            // create config for JmxCollector
+            final WiuJmxConfig config = new WiuJmxConfig();
+            config.setAgentAddress(InetAddressUtils.str(ipaddr));
+            config.setConnectionName(getConnectionName());
+            config.setRetries(retries);
+            config.setServiceProperties(JmxUtils.convertToStringMap(map));
+            config.setJmxCollection(JMXDataCollectionConfigFactory.getInstance().getJmxCollection(collectionName));
 
-//        // TODO mvr initialize config....
-//        WiuJmxConfig wiuConfig = new WiuJmxConfig();
-//        wiuConfig.setProperties(map);
-//        wiuConfig.setRetries(ParameterMap.getKeyedInteger(map, ParameterName.RETRY.toString(), 3));
-//        wiuConfig.setUseMbeanForRrds(ParameterMap.getKeyedBoolean(map, ParameterName.USE_MBEAN_NAME_FOR_RRDS.toString(), false));
-//        wiuConfig.setMbeans(nodeInfo.getMBeans());
-//        wiuConfig.setAgentAddress(agent.getAddress());
-//        wiuConfig.setResourceName(collDir);
-//
-//        // TODO mvr initialize wiucallback
-//        WiuCallback wiuCallback = new WiuCallback() {
-//
-//            @Override
-//            public void addAttribute(JMXCollectionAttributeType attribType, String value) {
-//                collectionResource.setAttributeValue(attribType, value);
-//            }
-//        };
-//
-//        try {
-//            doCollect(wiuConfig, wiuCallback);
-//            collectionSet.setStatus(ServiceCollector.COLLECTION_SUCCEEDED);
-//        } catch (final MBeanServerConnectionException ex) {
-//            LOG.error("Error getting MBeanServer", ex);
-//        }
+            final WiuJmxCollector jmxCollector = new WiuDefaultJmxCollector();
+            jmxCollector.collect(config, new JmxSampleProcessor() {
+
+                private final Map<String, AttributeGroupType> groupNameAttributeGroupTypeMap = new HashMap<>();
+
+                @Override
+                public void process(AttributeSample attributeSample) {
+                    final String objectName = attributeSample.getMbean().getObjectname();
+                    final String attributeName = attributeSample.getAttribute().getName();
+                    final AttributeGroupType attribGroupType = getAttributeGroupType(attributeSample.getMbean());
+
+                    JMXDataSource ds = nodeInfo.getDsMap().get(objectName + "|" + attributeName);
+                    JMXCollectionAttributeType attribType = new JMXCollectionAttributeType(ds, attribGroupType);
+                    collectionResource.setAttributeValue(attribType, attributeSample.getValueAsString());
+                }
+
+                @Override
+                public void process(CompositeSample compositeSample) {
+                    final String objectName = compositeSample.getMbean().getObjectname();
+                    final String attributeName = compositeSample.getAttribute().getName();
+                    final AttributeGroupType attribGroupType = getAttributeGroupType(compositeSample.getMbean());
+
+                    JMXDataSource ds = nodeInfo.getDsMap().get(objectName + "|" + attributeName + "|" + compositeSample.getCompositeKey());
+                    JMXCollectionAttributeType attribType = new JMXCollectionAttributeType(ds, attribGroupType);
+                    collectionResource.setAttributeValue(attribType, compositeSample.getValueAsString());
+                }
+
+                private AttributeGroupType getAttributeGroupType(Mbean mbean) {
+                    //All JMX collected values are per node
+                    final String groupName = useMbeanForRrds ? mbean.getName() : mbean.getObjectname();
+                    if (!groupNameAttributeGroupTypeMap.containsKey(groupName)) {
+                        final AttributeGroupType attribGroupType = new AttributeGroupType(fixGroupName(groupName), AttributeGroupType.IF_TYPE_ALL);
+                        groupNameAttributeGroupTypeMap.put(groupName, attribGroupType);
+                    }
+                    return groupNameAttributeGroupTypeMap.get(groupName);
+                }
+            });
+        } catch (final Exception e) {
+            LOG.debug("{} Collector.collect: IOException while collecting address: {}", serviceName, agent.getAddress(), e);
+        }
+
+        collectionSet.setStatus(ServiceCollector.COLLECTION_SUCCEEDED);
         return collectionSet;
     }
 
-    /*
-     * This method strips out the illegal character '/' and attempts to keep
-     * the length of the key plus ds name to 19 or less characters. The slash
-     * character cannot be in the name since it is an illegal character in
-     * file names.
+    /**
+     * This method removes characters from an object name that are
+     * potentially illegal in a file or directory name, returning a
+     * name that is appropriate for use with the storeByGroup persistence
+     * method.
+     *
+     * @param objectName
+     * @return
      */
-    private static String fixKey(String key, String attrName, String substitutions) {
-        String newKey = key;
-        if (key.startsWith(File.separator)) {
-            newKey = key.substring(1);
+    private static String fixGroupName(String objectName) {
+        if (objectName == null) {
+            return "NULL";
         }
-        if (substitutions != null && substitutions.length() > 0) {
-            StringTokenizer st = new StringTokenizer(substitutions, ",");
-            while (st.hasMoreTokens()) {
-                String token = st.nextToken();
-                int index = token.indexOf('|');
-                if (newKey.equals(token.substring(0, index))) {
-                    newKey = token.substring(index + 1);
-                }
-            }
-        }
-        return newKey;
+        return AlphaNumeric.parseAndReplace(objectName, '_');
     }
 
     /**
@@ -367,11 +370,11 @@ public abstract class JMXCollector implements ServiceCollector {
      * from the provided list of MBeanObject objects.
      *
      * @param collectionName Collection name
-     * @param attributeMap   List of MBeanObject objects defining the oid's to be
+     * @param oidList        List of MBeanObject objects defining the oid's to be
      *                       collected via JMX.
      * @return list of RRDDataSource objects
      */
-    protected static Map<String, JMXDataSource> buildDataSourceList(final String collectionName, final Map<String, List<Attrib>> attributeMap) {
+    protected static Map<String, JMXDataSource> buildDataSourceList(String collectionName, Map<String, List<Attrib>> attributeMap) {
         LOG.debug("buildDataSourceList - ***");
 
         /*
@@ -379,7 +382,7 @@ public abstract class JMXCollector implements ServiceCollector {
          * the expansion data source's. Use this list as a basis
          * for building a data source list for the current interface.
          */
-        final HashMap<String, JMXDataSource> dsList = new HashMap<String, JMXDataSource>();
+        HashMap<String, JMXDataSource> dsList = new HashMap<>();
 
         /*
          * Loop through the MBean object list to be collected for this
@@ -395,8 +398,6 @@ public abstract class JMXCollector implements ServiceCollector {
             LOG.debug("ObjectName: {}, Attributes: {}", objectName, list.size());
 
             for (Attrib attr : list) {
-                JMXDataSource ds;
-
                 /*
                  * Verify that this object has an appropriate "integer" data
                  * type which can be stored in an RRD database file (must map to
@@ -410,8 +411,9 @@ public abstract class JMXCollector implements ServiceCollector {
                      * Assign heartbeat using formula (2 * step) and hard code
                      * min & max values to "U" ("unknown").
                      */
-                    ds = new JMXDataSource();
-                    ds.setHeartbeat(2 * JMXDataCollectionConfigFactory.getInstance().getStep(collectionName));
+                    JMXDataSource ds = new JMXDataSource();
+                    ds.setHeartbeat(2 * JMXDataCollectionConfigFactory.getInstance().getStep(
+                            collectionName));
                     // For completeness, adding a minval option to the variable.
                     String ds_minval = attr.getMinval();
                     if (ds_minval == null) {
@@ -471,26 +473,18 @@ public abstract class JMXCollector implements ServiceCollector {
      *
      * @param useFriendlyName a boolean.
      */
-    protected void setUseFriendlyName(boolean useFriendlyName) {
+    public void setUseFriendlyName(boolean useFriendlyName) {
         this.useFriendlyName = useFriendlyName;
     }
 
-    public static class JMXCollectionAttributeType extends AbstractCollectionAttributeType {
-    	private final JMXDataSource m_dataSource;
-    	private final String m_name;
+    private static class JMXCollectionAttributeType extends AbstractCollectionAttributeType {
+        private final JMXDataSource m_dataSource;
+        private final String m_name;
 
-        public JMXCollectionAttributeType(JMXDataSource dataSource, String key, String substitutions, AttributeGroupType groupType) {
+        public JMXCollectionAttributeType(JMXDataSource dataSource, AttributeGroupType groupType) {
             super(groupType);
             m_dataSource = dataSource;
-            m_name = createName(key, substitutions);
-        }
-
-        private String createName(String key, String substitutions) {
-            String name = m_dataSource.getName();
-            if (key != null && !key.equals("")) {
-                name = fixKey(key, m_dataSource.getName(), substitutions) + "_" + name;
-            }
-            return name;
+            m_name = dataSource.getName();
         }
 
         @Override
@@ -514,7 +508,7 @@ public abstract class JMXCollector implements ServiceCollector {
     private static class JMXCollectionAttribute extends AbstractCollectionAttribute {
 
         private final String m_value;
-        
+
         JMXCollectionAttribute(JMXCollectionResource resource, CollectionAttributeType attribType, String value) {
             super(attribType, resource);
             m_value = value;

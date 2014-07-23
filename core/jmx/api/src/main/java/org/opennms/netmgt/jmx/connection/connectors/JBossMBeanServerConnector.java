@@ -26,10 +26,20 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.protocols.jmx.connectors;
+package org.opennms.netmgt.jmx.connection.connectors;
 
+import org.opennms.core.utils.ParameterMap;
+import org.opennms.netmgt.jmx.connection.MBeanServerConnectionException;
+import org.opennms.netmgt.jmx.connection.MBeanServerConnector;
+import org.opennms.netmgt.jmx.connection.WiuConnectionWrapper;
+import org.opennms.netmgt.jmx.connection.connectors.IsolatingClassLoader.InvalidContextClassLoaderException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 import java.io.File;
-import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.AccessController;
@@ -37,18 +47,7 @@ import java.security.PrivilegedAction;
 import java.util.Hashtable;
 import java.util.Map;
 
-import javax.naming.Context;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
-
-import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.utils.ParameterMap;
-import org.opennms.protocols.jmx.MBeanServerProxy;
-import org.opennms.protocols.jmx.connectors.IsolatingClassLoader.InvalidContextClassLoaderException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-/*
+/**
  * The JBossConnectionFactory class handles the creation of a connection to the 
  * remote JBoss server.  The connections can be either RMI or HTTP based.  RMI is
  * more efficient but doesn't work with firewalls.  The HTTP connection is suited 
@@ -57,35 +56,16 @@ import org.slf4j.LoggerFactory;
  * the jboss-service.xml found in the 
  * <jboss-home>/server/default/deploy/http-invoker/META-INF directory
  * 
- * @author <A HREF="mailto:mike@opennms.org">Mike Jamison </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
-/**
- * <p>JBossConnectionFactory class.</p>
- *
- * @author ranger
- * @version $Id: $
- */
-public class JBossConnectionFactory {
+class JBossMBeanServerConnector implements MBeanServerConnector {
     
-	private static final Logger LOG = LoggerFactory.getLogger(JBossConnectionFactory.class);
+	private static final Logger LOG = LoggerFactory.getLogger(JBossMBeanServerConnector.class);
 
-    static String[] packages = {"org.jboss.naming.*", "org.jboss.interfaces.*"};
+    private static final String[] PACKAGES = {"org.jboss.naming.*", "org.jboss.interfaces.*"};
 
-    /* (non-Javadoc)
-     * @see org.opennms.netmgt.utils.jmx.connectors.ConnectionFactory#getMBeanServer()
-     */
-    /**
-     * <p>getMBeanServerConnection</p>
-     *
-     * @param propertiesMap a {@link java.util.Map} object.
-     * @param address a {@link java.net.InetAddress} object.
-     * @return a {@link org.opennms.protocols.jmx.connectors.JBossConnectionWrapper} object.
-     */
-    public static JBossConnectionWrapper getMBeanServerConnection(Map<String,Object> propertiesMap, InetAddress address) {
-        
+    @Override
+    public WiuConnectionWrapper createConnection(String address, Map<String, String> propertiesMap) throws MBeanServerConnectionException {
         JBossConnectionWrapper wrapper = null;
-        //IsolatingClassLoader   icl     = null;
         ClassLoader icl = null;
         final ClassLoader originalLoader = Thread.currentThread().getContextClassLoader();
 
@@ -94,17 +74,12 @@ public class JBossConnectionFactory {
         String jbossVersion   = ParameterMap.getKeyedString(propertiesMap, "version", "4");
         String port           = ParameterMap.getKeyedString(propertiesMap, "port",    "1099");
 
-        if (connectionType == null) {
-            LOG.error("factory property is not set, check the configuration files.");
-            return null;
-        }
-        
         if (jbossVersion == null || jbossVersion.startsWith("4")) {
             try {
                 icl = new IsolatingClassLoader("jboss", 
                         new URL[] {new File(System.getProperty("opennms.home") + "/lib/jboss/jbossall-client.jar").toURI().toURL()},
                         originalLoader,
-                        packages,
+                        PACKAGES,
                         true);
                        
             } catch (MalformedURLException e) {
@@ -122,7 +97,7 @@ public class JBossConnectionFactory {
                                 "jboss", 
                                 new URL[] {new File(System.getProperty("opennms.home") + "/lib/jboss/jbossall-client32.jar").toURI().toURL()},
                                 originalLoader,
-                                packages,
+                                    PACKAGES,
                                 true
                             );
                         } catch (MalformedURLException e) {
@@ -146,7 +121,7 @@ public class JBossConnectionFactory {
         if (connectionType.equals("RMI")) {
             InitialContext  ctx  = null;
 
-            final String hostAddress = InetAddressUtils.str(address);
+            final String hostAddress = address;
 			try {
                 
                 Hashtable<String, String> props = new Hashtable<String, String>();
@@ -176,7 +151,7 @@ public class JBossConnectionFactory {
             InitialContext ctx  = null;
             String invokerSuffix = null;
 
-            final String hostAddress = InetAddressUtils.str(address);
+            final String hostAddress = address;
 			try {
                 
                 Hashtable<String, String> props = new Hashtable<String, String>();

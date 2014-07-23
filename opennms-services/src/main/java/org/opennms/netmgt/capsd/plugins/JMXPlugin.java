@@ -28,14 +28,16 @@
 
 package org.opennms.netmgt.capsd.plugins;
 
-import java.net.InetAddress;
-import java.util.Map;
-
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.capsd.AbstractPlugin;
-import org.opennms.protocols.jmx.connectors.ConnectionWrapper;
+import org.opennms.netmgt.jmx.JmxUtils;
+import org.opennms.netmgt.jmx.connection.WiuConnectionWrapper;
+import org.opennms.netmgt.jmx.connection.connectors.DefaultConnectionManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.net.InetAddress;
+import java.util.Map;
 
 
 /*
@@ -70,17 +72,7 @@ public abstract class JMXPlugin extends AbstractPlugin {
      */
     public abstract String getProtocolName(Map<String, Object> parameterMap);
     
-    /*
-     * The subclass is responsible for getting the connection.
-     */
-    /**
-     * <p>getMBeanServerConnection</p>
-     *
-     * @param parameterMap a {@link java.util.Map} object.
-     * @param address a {@link java.net.InetAddress} object.
-     * @return a {@link org.opennms.protocols.jmx.connectors.ConnectionWrapper} object.
-     */
-    public abstract ConnectionWrapper getMBeanServerConnection(Map<String, Object> parameterMap, InetAddress address);
+    protected abstract String getConnectionName();
     
     /*
      * @see org.opennms.netmgt.capsd.Plugin#getProtocolName()
@@ -108,12 +100,12 @@ public abstract class JMXPlugin extends AbstractPlugin {
         }
 
         boolean res = false;
-        ConnectionWrapper connection = null;
+        WiuConnectionWrapper connection = null;
         try {
-            
-            connection = getMBeanServerConnection(map, address);
-            
-            Integer result = connection.getMBeanServer().getMBeanCount();
+
+            connection = new DefaultConnectionManager(1).connect(getConnectionName(), InetAddressUtils.str(address), JmxUtils.convertToStringMap(map), null);
+
+            Integer result = connection.getMBeanServerConnection().getMBeanCount();
             LOG.debug("isProtocolSupported? {} {} {}", getProtocolName(), result, connection);
             if (result != null) {
                 res = true;

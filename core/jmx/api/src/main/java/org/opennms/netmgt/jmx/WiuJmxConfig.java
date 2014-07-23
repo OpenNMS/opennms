@@ -1,39 +1,30 @@
 package org.opennms.netmgt.jmx;
 
-import org.opennms.netmgt.config.BeanInfo;
+import org.opennms.netmgt.config.collectd.jmx.JmxCollection;
 
-import java.net.InetAddress;
 import java.util.Map;
 
 public class WiuJmxConfig {
 
-    private InetAddress agentAddress;
+    private String connectionName;
 
-    private Map<String, Object> properties;
+    private String agentAddress;
 
     private int retries;
 
-    private Map<String, BeanInfo> mbeans;
+    private Map<String, String> serviceProperties;
+    private JmxCollection jmxCollection;
 
-    private boolean useMbeanForRrds;
-
-    private Map<String, WiuJmxDataSource> dsMap;
-    private String resourceName;
-
-    public InetAddress getAgentAddress() {
+    public String getAgentAddress() {
         return agentAddress;
     }
 
-    public void setAgentAddress(InetAddress agentAddress) {
+    public void setAgentAddress(String agentAddress) {
         this.agentAddress = agentAddress;
     }
 
-    public Map<String, Object> getServiceProperties() {
-        return properties;
-    }
-
-    public void setProperties(Map<String, Object> properties) {
-        this.properties = properties;
+    public Map<String, String> getServiceProperties() {
+        return serviceProperties;
     }
 
     public int getRetries() {
@@ -44,35 +35,23 @@ public class WiuJmxConfig {
         this.retries = retries;
     }
 
-    public Map<String, BeanInfo> getMbeans() {
-        return mbeans;
+    public String getConnectionName() {
+        return connectionName;
     }
 
-    public void setMbeans(Map<String, BeanInfo> mbeans) {
-        this.mbeans = mbeans;
+    public void setConnectionName(String connectionName) {
+        this.connectionName = connectionName;
     }
 
-    public boolean isUseMbeanForRrds() {
-        return useMbeanForRrds;
+    public void setServiceProperties(Map<String, String> serviceProperties) {
+        this.serviceProperties = serviceProperties;
     }
 
-    public void setUseMbeanForRrds(boolean useMbeanForRrds) {
-        this.useMbeanForRrds = useMbeanForRrds;
+    public void setJmxCollection(JmxCollection jmxCollection) {
+        this.jmxCollection = jmxCollection;
     }
 
-    public Map<String, WiuJmxDataSource> getDataSourceMap() {
-        return dsMap;
-    }
-
-    public void setDataSourceMap(Map<String, WiuJmxDataSource> dsMap) {
-        this.dsMap = dsMap;
-    }
-
-    public void setResourceName(String resourceName) {
-        this.resourceName = resourceName;
-    }
-
-    public String getResourceName() {
-        return resourceName;
+    public JmxCollection getJmxCollection() {
+        return jmxCollection;
     }
 }

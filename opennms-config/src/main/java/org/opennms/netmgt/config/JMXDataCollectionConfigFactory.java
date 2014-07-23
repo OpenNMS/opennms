@@ -28,22 +28,10 @@
 
 package org.opennms.netmgt.config;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
+import org.exolab.castor.xml.Marshaller;
+import org.exolab.castor.xml.Unmarshaller;
+import org.exolab.castor.xml.XMLException;
 import org.opennms.core.utils.ConfigFileConstants;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.config.collectd.jmx.Attr;
 import org.opennms.netmgt.config.collectd.jmx.Attrib;
 import org.opennms.netmgt.config.collectd.jmx.CompAttrib;
@@ -53,9 +41,26 @@ import org.opennms.netmgt.config.collectd.jmx.JmxDatacollectionConfig;
 import org.opennms.netmgt.config.collectd.jmx.Mbean;
 import org.opennms.netmgt.config.collectd.jmx.Mbeans;
 import org.opennms.netmgt.rrd.RrdRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 /**
  * This class is the main repository for JMX data collection configuration
@@ -248,8 +253,6 @@ public final class JMXDataCollectionConfigFactory {
      *            IP address to look up in the collection
      * @return a list of MIB objects
      */
-    // TODO mvr we should remove this, or declare it deprecated
-    // jsr160, opennms-jvm, ipAddresse
     public Map<String, List<Attrib>> getAttributeMap(String cName, String aSysoid, String anAddress) {
         
         Map<String, List<Attrib>> attributeMap = new HashMap<String, List<Attrib>>();
@@ -294,36 +297,23 @@ public final class JMXDataCollectionConfigFactory {
         return attributeMap;
     }
 
-    // TODO mvr document and use this instead of the other fucked up method
-    public Map<String, List<Attrib>> getJmxCollection(String collectionName) {
-        Map<String, List<Attrib>> attributeMap = new HashMap<String, List<Attrib>>();
-
+    public JmxCollection getJmxCollection(String collectionName) {
         JmxCollection collection = m_collectionMap.get(collectionName);
-        if (collection == null) {
-            return attributeMap;
-        }
-
-        // TODO mvr The way I see it, we should only return a clone of the original list, that's it
-        for (Mbean mbean : collection.getMbeans().getMbean()) {
-            // Make sure to create a new ArrayList because we add to it below
-            List<Attrib> list = new ArrayList<Attrib>(Arrays.asList(mbean.getAttrib()));
-
-            CompAttrib[] compAttributes = mbean.getCompAttrib();
-            for (int i = 0; i < compAttributes.length; i++) {
-                CompMember[] compMembers = compAttributes[i].getCompMember();
-                for (int j = 0; j < compMembers.length; j++) {
-                    Attrib compAttrib = new Attrib();
-                    compAttrib.setName(compAttributes[i].getName() + "|" + compMembers[j].getName());
-                    compAttrib.setAlias(compMembers[j].getAlias());
-                    compAttrib.setType(compMembers[j].getType());
-                    list.add(compAttrib);
-                }
+        if (collection != null) {
+            // we clone the collection by marshal/unmarshalling the object :)
+            try {
+                // TODO mvr we cannot do it this way, this does not consider import
+                StringWriter out = new StringWriter();
+                Marshaller.marshal(collection, out);
+                StringReader in = new StringReader(out.toString());
+                return (JmxCollection) Unmarshaller.unmarshal(JmxCollection.class, in);
+            } catch (XMLException e) {
+                return null;
             }
-            attributeMap.put(mbean.getObjectname(), list);
         }
-        return attributeMap;
+        return null;
     }
-    
+
     /**
      * <p>getMBeanInfo</p>
      *

@@ -26,14 +26,8 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.protocols.jmx.connectors;
+package org.opennms.netmgt.jmx.connection.connectors;
 
-import javax.management.MBeanServerConnection;
-import java.io.Closeable;
-
-public interface ConnectionWrapper extends Closeable {
-    MBeanServerConnection getMBeanServer();
-
-    @Override
-    void close();
+class MX4JMBeanServerConnector extends DefaultMBeanServerConnector {
+	
 }

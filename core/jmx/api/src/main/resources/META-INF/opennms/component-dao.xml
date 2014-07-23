@@ -10,8 +10,4 @@
        http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd
        ">
        
-	<bean id="snmpStrategy" class="org.opennms.netmgt.snmp.SnmpUtils" factory-method="getStrategy"/>
-
-	<onmsgi:service interface="org.opennms.netmgt.snmp.SnmpStrategy" ref="snmpStrategy"/>
-       
 </beans>

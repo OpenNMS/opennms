@@ -26,28 +26,8 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.collectd;
+package org.opennms.netmgt.jmx.connection.connectors;
 
-import org.opennms.netmgt.jmx.connection.Connections;
+class Jsr160MBeanServerConnector extends DefaultMBeanServerConnector {
 
-/**
- * The MX4JCollector class manages the querying and storage of data into RRD files.  The list of
- * MBeans to be queried is read from the jmx-datacollection-config.xml file using the "mx4j" service name.
- * The super class, JMXCollector, performs all the work.
- *
- * @author <A HREF="mailto:mike@opennms.org">Mike Jamison </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- */
-public class MX4JCollector extends JMXCollector {
-
-    public MX4JCollector() {
-        super();
-        setServiceName("mx4j");
-        setUseFriendlyName(true);
-    }
-
-    @Override
-    protected String getConnectionName() {
-        return Connections.MX4J;
-    }
 }

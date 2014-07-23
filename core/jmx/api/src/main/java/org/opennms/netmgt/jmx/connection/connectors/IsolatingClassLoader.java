@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.protocols.jmx.connectors;
+package org.opennms.netmgt.jmx.connection.connectors;
 
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -45,7 +45,7 @@ import java.util.Set;
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  * @version $Id: $
  */
-public class IsolatingClassLoader extends URLClassLoader {
+class IsolatingClassLoader extends URLClassLoader {
     
     /** Array of prefixes that identifies packages or classes to isolate. **/
     private String[] m_isolatedPrefixes;
@@ -65,14 +65,14 @@ public class IsolatingClassLoader extends URLClassLoader {
      * @throws org.opennms.protocols.jmx.connectors.IsolatingClassLoader.InvalidContextClassLoaderException If augmentClassPath
      * is true and the current thread context class loader is not a
      * <code>URLClassLoader</code>.
-     * @param name a {@link java.lang.String} object.
+     * @param name a {@link String} object.
      */
     public IsolatingClassLoader(String name, URL[] classpath, String[] isolated, boolean augmentClassPath) throws InvalidContextClassLoaderException {
-        
+
         super(classpath);
         init(name, isolated, augmentClassPath);
     }
-    
+
     /**
      * <p>Constructor for IsolatingClassLoader.</p>
      *
@@ -85,8 +85,8 @@ public class IsolatingClassLoader extends URLClassLoader {
      * @throws org.opennms.protocols.jmx.connectors.IsolatingClassLoader.InvalidContextClassLoaderException If augmentClassPath
      * is true and the current thread context class loader is not a
      * <code>URLClassLoader</code>.
-     * @param name a {@link java.lang.String} object.
-     * @param parent a {@link java.lang.ClassLoader} object.
+     * @param name a {@link String} object.
+     * @param parent a {@link ClassLoader} object.
      */
     public IsolatingClassLoader(String name, URL[] classpath, ClassLoader parent, String[] isolated, boolean augmentClassPath)   throws InvalidContextClassLoaderException {
         
