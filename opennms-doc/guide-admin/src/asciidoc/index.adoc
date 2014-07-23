@@ -22,6 +22,7 @@ The OpenNMS Group, Inc. 220 Chatham Business Drive, Suite 220 Pittsboro, NC 2731
 include::text/poller/AvailabilityMonitor.adoc[]
 include::text/poller/BgpSessionMonitor.adoc[]
 include::text/poller/CitrixMonitor.adoc[]
+include::text/poller/DiskUsageMonitor.adoc[]
 include::text/poller/DNSResolutionMonitor.adoc[]
 include::text/poller/HttpMonitor.adoc[]
 include::text/poller/HttpPostMonitor.adoc[]
