@@ -1,4 +1,5 @@
 
+[[poller-dns-resolution-monitor]]
 === DNSResolutionMonitor
 
 The DNS resolution monitor, tests if the node label of an OpenNMS node can be resolved.

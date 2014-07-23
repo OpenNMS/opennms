@@ -33,6 +33,10 @@ www.google.com.		283	IN	A	74.125.232.18
 Received 112 bytes from 8.8.8.8#53 in 41 ms
 ----
 
+TIP:
+This monitor is intended for testing the availability of a DNS service.
+If you want to monitor the DNS resolution of some of your nodes from a client's perspective, please use the <<poller-dns-resolution-monitor,DNSResolutionMonitor>>.
+
 ==== Monitor facts
 
 [options="autowidth"]
