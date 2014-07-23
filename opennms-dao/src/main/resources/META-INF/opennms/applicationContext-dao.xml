@@ -270,7 +270,7 @@
   </bean>
 
   <onmsgi:service interface="org.opennms.netmgt.dao.api.OutageDao" ref="outageDao" />
-  
+
    <bean id="pathOutageDao" class="org.opennms.netmgt.dao.hibernate.PathOutageDaoHibernate">
     <property name="sessionFactory" ref="sessionFactory" />
   </bean>
@@ -410,7 +410,7 @@
   </bean>
   
   <onmsgi:service interface="org.opennms.netmgt.dao.api.JasperReportConfigDao" ref="jasperReportConfigDao" />
-  
+
   <bean id="filterDaoFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
     <property name="staticMethod"><value>org.opennms.netmgt.filter.FilterDaoFactory.setInstance</value></property>
     <property name="arguments">
@@ -426,7 +426,7 @@
   <bean id="filterFavoriteDao" class="org.opennms.netmgt.dao.hibernate.FilterFavoriteDaoHibernate">
     <property name="sessionFactory" ref="sessionFactory" />
   </bean>
-  
+
   <onmsgi:service interface="org.opennms.netmgt.dao.api.FilterFavoriteDao" ref="filterFavoriteDao" />
 
   <bean id="topologyDao" class="org.opennms.netmgt.dao.hibernate.TopologyDaoHibernate">
@@ -452,7 +452,7 @@
     <property name="rrdBaseDirectory" value="${rrd.base.dir}" />
     <property name="rrdBinaryPath" value="${rrd.binary}" />
   </bean>
-  
+
   <onmsgi:service interface="org.opennms.netmgt.dao.api.RrdDao" ref="rrdDao" />
 
   <bean id="statsdConfigResourceLocation" class="java.lang.String">
@@ -474,7 +474,7 @@
     <property name="configResource" ref="javamailConfigResourceLocation" />
     <property name="reloadCheckInterval" value="-1" />
   </bean>
-  
+
   <onmsgi:service interface="org.opennms.netmgt.dao.api.JavaMailConfigurationDao" ref="javamailConfigDao" />
 
   <bean id="onmsMapDao" class="org.opennms.netmgt.dao.hibernate.OnmsMapDaoHibernate">

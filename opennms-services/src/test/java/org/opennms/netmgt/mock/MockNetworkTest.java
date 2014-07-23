@@ -72,7 +72,7 @@ public class MockNetworkTest extends TestCase {
         private int nodeCount = 0;
 
         private int serviceCount = 0;
-        
+
         private int outageCount = 0;
 
         public int getContainerCount() {

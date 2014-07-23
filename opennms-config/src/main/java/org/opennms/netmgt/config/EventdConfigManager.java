@@ -73,13 +73,13 @@ public class EventdConfigManager implements EventdConfig {
     }
     
     EventdConfigManager(final InputStream stream) throws MarshalException, ValidationException, IOException {
-    	m_config = CastorUtils.unmarshal(EventdConfiguration.class, stream);		
-    }
+            m_config = CastorUtils.unmarshal(EventdConfiguration.class, stream);
+        }
     
     private void reload() throws MarshalException, ValidationException, IOException {
     	InputStream stream = new FileInputStream(ConfigFileConstants.getFile(ConfigFileConstants.EVENTD_CONFIG_FILE_NAME));
     	m_config = CastorUtils.unmarshal(EventdConfiguration.class, stream);		
-	}
+    }
 
     public Lock getReadLock() {
         return m_readLock;

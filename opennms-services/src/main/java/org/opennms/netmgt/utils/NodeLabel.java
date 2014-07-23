@@ -69,7 +69,7 @@ import org.slf4j.LoggerFactory;
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
 public class NodeLabel {
-		
+	
 	private static final Logger LOG = LoggerFactory.getLogger(NodeLabel.class);
 	
     /**
@@ -215,7 +215,7 @@ public class NodeLabel {
      * @deprecated Use a {@link NodeDao#load(Integer)} method call instead
      */
     public static NodeLabel retrieveLabel(final int nodeID) throws SQLException {
-    	final Connection dbConnection = DataSourceFactory.getInstance().getConnection();
+        final Connection dbConnection = DataSourceFactory.getInstance().getConnection();
         final DBUtils d = new DBUtils(NodeLabel.class, dbConnection);
 
         try {
@@ -300,7 +300,7 @@ public class NodeLabel {
      * 
      * @deprecated Use a {@link NodeDao#update(org.opennms.netmgt.model.OnmsNode)} method call instead
      */
-    public static  void assignLabel(final int nodeID, final NodeLabel nodeLabel) throws SQLException {
+    public static void assignLabel(final int nodeID, final NodeLabel nodeLabel) throws SQLException {
         final Connection dbConnection = DataSourceFactory.getInstance().getConnection();
         final DBUtils d = new DBUtils(NodeLabel.class, dbConnection);
 
@@ -329,13 +329,13 @@ public class NodeLabel {
      * @deprecated Use a {@link NodeDao#update(org.opennms.netmgt.model.OnmsNode)} method call instead
      */
     public static void assignLabel(final int nodeID, NodeLabel nodeLabel, final Connection dbConnection) throws SQLException {
-       final DBUtils d = new DBUtils(NodeLabel.class);
+        final DBUtils d = new DBUtils(NodeLabel.class);
 
-       try {
+        try {
             // Issue SQL update to assign the 'nodelabel' && 'nodelabelsource' fields of the 'node' table
-           PreparedStatement stmt = dbConnection.prepareStatement(SQL_DB_UPDATE_NODE_LABEL);
-           d.watch(stmt);
-           int column = 1;
+            PreparedStatement stmt = dbConnection.prepareStatement(SQL_DB_UPDATE_NODE_LABEL);
+            d.watch(stmt);
+            int column = 1;
 
             // Node Label
             LOG.debug("NodeLabel.assignLabel: Node label: {} source: {}", nodeLabel.getLabel(), nodeLabel.getSource());
@@ -346,9 +346,9 @@ public class NodeLabel {
                 if (label.length() > MAX_NODE_LABEL_LENGTH) {
                     label = label.substring(0, MAX_NODE_LABEL_LENGTH);
                 }
-                   stmt.setString(column++, label);
+                stmt.setString(column++, label);
             } else {
-               stmt.setNull(column++, java.sql.Types.VARCHAR);
+                stmt.setNull(column++, java.sql.Types.VARCHAR);
             }
             // Node Label Source
             stmt.setString(column++, String.valueOf(nodeLabel.getSource()));
@@ -420,8 +420,8 @@ public class NodeLabel {
      * @deprecated Update this to use modern DAO methods instead of raw SQL
      */
     public static NodeLabel computeLabel(final int nodeID, final Connection dbConnection) throws SQLException {
-       String netbiosName = null;
-    	PreparedStatement stmt = null;
+        String netbiosName = null;
+        PreparedStatement stmt = null;
         ResultSet rs = null;
         final DBUtils d = new DBUtils(NodeLabel.class);
 
@@ -498,7 +498,7 @@ public class NodeLabel {
 
             ipv4AddrList.clear();
             ipHostNameList.clear();
-            
+
             try {
                 // retrieve all non-managed interface IP addresses from 'ipinterface' table
                 stmt = dbConnection.prepareStatement(SQL_DB_RETRIEVE_NON_MANAGED_INTERFACES);

@@ -103,7 +103,7 @@ public class MockNetwork extends MockContainer<MockContainer<?,?>,MockElement> {
     private String m_ifAlias;
 
     private int m_nextServiceId = 1;
-    
+
     private MockPathOutage m_currentOutage;
 
 	private MockService m_currentService;
@@ -189,7 +189,7 @@ public class MockNetwork extends MockContainer<MockContainer<?,?>,MockElement> {
         m_currentNode = (MockNode) addMember(new MockNode(this, nodeid, label));
         return m_currentNode;
     }
-    
+
     public MockPathOutage addOutage(int nodeid, InetAddress ipAddr, String svcName) {
     	//m_currentOutage = (MockPathOutage) addMember(new MockPathOutage(this,nodeid, ipAddr, svcName));
     	m_currentOutage = (MockPathOutage) m_currentNode.addMember(new MockPathOutage(this, m_currentService));

@@ -14,7 +14,7 @@
     <bean id="eventIpcManager" name="eventSubscriptionService, eventForwarder" class="org.opennms.netmgt.model.events.EventIpcManagerProxy">
         <qualifier value="standard" />
     </bean>
-
+    
     <bean id="eventdConfigManager" class="org.opennms.netmgt.config.EventdConfigManager"/>
 
     <bean id="eventIpcManagerHandlerPoolSize" factory-bean="eventdConfigManager" factory-method="getReceivers"/>

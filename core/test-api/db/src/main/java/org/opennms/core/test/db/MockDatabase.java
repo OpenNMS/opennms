@@ -156,7 +156,7 @@ public class MockDatabase extends TemporaryDatabasePostgreSQL implements EventWr
         Object[] values = { Integer.valueOf(svc.getNodeId()), str(svc.getAddress()), Integer.valueOf(svc.getId()), status };
         update("insert into ifServices (nodeID, ipAddr, serviceID, status) values (?, ?, ?, ?);", values);
     }
-    
+
     public void writeOutage(MockPathOutage out) {
     	LOG.info("Inserting into pathoutage {} {} {}" ,out.getNodeId(), InetAddressUtils.str(out.getIpAddress()), out.getServiceName());
     	Object[] values = { Integer.valueOf(out.getNodeId()), InetAddressUtils.str(out.getIpAddress()), out.getServiceName() };

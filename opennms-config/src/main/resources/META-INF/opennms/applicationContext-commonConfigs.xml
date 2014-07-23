@@ -17,7 +17,7 @@
 ">
 
     <context:annotation-config />
-    
+
     <bean id="propertyPlaceholderConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
     <property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE" />
     <!-- 
@@ -51,7 +51,7 @@
 	</bean>
 
 	<bean id="pollerConfig" class="org.opennms.netmgt.config.PollerConfigFactory" depends-on="init-pollerConfig-factory" factory-method="getInstance"/>
-	
+
 	<onmsgi:service interface="org.opennms.netmgt.config.PollerConfig" ref="pollerConfig" />
 
 	<!--  collectd config factory is now init'd in the dao context -->

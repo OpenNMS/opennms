@@ -84,7 +84,7 @@ public final class ServiceConfigFactory {
         } catch (IOException e) {
             // Should never happen
             LOG.error("Could not open configuration file: " + ConfigFileConstants.SERVICE_CONF_FILE_NAME, e);
-        }
+    }
     }
 
     /**

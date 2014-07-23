@@ -1129,7 +1129,7 @@ public class ThresholdingVisitorTest {
 
         MockNetwork network = new MockNetwork();
         network.setCriticalService("ICMP");
-        
+
 
         for (int i=1; i<=numOfNodes; i++) {
             String ipAddress = baseIpAddress + i;

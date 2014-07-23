@@ -24,7 +24,7 @@
     <property name="backlogQ" ref="trapdBacklogQ"/>
   </bean>
   
-   
+  
   <!--
   <bean id="trapdIpMgr" class="org.opennms.netmgt.trapd.JdbcTrapdIpMgr">
     <property name="dataSource" ref="dataSource"/>

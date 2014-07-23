@@ -513,7 +513,7 @@ public class Collectd extends AbstractServiceDaemon implements
                     m_ifaceDao, 
                     spec, 
                     getScheduler(),
-                    m_schedulingCompletedFlag,
+                                              m_schedulingCompletedFlag,
                     m_transTemplate.getTransactionManager()
                 );
 
@@ -623,7 +623,7 @@ public class Collectd extends AbstractServiceDaemon implements
         }
         
         synchronized (m_collectableServices) {
-            for (CollectableService cSvc : m_collectableServices) {
+        	for (CollectableService cSvc : m_collectableServices) {
                 InetAddress addr = (InetAddress) cSvc.getAddress();
                 if (str(addr).equals(ipAddress)
                         && cSvc.getPackageName().equals(pkgName)
@@ -653,7 +653,7 @@ public class Collectd extends AbstractServiceDaemon implements
     }
 
     private void refreshServicePackages() {
-        for (CollectableService thisService : m_collectableServices) {
+    	for (CollectableService thisService : m_collectableServices) {
             thisService.refreshPackage(m_collectdConfigFactory);
         }
     }
@@ -925,7 +925,7 @@ public class Collectd extends AbstractServiceDaemon implements
                 cSvc = iter.next();
 
                 InetAddress addr = (InetAddress) cSvc.getAddress();
-                if (addr.equals(event.getInterfaceAddress())) {
+				if (addr.equals(event.getInterfaceAddress())) {
                     synchronized (cSvc) {
                         // Got a match!
                         LOG.debug("interfaceReparentedHandler: got a CollectableService match for {}", event.getInterface());
@@ -935,7 +935,7 @@ public class Collectd extends AbstractServiceDaemon implements
                         // this CollectableService.
                         CollectorUpdates updates = cSvc.getCollectorUpdates();
                         if (iface == null) {
-                            iface = getIpInterface(event.getNodeid().intValue(), event.getInterface());
+                        	iface = getIpInterface(event.getNodeid().intValue(), event.getInterface());
                         }
 
                         // Now set the reparenting flag
@@ -988,8 +988,8 @@ public class Collectd extends AbstractServiceDaemon implements
         
     }
     
-    private void unscheduleNodeAndMarkForDeletion(Long nodeId) {
-        // Iterate over the collectable service list and mark any entries
+	private void unscheduleNodeAndMarkForDeletion(Long nodeId) {
+		// Iterate over the collectable service list and mark any entries
         // which match the deleted nodeId for deletion.
         synchronized (getCollectableServices()) {
             CollectableService cSvc = null;
@@ -1019,7 +1019,7 @@ public class Collectd extends AbstractServiceDaemon implements
                 liter.remove();
             }
         }
-    }
+	}
 
     /**
      * Process the event, construct a new CollectableService object
@@ -1219,7 +1219,7 @@ public class Collectd extends AbstractServiceDaemon implements
 
                     final InetAddress addr = (InetAddress) cSvc.getAddress();
                     final String addrString = str(addr);
-                    if (addrString != null && addrString.equals(oldPrimaryIfAddr)) {
+					if (addrString != null && addrString.equals(oldPrimaryIfAddr)) {
                         synchronized (cSvc) {
                             // Got a match! Retrieve the CollectorUpdates
                             // object
@@ -1293,9 +1293,9 @@ public class Collectd extends AbstractServiceDaemon implements
                 LOG.debug("Comparing CollectableService ip address = {} and event ip interface = {}", addrString, ipAddress);
                 if (addrString != null && addrString.equals(ipAddress)) {
                     synchronized (cSvc) {
-                        if (iface == null) {
+                    	if (iface == null) {
                             iface = getIpInterface(nodeid.intValue(), ipAddress);
-                        }
+                    	}
                         // Got a match! Retrieve the CollectorUpdates object
                         // associated
                         // with this CollectableService.
@@ -1499,6 +1499,6 @@ public class Collectd extends AbstractServiceDaemon implements
     }
 
     public static String getLoggingCategory() {
-        return LOG4J_CATEGORY;
+    	return LOG4J_CATEGORY;
     }
 }

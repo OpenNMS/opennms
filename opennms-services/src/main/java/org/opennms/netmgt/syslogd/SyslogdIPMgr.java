@@ -55,7 +55,7 @@ final class SyslogdIPMgr {
      * addresses and their node IDs from the IP Interface table.
      */
     private static final String IP_LOAD_SQL = "SELECT ipAddr, nodeid FROM ipInterface";
-    
+
     /**
      * A Map of IP addresses and node IDs
      */
@@ -71,13 +71,13 @@ final class SyslogdIPMgr {
      *             Thrown if the connection cannot be created or a database
      *             error occurs.
      */
-     static synchronized void dataSourceSync() throws SQLException {
-    	java.sql.Connection c = null;
+    static synchronized void dataSourceSync() throws SQLException {
+        java.sql.Connection c = null;
         Statement s = null;
         try {
             // Get database connection
             c = DataSourceFactory.getInstance().getConnection();
-       	
+
             // Run with it
             c.setReadOnly(true);
 

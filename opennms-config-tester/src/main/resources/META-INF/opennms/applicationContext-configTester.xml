@@ -199,7 +199,7 @@ org.opennms.netmgt.filter.FilterParseException: SQL Exception occurred getting I
     <property name="configResource" value="file:${opennms.home}/etc/eventconf.xml"/>
   </bean>
   
-  
+
 
   <bean id="eventdConfigFactory" class="org.opennms.netmgt.config.EventdConfigManager"/>
   
