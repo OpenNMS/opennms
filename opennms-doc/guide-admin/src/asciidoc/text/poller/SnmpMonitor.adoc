@@ -83,7 +83,7 @@ It is currently not possible for the Remote Poller to have access to the SNMP co
 | `port`            | Destination port where the SNMP requests shall be sent.                                          | optional | `from snmp-config.xml'
 | `reason-template` | A user-provided template used for the monitor's reason code if the service is unvailable.
                       Defaults to a reasonable value if unset.
-                      See below for an explanation of the possible template parameters.                                 | optional | 'depends'
+                      See below for an explanation of the possible template parameters.                                 | optional | 'depends on operation mode'
 
 | `retry`           | Number of polls to attempt.                                                                      | optional | `from snmp-config.xml`
 | `retries`         | Deprecated.
@@ -96,6 +96,26 @@ It is currently not possible for the Remote Poller to have access to the SNMP co
                       defines how the tabular object's values must match the criteria defined by the `operator` and
                       `operand` parameters.
                       See also the `match-all`, `minimum`, and `maximum` parameters.                                   | optional | `false`
+|===
+
+.Variables which can be used in the reason-template parameter
+[options="header, autowidth"]
+|===
+| Variable           | Description
+| `${hex}`           | Value of the `hex` parameter.
+| `${ipaddr}`        | IP address polled.
+| `${matchAll}`      | Value of the `match-all` parameter.
+| `${matchCount}`    | when `match-all` is set to `count`, contains the number of matching instances encountered.
+| `${maximum}`       | Value of the `maximum` parameter.
+| `${minimum}`       | Value of the `minimum` paramater.
+| `${observedValue}` | Polled value that made the monitor succeed or fail.
+| `${oid}`           | Value of the `oid` parameter.
+| `${operand}`       | Value of the `operand` parameter.
+| `${operantor}`     | Value of the `operator` parameter.
+| `${port}`          | Value of the `port` parameter.
+| `${retry}`         | Value of the `retry` parameter.
+| `${timeout}`       | Value of the `timeout` parameter.
+| `${walk}`          | Value of the `walk` parameter.
 |===
 
 ==== Example for monitoring scalar object
