@@ -28,7 +28,7 @@
 
 package org.opennms.netmgt.collectd;
 
-import org.opennms.netmgt.jmx.connection.Connectors;
+import org.opennms.netmgt.jmx.connection.JmxConnectors;
 
 /**
  * The MX4JCollector class manages the querying and storage of data into RRD files.  The list of
@@ -48,6 +48,6 @@ public class MX4JCollector extends JMXCollector {
 
     @Override
     protected String getConnectionName() {
-        return Connectors.MX4J;
+        return JmxConnectors.MX4J;
     }
 }

@@ -28,7 +28,7 @@
 
 package org.opennms.netmgt.poller.monitors;
 
-import org.opennms.netmgt.jmx.connection.Connectors;
+import org.opennms.netmgt.jmx.connection.JmxConnectors;
 
 /**
  * The class is responsible for getting the connection to the rmote jmx server.  The
@@ -42,6 +42,6 @@ public class Jsr160Monitor extends JMXMonitor {
 
     @Override
     protected String getConnectionName() {
-        return Connectors.JSR160;
+        return JmxConnectors.JSR160;
     }
 }

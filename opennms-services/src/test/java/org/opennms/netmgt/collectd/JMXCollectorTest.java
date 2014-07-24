@@ -43,7 +43,7 @@ import org.opennms.netmgt.collection.support.SingleResourceCollectionSet;
 import org.opennms.netmgt.config.BeanInfo;
 import org.opennms.netmgt.config.JMXDataCollectionConfigFactory;
 import org.opennms.netmgt.config.collectd.jmx.Attrib;
-import org.opennms.netmgt.jmx.connection.Connectors;
+import org.opennms.netmgt.jmx.connection.JmxConnectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -307,7 +307,7 @@ public class JMXCollectorTest {
     public class JMXCollectorImpl extends JMXCollector {
         @Override
         protected String getConnectionName() {
-            return Connectors.PLATFORM;
+            return JmxConnectors.PLATFORM;
         }
     }
 }

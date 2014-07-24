@@ -8,8 +8,8 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.core.jmx</groupId>
-  <artifactId>org.opennms.core.jmx.api</artifactId>
-  <name>OpenNMS Core JMX API</name>
+  <artifactId>org.opennms.core.jmx.impl</artifactId>
+  <name>OpenNMS Core JMX Impl</name>
   <packaging>bundle</packaging>
   <build>
     <plugins>
@@ -23,8 +23,6 @@
             <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
             <Bundle-Version>${project.version}</Bundle-Version>
             <Export-Package>org.opennms.netmgt.jmx.*;version="${project.version}"</Export-Package>
-            <Export-Package>org.opennms.netmgt.jmx.connection;version="${project.version}"</Export-Package>
-            <Export-Package>org.opennms.netmgt.jmx.samples;version="${project.version}"</Export-Package>
           </instructions>
         </configuration>
       </plugin>
@@ -32,8 +30,8 @@
   </build>
   <dependencies>
     <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-config</artifactId>
+      <groupId>org.opennms.core.jmx</groupId>
+      <artifactId>org.opennms.core.jmx.api</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>

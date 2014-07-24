@@ -31,9 +31,10 @@ package org.opennms.netmgt.poller.monitors;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.jmx.JmxUtils;
-import org.opennms.netmgt.jmx.connection.ConnectionManager;
-import org.opennms.netmgt.jmx.connection.MBeanServerConnectionException;
-import org.opennms.netmgt.jmx.connection.WiuConnectionWrapper;
+import org.opennms.netmgt.jmx.connection.JmxConnectionManager;
+import org.opennms.netmgt.jmx.connection.JmxServerConnectionException;
+import org.opennms.netmgt.jmx.connection.JmxServerConnectionWrapper;
+import org.opennms.netmgt.jmx.connection.JmxServerConnectionException;
 import org.opennms.netmgt.jmx.connection.connectors.DefaultConnectionManager;
 import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.MonitoredService;
@@ -90,20 +91,20 @@ public abstract class JMXMonitor extends AbstractServiceMonitor {
         PollStatus serviceStatus = PollStatus.unavailable();
         try {
             final Timer timer = new Timer();
-            final ConnectionManager connectionManager = new DefaultConnectionManager(ParameterMap.getKeyedInteger(map, "retry", 3));
-            final ConnectionManager.RetryCallback retryCallback = new ConnectionManager.RetryCallback() {
+            final JmxConnectionManager connectionManager = new DefaultConnectionManager(ParameterMap.getKeyedInteger(map, "retry", 3));
+            final JmxConnectionManager.RetryCallback retryCallback = new JmxConnectionManager.RetryCallback() {
                 @Override
                 public void onRetry() {
                     timer.reset();
                 }
             };
 
-            try (WiuConnectionWrapper connection = connectionManager.connect(getConnectionName(), InetAddrUtils.str(ipv4Addr), JmxUtils.convertToStringMap(map), retryCallback)) {
+            try (JmxServerConnectionWrapper connection = connectionManager.connect(getConnectionName(), InetAddrUtils.str(ipv4Addr), JmxUtils.convertToStringMap(map), retryCallback)) {
 
                 connection.getMBeanServerConnection().getMBeanCount();
                 long nanoResponseTime = System.nanoTime() - timer.getStartTime();
                 serviceStatus = PollStatus.available(nanoResponseTime / 1000000.0);
-            } catch (MBeanServerConnectionException mbse) {
+            } catch (JmxServerConnectionException mbse) {
                 // Number of retries exceeded
                 String reason = "IOException while polling address: " + ipv4Addr;
                 LOG.debug(reason);

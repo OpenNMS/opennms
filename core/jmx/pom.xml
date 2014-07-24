@@ -12,5 +12,6 @@
   <name>OpenNMS Core JMX</name>
   <modules>
     <module>api</module>
+    <module>impl</module>
   </modules>
 </project>
