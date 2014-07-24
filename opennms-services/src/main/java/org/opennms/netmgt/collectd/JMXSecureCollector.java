@@ -28,7 +28,7 @@
 
 package org.opennms.netmgt.collectd;
 
-import org.opennms.netmgt.jmx.connection.Connectors;
+import org.opennms.netmgt.jmx.connection.JmxConnectors;
 
 /**
  * <p>JMXSecureCollector class.</p>
@@ -57,6 +57,6 @@ public class JMXSecureCollector extends JMXCollector {
 
     @Override
     protected String getConnectionName() {
-        return Connectors.JMX_SECURE;
+        return JmxConnectors.JMX_SECURE;
     }
 }

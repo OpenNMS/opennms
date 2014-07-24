@@ -26,22 +26,8 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.poller.monitors;
+package org.opennms.netmgt.jmx.connection.connectors;
 
-import org.opennms.netmgt.jmx.connection.JmxConnectors;
-
-/**
- * The class is responsible for getting the connection to the JBoss server.  The
- * super class (JMXMonitor) performs the checking to see if the service exists and 
- * how long it took to make the connection.
- * 
- * @author <A HREF="mailto:mike@opennms.org">Mike Jamison </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- */
-public class JBossMonitor extends JMXMonitor {
-
-    @Override
-    protected String getConnectionName() {
-        return JmxConnectors.JBOSS;
-    }
+class MX4JMBeanServerConnector extends DefaultJmxConnector {
+	
 }

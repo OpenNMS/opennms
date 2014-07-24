@@ -31,7 +31,7 @@ package org.opennms.netmgt.capsd.plugins;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.capsd.AbstractPlugin;
 import org.opennms.netmgt.jmx.JmxUtils;
-import org.opennms.netmgt.jmx.connection.WiuConnectionWrapper;
+import org.opennms.netmgt.jmx.connection.JmxServerConnectionWrapper;
 import org.opennms.netmgt.jmx.connection.connectors.DefaultConnectionManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -100,7 +100,7 @@ public abstract class JMXPlugin extends AbstractPlugin {
         }
 
         boolean res = false;
-        WiuConnectionWrapper connection = null;
+        JmxServerConnectionWrapper connection = null;
         try {
 
             connection = new DefaultConnectionManager(1).connect(getConnectionName(), InetAddressUtils.str(address), JmxUtils.convertToStringMap(map), null);

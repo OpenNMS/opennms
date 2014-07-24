@@ -48,13 +48,15 @@ import org.opennms.netmgt.collection.support.SingleResourceCollectionSet;
 import org.opennms.netmgt.config.JMXDataCollectionConfigFactory;
 import org.opennms.netmgt.config.collectd.jmx.Attrib;
 import org.opennms.netmgt.config.collectd.jmx.Mbean;
-import org.opennms.netmgt.jmx.AttributeSample;
-import org.opennms.netmgt.jmx.CompositeSample;
+import org.opennms.netmgt.jmx.samples.JmxAttributeSample;
+import org.opennms.netmgt.jmx.samples.JmxCompositeSample;
+import org.opennms.netmgt.jmx.DefaultJmxCollector;
+import org.opennms.netmgt.jmx.JmxCollector;
+import org.opennms.netmgt.jmx.JmxCollectorConfig;
 import org.opennms.netmgt.jmx.JmxSampleProcessor;
 import org.opennms.netmgt.jmx.JmxUtils;
-import org.opennms.netmgt.jmx.WiuDefaultJmxCollector;
-import org.opennms.netmgt.jmx.WiuJmxCollector;
-import org.opennms.netmgt.jmx.WiuJmxConfig;
+import org.opennms.netmgt.jmx.samples.JmxAttributeSample;
+import org.opennms.netmgt.jmx.samples.JmxCompositeSample;
 import org.opennms.netmgt.model.events.EventProxy;
 import org.opennms.netmgt.rrd.RrdRepository;
 import org.slf4j.Logger;
@@ -297,20 +299,20 @@ public abstract class JMXCollector implements ServiceCollector {
         LOG.debug("collecting {} on node ID {}", InetAddressUtils.str(ipaddr), nodeInfo.getNodeId());
         try {
             // create config for JmxCollector
-            final WiuJmxConfig config = new WiuJmxConfig();
+            final JmxCollectorConfig config = new JmxCollectorConfig();
             config.setAgentAddress(InetAddressUtils.str(ipaddr));
             config.setConnectionName(getConnectionName());
             config.setRetries(retries);
             config.setServiceProperties(JmxUtils.convertToStringMap(map));
             config.setJmxCollection(JMXDataCollectionConfigFactory.getInstance().getJmxCollection(collectionName));
 
-            final WiuJmxCollector jmxCollector = new WiuDefaultJmxCollector();
+            final JmxCollector jmxCollector = new DefaultJmxCollector();
             jmxCollector.collect(config, new JmxSampleProcessor() {
 
                 private final Map<String, AttributeGroupType> groupNameAttributeGroupTypeMap = new HashMap<>();
 
                 @Override
-                public void process(AttributeSample attributeSample) {
+                public void process(JmxAttributeSample attributeSample) {
                     final String objectName = attributeSample.getMbean().getObjectname();
                     final String attributeName = attributeSample.getAttribute().getName();
                     final AttributeGroupType attribGroupType = getAttributeGroupType(attributeSample.getMbean());
@@ -321,7 +323,7 @@ public abstract class JMXCollector implements ServiceCollector {
                 }
 
                 @Override
-                public void process(CompositeSample compositeSample) {
+                public void process(JmxCompositeSample compositeSample) {
                     final String objectName = compositeSample.getMbean().getObjectname();
                     final String attributeName = compositeSample.getAttribute().getName();
                     final AttributeGroupType attribGroupType = getAttributeGroupType(compositeSample.getMbean());

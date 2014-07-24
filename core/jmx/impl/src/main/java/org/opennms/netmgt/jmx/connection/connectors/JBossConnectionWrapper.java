@@ -26,22 +26,33 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.poller.monitors;
+package org.opennms.netmgt.jmx.connection.connectors;
 
-import org.opennms.netmgt.jmx.connection.JmxConnectors;
+import org.opennms.netmgt.jmx.connection.JmxServerConnectionWrapper;
+
+import javax.management.MBeanServer;
+import javax.management.MBeanServerConnection;
 
 /**
- * The class is responsible for getting the connection to the JBoss server.  The
- * super class (JMXMonitor) performs the checking to see if the service exists and 
- * how long it took to make the connection.
- * 
- * @author <A HREF="mailto:mike@opennms.org">Mike Jamison </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- */
-public class JBossMonitor extends JMXMonitor {
+ * The JBossConnectionWrapper class manages the connection to the JBoss server.  The 
+ * JBossConnectionFactory creates the connection to the server and closes the 
+ * connection to the naming server, so the close() method doesn't need to do anything.
+ *
+ * */
+class JBossConnectionWrapper implements JmxServerConnectionWrapper {
+    private MBeanServer mbeanServer;
+    
+    public JBossConnectionWrapper(MBeanServer mbeanServer) {
+        this.mbeanServer = mbeanServer;
+    }
 
     @Override
-    protected String getConnectionName() {
-        return JmxConnectors.JBOSS;
+    public MBeanServerConnection getMBeanServerConnection() {
+        return mbeanServer;
+    }
+
+    @Override
+    public void close() {
+        mbeanServer = null;
     }
 }
