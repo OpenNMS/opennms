@@ -41,28 +41,11 @@ To define the mapping I used the description from http://www.freesoft.org/CIE/RF
 
 [options="header, autowidth"]
 |===
-| Parameter   | Description                                    | Required | Default value
-| `bgpPeerIp` | IP address of the far end BGP peer session     | required | `-`
-| `retry`     | Amount of attempts to get the BGP peer state with SNMP | required | `-`
+| Parameter   | Description                                                             | Required | Default value
+| `bgpPeerIp` | IP address of the far end BGP peer session                              | required | `-`
+| `retry`     | Amount of attempts to get the BGP peer state with SNMP                  | required | `-`
 | `timeout`   | Time to wait for the SNMP agents response before trying a next attempt. | required | `-`
 |===
-
-==== Detecting with capsd
-
-To detect the service you include a `BgpSessionPlugin` in your _capsd_ configuration ('$OPENNMS_HOME/capsd-configuration.xml'), for example:
-
-[source, xml]
-----
-<protocol-plugin protocol="BGP-Peer-99.99.99.99-AS65423" class-name="org.opennms.netmgt.capsd.plugins.BgpSessionPlugin" scan="on">
-    <property key="timeout" value="2000" />
-    <property key="retry" value="1" />
-    <property key="bgpPeerIp" value="99.99.99.99" />
-</protocol-plugin>
-----
-
-The service will be discovered for every router which returns a value between `1` and `6` for the _BGP_PEER_STATE_OID_.
-You can rename the service as desired, its just an example.
-Be sure your capsd-protocol and your poller-monitor have the same name and your name has not more then 32 characters.
 
 ==== Examples
 
