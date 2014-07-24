@@ -52,7 +52,6 @@ import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.dao.api.EventDao;
-import org.opennms.netmgt.dao.support.NewTransactionTemplate;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsSeverity;
@@ -89,7 +88,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 @JUnitTemporaryDatabase
 public class AlarmRestServiceTest extends AbstractSpringJerseyRestTestCase {
 	@Autowired
-	NewTransactionTemplate m_template;
+	private TransactionTemplate m_template;
 
 	@Autowired
 	private DatabasePopulator m_databasePopulator;

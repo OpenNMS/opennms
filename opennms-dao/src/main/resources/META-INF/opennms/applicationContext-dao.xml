@@ -144,16 +144,18 @@
     </property>
   </bean>
 
-  <bean id="timeKeeper" class="org.opennms.core.utils.DefaultTimeKeeper" />
+  <bean id="timeKeeper" class="org.opennms.netmgt.collection.support.DefaultTimeKeeper" />
 
   <bean id="transactionTemplate" class="org.opennms.netmgt.dao.support.DefaultTransactionTemplate">
     <constructor-arg ref="transactionManager" />
   </bean>
 
   <!-- A TransactionTemplate that sets the propogation to "requires new" to always create new transactions -->
+  <!-- 
   <bean id="newTransactionTemplate" class="org.opennms.netmgt.dao.support.NewTransactionTemplate">
     <constructor-arg ref="transactionManager" />
   </bean>
+  -->
   
   <onmsgi:service interface="org.springframework.transaction.support.TransactionOperations" ref="transactionTemplate" />
     
@@ -473,7 +475,7 @@
       <bean id="jdbcFilterDao" class="org.opennms.netmgt.filter.JdbcFilterDao">
         <property name="dataSource">
           <!-- Use a data source bean that will reuse existing thread-local Hibernate database connections -->
-          <bean class="org.opennms.netmgt.dao.hibernate.HibernateSessionDataSource">
+          <bean class="org.opennms.netmgt.dao.hibernate.Hibernate4SessionDataSource">
             <property name="targetDataSource" ref="dataSource"/>
             <property name="sessionFactory" ref="sessionFactory"/>
           </bean>

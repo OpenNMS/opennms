@@ -41,7 +41,6 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
-import org.opennms.netmgt.dao.support.NewTransactionTemplate;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
@@ -52,6 +51,7 @@ import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
+import org.springframework.transaction.support.TransactionTemplate;
 
 
 /**
@@ -90,7 +90,7 @@ public class UpsertTest implements InitializingBean {
     DatabasePopulator m_populator;
 
     @Autowired
-    NewTransactionTemplate m_transactionTemplate;
+    TransactionTemplate m_transactionTemplate;
 
     @Override
     public void afterPropertiesSet() throws Exception {
