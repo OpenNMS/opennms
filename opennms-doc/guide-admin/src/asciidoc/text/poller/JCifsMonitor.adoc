@@ -59,6 +59,12 @@ The _JCifsMonitor_ can *not* test:
                         `folder_empty` and `folder_not_empty`, otherwise it will be ignored.                            | optional | `-`
 |===
 
+TIP: It make not much sense to have more retries higher than `1`.
+     It is a waste of resources during the monitoring.
+
+TIP: Please consider, if you are accessing shares with Mac OSX you have some side effects with the hidden file '.DS_Store.'
+     It could give you false positives in monitoring, you can use then the `folderIgnoreFiles` parameter.
+
 ==== Example test existence of a file in SMB share
 This example shows how to configure the _JCifsMonitor_ to test if a file share is available over a network.
 For this example we have access to a share for error logs and we want to be get an outage if we have any error log files in our folder.
