@@ -6,6 +6,17 @@ The monitor makes sure the service banner is a valid POP3 banner (ie: starts wit
 If the banner is valid, the monitor sends a _QUIT_ POP3 command and makes sure the service answers with a valid response (ie: a response that starts with "+OK").
 The service is considered available if the service's answer to the _QUIT_ command is valid.
 
+The behaviour can be simulated with `telnet`:
+
+ $ telnet mail.opennms.org 110
+ Trying 192.168.0.100
+ Connected to mail.opennms.org.
+ Escape character is '^]'.
+ +OK <21860.1076718099@mail.opennms.org>
+ quit
+ +OK
+ Connection closed by foreign host.
+
 ==== Monitor facts
 
 [options="autowidth"]
@@ -25,7 +36,7 @@ The service is considered available if the service's answer to the _QUIT_ comman
 | `strict-timeout`     | Boolean 
                          If set to `true`, makes sure that at least `timeout` milliseconds are elapsed between
                          attempts.                                                                                  | optional | `false`
-| `timeout`            | Timeout (in milliseconds) for the underlying socket's _connect_ and _read_ operations.     | optional | `3000`
+| `timeout`            | Timeout in milliseconds for the underlying socket's _connect_ and _read_ operations.       | optional | `3000`
 |===
 
 ==== Examples
