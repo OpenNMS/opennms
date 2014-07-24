@@ -6,7 +6,7 @@ The monitor gets information about the available free storage spaces available b
 
 A storage's description (as found in the corresponding _hrStorageDescr_ object) must match the criteria specified by the `disk` and `match-type` parameters to be monitored.
 
-A storage's available free space is calculated using the corresponding _hrStorageSize_ and __hrStorageUsed_ objects.
+A storage's available free space is calculated using the corresponding _hrStorageSize_ and _hrStorageUsed_ objects.
 
 This monitor uses _SNMP_ to accomplish its work.
 Therefore systems against which it is to be used must have an SNMP agent supporting the _HOST-RESOURCES-MIB_ installed and configured.
@@ -17,7 +17,7 @@ Out-of-box support for _HOST-RESOURCES-MIB_ among commercial _Unix_ operating sy
 
 [options="autowidth"]
 |===
-| Class Name | `org.opennms.netmgt.poller.monitors.DiskUsageMonitor`
+| Class Name     | `org.opennms.netmgt.poller.monitors.DiskUsageMonitor`
 | Remote Enabled | false, relies on SNMP configuration.
 |===
 
@@ -31,15 +31,15 @@ Out-of-box support for _HOST-RESOURCES-MIB_ among commercial _Unix_ operating sy
 | `free`       | The minimum amount of free space that storages matching the criteria must have available.
                  This parameter is evaluated as a percent of the storage's reported maximum capacity.               | optional | `15`
 | `match-type` | The way how the pattern specified by the `disk` parameter must be compared to storages' description
-                 Must be one of the following symbolic operators:
-                 *endswith*   : The `disk` parameter's value is evaluated as a string that storages' description
-                                must end with;
-                 *exact*      : The disk` parameter's value is evaluated as a string that storages" description 
-                                must exactly match;
-                 *regex*      : The `disk` parameter's value is evaluated as a regular expression that storages'
-                                description must match 
-                 *startswith* : The `disk` parameter's value is evaluated as a string that storages' description
-                                must start with.  
+                 Must be one of the following symbolic operators: +
+                 `endswith`   : The `disk` parameter's value is evaluated as a string that storages' description
+                                must end with; +
+                 `exact`      : The disk` parameter's value is evaluated as a string that storages" description 
+                                must exactly match; +
+                 `regex`      : The `disk` parameter's value is evaluated as a regular expression that storages'
+                                description must match; +
+                 `startswith` : The `disk` parameter's value is evaluated as a string that storages' description
+                                must start with. + 
                  Note: Comparisons are case-sensitive                                                               | optional | `exact`
 | `port`       | Destination port where the SNMP requests shall be sent.                                            | optional | `from snmp-config.xml'
 | `retries`    | Deprecated.
@@ -50,7 +50,6 @@ Out-of-box support for _HOST-RESOURCES-MIB_ among commercial _Unix_ operating sy
 |===
 
 ==== Examples
-Some example configuration how to configure the monitor in the `poller-configuration.xml`
 [source, xml]
 ----
 <!-- Make sure there's at least 5% of free space available on storages ending with "/home"
