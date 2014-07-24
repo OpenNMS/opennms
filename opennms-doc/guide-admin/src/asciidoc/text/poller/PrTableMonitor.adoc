@@ -3,9 +3,22 @@
 
 The PrTableMonitor monitor tests the link:http://www.net-snmp.org/docs/mibs/ucdavis.html#prTable[prTable] of a net-snmp SNMP agent.
 
-The monitor looks up the _prErrorFlag_ entries of this table.
+.prTable definition
+[quote,,UCD-SNMP-MIB]
+____
+A table containing information on running programs/daemons configured for monitoring in the snmpd.conf file of the agent.
+Processes violating the number of running processes required by the agent's configuration file are flagged with numerical and textual errors.
+____
 
+The monitor looks up the _prErrorFlag_ entries of this table.
 If the value of a _prErrorFlag_ entry in this table is set to "1" the service is considered unavailable.
+
+.prErrorFlag definition
+[quote,,UCD-SNMP-MIB]
+____
+A Error flag to indicate trouble with a process.
+It goes to 1 if there is an error, 0 if no error.
+____
 
 ==== Monitor facts
 
@@ -21,12 +34,12 @@ If the value of a _prErrorFlag_ entry in this table is set to "1" the service is
 [options="header, autowidth"]
 |===
 | Parameter | Description                                                        | Required | Default value
-| `port`    | The port to which connection shall be tried.                       | optional | `from snmp-config.xml`
-| `retry`   | Number of polls to attempt.                                        | optional | `from snmp-config.xml`
+| `port`    | The port to which connection shall be tried.                       | optional | from 'snmp-config.xml'
+| `retry`   | Number of polls to attempt.                                        | optional | from 'snmp-config.xml'
 | `retries` | Deprecated.
               Same as `retry`.
-              Parameter `retry` takes precedence if both are set.                | optional | `from snmp-config.xml`
-| `timeout` | Time (in milliseconds) to wait before receiving the SNMP response. | optional | `from snmp-config.xml`
+              Parameter `retry` takes precedence if both are set.                | optional | from 'snmp-config.xml'
+| `timeout` | Time (in milliseconds) to wait before receiving the SNMP response. | optional | from 'snmp-config.xml'
 |===
 
 ==== Examples
