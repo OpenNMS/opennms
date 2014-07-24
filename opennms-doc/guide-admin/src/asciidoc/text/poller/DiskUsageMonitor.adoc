@@ -52,7 +52,7 @@ Out-of-box support for _HOST-RESOURCES-MIB_ among commercial _Unix_ operating sy
 ==== Examples
 [source, xml]
 ----
-<!-- Make sure there's at least 5% of free space available on storages ending with "/home"
+<!-- Make sure there's at least 5% of free space available on storages ending with "/home" -->
 <service name="DiskUsage-home" interval="300000" user-defined="false" status="on">
   <parameter key="timeout" value="3000" />
   <parameter key="retry" value="2" />
