@@ -28,9 +28,9 @@
 
 package org.opennms.netmgt.config;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertEquals;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -45,8 +45,8 @@ import org.exolab.castor.xml.ValidationException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.opennms.netmgt.config.poller.Outage;
 import org.opennms.core.test.MockLogAppender;
+import org.opennms.netmgt.config.poller.outages.Outage;
 import org.springframework.core.io.FileSystemResource;
 
 public class PollOutagesConfigManagerTest {
