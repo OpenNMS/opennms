@@ -1,10 +1,7 @@
 package org.opennms.netmgt.jmx.connection;
 
-/**
- * Created by mvrueden on 23.07.14.
- */
 // TODO name
-public final class Connections {
+public final class Connectors {
 
     public static final String JSR160 = "jsr160";
 
@@ -14,7 +11,9 @@ public final class Connections {
 
     public static final String JMX_SECURE = "jmx_secure";
 
-    private Connections() {
+    public static final String PLATFORM = "platform";
+
+    private Connectors() {
 
     }
 }

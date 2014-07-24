@@ -29,7 +29,7 @@
 package org.opennms.netmgt.capsd.plugins;
 
 import org.opennms.core.utils.ParameterMap;
-import org.opennms.netmgt.jmx.connection.Connections;
+import org.opennms.netmgt.jmx.connection.Connectors;
 
 import java.net.InetAddress;
 import java.util.HashMap;
@@ -46,7 +46,7 @@ public class JMXSecurePlugin extends JMXPlugin
 
     @Override
     protected String getConnectionName() {
-        return Connections.JMX_SECURE;
+        return Connectors.JMX_SECURE;
     }
 
 	/** {@inheritDoc} */

@@ -29,7 +29,7 @@
 package org.opennms.netmgt.capsd.plugins;
 
 import org.opennms.core.utils.ParameterMap;
-import org.opennms.netmgt.jmx.connection.Connections;
+import org.opennms.netmgt.jmx.connection.Connectors;
 
 import java.net.InetAddress;
 import java.util.HashMap;
@@ -52,7 +52,7 @@ import java.util.Map;
 public class Jsr160Plugin extends JMXPlugin {
     @Override
     protected String getConnectionName() {
-        return Connections.JSR160;
+        return Connectors.JSR160;
     }
 
     /* The protocol name is used to...
