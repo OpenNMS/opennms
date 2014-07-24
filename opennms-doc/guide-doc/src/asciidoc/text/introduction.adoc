@@ -30,9 +30,9 @@ However, ensure that you explain concepts in detail and do not make omissions.
 |========================
 | Directory          | Contents
 | guide-doc/         | module with this overview documentation
-| guide-user/        | module with the guide for people how to use and configure OpenNMS
+| guide-user/        | module with the guide for how to use and configure OpenNMS
 | guide-admin/       | module with the guide for administrators optimizing and running OpenNMS
-| guide-development/ | module with the guide for people who want to develop within OpenNMS
-| guide-install/     | module with the guide how to install OpenNMS on different operating systems
+| guide-development/ | module with the guide for those who want to develop OpenNMS
+| guide-install/     | module with the guide of how to install OpenNMS on different operating systems
 | releasenotes/      | module with the changelog and release notes
 |========================
