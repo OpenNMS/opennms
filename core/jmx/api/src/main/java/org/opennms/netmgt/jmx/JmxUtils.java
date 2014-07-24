@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 // TODO mvr document and add license text
-public class JmxUtils {
+public final class JmxUtils {
 
     /**
      * Converts, so that we only have Strings, all non String value parameters will be removed.
@@ -28,6 +28,10 @@ public class JmxUtils {
             return Collections.unmodifiableMap(convertedProperties);
         }
         return null;
+    }
+
+    private JmxUtils() {
+
     }
 
 }
