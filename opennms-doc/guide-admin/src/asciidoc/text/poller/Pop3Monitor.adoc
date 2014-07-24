@@ -21,8 +21,10 @@ The service is considered available if the service's answer to the _QUIT_ comman
 |===
 | Parameter            | Description                                                                                | Required | Default value
 | `port`               | TCP port to connect to.                                                                    | optional | `110`
-| `retry`              | Number of attempts to get a response.                                                      | optional | `0`
-| `strict-timeout`     | Boolean                                                                                    | optional | `false`
+| `retry`              | Number of attempts to find the service available.                                          | optional | `0`
+| `strict-timeout`     | Boolean 
+                         If set to `true`, makes sure that at least `timeout` milliseconds are elapsed between
+                         attempts.                                                                                  | optional | `false`
 | `timeout`            | Timeout (in milliseconds) for the underlying socket's _connect_ and _read_ operations.     | optional | `3000`
 |===
 
