@@ -28,7 +28,7 @@
 
 package org.opennms.netmgt.collectd;
 
-import org.opennms.netmgt.jmx.connection.Connections;
+import org.opennms.netmgt.jmx.connection.Connectors;
 
 /**
  * The JBossCollector class manages the querying and storage of data into RRD files.  The list of
@@ -47,6 +47,6 @@ public class JBossCollector extends JMXCollector {
 
     @Override
     protected String getConnectionName() {
-        return Connections.JBOSS;
+        return Connectors.JBOSS;
     }
 }

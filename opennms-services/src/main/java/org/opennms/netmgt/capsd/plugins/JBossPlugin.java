@@ -35,7 +35,7 @@ package org.opennms.netmgt.capsd.plugins;
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
 
-import org.opennms.netmgt.jmx.connection.Connections;
+import org.opennms.netmgt.jmx.connection.Connectors;
 
 import java.net.InetAddress;
 import java.util.HashMap;
@@ -61,7 +61,7 @@ public class JBossPlugin extends JMXPlugin {
 
     @Override
     protected String getConnectionName() {
-        return Connections.JBOSS;
+        return Connectors.JBOSS;
     }
     /* (non-Javadoc)
      * @see org.opennms.netmgt.capsd.Plugin#isProtocolSupported(java.net.InetAddress)
