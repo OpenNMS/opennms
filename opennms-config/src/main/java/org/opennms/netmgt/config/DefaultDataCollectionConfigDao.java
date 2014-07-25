@@ -77,20 +77,30 @@ public class DefaultDataCollectionConfigDao extends AbstractJaxbConfigDao<Dataco
     @Override
     protected DatacollectionConfig translateConfig(final DatacollectionConfig config) {
         final DataCollectionConfigParser parser = new DataCollectionConfigParser(getConfigDirectory());
-
-        // Updating Configured Collections
-        for (final SnmpCollection collection : config.getSnmpCollectionCollection()) {
-            parser.parseCollection(collection);
-        }
+        resourceTypes.clear();
 
         // Create a special collection to hold all resource types, because they should be defined only once.
         final SnmpCollection resourceTypeCollection = new SnmpCollection();
         resourceTypeCollection.setName("__resource_type_collection");
-        resourceTypes.clear();
+
+        // Updating Configured Collections
+        for (final SnmpCollection collection : config.getSnmpCollectionCollection()) {
+            parser.parseCollection(collection);
+            // Save local resource types
+            for (final ResourceType rt : collection.getResourceTypeCollection()) {
+                resourceTypeCollection.addResourceType(rt);
+                resourceTypes.put(rt.getName(), rt);
+            }
+            // Remove local resource types
+            collection.getResourceTypeCollection().clear();
+        }
+
+        // Save external Resource Types
         for (final ResourceType rt : parser.getAllResourceTypes()) {
             resourceTypeCollection.addResourceType(rt);
             resourceTypes.put(rt.getName(), rt);
         }
+
         resourceTypeCollection.setGroups(new Groups());
         resourceTypeCollection.setSystems(new Systems());
         config.getSnmpCollectionCollection().add(0, resourceTypeCollection);
