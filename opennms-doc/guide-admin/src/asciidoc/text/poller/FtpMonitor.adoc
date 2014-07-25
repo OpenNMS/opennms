@@ -1,15 +1,15 @@
 
-// Please keep first line an empty line to make sure, the ToC can be build correctly
 === FtpMonitor
 
-The FtpMonitor is able to validate ftp connection dial-up processes. The monitor can test ftp server on multiple ports and specific login data.
+The FtpMonitor is able to validate ftp connection dial-up processes.
+The monitor can test ftp server on multiple ports and specific login data.
 
 
 ==== Monitor facts
 
 [options="autowidth"]
 |===
-| Class Name | `org.opennms.netmgt.poller.monitors.FtpMonitor`
+| Class Name     | `org.opennms.netmgt.poller.monitors.FtpMonitor`
 | Remote Enabled | `don't know. I guess -true-`
 |===
 
@@ -22,17 +22,17 @@ The FtpMonitor is able to validate ftp connection dial-up processes. The monitor
 | `retry`                | Number of attempts to get a valid FTP response/response-text                                | optional | `0`
 | `timeout`              | Timeout in milliseconds for TCP connection establishment.                                   | optional | `3000`
 | `port`                 | A list of TCP ports to which connection shall be tried.                                     | optional | `20`,`21`
-| `password`             | This parameter is meant to be used together with the `user` parameter to perform basic +
-                           authentication. This parameter specify to password to be used. The `user` and `password` +
+| `password`             | This parameter is meant to be used together with the `user` parameter to perform basic
+                           authentication. This parameter specify to password to be used. The `user` and `password`
                            parameters are ignored when the `basic-authentication` parameter is defined.                | optional | `empty string`
-| `userid`               | This parameter is meant to be used together with the `password` parameter to perform +
-                           basic authentication. This parameter specify to user ID to be used. The `userid` and +
+| `userid`               | This parameter is meant to be used together with the `password` parameter to perform
+                           basic authentication. This parameter specify to user ID to be used. The `userid` and
                            `password` parameters are ignored when the `basic-authentication` parameter is defined.     | optional | `-`                           
 |===
 
 
 ==== Examples
-Some example configuration how to configure the monitor in the `poller-configuration.xml`
+Some example configuration how to configure the monitor in the 'poller-configuration.xml'
 [source, xml]
 ----
 <service name="FTP" interval="300000" user-defined="false" status="on">
