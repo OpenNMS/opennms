@@ -28,12 +28,17 @@
 
 package org.opennms.netmgt.dao.hibernate;
 
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.hibernate.HibernateException;
+import org.hibernate.Session;
 import org.opennms.netmgt.dao.api.BridgeMacLinkDao;
 import org.opennms.netmgt.model.BridgeMacLink;
-
+import org.opennms.netmgt.model.topology.BridgeMacTopologyLink;
+import org.springframework.orm.hibernate3.HibernateCallback;
 
 
 public class BridgeMacLinkDaoHibernate extends AbstractDaoHibernate<BridgeMacLink, Integer> implements BridgeMacLinkDao {
@@ -73,6 +78,33 @@ public class BridgeMacLinkDaoHibernate extends AbstractDaoHibernate<BridgeMacLin
 		}
 	}
 
+    @Override
+    public List<BridgeMacTopologyLink> getAllBridgeLinksToIpAddrToNodes(){
+        List<Object[]> links =  getHibernateTemplate().execute(new HibernateCallback<List<Object[]>>() {
+            @Override
+            public List<Object[]> doInHibernate(Session session) throws HibernateException, SQLException {
+                return session.createSQLQuery("select mlink.*," +
+                        "ntm.netaddress, " +
+                        "ip.ipaddr, " +
+                        "ip.nodeid as targetnodeid, " +
+                        "node.nodelabel " +
+                        "from bridgemaclink as mlink " +
+                        "left join ipnettomedia as ntm " +
+                        "on mlink.macaddress = ntm.physaddress " +
+                        "left join ipinterface ip on ip.ipaddr = ntm.netaddress " +
+                        "left join node on ip.nodeid = node.nodeid " +
+                        "order by bridgeport;").list();
+            }
+        });
 
+        List<BridgeMacTopologyLink> topoLinks = new ArrayList<BridgeMacTopologyLink>();
+        for(Object[] link : links) {
+            topoLinks.add(new BridgeMacTopologyLink((Integer)link[0], (Integer)link[1], (Integer)link[2],
+                    (Integer)link[3], (Integer)link[4], (Integer)link[5], (String)link[6], (String)link[9],
+                    (String)link[10], (Integer)link[11], (String)link[12]));
+        }
+
+        return topoLinks;
+    }
 
 }

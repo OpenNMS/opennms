@@ -32,8 +32,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.opennms.netmgt.model.BridgeMacLink;
-
-
+import org.opennms.netmgt.model.topology.BridgeMacTopologyLink;
 
 
 /**
@@ -48,4 +47,7 @@ public interface BridgeMacLinkDao extends OnmsDao<BridgeMacLink, Integer> {
     public List<BridgeMacLink> findByMacAddress(String mac);
 
     void deleteByNodeIdOlderThen(Integer nodeiId, Date now);
+
+    public List<BridgeMacTopologyLink> getAllBridgeLinksToIpAddrToNodes();
+
 }
