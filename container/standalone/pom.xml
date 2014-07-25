@@ -81,6 +81,7 @@
                 <descriptor>file:${basedir}/target/classes/features.xml</descriptor>
               </descriptors>
               <features>
+                <!-- Add http-whiteboard to the default list of features -->
                 <feature>http-whiteboard</feature>
               </features>
               <repository>target/features-repo</repository>
