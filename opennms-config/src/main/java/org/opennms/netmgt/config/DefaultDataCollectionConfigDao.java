@@ -91,12 +91,12 @@ public class DefaultDataCollectionConfigDao extends AbstractJaxbConfigDao<Dataco
         for (final SnmpCollection collection : config.getSnmpCollections()) {
             parser.parseCollection(collection);
             // Save local resource types
-            for (final ResourceType rt : collection.getResourceTypeCollection()) {
+            for (final ResourceType rt : collection.getResourceTypes()) {
                 resourceTypeCollection.addResourceType(rt);
                 resourceTypes.put(rt.getName(), rt);
             }
             // Remove local resource types
-            collection.getResourceTypeCollection().clear();
+            collection.setResourceTypes(new ArrayList<ResourceType>());
         }
 
         // Save external Resource Types
