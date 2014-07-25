@@ -1,65 +1,56 @@
 
 // Please keep first line an empty line to make sure, the ToC can be build correctly
-=== Name of the Monitor. Normally the name of the class without .java
+=== FtpMonitor
 
-A summary what the monitor is doing. +
-When is the monitor up or down.
+The FtpMonitor is able to validate ftp connection dial-up processes. The monitor can test ftp server on multiple ports and specific login data.
+
 
 ==== Monitor facts
 
 [options="autowidth"]
 |===
-| Class Name | `Name of the monitor class which has to be used in the poller-configuration.xml`
-| Remote Enabled | true or false if the monitor can be used by the OpenNMS remote poller
+| Class Name | `org.opennms.netmgt.poller.monitors.FtpMonitor`
+| Remote Enabled | `don't know. I guess -true-`
 |===
 
 ==== Configuration and Usage
 
-.Monitor specific parameters for the {monitorname}
+.Monitor specific parameters for the FtpMonitor.
 [options="header, autowidth"]
 |===
-| Parameter | Description                                    | Required | Default value
-| `my parameter 1` | This is a placeholder for the first +
-                     rquired monitor parameter description.  | required | `-`
-| `my parameter 2` | This is a placeholder for the second +
-                     optional monitor parameter description. | optional | `default value`
+| Parameter              | Description                                                                                 | Required | Default value
+| `retry`                | Number of attempts to get a valid FTP response/response-text                                | optional | `0`
+| `timeout`              | Timeout in milliseconds for TCP connection establishment.                                   | optional | `3000`
+| `port`                 | A list of TCP ports to which connection shall be tried.                                     | optional | `20`,`21`
+| `password`             | This parameter is meant to be used together with the `user` parameter to perform basic +
+                           authentication. This parameter specify to password to be used. The `user` and `password` +
+                           parameters are ignored when the `basic-authentication` parameter is defined.                | optional | `empty string`
+| `userid`               | This parameter is meant to be used together with the `password` parameter to perform +
+                           basic authentication. This parameter specify to user ID to be used. The `userid` and +
+                           `password` parameters are ignored when the `basic-authentication` parameter is defined.     | optional | `-`                           
 |===
 
-This is optional just if you can use variables in the configuration
-
-.Variables which can be used in the configuration
-[options="header, autowidth"]
-|===
-| Variable        | Description
-| `${variable1}`  | Description for the first variable
-| `${variable2}`  | Description for the second variable
-| `${variable3}`  | Description for the third variable
-|===
 
 ==== Examples
 Some example configuration how to configure the monitor in the `poller-configuration.xml`
 [source, xml]
 ----
-<parameter key="args" value="-i {variable3} -t ${variable2}"/>
-<parameter key="args" value="http://${variable1}/${variable2}/static"/>
+<service name="FTP" interval="300000" user-defined="false" status="on">
+ <parameter key="retry" value="1"/>
+ <parameter key="timeout" value="3000"/>
+ <parameter key="port" value="21"/>
+ <parameter key="userid" value=""/>
+ <parameter key="password" value=""/>
+</service>
+
+<service name="FTP-Customer" interval="300000" user-defined="false" status="on">
+ <parameter key="retry" value="1"/>
+ <parameter key="timeout" value="3000"/>
+ <parameter key="port" value="21"/>
+ <parameter key="userid" value="Customer"/>
+ <parameter key="password" value="MySecretPassword"/>
+</service>
+
+<monitor service="FTP" class-name="org.opennms.netmgt.poller.monitors.FtpMonitor"/>
+<monitor service="FTP-Customer" class-name="org.opennms.netmgt.poller.monitors.FtpMonitor"/>
 ----
-
-.This section is optional and give some specific hints
-==== SystemExecuteMonitor vs GpMonitor
-
-The SystemExecuteMonitor is the successor of the GpMonitor. The main differences are:
-
-* Variable replacement for the parameter args
-* There are no fixed arguments handed to the system-call
-* The _SystemExecuteMonitor_ supports _RemotePoller_ deployment
-
-To migrate services from the _GpMonitor_ to the _SystemExecuteMonitor_ it is required to alter the parameter args.
-To match the arguments called `hoption` for the `hostAddress` and `toption` for the `timeoutInSeconds`.
-The args string that matches the _GpMonitor_ call looks like this:
-
-[source, xml]
-----
-<parameter key="my parameter 2" value="--hostname ${variable1} --timeout ${variable2}" />
-----
-
-To migrate the GpMonitor parameters `hoption` and `toption` just replace the `--hostname` and `--timeout` directly in the args key.
