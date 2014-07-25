@@ -36,10 +36,10 @@ ____
 | Parameter | Description                                                        | Required | Default value
 | `port`    | The port to which connection shall be tried.                       | optional | from 'snmp-config.xml'
 | `retry`   | Number of polls to attempt.                                        | optional | from 'snmp-config.xml'
-| `retries` | Deprecated.
+| `retries` | *Deprecated*.
               Same as `retry`.
               Parameter `retry` takes precedence if both are set.                | optional | from 'snmp-config.xml'
-| `timeout` | Time (in milliseconds) to wait before receiving the SNMP response. | optional | from 'snmp-config.xml'
+| `timeout` | Time in milliseconds to wait before receiving the SNMP response.   | optional | from 'snmp-config.xml'
 |===
 
 ==== Examples
@@ -47,12 +47,12 @@ ____
 [source, xml]
 ----
 <!-- Overriding default SNMP config -->
-<service name="prTable" interval="300000" user-defined="false" status="on">
+<service name="Process-Table" interval="300000" user-defined="false" status="on">
   <parameter key="retry" value="3"/>
   <parameter key="timeout" value="5000"/>
 </service>
 
-<monitor service="prtable" class-name="org.opennms.netmgt.poller.monitors.PrTableMonitor" />
+<monitor service="Process-Table" class-name="org.opennms.netmgt.poller.monitors.PrTableMonitor" />
 ----
 
 ==== UCD-SNMP-MIB
