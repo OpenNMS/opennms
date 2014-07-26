@@ -27,8 +27,7 @@ Monitor specific parameters for the StrafePingMonitor
 | `ping-count`        | The number of pings to attempt each interval                                             | required | `20`
 | `failure-ping-count`| The number of pings that need to fail for the service to be considered down              | required | `20`
 | `wait-interval`     | Time in milliseconds to wait between each _ICMP_ _echo-request_ packet                   | required | `50`
-| `rrd-repository`    | The location to write RRD data. Generally, you will not want to change this from default
-                        $OPENNMS_HOME/share/rrd/response)                                                        | required | `$OPENNMS_HOME/share/rrd/response`
+| `rrd-repository`    | The location to write RRD data. Generally, you will not want to change this from default | required | `$OPENNMS_HOME/share/rrd/response`
 | `rrd-base-name`     | The name of the RRD file to write (minus the extension, `.rrd` or `.jrb`)                | required | `strafeping`
 |===
 
