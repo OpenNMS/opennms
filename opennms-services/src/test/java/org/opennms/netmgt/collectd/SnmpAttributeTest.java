@@ -180,6 +180,17 @@ public class SnmpAttributeTest extends TestCase {
         persister.commitBuilder();
     }
 
+    /**
+     * @see http://issues.opennms.org/browse/NMS-6202
+     */
+    public void test8DigitDecimalNumericAttributeStringValue() throws Exception {
+        String longValue = "49197860";
+        testPersisting(
+            new Double(longValue).toString(),
+            new Snmp4JValueFactory().getOctetString(longValue.getBytes("UTF-8"))
+        );
+    }
+
     @SuppressWarnings("unchecked")
     private <T> List<T> isAList(Class<T> clazz) {
         return isA(List.class);

@@ -200,20 +200,25 @@ public class SnmpAttribute extends AbstractCollectionAttribute {
             return null;
         } else if (getValue().isNumeric()) {
             return Long.toString(getValue().toLong());
-        } else if (getValue().getBytes().length == 8) {
-            return Long.toString(SnmpUtils.getProtoCounter64Value(getValue()));
         } else {
+            // Check to see if this is a 63-bit counter packed into an octetstring
+            Long value = SnmpUtils.getProtoCounter63Value(getValue());
+            if (value != null) {
+                return value.toString();
+            }
+
             try {
                 return Double.valueOf(getValue().toString()).toString();
             } catch(NumberFormatException e) {
-            }
-            if (getValue().getType() == SnmpValue.SNMP_OCTET_STRING) {
-                try {
-                    return Long.valueOf(getValue().toHexString(), 16).toString();
-                } catch(NumberFormatException e) {
+                log().trace("Unable to process data received for attribute " + this + " maybe this is not a number? See bug 1473 for more information. Skipping.");
+                if (getValue().getType() == SnmpValue.SNMP_OCTET_STRING) {
+                    try {
+                        return Long.valueOf(getValue().toHexString(), 16).toString();
+                    } catch(NumberFormatException ex) {
+                        log().trace("Unable to process data received for attribute " + this + " maybe this is not a number? See bug 1473 for more information. Skipping.");
+                    }
                 }
             }
-            log().trace("Unable to process data received for attribute " + this + " maybe this is not a number? See bug 1473 for more information. Skipping.");
             return null;
         }
     }
