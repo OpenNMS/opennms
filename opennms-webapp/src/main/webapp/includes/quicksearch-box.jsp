@@ -60,7 +60,7 @@
     <form action="element/nodeList.htm" method="get">
       <font style="font-size: 70%; line-height: 1.25em; align=left">TCP/IP Address like:</font><br />
       <input type="hidden" name="listInterfaces" value="false"/>
-      <input type="text" name="iplike" value="*.*.*.*" />
+      <input type="text" name="iplike" value="" placeholder="*.*.*.*" />
       <input type="submit" value="Search"/>               
     </form>
     <form action="element/nodeList.htm" method="get">
