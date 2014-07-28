@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns="http://maven.apache.org/POM/4.0.0"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd"
+>
+  <parent>
+    <groupId>org.opennms</groupId>
+    <artifactId>org.opennms.features</artifactId>
+    <version>1.13.4-PJSM-SNAPSHOT</version>
+  </parent>
+
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.opennms.features</groupId>
+  <artifactId>org.opennms.features.activemq</artifactId>
+  <name>OpenNMS :: Features :: ActiveMQ</name>
+  <packaging>pom</packaging>
+
+  <modules>
+    <module>broker</module>
+    <!--
+    TODO
+    <module>event-forwarder</module>
+    <module>event-listener</module>
+    -->
+  </modules>
+
+</project>
