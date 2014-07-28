@@ -98,8 +98,8 @@ public class IsisElementFactory implements InitializingBean, IsisElementFactoryI
 		}
 		linknode.setIsisISAdjNeighSysType(IsisISAdjNeighSysType.getTypeString(link.getIsisISAdjNeighSysType().getValue()));
 		
-		link.setIsisISAdjNeighSNPAAddress(link.getIsisISAdjNeighSNPAAddress());
-		link.setIsisISAdjState(IsisISAdjState.get(link.getIsisISAdjState().getValue()));
+		linknode.setIsisISAdjNeighSNPAAddress(link.getIsisISAdjNeighSNPAAddress());
+		linknode.setIsisISAdjState(IsisISAdjState.get(link.getIsisISAdjState().getValue()).toString());
 		linknode.setIsisISAdjNbrExtendedCircID(link.getIsisISAdjNbrExtendedCircID());
 		
 		OnmsSnmpInterface remiface = null;
