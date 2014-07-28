@@ -1,13 +1,14 @@
 package org.opennms.web.bridge;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class BridgeLinkNode {
 	
 	private String m_bridgeLocalPort;
+	private Integer m_bridgeLocalVlan;
 
-	private String m_bridgeRemoteNode;
-	private String m_bridgeRemoteUrl;
-	private String m_bridgeRemotePort;
-	private String m_bridgeRemotePortUrl;
+	private List<BridgeLinkRemoteNode> m_bridgeLinkRemoteNodes = new ArrayList<BridgeLinkRemoteNode>();
 
 	private String m_bridgeLinkCreateTime;
     private String m_bridgeLinkLastPollTime;
@@ -30,31 +31,19 @@ public class BridgeLinkNode {
 	public void setBridgeLocalPort(String bridgeLocalPort) {
 		m_bridgeLocalPort = bridgeLocalPort;
 	}
-	public String getBridgeRemoteNode() {
-		return m_bridgeRemoteNode;
+	public Integer getBridgeLocalVlan() {
+		return m_bridgeLocalVlan;
 	}
-	public void setBridgeRemoteNode(String bridgeRemoteNode) {
-		m_bridgeRemoteNode = bridgeRemoteNode;
+	public void setBridgeLocalVlan(Integer bridgeLocalVlan) {
+		m_bridgeLocalVlan = bridgeLocalVlan;
 	}
-	public String getBridgeRemoteUrl() {
-		return m_bridgeRemoteUrl;
+	public List<BridgeLinkRemoteNode> getBridgeLinkRemoteNodes() {
+		return m_bridgeLinkRemoteNodes;
 	}
-	public void setBridgeRemoteUrl(String bridgeRemoteUrl) {
-		m_bridgeRemoteUrl = bridgeRemoteUrl;
+	public void setBridgeLinkRemoteNodes(
+			List<BridgeLinkRemoteNode> bridgeLinkRemoteNodes) {
+		m_bridgeLinkRemoteNodes = bridgeLinkRemoteNodes;
 	}
-	public String getBridgeRemotePort() {
-		return m_bridgeRemotePort;
-	}
-	public void setBridgeRemotePort(String bridgeRemotePort) {
-		m_bridgeRemotePort = bridgeRemotePort;
-	}
-	public String getBridgeRemotePortUrl() {
-		return m_bridgeRemotePortUrl;
-	}
-	public void setBridgeRemotePortUrl(String bridgeRemotePortUrl) {
-		m_bridgeRemotePortUrl = bridgeRemotePortUrl;
-	}
-
     
 
 }

@@ -1,19 +1,21 @@
 package org.opennms.web.bridge;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.ServletContext;
 
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.spring.BeanUtils;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.api.BridgeBridgeLinkDao;
 import org.opennms.netmgt.dao.api.BridgeElementDao;
 import org.opennms.netmgt.dao.api.BridgeMacLinkDao;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.IpNetToMediaDao;
-import org.opennms.netmgt.dao.api.IsIsElementDao;
-import org.opennms.netmgt.dao.api.IsIsLinkDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
 import org.opennms.netmgt.model.BridgeBridgeLink;
@@ -21,6 +23,8 @@ import org.opennms.netmgt.model.BridgeElement;
 import org.opennms.netmgt.model.BridgeElement.BridgeDot1dBaseType;
 import org.opennms.netmgt.model.BridgeElement.BridgeDot1dStpProtocolSpecification;
 import org.opennms.netmgt.model.BridgeMacLink;
+import org.opennms.netmgt.model.IpNetToMedia;
+import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.web.api.Util;
 import org.springframework.beans.factory.InitializingBean;
@@ -30,8 +34,12 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
+import static org.opennms.core.utils.InetAddressUtils.str;
+
 @Transactional(readOnly=true)
 public class BridgeElementFactory implements InitializingBean, BridgeElementFactoryInterface{
+
+	Map<Integer,BridgeLinkNode> nodelinks = new HashMap<Integer,BridgeLinkNode>(); 
 
 	@Autowired
 	private BridgeElementDao m_bridgeElementDao;
@@ -62,6 +70,7 @@ public class BridgeElementFactory implements InitializingBean, BridgeElementFact
         BeanUtils.assertAutowiring(this);
     }
 
+    
     public static BridgeElementFactoryInterface getInstance(ServletContext servletContext) {
         return getInstance(WebApplicationContextUtils.getWebApplicationContext(servletContext));    
     }
@@ -106,52 +115,118 @@ public class BridgeElementFactory implements InitializingBean, BridgeElementFact
 	}
 
 	@Override
-	public List<BridgeLinkNode> getBridgeLinks(int nodeId) {
-		List<BridgeLinkNode> nodelinks = new ArrayList<BridgeLinkNode>(); 
+	public Collection<BridgeLinkNode> getBridgeLinks(int nodeId) {
 		for (BridgeMacLink link: m_bridgeMacLinkDao.findByNodeId(Integer.valueOf(nodeId))) {
-			nodelinks.add(convertFromModel(nodeId,link));
+			convertFromModel(nodeId,link);
 		}
 		for (BridgeBridgeLink link: m_bridgeBridgeLinkDao.findByNodeId(Integer.valueOf(nodeId))) {
-			nodelinks.add(convertFromModel(nodeId,link));
+			convertFromModel(nodeId,link);
 		}
 		for (BridgeBridgeLink link: m_bridgeBridgeLinkDao.findByDesignatedNodeId(Integer.valueOf(nodeId))) {
-			nodelinks.add(convertFromModelReverse(nodeId,link));
+			convertFromModel(nodeId,link.getReverseBridgeBridgeLink());
 		}
-		return nodelinks;
+		return nodelinks.values();
 	}
 	
 	@Transactional 
-	private BridgeLinkNode convertFromModelReverse(int nodeid, BridgeBridgeLink link) {
+	private void convertFromModel(int nodeid, BridgeBridgeLink link) {
+
 		BridgeLinkNode linknode = new BridgeLinkNode();
+		if (nodelinks.containsKey(link.getBridgePort())) {
+				linknode = nodelinks.get(link.getBridgePort());
+		} else {
+			linknode.setBridgeLocalPort(getBridgePortString(link.getBridgePort(),link.getBridgePortIfIndex()));
+			linknode.setBridgeLocalVlan(link.getVlan());
+			linknode.setBridgeLinkCreateTime(Util.formatDateToUIString(link.getBridgeBridgeLinkCreateTime()));
+			linknode.setBridgeLinkLastPollTime(Util.formatDateToUIString(link.getBridgeBridgeLinkLastPollTime()));
+			nodelinks.put(link.getBridgePort(), linknode);
+		}
 		
-		linknode.setBridgeLinkCreateTime(Util.formatDateToUIString(link.getBridgeBridgeLinkCreateTime()));
-		linknode.setBridgeLinkLastPollTime(Util.formatDateToUIString(link.getBridgeBridgeLinkLastPollTime()));
-		return linknode;
-	}
+		BridgeLinkRemoteNode remlinknode = new BridgeLinkRemoteNode();
 	
-	@Transactional 
-	private BridgeLinkNode convertFromModel(int nodeid, BridgeBridgeLink link) {
-		BridgeLinkNode linknode = new BridgeLinkNode();
+		remlinknode.setBridgeRemoteNode(link.getDesignatedNode().getLabel());
+		remlinknode.setBridgeRemoteUrl(getNodeUrl(link.getDesignatedNode().getId()));
 		
-		linknode.setBridgeLinkCreateTime(Util.formatDateToUIString(link.getBridgeBridgeLinkCreateTime()));
-		linknode.setBridgeLinkLastPollTime(Util.formatDateToUIString(link.getBridgeBridgeLinkLastPollTime()));
-		return linknode;
+		remlinknode.setBridgeRemotePort(getPortString(m_snmpInterfaceDao.findByNodeIdAndIfIndex(link.getDesignatedNode().getId(), link.getDesignatedPortIfIndex())));
+		remlinknode.setBridgeRemotePortUrl(getSnmpInterfaceUrl(link.getDesignatedNode().getId(), link.getDesignatedPortIfIndex()));
+		
+		remlinknode.setBridgeRemoteVlan(link.getDesignatedVlan());
+		
+		linknode.getBridgeLinkRemoteNodes().add(remlinknode);
 	}
 	
 	@Transactional
-	private BridgeLinkNode convertFromModel(int nodeid, BridgeMacLink link) {
+	private void convertFromModel(int nodeid, BridgeMacLink link) {
 		BridgeLinkNode linknode = new BridgeLinkNode();
-
-		linknode.setBridgeLinkCreateTime(Util.formatDateToUIString(link.getBridgeMacLinkCreateTime()));
-		linknode.setBridgeLinkLastPollTime(Util.formatDateToUIString(link.getBridgeMacLinkLastPollTime()));
+		if (nodelinks.containsKey(link.getBridgePort())) {
+				linknode = nodelinks.get(link.getBridgePort());
+		} else {
+			linknode.setBridgeLocalPort(getBridgePortString(link.getBridgePort(),link.getBridgePortIfIndex()));
+			linknode.setBridgeLocalVlan(link.getVlan());
+			linknode.setBridgeLinkCreateTime(Util.formatDateToUIString(link.getBridgeMacLinkCreateTime()));
+			linknode.setBridgeLinkLastPollTime(Util.formatDateToUIString(link.getBridgeMacLinkLastPollTime()));
+			nodelinks.put(link.getBridgePort(), linknode);
+		}
 		
-		return linknode;
+		List<IpNetToMedia> ipnettomedias = m_ipNetToMediaDao.findByPhysAddress(link.getMacAddress());
+		if (ipnettomedias.isEmpty()) {
+			BridgeLinkRemoteNode remlinknode = new BridgeLinkRemoteNode();
+			OnmsSnmpInterface snmp = getFromPhysAddress(link.getMacAddress());
+			if (snmp == null) {
+				remlinknode.setBridgeRemoteNode(link.getMacAddress()+ " No node associated in db");
+			} else {
+				remlinknode.setBridgeRemoteNode(snmp.getNode().getLabel());
+				remlinknode.setBridgeRemoteUrl(getNodeUrl(snmp.getNode().getId()));
+				
+				remlinknode.setBridgeRemotePort(getPortString(snmp));
+				remlinknode.setBridgeRemotePortUrl(getSnmpInterfaceUrl(snmp.getNode().getId(),snmp.getIfIndex()));
+			}
+			linknode.getBridgeLinkRemoteNodes().add(remlinknode);
+		}
+		for (IpNetToMedia ipnettomedia: ipnettomedias) {
+			BridgeLinkRemoteNode remlinknode = new BridgeLinkRemoteNode();
+			List<OnmsIpInterface> ips = m_ipInterfaceDao.findByIpAddress(ipnettomedia.getNetAddress().getHostAddress());
+			if (ips.isEmpty() ) {
+				remlinknode.setBridgeRemoteNode(str(ipnettomedia.getNetAddress())+"/"+link.getMacAddress()+ " No node associated in db");
+			} else if ( ips.size() > 1) {
+				remlinknode.setBridgeRemoteNode(str(ipnettomedia.getNetAddress())+"/"+link.getMacAddress()+ " duplicated ip multiple node associated in db");
+			}
+			for (OnmsIpInterface ip: ips) {
+				remlinknode.setBridgeRemoteNode(ip.getNode().getLabel());
+				remlinknode.setBridgeRemoteUrl(getNodeUrl(ip.getNode().getId()));
+				
+				remlinknode.setBridgeRemotePort(str(ipnettomedia.getNetAddress())+"/"+link.getMacAddress());
+				remlinknode.setBridgeRemotePortUrl(getIpInterfaceUrl(ip));
+			}
+			linknode.getBridgeLinkRemoteNodes().add(remlinknode);
+		}
+		
 	}
 			
+	private OnmsSnmpInterface getFromPhysAddress(String physAddress) {
+		final CriteriaBuilder builder = new CriteriaBuilder(OnmsSnmpInterface.class);
+        builder.eq("physAddr", physAddress);
+        final List<OnmsSnmpInterface> nodes = m_snmpInterfaceDao.findMatching(builder.toCriteria());
+
+        if (nodes.size() == 1)
+            return nodes.get(0);
+        return null;
+	}
+
 	private String getSnmpInterfaceUrl(Integer nodeid,Integer ifindex) {
 		if (ifindex != null && nodeid != null )
 			return "element/snmpinterface.jsp?node="+nodeid+"&ifindex="+ifindex;
 		return null;
+	}
+
+	private String getBridgePortString(Integer bridgePort, Integer ifindex) {
+		if (ifindex != null)
+			return "bridge port: "+ bridgePort + "(ifindex:"+ifindex+")";
+		return "bridge port: "+ bridgePort;
+	}
+
+	private String getIpInterfaceUrl(OnmsIpInterface ip) {
+		return "element/interface.jsp?node="+ip.getNode().getId()+"&intf="+str(ip.getIpAddress());
 	}
 
 	private String getPortString(OnmsSnmpInterface snmpiface) {
