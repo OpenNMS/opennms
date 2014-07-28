@@ -22,10 +22,9 @@
                 <excludes>
                     <exclude>**/*.txt</exclude>
                     <exclude>bin/*</exclude>
-                    <exclude>demos/**</exclude>
+                    <exclude>demos/*</exclude>
+                    <!-- Get rid of the old Karaf features XML -->
                     <exclude>**/org.opennms.container.standalone*-features.xml</exclude>
-                    <exclude>**/custom.properties</exclude>
-                    <exclude>**/org.apache.karaf.features.cfg</exclude>
                 </excludes>
             </unpackOptions>
         </dependencySet>

@@ -78,7 +78,7 @@
            <configuration>
               <descriptors>
                 <descriptor>mvn:org.apache.karaf.assemblies.features/standard/${karafVersion}/xml/features</descriptor>
-                <descriptor>file:${basedir}/target/classes/features.xml</descriptor>
+                <descriptor>file:${project.build.outputDirectory}/features.xml</descriptor>
               </descriptors>
               <features>
                 <!-- Add http-whiteboard to the default list of features -->
