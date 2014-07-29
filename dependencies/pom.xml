@@ -3,7 +3,7 @@
   <parent>
     <artifactId>opennms</artifactId>
     <groupId>org.opennms</groupId>
-    <version>1.13.4-SNAPSHOT</version>
+    <version>1.13.4-PJSM-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>dependencies</artifactId>
@@ -30,6 +30,7 @@
     <module>jersey</module>
     <module>jfreechart</module>
     <module>jinterop</module>
+    <module>jmx</module>
     <module>jna</module>
     <module>jnlp</module>
     <module>jradius</module>

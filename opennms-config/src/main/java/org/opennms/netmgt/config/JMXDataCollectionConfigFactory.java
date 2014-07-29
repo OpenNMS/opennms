@@ -28,22 +28,10 @@
 
 package org.opennms.netmgt.config;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
+import org.exolab.castor.xml.Marshaller;
+import org.exolab.castor.xml.Unmarshaller;
+import org.exolab.castor.xml.XMLException;
 import org.opennms.core.utils.ConfigFileConstants;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.config.collectd.jmx.Attr;
 import org.opennms.netmgt.config.collectd.jmx.Attrib;
 import org.opennms.netmgt.config.collectd.jmx.CompAttrib;
@@ -53,9 +41,26 @@ import org.opennms.netmgt.config.collectd.jmx.JmxDatacollectionConfig;
 import org.opennms.netmgt.config.collectd.jmx.Mbean;
 import org.opennms.netmgt.config.collectd.jmx.Mbeans;
 import org.opennms.netmgt.rrd.RrdRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 /**
  * This class is the main repository for JMX data collection configuration
@@ -291,7 +296,26 @@ public final class JMXDataCollectionConfigFactory {
         }
         return attributeMap;
     }
-    
+
+    public JmxCollection getJmxCollection(String collectionName) {
+        JmxCollection collection = m_collectionMap.get(collectionName);
+        if (collection != null) {
+            // we clone the collection by marshal/unmarshalling the object :)
+            try {
+                StringWriter out = new StringWriter();
+                Marshaller.marshal(collection, out);
+                StringReader in = new StringReader(out.toString());
+                return (JmxCollection) Unmarshaller.unmarshal(JmxCollection.class, in);
+            } catch (XMLException e) {
+                LOG.error("Could not marshal/unmarshal JMX config for collection '{}'.", collectionName);
+                return null;
+            }
+        } else {
+            LOG.warn("No JMX Config for collection '{}' found", collectionName);
+        }
+        return null;
+    }
+
     /**
      * <p>getMBeanInfo</p>
      *
