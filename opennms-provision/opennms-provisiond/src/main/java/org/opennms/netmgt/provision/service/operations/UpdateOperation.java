@@ -43,9 +43,10 @@ public class UpdateOperation extends SaveOrUpdateOperation {
      * @param building a {@link java.lang.String} object.
      * @param city a {@link java.lang.String} object.
      * @param provisionService a {@link org.opennms.netmgt.provision.service.ProvisionService} object.
+     * @param rescanExisting a {@link java.lang.Boolean} object
      */
-    public UpdateOperation(Integer nodeId, String foreignSource, String foreignId, String nodeLabel, String building, String city, ProvisionService provisionService) {
-		super(nodeId, foreignSource, foreignId, nodeLabel, building, city, provisionService);
+    public UpdateOperation(Integer nodeId, String foreignSource, String foreignId, String nodeLabel, String building, String city, ProvisionService provisionService, boolean rescanExisting) {
+		super(nodeId, foreignSource, foreignId, nodeLabel, building, city, provisionService, rescanExisting);
 	}
 
 	/**
@@ -61,6 +62,6 @@ public class UpdateOperation extends SaveOrUpdateOperation {
 	/** {@inheritDoc} */
 	@Override
     protected void doPersist() {
-        getProvisionService().updateNode(getNode());
+        getProvisionService().updateNode(getNode(), getRescanExisting());
     }
 }
