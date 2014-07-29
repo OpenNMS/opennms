@@ -127,7 +127,9 @@ public class JniRrdStrategy implements RrdStrategy<JniRrdStrategy.CreateCommand 
         @Override
     public CreateCommand createDefinition(String creator, String directory, String rrdName, int step, List<RrdDataSource> dataSources, List<String> rraList) throws Exception {
         File f = new File(directory);
-        f.mkdirs();
+        if(!f.mkdirs()) {
+        	LOG.warn("Could not make directory: {}", f.getPath());
+        }
 
         String fileName = directory + File.separator + rrdName + RrdUtils.getExtension();
         
@@ -547,7 +549,9 @@ public class JniRrdStrategy implements RrdStrategy<JniRrdStrategy.CreateCommand 
         } catch (Throwable e) {
             throw new RrdException("Can't execute command " + command, e);
         } finally {
-            pngFile.delete();
+            if (!pngFile.delete()) {
+            	LOG.warn("Could not delete file: {}", pngFile.getPath());
+            }
         }
 
         // Creating Graph Details

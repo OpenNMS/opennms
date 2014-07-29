@@ -30,7 +30,6 @@ package org.opennms.upgrade.implementations;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.opennms.core.utils.ConfigFileConstants;
@@ -38,6 +37,8 @@ import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
 import org.opennms.upgrade.api.AbstractOnmsUpgrade;
 import org.opennms.upgrade.api.OnmsUpgradeException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The Class Requisitions Migrator.
@@ -54,6 +55,8 @@ import org.opennms.upgrade.api.OnmsUpgradeException;
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a> 
  */
 public class RequisitionsMigratorOffline extends AbstractOnmsUpgrade {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(RequisitionsMigratorOffline.class);
 
     /** The requisition directory. */
     private File requisitionDir;
@@ -108,7 +111,9 @@ public class RequisitionsMigratorOffline extends AbstractOnmsUpgrade {
         File zip = getBackupFile();
         if (zip.exists()) {
             log("Removing backup %s\n", zip);
-            zip.delete();
+            if(!zip.delete()) {
+            	LOG.warn("Could not delete file: {}",zip.getPath());
+            }
         }
     }
 
@@ -119,7 +124,9 @@ public class RequisitionsMigratorOffline extends AbstractOnmsUpgrade {
     public void rollback() throws OnmsUpgradeException {
         File zip = getBackupFile();
         unzipFile(zip, getRequisitionDir());
-        zip.delete();
+        if(!zip.delete()) {
+        	LOG.warn("Could not delete file: {}",zip.getPath());
+        }
     }
 
     /* (non-Javadoc)

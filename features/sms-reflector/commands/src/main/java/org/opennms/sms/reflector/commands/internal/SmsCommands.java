@@ -372,7 +372,7 @@ public class SmsCommands implements CommandProvider, BundleContextAware {
             GatewayGroupImpl gatewayGroup = new GatewayGroupImpl();
             List<AGateway> gateways = new ArrayList<AGateway>();
 
-            SerialModemGateway gateway = new SerialModemGateway("modem." + id, port, new Integer(baudRate), manufacturer, model);
+            SerialModemGateway gateway = new SerialModemGateway("modem." + id, port, Integer.valueOf(baudRate), manufacturer, model);
             gateway.setProtocol(Protocols.PDU);
             gateway.setInbound(true);
             gateway.setOutbound(true);

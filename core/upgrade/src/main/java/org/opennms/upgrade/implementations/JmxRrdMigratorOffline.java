@@ -51,6 +51,8 @@ import org.opennms.netmgt.config.collectd.Package;
 import org.opennms.netmgt.config.collectd.Service;
 import org.opennms.upgrade.api.AbstractOnmsUpgrade;
 import org.opennms.upgrade.api.OnmsUpgradeException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The Class RRD/JRB Migrator for JMX Collector.
@@ -72,6 +74,9 @@ import org.opennms.upgrade.api.OnmsUpgradeException;
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a> 
  */
 public class JmxRrdMigratorOffline extends AbstractOnmsUpgrade {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(JmxRrdMigratorOffline.class);
+
 
     /** The JMX resource directories. */
     private List<File> jmxResourceDirectories;
@@ -164,9 +169,13 @@ public class JmxRrdMigratorOffline extends AbstractOnmsUpgrade {
             for (File jmxResourceDir : getJmxResourceDirectories()) {
                 File zip = new File(jmxResourceDir.getAbsolutePath() + ZIP_EXT);
                 FileUtils.deleteDirectory(jmxResourceDir);
-                jmxResourceDir.mkdirs();
+                if(!jmxResourceDir.mkdirs()) {
+                	LOG.warn("Could not make directory: {}", jmxResourceDir.getPath());
+                }
                 unzipFile(zip, jmxResourceDir);
-                zip.delete();
+                if(!zip.delete()) {
+                	LOG.warn("Could not delete file: {}", zip.getPath());
+                }
             }
             File configDir = new File(ConfigFileConstants.getFilePathString());
             for (File backupFile : backupFiles) {
@@ -443,8 +452,11 @@ public class JmxRrdMigratorOffline extends AbstractOnmsUpgrade {
                     File newFile = new File(metaFile.getParentFile(), newName + metaExt);
                     log("Re-creating META into %s\n", newFile);
                     newMeta.store(new FileWriter(newFile), null);
-                    if (!metaFile.equals(newFile))
-                        metaFile.delete();
+                    if (!metaFile.equals(newFile)) {
+                        if (!metaFile.delete()) {
+                        	LOG.warn("Could not delete file {}", metaFile.getPath());
+                        }
+                    }
                 }
             }
         }
@@ -520,8 +532,11 @@ public class JmxRrdMigratorOffline extends AbstractOnmsUpgrade {
                 File newFile = new File(metaFile.getParentFile(), getFixedFileName(metaFile.getName().replaceFirst(metaExt, "")) + metaExt);
                 log("Recreating META into %s\n", newFile);
                 newMeta.store(new FileWriter(newFile), null);
-                if (!metaFile.equals(newFile))
-                    metaFile.delete();
+                if (!metaFile.equals(newFile)) {
+                   if(!metaFile.delete()) {
+                	   LOG.warn("Could not delete file: {}", metaFile.getPath());
+                   }
+                }
             }
         }
         // JRBs

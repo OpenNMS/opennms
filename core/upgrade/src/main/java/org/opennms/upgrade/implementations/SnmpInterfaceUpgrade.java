@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2013 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -31,58 +31,17 @@ import java.io.File;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import org.apache.commons.lang.StringUtils;
-import org.opennms.core.utils.RrdLabelUtils;
 import org.opennms.netmgt.config.DataCollectionConfigFactory;
-import org.opennms.netmgt.model.OnmsResource;
 
 /**
  * The Class SnmpInterfaceUpgrade.
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a> 
  */
-public class SnmpInterfaceUpgrade {
+public class SnmpInterfaceUpgrade extends SnmpInterface {
 
     /** The node's directory. */
     private File nodeDir;
-
-    /** The node's id. */
-    private int nodeId;
-
-    /** The node's foreign id. */
-    private String foreignId;
-
-    /** The node's foreign source. */
-    private String foreignSource;
-
-    /** The SNMP interface name. */
-    private String ifName;
-
-    /** The SNMP interface description. */
-    private String ifDescr;
-
-    /** The SNMP physical address. */
-    private String physAddr;
-
-    /** The old RRD label. */
-    private String oldRrdLabel;
-
-    /** The new RRD label. */
-    private String newRrdLabel;
-
-    /** The store by foreign source. */
-    private boolean storeByForeignSource;
-
-    /**
-     * Instantiates a new SNMP interface upgrade.
-     *
-     * @param rs the ResultSet
-     * @param storeByForeignSource true, if the store by foreign source is enabled
-     * @throws SQLException the sQL exception
-     */
-    public SnmpInterfaceUpgrade(ResultSet rs, boolean storeByForeignSource) throws SQLException {
-        this(rs.getInt("nodeid"), rs.getString("foreignsource"), rs.getString("foreignid"), rs.getString("snmpifdescr"), rs.getString("snmpifname") ,rs.getString("snmpphysaddr"), storeByForeignSource);
-    }
 
     /**
      * Instantiates a new SNMP interface upgrade.
@@ -96,40 +55,28 @@ public class SnmpInterfaceUpgrade {
      * @param storeByForeignSource true, if store by foreign source is enabled
      */
     public SnmpInterfaceUpgrade(int nodeId, String foreignSource,
-            String foreignId, String ifDescr, String ifName,
-            String physAddr, boolean storeByForeignSource) {
-        this.nodeId = nodeId;
-        this.foreignSource = normalize(foreignSource);
-        this.foreignId = normalize(foreignId);
-        this.ifDescr = normalize(ifDescr);
-        this.ifName = normalize(ifName);
-        this.physAddr = normalize(physAddr);
-        this.storeByForeignSource = storeByForeignSource;
-        initialize();
+            String foreignId, String ifDescr, String ifName, String physAddr,
+            boolean storeByForeignSource) {
+        super(nodeId, foreignSource, foreignId, ifDescr, ifName, physAddr, storeByForeignSource);
     }
 
     /**
-     * Normalizes a String.
+     * Instantiates a new SNMP interface upgrade.
      *
-     * @param source the source
-     * @return the normalized string
+     * @param rs the ResultSet
+     * @param storeByForeignSource true, if the store by foreign source is enabled
+     * @throws SQLException the SQL exception
      */
-    private String normalize(String source) {
-        return StringUtils.isBlank(source) ? null : StringUtils.trim(source);
+    public SnmpInterfaceUpgrade(ResultSet rs, boolean storeByForeignSource) throws SQLException {
+        super(rs, storeByForeignSource);
     }
 
-    /**
-     * Initialize.
+    /* (non-Javadoc)
+     * @see org.opennms.upgrade.implementations.SnmpInterface#initialize()
      */
-    private void initialize() {
-        // If the ifName and the ifDescr are null at the same time, OpenNMS is going to create a directory like this:
-        // /var/opennms/rrd/snmp/10/null or /var/opennms/rrd/snmp/10/null-00029906ced7
-        if (ifDescr == null && ifName == null) {
-            ifName = "null";
-        }
-        oldRrdLabel = RrdLabelUtils.computeLabelForRRD(ifName, ifDescr, null);
-        newRrdLabel = RrdLabelUtils.computeLabelForRRD(ifName, ifDescr, physAddr);
-        nodeDir = getNodeDirectory(nodeId, foreignSource, foreignId);
+    protected void initialize() {
+        super.initialize();
+        nodeDir = getNodeDirectory(getNodeId(), getForeignSource(), getForeignId());
     }
 
     /**
@@ -160,78 +107,6 @@ public class SnmpInterfaceUpgrade {
     }
 
     /**
-     * Gets the node id.
-     *
-     * @return the node id
-     */
-    public int getNodeId() {
-        return nodeId;
-    }
-
-    /**
-     * Gets the foreign id.
-     *
-     * @return the foreign id
-     */
-    public String getForeignId() {
-        return foreignId;
-    }
-
-    /**
-     * Gets the foreign source.
-     *
-     * @return the foreign source
-     */
-    public String getForeignSource() {
-        return foreignSource;
-    }
-
-    /**
-     * Gets the interface name.
-     *
-     * @return the interface name
-     */
-    public String getIfName() {
-        return ifName;
-    }
-
-    /**
-     * Gets the interface description.
-     *
-     * @return the interface description
-     */
-    public String getIfDescr() {
-        return ifDescr;
-    }
-
-    /**
-     * Gets the physical address.
-     *
-     * @return the physical address
-     */
-    public String getPhysAddr() {
-        return physAddr;
-    }
-
-    /**
-     * Gets the old RRD label.
-     *
-     * @return the old RRD label
-     */
-    public String getOldRrdLabel() {
-        return oldRrdLabel;
-    }
-
-    /**
-     * Gets the new RRD label.
-     *
-     * @return the new RRD label
-     */
-    public String getNewRrdLabel() {
-        return newRrdLabel;
-    }
-
-    /**
      * Checks if the interface directories should be merged.
      *
      * @return true, if the interface directory should be merged
@@ -241,46 +116,6 @@ public class SnmpInterfaceUpgrade {
         // For this reason, if the old directory exist and the label of the old interface is different than the new one,
         // that means, the interface statistics must be merged.
         return getOldInterfaceDir().exists() && !getOldRrdLabel().equals(getNewRrdLabel());
-    }
-
-    /**
-     * Gets the old resource id.
-     *
-     * @return the old resource id
-     */
-    public String getOldResourceId() {
-        return getResourceId(oldRrdLabel);
-    }
-
-    /**
-     * Gets the new resource id.
-     *
-     * @return the new resource id
-     */
-    public String getNewResourceId() {
-        return getResourceId(newRrdLabel);
-    }
-
-    /**
-     * Gets the resource id.
-     *
-     * @param label the label
-     * @return the resource id
-     */
-    private String getResourceId(String label) {
-        String parentType = storeByForeignSource ? "nodeSource" : "node";
-        String parentId   = storeByForeignSource ? foreignSource + ':' + foreignId : Integer.toString(nodeId);
-        return OnmsResource.createResourceId(parentType, parentId, "interfaceSnmp", label);
-    }
-
-    /**
-     * Checks if the resourceId should be updated.
-     *
-     * @param resourceId the resource id to check
-     * @return true, if the resource should be updated
-     */
-    public boolean shouldUpdate(String resourceId) {
-        return resourceId.endsWith("interfaceSnmp[" + oldRrdLabel + "]");
     }
 
     /**

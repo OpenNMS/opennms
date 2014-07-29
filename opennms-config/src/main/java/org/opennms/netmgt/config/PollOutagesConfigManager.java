@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -122,15 +122,10 @@ abstract public class PollOutagesConfigManager extends AbstractJaxbConfigDao<Out
     public Outage getOutage(final String name) {
         getReadLock().lock();
         try {
-            for (final Outage out : getConfig().getOutageCollection()) {
-                if (BasicScheduleUtils.getBasicOutageSchedule(out).getName().equals(name)) {
-                    return out;
-                }
-            }
+            return getConfig().getOutage(name);
         } finally {
             getReadLock().unlock();
         }
-        return null;
     }
 
     /**
@@ -289,7 +284,7 @@ abstract public class PollOutagesConfigManager extends AbstractJaxbConfigDao<Out
     public void removeOutage(final String outageName) {
         getWriteLock().lock();
         try {
-            getConfig().removeOutage(getOutage(outageName));
+            getConfig().removeOutage(outageName);
         } finally {
             getWriteLock().unlock();
         }
@@ -345,7 +340,7 @@ abstract public class PollOutagesConfigManager extends AbstractJaxbConfigDao<Out
      */
     public Node[] getNodeIds(final String name) {
         final Outage out = getOutage(name);
-        if (BasicScheduleUtils.getBasicOutageSchedule(out) == null) return null;
+        if (out == null) return null;
         return out.getNode();
     }
 
