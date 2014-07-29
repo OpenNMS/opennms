@@ -106,9 +106,11 @@ public interface ProvisionService {
      * @param node
      *            The node that has been updated and should be written to the
      *            database
+     * @param rescanExisting
+     *            true, if the node must be rescanned.
      */
     @Transactional
-    void updateNode(OnmsNode node);
+    void updateNode(OnmsNode node, boolean rescanExisting);
     
     /**
      * <p>updateNodeAttributes</p>

@@ -40,6 +40,7 @@ import static org.opennms.netmgt.EventConstants.PARM_NODE_LABEL;
 import static org.opennms.netmgt.EventConstants.PARM_NODE_LABEL_SOURCE;
 import static org.opennms.netmgt.EventConstants.PARM_NODE_SYSDESCRIPTION;
 import static org.opennms.netmgt.EventConstants.PARM_NODE_SYSNAME;
+import static org.opennms.netmgt.EventConstants.PARM_RESCAN_EXISTING;
 import static org.opennms.netmgt.EventConstants.SERVICE_DELETED_EVENT_UEI;
 
 import java.net.InetAddress;
@@ -336,14 +337,16 @@ public abstract class EventUtils {
      * @param nodeId a {@link java.lang.Integer} object.
      * @param nodeLabel a {@link java.lang.String} object.
      * @param labelSource a {@link java.lang.String} object.
+     * @param rescanExisting a {@link java.lang.Boolean} object.
      * @return a {@link org.opennms.netmgt.xml.event.Event} object.
      */
-    public static Event createNodeUpdatedEvent(String source, Integer nodeId, String nodeLabel, String labelSource) {
+    public static Event createNodeUpdatedEvent(String source, Integer nodeId, String nodeLabel, String labelSource, boolean rescanExisting) {
         debug("CreateNodeUpdatedEvent: nodedId: %d", nodeId);
         EventBuilder bldr = new EventBuilder(NODE_UPDATED_EVENT_UEI, source);
         bldr.setNodeid(nodeId);
         bldr.addParam(PARM_NODE_LABEL, nodeLabel);
         bldr.addParam(PARM_NODE_LABEL_SOURCE, labelSource);
+        bldr.addParam(PARM_RESCAN_EXISTING, rescanExisting);
         return bldr.getEvent();
     }
 

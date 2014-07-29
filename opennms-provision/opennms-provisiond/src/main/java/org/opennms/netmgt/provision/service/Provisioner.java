@@ -597,6 +597,16 @@ public class Provisioner implements SpringServiceDaemon {
         	LogUtils.debugf(this, "Rescanning updated nodes is disabled via property: %s", SCHEDULE_RESCAN_FOR_UPDATED_NODES);
         	return;
         }
+        boolean rescanExisting = true; // Default
+        for (Parm parm : e.getParmCollection()) {
+            if (EventConstants.PARM_RESCAN_EXISTING.equals(parm.getParmName()) && "false".equalsIgnoreCase(parm.getValue().getContent())) {
+                rescanExisting = false;
+            }
+        }
+        if (!rescanExisting) {
+            LogUtils.debugf(this, "Rescanning updated nodes is disabled via event parameter: %s", EventConstants.PARM_RESCAN_EXISTING);
+            return;
+        }
         
         removeNodeFromScheduleQueue(new Long(e.getNodeid()).intValue());
         NodeScanSchedule scheduleForNode = getProvisionService().getScheduleForNode(new Long(e.getNodeid()).intValue(), true);

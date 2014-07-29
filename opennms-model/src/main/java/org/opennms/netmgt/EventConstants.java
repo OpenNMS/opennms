@@ -918,8 +918,8 @@ public class EventConstants {
     public static final String PARM_FOREIGN_SOURCE = "foreignSource";
     /** Constant <code>PARM_FOREIGN_ID="foreignId"</code> */
     public static final String PARM_FOREIGN_ID = "foreignId";
-
-
+    /** Constant <code>PARM_RESCAN_EXISTING="rescanExisting"</code> */
+    public static final String PARM_RESCAN_EXISTING = "rescanExisting";
     
     /**
      * Parms used for configureSnmp events

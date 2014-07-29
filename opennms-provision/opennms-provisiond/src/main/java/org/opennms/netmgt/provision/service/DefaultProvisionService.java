@@ -208,7 +208,7 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
     
     /** {@inheritDoc} */
     @Transactional
-    public void updateNode(final OnmsNode node) {
+    public void updateNode(final OnmsNode node, boolean rescanExisting) {
 
     	final OnmsNode dbNode = m_nodeDao.getHierarchy(node.getId());
 
@@ -220,7 +220,7 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
         m_nodeDao.update(dbNode);
         m_nodeDao.flush();
 
-        final EntityVisitor eventAccumlator = new UpdateEventVisitor(m_eventForwarder);
+        final EntityVisitor eventAccumlator = new UpdateEventVisitor(m_eventForwarder, rescanExisting);
 
         node.visit(eventAccumlator);
         
