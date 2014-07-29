@@ -855,7 +855,8 @@ public class Provisioner implements SpringServiceDaemon {
         final String rescanExisting = EventUtils.getParm(event, EventConstants.PARM_IMPORT_RESCAN_EXISTING);
         
         if (rescanExisting == null) {
-            return Boolean.getBoolean(SCHEDULE_RESCAN_FOR_UPDATED_NODES);
+            String enabled = System.getProperty(SCHEDULE_RESCAN_FOR_UPDATED_NODES, "true");
+            return Boolean.valueOf(enabled);
         }
         
         return Boolean.parseBoolean(rescanExisting);
