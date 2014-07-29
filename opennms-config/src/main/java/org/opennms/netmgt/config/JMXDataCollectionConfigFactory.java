@@ -302,14 +302,16 @@ public final class JMXDataCollectionConfigFactory {
         if (collection != null) {
             // we clone the collection by marshal/unmarshalling the object :)
             try {
-                // TODO mvr we cannot do it this way, this does not consider import
                 StringWriter out = new StringWriter();
                 Marshaller.marshal(collection, out);
                 StringReader in = new StringReader(out.toString());
                 return (JmxCollection) Unmarshaller.unmarshal(JmxCollection.class, in);
             } catch (XMLException e) {
+                LOG.error("Could not marshal/unmarshal JMX config for collection '{}'.", collectionName);
                 return null;
             }
+        } else {
+            LOG.warn("No JMX Config for collection '{}' found", collectionName);
         }
         return null;
     }
