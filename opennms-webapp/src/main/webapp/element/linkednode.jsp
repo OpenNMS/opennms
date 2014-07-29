@@ -29,15 +29,13 @@
 
 --%>
 
+<%@page import="org.opennms.web.enlinkd.EnLinkdElementFactory"%>
+<%@page import="org.opennms.web.enlinkd.EnLinkdElementFactoryInterface"%>
+<%@page import="org.opennms.web.enlinkd.BridgeLinkNode"%>
+<%@page import="org.opennms.web.enlinkd.BridgeLinkRemoteNode"%>
 <%@page import="org.opennms.web.enlinkd.LldpLinkNode"%>
-<%@page import="org.opennms.web.enlinkd.LldpElementFactory"%>
-<%@page import="org.opennms.web.enlinkd.LldpElementFactoryInterface"%>
 <%@page import="org.opennms.web.enlinkd.OspfLinkNode"%>
-<%@page import="org.opennms.web.enlinkd.OspfElementFactory"%>
-<%@page import="org.opennms.web.enlinkd.OspfElementFactoryInterface"%>
 <%@page import="org.opennms.web.enlinkd.IsisLinkNode"%>
-<%@page import="org.opennms.web.enlinkd.IsisElementFactory"%>
-<%@page import="org.opennms.web.enlinkd.IsisElementFactoryInterface"%>
 <%@page
 	language="java"
 	contentType="text/html"
@@ -105,9 +103,7 @@
 
 <%
     NetworkElementFactoryInterface factory = NetworkElementFactory.getInstance(getServletContext());
-    LldpElementFactoryInterface lldpfactory = LldpElementFactory.getInstance(getServletContext());
-    OspfElementFactoryInterface ospffactory = OspfElementFactory.getInstance(getServletContext());
-    IsisElementFactoryInterface isisfactory = IsisElementFactory.getInstance(getServletContext());
+    EnLinkdElementFactoryInterface enlinkdfactory = EnLinkdElementFactory.getInstance(getServletContext());
 
     String nodeIdString = request.getParameter( "node" );
 
@@ -452,10 +448,76 @@
 	    </table>
 
 <% }  %>
+<hr />        
+<%
+   if (enlinkdfactory.getBridgeLinks(nodeId).isEmpty()) {
+%>
+	<div class="TwoColLeft">
+		<h3>No Bridge Forwarding Table Links found on <%=node_db.getLabel()%> by Enhanced Linkd</h3>
+	</div>
+<% } else { %>
+<h3><%=node_db.getLabel()%> Bridge Forwarding Table Links found by Enhanced Linkd</h3>
+		
+		<!-- Link box -->
+		<table class="standard">
+		
+		<thead>
+			<tr>
+			<th>Local Port</th> 
+            <th>Local Vlan</th>
+			<th>Remote Node</th>
+			<th>Remote Port</th> 
+            <th>Remote Vlan</th>
+			<th>Created</th>
+			<th>Last Poll</th>
+			</tr>
+		</thead>
+				
+		<% for( BridgeLinkNode bridgelink: enlinkdfactory.getBridgeLinks(nodeId)) { %>
+			<% for( BridgeLinkRemoteNode remlink: bridgelink.getBridgeLinkRemoteNodes()) { %>
+	    <tr>
+		    <td class="standard"><%=bridgelink.getBridgeLocalPort()%></td>
+		    <td class="standard">
+		 	<% if (bridgelink.getBridgeLocalVlan() != null) { %>
+            	<%=bridgelink.getBridgeLocalVlan()%>
+            <% } else { %> 
+            	&nbsp;
+    		<% } %> 
+            </td>
+            <td class="standard">
+            <% if (remlink.getBridgeRemoteUrl() != null) { %>
+            	<a href="<%=remlink.getBridgeRemoteUrl()%>"><%=remlink.getBridgeRemoteNode()%></a>
+            <% } else { %> 
+				<%=remlink.getBridgeRemoteNode()%>
+    			<% } %> 
+            </td>
+            <td class="standard">
+           <% if (remlink.getBridgeRemotePortUrl() != null) { %>
+            	<a href="<%=remlink.getBridgeRemotePortUrl()%>"><%=remlink.getBridgeRemotePort()%></a>
+            <% } else { %> 
+				<%=remlink.getBridgeRemotePort()%>
+    			<% } %> 
+            </td>
+		    <td class="standard">
+		 	<% if (remlink.getBridgeRemoteVlan() != null) { %>
+            	<%=remlink.getBridgeRemoteVlan()%>
+            <% } else { %> 
+            	&nbsp;
+    		<% } %> 
+            </td>
+		    <td class="standard"><%=bridgelink.getBridgeLinkCreateTime()%></td>
+		    <td class="standard"><%=bridgelink.getBridgeLinkLastPollTime()%></td>
+	    </tr>
+		    <% } %>
+	    <% } %>
+		    
+	    </table>
+
+<% }  %>
 
 <hr />        
 <%
-   if (lldpfactory.getLldpLinks(nodeId).isEmpty()) {
+   if (enlinkdfactory.getLldpLinks(nodeId).isEmpty()) {
 %>
 	<div class="TwoColLeft">
 		<h3>No Lldp Remote Table Links found on <%=node_db.getLabel()%> by Enhanced Linkd</h3>
@@ -479,7 +541,7 @@
 			</tr>
 		</thead>
 				
-		<% for( LldpLinkNode lldplink: lldpfactory.getLldpLinks(nodeId)) { %>
+		<% for( LldpLinkNode lldplink: enlinkdfactory.getLldpLinks(nodeId)) { %>
 	    <tr>
 		    <td class="standard">
 		 	<% if (lldplink.getLldpPortUrl() != null) { %>
@@ -518,7 +580,7 @@
 
 <hr />        
 <%
-   if (ospffactory.getOspfLinks(nodeId).isEmpty()) {
+   if (enlinkdfactory.getOspfLinks(nodeId).isEmpty()) {
 %>
 	<div class="TwoColLeft">
 		<h3>No Ospf Nbr Links found on <%=node_db.getLabel()%> by Enhanced Linkd</h3>
@@ -541,7 +603,7 @@
 			</tr>
 		</thead>
 				
-		<% for( OspfLinkNode ospflink: ospffactory.getOspfLinks(nodeId)) { %>
+		<% for( OspfLinkNode ospflink: enlinkdfactory.getOspfLinks(nodeId)) { %>
 	    <tr>
 		    <td class="standard"><%=ospflink.getOspfIpAddr()%>(ifindex=<%=ospflink.getOspfIfIndex()%>)</td>
 		    <td class="standard"><%=ospflink.getOspfAddressLessIndex()%></td>
@@ -571,7 +633,7 @@
 
 <hr />        
 <%
-   if (isisfactory.getIsisLinks(nodeId).isEmpty()) {
+   if (enlinkdfactory.getIsisLinks(nodeId).isEmpty()) {
 %>
 	<div class="TwoColLeft">
 		<h3>No IS-IS Adjacency Links found on <%=node_db.getLabel()%> by Enhanced Linkd</h3>
@@ -597,7 +659,7 @@
 			</tr>
 		</thead>
 				
-		<% for( IsisLinkNode isislink: isisfactory.getIsisLinks(nodeId)) { %>
+		<% for( IsisLinkNode isislink: enlinkdfactory.getIsisLinks(nodeId)) { %>
 	    <tr>
 		    <td class="standard"><%=isislink.getIsisCircIfIndex()%></td>
 		    <td class="standard"><%=isislink.getIsisCircAdminState()%></td>
