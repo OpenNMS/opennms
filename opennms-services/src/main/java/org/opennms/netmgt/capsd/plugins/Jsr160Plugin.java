@@ -28,13 +28,12 @@
 
 package org.opennms.netmgt.capsd.plugins;
 
+import org.opennms.core.utils.ParameterMap;
+import org.opennms.netmgt.jmx.connection.JmxConnectors;
+
 import java.net.InetAddress;
 import java.util.HashMap;
 import java.util.Map;
-
-import org.opennms.core.utils.ParameterMap;
-import org.opennms.protocols.jmx.connectors.ConnectionWrapper;
-import org.opennms.protocols.jmx.connectors.Jsr160ConnectionFactory;
 
 /*
  * This class enables the monitoring of Jsr160 service.  Since there will potentially be several 
@@ -51,18 +50,11 @@ import org.opennms.protocols.jmx.connectors.Jsr160ConnectionFactory;
  * @version $Id: $
  */
 public class Jsr160Plugin extends JMXPlugin {
-    
-    /* The factory handles the creation of the connection and returns a CollectionWrapper which is used
-     * in the JXMPlugin base class to determine whether this capability exists.  
-     * 
-     * @see org.opennms.netmgt.capsd.JMXPlugin#getMBeanServer(java.util.Map, java.net.InetAddress)
-     */
-    /** {@inheritDoc} */
     @Override
-    public ConnectionWrapper getMBeanServerConnection(Map<String, Object> parameterMap, InetAddress address) {
-        return Jsr160ConnectionFactory.getMBeanServerConnection(parameterMap, address);
+    protected String getConnectionName() {
+        return JmxConnectors.JSR160;
     }
-    
+
     /* The protocol name is used to...
      * @see org.opennms.netmgt.capsd.Plugin#getProtocolName()
      */

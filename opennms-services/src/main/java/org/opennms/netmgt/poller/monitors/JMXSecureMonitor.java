@@ -28,12 +28,8 @@
 
 package org.opennms.netmgt.poller.monitors;
 
-import java.net.InetAddress;
-import java.util.Map;
-
+import org.opennms.netmgt.jmx.connection.JmxConnectors;
 import org.opennms.netmgt.poller.Distributable;
-import org.opennms.protocols.jmx.connectors.ConnectionWrapper;
-import org.opennms.protocols.jmx.connectors.JMXSecureConnectionFactory;
 
 @Distributable
 /**
@@ -42,12 +38,10 @@ import org.opennms.protocols.jmx.connectors.JMXSecureConnectionFactory;
  * @author ranger
  * @version $Id: $
  */
-public class JMXSecureMonitor extends JMXMonitor
-{
-	/** {@inheritDoc} */
-        @Override
-	public ConnectionWrapper getMBeanServerConnection(Map<String,Object> parameterMap, InetAddress address)
-	{
-		return JMXSecureConnectionFactory.getMBeanServerConnection(parameterMap, address);
-	}
+public class JMXSecureMonitor extends JMXMonitor {
+
+    @Override
+    protected String getConnectionName() {
+        return JmxConnectors.JMX_SECURE;
+    }
 }

@@ -26,18 +26,12 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.protocols.jmx;
+package org.opennms.netmgt.jmx.connection.connectors;
 
 import javax.management.MBeanServer;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
-
-/*
- * 
- * @author <A HREF="mailto:mike@opennms.org">Mike Jamison </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- */
 
 /**
  * <p>MBeanServerProxy class.</p>
@@ -55,7 +49,7 @@ public class MBeanServerProxy implements InvocationHandler {
     /**
      * Creates a new instance of Proxy
      *
-     * @param remoteServer a {@link java.lang.Object} object.
+     * @param remoteServer a {@link Object} object.
      */
     public MBeanServerProxy(Object remoteServer) {
         this.remoteServer = remoteServer;
@@ -65,11 +59,11 @@ public class MBeanServerProxy implements InvocationHandler {
     /**
      * <p>invoke</p>
      *
-     * @param proxy a {@link java.lang.Object} object.
+     * @param proxy a {@link Object} object.
      * @param m a {@link java.lang.reflect.Method} object.
-     * @param args an array of {@link java.lang.Object} objects.
-     * @return a {@link java.lang.Object} object.
-     * @throws java.lang.Throwable if any.
+     * @param args an array of {@link Object} objects.
+     * @return a {@link Object} object.
+     * @throws Throwable if any.
      */
     @Override
     public Object invoke(Object proxy, Method m, Object[] args) throws Throwable {
@@ -86,7 +80,7 @@ public class MBeanServerProxy implements InvocationHandler {
     /**
      * <p>buildServerProxy</p>
      *
-     * @param server a {@link java.lang.Object} object.
+     * @param server a {@link Object} object.
      * @return a {@link javax.management.MBeanServer} object.
      */
     public static MBeanServer buildServerProxy(Object server) {

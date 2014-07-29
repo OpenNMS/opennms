@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.protocols.jmx.connectors;
+package org.opennms.netmgt.jmx.connection.connectors;
 
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -39,20 +39,17 @@ import java.util.Set;
  * packages rather letting the parent do it. The result is that classes
  * loaded from these packages are isolated from other classloaders.
  *
- * @author <A HREF="mailto:mike@opennms.org">Mike Jamison </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @author <A HREF="mailto:mike@opennms.org">Mike Jamison </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <a href="mailto:mike@opennms.org">Mike Jamison </a>
  * @version $Id: $
  */
-public class IsolatingClassLoader extends URLClassLoader {
+class IsolatingClassLoader extends URLClassLoader {
     
     /** Array of prefixes that identifies packages or classes to isolate. **/
     private String[] m_isolatedPrefixes;
     
     /** Set of class names that identifies classes to isolate. **/
     private Set<String> m_isolatedClassNames = new HashSet<String>();
-    
+
     /**
      * <p>Constructor for IsolatingClassLoader.</p>
      *
@@ -62,34 +59,11 @@ public class IsolatingClassLoader extends URLClassLoader {
      * classes to isolate.
      * @param augmentClassPath true => Add the URL's of the current
      * thread context class loader to <code>classpath</code>.
-     * @throws org.opennms.protocols.jmx.connectors.IsolatingClassLoader.InvalidContextClassLoaderException If augmentClassPath
-     * is true and the current thread context class loader is not a
-     * <code>URLClassLoader</code>.
-     * @param name a {@link java.lang.String} object.
-     */
-    public IsolatingClassLoader(String name, URL[] classpath, String[] isolated, boolean augmentClassPath) throws InvalidContextClassLoaderException {
-        
-        super(classpath);
-        init(name, isolated, augmentClassPath);
-    }
-    
-    /**
-     * <p>Constructor for IsolatingClassLoader.</p>
-     *
-     * @param classpath Where to find classes.
-     * @param isolated Array of fully qualified class names, or fully
-     * qualified prefixes ending in "*", that identify the packages or
-     * classes to isolate.
-     * @param augmentClassPath true => Add the URL's of the current
-     * thread context class loader to <code>classpath</code>.
-     * @throws org.opennms.protocols.jmx.connectors.IsolatingClassLoader.InvalidContextClassLoaderException If augmentClassPath
-     * is true and the current thread context class loader is not a
-     * <code>URLClassLoader</code>.
-     * @param name a {@link java.lang.String} object.
-     * @param parent a {@link java.lang.ClassLoader} object.
+     * @throws InvalidContextClassLoaderException If augmentClassPath is true and the current thread context class loader is not a {@link java.net.URLClassLoader}.
+     * @param name a {@link String} object.
+     * @param parent a {@link ClassLoader} object.
      */
     public IsolatingClassLoader(String name, URL[] classpath, ClassLoader parent, String[] isolated, boolean augmentClassPath)   throws InvalidContextClassLoaderException {
-        
         super(classpath, parent);
         init(name, isolated, augmentClassPath);
     }
@@ -168,9 +142,6 @@ public class IsolatingClassLoader extends URLClassLoader {
     
     public static class InvalidContextClassLoaderException extends Exception {
         
-        /**
-         * 
-         */
         private static final long serialVersionUID = -82741827583768184L;
 
         public InvalidContextClassLoaderException(String message) {

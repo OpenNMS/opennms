@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,63 +26,41 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.protocols.jmx.connectors;
+package org.opennms.netmgt.jmx.connection.connectors;
 
-import java.io.IOException;
+
+import org.opennms.netmgt.jmx.connection.JmxServerConnectionWrapper;
 
 import javax.management.MBeanServerConnection;
 import javax.management.remote.JMXConnector;
+import java.io.IOException;
+import java.util.Objects;
 
-/*
- * This class manages the connection to the remote jmx server.  The Jsr160ConnectionFactory
- * class creates the connection and the close method closes it.
- * 
- * @author <A HREF="mailto:mike@opennms.org">Mike Jamison </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- */
-/**
- * <p>Jsr160ConnectionWrapper class.</p>
- *
- * @author ranger
- * @version $Id: $
- */
-public class Jsr160ConnectionWrapper implements ConnectionWrapper{
-    
+class DefaultConnectionWrapper implements JmxServerConnectionWrapper {
+
     private JMXConnector connector;
     private MBeanServerConnection connection;
 
-    /**
-     * <p>Constructor for Jsr160ConnectionWrapper.</p>
-     *
-     * @param connector a {@link javax.management.remote.JMXConnector} object.
-     * @param connection a {@link javax.management.MBeanServerConnection} object.
-     */
-    public Jsr160ConnectionWrapper(JMXConnector connector, MBeanServerConnection connection) {
-        this.connector  = connector;
-        this.connection = connection;
+    protected DefaultConnectionWrapper(JMXConnector connector, MBeanServerConnection connection) {
+        this.connector = Objects.requireNonNull(connector, "connector must not be null");
+        this.connection = Objects.requireNonNull(connection, "connection must not be null");
     }
-    
-    /**
-     * <p>getMBeanServer</p>
-     *
-     * @return Returns the connection.
-     */
+
     @Override
-    public MBeanServerConnection getMBeanServer() {
+    public MBeanServerConnection getMBeanServerConnection() {
         return connection;
     }
-    
-    /**
-     * <p>close</p>
-     */
+
     @Override
     public void close() {
         if (connector != null) {
             try {
                 connector.close();
             } catch (IOException e) {
+
             }
         }
         connection = null;
     }
+
 }

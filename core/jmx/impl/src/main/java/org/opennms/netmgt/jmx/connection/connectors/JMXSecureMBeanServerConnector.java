@@ -26,10 +26,12 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.protocols.jmx.connectors;
+package org.opennms.netmgt.jmx.connection.connectors;
 
-import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
+import org.opennms.netmgt.jmx.connection.JmxServerConnectionException;
+import org.opennms.netmgt.jmx.connection.JmxServerConnectionWrapper;
+import org.opennms.netmgt.jmx.connection.JmxServerConnector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,8 +39,12 @@ import javax.management.MBeanServerConnection;
 import javax.management.remote.JMXConnector;
 import javax.management.remote.JMXConnectorFactory;
 import javax.management.remote.JMXServiceURL;
-import javax.net.ssl.*;
-import java.net.InetAddress;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLException;
+import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.TrustManagerFactory;
+import javax.net.ssl.X509TrustManager;
 import java.net.MalformedURLException;
 import java.security.KeyStore;
 import java.security.cert.CertificateException;
@@ -46,24 +52,12 @@ import java.security.cert.X509Certificate;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * <p>JMXSecureConnectionFactory class.</p>
- *
- * @author ranger
- * @version $Id: $
- */
-public class JMXSecureConnectionFactory {
+class JMXSecureMBeanServerConnector implements JmxServerConnector {
 	
-	private static final Logger LOG = LoggerFactory.getLogger(JMXSecureConnectionFactory.class);
+	private static final Logger LOG = LoggerFactory.getLogger(JMXSecureMBeanServerConnector.class);
 
-    /**
-     * <p>getMBeanServerConnection</p>
-     *
-     * @param propertiesMap a {@link java.util.Map} object.
-     * @param address       a {@link java.net.InetAddress} object.
-     * @return a {@link org.opennms.protocols.jmx.connectors.Jsr160ConnectionWrapper} object.
-     */
-    public static Jsr160ConnectionWrapper getMBeanServerConnection(Map<?, ?> propertiesMap, InetAddress address) {
+    @Override
+    public JmxServerConnectionWrapper createConnection(String ipAddress, Map<String, String> propertiesMap) throws JmxServerConnectionException {
         Jsr160ConnectionWrapper connectionWrapper = null;
 
         JMXServiceURL url = null;
@@ -80,11 +74,10 @@ public class JMXSecureConnectionFactory {
 
                 // Create an JMXMP connector client and
                 // connect it to the JMXMP connector server
-                //
-                url = new JMXServiceURL(protocol, InetAddressUtils.str(address), port, urlPath);
+                url = new JMXServiceURL(protocol, ipAddress, port, urlPath);
             } else {
                 // Fallback, building a URL for RMI
-                url = new JMXServiceURL("service:jmx:" + protocol + ":///jndi/" + protocol + "://" + InetAddressUtils.str(address) + ":" + port + urlPath);
+                url = new JMXServiceURL("service:jmx:" + protocol + ":///jndi/" + protocol + "://" + ipAddress + ":" + port + urlPath);
             }
         } catch (MalformedURLException e) {
             LOG.error("JMXServiceURL exception: {}. Error message: {}", url, e.getMessage());
@@ -98,60 +91,56 @@ public class JMXSecureConnectionFactory {
                 String password = ParameterMap.getKeyedString(propertiesMap, "password", null);
 
                 HashMap<String, Object> env = new HashMap<String, Object>();
+                AnyServerX509TrustManager tm;
+                KeyStore ks;
 
-                // TODO: We can have a deadlock here
-                while (true) {
-                    AnyServerX509TrustManager tm;
-                    KeyStore ks;
-
-                    try {
-                        ks = KeyStore.getInstance(KeyStore.getDefaultType());
-                        TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
-                        tmf.init(ks);
-                        // X509TrustManager defaultTrustManager = (X509TrustManager) tmf.getTrustManagers()[0];
-                        tm = new AnyServerX509TrustManager();
-                        SSLContext ctx = SSLContext.getInstance("TLSv1");
-                        ctx.init(null, new TrustManager[]{tm}, null);
-                        SSLSocketFactory ssf = ctx.getSocketFactory();
-                        env.put("jmx.remote.tls.socket.factory", ssf);
-                    } catch (Throwable e) {
-                    	LOG.error("Something bad occured: {}", e.getMessage());
-                        throw e;
-                    }
-
-                    // We don't need to add this provider manually... it is included in the JVM
-                    // by default in Java5+
-                    //
-                    // @see $JAVA_HOME/jre/lib/security/java.security
-                    //
-                    //Security.addProvider(new com.sun.security.sasl.Provider());
-
-                    String[] creds;
-                    if (sunCacao.equals("true"))
-                        creds = new String[]{"com.sun.cacao.user\001" + username, password};
-                    else
-                        creds = new String[]{username, password};
-                    env.put("jmx.remote.profiles", "TLS SASL/PLAIN");
-                    env.put("jmx.remote.credentials", creds);
-
-                    JMXConnector connector = JMXConnectorFactory.newJMXConnector(url, null);
-
-                    // Connect and invoke an operation on the remote MBeanServer
-                    try {
-                        connector.connect(env);
-                    } catch (SSLException e) {
-                        LOG.warn("SSLException occured. Error message: {}", e.getMessage());
-                    } catch (SecurityException x) {
-                        LOG.error("Security exception: bad credentials. Error message: {}", x.getMessage());
-                    }
-                    MBeanServerConnection connection = connector.getMBeanServerConnection();
-                    connectionWrapper = new Jsr160ConnectionWrapper(connector, connection);
-                    break;
+                try {
+                    ks = KeyStore.getInstance(KeyStore.getDefaultType());
+                    TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+                    tmf.init(ks);
+                    // X509TrustManager defaultTrustManager = (X509TrustManager) tmf.getTrustManagers()[0];
+                    tm = new AnyServerX509TrustManager();
+                    SSLContext ctx = SSLContext.getInstance("TLSv1");
+                    ctx.init(null, new TrustManager[]{tm}, null);
+                    SSLSocketFactory ssf = ctx.getSocketFactory();
+                    env.put("jmx.remote.tls.socket.factory", ssf);
+                } catch (Throwable e) {
+                    LOG.error("Something bad occured: {}", e.getMessage());
+                    throw e;
                 }
+
+                // We don't need to add this provider manually... it is included in the JVM
+                // by default in Java5+
+                //
+                // @see $JAVA_HOME/jre/lib/security/java.security
+                //
+                //Security.addProvider(new com.sun.security.sasl.Provider());
+
+                String[] creds;
+                if (sunCacao.equals("true"))
+                    creds = new String[]{"com.sun.cacao.user\001" + username, password};
+                else
+                    creds = new String[]{username, password};
+                env.put("jmx.remote.profiles", "TLS SASL/PLAIN");
+                env.put("jmx.remote.credentials", creds);
+
+                JMXConnector connector = JMXConnectorFactory.newJMXConnector(url, null);
+
+                // Connect and invoke an operation on the remote MBeanServer
+                try {
+                    connector.connect(env);
+                } catch (SSLException e) {
+                    LOG.warn("SSLException occured. Error message: {}", e.getMessage());
+                } catch (SecurityException x) {
+                    LOG.error("Security exception: bad credentials. Error message: {}", x.getMessage());
+                }
+                MBeanServerConnection connection = connector.getMBeanServerConnection();
+                connectionWrapper = new Jsr160ConnectionWrapper(connector, connection);
             } catch (Throwable e) {
                 LOG.error("Unable to get MBeanServerConnection: {}. Error message: {}", url, e.getMessage());
             }
         }
+
         return connectionWrapper;
     }
 

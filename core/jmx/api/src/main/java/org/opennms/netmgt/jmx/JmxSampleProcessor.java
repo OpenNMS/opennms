@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,34 +26,26 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.protocols.jmx.connectors;
+package org.opennms.netmgt.jmx;
 
-import javax.management.MBeanServerConnection;
+import org.opennms.netmgt.jmx.samples.JmxAttributeSample;
+import org.opennms.netmgt.jmx.samples.JmxCompositeSample;
 
-/*
- * This interface defines the ability to handle a live connection and the ability to
- * close it.
- * 
- * @author <A HREF="mailto:mike@opennms.org">Mike Jamison </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- */
 /**
- * <p>ConnectionWrapper interface.</p>
- *
- * @author ranger
- * @version $Id: $
+ * Processes collected JMX Samples.
  */
-public interface ConnectionWrapper {
+public interface JmxSampleProcessor {
     /**
-     * <p>getMBeanServer</p>
+     * Callback method for each collected MBean Attribute.
      *
-     * @return a {@link javax.management.MBeanServerConnection} object.
+     * @param attributeSample The collected sample.
      */
-    public MBeanServerConnection getMBeanServer();
-    
-    /**
-     * <p>close</p>
-     */
-    public void close();
+    void process(JmxAttributeSample attributeSample);
 
+    /**
+     * Callback method for each collected Composite Member.
+     *
+     * @param compositeSample The collected sample.
+     */
+    void process(JmxCompositeSample compositeSample);
 }
