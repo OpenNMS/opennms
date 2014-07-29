@@ -54,7 +54,7 @@ public class Dot1dBasePortTableTracker extends TableTracker {
 		
 	};
 
-	public class Dot1dBasePortRow extends SnmpRowResult {
+	public static class Dot1dBasePortRow extends SnmpRowResult {
 
 		public Dot1dBasePortRow(int columnCount, SnmpInstId instance) {
 			super(columnCount, instance);

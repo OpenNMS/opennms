@@ -68,7 +68,7 @@ public class OspfIfTableTracker extends TableTracker {
         
     };
     
-    public class OspfIfRow extends SnmpRowResult {
+    public static class OspfIfRow extends SnmpRowResult {
 
     	public OspfIfRow(int columnCount, SnmpInstId instance) {
 			super(columnCount, instance);

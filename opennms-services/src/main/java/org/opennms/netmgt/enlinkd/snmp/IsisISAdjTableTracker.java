@@ -127,7 +127,7 @@ public class IsisISAdjTableTracker extends TableTracker {
 
     };
     
-    public class IsIsAdjRow extends SnmpRowResult {
+    public static class IsIsAdjRow extends SnmpRowResult {
 		public IsIsAdjRow(int columnCount, SnmpInstId instance) {
 			super(columnCount, instance);
             LOG.debug( "column count = {}, instance = {}", columnCount, instance);

@@ -237,7 +237,7 @@ public class SnmpDescriptor extends org.exolab.castor.xml.util.XMLClassDescripto
             {
                 Snmp target = (Snmp) object;
                 if (!target.hasSpecific()) { return null; }
-                return new java.lang.Integer(target.getSpecific());
+                return java.lang.Integer.valueOf(target.getSpecific());
             }
             @Override
             public void setValue( java.lang.Object object, java.lang.Object value) 
@@ -285,7 +285,7 @@ public class SnmpDescriptor extends org.exolab.castor.xml.util.XMLClassDescripto
             {
                 Snmp target = (Snmp) object;
                 if (!target.hasGeneric()) { return null; }
-                return new java.lang.Integer(target.getGeneric());
+                return java.lang.Integer.valueOf(target.getGeneric());
             }
             @Override
             public void setValue( java.lang.Object object, java.lang.Object value) 

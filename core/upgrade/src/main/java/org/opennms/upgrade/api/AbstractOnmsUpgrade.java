@@ -47,6 +47,8 @@ import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.xml.CastorUtils;
 import org.opennms.netmgt.config.opennmsDataSources.DataSourceConfiguration;
 import org.opennms.netmgt.config.opennmsDataSources.JdbcDataSource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The Abstract class for OpenNMS Upgrade Implementations.
@@ -55,6 +57,8 @@ import org.opennms.netmgt.config.opennmsDataSources.JdbcDataSource;
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a> 
  */
 public abstract class AbstractOnmsUpgrade implements OnmsUpgrade {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(AbstractOnmsUpgrade.class);
 
     /** The Constant ZIP_EXT. */
     public static final String ZIP_EXT = ".zip";
@@ -345,7 +349,11 @@ public abstract class AbstractOnmsUpgrade implements OnmsUpgrade {
      */
     protected void unzipFile(File zipFile, File outputFolder) throws OnmsUpgradeException {
         try {
-            if (!outputFolder.exists()) outputFolder.mkdirs();
+        	if (!outputFolder.exists()) {
+        		if (!outputFolder.mkdirs()) {
+            		LOG.warn("Could not make directory: {}", outputFolder.getPath());
+            	}
+        	}
             FileInputStream fis;
             byte[] buffer = new byte[1024];
             fis = new FileInputStream(zipFile);

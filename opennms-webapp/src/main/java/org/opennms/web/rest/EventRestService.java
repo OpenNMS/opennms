@@ -96,7 +96,7 @@ public class EventRestService extends OnmsRestService {
     public OnmsEvent getEvent(@PathParam("eventId") final String eventId) {
         readLock();
         try {
-            return m_eventDao.get(new Integer(eventId));
+            return m_eventDao.get(Integer.valueOf(eventId));
         } finally {
             readUnlock();
         }
@@ -230,7 +230,7 @@ public class EventRestService extends OnmsRestService {
         writeLock();
 
         try {
-            final OnmsEvent event = m_eventDao.get(new Integer(eventId));
+            final OnmsEvent event = m_eventDao.get(Integer.valueOf(eventId));
             if (ack == null) {
                 throw new IllegalArgumentException("Must supply the 'ack' parameter, set to either 'true' or 'false'");
             }

@@ -145,7 +145,7 @@ public class AlarmDataDescriptor extends org.exolab.castor.xml.util.XMLClassDesc
             {
                 AlarmData target = (AlarmData) object;
                 if (!target.hasAlarmType()) { return null; }
-                return new java.lang.Integer(target.getAlarmType());
+                return java.lang.Integer.valueOf(target.getAlarmType());
             }
             @Override
             public void setValue( java.lang.Object object, java.lang.Object value) 
@@ -320,7 +320,7 @@ public class AlarmDataDescriptor extends org.exolab.castor.xml.util.XMLClassDesc
             {
                 AlarmData target = (AlarmData) object;
                 if (!target.hasX733ProbableCause()) { return null; }
-                return new java.lang.Integer(target.getX733ProbableCause());
+                return java.lang.Integer.valueOf(target.getX733ProbableCause());
             }
             @Override
             public void setValue( java.lang.Object object, java.lang.Object value) 

@@ -186,7 +186,7 @@ public class RrdField extends CustomField<Rrd> implements Button.ClickListener {
     protected Rrd getInternalValue() {
         Rrd rrd = new Rrd();
         try {
-            rrd.setStep(new Integer((String) step.getValue()));
+            rrd.setStep(Integer.valueOf((String) step.getValue()));
         } catch (NumberFormatException e) {
             rrd.setStep(null);
         }
@@ -263,6 +263,6 @@ public class RrdField extends CustomField<Rrd> implements Button.ClickListener {
      */
     public Integer getStepValue() {
         final String value = step.getValue();
-        return value == null ? null : new Integer(value);
+        return value == null ? null : Integer.valueOf(value);
     }
 }

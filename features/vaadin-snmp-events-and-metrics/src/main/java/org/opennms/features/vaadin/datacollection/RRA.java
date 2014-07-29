@@ -151,8 +151,8 @@ public class RRA {
         try {
             setCf(parts[1]);
             setXff(new Double(parts[2]));
-            setSteps(new Integer(parts[3]));
-            setRows(new Integer(parts[4]));
+            setSteps(Integer.valueOf(parts[3]));
+            setRows(Integer.valueOf(parts[4]));
         } catch (Exception e) {
             throw new IllegalArgumentException("Malformed RRA");
         }

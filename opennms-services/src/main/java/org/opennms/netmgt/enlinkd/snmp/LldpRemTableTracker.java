@@ -95,7 +95,7 @@ public class LldpRemTableTracker extends TableTracker {
     };
     
 
-    public class LldpRemRow extends SnmpRowResult {
+    public static class LldpRemRow extends SnmpRowResult {
 
 		public LldpRemRow(int columnCount, SnmpInstId instance) {
 			super(columnCount, instance);

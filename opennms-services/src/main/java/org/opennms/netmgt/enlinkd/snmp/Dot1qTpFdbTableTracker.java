@@ -122,7 +122,7 @@ public class Dot1qTpFdbTableTracker extends TableTracker {
 	};
 
 
-	public class Dot1qTpFdbRow extends SnmpRowResult {
+	public static class Dot1qTpFdbRow extends SnmpRowResult {
 
 		public Dot1qTpFdbRow(int columnCount, SnmpInstId instance) {
 			super(columnCount, instance);

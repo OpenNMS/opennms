@@ -102,7 +102,7 @@ public class AddMapsController extends MapsLoggingController {
 	        String[] smapids = elems.split(",");
 
 	        for (int i = 0; i<smapids.length;i++) {
-	            Integer id = new Integer(smapids[i]);
+	            Integer id = Integer.valueOf(smapids[i]);
 	            if (map.containsElement(id, MapsConstants.MAP_TYPE)) {
 	                LOG.debug(" Map Contains Element: {}", id+MapsConstants.MAP_TYPE);
 	                continue;
