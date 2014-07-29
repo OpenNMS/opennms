@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -44,19 +44,22 @@ import java.net.MalformedURLException;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Implements the default "jsr160" connection logic.
+ */
 class DefaultJmxConnector implements JmxServerConnector {
 
     private static final Logger LOG = LoggerFactory.getLogger(DefaultJmxConnector.class);
 
     @Override
-    public JmxServerConnectionWrapper createConnection(final String address, final Map<String, String> propertiesMap) throws JmxServerConnectionException {
+    public JmxServerConnectionWrapper createConnection(final String ipAddress, final Map<String, String> propertiesMap) throws JmxServerConnectionException {
         try {
             final String factory = ParameterMap.getKeyedString(propertiesMap, "factory", "STANDARD");
             final String port = ParameterMap.getKeyedString(propertiesMap, "port", "1099");
             final String protocol = ParameterMap.getKeyedString(propertiesMap, "protocol", "rmi");
             final String urlPath = ParameterMap.getKeyedString(propertiesMap, "urlPath",  "/jmxrmi");
 
-            final JMXServiceURL url = new JMXServiceURL("service:jmx:" + protocol + ":///jndi/"+protocol+"://" + address + ":" + port + urlPath);
+            final JMXServiceURL url = new JMXServiceURL("service:jmx:" + protocol + ":///jndi/"+protocol+"://" + ipAddress + ":" + port + urlPath);
             LOG.debug("JMX: {} - {}", factory, url);
 
             final Map<String,String[]> env = new HashMap<>();

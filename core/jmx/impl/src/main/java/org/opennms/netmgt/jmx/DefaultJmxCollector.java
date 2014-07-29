@@ -1,3 +1,31 @@
+/*******************************************************************************
+ * This file is part of OpenNMS(R).
+ *
+ * Copyright (C) 2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * OpenNMS(R) is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenNMS(R).  If not, see:
+ *      http://www.gnu.org/licenses/
+ *
+ * For more information contact:
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
+ *******************************************************************************/
+
 package org.opennms.netmgt.jmx;
 
 import org.opennms.netmgt.config.collectd.jmx.Attrib;
@@ -35,8 +63,12 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.StringTokenizer;
 
-// TODO mvr refactoring der ganzen anderen ConnectionFActories
-// TODO mvr JmxCollector sollte nicht mehr das "connect" implementieren.
+/**
+ * A implementation of the JmxCollector.
+ * It iterates over all configured MBeans, collects either attributes or composite members and creates a sample accordingly.
+ *
+ * @see org.opennms.netmgt.jmx.JmxCollector
+ */
 public class DefaultJmxCollector implements JmxCollector {
 
     protected final Logger logger = LoggerFactory.getLogger(getClass());
@@ -53,7 +85,6 @@ public class DefaultJmxCollector implements JmxCollector {
         }
     }
 
-    // TODO mvr wir brauchen connectionName (e.g. jsr160, jboss, usw, um zu entscheiden wie die Connection aufgebaut werden soll...)
     private void collect(MBeanServerConnection concreteConnection, JmxCollection jmxCollection, JmxSampleProcessor sampleProcessor) {
         try {
             for (Mbean eachMbean : jmxCollection.getMbeans().getMbeanCollection()) {
@@ -72,12 +103,12 @@ public class DefaultJmxCollector implements JmxCollector {
                             if (eachAttribute.getValue() instanceof CompositeData) {
                                 CompositeData compositeData = (CompositeData) eachAttribute.getValue();
                                 for (CompMember eachCompositeMember : getCompositeMembers(eachMbean, eachAttribute.getName())) {
-                                    JmxCompositeSample sample = new JmxCompositeSample(eachMbean, eachObjectName, eachAttribute, compositeData, eachCompositeMember);
+                                    JmxCompositeSample sample = new JmxCompositeSample(eachMbean, eachAttribute, compositeData, eachCompositeMember);
                                     logger.debug("Collected sample {}", sample);
                                     sampleProcessor.process(sample);
                                 }
                             } else {
-                                JmxAttributeSample sample = new JmxAttributeSample(eachMbean, eachObjectName, eachAttribute);
+                                JmxAttributeSample sample = new JmxAttributeSample(eachMbean, eachAttribute);
                                 logger.debug("Collected sample {}", sample);
                                 sampleProcessor.process(sample);
                             }
@@ -89,11 +120,18 @@ public class DefaultJmxCollector implements JmxCollector {
             }
         } catch (JMException e) {
             logger.error("Could not collect data", e);
-        }  catch (IOException e) {
+        } catch (IOException e) {
             logger.error("Could not communicate with MBeanServer", e);
         }
     }
 
+    /**
+     * Checks if a given objectName can be collected.
+     * It cannot be collected if it is excluded or not registered, otherwise it can be collected.
+     *
+     * @return if it can be collected.
+     * @throws IOException If an error while communicating with the MBeanServer occurs.
+     */
     private boolean canBeCollected(MBeanServerConnection connection, ObjectName objectName, String keyField, String excludeList) throws IOException {
         if (isExcluded(objectName, keyField, excludeList)) {
             logger.debug("ObjectName {} with key {} is in excludeList {}.", objectName, keyField, excludeList);
@@ -106,7 +144,13 @@ public class DefaultJmxCollector implements JmxCollector {
         return true;
     }
 
-    // TODO mvr should we really do it this way?
+    /**
+     * Get a list of jmx Attributes from the JMX Server.
+     * The returned list only contains available attributes.
+     * The input list contains all attributes we would like to fetch.
+     *
+     * @return the list of attributes available at the JMX Server.
+     */
     private List<Attribute> getAttributes(MBeanServerConnection concreteConnection, ObjectName eachObjectName, List<String> attributes) throws InstanceNotFoundException, IOException, ReflectionException {
         AttributeList attributeList = concreteConnection.getAttributes(eachObjectName, attributes.toArray(new String[attributes.size()]));
         List<Attribute> newList = new ArrayList<>();
@@ -118,6 +162,13 @@ public class DefaultJmxCollector implements JmxCollector {
         return Collections.checkedList(newList, Attribute.class);
     }
 
+    /**
+     * Extracts all Composite members from a given composite attribute name.
+     *
+     * @param bean              The mbean the composite attribute belongs to.
+     * @param compAttributeName The composite attribute name.
+     * @return A list of all Composite Members of the given composite attribute. May be empty. The list is unmodifiable.
+     */
     private List<CompMember> getCompositeMembers(Mbean bean, String compAttributeName) {
         for (CompAttrib eachAttrib : bean.getCompAttrib()) {
             if (Objects.equals(compAttributeName, eachAttrib.getName())) {
@@ -151,7 +202,7 @@ public class DefaultJmxCollector implements JmxCollector {
 
     /**
      * Checks if the given objectName is excluded.
-     *
+     * <p/>
      * An objectName is excluded if the excludeList contains the provided keyField.
      *
      * @param objectName
@@ -183,6 +234,7 @@ public class DefaultJmxCollector implements JmxCollector {
 
     /**
      * Check if the objectName is a wildcard entry.
+     *
      * @param objectName The object Name. May not be null.
      * @return true if objectName contains * otherwise false.
      */
@@ -190,6 +242,15 @@ public class DefaultJmxCollector implements JmxCollector {
         return objectName.contains("*");
     }
 
+    /**
+     * Returns an unmodifiable set of <code>ObjectName</code>s according to the given <code>objectName</code>.
+     *
+     * @param objectName The objectName to query the server with. May contain wildcards.
+     *                   See {@link javax.management.MBeanServer#queryMBeans(javax.management.ObjectName, javax.management.QueryExp)} for details.
+     * @return an unmodifiable set of <code>ObjectName</code>s according to the given <code>objectName</code>.
+     * @throws MalformedObjectNameException
+     * @throws IOException
+     */
     private Set<ObjectName> getObjectNames(MBeanServerConnection mbeanServer, String objectName) throws MalformedObjectNameException, IOException {
         Set<ObjectName> objectNames = new HashSet<>();
 

@@ -46,7 +46,6 @@ import org.slf4j.LoggerFactory;
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  * @version 1.1.1.1
  */
-// TODO mvr we may get rid of this *jippie*
 public class JMXDataSource implements Cloneable {
     private static final Logger LOG = LoggerFactory.getLogger(JMXDataSource.class);
 	private static final int MAX_DS_NAME_LENGTH = 19;

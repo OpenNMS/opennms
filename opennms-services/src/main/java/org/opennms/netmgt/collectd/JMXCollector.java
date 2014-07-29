@@ -272,7 +272,6 @@ public abstract class JMXCollector implements ServiceCollector {
         // Nothing to release...
     }
 
-    // TODO mvr make abstract
     // we need this to determine which connection type/manager should be used to connect to the jvm
     protected abstract String getConnectionName();
 
