@@ -1,4 +1,4 @@
-package org.opennms.web.ospf;
+package org.opennms.web.enlinkd;
 
 public class OspfLinkNode {
 	private String m_ospfIpAddr;

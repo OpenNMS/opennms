@@ -1,4 +1,4 @@
-package org.opennms.web.ospf;
+package org.opennms.web.enlinkd;
 
 import java.util.List;
 

@@ -1,4 +1,4 @@
-package org.opennms.web.bridge;
+package org.opennms.web.enlinkd;
 
 public class BridgeLinkRemoteNode {
 	private String m_bridgeRemoteNode;

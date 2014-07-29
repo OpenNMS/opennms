@@ -29,15 +29,15 @@
 
 --%>
 
-<%@page import="org.opennms.web.lldp.LldpLinkNode"%>
-<%@page import="org.opennms.web.lldp.LldpElementFactory"%>
-<%@page import="org.opennms.web.lldp.LldpElementFactoryInterface"%>
-<%@page import="org.opennms.web.ospf.OspfLinkNode"%>
-<%@page import="org.opennms.web.ospf.OspfElementFactory"%>
-<%@page import="org.opennms.web.ospf.OspfElementFactoryInterface"%>
-<%@page import="org.opennms.web.isis.IsisLinkNode"%>
-<%@page import="org.opennms.web.isis.IsisElementFactory"%>
-<%@page import="org.opennms.web.isis.IsisElementFactoryInterface"%>
+<%@page import="org.opennms.web.enlinkd.LldpLinkNode"%>
+<%@page import="org.opennms.web.enlinkd.LldpElementFactory"%>
+<%@page import="org.opennms.web.enlinkd.LldpElementFactoryInterface"%>
+<%@page import="org.opennms.web.enlinkd.OspfLinkNode"%>
+<%@page import="org.opennms.web.enlinkd.OspfElementFactory"%>
+<%@page import="org.opennms.web.enlinkd.OspfElementFactoryInterface"%>
+<%@page import="org.opennms.web.enlinkd.IsisLinkNode"%>
+<%@page import="org.opennms.web.enlinkd.IsisElementFactory"%>
+<%@page import="org.opennms.web.enlinkd.IsisElementFactoryInterface"%>
 <%@page
 	language="java"
 	contentType="text/html"

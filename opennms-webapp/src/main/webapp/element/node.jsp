@@ -29,14 +29,14 @@
 
 --%>
 
-<%@page import="org.opennms.web.lldp.LldpElementFactory"%>
-<%@page import="org.opennms.web.lldp.LldpElementNode"%>
-<%@page import="org.opennms.web.ospf.OspfElementFactory"%>
-<%@page import="org.opennms.web.ospf.OspfElementNode"%>
-<%@page import="org.opennms.web.isis.IsisElementFactory"%>
-<%@page import="org.opennms.web.isis.IsisElementNode"%>
-<%@page import="org.opennms.web.bridge.BridgeElementFactory"%>
-<%@page import="org.opennms.web.bridge.BridgeElementNode"%>
+<%@page import="org.opennms.web.enlinkd.LldpElementFactory"%>
+<%@page import="org.opennms.web.enlinkd.LldpElementNode"%>
+<%@page import="org.opennms.web.enlinkd.OspfElementFactory"%>
+<%@page import="org.opennms.web.enlinkd.OspfElementNode"%>
+<%@page import="org.opennms.web.enlinkd.IsisElementFactory"%>
+<%@page import="org.opennms.web.enlinkd.IsisElementNode"%>
+<%@page import="org.opennms.web.enlinkd.BridgeElementFactory"%>
+<%@page import="org.opennms.web.enlinkd.BridgeElementNode"%>
 <%@page language="java"
 	contentType="text/html"
 	session="true"

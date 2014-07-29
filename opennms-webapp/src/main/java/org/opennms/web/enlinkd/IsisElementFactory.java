@@ -1,4 +1,4 @@
-package org.opennms.web.isis;
+package org.opennms.web.enlinkd;
 
 import java.util.ArrayList;
 import java.util.List;
