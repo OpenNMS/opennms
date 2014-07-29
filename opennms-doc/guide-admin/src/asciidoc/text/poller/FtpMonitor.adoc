@@ -59,7 +59,7 @@ Some example configuration how to configure the monitor in the 'poller-configura
 ----
 
 
-=== Hint
+==== Hint
 
 *Comment from FtpMonitor source*
 
