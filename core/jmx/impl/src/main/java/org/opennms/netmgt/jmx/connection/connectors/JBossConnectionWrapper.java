@@ -34,14 +34,14 @@ import javax.management.MBeanServer;
 import javax.management.MBeanServerConnection;
 
 /**
- * The JBossConnectionWrapper class manages the connection to the JBoss server.  The 
- * JBossConnectionFactory creates the connection to the server and closes the 
- * connection to the naming server, so the close() method doesn't need to do anything.
- *
- * */
+ * The JBossConnectionWrapper manages the connection to a JBoss server.  The
+ * {@link org.opennms.netmgt.jmx.connection.connectors.JBossMBeanServerConnector}
+ * creates the connection to the server and closes the connection, so the {@link #close()} method doesn't
+ * need to do anything.
+ */
 class JBossConnectionWrapper implements JmxServerConnectionWrapper {
     private MBeanServer mbeanServer;
-    
+
     public JBossConnectionWrapper(MBeanServer mbeanServer) {
         this.mbeanServer = mbeanServer;
     }

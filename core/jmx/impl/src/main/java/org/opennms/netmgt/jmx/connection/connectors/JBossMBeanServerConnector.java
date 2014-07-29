@@ -48,7 +48,7 @@ import java.util.Hashtable;
 import java.util.Map;
 
 /**
- * The JBossConnectionFactory class handles the creation of a connection to the 
+ * The JBossMBeanServerConnector handles the creation of a connection to the
  * remote JBoss server.  The connections can be either RMI or HTTP based.  RMI is
  * more efficient but doesn't work with firewalls.  The HTTP connection is suited 
  * for that.  Before attempting to use the HTTP connector, you need to make sure that
@@ -64,7 +64,7 @@ class JBossMBeanServerConnector implements JmxServerConnector {
     private static final String[] PACKAGES = {"org.jboss.naming.*", "org.jboss.interfaces.*"};
 
     @Override
-    public JmxServerConnectionWrapper createConnection(String address, Map<String, String> propertiesMap) throws JmxServerConnectionException {
+    public JmxServerConnectionWrapper createConnection(String ipAddress, Map<String, String> propertiesMap) throws JmxServerConnectionException {
         JBossConnectionWrapper wrapper = null;
         ClassLoader icl = null;
         final ClassLoader originalLoader = Thread.currentThread().getContextClassLoader();
@@ -121,7 +121,7 @@ class JBossMBeanServerConnector implements JmxServerConnector {
         if (connectionType.equals("RMI")) {
             InitialContext  ctx  = null;
 
-            final String hostAddress = address;
+            final String hostAddress = ipAddress;
 			try {
                 
                 Hashtable<String, String> props = new Hashtable<String, String>();
@@ -151,7 +151,7 @@ class JBossMBeanServerConnector implements JmxServerConnector {
             InitialContext ctx  = null;
             String invokerSuffix = null;
 
-            final String hostAddress = address;
+            final String hostAddress = ipAddress;
 			try {
                 
                 Hashtable<String, String> props = new Hashtable<String, String>();
