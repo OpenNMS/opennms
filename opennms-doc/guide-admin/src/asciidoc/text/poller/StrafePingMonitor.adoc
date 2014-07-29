@@ -6,7 +6,7 @@ The StrafePing monitor performs multiple ICMP echo (ping) requests and stores th
 Credit is due to Tobias Oetiker, as this graphing feature is an adaptation of the http://oss.oetiker.ch/smokeping/[SmokePing] tool that he developed.
 
 .Visualization of a graph from the StrafePingMonitor
-image::../../images/poller/01_strafeping.png[]
+image::poller/01_strafeping.png[]
 
 ==== Monitor facts
 
