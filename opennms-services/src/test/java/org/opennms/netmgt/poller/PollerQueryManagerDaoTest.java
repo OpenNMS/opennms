@@ -66,7 +66,7 @@ import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.dao.mock.EventAnticipator;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.dao.support.NullRrdStrategy;
-import org.opennms.netmgt.eventd.EventUtil;
+import org.opennms.netmgt.eventd.AbstractEventUtil;
 import org.opennms.netmgt.mock.MockElement;
 import org.opennms.netmgt.mock.MockEventUtil;
 import org.opennms.netmgt.mock.MockInterface;
@@ -465,7 +465,7 @@ public class PollerQueryManagerDaoTest implements TemporaryDatabaseAware<MockDat
 		MockService svc = m_network.getService(1, "192.168.1.1", "ICMP");
 		Event e = svc.createDownEvent();
 		String reasonParm = "eventReason";
-		String val = EventUtil.getNamedParmValue("parm[" + reasonParm + "]", e);
+		String val = (String) AbstractEventUtil.getInstance().getNamedParmValue("parm[" + reasonParm + "]", e);
 		assertEquals("Service Not Responding.", val);
 	}
 
