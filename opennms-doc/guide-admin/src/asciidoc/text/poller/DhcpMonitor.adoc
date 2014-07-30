@@ -21,7 +21,7 @@ This monitor is used to monitor the availability and functionality of http://en.
 | `timeout`        | Time in milliseconds to wait for the DHCP response from the server                             | optional | `don't know`
 | `rrd-repository` | The location to write RRD data. Generally, you will not want to change this from default       | required | `$OPENNMS_HOME/share/rrd/response`
 | `rrd-base-name`  | The name of the RRD file to write (minus the extension, .rrd or .jrb)                          | required | `dhcp`
-| `ds-name`        | This is a placeholder for the second optional monitor parameter description.                   | required | `dhcp`
+| `ds-name`        | Not sure what this does                                                                        | required | `dhcp`
 
 |===
 
