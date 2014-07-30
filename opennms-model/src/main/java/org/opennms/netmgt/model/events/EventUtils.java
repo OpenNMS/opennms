@@ -346,7 +346,7 @@ public abstract class EventUtils {
         bldr.setNodeid(nodeId);
         bldr.addParam(PARM_NODE_LABEL, nodeLabel);
         bldr.addParam(PARM_NODE_LABEL_SOURCE, labelSource);
-        bldr.addParam(PARM_RESCAN_EXISTING, rescanExisting);
+        bldr.addParam(PARM_RESCAN_EXISTING, Boolean.toString(rescanExisting));
         return bldr.getEvent();
     }
 
