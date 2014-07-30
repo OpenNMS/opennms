@@ -354,7 +354,7 @@ public abstract class EventUtils {
         if (labelSource != null) {
             bldr.addParam(PARM_NODE_LABEL_SOURCE, labelSource.toString());
         }
-        bldr.addParam(PARM_RESCAN_EXISTING, rescanExisting);
+        bldr.addParam(PARM_RESCAN_EXISTING, Boolean.toString(rescanExisting));
         return bldr.getEvent();
     }
 
