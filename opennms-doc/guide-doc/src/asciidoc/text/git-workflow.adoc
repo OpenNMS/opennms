@@ -112,7 +112,7 @@ Todo Review:<2>
 - [ ] Formatting and conventions
 - [ ] Content
 ----
-<1> A bank link to the JIRA issue for easy navigation
+<1> A backlink to the JIRA issue for easy navigation
 <2> Checkbox which helps to indicate the status of the review process
 
 .Switch target branch from OpenNMS:master to OpenNMS:development/docs
