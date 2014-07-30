@@ -1,6 +1,5 @@
 
-// REMOVE ME!! Please keep first line an empty line to make sure, the ToC can be build correctly
-=== Name of the Monitor. Normally the name of the class without .java
+=== DhcpMonitor
 
 A summary what the monitor is doing. When is the monitor up or down.
 
@@ -8,30 +7,22 @@ A summary what the monitor is doing. When is the monitor up or down.
 
 [options="autowidth"]
 |===
-| Class Name     | `Name of the monitor class which has to be used in the poller-configuration.xml`
-| Remote Enabled | true or false if the monitor can be used by the OpenNMS remote poller
+| Class Name     | `org.opennms.protocols.dhcp.monitor.DhcpMonitor`
+| Remote Enabled | dont' know
 |===
 
 ==== Configuration and Usage
 
-.Monitor specific parameters for the <MONITORNAME-HERE>
+.Monitor specific parameters for the DhcpMonitor
 [options="header, autowidth"]
 |===
-| Parameter        | Description                                                                                        | Required | Default value
-| `my parameter 1` | This is a placeholder for the first required monitor parameter description. If you have a very
-                     long description make a soft break at line 120                                                     | required | `-`
-| `my parameter 2` | This is a placeholder for the second optional monitor parameter description.                       | optional | `default value`
-|===
+| Parameter        | Description                                                                                    | Required | Default value
+| `retry`          | Number of retries before the service is marked as down                                         | optional | `don't know`
+| `timeout`        | Time in milliseconds to wait for the DHCP response from the server                             | optional | `don't know`
+| `rrd-repository` | The location to write RRD data. Generally, you will not want to change this from default       | required | `$OPENNMS_HOME/share/rrd/response`
+| `rrd-base-name`  | The name of the RRD file to write (minus the extension, .rrd or .jrb)                          | required | `dhcp`
+| `ds-name`        | This is a placeholder for the second optional monitor parameter description.                   | required | `dhcp`
 
-This is optional just if you can use variables in the configuration
-
-.Variables which can be used in the configuration
-[options="header, autowidth"]
-|===
-| Variable        | Description
-| `${variable1}`  | Description for the first variable
-| `${variable2}`  | Description for the second variable
-| `${variable3}`  | Description for the third variable
 |===
 
 ==== Examples
@@ -39,26 +30,75 @@ Some example configuration how to configure the monitor in the 'poller-configura
 
 [source, xml]
 ----
-<parameter key="args" value="-i {variable3} -t ${variable2}"/>
-<parameter key="args" value="http://${variable1}/${variable2}/static"/>
+<service name="DHCP" interval="300000" user-defined="false" status="on">
+ <parameter key="retry" value="2" />
+ <parameter key="timeout" value="3000" />
+ <parameter key="rrd-repository" value="/opt/opennms/share/rrd/response" />
+ <parameter key="rrd-base-name" value="dhcp" />
+ <parameter key="ds-name" value="dhcp" />
+</service>
+
+<monitor service="DCHP" class-name="org.opennms.protocols.dhcp.monitor.DhcpMonitor"/>
 ----
 
-.This section is optional and give some specific hints
-==== SystemExecuteMonitor vs GpMonitor
 
-The SystemExecuteMonitor is the successor of the GpMonitor. The main differences are:
+==== Required additional configuration
 
-* Variable replacement for the parameter args
-* There are no fixed arguments handed to the system-call
-* The _SystemExecuteMonitor_ supports _RemotePoller_ deployment
-
-To migrate services from the _GpMonitor_ to the _SystemExecuteMonitor_ it is required to alter the parameter args.
-To match the arguments called `hoption` for the `hostAddress` and `toption` for the `timeoutInSeconds`.
-The args string that matches the _GpMonitor_ call looks like this:
+Some example configuration how to configure the 'dhcp-configuration.xml'.
 
 [source, xml]
 ----
-<parameter key="my parameter 2" value="--hostname ${variable1} --timeout ${variable2}" />
+<DhcpdConfiguration
+       port="5818"
+       macAddress="00:06:0D:BE:9C:B2"
+       myIpAddress="127.0.0.1"
+       extendedMode="false"
+       requestIpAddress="127.0.0.1">
+</DhcpdConfiguration>
+
+<DhcpdConfiguration
+       port="5818"
+       macAddress="00:06:0D:BE:9C:B2"
+       myIpAddress="OpenNMS server ip"
+       extendedMode="true"
+       requestIpAddress="targetHost">
+</DhcpdConfiguration>
 ----
 
-To migrate the GpMonitor parameters `hoption` and `toption` just replace the `--hostname` and `--timeout` directly in the args key.
+[options="autowidth"]
+|===
+| Parameter          | Description                                                                       | Required           | Default value
+| `port`             | Defines the port your dhcp server is using                                        | required           | `5818`                   
+| `macAddress`       | The MAC address which OpenNMS uses for a dhcp request                             | required           | `don't know`
+| `myIpAddress`      | This parameter will usually be set to the ip address of the OpenNMS server,
+                       which puts the DHCP poller in "relay" mode as opposed to "broadcast" mode.
+                       In "relay" mode, the DHCP server being polled will unicast its responses directly
+                       back to the ip address specified by myIpAddress rather than broadcasting its
+                       responses. This allows DHCP servers to be polled even though they are not on the
+                       same subnet as the OpenNMS server, and without the aid of an external relay.
+                       _Usage:_ `myIpAddress="10.11.12.13"` or `myIpAddress="broadcast"`                 | required           | `broadcast`
+| `extendedMode`     | When extendedMode is false, the DHCP poller will send a DISCOVER and expect an
+                       OFFER in return. When extendedMode is true, the DHCP poller will first send a
+                       DISCOVER. If no valid response is received it will send an INFORM. If no valid
+                       response is received it will then send a REQUEST. OFFER, ACK, and NAK are all
+                       considered valid responses in extendedMode.
+                       _Usage:_ `extendedMode="true"` or `extendedMode="false"`                          | required           | `false`
+| `requestIpAddress` | This parameter only applies to REQUEST queries sent to the DHCP server when
+                       extendedMode is true. If an ip address is specified, that ip address will be
+                       requested in the query. If "targetHost" is specified, the DHCP server's own ip
+                       address will be requested. Since a well-managed server will probably not respond
+                       to a request for its own ip, this parameter can also be set to "targetSubnet".
+                       This is similar to "targetHost" except the DHCP server's ip address is
+                       incremented or decremented by 1 to obtain an ip address that is on the same
+                       subnet.
+                       (The resulting address will not be on the same subnet if the DHCP server's
+                       subnet is a /32 or /31. Otherwise, the algorithm used should be reliable.)
+                       _Usage:_ `requestIpAddress="10.77.88.99"` or `requestIpAddress="targetHost"`
+                       or `requestIpAddress="targetSubnet"`                                              | required           | `false`
+|===
+
+
+==== Hint
+
+*Caution on usage:* If in extended mode, the time required to complete the poll for an unresponsive node is increased by a factor of 3.
+                    Thus it is a good idea to limit the number of retries to a small number. 
