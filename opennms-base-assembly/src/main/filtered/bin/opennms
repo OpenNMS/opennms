@@ -546,6 +546,12 @@ if [ -n "$USE_INCGC" -a "$USE_INCGC" = true ] ; then
 	MANAGER_OPTIONS="$MANAGER_OPTIONS -Xincgc"
 fi
 
+if echo "$ADDITIONAL_MANAGER_OPTIONS" | grep -- -DisThreadContextMapInheritable=true > /dev/null ; then
+    true # do nothing
+else
+    ADDITIONAL_MANAGER_OPTIONS="$ADDITIONAL_MANAGER_OPTIONS -DisThreadContextMapInheritable=true"
+fi
+
 if echo "$ADDITIONAL_MANAGER_OPTIONS" | grep MaxPermSize > /dev/null ; then
 	true # do nothing
 else
