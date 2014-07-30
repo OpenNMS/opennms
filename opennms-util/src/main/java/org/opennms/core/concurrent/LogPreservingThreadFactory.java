@@ -38,7 +38,7 @@ public class LogPreservingThreadFactory implements ThreadFactory {
     private final BitSet m_slotNumbers;
     private final String m_name;
     private final int m_poolSize;
-    private Map m_mdc = null;
+    private Map<String,String> m_mdc = null;
     private int m_counter = 0;
 
     public LogPreservingThreadFactory(String poolName, int poolSize, boolean preserveMDC) {
@@ -63,11 +63,11 @@ public class LogPreservingThreadFactory implements ThreadFactory {
         }
     }
     
-    private Map getCopyOfContextMap() {
+    private Map<String,String> getCopyOfContextMap() {
         return MDC.getCopyOfContextMap();
     }
     
-    private void setContextMap(Map map) {
+    private void setContextMap(Map<String,String> map) {
         if (map == null) {
             MDC.clear();
         } else {
@@ -80,7 +80,7 @@ public class LogPreservingThreadFactory implements ThreadFactory {
         return new Thread(new Runnable() {
             @Override
             public void run() {
-                Map mdc = getCopyOfContextMap();
+                Map<String,String> mdc = getCopyOfContextMap();
                 try {
                     // Set the logging prefix if it was stored during creation
                     setContextMap(m_mdc);
@@ -98,7 +98,7 @@ public class LogPreservingThreadFactory implements ThreadFactory {
         return new Thread(new Runnable() {
             @Override
             public void run() {
-                Map mdc = getCopyOfContextMap();
+                Map<String,String> mdc = getCopyOfContextMap();
                 try {
                     // Set the logging prefix if it was stored during creation
                     setContextMap(m_mdc);
@@ -117,7 +117,7 @@ public class LogPreservingThreadFactory implements ThreadFactory {
         return new Thread(new Runnable() {
             @Override
             public void run() {
-                Map mdc = getCopyOfContextMap();
+                Map<String,String> mdc = getCopyOfContextMap();
                 try {
                     try {
                         setContextMap(m_mdc);
