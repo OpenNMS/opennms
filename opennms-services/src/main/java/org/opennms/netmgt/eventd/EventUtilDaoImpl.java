@@ -16,9 +16,6 @@ import org.opennms.netmgt.dao.api.AssetRecordDao;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
-import org.opennms.netmgt.model.OnmsAssetRecord;
-import org.opennms.netmgt.model.OnmsIpInterface;
-import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Snmp;
@@ -282,17 +279,14 @@ public class EventUtilDaoImpl implements EventUtil{
 
 	@Override
 	public String getIfAlias(long nodeId, String ipaddr) throws SQLException {
-		String d = Long.toString(nodeId);
-		Integer id = Integer.valueOf(d);
-		OnmsIpInterface face = ipInterfaceDao.findByNodeIdAndIpAddress(id, ipaddr);
-		OnmsSnmpInterface snmp = face.getSnmpInterface();
-		return snmp.getIfAlias();		
+		return ipInterfaceDao.findByNodeIdAndIpAddress((int)nodeId, ipaddr).getSnmpInterface().getIfAlias();
+				
 	}
 
 	@Override
 	public String getAssetFieldValue(String parm, long nodeId) {
-		OnmsAssetRecord assetRecord = assetRecordDao.findByNodeId((int)(long)nodeId);
-    	return assetRecord.getNode().getLabel();
+		return assetRecordDao.findByNodeId((int)nodeId).getNode().getLabel();
+    	
 		
 	}
 

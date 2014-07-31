@@ -35,6 +35,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.InputStream;
+import java.net.InetAddress;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
@@ -42,11 +43,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Properties;
+import java.util.Set;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.opennms.core.criteria.Criteria;
 import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.core.test.MockLogAppender;
@@ -58,6 +61,8 @@ import org.opennms.netmgt.config.CollectdConfigFactory;
 import org.opennms.netmgt.config.DatabaseSchemaConfigFactory;
 import org.opennms.netmgt.config.OpennmsServerConfigFactory;
 import org.opennms.netmgt.config.poller.Package;
+import org.opennms.netmgt.dao.api.MonitoredServiceDao;
+import org.opennms.netmgt.dao.hibernate.MonitoredServiceDaoHibernate;
 import org.opennms.netmgt.dao.mock.EventAnticipator;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.dao.support.NullRrdStrategy;
@@ -76,6 +81,10 @@ import org.opennms.netmgt.mock.MockVisitorAdapter;
 import org.opennms.netmgt.mock.OutageAnticipator;
 import org.opennms.netmgt.mock.PollAnticipator;
 import org.opennms.netmgt.mock.TestCapsdConfigManager;
+import org.opennms.netmgt.model.OnmsApplication;
+import org.opennms.netmgt.model.OnmsCriteria;
+import org.opennms.netmgt.model.OnmsMonitoredService;
+import org.opennms.netmgt.model.ServiceSelector;
 import org.opennms.netmgt.model.events.EventUtils;
 import org.opennms.netmgt.poller.pollables.PollableNetwork;
 import org.opennms.netmgt.rrd.RrdUtils;
@@ -198,6 +207,9 @@ public class PollerTest {
 
 		m_poller = new Poller();
         m_poller.setDataSource(m_db);
+        MonitoredServiceDao dao = new MonitoredServiceDaoHibernate();
+        
+		m_poller.setMonitoredServiceDao(new MonitoredServiceDaoHibernate());
 		m_poller.setEventManager(m_eventMgr);
 		m_poller.setNetwork(network);
 		m_poller.setQueryManager(queryManager);
@@ -208,7 +220,7 @@ public class PollerTest {
 		config.setGetNextOutageID(m_db.getNextOutageIdStatement());
 		
 		RrdUtils.setStrategy(new NullRrdStrategy());
-
+		
 		// m_outageMgr = new OutageManager();
 		// m_outageMgr.setEventMgr(m_eventMgr);
 		// m_outageMgr.setOutageMgrConfig(config);

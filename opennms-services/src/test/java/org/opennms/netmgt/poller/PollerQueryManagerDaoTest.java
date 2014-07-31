@@ -63,6 +63,7 @@ import org.opennms.netmgt.config.CollectdConfigFactory;
 import org.opennms.netmgt.config.DatabaseSchemaConfigFactory;
 import org.opennms.netmgt.config.OpennmsServerConfigFactory;
 import org.opennms.netmgt.config.poller.Package;
+import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.dao.mock.EventAnticipator;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.dao.support.NullRrdStrategy;
@@ -91,6 +92,8 @@ import org.opennms.test.mock.MockUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionTemplate;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
@@ -98,6 +101,7 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
         "classpath*:/META-INF/opennms/component-dao.xml",
+        "classpath*:/META-INF/opennms/component-service.xml",
         "classpath:/META-INF/opennms/applicationContext-daemon.xml",
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
         "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
@@ -135,6 +139,12 @@ public class PollerQueryManagerDaoTest implements TemporaryDatabaseAware<MockDat
 
 	@Autowired
 	private QueryManager m_queryManager;
+	
+	@Autowired
+	private MonitoredServiceDao m_monitoredServiceDao;
+
+	@Autowired
+	private TransactionTemplate m_transactionTemplate;
 
 
 	//private DemandPollDao m_demandPollDao;
@@ -226,6 +236,8 @@ public class PollerQueryManagerDaoTest implements TemporaryDatabaseAware<MockDat
 
 		m_poller = new Poller();
         m_poller.setDataSource(m_db);
+        m_poller.setMonitoredServiceDao(m_monitoredServiceDao);
+        m_poller.setTransactionTemplate(m_transactionTemplate);
 		m_poller.setEventManager(m_eventMgr);
 		m_poller.setNetwork(network);
 		m_poller.setQueryManager(m_queryManager);
