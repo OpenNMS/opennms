@@ -6,6 +6,39 @@
 
 	<!-- Start 1.12 -->
 
+	<section id="opennms-1.12.9">
+		<title>Changes in OpenNMS 1.12.9</title>
+
+		<section id="opennms-1.12.9-bug">
+			<title>Bug</title>
+
+			<itemizedlist>
+				<listitem><para>HRULE not working in JRobin graphs (Issue <ulink url='http://issues.opennms.org/browse/NMS-2793'>NMS-2793</ulink>)</para></listitem>
+				<listitem><para>incorrectly translated trap contents (Issue <ulink url='http://issues.opennms.org/browse/NMS-5281'>NMS-5281</ulink>)</para></listitem>
+				<listitem><para>Can&#39;t monitor JBoss EAP 6.1.0 or later with the JMXMonitor/JMXCollector because they don&#39;t support jmx-remoting protocol (Issue <ulink url='http://issues.opennms.org/browse/NMS-6589'>NMS-6589</ulink>)</para></listitem>
+				<listitem><para>New jetty.xml configuration lacks default keystore passwords (Issue <ulink url='http://issues.opennms.org/browse/NMS-6601'>NMS-6601</ulink>)</para></listitem>
+				<listitem><para>Pollerd stops working if a service is down and the downtime model is not correct. (Issue <ulink url='http://issues.opennms.org/browse/NMS-6603'>NMS-6603</ulink>)</para></listitem>
+				<listitem><para>Problem with disable-ssl-verification in XML_Collector (Issue <ulink url='http://issues.opennms.org/browse/NMS-6611'>NMS-6611</ulink>)</para></listitem>
+				<listitem><para>No Longer Able to Control Graph Report Order (Issue <ulink url='http://issues.opennms.org/browse/NMS-6621'>NMS-6621</ulink>)</para></listitem>
+				<listitem><para>If Jetty HTTP is enabled in opennms.properties, the WebUI doesn&#39;t work with SSL (Issue <ulink url='http://issues.opennms.org/browse/NMS-6629'>NMS-6629</ulink>)</para></listitem>
+				<listitem><para>Can&#39;t download generated reports, a NPE is thrown by the WebUI (Issue <ulink url='http://issues.opennms.org/browse/NMS-6632'>NMS-6632</ulink>)</para></listitem>
+				<listitem><para>Having hundreds of scheduled outage hurts the performance of the OpenNMS server (Issue <ulink url='http://issues.opennms.org/browse/NMS-6748'>NMS-6748</ulink>)</para></listitem>
+				<listitem><para>High CPU usage due to DataCollectionConfigDao.getConfiguredResourceTypes() while Collectd starts (Issue <ulink url='http://issues.opennms.org/browse/NMS-6757'>NMS-6757</ulink>)</para></listitem>
+				<listitem><para>The rescanExisting flag in Provisiond is not working as expected (Issue <ulink url='http://issues.opennms.org/browse/NMS-6759'>NMS-6759</ulink>)</para></listitem>
+			</itemizedlist>
+		</section>
+		<section id="opennms-1.12.9-enhancement">
+			<title>Enhancement</title>
+
+			<itemizedlist>
+				<listitem><para>Monitoring Asterisk SIP Clients (Issue <ulink url='http://issues.opennms.org/browse/NMS-5767'>NMS-5767</ulink>)</para></listitem>
+				<listitem><para>Remove link to Surveillance Category Editor from nodepage for requisitioned nodes (Issue <ulink url='http://issues.opennms.org/browse/NMS-6372'>NMS-6372</ulink>)</para></listitem>
+				<listitem><para>Asset page should not be in edit mode for requisitioned nodes (Issue <ulink url='http://issues.opennms.org/browse/NMS-6373'>NMS-6373</ulink>)</para></listitem>
+				<listitem><para>If the HostResourceSwRunMonitor fails because of a timeout, the reason does not reflect it. (Issue <ulink url='http://issues.opennms.org/browse/NMS-6626'>NMS-6626</ulink>)</para></listitem>
+			</itemizedlist>
+		</section>
+	</section>
+
 	<section id="opennms-1.12.8">
 		<title>Changes in OpenNMS 1.12.8</title>
 

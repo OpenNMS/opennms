@@ -6,6 +6,23 @@
 
 	<!-- Start 1.12 -->
 
+	<section id="introduction-1.12.9">
+		<title>Release 1.12.9</title>
+
+		<para>
+			Release 1.12.9 is the latest in the stable 1.12 series of OpenNMS.
+			It contains a number of important fixes including handling jetty.xml
+			upgrades better, and a fix for a bug in the rescanExisting flag when
+			provisioning.
+			See <ulink url="http://www.opennms.org/wiki/What%27s_New_in_OpenNMS_1.12">What's
+			New in OpenNMS 1.12</ulink> for a general list of changes in the
+			1.12 series.
+		</para>
+		<para>
+			The codename for 1.12.9 is <emphasis>Bruce Springsteen</emphasis>
+		</para>
+	</section>
+
 	<section id="introduction-1.12.8">
 		<title>Release 1.12.8</title>
 
