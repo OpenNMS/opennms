@@ -14,8 +14,6 @@
   <name>OpenNMS Features :: Vaadin :: Themes</name>
 
   <packaging>pom</packaging>
-  <version>1.13.4-PJSM-SNAPSHOT</version>
-
 
   <modules>
     <module>onms-default-theme</module>
