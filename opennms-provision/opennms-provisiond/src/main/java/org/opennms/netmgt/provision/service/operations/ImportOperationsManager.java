@@ -57,18 +57,8 @@ import org.slf4j.LoggerFactory;
  */
 public class ImportOperationsManager {
     private static final Logger LOG = LoggerFactory.getLogger(ImportOperationsManager.class);
-	public static final class NullUpdateOperation extends UpdateOperation {
-		public NullUpdateOperation(final Integer nodeId, final String foreignSource, final String foreignId, final String nodeLabel, final String building, final String city, final ProvisionService provisionService) {
-			super(nodeId, foreignSource, foreignId, nodeLabel, building, city, provisionService);
-		}
 
-		@Override
-	    protected void doPersist() {
-			LOG.debug("Skipping persist for node {}: rescanExisting is false", getNode());
-		}
-	}
-
-	/**
+    /**
      * TODO: Seth 2012-03-08: These lists may consume a lot of RAM for large provisioning 
      * groups. We may need to figure out how to use flyweight objects instead of heavier 
      * {@link OnmsNode} objects in these lists. Our goal is to handle 50,000+ nodes per 
@@ -109,7 +99,7 @@ public class ImportOperationsManager {
         
         SaveOrUpdateOperation ret;
         if (nodeExists(foreignId)) {
-        	ret = updateNode(foreignId, nodeLabel, building, city);
+            ret = updateNode(foreignId, nodeLabel, building, city);
         } else {
             ret = insertNode(foreignId, nodeLabel, building, city);
         }        
@@ -128,12 +118,7 @@ public class ImportOperationsManager {
 
     private SaveOrUpdateOperation updateNode(final String foreignId, final String nodeLabel, final String building, final String city) {
     	final Integer nodeId = processForeignId(foreignId);
-    	final UpdateOperation updateOperation;
-    	if (m_rescanExisting) {
-            updateOperation = new UpdateOperation(nodeId, getForeignSource(), foreignId, nodeLabel, building, city, m_provisionService);
-    	} else {
-            updateOperation = new NullUpdateOperation(nodeId, getForeignSource(), foreignId, nodeLabel, building, city, m_provisionService);
-    	}
+    	final UpdateOperation updateOperation = new UpdateOperation(nodeId, getForeignSource(), foreignId, nodeLabel, building, city, m_provisionService, m_rescanExisting);
         m_updates.add(updateOperation);
         return updateOperation;
     }
