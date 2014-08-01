@@ -97,7 +97,6 @@ public class Poller extends AbstractServiceDaemon {
 
     private PollOutagesConfig m_pollOutagesConfig;
 
-    @Autowired
     private EventIpcManager m_eventMgr;
 
     @Autowired
@@ -108,6 +107,8 @@ public class Poller extends AbstractServiceDaemon {
     
     @Autowired
     private TransactionTemplate m_transactionTemplate;
+    
+    
 
     public void setMonitoredServiceDao(MonitoredServiceDao monitoredServiceDao) {
 		this.m_monitoredServiceDao = monitoredServiceDao;
@@ -117,6 +118,24 @@ public class Poller extends AbstractServiceDaemon {
 	public void setTransactionTemplate(TransactionTemplate transactionTemplate) {
 		m_transactionTemplate = transactionTemplate;
 	}
+	
+	/**
+     * <p>setEventIpcManager</p>
+     *
+     * @param eventIpcManager a {@link org.opennms.netmgt.model.events.EventIpcManager} object.
+     */
+    public void setEventIpcManager(EventIpcManager eventIpcManager) {
+        m_eventMgr = eventIpcManager;
+    }
+
+    /**
+     * <p>getEventIpcManager</p>
+     *
+     * @return a {@link org.opennms.netmgt.model.events.EventIpcManager} object.
+     */
+    public EventIpcManager getEventIpcManager() {
+        return m_eventMgr;
+    }
 
 	/**
      * <p>Constructor for Poller.</p>
@@ -142,15 +161,6 @@ public class Poller extends AbstractServiceDaemon {
      */
     public EventIpcManager getEventManager() {
         return m_eventMgr;
-    }
-
-    /**
-     * <p>setEventManager</p>
-     *
-     * @param eventMgr a {@link org.opennms.netmgt.model.events.EventIpcManager} object.
-     */
-    void setEventManager(EventIpcManager eventMgr) {
-        m_eventMgr = eventMgr;
     }
 
     /**

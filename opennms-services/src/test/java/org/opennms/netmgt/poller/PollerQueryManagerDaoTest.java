@@ -238,7 +238,7 @@ public class PollerQueryManagerDaoTest implements TemporaryDatabaseAware<MockDat
         m_poller.setDataSource(m_db);
         m_poller.setMonitoredServiceDao(m_monitoredServiceDao);
         m_poller.setTransactionTemplate(m_transactionTemplate);
-		m_poller.setEventManager(m_eventMgr);
+		m_poller.setEventIpcManager(m_eventMgr);
 		m_poller.setNetwork(network);
 		m_poller.setQueryManager(m_queryManager);
 		m_poller.setPollerConfig(m_pollerConfig);

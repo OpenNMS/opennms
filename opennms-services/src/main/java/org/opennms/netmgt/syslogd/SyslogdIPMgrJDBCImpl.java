@@ -29,17 +29,17 @@
 package org.opennms.netmgt.syslogd;
 
 //import java.sql.ResultSet;
+import java.sql.ResultSet;
 import java.sql.SQLException;
-//import java.sql.Statement;
-import java.util.List;
+import java.sql.Statement;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-//import org.opennms.core.db.DataSourceFactory;
-import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.dao.api.IpInterfaceDao;
-import org.opennms.netmgt.model.OnmsIpInterface;
-import org.springframework.beans.factory.annotation.Autowired;
+
+
+
+
+import org.opennms.core.db.DataSourceFactory;
 
 /**
  * This class represents a singular instance that is used to map trap IP
@@ -50,10 +50,12 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @author <a href="mailto:tarus@opennms.org">Tarus Balog </a>
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
  */
-final class SyslogdIPMgrDaoImpl implements SyslogdIPMgr{
-        
-    @Autowired
-    private IpInterfaceDao ipInt;
+final class SyslogdIPMgrJDBCImpl implements SyslogdIPMgr{
+    /**
+     * The SQL statement used to extract the list of currently known IP
+     * addresses and their node IDs from the IP Interface table.
+     */
+    private static final String IP_LOAD_SQL = "SELECT ipAddr, nodeid FROM ipInterface";
 
     /**
      * A Map of IP addresses and node IDs
@@ -61,7 +63,7 @@ final class SyslogdIPMgrDaoImpl implements SyslogdIPMgr{
     private static Map<String,Long> m_knownips = new ConcurrentHashMap<String,Long>();
     
     public static SyslogdIPMgr getInstance() {
-    	return new SyslogdIPMgrDaoImpl();
+    	return new SyslogdIPMgrJDBCImpl();
     }
 
     /**
@@ -76,17 +78,39 @@ final class SyslogdIPMgrDaoImpl implements SyslogdIPMgr{
      */
     @Override
     public synchronized void dataSourceSync() throws SQLException {
-    	
-    	List<OnmsIpInterface> list = ipInt.findAll();
-    	
-    	m_knownips.clear();
-    	for (OnmsIpInterface one: list) {
-    		if (one != null) {
-    			m_knownips.put(InetAddressUtils.str(one.getIpAddress()), (long) one.getId());
-    		}
-    		
-    	}
-    	
+        java.sql.Connection c = null;
+        Statement s = null;
+        try {
+            // Get database connection
+            c = DataSourceFactory.getInstance().getConnection();
+
+            // Run with it
+            c.setReadOnly(true);
+
+            s = c.createStatement();
+            final ResultSet rs = s.executeQuery(IP_LOAD_SQL);
+
+            if (rs != null) {
+                m_knownips.clear();
+                while (rs.next()) {
+                    m_knownips.put(rs.getString(1), rs.getLong(2));
+                }
+                rs.close();
+            }
+        } finally {
+            if (s != null) {
+                try {
+                    s.close();
+                } catch (final SQLException sqlE) {
+                }
+            }
+            if (c != null) {
+                try {
+                    c.close();
+                } catch (final SQLException sqlE) {
+                }
+            }
+        }
     }
 
     /**
@@ -100,7 +124,7 @@ final class SyslogdIPMgrDaoImpl implements SyslogdIPMgr{
         if (addr == null) {
             return -1;
         }
-        return longValue(m_knownips.get(addr));
+        return SyslogdIPMgrJDBCImpl.getInstance().longValue(m_knownips.get(addr));
     }
 
     /**
@@ -115,7 +139,7 @@ final class SyslogdIPMgrDaoImpl implements SyslogdIPMgr{
         if (addr == null || nodeid == -1)
             return -1;
 
-        return longValue(m_knownips.put(addr, nodeid));
+        return SyslogdIPMgrJDBCImpl.getInstance().longValue(m_knownips.put(addr, nodeid));
     }
 
     /**
@@ -128,7 +152,7 @@ final class SyslogdIPMgrDaoImpl implements SyslogdIPMgr{
     public long removeNodeId(final String addr) {
         if (addr == null)
             return -1;
-        return longValue(m_knownips.remove(addr));
+        return SyslogdIPMgrJDBCImpl.getInstance().longValue(m_knownips.remove(addr));
     }
 
     @Override
