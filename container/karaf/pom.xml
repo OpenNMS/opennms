@@ -18,6 +18,13 @@
     <dependencies>
         <dependency>
             <groupId>org.opennms.container</groupId>
+            <artifactId>standalone</artifactId>
+            <version>${project.version}</version>
+            <type>tar.gz</type>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.container</groupId>
             <artifactId>branding</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -37,13 +44,6 @@
             <type>zip</type>
             <scope>provided</scope>
             <version>${karafVersion}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.opennms.container</groupId>
-            <artifactId>standalone</artifactId>
-            <version>${project.version}</version>
-            <type>tar.gz</type>
-            <scope>provided</scope>
         </dependency>
     </dependencies>
 

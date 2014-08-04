@@ -26,6 +26,8 @@
                     <exclude>**/org.opennms.container.standalone*-features.xml</exclude>
                     <exclude>**/custom.properties</exclude>
                     <exclude>**/org.apache.karaf.features.cfg</exclude>
+                    <exclude>**/org.apache.karaf.shell.cfg</exclude>
+                    <exclude>**/org.ops4j.pax.logging.cfg</exclude>
                 </excludes>
             </unpackOptions>
         </dependencySet>
