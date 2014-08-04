@@ -18,10 +18,9 @@
 
   <modules>
     <module>broker</module>
-    <!--
-    TODO
     <module>event-forwarder</module>
-    <module>event-listener</module>
+    <!--
+    <module>event-receiver</module>
     -->
   </modules>
 
