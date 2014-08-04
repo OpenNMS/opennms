@@ -65,8 +65,8 @@
 
     int nodeId = WebSecurityUtils.safeParseInt( nodeIdString );
 
-    NodeLabel currentLabel = NodeLabel.retrieveLabel( nodeId );
-    NodeLabel autoLabel = NodeLabel.computeLabel( nodeId );
+    NodeLabel currentLabel = NodeLabelJDBCImpl.getInstance().retrieveLabel( nodeId );
+    NodeLabel autoLabel = NodeLabelJDBCImpl.getInstance().computeLabel( nodeId );
 
     if( currentLabel == null || autoLabel == null ) {
         // XXX handle this WAY better, very awful
