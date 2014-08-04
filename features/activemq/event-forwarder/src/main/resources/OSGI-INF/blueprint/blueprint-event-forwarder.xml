@@ -21,12 +21,10 @@
   <!-- Configuration properties -->
   <cm:property-placeholder id="eventForwarderProperties" persistent-id="org.opennms.features.activemq.event-forwarder" update-strategy="none">
     <cm:default-properties>
-      <cm:property name="rest.root" value="http://localhost:8980/opennms/rest"/>
+      <cm:property name="brokerUri" value="tcp://127.0.0.1:61716"/>
       <cm:property name="location.name" value="remote" />
       <cm:property name="username" value="admin"/>
       <cm:property name="password" value="admin"/>
-      <cm:property name="collectdConfigUrl" value="{{rest.root}}/config/{{location.name}}/collection"/>
-      <cm:property name="agentListUrl" value="{{rest.root}}/config/agents"/>
       <cm:property name="refreshInterval" value="300000"/> <!-- milliseconds -->
     </cm:default-properties>
   </cm:property-placeholder>
@@ -53,7 +51,7 @@
     <argument value="seda:forwardEvent"/>
   </bean>
 
-  <camelContext id="samplerConfigCamelContext" xmlns="http://camel.apache.org/schema/blueprint">
+  <camelContext id="activeMqEventForwarderCamelContext" xmlns="http://camel.apache.org/schema/blueprint">
     <propertyPlaceholder id="properties" location="blueprint:eventForwarderProperties" />
 
     <!--
@@ -72,11 +70,14 @@
       <!-- Marshal Event to XML -->
       <bean ref="marshaller"/>
       <log message="FORWARDING EVENT: ${body.toString()}"/>
-      <!-- TODO Send to ActiveMQ -->
-      <!--
+      <!-- Send to ActiveMQ -->
       <to uri="activemq:forwardEvents?disableReplyTo=true" />
-      -->
     </route>
   </camelContext>
+
+  <bean id="activemq" class="org.apache.activemq.camel.component.ActiveMQComponent">
+    <!-- Connect to the opennms-activemq-dispatcher broker -->
+    <property name="brokerURL" value="${brokerUri}" />
+  </bean>
 
 </blueprint>

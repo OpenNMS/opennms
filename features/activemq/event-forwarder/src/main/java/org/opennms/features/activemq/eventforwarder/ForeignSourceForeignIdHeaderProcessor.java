@@ -34,11 +34,15 @@ public class ForeignSourceForeignIdHeaderProcessor implements Processor {
 		if (event.getNodeid() > 0) {
 			OnmsNode node = nodeDao.get(event.getNodeid().intValue());
 
-			String foreignSource = node.getForeignSource();
-			String foreignId = node.getForeignId();
-			if (foreignSource != null && foreignId != null) {
-				exchange.getIn().setHeader(EVENT_HEADER_FOREIGNSOURCE, node.getForeignSource());
-				exchange.getIn().setHeader(EVENT_HEADER_FOREIGNID, node.getForeignId());
+			if (node != null) {
+				String foreignSource = node.getForeignSource();
+				String foreignId = node.getForeignId();
+				if (foreignSource != null && foreignId != null) {
+					exchange.getIn().setHeader(EVENT_HEADER_FOREIGNSOURCE, node.getForeignSource());
+					exchange.getIn().setHeader(EVENT_HEADER_FOREIGNID, node.getForeignId());
+				}
+			} else {
+				LOG.warn("Could not find node {} in the database, cannot add requisition headers", event.getNodeid());
 			}
 		}
 	}
