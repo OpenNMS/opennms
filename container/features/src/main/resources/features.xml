@@ -20,8 +20,8 @@
         # Location of configuration file from opennms-activemq-dispatcher-config
         config ${karaf.base}/etc/activemq-dispatcher.xml
         # Parameters used to replace values in the configuration file
-        data ${karaf.data}/activemq
         brokerUri tcp://127.0.0.1:61616
+        data ${karaf.data}/activemq
       </config>
       <feature>opennms-activemq-dispatcher-config</feature>
       <feature>activemq</feature>
