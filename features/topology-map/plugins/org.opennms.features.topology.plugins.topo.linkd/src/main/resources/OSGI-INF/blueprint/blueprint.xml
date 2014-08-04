@@ -125,6 +125,11 @@ xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0
         <property name="isisLinkDao" ref="isisLinkDao"/>
     </bean>
 
+    <bean id="bridgeLinkStatusProvider" class="org.opennms.features.topology.plugins.topo.linkd.internal.BridgeLinkStatusProvider">
+        <property name="alarmDao" ref="alarmDao"/>
+        <property name="bridgeMacLinkDao" ref="bridgeMacLinkDao"/>
+    </bean>
+
     <service interface="org.opennms.features.topology.api.CheckedOperation" >
         <service-properties>
             <entry key="operation.menuLocation" value="View"/>
@@ -134,6 +139,7 @@ xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0
             <property name="llpdStatusProvider" ref="lldpLinkStatusProvider"/>
             <property name="ospfLinkStatusProvider" ref="ospfLinkStatusProvider"/>
             <property name="isisLinkStatusProvider" ref="isisLinkStatusProvider"/>
+            <property name="bridgeLinkStatusProvider" ref="bridgeLinkStatusProvider"/>
         </bean>
     </service>
     <!-- End LldpLinkStatusProvider -->

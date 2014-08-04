@@ -45,10 +45,11 @@ public class BridgeMacTopologyLink {
     private final InetAddress m_ipAddr;
     private final Integer m_targetNodeId;
     private final String m_nodeLabel;
+    private final int m_sourceIfIndex;
 
     public BridgeMacTopologyLink(Integer id, Integer nodeId, Integer bridgePort, Integer bridgePortIfIndex,
                                  Integer bridgePortIfName, Integer vlan, String macAddr, String netaddress,
-                                 String ipAddr, Integer targetNodeId, String nodeLabel) {
+                                 String ipAddr, Integer targetNodeId, String nodeLabel, int sourceIfIndex) {
         m_id = id;
         m_nodeId = nodeId;
         m_bridgePort = bridgePort;
@@ -60,6 +61,7 @@ public class BridgeMacTopologyLink {
         m_ipAddr = InetAddressUtils.getInetAddress(ipAddr);
         m_targetNodeId = targetNodeId;
         m_nodeLabel = nodeLabel;
+        m_sourceIfIndex = sourceIfIndex;
     }
 
     public int getId() {
@@ -104,5 +106,9 @@ public class BridgeMacTopologyLink {
 
     public String getNodeLabel() {
         return m_nodeLabel;
+    }
+
+    public int getSourceIfIndex(){
+        return m_sourceIfIndex;
     }
 }

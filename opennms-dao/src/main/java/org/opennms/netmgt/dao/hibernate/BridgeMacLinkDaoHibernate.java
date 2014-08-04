@@ -88,6 +88,7 @@ public class BridgeMacLinkDaoHibernate extends AbstractDaoHibernate<BridgeMacLin
                         "ip.ipaddr, " +
                         "ip.nodeid as targetnodeid, " +
                         "node.nodelabel " +
+                        "ntm.sourceIfIndex " +
                         "from bridgemaclink as mlink " +
                         "left join ipnettomedia as ntm " +
                         "on mlink.macaddress = ntm.physaddress " +
@@ -101,7 +102,7 @@ public class BridgeMacLinkDaoHibernate extends AbstractDaoHibernate<BridgeMacLin
         for(Object[] link : links) {
             topoLinks.add(new BridgeMacTopologyLink((Integer)link[0], (Integer)link[1], (Integer)link[2],
                     (Integer)link[3], (Integer)link[4], (Integer)link[5], (String)link[6], (String)link[9],
-                    (String)link[10], (Integer)link[11], (String)link[12]));
+                    (String)link[10], (Integer)link[11], (String)link[12], (Integer)link[13]));
         }
 
         return topoLinks;
