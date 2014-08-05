@@ -28,19 +28,19 @@
 
 package org.opennms.netmgt.config.collectd.jmx;
 
+import org.junit.runners.Parameterized.Parameters;
+import org.opennms.core.test.xml.XmlTestNoCastor;
+
 import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Collection;
 
-import org.junit.runners.Parameterized.Parameters;
-import org.opennms.core.test.xml.XmlTest;
-
 /**
- * The Test Class for Attrib.
+ * The Test Class for CompMember.
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
-public class AttribTest extends XmlTest<Attrib> {
+public class CompMemberTest extends XmlTestNoCastor<CompMember> {
 
     /**
      * Instantiates a new attribute test.
@@ -49,7 +49,7 @@ public class AttribTest extends XmlTest<Attrib> {
      * @param sampleXml the sample XML
      * @param schemaFile the schema file
      */
-    public AttribTest(Attrib sampleObject, String sampleXml, String schemaFile) {
+    public CompMemberTest(CompMember sampleObject, String sampleXml, String schemaFile) {
         super(sampleObject, sampleXml, schemaFile);
     }
 
@@ -57,18 +57,18 @@ public class AttribTest extends XmlTest<Attrib> {
      * Data.
      *
      * @return the collection
-     * @throws ParseException the parse exception
+     * @throws java.text.ParseException the parse exception
      */
     @Parameters
     public static Collection<Object[]> data() throws ParseException {
-        final Attrib a = new Attrib();
+        final CompMember a = new CompMember();
         a.setName("FreeMemory");
         a.setAlias("FreeMemory");
         a.setType("gauge");
 
         return Arrays.asList(new Object[][] { {
             a,
-            "<attrib name=\"FreeMemory\" alias=\"FreeMemory\" type=\"gauge\" />",
+            "<comp-member name=\"FreeMemory\" alias=\"FreeMemory\" type=\"gauge\" />",
             "target/classes/xsds/jmx-datacollection-config.xsd" } });
     }
 }

@@ -28,19 +28,19 @@
 
 package org.opennms.netmgt.config.collectd.jmx;
 
+import org.junit.runners.Parameterized.Parameters;
+import org.opennms.core.test.xml.XmlTestNoCastor;
+
 import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Collection;
 
-import org.junit.runners.Parameterized.Parameters;
-import org.opennms.core.test.xml.XmlTest;
-
 /**
- * The Test Class for Rrd.
+ * The Test Class for CompAttrib.
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
-public class RrdTest extends XmlTest<Rrd> {
+public class CompAttribTest extends XmlTestNoCastor<CompAttrib> {
 
     /**
      * Instantiates a new attribute test.
@@ -49,7 +49,7 @@ public class RrdTest extends XmlTest<Rrd> {
      * @param sampleXml the sample XML
      * @param schemaFile the schema file
      */
-    public RrdTest(Rrd sampleObject, String sampleXml, String schemaFile) {
+    public CompAttribTest(CompAttrib sampleObject, String sampleXml, String schemaFile) {
         super(sampleObject, sampleXml, schemaFile);
     }
 
@@ -57,17 +57,31 @@ public class RrdTest extends XmlTest<Rrd> {
      * Data.
      *
      * @return the collection
-     * @throws ParseException the parse exception
+     * @throws java.text.ParseException the parse exception
      */
     @Parameters
     public static Collection<Object[]> data() throws ParseException {
-        final Rrd rrd = new Rrd();
-        rrd.setStep(300);
-        rrd.addRra("RRA:AVERAGE:0.5:1:2016");
+        final CompAttrib a = new CompAttrib();
+        a.setName("PeakUsage");
+        a.setAlias("EdenPeakUsage");
+        a.setType("Composite");
+        final CompMember m1 = new CompMember();
+        m1.setName("used");
+        m1.setAlias("EdenPeakUsageUsed");
+        m1.setType("gauge");
+        a.addCompMember(m1);
+        final CompMember m2 = new CompMember();
+        m2.setName("committed");
+        m2.setAlias("EdenPeakUsgCmmttd");
+        m2.setType("gauge");
+        a.addCompMember(m2);
 
         return Arrays.asList(new Object[][] { {
-            rrd,
-            "<rrd step=\"300\"><rra>RRA:AVERAGE:0.5:1:2016</rra></rrd>",
+            a,
+            "<comp-attrib name=\"PeakUsage\" alias=\"EdenPeakUsage\" type=\"Composite\">"
+            + "<comp-member name=\"used\" alias=\"EdenPeakUsageUsed\" type=\"gauge\" />"
+            + "<comp-member name=\"committed\" alias=\"EdenPeakUsgCmmttd\" type=\"gauge\" />"
+            + "</comp-attrib>",
             "target/classes/xsds/jmx-datacollection-config.xsd" } });
     }
 }

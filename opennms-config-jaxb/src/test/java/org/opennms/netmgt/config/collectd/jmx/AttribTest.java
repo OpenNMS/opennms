@@ -28,19 +28,19 @@
 
 package org.opennms.netmgt.config.collectd.jmx;
 
+import org.junit.runners.Parameterized.Parameters;
+import org.opennms.core.test.xml.XmlTestNoCastor;
+
 import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Collection;
 
-import org.junit.runners.Parameterized.Parameters;
-import org.opennms.core.test.xml.XmlTest;
-
 /**
- * The Test Class for CompMember.
+ * The Test Class for Attrib.
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
-public class CompMemberTest extends XmlTest<CompMember> {
+public class AttribTest extends XmlTestNoCastor<Attrib> {
 
     /**
      * Instantiates a new attribute test.
@@ -49,7 +49,7 @@ public class CompMemberTest extends XmlTest<CompMember> {
      * @param sampleXml the sample XML
      * @param schemaFile the schema file
      */
-    public CompMemberTest(CompMember sampleObject, String sampleXml, String schemaFile) {
+    public AttribTest(Attrib sampleObject, String sampleXml, String schemaFile) {
         super(sampleObject, sampleXml, schemaFile);
     }
 
@@ -57,18 +57,18 @@ public class CompMemberTest extends XmlTest<CompMember> {
      * Data.
      *
      * @return the collection
-     * @throws ParseException the parse exception
+     * @throws java.text.ParseException the parse exception
      */
     @Parameters
     public static Collection<Object[]> data() throws ParseException {
-        final CompMember a = new CompMember();
-        a.setName("FreeMemory");
-        a.setAlias("FreeMemory");
-        a.setType("gauge");
+        final Attrib attrib = new Attrib();
+        attrib.setName("FreeMemory");
+        attrib.setAlias("FreeMemory");
+        attrib.setType("gauge");
 
         return Arrays.asList(new Object[][] { {
-            a,
-            "<comp-member name=\"FreeMemory\" alias=\"FreeMemory\" type=\"gauge\" />",
+            attrib,
+            "<attrib name=\"FreeMemory\" alias=\"FreeMemory\" type=\"gauge\" />",
             "target/classes/xsds/jmx-datacollection-config.xsd" } });
     }
 }

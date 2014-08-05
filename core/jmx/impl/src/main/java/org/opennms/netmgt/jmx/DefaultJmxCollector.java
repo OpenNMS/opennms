@@ -41,7 +41,6 @@ import org.opennms.netmgt.jmx.samples.JmxAttributeSample;
 import org.opennms.netmgt.jmx.samples.JmxCompositeSample;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.util.Assert;
 
 import javax.management.Attribute;
 import javax.management.AttributeList;
@@ -54,10 +53,10 @@ import javax.management.ReflectionException;
 import javax.management.openmbean.CompositeData;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -77,8 +76,8 @@ public class DefaultJmxCollector implements JmxCollector {
     public void collect(JmxCollectorConfig config, JmxSampleProcessor sampleProcessor) throws JmxServerConnectionException {
         JmxConnectionManager connectionManager = new DefaultConnectionManager(config.getRetries());
         try (JmxServerConnectionWrapper connectionWrapper = connectionManager.connect(config.getConnectionName(), config.getAgentAddress(), config.getServiceProperties(), null)) {
-            Assert.notNull(connectionWrapper, "connectionWrapper should never be null");
-            Assert.notNull(connectionWrapper.getMBeanServerConnection(), "connectionWrapper.getMBeanServerConnection() should never be null");
+            Objects.requireNonNull(connectionWrapper, "connectionWrapper should never be null");
+            Objects.requireNonNull(connectionWrapper.getMBeanServerConnection(), "connectionWrapper.getMBeanServerConnection() should never be null");
 
             final MBeanServerConnection concreteConnection = connectionWrapper.getMBeanServerConnection();
             collect(concreteConnection, config.getJmxCollection(), sampleProcessor);

@@ -28,19 +28,19 @@
 
 package org.opennms.netmgt.config.collectd.jmx;
 
+import org.junit.runners.Parameterized.Parameters;
+import org.opennms.core.test.xml.XmlTestNoCastor;
+
 import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Collection;
 
-import org.junit.runners.Parameterized.Parameters;
-import org.opennms.core.test.xml.XmlTest;
-
 /**
- * The Test Class for JmxDatacollectionConfig.
+ * The Test Class for Mbean.
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
-public class JmxDatacollectionConfigTest extends XmlTest<JmxDatacollectionConfig> {
+public class MbeanTest extends XmlTestNoCastor<Mbean> {
 
     /**
      * Instantiates a new attribute test.
@@ -49,7 +49,7 @@ public class JmxDatacollectionConfigTest extends XmlTest<JmxDatacollectionConfig
      * @param sampleXml the sample XML
      * @param schemaFile the schema file
      */
-    public JmxDatacollectionConfigTest(JmxDatacollectionConfig sampleObject, String sampleXml, String schemaFile) {
+    public MbeanTest(Mbean sampleObject, String sampleXml, String schemaFile) {
         super(sampleObject, sampleXml, schemaFile);
     }
 
@@ -57,15 +57,18 @@ public class JmxDatacollectionConfigTest extends XmlTest<JmxDatacollectionConfig
      * Data.
      *
      * @return the collection
-     * @throws ParseException the parse exception
+     * @throws java.text.ParseException the parse exception
      */
     @Parameters
     public static Collection<Object[]> data() throws ParseException {
+        final Mbean bean = new Mbean();
+        bean.setName("JVM MemoryPool:Eden Space");
+        bean.setObjectname("java.lang:type=MemoryPool,name=Eden Space");
         final Attrib a = new Attrib();
         a.setName("CollectionUsageThreshold");
         a.setAlias("EdenCollUseThrsh");
         a.setType("gauge");
-
+        bean.addAttrib(a);
         final CompAttrib comp = new CompAttrib();
         comp.setName("PeakUsage");
         comp.setAlias("EdenPeakUsage");
@@ -80,47 +83,17 @@ public class JmxDatacollectionConfigTest extends XmlTest<JmxDatacollectionConfig
         m2.setAlias("EdenPeakUsgCmmttd");
         m2.setType("gauge");
         comp.addCompMember(m2);
-        
-        final Mbean bean = new Mbean();
-        bean.setName("JVM MemoryPool:Eden Space");
-        bean.setObjectname("java.lang:type=MemoryPool,name=Eden Space");
-        bean.addAttrib(a);
         bean.addCompAttrib(comp);
 
-        final Mbeans mbeans = new Mbeans();
-        mbeans.addMbean(bean);
-
-        final Rrd rrd = new Rrd();
-        rrd.setStep(300);
-        rrd.addRra("RRA:AVERAGE:0.5:1:4032");
-
-        final JmxCollection collection = new JmxCollection();
-        collection.setName("default");
-        collection.setRrd(rrd);
-        collection.setMbeans(mbeans);
-        
-        final JmxDatacollectionConfig config = new JmxDatacollectionConfig();
-        config.setRrdRepository("/opt/opennms/share/rrd/snmp");
-        config.addJmxCollection(collection);
-
         return Arrays.asList(new Object[][] { {
-            config,
-            "<jmx-datacollection-config rrdRepository=\"/opt/opennms/share/rrd/snmp\">"
-            + "<jmx-collection name=\"default\">"
-            + "<rrd step=\"300\">"
-            + "<rra>RRA:AVERAGE:0.5:1:4032</rra>"
-            + "</rrd>"
-            + "<mbeans>"
-            + "<mbean name=\"JVM MemoryPool:Eden Space\" objectname=\"java.lang:type=MemoryPool,name=Eden Space\">"
+            bean,
+            "<mbean name=\"JVM MemoryPool:Eden Space\" objectname=\"java.lang:type=MemoryPool,name=Eden Space\">"
             + "<attrib name=\"CollectionUsageThreshold\" alias=\"EdenCollUseThrsh\" type=\"gauge\" />"
             + "<comp-attrib name=\"PeakUsage\" alias=\"EdenPeakUsage\" type=\"Composite\">"
             + "<comp-member name=\"used\" alias=\"EdenPeakUsageUsed\" type=\"gauge\" />"
             + "<comp-member name=\"committed\" alias=\"EdenPeakUsgCmmttd\" type=\"gauge\" />"
             + "</comp-attrib>"
-            + "</mbean>"
-            + "</mbeans>"
-            + "</jmx-collection>"
-            + "</jmx-datacollection-config>",
+            + "</mbean>",
             "target/classes/xsds/jmx-datacollection-config.xsd" } });
     }
 }

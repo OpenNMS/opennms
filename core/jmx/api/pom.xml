@@ -33,7 +33,7 @@
   <dependencies>
     <dependency>
       <groupId>org.opennms</groupId>
-      <artifactId>opennms-config</artifactId>
+      <artifactId>opennms-config-jaxb</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>

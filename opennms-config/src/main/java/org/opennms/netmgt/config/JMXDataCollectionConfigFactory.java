@@ -32,7 +32,6 @@ import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.XMLException;
 import org.opennms.core.utils.ConfigFileConstants;
-import org.opennms.netmgt.config.collectd.jmx.Attr;
 import org.opennms.netmgt.config.collectd.jmx.Attrib;
 import org.opennms.netmgt.config.collectd.jmx.CompAttrib;
 import org.opennms.netmgt.config.collectd.jmx.CompMember;
@@ -399,39 +398,6 @@ public final class JMXDataCollectionConfigFactory {
             map.put(mbean.getObjectname(), attribs);
         }
         return Collections.unmodifiableMap(map);
-    }
-
-    /**
-     * Takes a list of castor generated MibObj objects iterates over them
-     * creating corresponding MibObject objects and adding them to the supplied
-     * MibObject list.
-     * 
-     * @param objectList
-     *            List of MibObject objects parsed from
-     *            'datacollection-config.xml'
-     * @param mibObjectList
-     *            List of MibObject objects currently being built 
-     */ 
-    static void processObjectList(List<Attrib> objectList, List<Attr> mibObjectList) {
-        //TODO: Make mibObjectList a Set
-        //TODO: Delete this method, it is not referenced anywhere
-        Iterator<Attrib>i = objectList.iterator();
-        while (i.hasNext()) {
-            Attrib mibObj = i.next();
-
-            // Create a MibObject from the castor MibObj
-            Attr aMibObject = new Attr();
-            aMibObject.setName(mibObj.getName());
-            aMibObject.setAlias(mibObj.getAlias());
-            aMibObject.setType(mibObj.getType());
-            aMibObject.setMaxval(mibObj.getMaxval());
-            aMibObject.setMinval(mibObj.getMinval());
-
-            // Add the MIB object provided it isn't already in the list
-            if (!mibObjectList.contains(aMibObject)) {
-                mibObjectList.add(aMibObject);
-            }
-        }
     }
 
     /**

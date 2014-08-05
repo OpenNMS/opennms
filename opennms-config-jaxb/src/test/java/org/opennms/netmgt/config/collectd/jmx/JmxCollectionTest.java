@@ -28,19 +28,19 @@
 
 package org.opennms.netmgt.config.collectd.jmx;
 
+import org.junit.runners.Parameterized.Parameters;
+import org.opennms.core.test.xml.XmlTestNoCastor;
+
 import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Collection;
-
-import org.junit.runners.Parameterized.Parameters;
-import org.opennms.core.test.xml.XmlTest;
 
 /**
  * The Test Class for JmxCollection.
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
-public class JmxCollectionTest extends XmlTest<JmxCollection> {
+public class JmxCollectionTest extends XmlTestNoCastor<JmxCollection> {
 
     /**
      * Instantiates a new attribute test.
@@ -57,7 +57,7 @@ public class JmxCollectionTest extends XmlTest<JmxCollection> {
      * Data.
      *
      * @return the collection
-     * @throws ParseException the parse exception
+     * @throws java.text.ParseException the parse exception
      */
     @Parameters
     public static Collection<Object[]> data() throws ParseException {
