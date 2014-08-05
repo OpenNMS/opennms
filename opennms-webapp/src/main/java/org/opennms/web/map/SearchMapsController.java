@@ -149,7 +149,7 @@ public class SearchMapsController extends MapsLoggingController {
                         s++;
        		        }
 			    }
-			    velems.add(manager.newElement(MapsConstants.SEARCH_MAP, new Integer(smapids[i]), MapsConstants.MAP_TYPE, null, x*4*d+s*2*d, y*2*d+d));
+			    velems.add(manager.newElement(MapsConstants.SEARCH_MAP, Integer.valueOf(smapids[i]), MapsConstants.MAP_TYPE, null, x*4*d+s*2*d, y*2*d+d));
 			} // end for
 
 			//get map

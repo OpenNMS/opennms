@@ -308,7 +308,9 @@ public class MibCompilerPanel extends Panel {
         logger.info("Renaming file " + currentFile.getName() + " to " + suggestedFile.getName());
         mibsTree.removeItem(currentFile.getName());
         addTreeItem(suggestedFile.getName(), COMPILED);
-        currentFile.renameTo(suggestedFile);
+        if(!currentFile.renameTo(suggestedFile)) {
+        	LOG.warn("Could not rename file: {}", currentFile.getPath());
+        }
     }
 
     /**

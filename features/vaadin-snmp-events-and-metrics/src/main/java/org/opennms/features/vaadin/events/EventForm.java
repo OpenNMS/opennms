@@ -134,9 +134,9 @@ public class EventForm extends CustomComponent {
         logMsgContent.setNullRepresentation("");
         eventLayout.addComponent(logMsgContent);
 
-        alarmDataAlarmType.addItem(new Integer(1));
-        alarmDataAlarmType.addItem(new Integer(2));
-        alarmDataAlarmType.addItem(new Integer(3));
+        alarmDataAlarmType.addItem(Integer.valueOf(1));
+        alarmDataAlarmType.addItem(Integer.valueOf(2));
+        alarmDataAlarmType.addItem(Integer.valueOf(3));
         alarmDataAlarmType.setDescription("<b>1</b> to be a problem that has a possible resolution, alarm-type set to <b>2</b> to be a resolution event, and alarm-type set to <b>3</b> for events that have no possible resolution");
         alarmDataAlarmType.setNullSelectionAllowed(false);
         eventLayout.addComponent(alarmDataAlarmType);

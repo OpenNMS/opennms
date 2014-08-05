@@ -25,7 +25,6 @@
         <entry key="discovery-configuration.xml" value="discoveryConfigFactory"/>
         <entry key="eventconf.xml" value="eventConfDao"/>
         <entry key="eventd-configuration.xml" value="eventdConfigFactory"/>
-        <entry key="events-archiver-configuration.xml" value="eventsArchiverConfigFactory"/>
         <entry key="exclude-ueis.properties" value="excludeUeisProperties"/>
         <entry key="groups.xml" value="groupFactory"/>
         <entry key="http-datacollection-config.xml" value="httpCollectionConfigFactory"/>
@@ -204,12 +203,6 @@ org.opennms.netmgt.filter.FilterParseException: SQL Exception occurred getting I
   </bean>
 
   <bean id="eventdConfigFactory" class="org.opennms.netmgt.config.EventdConfigFactory" depends-on="eventdConfigFactory-init" factory-method="getInstance"/>
-  
-  <bean id="eventsArchiverConfigFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-    <property name="staticMethod"><value>org.opennms.netmgt.config.EventsArchiverConfigFactory.init</value></property>
-  </bean>
-
-  <bean id="eventsArchiverConfigFactory" class="org.opennms.netmgt.config.EventsArchiverConfigFactory" depends-on="eventsArchiverConfigFactory-init" factory-method="getInstance"/>
   
   <bean id="excludeUeisProperties" class="org.opennms.netmgt.config.tester.support.ExcludeUeisProperties"/>
   

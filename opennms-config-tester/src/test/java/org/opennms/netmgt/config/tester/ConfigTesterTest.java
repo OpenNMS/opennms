@@ -191,11 +191,6 @@ public class ConfigTesterTest {
     }
 
     @Test
-    public void testEventsArchiverConfiguration() {
-        testConfigFile("events-archiver-configuration.xml");
-    }
-
-    @Test
     public void testExcludeUeis() {
         testConfigFile("exclude-ueis.properties");
     }
@@ -256,11 +251,6 @@ public class ConfigTesterTest {
     @Test
     public void testLog4j2Config() {
         ignoreConfigFile("log4j2.xml");
-    }
-
-    @Test
-    public void testLog4j2ArchiveEventsConfig() {
-        ignoreConfigFile("log4j2-archive-events.xml");
     }
 
     @Test

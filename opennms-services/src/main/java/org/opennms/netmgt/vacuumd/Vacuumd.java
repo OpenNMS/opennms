@@ -35,6 +35,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 
 import javax.sql.DataSource;
@@ -42,6 +43,7 @@ import javax.sql.DataSource;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.db.DataSourceFactory;
+import org.opennms.core.logging.Logging;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.VacuumdConfigFactory;
 import org.opennms.netmgt.config.vacuumd.Action;
@@ -148,12 +150,27 @@ public class Vacuumd extends AbstractServiceDaemon implements Runnable, EventLis
         }
     }
 
+    private void createAndStartThread() {
+        m_thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                final Map<String,String> mdc = Logging.getCopyOfContextMap();
+                Logging.putPrefix("vacuumd");
+                try {
+                    this.run();
+                } finally {
+                    Logging.setContextMap(mdc);
+                }
+            }
+        }, "Vacuumd-Thread");
+        m_thread.start();
+    }
+
     /** {@inheritDoc} */
     @Override
     protected void onStart() {
         m_startTime = System.currentTimeMillis();
-        m_thread = new Thread(this, "Vacuumd-Thread");
-        m_thread.start();
+        createAndStartThread();
         m_scheduler.start();
     }
 
@@ -176,8 +193,7 @@ public class Vacuumd extends AbstractServiceDaemon implements Runnable, EventLis
     /** {@inheritDoc} */
     @Override
     protected void onResume() {
-        m_thread = new Thread(this, "Vacuumd-Thread");
-        m_thread.start();
+        createAndStartThread();
         m_scheduler.resume();
     }
 
