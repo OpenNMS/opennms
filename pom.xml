@@ -881,8 +881,8 @@
     <ecjVersion>4.2.2</ecjVersion>
     <gwtVersion>2.3.0</gwtVersion>
     <gwtPluginVersion>2.3.0-1</gwtPluginVersion>
-    <httpcoreVersion>4.2.4</httpcoreVersion>
-    <httpclientVersion>4.2.5</httpclientVersion>
+    <httpcoreVersion>4.3.2</httpcoreVersion>
+    <httpclientVersion>4.3.4</httpclientVersion>
     <jasperreportsVersion>3.7.6</jasperreportsVersion>
     <jettyVersion>7.6.15.v20140411</jettyVersion>
     <karafVersion>2.3.1</karafVersion>
@@ -2248,7 +2248,7 @@
       <dependency>
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-exec</artifactId>
-        <version>1.0.1</version>
+        <version>1.2</version>
       </dependency>
       <dependency>
         <groupId>org.apache.httpcomponents</groupId>
@@ -2344,7 +2344,7 @@
       <dependency>
         <groupId>com.google.guava</groupId>
         <artifactId>guava</artifactId>
-        <version>10.0.1</version>
+        <version>17.0</version>
       </dependency>
       <dependency>
         <groupId>com.google.gwt</groupId>

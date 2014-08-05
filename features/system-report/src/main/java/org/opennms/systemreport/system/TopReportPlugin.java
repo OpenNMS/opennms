@@ -32,6 +32,7 @@ import java.io.File;
 import java.util.TreeMap;
 
 import org.apache.commons.exec.CommandLine;
+import org.opennms.core.utils.LogUtils;
 import org.opennms.systemreport.AbstractSystemReportPlugin;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
@@ -58,6 +59,7 @@ public class TopReportPlugin extends AbstractSystemReportPlugin {
 
         if (top != null) {
             topOutput = slurpOutput(CommandLine.parse(top + " -h"), true);
+            LogUtils.debugf(this, "top -h output: %s", topOutput);
 
             if (topOutput.contains("-b") && topOutput.contains("-n")) {
                 topOutput = slurpOutput(CommandLine.parse(top + " -n 1 -b"), false);

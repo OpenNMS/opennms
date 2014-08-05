@@ -11,7 +11,7 @@
   <name>OpenNMS Selenium Monitor</name>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <seleniumVersion>2.7.0</seleniumVersion>
+    <seleniumVersion>2.42.2</seleniumVersion>
   </properties>
   <packaging>bundle</packaging>
   <build>
@@ -91,6 +91,12 @@
         <artifactId>selenium-chrome-driver</artifactId>
         <version>${seleniumVersion}</version>
     </dependency>
+
+    <dependency>
+        <groupId>com.github.detro.ghostdriver</groupId>
+        <artifactId>phantomjsdriver</artifactId>
+        <version>1.1.0</version>
+    </dependency>
     
     <dependency>
         <groupId>org.seleniumhq.selenium</groupId>
@@ -111,12 +117,11 @@
     <dependency>
         <groupId>org.codehaus.groovy</groupId>
         <artifactId>groovy</artifactId>
-        <version>1.9.0-beta-3</version>
+        <version>2.3.6</version>
     </dependency>
     <dependency>
         <groupId>com.google.guava</groupId>
         <artifactId>guava</artifactId>
-        <version>10.0.1</version>
     </dependency>
     
     <dependency>
