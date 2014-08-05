@@ -48,7 +48,7 @@ BSFMonitors also grand access to a selection of OpenNMS internal methods and cla
 [options="header, autowidth"]
 |===
 | Variable     | Type                           | Description
-| `map`        | Map<String, Object             | The _map_ contains all various parameters passed to the monitor +
+| `map`        | Map<String, Object>            | The _map_ contains all various parameters passed to the monitor +
                                                   from the service definition it the _poller-configuration.xml_ file.
 | `ip_addr`    | String                         | The IP address that is currently being polled.
 | `node_id`    | int                            | The Node ID of the node the _ip_addr_ belongs to.
