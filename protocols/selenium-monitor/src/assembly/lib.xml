@@ -15,6 +15,8 @@
         <include>org.json:json</include>
         <include>org.seleniumhq.selenium:selenium*</include>
         <include>org.codehaus.groovy:groovy</include>
+        <include>com.github.detro.ghostdriver:phantomjsdriver</include>
+        <include>junit:junit</include>
         <include>antlr:antlr</include>
         <include>asm:asm*</include>
       </includes>
