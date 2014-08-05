@@ -1,8 +1,12 @@
 
 // Please keep first line an empty line to make sure, the ToC can be build correctly
 === BSFMonitor
+This monitor runs a Bean Scripting Framework http://commons.apache.org/proper/commons-bsf/[BSF] compatible script to determin the status of a service.
+Users can write there own scripts to performe highly custom service checks. This monitor is not optimiced for scale. It's intedet for a small amount of custom checks or prototying of monitors.
 
-This monitor runs a Bean Shell Framework (BSF) compatible script to determin the status of the service.
+==== BSFMonitor vs SystemExecuteMonitor
+The BSFMonitor avoides the overhead of fork(2) that is used by the SystemExecuteMonitor.
+BSFMonitors also grand access to a selection of OpenNMS internal methods and classes that can be used in the script.
 
 
 ==== Monitor facts
@@ -60,30 +64,38 @@ This monitor runs a Bean Shell Framework (BSF) compatible script to determin the
 | `times`      | LinkedHashMap<String, Number>  | The script is expected to put one or more response times into this object.
 |===
 
-==== Examples
-Some example configuration how to configure the monitor in the `poller-configuration.xml`
+==== Minimal Examples
+
+===== Minimal Groovy Example
+Groovy Example
 [source, xml]
 ----
-<parameter key="args" value="-i {variable3} -t ${variable2}"/>
-<parameter key="args" value="http://${variable1}/${variable2}/static"/>
+
+<service name="MinimalBeanShell" interval="10000" user-defined="true" status="on">
+  <parameter key="file-name" value="/opt/opennms/etc/bsfmonitor/soaptest.bsf" />
+  <parameter key="lang-class" value="beanshell" />
+  <parameter key="bsf-engine" value="bsh.util.BeanShellBSFEngine" />
+  <parameter key="file-extensions" value="bsh" />
+  <parameter key="run-type" value="exec" />
+  <parameter key="retry" value="1" />
+  <parameter key="timeout" value="3000" />
+  <parameter key="soap_scheme" value="http" />
+  <parameter key="soap_port" value="8080" />
+  <parameter key="soap_uri" value="/ws/services/wsbasic" />
+  <parameter key="input_body" value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;yes&quot;?&gt;&lt;soap:Envelope xmlns:soap=&quot;http://schemas.xmlsoap.org/soap/envelope/&quot;&gt;&lt;soap:Header&gt;&lt;code xmlns=&quot;http://services.biz.example.com/&quot;&gt;Web&lt;/code&gt;&lt;password xmlns=&quot;http://services.biz.example.com/&quot;&gt;WWVzIEkgc2FuaXRpemVkIGl0LCBhc3Nob2xlIQ==&lt;/password&gt;&lt;/soap:Header&gt;&lt;soap:Body&gt;&lt;ns2:getStatusForAddress xmlns:ns2=&quot;http://services.biz.example.com/&quot;&gt;&lt;arg0&gt;&lt;callType&gt;ADDRESS&lt;/callType&gt;&lt;location&gt;&lt;address1&gt;220 chatham business dr&lt;/address1&gt;&lt;address2&gt;&lt;/address2&gt;&lt;aptCode&gt;NON&lt;/aptCode&gt;&lt;city&gt;&lt;/city&gt;&lt;locationType&gt;&lt;locationTypeId&gt;1&lt;/locationTypeId&gt;&lt;/locationType&gt;&lt;postalCode&gt;27312&lt;/postalCode&gt;&lt;/location&gt;&lt;maxMatches&gt;18&lt;/maxMatches&gt;&lt;orderType&gt;WILLCALL&lt;/orderType&gt;&lt;radius&gt;50.0&lt;/radius&gt;&lt;/arg0&gt;&lt;/ns2:getStoresForAddress&gt;&lt;/soap:Body&gt;&lt;/soap:Envelope&gt;" />
+  <parameter key="output_regex" value=".*>SUCCESS<.*" />
+  <parameter key="input_mimetype" value="text/xml" />
+  <parameter key="input_charset" value="utf-8" />
+</service>
+
+<monitor service="MinimalBeanShell" class-name="org.opennms.netmgt.poller.monitors.BSFMonitor" />
+
 ----
+
+
+===== Minimal Bean Shell Example
+
+==== Examples
+
 
 .This section is optional and give some specific hints
-==== SystemExecuteMonitor vs GpMonitor
-
-The SystemExecuteMonitor is the successor of the GpMonitor. The main differences are:
-
-* Variable replacement for the parameter args
-* There are no fixed arguments handed to the system-call
-* The _SystemExecuteMonitor_ supports _RemotePoller_ deployment
-
-To migrate services from the _GpMonitor_ to the _SystemExecuteMonitor_ it is required to alter the parameter args.
-To match the arguments called `hoption` for the `hostAddress` and `toption` for the `timeoutInSeconds`.
-The args string that matches the _GpMonitor_ call looks like this:
-
-[source, xml]
-----
-<parameter key="my parameter 2" value="--hostname ${variable1} --timeout ${variable2}" />
-----
-
-To migrate the GpMonitor parameters `hoption` and `toption` just replace the `--hostname` and `--timeout` directly in the args key.
