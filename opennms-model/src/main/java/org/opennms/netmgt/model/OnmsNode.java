@@ -230,7 +230,7 @@ public class OnmsNode extends OnmsEntity implements Serializable, Comparable<Onm
      * @return a {@link java.lang.Integer} object.
      */
     @Id
-    @Column(name="nodeId", nullable=false)
+    @Column(name="nodeid", nullable=false)
     @SequenceGenerator(name="nodeSequence", sequenceName="nodeNxtId")
     @GeneratedValue(generator="nodeSequence")
     @XmlTransient
@@ -843,9 +843,11 @@ public class OnmsNode extends OnmsEntity implements Serializable, Comparable<Onm
         @AttributeOverride(name="ipAddress", column=@Column(name="criticalPathIp", table="pathOutage")),
         @AttributeOverride(name="serviceName", column=@Column(name="criticalPathServiceName", table="pathOutage"))
     })
-    public PathElement getPathElement() {
+     public PathElement getPathElement() {
+    
         return m_pathElement;
     }
+    
 
     /**
      * <p>setPathElement</p>
@@ -855,7 +857,7 @@ public class OnmsNode extends OnmsEntity implements Serializable, Comparable<Onm
     public void setPathElement(PathElement pathElement) {
         m_pathElement = pathElement;
     }
-
+    
 
     /**
      * The interfaces on this node

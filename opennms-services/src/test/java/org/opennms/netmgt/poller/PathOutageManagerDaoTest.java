@@ -34,6 +34,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.List;
+import java.util.Set;
 
 import org.junit.After;
 import org.junit.Before;
@@ -69,8 +70,8 @@ import org.springframework.transaction.annotation.Transactional;
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
-        "classpath:/META-INF/opennms/applicationContext-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
+        "classpath:/META-INF/opennms/applicationContext-dao.xml",
         "classpath*:/META-INF/opennms/component-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-daemon.xml",
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
@@ -282,7 +283,11 @@ public class PathOutageManagerDaoTest implements TemporaryDatabaseAware<MockData
 			assertEquals("192.168.1.4", nc[0]);
 			assertEquals("SMTP", nc[1]);
 		
-		
+			Set<Integer> test = m_pathOutageManager.getAllDependencyNodesByCriticalPath("192.168.1.1");
+			assertEquals(1, test.size());
+			
+			Set<Integer> less = m_pathOutageManager.getAllDependencyNodesByNodeId(3);
+			assertEquals(1, less.size());
 	}
 
 	class OutageChecker extends Querier {

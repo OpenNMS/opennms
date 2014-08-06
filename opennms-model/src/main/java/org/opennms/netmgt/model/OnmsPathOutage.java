@@ -33,9 +33,11 @@ import java.net.InetAddress;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
-
 import org.hibernate.annotations.Type;
 
 /**
@@ -52,9 +54,9 @@ public class OnmsPathOutage implements Serializable{
 	 */
 	private static final long serialVersionUID = 2180867754702562743L;
 	
-	private int m_nodeId;
 	private InetAddress m_criticalPathIp;
 	private String m_criticalPathServiceName;
+	private OnmsNode m_node;
 	
 	/**
 	 * <p>Contructor for OnmsPathOutage</p>
@@ -63,8 +65,8 @@ public class OnmsPathOutage implements Serializable{
 	 * @param an InetAddress
 	 * @param a String
 	 */
-	public OnmsPathOutage(int nodeId, InetAddress criticalPathIp, String criticalPathServiceName) {
-		m_nodeId = nodeId;
+	public OnmsPathOutage(OnmsNode node, InetAddress criticalPathIp, String criticalPathServiceName) {
+		m_node = node;
 		m_criticalPathIp = criticalPathIp;
 		m_criticalPathServiceName = criticalPathServiceName;
 	}
@@ -74,14 +76,29 @@ public class OnmsPathOutage implements Serializable{
 	}
 	
 	/**
+     * The node this asset information belongs to.
+     *
+     * @return a {@link org.opennms.netmgt.model.OnmsNode} object.
+     */
+	@Id
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "nodeid")
+    public OnmsNode getNode() {
+        return m_node;
+    }
+    
+    public void setNode(OnmsNode node) {
+    	m_node = node;
+    }
+	
+	/**
 	 * <p>Getter for field <code>m_nodeId</code>.</p>
 	 * 
 	 * @return an int
 	 */
-	@Id
 	@Column(name="nodeid", nullable = false)
 	public int getNodeId() {
-		return m_nodeId;
+		return m_node.getId();
 	}
 	
 	/**
@@ -90,7 +107,7 @@ public class OnmsPathOutage implements Serializable{
 	 * @param an int
 	 */
 	public void setNodeId(int nodeId) {
-		m_nodeId = nodeId;
+		m_node.setNodeId(String.valueOf(nodeId));
 	}
 	
 	/**

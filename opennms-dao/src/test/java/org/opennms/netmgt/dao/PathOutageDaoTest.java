@@ -53,6 +53,7 @@ import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.OutageDao;
 import org.opennms.netmgt.dao.api.PathOutageDao;
 import org.opennms.netmgt.dao.api.ServiceTypeDao;
+import org.opennms.netmgt.dao.hibernate.AbstractDaoHibernate;
 import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsEvent;
@@ -80,12 +81,12 @@ import org.springframework.transaction.support.TransactionTemplate;
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
+        "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
         "classpath:/META-INF/opennms/applicationContext-setupIpLike-enabled.xml",
         "classpath*:/META-INF/opennms/component-dao.xml",
-        "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
-        "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml"
+        "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml"
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
@@ -144,14 +145,21 @@ public class PathOutageDaoTest implements InitializingBean {
 
         OnmsMonitoredService monitoredService = new OnmsMonitoredService(ipInterface, serviceType);
 
-        OnmsPathOutage outage = new OnmsPathOutage(node.getId(),ipInterface.getIpAddress(), monitoredService.getServiceName());
+        OnmsPathOutage outage = new OnmsPathOutage(node,ipInterface.getIpAddress(), monitoredService.getServiceName());
 
-       m_outageDao.save(outage);
-
+        //outage.setNode(node);
+        
+        m_outageDao.save(outage);
+        //m_outageDao.flush();
+        //((AbstractDaoHibernate)m_nodeDao).refresh(outage);
+        
         //it works we're so smart! hehe
-        outage = m_outageDao.load(outage.getNodeId());
+        OnmsPathOutage temp = m_outageDao.load(outage.getNode().getId());
+        //((AbstractDaoHibernate)m_nodeDao).refresh(temp);
         assertEquals("ICMP", outage.getCriticalPathServiceName());
 //        outage.setEventBySvcRegainedEvent();
+        
+        assertEquals("localhost",temp.getNode().getLabel());
         
     }
     

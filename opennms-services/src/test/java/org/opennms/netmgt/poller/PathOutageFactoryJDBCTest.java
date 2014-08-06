@@ -101,9 +101,6 @@ public class PathOutageFactoryJDBCTest implements TemporaryDatabaseAware<MockDat
 	 @Autowired
 	 private QueryManager m_queryManager;
 	
-	@Autowired
-	private PathOutageDao m_pathOutageDao;
-	
 	private static PathOutageFactory getInstance() {
 		return new PathOutageFactory();
 	}
