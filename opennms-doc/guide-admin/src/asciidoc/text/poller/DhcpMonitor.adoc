@@ -17,11 +17,11 @@ This monitor is used to monitor the availability and functionality of http://en.
 [options="header, autowidth"]
 |===
 | Parameter        | Description                                                                                    | Required | Default value
-| `retry`          | Number of retries before the service is marked as down                                         | optional | `don't know`
-| `timeout`        | Time in milliseconds to wait for the DHCP response from the server                             | optional | `don't know`
+| `retry`          | Number of retries before the service is marked as down                                         | optional | `0`
+| `timeout`        | Time in milliseconds to wait for the DHCP response from the server                             | optional | `3000`
 | `rrd-repository` | The location to write RRD data. Generally, you will not want to change this from default       | required | `$OPENNMS_HOME/share/rrd/response`
-| `rrd-base-name`  | The name of the RRD file to write (minus the extension, .rrd or .jrb)                          | required | `dhcp`
-| `ds-name`        | Not sure what this does                                                                        | required | `dhcp`
+| `rrd-base-name`  | The name of the RRD file to write (minus the extension, +.rrd+ or +.jrb+)                      | required | `dhcp`
+| `ds-name`        | This is the name as reference for this particular data source in the RRD file                  | required | `dhcp`
 
 |===
 
@@ -69,17 +69,17 @@ Some example configuration how to configure the 'dhcp-configuration.xml'.
 <DhcpdConfiguration
        port="5818"
        macAddress="00:06:0D:BE:9C:B2"
-       myIpAddress="127.0.0.1"
+       myIpAddress="broadcast
        extendedMode="false"
-       requestIpAddress="127.0.0.1">
+       requestIpAddress="10.2.1.56">
 </DhcpdConfiguration>
 
 <DhcpdConfiguration
        port="5818"
        macAddress="00:06:0D:BE:9C:B2"
-       myIpAddress="OpenNMS server ip"
+       myIpAddress="10.4.1.234"
        extendedMode="true"
-       requestIpAddress="targetHost">
+       requestIpAddress="targetSubnet">
 </DhcpdConfiguration>
 ----
 
