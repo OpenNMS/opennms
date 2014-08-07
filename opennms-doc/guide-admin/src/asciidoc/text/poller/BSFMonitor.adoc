@@ -66,36 +66,57 @@ BSFMonitors also grand access to a selection of OpenNMS internal methods and cla
 
 ==== Minimal Examples
 
-===== Minimal Groovy Example
-Groovy Example
+
+===== Minimal Bean Shell Example
+BeanShell Example PollerConfig
 [source, xml]
 ----
-
-<service name="MinimalBeanShell" interval="10000" user-defined="true" status="on">
-  <parameter key="file-name" value="/opt/opennms/etc/bsfmonitor/soaptest.bsf" />
-  <parameter key="lang-class" value="beanshell" />
-  <parameter key="bsf-engine" value="bsh.util.BeanShellBSFEngine" />
-  <parameter key="file-extensions" value="bsh" />
-  <parameter key="run-type" value="exec" />
-  <parameter key="retry" value="1" />
-  <parameter key="timeout" value="3000" />
-  <parameter key="soap_scheme" value="http" />
-  <parameter key="soap_port" value="8080" />
-  <parameter key="soap_uri" value="/ws/services/wsbasic" />
-  <parameter key="input_body" value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;yes&quot;?&gt;&lt;soap:Envelope xmlns:soap=&quot;http://schemas.xmlsoap.org/soap/envelope/&quot;&gt;&lt;soap:Header&gt;&lt;code xmlns=&quot;http://services.biz.example.com/&quot;&gt;Web&lt;/code&gt;&lt;password xmlns=&quot;http://services.biz.example.com/&quot;&gt;WWVzIEkgc2FuaXRpemVkIGl0LCBhc3Nob2xlIQ==&lt;/password&gt;&lt;/soap:Header&gt;&lt;soap:Body&gt;&lt;ns2:getStatusForAddress xmlns:ns2=&quot;http://services.biz.example.com/&quot;&gt;&lt;arg0&gt;&lt;callType&gt;ADDRESS&lt;/callType&gt;&lt;location&gt;&lt;address1&gt;220 chatham business dr&lt;/address1&gt;&lt;address2&gt;&lt;/address2&gt;&lt;aptCode&gt;NON&lt;/aptCode&gt;&lt;city&gt;&lt;/city&gt;&lt;locationType&gt;&lt;locationTypeId&gt;1&lt;/locationTypeId&gt;&lt;/locationType&gt;&lt;postalCode&gt;27312&lt;/postalCode&gt;&lt;/location&gt;&lt;maxMatches&gt;18&lt;/maxMatches&gt;&lt;orderType&gt;WILLCALL&lt;/orderType&gt;&lt;radius&gt;50.0&lt;/radius&gt;&lt;/arg0&gt;&lt;/ns2:getStoresForAddress&gt;&lt;/soap:Body&gt;&lt;/soap:Envelope&gt;" />
-  <parameter key="output_regex" value=".*>SUCCESS<.*" />
-  <parameter key="input_mimetype" value="text/xml" />
-  <parameter key="input_charset" value="utf-8" />
+<service name="MinimalBeanShell" interval="300000" user-defined="true" status="on">
+  <parameter key="file-name"  value="/tmp/MinimalBeanShell.bsh"/>
+  <parameter key="bsf-engine" value="bsh.util.BeanShellBSFEngine"/>
 </service>
 
 <monitor service="MinimalBeanShell" class-name="org.opennms.netmgt.poller.monitors.BSFMonitor" />
+----
 
+BeanShell Example MinimalBeanShell Script file
+[source, java]
+----
+bsf_monitor.log("ERROR", "Starting MinimalBeanShell.bsf", null);
+File testFile = new File("/tmp/TestFile");
+if (testFile.exists()) {
+  return "OK";
+} else {
+  results.put("reason", "file dose not exist");
+  return "NOK";
+}
 ----
 
 
-===== Minimal Bean Shell Example
+===== Minimal Groovy Example
+To use the Groovy language an additional library is required. Copy a _groovy-all.jar_ into to opennms lib folder and restart OpenNMS.
+That makes Groovy avalible for the BSFMonitor.
 
-==== Examples
+Groovy Example PollerConfig
+[source, xml]
+----
+<service name="MinimalBeanShell" interval="300000" user-defined="true" status="on">
+  <parameter key="file-name"  value="/tmp/MinimalBeanShell.bsh"/>
+  <parameter key="bsf-engine" value="bsh.util.BeanShellBSFEngine"/>
+</service>
 
+<monitor service="MinimalBeanShell" class-name="org.opennms.netmgt.poller.monitors.BSFMonitor" />
+----
 
-.This section is optional and give some specific hints
+Groovy Example MinimalGroovy Script file
+[source, java]
+----
+bsf_monitor.log("ERROR", "Starting MinimalGroovy.groovy", null);
+File testFile = new File("/tmp/TestFile");
+if (testFile.exists()) {
+  return "OK";
+} else {
+  results.put("reason", "file dose not exist");
+  return "NOK";
+}
+----
