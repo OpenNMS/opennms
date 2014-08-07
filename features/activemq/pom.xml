@@ -7,7 +7,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>org.opennms.features</artifactId>
-    <version>1.13.5-SNAPSHOT</version>
+    <version>1.13.5-PJSM-SNAPSHOT</version>
   </parent>
 
   <modelVersion>4.0.0</modelVersion>
@@ -18,10 +18,9 @@
 
   <modules>
     <module>broker</module>
-    <!--
-    TODO
     <module>event-forwarder</module>
-    <module>event-listener</module>
+    <!--
+    <module>event-receiver</module>
     -->
   </modules>
 
