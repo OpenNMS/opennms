@@ -61,6 +61,7 @@ Please keep in mind, that this parameters are also accesable via the map object.
 ==== Response Codes
 The script has to provide a statuscode that represents the status of the associated service. The following status are defined:
 
+.Response Codes
 [options="header, autowidth"]
 |===
 | Code  | Description
