@@ -32,10 +32,12 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @XmlRootElement(name="jmx-collection")
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -56,8 +58,9 @@ public class JmxCollection implements java.io.Serializable {
     @XmlElement(name="rrd", required=true)
     private Rrd m_rrd;
 
-    @XmlElement(name="mbeans")
-    private Mbeans m_mbeans;
+    @XmlElement(name="mbean")
+    @XmlElementWrapper(name="mbeans")
+    private List<Mbean> m_mbeans = new ArrayList<>();
 
     @XmlElement(name="import-mbeans", required=false)
     private List<String> m_importMbeansList = new ArrayList<String>();
@@ -98,42 +101,21 @@ public class JmxCollection implements java.io.Serializable {
      */
     @Override()
     public boolean equals(final Object obj) {
-        if ( this == obj )
+        if ( this == obj ) {
             return true;
+        }
+        if (obj == null) {
+            return false;
+        }
 
         if (obj instanceof JmxCollection) {
+            JmxCollection temp = (JmxCollection) obj;
 
-            JmxCollection temp = (JmxCollection)obj;
-            if (m_name != null) {
-                if (temp.m_name == null) return false;
-                else if (!(this.m_name.equals(temp.m_name)))
-                    return false;
-            } else if (temp.m_name != null) {
-                return false;
-            }
-
-            if (this.m_maxVarsPerPdu != temp.m_maxVarsPerPdu) {
-                return false;
-            }
-            if (this.m_rrd != null) {
-                if (temp.m_rrd == null) {
-                    return false;
-                } else if (!(this.m_rrd.equals(temp.m_rrd))) {
-                    return false;
-                }
-            } else if (temp.m_rrd != null) {
-                return false;
-            }
-            if (m_mbeans != null) {
-                if (temp.m_mbeans == null) {
-                    return false;
-                } else if (!(this.m_mbeans.equals(temp.m_mbeans))) {
-                    return false;
-                }
-            } else if (temp.m_mbeans != null) {
-                return false;
-            }
-            return true;
+            boolean equals = Objects.equals(m_name, temp.m_name)
+                    && Objects.equals(m_maxVarsPerPdu, temp.m_maxVarsPerPdu)
+                    && Objects.equals(m_rrd, temp.m_rrd)
+                    && Objects.equals(m_mbeans, temp.m_mbeans);
+            return equals;
         }
         return false;
     }
@@ -143,8 +125,7 @@ public class JmxCollection implements java.io.Serializable {
         return m_maxVarsPerPdu;
     }
 
-    public Mbeans getMbeans(
-    ) {
+    public List<Mbean> getMbeans() {
         return m_mbeans;
     }
 
@@ -163,31 +144,24 @@ public class JmxCollection implements java.io.Serializable {
         return m_maxVarsPerPdu != 0;
     }
 
-    /**
-     * Overrides the java.lang.Object.hashCode method.
-     * <p>
-     * The following steps came from <b>Effective Java Programming
-     * Language Guide</b> by Joshua Bloch, Chapter 3
-     *
-     * @return a hash code value for the object.
-     */
     @Override
     public int hashCode() {
-        int result = 17;
+        return Objects.hash(m_name, m_maxVarsPerPdu, m_rrd, m_mbeans);
+    }
 
-        long tmp;
-        if (m_name != null) {
-           result = 37 * result + m_name.hashCode();
-        }
-        result = 37 * result + m_maxVarsPerPdu;
-        if (m_rrd != null) {
-           result = 37 * result + m_rrd.hashCode();
-        }
-        if (m_mbeans != null) {
-           result = 37 * result + m_mbeans.hashCode();
-        }
+    /**
+     * Method getMbeanCount.
+     *
+     * @return the size of this collection
+     */
+    public int getMbeanCount() {
+        return this.m_mbeans.size();
+    }
 
-        return result;
+    public void addMbean(Mbean mbean) {
+        if (mbean != null) {
+            m_mbeans.add(mbean);
+        }
     }
 
     /**
@@ -198,7 +172,7 @@ public class JmxCollection implements java.io.Serializable {
         m_maxVarsPerPdu = maxVarsPerPdu;
     }
 
-    public void setMbeans(final Mbeans mbeans) {
+    public void setMbeans(final List<Mbean> mbeans) {
         m_mbeans = mbeans;
     }
 
@@ -210,4 +184,7 @@ public class JmxCollection implements java.io.Serializable {
         m_rrd = rrd;
     }
 
+    public void addMbeans(List<Mbean> mbeanList) {
+        m_mbeans.addAll(mbeanList);
+    }
 }

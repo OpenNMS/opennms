@@ -20,8 +20,8 @@ public class JMXDataCollectionConfigFactoryTest {
 
         Assert.assertNotNull(factory.getJmxCollection("jboss"));
         Assert.assertNotNull(factory.getJmxCollection("jsr160"));
-        Assert.assertEquals(8, factory.getJmxCollection("jboss").getMbeans().getMbeanCount());
-        Assert.assertEquals(4, factory.getJmxCollection("jsr160").getMbeans().getMbeanCount());
+        Assert.assertEquals(8, factory.getJmxCollection("jboss").getMbeanCount());
+        Assert.assertEquals(4, factory.getJmxCollection("jsr160").getMbeanCount());
 
     }
 }

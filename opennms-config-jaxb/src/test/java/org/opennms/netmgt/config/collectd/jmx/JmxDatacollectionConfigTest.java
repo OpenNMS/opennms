@@ -87,9 +87,6 @@ public class JmxDatacollectionConfigTest extends XmlTestNoCastor<JmxDatacollecti
         bean.addAttrib(a);
         bean.addCompAttrib(comp);
 
-        final Mbeans mbeans = new Mbeans();
-        mbeans.addMbean(bean);
-
         final Rrd rrd = new Rrd();
         rrd.setStep(300);
         rrd.addRra("RRA:AVERAGE:0.5:1:4032");
@@ -97,8 +94,8 @@ public class JmxDatacollectionConfigTest extends XmlTestNoCastor<JmxDatacollecti
         final JmxCollection collection = new JmxCollection();
         collection.setName("default");
         collection.setRrd(rrd);
-        collection.setMbeans(mbeans);
-        
+        collection.addMbean(bean);
+
         final JmxDatacollectionConfig config = new JmxDatacollectionConfig();
         config.setRrdRepository("/opt/opennms/share/rrd/snmp");
         config.addJmxCollection(collection);

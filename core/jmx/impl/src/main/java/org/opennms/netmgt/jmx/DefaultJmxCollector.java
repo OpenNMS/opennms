@@ -53,7 +53,6 @@ import javax.management.ReflectionException;
 import javax.management.openmbean.CompositeData;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -86,7 +85,7 @@ public class DefaultJmxCollector implements JmxCollector {
 
     private void collect(MBeanServerConnection concreteConnection, JmxCollection jmxCollection, JmxSampleProcessor sampleProcessor) {
         try {
-            for (Mbean eachMbean : jmxCollection.getMbeans().getMbeanCollection()) {
+            for (Mbean eachMbean : jmxCollection.getMbeans()) {
                 logger.debug("Collecting MBean (objectname={}, wildcard={})", eachMbean.getObjectname(), isWildcard(eachMbean.getObjectname()));
 
                 final Collection<ObjectName> objectNames = getObjectNames(concreteConnection, eachMbean.getObjectname());
@@ -169,9 +168,9 @@ public class DefaultJmxCollector implements JmxCollector {
      * @return A list of all Composite Members of the given composite attribute. May be empty. The list is unmodifiable.
      */
     private List<CompMember> getCompositeMembers(Mbean bean, String compAttributeName) {
-        for (CompAttrib eachAttrib : bean.getCompAttrib()) {
+        for (CompAttrib eachAttrib : bean.getCompAttribList()) {
             if (Objects.equals(compAttributeName, eachAttrib.getName())) {
-                List<CompMember> list = Arrays.asList(eachAttrib.getCompMember());
+                List<CompMember> list = eachAttrib.getCompMemberList();
                 return Collections.unmodifiableList(list);
             }
         }
@@ -188,11 +187,11 @@ public class DefaultJmxCollector implements JmxCollector {
     private List<String> extractAttributeNames(Mbean bean) {
         List<String> attributes = new ArrayList<>();
 
-        for (Attrib eachAttrib : bean.getAttrib()) {
+        for (Attrib eachAttrib : bean.getAttribList()) {
             attributes.add(eachAttrib.getName());
         }
 
-        for (CompAttrib eachCompAttrib : bean.getCompAttrib()) {
+        for (CompAttrib eachCompAttrib : bean.getCompAttribList()) {
             attributes.add(eachCompAttrib.getName());
         }
 

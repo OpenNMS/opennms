@@ -39,13 +39,13 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.util.Objects;
 
 @XmlRootElement(name="attrib")
 @XmlAccessorType(XmlAccessType.FIELD)
 // TODO mvr remove fishy methods
 @SuppressWarnings("all")
 public class Attrib implements java.io.Serializable {
-
 
     @XmlAttribute(name="name", required=true)
     private String _name;
@@ -69,176 +69,58 @@ public class Attrib implements java.io.Serializable {
 
         if (obj instanceof Attrib) {
             Attrib temp = (Attrib)obj;
-            if (this._name != null) {
-                if (temp._name == null) return false;
-                else if (!(this._name.equals(temp._name)))
-                    return false;
-            }
-            else if (temp._name != null)
-                return false;
-            if (this._alias != null) {
-                if (temp._alias == null) return false;
-                else if (!(this._alias.equals(temp._alias)))
-                    return false;
-            }
-            else if (temp._alias != null)
-                return false;
-            if (this._type != null) {
-                if (temp._type == null) return false;
-                else if (!(this._type.equals(temp._type)))
-                    return false;
-            }
-            else if (temp._type != null)
-                return false;
-            if (this._maxval != null) {
-                if (temp._maxval == null) return false;
-                else if (!(this._maxval.equals(temp._maxval)))
-                    return false;
-            }
-            else if (temp._maxval != null)
-                return false;
-            if (this._minval != null) {
-                if (temp._minval == null) return false;
-                else if (!(this._minval.equals(temp._minval)))
-                    return false;
-            }
-            else if (temp._minval != null)
-                return false;
-            return true;
+            boolean equals = Objects.equals(this._name, temp._name)
+                    && Objects.equals(this._alias, temp._alias)
+                    && Objects.equals(this._type, temp._type)
+                    && Objects.equals(this._maxval, temp._maxval)
+                    && Objects.equals(this._minval, temp._minval);
+            return equals;
         }
         return false;
     }
 
-    /**
-     * Returns the value of field 'alias'.
-     *
-     * @return the value of field 'Alias'.
-     */
-    public String getAlias(
-    ) {
+    public String getAlias() {
         return this._alias;
     }
 
-    /**
-     * Returns the value of field 'maxval'.
-     *
-     * @return the value of field 'Maxval'.
-     */
-    public String getMaxval(
-    ) {
+    public String getMaxval() {
         return this._maxval;
     }
 
-    /**
-     * Returns the value of field 'minval'.
-     *
-     * @return the value of field 'Minval'.
-     */
-    public String getMinval(
-    ) {
+    public String getMinval() {
         return this._minval;
     }
 
-    /**
-     * Returns the value of field 'name'.
-     *
-     * @return the value of field 'Name'.
-     */
-    public String getName(
-    ) {
+    public String getName() {
         return this._name;
     }
 
-    /**
-     * Returns the value of field 'type'.
-     *
-     * @return the value of field 'Type'.
-     */
-    public String getType(
-    ) {
+    public String getType() {
         return this._type;
     }
 
-    /**
-     * Overrides the java.lang.Object.hashCode method.
-     * <p>
-     * The following steps came from <b>Effective Java Programming
-     * Language Guide</b> by Joshua Bloch, Chapter 3
-     *
-     * @return a hash code value for the object.
-     */
     @Override
-    public int hashCode(
-    ) {
-        int result = 17;
-
-        long tmp;
-        if (_name != null) {
-           result = 37 * result + _name.hashCode();
-        }
-        if (_alias != null) {
-           result = 37 * result + _alias.hashCode();
-        }
-        if (_type != null) {
-           result = 37 * result + _type.hashCode();
-        }
-        if (_maxval != null) {
-           result = 37 * result + _maxval.hashCode();
-        }
-        if (_minval != null) {
-           result = 37 * result + _minval.hashCode();
-        }
-
-        return result;
+    public int hashCode() {
+        return Objects.hash(_name, _alias, _type, _maxval, _minval);
     }
 
-     /**
-     * Sets the value of field 'alias'.
-     *
-     * @param alias the value of field 'alias'.
-     */
-    public void setAlias(
-            final String alias) {
+    public void setAlias(final String alias) {
         this._alias = alias;
     }
 
-    /**
-     * Sets the value of field 'maxval'.
-     *
-     * @param maxval the value of field 'maxval'.
-     */
-    public void setMaxval(
-            final String maxval) {
+    public void setMaxval(final String maxval) {
         this._maxval = maxval;
     }
 
-    /**
-     * Sets the value of field 'minval'.
-     *
-     * @param minval the value of field 'minval'.
-     */
-    public void setMinval(
-            final String minval) {
+    public void setMinval(final String minval) {
         this._minval = minval;
     }
 
-    /**
-     * Sets the value of field 'name'.
-     *
-     * @param name the value of field 'name'.
-     */
-    public void setName(
-            final String name) {
+    public void setName(final String name) {
         this._name = name;
     }
 
-    /**
-     * Sets the value of field 'type'.
-     *
-     * @param type the value of field 'type'.
-     */
-    public void setType(
-            final String type) {
+    public void setType(final String type) {
         this._type = type;
     }
 }

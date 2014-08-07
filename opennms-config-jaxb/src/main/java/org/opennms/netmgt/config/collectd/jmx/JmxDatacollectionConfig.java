@@ -40,11 +40,11 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.util.Objects;
 
 @XmlRootElement(name = "jmx-datacollection-config")
 @XmlAccessorType(XmlAccessType.FIELD)
 @SuppressWarnings("all")
-// TODO mvr remove fishy methods
 public class JmxDatacollectionConfig implements java.io.Serializable {
 
     @XmlAttribute(name = "rrdRepository", required = true)
@@ -52,66 +52,25 @@ public class JmxDatacollectionConfig implements java.io.Serializable {
 
     @XmlElement(name = "jmx-collection", required = true)
     private java.util.List<JmxCollection> _jmxCollectionList = new java.util.ArrayList<>();
-    ;
 
-
-    /**
-     * @param vJmxCollection
-     * @throws IndexOutOfBoundsException if the index
-     *                                   given is outside the bounds of the collection
-     */
-    public void addJmxCollection(
-            final JmxCollection vJmxCollection)
-            throws IndexOutOfBoundsException {
-        this._jmxCollectionList.add(vJmxCollection);
-    }
-
-    /**
-     * @param index
-     * @param vJmxCollection
-     * @throws IndexOutOfBoundsException if the index
-     *                                   given is outside the bounds of the collection
-     */
-    public void addJmxCollection(
-            final int index,
-            final JmxCollection vJmxCollection)
-            throws IndexOutOfBoundsException {
-        this._jmxCollectionList.add(index, vJmxCollection);
-    }
-
-    /**
-     * Method enumerateJmxCollection.
-     *
-     * @return an Enumeration over all possible elements of this
-     * collection
-     */
-    public java.util.Enumeration<JmxCollection> enumerateJmxCollection(
-    ) {
-        return java.util.Collections.enumeration(this._jmxCollectionList);
+    public void addJmxCollection(final JmxCollection jmxCollection) {
+        this._jmxCollectionList.add(jmxCollection);
     }
 
     @Override
-    public boolean equals(
-            final Object obj) {
-        if (this == obj)
+    public boolean equals(final Object obj) {
+        if (this == obj) {
             return true;
+        }
+        if (obj == null) {
+            return false;
+        }
 
         if (obj instanceof JmxDatacollectionConfig) {
-
             JmxDatacollectionConfig temp = (JmxDatacollectionConfig) obj;
-            if (this._rrdRepository != null) {
-                if (temp._rrdRepository == null) return false;
-                else if (!(this._rrdRepository.equals(temp._rrdRepository)))
-                    return false;
-            } else if (temp._rrdRepository != null)
-                return false;
-            if (this._jmxCollectionList != null) {
-                if (temp._jmxCollectionList == null) return false;
-                else if (!(this._jmxCollectionList.equals(temp._jmxCollectionList)))
-                    return false;
-            } else if (temp._jmxCollectionList != null)
-                return false;
-            return true;
+            boolean equals = Objects.equals(_rrdRepository, temp._rrdRepository)
+                    && Objects.equals(_jmxCollectionList, temp._jmxCollectionList);
+            return equals;
         }
         return false;
     }
@@ -126,9 +85,7 @@ public class JmxDatacollectionConfig implements java.io.Serializable {
      * @throws IndexOutOfBoundsException if the index
      *                                   given is outside the bounds of the collection
      */
-    public JmxCollection getJmxCollection(
-            final int index)
-            throws IndexOutOfBoundsException {
+    public JmxCollection getJmxCollection(final int index) throws IndexOutOfBoundsException {
         // check bounds for index
         if (index < 0 || index >= this._jmxCollectionList.size()) {
             throw new IndexOutOfBoundsException("getJmxCollection: Index value '" + index + "' not in range [0.." + (this._jmxCollectionList.size() - 1) + "]");
@@ -137,182 +94,45 @@ public class JmxDatacollectionConfig implements java.io.Serializable {
         return (JmxCollection) _jmxCollectionList.get(index);
     }
 
-    /**
-     * Method getJmxCollection.Returns the contents of the
-     * collection in an Array.  <p>Note:  Just in case the
-     * collection contents are changing in another thread, we pass
-     * a 0-length Array of the correct type into the API call.
-     * This way we <i>know</i> that the Array returned is of
-     * exactly the correct length.
-     *
-     * @return this collection as an Array
-     */
-    public JmxCollection[] getJmxCollection(
-    ) {
-        JmxCollection[] array = new JmxCollection[0];
-        return (JmxCollection[]) this._jmxCollectionList.toArray(array);
+    public JmxCollection getJmxCollection(final String collectionName) {
+        for (JmxCollection eachCollection : _jmxCollectionList) {
+            if (eachCollection != null 
+                    && eachCollection.getName() != null
+                    && eachCollection.getName().equals(collectionName)) {
+                return eachCollection;
+            }
+        }
+        return null;
     }
 
-    /**
-     * Method getJmxCollectionCollection.Returns a reference to
-     * '_jmxCollectionList'. No type checking is performed on any
-     * modifications to the Vector.
-     *
-     * @return a reference to the Vector backing this class
-     */
-    public java.util.List<JmxCollection> getJmxCollectionCollection(
-    ) {
-        return this._jmxCollectionList;
-    }
-
-    /**
-     * Method getJmxCollectionCount.
-     *
-     * @return the size of this collection
-     */
-    public int getJmxCollectionCount(
-    ) {
+    public int getJmxCollectionCount() {
         return this._jmxCollectionList.size();
     }
 
-    /**
-     * Returns the value of field 'rrdRepository'.
-     *
-     * @return the value of field 'RrdRepository'.
-     */
-    public String getRrdRepository(
-    ) {
+    public String getRrdRepository() {
         return this._rrdRepository;
     }
 
-    /**
-     * Overrides the java.lang.Object.hashCode method.
-     * <p/>
-     * The following steps came from <b>Effective Java Programming
-     * Language Guide</b> by Joshua Bloch, Chapter 3
-     *
-     * @return a hash code value for the object.
-     */
     @Override
-    public int hashCode(
-    ) {
-        int result = 17;
-
-        long tmp;
-        if (_rrdRepository != null) {
-            result = 37 * result + _rrdRepository.hashCode();
-        }
-        if (_jmxCollectionList != null) {
-            result = 37 * result + _jmxCollectionList.hashCode();
-        }
-
-        return result;
+    public int hashCode() {
+        return Objects.hash(_rrdRepository, _jmxCollectionList);
     }
 
-    /**
-     * Method iterateJmxCollection.
-     *
-     * @return an Iterator over all possible elements in this
-     * collection
-     */
-    public java.util.Iterator<JmxCollection> iterateJmxCollection(
-    ) {
-        return this._jmxCollectionList.iterator();
-    }
-
-    public void removeAllJmxCollection(
-    ) {
-        this._jmxCollectionList.clear();
-    }
-
-    /**
-     * Method removeJmxCollection.
-     *
-     * @param vJmxCollection
-     * @return true if the object was removed from the collection.
-     */
-    public boolean removeJmxCollection(
-            final JmxCollection vJmxCollection) {
+    public boolean removeJmxCollection(final JmxCollection vJmxCollection) {
         boolean removed = _jmxCollectionList.remove(vJmxCollection);
         return removed;
     }
 
-    /**
-     * Method removeJmxCollectionAt.
-     *
-     * @param index
-     * @return the element removed from the collection
-     */
-    public JmxCollection removeJmxCollectionAt(
-            final int index) {
-        Object obj = this._jmxCollectionList.remove(index);
-        return (JmxCollection) obj;
-    }
-
-    /**
-     * @param index
-     * @param vJmxCollection
-     * @throws IndexOutOfBoundsException if the index
-     *                                   given is outside the bounds of the collection
-     */
-    public void setJmxCollection(
-            final int index,
-            final JmxCollection vJmxCollection)
-            throws IndexOutOfBoundsException {
-        // check bounds for index
-        if (index < 0 || index >= this._jmxCollectionList.size()) {
-            throw new IndexOutOfBoundsException("setJmxCollection: Index value '" + index + "' not in range [0.." + (this._jmxCollectionList.size() - 1) + "]");
-        }
-
-        this._jmxCollectionList.set(index, vJmxCollection);
-    }
-
-    /**
-     * @param vJmxCollectionArray
-     */
-    public void setJmxCollection(
-            final JmxCollection[] vJmxCollectionArray) {
-        //-- copy array
-        _jmxCollectionList.clear();
-
-        for (int i = 0; i < vJmxCollectionArray.length; i++) {
-            this._jmxCollectionList.add(vJmxCollectionArray[i]);
-        }
-    }
-
-    /**
-     * Sets the value of '_jmxCollectionList' by copying the given
-     * Vector. All elements will be checked for type safety.
-     *
-     * @param vJmxCollectionList the Vector to copy.
-     */
-    public void setJmxCollection(
-            final java.util.List<JmxCollection> vJmxCollectionList) {
-        // copy vector
+    public void setJmxCollectionList(final java.util.List<JmxCollection> jmxCollectionList) {
         this._jmxCollectionList.clear();
-
-        this._jmxCollectionList.addAll(vJmxCollectionList);
+        this._jmxCollectionList.addAll(jmxCollectionList);
     }
 
-    /**
-     * Sets the value of '_jmxCollectionList' by setting it to the
-     * given Vector. No type checking is performed.
-     *
-     * @param jmxCollectionList the Vector to set.
-     * @deprecated
-     */
-    public void setJmxCollectionCollection(
-            final java.util.List<JmxCollection> jmxCollectionList) {
-        this._jmxCollectionList = jmxCollectionList;
+    public java.util.List<JmxCollection> getJmxCollectionList() {
+        return _jmxCollectionList;
     }
 
-    /**
-     * Sets the value of field 'rrdRepository'.
-     *
-     * @param rrdRepository the value of field 'rrdRepository'.
-     */
-    public void setRrdRepository(
-            final String rrdRepository) {
+    public void setRrdRepository(final String rrdRepository) {
         this._rrdRepository = rrdRepository;
     }
 
