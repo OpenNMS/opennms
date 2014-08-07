@@ -94,10 +94,18 @@ To add custom response time or overwrite the default one add entries to the _tim
 The entries start with a string that names the datasource and number that represents the response time.
 To overwrite the default response time datasource add a entry into _times_ named _response-time_
 
-
 ==== Timeout and Retry
 The BSFMonitor is not handling any timeout or retry cycles. 
 If retry and or timeout behavior is required, it has to be implemented in the script it self.
+
+==== Requirements for the script (run-types)
+Depending on the _run-type_ the script has to provid its results in diverent ways.
+For minimal scripts with very simple logic _run-type_ _eval_ is the simple option.
+Scripts runing in _eval_ mode have to return a string matching one of the Response Codes.
+
+Every time your script is more then a one liner _run-type_ _exec_ is required.
+Scripts runing in _exex_ mode have not to return anything, but they have to add a "status" entry with a "response code" to the _results_ object.
+Additionally the _results_ object can also carry a "reason":"message" entry that is used in non "OK" states.
 
 ==== Minimal Examples
 
@@ -131,7 +139,7 @@ if (testFile.exists()) {
 To use the Groovy language an additional library is required. Copy a _groovy-all.jar_ into to opennms lib folder and restart OpenNMS.
 That makes Groovy avalible for the BSFMonitor.
 
-Groovy Example PollerConfig
+Groovy Example PollerConfig with default _run-type_ _eval_
 [source, xml]
 ----
 <service name="MinimalBeanShell" interval="300000" user-defined="true" status="on">
@@ -142,7 +150,7 @@ Groovy Example PollerConfig
 <monitor service="MinimalBeanShell" class-name="org.opennms.netmgt.poller.monitors.BSFMonitor" />
 ----
 
-Groovy Example MinimalGroovy Script file
+Groovy Example MinimalGroovy Script file for _run-type_ _eval_
 [source, java]
 ----
 bsf_monitor.log("ERROR", "Starting MinimalGroovy.groovy", null);
@@ -154,6 +162,33 @@ if (testFile.exists()) {
   return "NOK";
 }
 ----
+
+
+Groovy Example PollerConfig with _run-type_ _exec_
+[source, xml]
+----
+<service name="MinimalBeanShell" interval="300000" user-defined="true" status="on">
+  <parameter key="file-name"  value="/tmp/MinimalBeanShell.bsh"/>
+  <parameter key="bsf-engine" value="bsh.util.BeanShellBSFEngine"/>
+  <parameter key="run-type" value="exec"/>
+</service>
+
+<monitor service="MinimalBeanShell" class-name="org.opennms.netmgt.poller.monitors.BSFMonitor" />
+----
+
+Groovy Example MinimalGroovy Script file for _run-type_ _exec_
+[source, java]
+----
+bsf_monitor.log("ERROR", "Starting MinimalGroovy", null);
+def testFile = new File("/tmp/TestFile");
+if (testFile.exists()) {
+  results.put("status", "OK")
+} else {
+  results.put("reason", "file dose not exist");
+  results.put("status", "NOK");
+}
+----
+
 
 ===== Additional examples
 
