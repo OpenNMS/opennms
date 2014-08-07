@@ -62,6 +62,27 @@ BSFMonitors also grand access to a selection of OpenNMS internal methods and cla
 | `times`      | LinkedHashMap<String, Number>  | The script is expected to put one or more response times into this object.
 |===
 
+==== Response time tracking
+By default the BSFMonitor tracks the time the script file consumes as the response time.
+If the response time should be persist the response time add the following parameters:
+
+RRD Response Time Tracking at the PollerConfig Service
+[source, xml]
+----
+<!-- where in the filesystem response times are stored -->
+<parameter key="rrd-repository" value="/opt/opennms/share/rrd/response" />
+
+<!-- name of the rrd file -->
+<parameter key="rrd-base-name" value="minimalbshbase" />
+
+<!-- name of the data source in the rrd file -->
+<parameter key="ds-name" value="minimalbshds" />
+----
+
+It is also possible to return one or multiple response times from the script. 
+This is achived by adding name-number pairs that are respresenting the response times to the _times_ object.
+TODO
+
 ==== Minimal Examples
 
 
@@ -72,11 +93,6 @@ BeanShell Example PollerConfig
 <service name="MinimalBeanShell" interval="300000" user-defined="true" status="on">
   <parameter key="file-name"  value="/tmp/MinimalBeanShell.bsh"/>
   <parameter key="bsf-engine" value="bsh.util.BeanShellBSFEngine"/>
-  
-  <!-- optional for response time tracking -->
-  <parameter key="rrd-repository" value="/opt/opennms/share/rrd/response" />
-  <parameter key="rrd-base-name" value="minimalbshbase" />
-  <parameter key="ds-name" value="minimalbshds" />
 </service>
 
 <monitor service="MinimalBeanShell" class-name="org.opennms.netmgt.poller.monitors.BSFMonitor" />
@@ -106,11 +122,6 @@ Groovy Example PollerConfig
 <service name="MinimalBeanShell" interval="300000" user-defined="true" status="on">
   <parameter key="file-name"  value="/tmp/MinimalBeanShell.bsh"/>
   <parameter key="bsf-engine" value="bsh.util.BeanShellBSFEngine"/>
-  
-  <!-- optional for response time tracking -->
-  <parameter key="rrd-repository" value="/opt/opennms/share/rrd/response" />
-  <parameter key="rrd-base-name" value="minimalgroovybase" />
-  <parameter key="ds-name" value="minimalgroovyds" />
 </service>
 
 <monitor service="MinimalBeanShell" class-name="org.opennms.netmgt.poller.monitors.BSFMonitor" />
