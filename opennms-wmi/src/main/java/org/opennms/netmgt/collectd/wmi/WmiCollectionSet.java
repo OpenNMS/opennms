@@ -35,8 +35,10 @@ import org.opennms.netmgt.config.collector.CollectionSet;
 import org.opennms.netmgt.config.collector.CollectionSetVisitor;
 
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Set;
 
 /**
  * <p>WmiCollectionSet class.</p>
@@ -46,7 +48,7 @@ import java.util.ArrayList;
  */
 public class WmiCollectionSet implements CollectionSet {
     private int m_status;
-    private List<WmiCollectionResource> m_collectionResources;
+    private Set<WmiCollectionResource> m_collectionResources;
     private Date m_timestamp;
 
     /**
@@ -56,7 +58,7 @@ public class WmiCollectionSet implements CollectionSet {
      */
     public WmiCollectionSet(final CollectionAgent agent) {
         m_status = ServiceCollector.COLLECTION_FAILED;
-        m_collectionResources = new ArrayList<WmiCollectionResource>();
+        m_collectionResources = new HashSet<WmiCollectionResource>();
     }
 
     /**
@@ -93,7 +95,7 @@ public class WmiCollectionSet implements CollectionSet {
      *
      * @return a {@link java.util.List} object.
      */
-    public List<WmiCollectionResource> getResources() {
+    public Set<WmiCollectionResource> getResources() {
         return m_collectionResources;
     }
 

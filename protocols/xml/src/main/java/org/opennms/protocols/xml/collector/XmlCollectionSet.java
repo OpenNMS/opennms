@@ -28,9 +28,9 @@
 
 package org.opennms.protocols.xml.collector;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.opennms.netmgt.collectd.CollectionAgent;
 import org.opennms.netmgt.collectd.ServiceCollector;
@@ -49,7 +49,7 @@ public class XmlCollectionSet implements CollectionSet {
     private int m_status;
 
     /** The list of XML collection resources. */
-    private List<XmlCollectionResource> m_collectionResources;
+    private Set<XmlCollectionResource> m_collectionResources;
 
     /** The collection timestamp. */
     private Date m_timestamp;
@@ -61,7 +61,7 @@ public class XmlCollectionSet implements CollectionSet {
      */
     public XmlCollectionSet(CollectionAgent agent) {
         m_status = ServiceCollector.COLLECTION_FAILED;
-        m_collectionResources = new ArrayList<XmlCollectionResource>();
+        m_collectionResources = new HashSet<XmlCollectionResource>();
     }
 
     /* (non-Javadoc)
@@ -85,17 +85,8 @@ public class XmlCollectionSet implements CollectionSet {
      *
      * @return the collection resources
      */
-    public List<XmlCollectionResource> getCollectionResources() {
+    public Set<XmlCollectionResource> getCollectionResources() {
         return m_collectionResources;
-    }
-
-    /**
-     * Sets the collection resources.
-     *
-     * @param collectionResources the new collection resources
-     */
-    public void setCollectionResources(List<XmlCollectionResource> collectionResources) {
-        m_collectionResources = collectionResources;
     }
 
     /* (non-Javadoc)

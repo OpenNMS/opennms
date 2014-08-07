@@ -28,9 +28,9 @@
 
 package org.opennms.netmgt.collectd.jdbc;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.opennms.netmgt.collectd.CollectionAgent;
 import org.opennms.netmgt.collectd.ServiceCollector;
@@ -40,12 +40,12 @@ import org.opennms.netmgt.config.collector.CollectionSetVisitor;
 
 public class JdbcCollectionSet implements CollectionSet {
     private int m_status;
-    private List<JdbcCollectionResource> m_collectionResources;
+    private Set<JdbcCollectionResource> m_collectionResources;
     private Date m_timestamp;
     
     public JdbcCollectionSet(CollectionAgent agent) {
         m_status = ServiceCollector.COLLECTION_FAILED;
-        m_collectionResources = new ArrayList<JdbcCollectionResource>();
+        m_collectionResources = new HashSet<JdbcCollectionResource>();
     }
     
     public int getStatus() {
@@ -56,12 +56,8 @@ public class JdbcCollectionSet implements CollectionSet {
         m_status = status;
     }
 
-    public List<JdbcCollectionResource> getCollectionResources() {
+    public Set<JdbcCollectionResource> getCollectionResources() {
         return m_collectionResources;
-    }
-
-    public void setCollectionResources(List<JdbcCollectionResource> collectionResources) {
-        m_collectionResources = collectionResources;
     }
 
     public void visit(CollectionSetVisitor visitor) {
