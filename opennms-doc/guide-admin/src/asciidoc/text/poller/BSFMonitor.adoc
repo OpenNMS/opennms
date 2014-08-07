@@ -25,14 +25,12 @@ BSFMonitors also grand access to a selection of OpenNMS internal methods and cla
 | Parameter         | Description                                    | Required | Default value
 
 | `file-name`       | Path to the script file.                              | required | `-`
-| `lang-class`      | The BSF language class, like `groovy` or `beanshell`. | optional | `file-name extention is interpreted by default`
-
 | `bsf-engine`      | The BSF Engine to run the script in, linke +
                       `bsh.util.BeanShellBSFEngine` or  +
-                      `?groovy?`                                            | required | `-`
-| `file-extensions` | comma seperated list                                  | optional | `-`
+                      `org.codehaus.groovy.bsf.GroovyEngine`                | required | `-`
 | `run-type`        | one of those `eval` or `exec`                         | optional | `eval`
-
+| `lang-class`      | The BSF language class, like `groovy` or `beanshell`. | optional | `file-name extention is interpreted by default`
+| `file-extensions` | comma seperated list                                  | optional | `-`
 
 // There is no retry of timeout in the BSFMonitor code....
 // There are also no dedicated retry or timeout parameters handed over to the script, just the parameter map it self.
