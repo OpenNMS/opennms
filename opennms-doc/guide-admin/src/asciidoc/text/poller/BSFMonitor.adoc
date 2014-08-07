@@ -74,6 +74,11 @@ BeanShell Example PollerConfig
 <service name="MinimalBeanShell" interval="300000" user-defined="true" status="on">
   <parameter key="file-name"  value="/tmp/MinimalBeanShell.bsh"/>
   <parameter key="bsf-engine" value="bsh.util.BeanShellBSFEngine"/>
+  
+  <!-- optional for response time tracking -->
+  <parameter key="rrd-repository" value="/opt/opennms/share/rrd/response" />
+  <parameter key="rrd-base-name" value="minimalbshbase" />
+  <parameter key="ds-name" value="minimalbshds" />
 </service>
 
 <monitor service="MinimalBeanShell" class-name="org.opennms.netmgt.poller.monitors.BSFMonitor" />
@@ -103,6 +108,11 @@ Groovy Example PollerConfig
 <service name="MinimalBeanShell" interval="300000" user-defined="true" status="on">
   <parameter key="file-name"  value="/tmp/MinimalBeanShell.bsh"/>
   <parameter key="bsf-engine" value="bsh.util.BeanShellBSFEngine"/>
+  
+  <!-- optional for response time tracking -->
+  <parameter key="rrd-repository" value="/opt/opennms/share/rrd/response" />
+  <parameter key="rrd-base-name" value="minimalgroovybase" />
+  <parameter key="ds-name" value="minimalgroovyds" />
 </service>
 
 <monitor service="MinimalBeanShell" class-name="org.opennms.netmgt.poller.monitors.BSFMonitor" />
