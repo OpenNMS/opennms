@@ -152,3 +152,83 @@ if (testFile.exists()) {
   return "NOK";
 }
 ----
+
+===== Additional examples
+
+The following example references all beans that are exposed to the script, inculding a custom parameter.
+
+Groovy Example PollerConfig
+[source, xml]
+----
+<service name="MinimalGroovy" interval="30000" user-defined="true" status="on">
+  <parameter key="file-name"  value="/tmp/MinimalGroovy.groovy"/>
+  <parameter key="bsf-engine" value="org.codehaus.groovy.bsf.GroovyEngine"/>
+  
+  <!-- custome parameters -->
+  <parameter key="myParameter" value="Hello Groovy" />
+
+  <!-- optional for response time tracking -->
+  <parameter key="rrd-repository" value="/opt/opennms/share/rrd/response" />
+  <parameter key="rrd-base-name" value="minimalgroovybase" />
+  <parameter key="ds-name" value="minimalgroovyds" />
+</service>
+
+<monitor service="MinimalGroovy" class-name="org.opennms.netmgt.poller.monitors.BSFMonitor" />
+----
+
+Groovy Example Bean referencing Script file
+[source, java]
+----
+bsf_monitor.log("ERROR", "Starting MinimalGroovy", null);
+
+//list of all availible objects from the BSFMonitor
+Map<String, Object> map = map;
+bsf_monitor.log("ERROR", "---- map ----", null);
+bsf_monitor.log("ERROR", map.toString(), null);
+
+String ip_addr = ip_addr;
+bsf_monitor.log("ERROR", "---- ip_addr ----", null);
+bsf_monitor.log("ERROR", ip_addr, null);
+
+int node_id = node_id;
+bsf_monitor.log("ERROR", "---- node_id ----", null);
+bsf_monitor.log("ERROR", node_id.toString(), null);
+
+String node_label = node_label;
+bsf_monitor.log("ERROR", "---- node_label ----", null);
+bsf_monitor.log("ERROR", node_label, null);
+
+String svc_name = svc_name;
+bsf_monitor.log("ERROR", "---- svc_name ----", null);
+bsf_monitor.log("ERROR", svc_name, null);
+
+org.opennms.netmgt.poller.monitors.BSFMonitor bsf_monitor = bsf_monitor;
+bsf_monitor.log("ERROR", "---- bsf_monitor ----", null);
+bsf_monitor.log("ERROR", bsf_monitor.toString(), null);
+
+HashMap<String, String> results = results;
+bsf_monitor.log("ERROR", "---- results ----", null);
+bsf_monitor.log("ERROR", results.toString(), null);
+
+LinkedHashMap<String, Number> times = times;
+bsf_monitor.log("ERROR", "---- times ----", null);
+bsf_monitor.log("ERROR", times.toString(), null);
+
+// reading a parameter from the service definition
+String myParameter = myParameter;
+bsf_monitor.log("ERROR", "---- myParameter ----", null);
+bsf_monitor.log("ERROR", myParameter, null);
+
+// minimal example
+def testFile = new File("/tmp/TestFile");
+if (testFile.exists()) {
+  bsf_monitor.log("ERROR", "Done MinimalGroovy ---- OK ----", null);
+  return "OK";
+} else {
+  
+  results.put("reason", "file dose not exist");
+  bsf_monitor.log("ERROR", "Done MinimalGroovy ---- NOK ----", null);
+  return "NOK";
+}
+----
+
