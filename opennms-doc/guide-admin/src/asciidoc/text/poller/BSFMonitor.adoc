@@ -55,7 +55,7 @@ BSFMonitors also grand access to a selection of OpenNMS internal methods and cla
 | `bsf_monitor`| BSFMonitor                     | The instance of the _BSFMonitor_ object calling the script. +
                                                   Useful for logging via its +
                                                   log(String sev, String fmt, Object... args) method.
-| `result`     | HashMap<String, String>        | The script is ecpected to put it results into this object. +
+| `results`     | HashMap<String, String>        | The script is ecpected to put it results into this object. +
                                                   The status indication sould be set into the entry with key _status_. +
                                                   If the status is not _OK_, a key _reason_ shoud contain a +
                                                   description of the problem.
