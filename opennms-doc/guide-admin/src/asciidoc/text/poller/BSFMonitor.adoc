@@ -31,14 +31,6 @@ BSFMonitors also grand access to a selection of OpenNMS internal methods and cla
 | `run-type`        | one of those `eval` or `exec`                         | optional | `eval`
 | `lang-class`      | The BSF language class, like `groovy` or `beanshell`. | optional | `file-name extention is interpreted by default`
 | `file-extensions` | comma seperated list                                  | optional | `-`
-
-// There is no retry of timeout in the BSFMonitor code....
-// There are also no dedicated retry or timeout parameters handed over to the script, just the parameter map it self.
-| `retry`          | text                                                   | optional | `-`
-| `timeout`        | text                                                   | optional | `-`
-
-
-
 |===
 
 
@@ -55,11 +47,27 @@ BSFMonitors also grand access to a selection of OpenNMS internal methods and cla
 | `bsf_monitor`| BSFMonitor                     | The instance of the _BSFMonitor_ object calling the script. +
                                                   Useful for logging via its +
                                                   log(String sev, String fmt, Object... args) method.
-| `results`     | HashMap<String, String>        | The script is ecpected to put it results into this object. +
+| `results`    | HashMap<String, String>        | The script is ecpected to put it results into this object. +
                                                   The status indication sould be set into the entry with key _status_. +
                                                   If the status is not _OK_, a key _reason_ shoud contain a +
                                                   description of the problem.
 | `times`      | LinkedHashMap<String, Number>  | The script is expected to put one or more response times into this object.
+|===
+
+Additionally every parameter added to to service definition in PollerConfig is avalible as a String object in the script.
+The key attribute of the parameter respresents the name of the string object and the value attribute represents the value of the string object.
+Please keep in mind, that this parameters are also accesable via the map object.
+
+==== Response Codes
+The script has to provide a statuscode that represents the status of the associated service. The following status are defined:
+
+[options="header, autowidth"]
+|===
+| Code  | Description
+| `OK`  | Service is available
+| `UNK` | Service status unknown
+| `UNR` | Service is unresponsive
+| `NOK` | Service is unavailable
 |===
 
 ==== Response time tracking
@@ -82,6 +90,10 @@ RRD Response Time Tracking at the PollerConfig Service
 It is also possible to return one or multiple response times from the script. 
 This is achived by adding name-number pairs that are respresenting the response times to the _times_ object.
 TODO
+
+==== Timeout and Retry
+The BSFMonitor is not handling any timeout or retry cycles. 
+If retry and or timeout behavior is required, it has to be implemented in the script it self.
 
 ==== Minimal Examples
 
