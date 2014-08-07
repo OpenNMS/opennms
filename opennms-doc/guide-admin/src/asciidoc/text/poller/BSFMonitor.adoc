@@ -46,7 +46,7 @@ BSFMonitors also grant access to a selection of OpenNMS internal methods and cla
 | `svc_name`   | String                         | The name of the service that is being polled.
 | `bsf_monitor`| BSFMonitor                     | The instance of the _BSFMonitor_ object calling the script. 
                                                   Useful for logging via its 
-                                                  log(String sev, String fmt, Object... args) method.
+                                                  +log(String sev, String fmt, Object... args)+ method.
 | `results`    | HashMap<String, String>        | The script is ecpected to put it results into this object.
                                                   The status indication sould be set into the entry with key _status_.
                                                   If the status is not _OK_, a key _reason_ shoud contain a description of the problem.
@@ -94,7 +94,7 @@ RRD response time tracking at the _poller-configuration.xml_ Service
 
 It is also possible to return one or many response times directly from the script.
 To add custom response time or overwrite the default one add entries to the _times_ object.
-The entries start with a string that names the datasource and number that represents the response time.
+The entries start with a _String_ that names the datasource and number that represents the response time.
 To overwrite the default response time datasource add an entry into _times_ named _response-time_
 
 ==== Timeout and Retry
@@ -104,7 +104,7 @@ If retry and or timeout behavior is required, it has to be implemented in the sc
 ==== Requirements for the script (run-types)
 Depending on the _run-type_ the script has to provide its results in different ways.
 For minimal scripts with very simple logic _run-type_ _eval_ is the simple option.
-Scripts runing in _eval_ mode have to return a string matching one of the _Status Codes_.
+Scripts runing in _eval_ mode have to return a _String_ matching one of the _Status Codes_.
 
 Every time your script is more than a one-liner _run-type_ _exec_ is required.
 Scripts running in _exec_ mode have not to return anything, but they have to add a "status" entry with a _Status Code_ to the _results_ object.
