@@ -85,19 +85,21 @@ RRD Response Time Tracking at the PollerConfig Service
 <parameter key="rrd-base-name" value="minimalbshbase" />
 
 <!-- name of the data source in the rrd file -->
-<parameter key="ds-name" value="minimalbshds" />
+<!-- by default "response-time" is used as ds-name -->
+<parameter key="ds-name" value="myResponseTime" />
 ----
 
-It is also possible to return one or multiple response times from the script. 
-This is achived by adding name-number pairs that are respresenting the response times to the _times_ object.
-TODO
+It is also possible to return one or many response times directly from the script.
+To add custom response time or overwrite the default one add entries to the _times_ object.
+The entries start with a string that names the datasource and number that represents the response time.
+To overwrite the default response time datasource add a entry into _times_ named _response-time_
+
 
 ==== Timeout and Retry
 The BSFMonitor is not handling any timeout or retry cycles. 
 If retry and or timeout behavior is required, it has to be implemented in the script it self.
 
 ==== Minimal Examples
-
 
 ===== Minimal Bean Shell Example
 BeanShell Example PollerConfig
