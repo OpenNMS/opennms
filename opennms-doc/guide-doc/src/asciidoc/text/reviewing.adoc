@@ -19,13 +19,15 @@ You have basically two possibilities as a reviewer to change something:
 
 === Step 1: Formal check, is everything there
 
-Every Pull Request requires a comment with the following content:
+Every Pull Request should have in the first comment the following content:
 
 * Comment with the backlink to the JIRA issue and a Todo list for the review, see below
 
 [source]
 ----
-http://issues.opennms.org/browse/NMS-6698
+JIRA: http://issues.opennms.org/browse/NMS-6698
+
+ - This is optional, if you migrate from an existing Wiki, the link to the Wiki page you migrate
 
 Todo Review:
 - [ ] Typo and grammar
