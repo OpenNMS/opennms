@@ -188,7 +188,7 @@ public class OnmsTopologyProvider extends AbstractTopologyProvider implements Gr
             for (DataLinkInterface link: getDataLinkInterfaceDao().findByNodeParentId(((SimpleLeafVertex)target).getNodeID())) {
                 for (Vertex source: leafs) {
                    if ( link.getNode().getId() == ((SimpleLeafVertex)source).getNodeID() ) {
-                       connectVertices(link.getId().toString(), source, target);
+                       connectVertices(link.getId().toString(), source, target, TOPOLOGY_NAMESPACE_ONMSDAO);
                    }
                 }
             }

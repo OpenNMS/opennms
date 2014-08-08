@@ -38,7 +38,7 @@ import java.util.List;
 public class IsisEdgeProvider implements EdgeProvider{
     @Override
     public String getEdgeNamespace() {
-        return AbstractLinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD;
+        return AbstractLinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD + "::IsIs";
     }
 
     @Override

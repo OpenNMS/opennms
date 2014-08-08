@@ -180,6 +180,9 @@ public class OnmsNode extends OnmsEntity implements Serializable, Comparable<Onm
     private IsIsElement m_isisElement;
 
     /** persistent field */
+    private CdpElement m_cdpElement;
+
+    /** persistent field */
     private Set<OnmsIpInterface> m_ipInterfaces = new LinkedHashSet<OnmsIpInterface>();
 
     /** persistent field */
@@ -809,6 +812,24 @@ public class OnmsNode extends OnmsEntity implements Serializable, Comparable<Onm
         m_isisElement = isisElement;
     }
 
+    /**
+     * The cdp element associated with this node
+     *
+     * @return a {@link org.opennms.netmgt.model.CdpElement} object.
+     */
+    @OneToOne(mappedBy="node", cascade = CascadeType.ALL, fetch=FetchType.LAZY)
+    public CdpElement getCdpElement() {
+        return m_cdpElement;
+    }
+
+    /**
+     * <p>setCdpElement</p>
+     *
+     * @param asset a {@link org.opennms.netmgt.model.CdpElement} object.
+     */
+    public void setCdpElement(CdpElement cdpElement) {
+        m_cdpElement = cdpElement;
+    }
 
     /**
      * <p>getPathElement</p>

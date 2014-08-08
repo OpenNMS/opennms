@@ -114,7 +114,7 @@ public class AddNodesController extends MapsLoggingController {
 				String[] snodeids = elems.split(",");
 				nodeids = new Integer[snodeids.length];
 				for (int i = 0; i<snodeids.length;i++) {
-					nodeids[i] = new Integer(snodeids[i]);
+					nodeids[i] = Integer.valueOf(snodeids[i]);
 				}
 			}
 			
@@ -168,7 +168,7 @@ public class AddNodesController extends MapsLoggingController {
 				LOG.debug("Adding nodes with neighbor of:{}", elems);
 				actionfound = true;
 				Set<Integer> linkednodeids = NetworkElementFactory.getInstance(getServletContext()).getLinkedNodeIdOnNode(WebSecurityUtils.safeParseInt(elems));
-				linkednodeids.add(new Integer(elems));
+				linkednodeids.add(Integer.valueOf(elems));
 				nodeids = linkednodeids.toArray(new Integer[linkednodeids.size()]);
 			} 
 			

@@ -32,11 +32,11 @@ import org.opennms.features.topology.api.support.VertexHopGraphProvider;
 import org.opennms.features.topology.api.topo.*;
 import org.opennms.netmgt.dao.api.OspfElementDao;
 import org.opennms.netmgt.dao.api.OspfLinkDao;
+import org.opennms.netmgt.model.OnmsIpInterface;
+import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OspfLink;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 public class OspfEdgeProvider implements EdgeProvider {
 
@@ -45,7 +45,7 @@ public class OspfEdgeProvider implements EdgeProvider {
 
     @Override
     public String getEdgeNamespace() {
-        return AbstractLinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD;
+        return AbstractLinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD + "::OSPF";
     }
 
     @Override
@@ -65,26 +65,46 @@ public class OspfEdgeProvider implements EdgeProvider {
 
     @Override
     public List<Edge> getEdges(Criteria... criteria) {
-        for (Criteria crit : criteria) {
-            if(crit.getNamespace().equals(AbstractLinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD)){
-                if(crit instanceof LinkdHopCriteria){
-                    String nodeId = ((LinkdHopCriteria) crit).getId();
-                    //List<OspfLink> links = getOspfLinkDao().findByNodeId(Integer.valueOf(nodeId));
-                }
+        /*if(criteria.length > 0) {
+            for (Criteria crit : criteria) {
+                if (crit.getNamespace().equals(AbstractLinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD)) {
+                    if (crit instanceof LinkdHopCriteria) {
+                        String nodeId = ((LinkdHopCriteria) crit).getId();
+                        //List<OspfLink> links = getOspfLinkDao().findByNodeId(Integer.valueOf(nodeId));
+                    }
 
-                if (crit instanceof VertexHopGraphProvider.FocusNodeHopCriteria) {
+                    if (crit instanceof VertexHopGraphProvider.FocusNodeHopCriteria) {
 
+                    }
                 }
             }
-        }
+        } else {*/
+            List<OspfLink> allLinks =  getOspfLinkDao().findAll();
+            Set<Edge> combinedLinks = new HashSet<Edge>();
+            for(OspfLink sourceLink : allLinks) {
+
+                for (OspfLink targetLink : allLinks) {
+                    boolean ipAddrCheck = sourceLink.getOspfRemIpAddr().equals(targetLink.getOspfIpAddr()) && targetLink.getOspfRemIpAddr().equals(sourceLink.getOspfIpAddr());
+                    if(ipAddrCheck) {
+                        String id = "ospf::" + Math.min(sourceLink.getId(), targetLink.getId()) + "||" + Math.max(sourceLink.getId(), targetLink.getId());
+                        Vertex source = new AbstractVertex(AbstractLinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD, sourceLink.getNode().getNodeId(), sourceLink.getNode().getLabel());
+                        Vertex target = new AbstractVertex(AbstractLinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD, targetLink.getNode().getNodeId(), targetLink.getNode().getLabel());
+                        Edge edge = new AbstractEdge(getEdgeNamespace(), id, source, target);
+                        combinedLinks.add(edge);
+                    }
+                }
+            }
+            return Arrays.asList(combinedLinks.toArray(new Edge[0]));
+
+       /* }
 
 
-        return Collections.emptyList();
+        return Collections.emptyList();*/
     }
 
     @Override
     public List<Edge> getEdges(Collection<? extends EdgeRef> references) {
-        return Collections.emptyList();
+        throw new UnsupportedOperationException("Not implemented");
     }
 
     @Override

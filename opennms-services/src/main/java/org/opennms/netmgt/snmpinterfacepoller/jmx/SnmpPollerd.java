@@ -41,7 +41,7 @@ public class SnmpPollerd extends AbstractSpringContextJmxServiceDaemon<org.openn
     /** {@inheritDoc} */
     @Override
     protected String getLoggingPrefix() {
-        return "OpenNMS.SnmpPoller";
+        return "snmp-poller";
     }
 
     /** {@inheritDoc} */

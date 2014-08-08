@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>org.opennms.features</artifactId>
-    <version>1.13.4-SNAPSHOT</version>
+    <version>1.13.5-SNAPSHOT</version>
   </parent>
 
   <modelVersion>4.0.0</modelVersion>
@@ -12,7 +12,7 @@
   <groupId>org.opennms.features</groupId>
   <artifactId>nrtg</artifactId>
   <packaging>pom</packaging>
-  <name>OpenNMS Features NRTG</name>
+  <name>OpenNMS :: Features :: NRTG</name>
   <description>
     Near Real Time Graphing (NRTG) is the main module which contains the
     parts of the NRTG project. NRTG is a distributable scalable system to

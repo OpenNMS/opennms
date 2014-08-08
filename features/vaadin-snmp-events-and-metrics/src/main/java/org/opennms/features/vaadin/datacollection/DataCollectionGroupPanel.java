@@ -38,6 +38,7 @@ import org.opennms.core.xml.JaxbUtils;
 import org.opennms.features.vaadin.api.Logger;
 import org.opennms.netmgt.config.DataCollectionConfigDao;
 import org.opennms.netmgt.config.datacollection.DatacollectionGroup;
+import org.slf4j.LoggerFactory;
 import org.vaadin.dialogs.ConfirmDialog;
 
 import com.vaadin.data.util.ObjectProperty;
@@ -63,6 +64,8 @@ import com.vaadin.ui.VerticalLayout;
 @SuppressWarnings("serial")
 public abstract class DataCollectionGroupPanel extends Panel implements TabSheet.SelectedTabChangeListener {
 
+	private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(DataCollectionGroupPanel.class);
+	
     /** The group name. */
     private final TextField groupName = new TextField("Data Collection Group Name");
 
@@ -225,7 +228,9 @@ public abstract class DataCollectionGroupPanel extends Panel implements TabSheet
             // Force reload datacollection-config.xml to be able to configure SNMP collections.
             try {
                 final File configFile = ConfigFileConstants.getFile(ConfigFileConstants.DATA_COLLECTION_CONF_FILE_NAME);
-                configFile.setLastModified(System.currentTimeMillis());
+                if(!configFile.setLastModified(System.currentTimeMillis())) {
+                	LOG.warn("Could not set last modified: {}",configFile.getPath());
+                }
             } catch (IOException e) {
                 logger.warn("Can't reach datacollection-config.xml: " + e.getMessage());
             }

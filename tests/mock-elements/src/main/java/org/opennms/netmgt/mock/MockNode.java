@@ -49,7 +49,7 @@ public class MockNode extends MockContainer<MockNetwork,MockInterface> {
 
     int m_nodeid;
     int m_nextIfIndex = 1;
-
+    
     /**
      * <p>Constructor for MockNode.</p>
      *
@@ -88,7 +88,7 @@ public class MockNode extends MockContainer<MockNetwork,MockInterface> {
     // impl
     @Override
     Object getKey() {
-        return new Integer(m_nodeid);
+        return Integer.valueOf(m_nodeid);
     }
 
     // model
@@ -234,4 +234,5 @@ public class MockNode extends MockContainer<MockNetwork,MockInterface> {
         event.addParam(EventConstants.PARM_NODE_LABEL, newLabel);
         return event.getEvent();
     }
+    
 }

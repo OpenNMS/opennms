@@ -7,7 +7,7 @@
         <relativePath>../../topology-map/poms/compiled/</relativePath>
         <groupId>org.opennms.features.topology.build</groupId>
         <artifactId>compiled-bundle-settings</artifactId>
-        <version>1.13.4-SNAPSHOT</version>
+        <version>1.13.5-SNAPSHOT</version>
     </parent>
 
     <groupId>org.opennms.features.vaadin-dashlets</groupId>

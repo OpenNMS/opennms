@@ -178,7 +178,9 @@ public class RequisitionFileUtils {
         for (final File snapshotFile : findSnapshots(repository, foreignSource)) {
             if (!isNewer(snapshotFile, date)) {
                 LOG.trace("Deleting {}", snapshotFile);
-                snapshotFile.delete();
+                if(!snapshotFile.delete()) {
+                	LOG.warn("Could not delete file: {}", snapshotFile.getPath());
+                }
             }
         }
     }
@@ -188,7 +190,9 @@ public class RequisitionFileUtils {
             final List<File> snapshots = findSnapshots(repository, foreignSource);
             for (final File snapshot : snapshots) {
                 LOG.trace("Deleting {}", snapshot);
-                snapshot.delete();
+                if(!snapshot.delete()) {
+                	LOG.warn("Could not delete file: {}", snapshot.getPath());
+                }
             }
         }
     }

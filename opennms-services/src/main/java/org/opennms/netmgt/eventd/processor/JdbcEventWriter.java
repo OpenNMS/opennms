@@ -73,7 +73,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
  * 
  * @deprecated Replace with a Hibernate implementation. See bug NMS-3033. Actually
  * it doesn't have any details. :P
- * http://issues.opennms.org:8280/browse/NMS-3033
+ * http://issues.opennms.org/browse/NMS-3033
  *
  * @see org.opennms.netmgt.model.events.Constants#MULTIPLE_VAL_DELIM
  * @see org.opennms.netmgt.model.events.Constants#DB_ATTRIB_DELIM
