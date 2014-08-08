@@ -111,6 +111,18 @@ If your script is more than a one-liner, _run-type_ _exec_ is essentially requir
 Scripts running in _exec_ mode need not return anything, but they have to add a "status" entry with a _Status Code_ to the _results_ object.
 Additionally, the _results_ object can also carry a "reason":"message" entry that is used in non "OK" states.
 
+==== Commonly used language settings
+The BSF supports many languages, the following table provides the reqiered setup for commonly used languages.
+
+.BSF language setups
+[options="header, autowidth"]
+|===
+| Language                            | lang-class  | bsf-engine                                    | required library 
+| http://www.beanshell.org[BeanShell] | _beanshell_ | `bsh.util.BeanShellBSFEngine`                 | `supported by default`
+| http://groovy.codehaus.org[Groovy]  | _groovy_    | `org.codehaus.groovy.bsf.GroovyEngine`        | _groovy-all-[version].jar_
+| http://www.jython.org[Jython]       | _jython_    | `org.apache.bsf.engines.jython.JythonEngine`  | _jython-[version].jar_
+|===
+
 ==== Minimal Examples
 
 ===== Minimal Bean Shell Example
