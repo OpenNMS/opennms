@@ -35,8 +35,12 @@ import org.apache.commons.exec.CommandLine;
 import org.opennms.systemreport.AbstractSystemReportPlugin;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class TopReportPlugin extends AbstractSystemReportPlugin {
+    private static final Logger LOG = LoggerFactory.getLogger(TopReportPlugin.class);
+
     @Override
     public String getName() {
         return "Top";
@@ -62,6 +66,7 @@ public class TopReportPlugin extends AbstractSystemReportPlugin {
 
         if (top != null) {
             topOutput = slurpOutput(CommandLine.parse(top + " -h"), true);
+            LOG.debug("top -h output: {}", topOutput);
 
             if (topOutput.contains("-b") && topOutput.contains("-n")) {
                 topOutput = slurpOutput(CommandLine.parse(top + " -n 1 -b"), false);

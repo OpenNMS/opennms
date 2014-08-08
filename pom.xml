@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms</groupId>
   <artifactId>opennms</artifactId>
-  <version>1.13.4-SNAPSHOT</version>
+  <version>1.13.5-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>OpenNMS</name>
   <url>http://opennms.org/</url>
@@ -967,7 +967,7 @@
     <install.version>${project.version}</install.version>
     <display.version>${install.version}</display.version>
     <opennms.home>${dist.dir}/${dist.name}</opennms.home>
-    <opennms.osgi.version>1.13.4.SNAPSHOT</opennms.osgi.version>
+    <opennms.osgi.version>1.13.5.SNAPSHOT</opennms.osgi.version>
     <maven.metadata.legacy>true</maven.metadata.legacy>
     <root.dir>${project.basedir}</root.dir>
     <dist.dir>${root.dir}/target</dist.dir>
@@ -1044,12 +1044,12 @@
     <dnsjavaVersion>2.1.3</dnsjavaVersion>
     <ecjVersion>4.2.2</ecjVersion>
     <eclipselinkVersion>2.5.1</eclipselinkVersion>
-    <groovyVersion>1.8.9</groovyVersion>
-    <guavaVersion>13.0</guavaVersion>
+    <groovyVersion>2.3.6</groovyVersion>
+    <guavaVersion>17.0</guavaVersion>
     <gwtVersion>2.6.1</gwtVersion>
     <gwtPluginVersion>2.6.1</gwtPluginVersion>
-    <httpcoreVersion>4.2.4</httpcoreVersion>
-    <httpclientVersion>4.2.5</httpclientVersion>
+    <httpcoreVersion>4.3.2</httpcoreVersion>
+    <httpclientVersion>4.3.4</httpclientVersion>
     <jacksonVersion>1.9.13</jacksonVersion>
     <jasperreportsVersion>3.7.6</jasperreportsVersion>
     <jettyVersion>7.6.15.v20140411</jettyVersion>
@@ -1057,7 +1057,7 @@
     <felixVersion>2.2.0</felixVersion>
     <liquibaseVersion>2.0.5</liquibaseVersion>
     <log4jVersion>99.99.99-use-log4j2</log4jVersion>
-    <log4j2Version>2.0-rc2</log4j2Version>
+    <log4j2Version>2.0</log4j2Version>
     <minaVersion>2.0.7</minaVersion>
     <paxExamVersion>2.6.0</paxExamVersion>
     <powermockVersion>1.5.5</powermockVersion>
@@ -2551,7 +2551,7 @@
       <dependency>
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-exec</artifactId>
-        <version>1.0.1</version>
+        <version>1.2</version>
       </dependency>
       <dependency>
         <groupId>org.apache.httpcomponents</groupId>

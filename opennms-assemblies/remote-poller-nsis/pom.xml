@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.assemblies</groupId>
   <artifactId>opennms-remote-poller-windows</artifactId>
-  <version>1.13.4-SNAPSHOT</version>
+  <version>1.13.5-SNAPSHOT</version>
   <packaging>pom</packaging>
   <!-- 
     This "name" value is displayed in the installer and used to 

@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.opennms.features</groupId>
     <artifactId>nrtg</artifactId>
-    <version>1.13.4-SNAPSHOT</version>
+    <version>1.13.5-SNAPSHOT</version>
   </parent>
   <groupId>org.opennms.features.nrtg</groupId>
   <artifactId>nrtg-commander</artifactId>
@@ -14,7 +14,7 @@
     <!-- refactor code so namespace matches symbolic name -->
     <bundle.namespace>org.opennms.nrtg.commander</bundle.namespace>
   </properties>
-  <name>OpenNMS Features NRTG Commander</name>
+  <name>OpenNMS :: Features :: NRTG :: Commander</name>
   <description>
      The Commander is a dummy implementation to generate CollectionJobs
      and publish them via JMS-Queues. It's able to run in parallel and 

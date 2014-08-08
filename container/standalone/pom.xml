@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>container</artifactId>
-    <version>1.13.4-SNAPSHOT</version>
+    <version>1.13.5-SNAPSHOT</version>
   </parent>
   <groupId>org.opennms.container</groupId>
   <artifactId>standalone</artifactId>
@@ -78,9 +78,10 @@
            <configuration>
               <descriptors>
                 <descriptor>mvn:org.apache.karaf.assemblies.features/standard/${karafVersion}/xml/features</descriptor>
-                <descriptor>file:${basedir}/target/classes/features.xml</descriptor>
+                <descriptor>file:${project.build.outputDirectory}/features.xml</descriptor>
               </descriptors>
               <features>
+                <!-- Add http-whiteboard to the default list of features -->
                 <feature>http-whiteboard</feature>
               </features>
               <repository>target/features-repo</repository>

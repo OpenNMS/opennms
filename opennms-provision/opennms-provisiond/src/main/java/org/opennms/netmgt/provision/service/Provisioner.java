@@ -600,6 +600,21 @@ public class Provisioner implements SpringServiceDaemon {
     public void handleNodeUpdated(Event e) {
     	LOG.debug("Node updated event received: {}", e);
     	
+        if (!Boolean.valueOf(System.getProperty(SCHEDULE_RESCAN_FOR_UPDATED_NODES, "true"))) {
+        	LOG.debug("Rescanning updated nodes is disabled via property: {}", SCHEDULE_RESCAN_FOR_UPDATED_NODES);
+        	return;
+        }
+        boolean rescanExisting = true; // Default
+        for (Parm parm : e.getParmCollection()) {
+            if (EventConstants.PARM_RESCAN_EXISTING.equals(parm.getParmName()) && "false".equalsIgnoreCase(parm.getValue().getContent())) {
+                rescanExisting = false;
+            }
+        }
+        if (!rescanExisting) {
+            LOG.debug("Rescanning updated nodes is disabled via event parameter: {}", EventConstants.PARM_RESCAN_EXISTING);
+            return;
+        }
+        
         removeNodeFromScheduleQueue(new Long(e.getNodeid()).intValue());
         NodeScanSchedule scheduleForNode = getProvisionService().getScheduleForNode(e.getNodeid().intValue(), true);
         if (scheduleForNode != null) {
@@ -855,7 +870,8 @@ public class Provisioner implements SpringServiceDaemon {
         final String rescanExisting = EventUtils.getParm(event, EventConstants.PARM_IMPORT_RESCAN_EXISTING);
         
         if (rescanExisting == null) {
-            return Boolean.getBoolean(SCHEDULE_RESCAN_FOR_UPDATED_NODES);
+            String enabled = System.getProperty(SCHEDULE_RESCAN_FOR_UPDATED_NODES, "true");
+            return Boolean.valueOf(enabled);
         }
         
         return Boolean.parseBoolean(rescanExisting);

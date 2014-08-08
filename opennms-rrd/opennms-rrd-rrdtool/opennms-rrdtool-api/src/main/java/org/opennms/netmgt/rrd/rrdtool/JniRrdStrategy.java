@@ -127,8 +127,10 @@ public class JniRrdStrategy implements RrdStrategy<JniRrdStrategy.CreateCommand 
         @Override
     public CreateCommand createDefinition(String creator, String directory, String rrdName, int step, List<RrdDataSource> dataSources, List<String> rraList) throws Exception {
         File f = new File(directory);
-        if(!f.mkdirs()) {
-        	LOG.warn("Could not make directory: {}", f.getPath());
+        if (!f.exists()) {
+            if (!f.mkdirs()) {
+        	       LOG.warn("Could not make directory: {}", f.getPath());
+            }
         }
 
         String fileName = directory + File.separator + rrdName + RrdUtils.getExtension();
