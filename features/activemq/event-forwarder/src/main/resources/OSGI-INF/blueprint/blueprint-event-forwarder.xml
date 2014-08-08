@@ -19,7 +19,7 @@
 ">
 
   <!-- Configuration properties -->
-  <cm:property-placeholder id="eventForwarderProperties" persistent-id="org.opennms.features.activemq.event-forwarder" update-strategy="none">
+  <cm:property-placeholder id="eventForwarderProperties" persistent-id="org.opennms.features.activemq.eventforwarder" update-strategy="none">
     <cm:default-properties>
       <cm:property name="brokerUri" value="tcp://127.0.0.1:61716"/>
       <cm:property name="location.name" value="remote" />
@@ -46,7 +46,7 @@
   <!-- Camel marshalling processor -->
   <bean id="marshaller" class="org.opennms.features.activemq.eventforwarder.CastorUtilsMarshalProcessor"/>
 
-  <!-- OSGi service that exposes this sampler as a scheduling target -->
+  <!-- Event listener that connects the EventIpcManager to this Camel context -->
   <bean id="eventForwarder" class="org.opennms.features.activemq.eventforwarder.internal.DefaultEventForwarder">
     <argument value="seda:forwardEvent"/>
   </bean>
@@ -69,7 +69,7 @@
       <bean ref="foreignSourceForeignIdHeaderProcessor"/>
       <!-- Marshal Event to XML -->
       <bean ref="marshaller"/>
-      <log message="FORWARDING EVENT: ${body.toString()}"/>
+      <log message="blueprint-event-forwarder.xml: Forwarding event: ${body.toString()}"/>
       <!-- Send to ActiveMQ -->
       <to uri="activemq:forwardEvents?disableReplyTo=true" />
     </route>
