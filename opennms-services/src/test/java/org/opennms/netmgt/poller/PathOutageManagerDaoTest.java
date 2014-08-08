@@ -283,10 +283,10 @@ public class PathOutageManagerDaoTest implements TemporaryDatabaseAware<MockData
 			assertEquals("192.168.1.4", nc[0]);
 			assertEquals("SMTP", nc[1]);
 		
-			Set<Integer> test = m_pathOutageManager.getAllDependencyNodesByCriticalPath("192.168.1.1");
+			Set<Integer> test = m_pathOutageManager.getDependencyNodesByCriticalPath("192.168.1.1");
 			assertEquals(1, test.size());
 			
-			Set<Integer> less = m_pathOutageManager.getAllDependencyNodesByNodeId(3);
+			Set<Integer> less = m_pathOutageManager.getDependencyNodesByNodeId(3);
 			assertEquals(1, less.size());
 	}
 

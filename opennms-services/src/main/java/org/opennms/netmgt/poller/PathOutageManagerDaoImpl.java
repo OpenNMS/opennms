@@ -320,8 +320,8 @@ public class PathOutageManagerDaoImpl implements PathOutageManager{
         
         return result;
     }
-    
-    public Set<Integer> getAllDependencyNodesByCriticalPath(String criticalPathip) {
+    @Override
+    public Set<Integer> getDependencyNodesByCriticalPath(String criticalPathip) {
        	Set<Integer> depNodes = new TreeSet<Integer>();
     	    	
     	final org.opennms.core.criteria.Criteria crit = new org.opennms.core.criteria.Criteria(OnmsPathOutage.class)
@@ -343,7 +343,8 @@ public class PathOutageManagerDaoImpl implements PathOutageManager{
     	return depNodes;
     }
     
-    public Set<Integer> getAllDependencyNodesByNodeId(int nodeId) {
+    @Override
+    public Set<Integer> getDependencyNodesByNodeId(int nodeId) {
     	Set<Integer> depNodes = new TreeSet<Integer>();
     	
     	final org.opennms.core.criteria.Criteria crit = new org.opennms.core.criteria.Criteria(OnmsPathOutage.class) 
@@ -357,9 +358,7 @@ public class PathOutageManagerDaoImpl implements PathOutageManager{
     				depNodes.add(cur.getNodeId());
     			}
     		}
-    	}
-    	
-    	
+    	}    	
     	
     	return depNodes;
     }
