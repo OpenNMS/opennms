@@ -68,9 +68,20 @@ public class BridgeLinkStatusProviderTest {
     }
 
     @Test
+    public void testGetLinkIds(){
+        EasyMock.expect(m_bridgeMacLinkDao.getAllBridgeLinksToIpAddrToNodes()).andReturn(createBridgeLinks());
+        EasyMock.replay(m_bridgeMacLinkDao);
+
+        Set<Integer> ids = m_statusProvider.getLinkIds(mapRefs(createEdges()));
+        assertEquals(1, ids.size());
+
+    }
+
+
+    @Test
     public void testGetBridgeLinkStatus() {
         EasyMock.expect(
-                m_alarmDao.findMatching(EasyMock.anyObject(org.opennms.core.criteria.Criteria.class))).andReturn(createAlarm());
+                m_alarmDao.findMatching(EasyMock.anyObject(org.opennms.core.criteria.Criteria.class))).andReturn(createAlarm()).anyTimes();
         EasyMock.expect(m_bridgeMacLinkDao.getAllBridgeLinksToIpAddrToNodes()).andReturn(createBridgeLinks());
 
         EasyMock.replay(m_alarmDao, m_bridgeMacLinkDao);
@@ -84,10 +95,39 @@ public class BridgeLinkStatusProviderTest {
             assertEquals("up", status.computeStatus());
         }
 
+        BridgeMacLinkDao bridgeMacLinkDao = EasyMock.createMock(BridgeMacLinkDao.class);
+        EasyMock.expect(bridgeMacLinkDao.getAllBridgeLinksToIpAddrToNodes()).andReturn(createBridgeLinks());
+        EasyMock.replay(bridgeMacLinkDao);
+
+        m_statusProvider.setBridgeMacLinkDao(bridgeMacLinkDao);
+
+        Map<EdgeRef, Status> statusMap2 = m_statusProvider.getStatusForEdges(m_edgeProvider, edges, new Criteria[0]);
+        assertEquals(2, statusMap2.size());
+        for (Status status : statusMap2.values()) {
+            assertEquals("up", status.computeStatus());
+        }
+
     }
 
     @Test
     public void testGetBridgeLinkStatusOneDown(){
+        EasyMock.expect(
+                m_alarmDao.findMatching(EasyMock.anyObject(org.opennms.core.criteria.Criteria.class))).andReturn(createDownAlarm());
+        EasyMock.expect(m_bridgeMacLinkDao.getAllBridgeLinksToIpAddrToNodes()).andReturn(createBridgeLinks());
+
+        EasyMock.replay(m_alarmDao, m_bridgeMacLinkDao);
+        List<EdgeRef> edges = createEdges();
+
+        Map<EdgeRef, Status> statusMap = m_statusProvider.getStatusForEdges(m_edgeProvider, edges, new Criteria[0]);
+        assertEquals(2, statusMap.size());
+        assertEquals(edges.get(0), new ArrayList<EdgeRef>(statusMap.keySet()).get(0));
+
+        assertEquals(statusMap.get(edges.get(0)).computeStatus(), "up");
+        assertEquals(statusMap.get(edges.get(1)).computeStatus(), "down");
+    }
+
+    @Test
+    public void testGetBridgeLinkStatusOneLink(){
         EasyMock.expect(
                 m_alarmDao.findMatching(EasyMock.anyObject(org.opennms.core.criteria.Criteria.class))).andReturn(createDownAlarm());
         EasyMock.expect(m_bridgeMacLinkDao.getAllBridgeLinksToIpAddrToNodes()).andReturn(createBridgeLinks());
@@ -120,6 +160,15 @@ public class BridgeLinkStatusProviderTest {
         }
     }
 
+    protected Map<String, EdgeRef> mapRefs(Collection<EdgeRef> edges) {
+        Map<String, EdgeRef> retVal = new HashMap<String, EdgeRef>();
+        for (EdgeRef edge : edges) {
+            String nameSpace = EnhancedLinkdTopologyProvider.BRIDGE_EDGE_NAMESPACE;;
+            if (edge.getNamespace().equals(nameSpace)) retVal.put(edge.getId(), edge);
+        }
+        return retVal;
+    }
+
     private List<EdgeRef> createEdges() {
 
         Vertex sourceVertex = new AbstractVertex("nodes", "1", "source");
@@ -132,24 +181,37 @@ public class BridgeLinkStatusProviderTest {
         return Arrays.asList(edge, edge2);
     }
 
-    private List<BridgeMacTopologyLink> createBridgeLinks() {
-
+    private List<BridgeMacTopologyLink> createBridgeLinks(){
         /*
-        521 |      1 |         48 |                48 |                  |      | a8d0e5a0a490 | 172.20.2.1    | 172.20.2.1    |            2 | mrmakay   |           551
-        521 |      1 |         48 |                48 |                  |      | a8d0e5a0a490 | 98.101.157.50 | 98.101.157.50 |            2 | mrmakay   |           549
-        521 |      1 |         48 |                48 |                  |      | a8d0e5a0a490 | 172.20.1.1    | 172.20.1.1    |            2 | mrmakay   |           548
-         */
+        519 |      1 |         48 |                48 |                  |      | 00e08155403b | 172.20.1.16   |            |              |           |           548
+        652 |      1 |         48 |                48 |                  |      | 00163e62e1c8 | 172.20.1.40   |            |              |           |           548
+        521 |      1 |         48 |                48 |                  |      | a8d0e5a0a490 | 172.20.2.1    |            |              |           |           551
+        521 |      1 |         48 |                48 |                  |      | a8d0e5a0a490 | 98.101.157.50 |            |              |           |           549
+        521 |      1 |         48 |                48 |                  |      | a8d0e5a0a490 | 172.20.1.1    | 172.20.1.1 |            2 | mrmakay   |           548
+        522 |      1 |         48 |                48 |                  |      | 000bdba886f4 | 172.20.1.19   |            |              |           |           548
+        523 |      1 |         48 |                48 |                  |      | 00163e7efe74 | 172.20.1.32   |            |              |           |           548
+        524 |      1 |         48 |                48 |                  |      | a8d0e5a0a488 |               |            |              |           |
+        525 |      1 |         48 |                48 |                  |      | 782bcb446c68 |               |            |              |           |
+        604 |      1 |         48 |                48 |                  |      | 782bcb446c66 | 172.20.1.11   |            |              |           |           548
+        527 |      1 |         48 |                48 |                  |      | b8ca3aeb75a8 | 172.20.1.254  |            |              |           |           548
+        528 |      1 |         48 |                48 |                  |      | 14feb5cf15b9 | 172.20.1.23   |            |              |           |           548
+        518 |      1 |         48 |                48 |                  |      | 14feb5cf15c1 |               |            |              |           |
+        517 |      1 |         48 |                48 |                  |      | 000d566ffea8 | 172.20.1.39   |            |              |           |           548
+        516 |      1 |         48 |                48 |                  |      | 525400eeb91d | 172.20.1.41   |            |              |           |           548
+        515 |      1 |         48 |                48 |                  |      | 00163e1d0215 | 172.20.1.24   |            |              |           |           548
+        514 |      1 |         48 |                48 |                  |      | 00163e69ab49 | 172.20.1.38   |            |              |           |           548
+ */
+        BridgeMacTopologyLink link1 = new BridgeMacTopologyLink(519, 1, 48, 48, null, null, "00e08155403b", "172.20.1.16", null, null, null, 548);
+        BridgeMacTopologyLink link2 = new BridgeMacTopologyLink(652, 1, 48, 48, null, null, "00163e62e1c8", "172.20.1.40", null, null, null, 548);
+        BridgeMacTopologyLink link3 = new BridgeMacTopologyLink(521, 1, 48, 48, null, null, "a8d0e5a0a490", "172.20.2.1", null, null, null, 551);
+        BridgeMacTopologyLink link4 = new BridgeMacTopologyLink(521, 1, 48, 48, null, null, "a8d0e5a0a490", "98.101.157.50", null, null, null, 549);
+        BridgeMacTopologyLink link5 = new BridgeMacTopologyLink(521, 1, 48, 48, null, null, "a8d0e5a0a490", "172.20.1.1", "172.20.1.1", 2, "mrmakay", 548);
 
-        BridgeMacTopologyLink link1 = new BridgeMacTopologyLink(521, 1, 48, 48, null, null, "a8d0e5a0a490", "172.20.2.1", "172.20.2.1", 2, "mrmakay", 551);
-        BridgeMacTopologyLink link2 = new BridgeMacTopologyLink(521, 1, 48, 48, null, null, "a8d0e5a0a490", "98.101.157.50", "98.101.157.50", 2, "mrmakay", 549);
-        BridgeMacTopologyLink link3 = new BridgeMacTopologyLink(521, 1, 48, 48, null, null, "a8d0e5a0a490", "172.20.1.1", "172.20.1.1", 2, "mrmakay", 548);
+        BridgeMacTopologyLink link6 = new BridgeMacTopologyLink(522, 1, 48, 48, null, null, "000bdba886f4", "172.20.1.19", null, null, null, 548);
+        BridgeMacTopologyLink link7 = new BridgeMacTopologyLink(523, 1, 48, 48, null, null, "00163e7efe74", "172.20.1.24", null, null, null, 548);
+        BridgeMacTopologyLink link8 = new BridgeMacTopologyLink(524, 1, 48, 48, null, null, "a8d0e5a0a488", null, null, null, null, 548);
 
-        List<BridgeMacTopologyLink> links = new ArrayList<BridgeMacTopologyLink>();
-        links.add(link1);
-        links.add(link2);
-        links.add(link3);
-
-        return links;
+        return Arrays.asList(link1, link2, link3, link4, link5, link6, link7, link8);
     }
 
     private List<OnmsAlarm> createAlarm() {

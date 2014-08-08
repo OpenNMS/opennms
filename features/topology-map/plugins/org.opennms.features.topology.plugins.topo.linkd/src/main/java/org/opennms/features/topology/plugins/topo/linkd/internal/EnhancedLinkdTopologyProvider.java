@@ -348,7 +348,7 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
 
 
         } catch (Exception e){
-            String message = e.getMessage();
+            LOG.debug(e.getStackTrace().toString());
         }
 
         LOG.debug("loadtopology: adding nodes without links: " + isAddNodeWithoutLink());
