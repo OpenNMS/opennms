@@ -200,7 +200,7 @@ def testFile = new File("/tmp/TestFile");
 if (testFile.exists()) {
   results.put("status", "OK")
 } else {
-  results.put("reason", "file dose not exist");
+  results.put("reason", "file does not exist");
   results.put("status", "NOK");
 }
 ----
