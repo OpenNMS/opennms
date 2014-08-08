@@ -193,6 +193,39 @@ if (testFile.exists()) {
 }
 ----
 
+===== Minimal Jython Example
+To use the Jython (Java implementiton of Python) language an additional library is required.
+Copy _jython-2.5.3.jar_ into the opennms lib folder and restart OpenNMS.
+That makes Jython available for the BSFMonitor.
+
+Jython Example PollerConfig with _run-type_ _exec_
+[source, xml]
+----
+<service name="MinimalJython" interval="300000" user-defined="true" status="on">
+  <parameter key="file-name"  value="/tmp/MinimalJython.py"/>
+  <parameter key="bsf-engine" value="org.apache.bsf.engines.jython.JythonEngine"/>
+  <parameter key="run-type" value="exec"/>
+</service>
+
+<monitor service="MinimalJython" class-name="org.opennms.netmgt.poller.monitors.BSFMonitor" />
+----
+
+Jython Example MinimalJython Script file for _run-type_ _exec_
+[source, python]
+----
+from java.io import File
+
+bsf_monitor.log("ERROR", "Starting MinimalJython.py", None);
+if (File("/tmp/TestFile").exists()):
+        results.put("status", "OK")
+else:
+        results.put("reason", "file does not exist")
+        results.put("status", "NOK")
+----
+
+We have to use _run-type_ _exec_ here because Jython chokes on the _import_ keyword in _eval_ mode. Also note the substitution of Python's _None_ value for Java's _null_ in the log call.
+
+
 
 ===== Additional examples
 
