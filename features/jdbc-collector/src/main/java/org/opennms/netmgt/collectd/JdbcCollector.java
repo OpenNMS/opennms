@@ -195,6 +195,9 @@ public class JdbcCollector implements ServiceCollector {
             // Create a new collection set.
             JdbcCollectionSet collectionSet = new JdbcCollectionSet();
             collectionSet.setCollectionTimestamp(new Date());
+
+            // Creating a single resource object, because all node-level metric must belong to the exact same resource.
+            final JdbcSingleInstanceCollectionResource nodeResource = new JdbcSingleInstanceCollectionResource(agent);
         
             // Cycle through all of the queries for this collection
             for(JdbcQuery query : collection.getQueries()) {
@@ -233,14 +236,13 @@ public class JdbcCollector implements ServiceCollector {
                         boolean singleInstance = (results.getRow()==1)?true:false;
                         results.beforeFirst();
                         
-                        
                         // Iterate through each row.
                         while(results.next() ) {
                             JdbcCollectionResource resource = null;
                             
                             // Create the appropriate resource container.
                             if(singleInstance) {
-                                resource = new JdbcSingleInstanceCollectionResource(agent);
+                                resource = nodeResource;
                             } else {
                                 // Retrieve the name of the column to use as the instance key for multi-row queries.
                                 String instance = results.getString(query.getInstanceColumn());

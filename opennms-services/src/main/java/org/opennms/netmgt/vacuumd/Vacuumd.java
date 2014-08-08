@@ -35,7 +35,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ExecutorService;
 
 import javax.sql.DataSource;
@@ -151,18 +150,7 @@ public class Vacuumd extends AbstractServiceDaemon implements Runnable, EventLis
     }
 
     private void createAndStartThread() {
-        m_thread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                final Map<String,String> mdc = Logging.getCopyOfContextMap();
-                Logging.putPrefix("vacuumd");
-                try {
-                    this.run();
-                } finally {
-                    Logging.setContextMap(mdc);
-                }
-            }
-        }, "Vacuumd-Thread");
+        m_thread = new Thread(Logging.preserve(this), "Vacuumd-Thread");
         m_thread.start();
     }
 
