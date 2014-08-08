@@ -6,8 +6,10 @@ import java.util.List;
 public interface EnLinkdElementFactoryInterface {
 
 	List<BridgeElementNode> getBridgeElements(int nodeId);
-	
+
 	Collection<BridgeLinkNode> getBridgeLinks(int nodeId);
+
+	Collection<NodeLinkBridge> getNodeLinks(int nodeId);
 
 	IsisElementNode getIsisElement(int nodeId);
 	

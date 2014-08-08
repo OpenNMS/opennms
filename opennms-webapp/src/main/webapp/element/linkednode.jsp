@@ -32,6 +32,7 @@
 <%@page import="org.opennms.web.enlinkd.EnLinkdElementFactory"%>
 <%@page import="org.opennms.web.enlinkd.EnLinkdElementFactoryInterface"%>
 <%@page import="org.opennms.web.enlinkd.BridgeLinkNode"%>
+<%@page import="org.opennms.web.enlinkd.NodeLinkBridge"%>
 <%@page import="org.opennms.web.enlinkd.BridgeLinkRemoteNode"%>
 <%@page import="org.opennms.web.enlinkd.LldpLinkNode"%>
 <%@page import="org.opennms.web.enlinkd.OspfLinkNode"%>
@@ -450,11 +451,58 @@
 <% }  %>
 <hr />        
 <%
-   if (enlinkdfactory.getBridgeLinks(nodeId).isEmpty()) {
+   Collection<BridgeLinkNode> bridgelinks = enlinkdfactory.getBridgeLinks(nodeId);
+   if (bridgelinks.isEmpty()) {
+	   Collection<NodeLinkBridge> nodelinks = enlinkdfactory.getNodeLinks(nodeId);
+	   if (nodelinks.isEmpty()) {
 %>
 	<div class="TwoColLeft">
 		<h3>No Bridge Forwarding Table Links found on <%=node_db.getLabel()%> by Enhanced Linkd</h3>
 	</div>
+	<% } else { %>
+<h3><%=node_db.getLabel()%> Bridge Forwarding Table Links found by Enhanced Linkd</h3>
+		
+		<!-- Link box -->
+		<table class="standard">
+		
+		<thead>
+			<tr>
+			<th>Local Port</th> 
+			<th>Bridge Node</th>
+			<th>Bridge Port</th> 
+            <th>Bridge Vlan</th>
+			<th>Created</th>
+			<th>Last Poll</th>
+			</tr>
+		</thead>
+				
+		<% for( NodeLinkBridge nodelink: nodelinks) { %>
+			<% for( String localport: nodelink.getNodeLocalPorts()) { %>
+	    <tr>
+		    <td class="standard"><%=localport%></td>
+            <td class="standard">
+            	<a href="<%=nodelink.getBridgeLinkRemoteNode().getBridgeRemoteUrl()%>"><%=nodelink.getBridgeLinkRemoteNode().getBridgeRemoteNode()%></a>
+             </td>
+            <td class="standard">
+            	<a href="<%=nodelink.getBridgeLinkRemoteNode().getBridgeRemotePortUrl()%>"><%=nodelink.getBridgeLinkRemoteNode().getBridgeRemotePort()%></a>
+            </td>
+		    <td class="standard">
+		 	<% if (nodelink.getBridgeLinkRemoteNode().getBridgeRemoteVlan() != null) { %>
+            	<%=nodelink.getBridgeLinkRemoteNode().getBridgeRemoteVlan()%>
+            <% } else { %> 
+            	&nbsp;
+    		<% } %> 
+            </td>
+		    <td class="standard"><%=nodelink.getBridgeLinkCreateTime()%></td>
+		    <td class="standard"><%=nodelink.getBridgeLinkLastPollTime()%></td>
+	    </tr>
+		    <% } %>
+	    <% } %>
+		    
+	    </table>
+
+	<% } %>
+	
 <% } else { %>
 <h3><%=node_db.getLabel()%> Bridge Forwarding Table Links found by Enhanced Linkd</h3>
 		
@@ -473,7 +521,7 @@
 			</tr>
 		</thead>
 				
-		<% for( BridgeLinkNode bridgelink: enlinkdfactory.getBridgeLinks(nodeId)) { %>
+		<% for( BridgeLinkNode bridgelink: bridgelinks) { %>
 			<% for( BridgeLinkRemoteNode remlink: bridgelink.getBridgeLinkRemoteNodes()) { %>
 	    <tr>
 		    <td class="standard"><%=bridgelink.getBridgeLocalPort()%></td>

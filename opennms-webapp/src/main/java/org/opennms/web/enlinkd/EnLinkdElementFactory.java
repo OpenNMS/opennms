@@ -56,8 +56,10 @@ import static org.opennms.core.utils.InetAddressUtils.str;
 @Transactional(readOnly=true)
 public class EnLinkdElementFactory implements InitializingBean, EnLinkdElementFactoryInterface{
 
-	Map<Integer,BridgeLinkNode> nodelinks = new HashMap<Integer,BridgeLinkNode>(); 
+	Map<Integer,BridgeLinkNode> bridgelinks = new HashMap<Integer,BridgeLinkNode>(); 
 
+	Map<Integer, NodeLinkBridge> nodelinks = new HashMap<Integer,NodeLinkBridge>();
+	
 	@Autowired
 	private OspfElementDao m_ospfElementDao;
 	
@@ -332,6 +334,41 @@ public class EnLinkdElementFactory implements InitializingBean, EnLinkdElementFa
 	}
 
 	@Override
+	public Collection<NodeLinkBridge> getNodeLinks(int nodeId) {
+		for (OnmsIpInterface ip: m_ipInterfaceDao.findByNodeId(nodeId)) {
+			for (IpNetToMedia ipnetomedia: m_ipNetToMediaDao.findByNetAddress(ip.getIpAddress())) {
+				for (BridgeMacLink maclink: m_bridgeMacLinkDao.findByMacAddress(ipnetomedia.getPhysAddress())) {
+					convertFromModel(nodeId, maclink, getNodePortString(str(ipnetomedia.getNetAddress()), ipnetomedia.getPhysAddress()));
+				}
+			}
+		}
+		return nodelinks.values();
+	}
+
+	@Transactional
+	private void convertFromModel(int nodeid, BridgeMacLink link, String port) {
+		if (!nodelinks.containsKey(link.getId())) {
+			NodeLinkBridge linknode = new NodeLinkBridge();
+			BridgeLinkRemoteNode remlinknode = new BridgeLinkRemoteNode();
+			
+			remlinknode.setBridgeRemoteNode(link.getNode().getLabel());
+			remlinknode.setBridgeRemoteUrl(getNodeUrl(link.getNode().getId()));
+			remlinknode.setBridgeRemotePort(getPortString(m_snmpInterfaceDao.findByNodeIdAndIfIndex(link.getNode().getId(), link.getBridgePortIfIndex())));
+			remlinknode.setBridgeRemotePortUrl(getSnmpInterfaceUrl(link.getNode().getId(), link.getBridgePortIfIndex()));
+			remlinknode.setBridgeRemoteVlan(link.getVlan());
+			
+			linknode.setBridgeLinkRemoteNode(remlinknode);
+			
+			linknode.setBridgeLinkCreateTime(Util.formatDateToUIString(link.getBridgeMacLinkCreateTime()));
+			linknode.setBridgeLinkLastPollTime(Util.formatDateToUIString(link.getBridgeMacLinkLastPollTime()));
+			nodelinks.put(link.getId(), linknode);
+			
+		} 
+			
+		nodelinks.get(link.getId()).getNodeLocalPorts().add(port);
+	}
+
+	@Override
 	public Collection<BridgeLinkNode> getBridgeLinks(int nodeId) {
 		for (BridgeMacLink link: m_bridgeMacLinkDao.findByNodeId(Integer.valueOf(nodeId))) {
 			convertFromModel(nodeId,link);
@@ -342,21 +379,21 @@ public class EnLinkdElementFactory implements InitializingBean, EnLinkdElementFa
 		for (BridgeBridgeLink link: m_bridgeBridgeLinkDao.findByDesignatedNodeId(Integer.valueOf(nodeId))) {
 			convertFromModel(nodeId,link.getReverseBridgeBridgeLink());
 		}
-		return nodelinks.values();
+		return bridgelinks.values();
 	}
 	
 	@Transactional 
 	private void convertFromModel(int nodeid, BridgeBridgeLink link) {
 
 		BridgeLinkNode linknode = new BridgeLinkNode();
-		if (nodelinks.containsKey(link.getBridgePort())) {
-				linknode = nodelinks.get(link.getBridgePort());
+		if (bridgelinks.containsKey(link.getBridgePort())) {
+				linknode = bridgelinks.get(link.getBridgePort());
 		} else {
 			linknode.setBridgeLocalPort(getBridgePortString(link.getBridgePort(),link.getBridgePortIfIndex()));
 			linknode.setBridgeLocalVlan(link.getVlan());
 			linknode.setBridgeLinkCreateTime(Util.formatDateToUIString(link.getBridgeBridgeLinkCreateTime()));
 			linknode.setBridgeLinkLastPollTime(Util.formatDateToUIString(link.getBridgeBridgeLinkLastPollTime()));
-			nodelinks.put(link.getBridgePort(), linknode);
+			bridgelinks.put(link.getBridgePort(), linknode);
 		}
 		
 		BridgeLinkRemoteNode remlinknode = new BridgeLinkRemoteNode();
@@ -375,14 +412,14 @@ public class EnLinkdElementFactory implements InitializingBean, EnLinkdElementFa
 	@Transactional
 	private void convertFromModel(int nodeid, BridgeMacLink link) {
 		BridgeLinkNode linknode = new BridgeLinkNode();
-		if (nodelinks.containsKey(link.getBridgePort())) {
-				linknode = nodelinks.get(link.getBridgePort());
+		if (bridgelinks.containsKey(link.getBridgePort())) {
+				linknode = bridgelinks.get(link.getBridgePort());
 		} else {
 			linknode.setBridgeLocalPort(getBridgePortString(link.getBridgePort(),link.getBridgePortIfIndex()));
 			linknode.setBridgeLocalVlan(link.getVlan());
 			linknode.setBridgeLinkCreateTime(Util.formatDateToUIString(link.getBridgeMacLinkCreateTime()));
 			linknode.setBridgeLinkLastPollTime(Util.formatDateToUIString(link.getBridgeMacLinkLastPollTime()));
-			nodelinks.put(link.getBridgePort(), linknode);
+			bridgelinks.put(link.getBridgePort(), linknode);
 		}
 		
 		List<IpNetToMedia> ipnettomedias = m_ipNetToMediaDao.findByPhysAddress(link.getMacAddress());
@@ -446,6 +483,11 @@ public class EnLinkdElementFactory implements InitializingBean, EnLinkdElementFa
         return null;
 	}
 
+	private String getNodePortString(String ip, String physaddr) {
+		if (ip != null && physaddr != null)
+			return ip + "(" + physaddr+")";
+		return null;
+	}
 	private String getBridgePortString(Integer bridgePort, Integer ifindex) {
 		if (ifindex != null)
 			return "bridge port: "+ bridgePort + "(ifindex:"+ifindex+")";
