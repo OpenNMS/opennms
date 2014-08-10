@@ -1,3 +1,4 @@
+
 === BSFMonitor
 This monitor runs a _Bean Scripting Framework_ http://commons.apache.org/proper/commons-bsf/[BSF] compatible script to determine the status of a service.
 Users can write scripts to perform highly custom service checks.
