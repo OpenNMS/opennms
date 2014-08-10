@@ -206,7 +206,7 @@ To use the _Jython_ (_Java_ implementation of _Python_) language an additional l
 Copy a compatible `jython-x.y.z.jar` into the 'opennms/lib' folder and restart _OpenNMS_.
 That makes _Jython_ available for the _BSFMonitor_.
 
-Jython example 'poller-configuration.xml' with `run-type` `exec`
+.Jython example 'poller-configuration.xml' with `run-type` `exec`
 [source, xml]
 ----
 <service name="MinimalJython" interval="300000" user-defined="true" status="on">
