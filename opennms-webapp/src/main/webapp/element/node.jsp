@@ -45,7 +45,7 @@
         org.opennms.netmgt.config.PollOutagesConfigFactory,
         org.opennms.netmgt.config.poller.outages.Outage,
         org.opennms.netmgt.model.OnmsNode,
-        org.opennms.netmgt.poller.PathOutageFactory,
+        org.opennms.netmgt.poller.PathOutageManagerJdbcImpl,
         org.opennms.web.api.Authentication,
         org.opennms.web.asset.Asset,
         org.opennms.web.asset.AssetModel,
@@ -174,8 +174,8 @@
     
     nodeModel.put("resources", m_resourceService.findNodeChildResources(node_db));
     nodeModel.put("vlans", NetworkElementFactory.getInstance(getServletContext()).getVlansOnNode(nodeId));
-    nodeModel.put("criticalPath", PathOutageFactory.getInstance().getPrettyCriticalPath(nodeId));
-    nodeModel.put("noCriticalPath", PathOutageFactory.NO_CRITICAL_PATH);
+    nodeModel.put("criticalPath", PathOutageManagerJdbcImpl.getInstance().getPrettyCriticalPath(nodeId));
+    nodeModel.put("noCriticalPath", PathOutageManagerJdbcImpl.NO_CRITICAL_PATH);
     nodeModel.put("admin", request.isUserInRole(Authentication.ROLE_ADMIN));
     
     // get the child interfaces
