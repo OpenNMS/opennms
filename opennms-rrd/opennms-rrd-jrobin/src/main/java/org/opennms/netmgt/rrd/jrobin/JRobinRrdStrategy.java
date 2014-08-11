@@ -159,7 +159,6 @@ public class JRobinRrdStrategy implements RrdStrategy<RrdDef,RrdDb> {
         File f = new File(directory);
         f.mkdirs();
 
-
         String fileName = directory + File.separator + rrdName + RrdUtils.getExtension();
 
         if (new File(fileName).exists()) {

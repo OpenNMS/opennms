@@ -3,12 +3,12 @@
   <parent>
     <groupId>org.opennms.osgi.features.nrtg</groupId>
     <artifactId>osgi-nrtg-protocolcollector</artifactId>
-    <version>1.13.4-SNAPSHOT</version>
+    <version>1.13.5-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.osgi.features.nrtg.protocolcollector</groupId>
   <artifactId>osgi-nrtg-protocolcollector-snmp</artifactId>
-  <name>OpenNMS Features NRTG Features ProtocolCollector SNMP Feature</name>
+  <name>OpenNMS :: Features :: NRTG :: SNMP Protocol Collector</name>
   <description>
     Plugin for the NRTCollector OSGI Satellit to collect data from snmp agents
   </description>

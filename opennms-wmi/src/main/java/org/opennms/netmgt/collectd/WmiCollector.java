@@ -106,6 +106,7 @@ public class WmiCollector implements ServiceCollector {
         // Create a new collection set.
         final WmiCollectionSet collectionSet = new WmiCollectionSet();
         collectionSet.setCollectionTimestamp(new Date());
+        final WmiSingleInstanceCollectionResource nodeResource = new WmiSingleInstanceCollectionResource(agent);
 
         // Iterate through the WMI collection groups.
         for (final Wpm wpm : collection.getWpms().getWpm()) {
@@ -152,7 +153,7 @@ public class WmiCollector implements ServiceCollector {
                                 }
                                 resource = new WmiMultiInstanceCollectionResource(agent,instance,wpm.getResourceType());
                             } else {
-                                resource = new WmiSingleInstanceCollectionResource(agent);
+                                resource = nodeResource;
                             }
 
 
