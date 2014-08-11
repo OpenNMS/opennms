@@ -1,0 +1,67 @@
+
+=== JDBCMonitor
+
+A summary what the monitor is doing. When is the monitor up or down.
+
+==== Monitor facts
+
+[options="autowidth"]
+|===
+| Class Name     | `org.opennms.netmgt.poller.monitors.JDBCMonitor`
+| Remote Enabled | true
+|===
+
+NOTE: To use the JDBCMonitor with the _RemotePoller_, make sure the JDBC-Driver is available as a jar for the _RemotePoller_.
+
+==== Configuration and Usage
+
+.Monitor specific parameters for the JDBCMonitor
+[options="header, autowidth"]
+|===
+| Parameter  | Description                               | Required | Default value
+| `driver`   | DRAFT JDBC-Driver class                   | required | `PostgreSQL Driver used by OpenNMS it self`
+| `url`      | DRAFT JDBC-Url                            | required | `Url for the OpenNMS database`
+| `user`     | DRAFT Database user                       | required | `User of for the OpenNMS database`
+| `password` | DRAFT Database password                   | required | `Password for the OpenNMS database`
+| `timeout`  | DRAFT Timeout for the database-connection | optional | `where is the default from?`
+|===
+
+This is optional just if you can use variables in the configuration
+
+.Variables which can be used in the configuration
+[options="header, autowidth"]
+|===
+| Variable        | Description
+| `${variable1}`  | Description for the first variable
+| `${variable2}`  | Description for the second variable
+| `${variable3}`  | Description for the third variable
+|===
+
+==== Examples
+Some example configuration how to configure the monitor in the 'poller-configuration.xml'.
+
+[source, xml]
+----
+<parameter key="args" value="-i {variable3} -t ${variable2}"/>
+<parameter key="args" value="http://${variable1}/${variable2}/static"/>
+----
+
+.This section is optional and give some specific hints
+==== SystemExecuteMonitor vs GpMonitor
+
+The SystemExecuteMonitor is the successor of the GpMonitor. The main differences are:
+
+* Variable replacement for the parameter args
+* There are no fixed arguments handed to the system-call
+* The _SystemExecuteMonitor_ supports _RemotePoller_ deployment
+
+To migrate services from the _GpMonitor_ to the _SystemExecuteMonitor_ it is required to alter the parameter args.
+To match the arguments called `hoption` for the `hostAddress` and `toption` for the `timeoutInSeconds`.
+The args string that matches the _GpMonitor_ call looks like this:
+
+[source, xml]
+----
+<parameter key="my parameter 2" value="--hostname ${variable1} --timeout ${variable2}" />
+----
+
+To migrate the GpMonitor parameters `hoption` and `toption` just replace the `--hostname` and `--timeout` directly in the args key.
