@@ -23,6 +23,7 @@ import org.opennms.features.topology.api.HistoryOperation;
 import org.opennms.features.topology.api.Layout;
 import org.opennms.features.topology.api.Point;
 import org.opennms.features.topology.api.support.VertexHopGraphProvider.FocusNodeHopCriteria;
+import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.slf4j.LoggerFactory;
@@ -90,12 +91,21 @@ public class SavedHistory {
     }
 
     protected static Set<VertexRef> getFocusVertices(GraphContainer graphContainer) {
-        FocusNodeHopCriteria criteria = VertexHopGraphProvider.getFocusNodeHopCriteriaForContainer(graphContainer, false);
-        if (criteria == null) {
-            return Collections.emptySet();
-        } else {
-            return criteria.getVertices();
+        Set<VertexRef> retVal = new HashSet<VertexRef>();
+
+        Criteria[] criterias = graphContainer.getCriteria();
+        for (Criteria crit : criterias) {
+            if (crit instanceof VertexHopGraphProvider.VertexHopCriteria) {
+                retVal.addAll(((VertexHopGraphProvider.VertexHopCriteria) crit).getVertices());
+            }
         }
+
+        FocusNodeHopCriteria criteria = VertexHopGraphProvider.getFocusNodeHopCriteriaForContainer(graphContainer, false);
+        if (criteria != null) {
+            retVal.addAll(criteria.getVertices());
+        }
+
+        return retVal;
     }
 
     SavedHistory(int szl, BoundingBox box, Map<VertexRef,Point> locations, Set<VertexRef> selectedVertices, Set<VertexRef> focusVertices, Map<String,String> operationSettings) {
