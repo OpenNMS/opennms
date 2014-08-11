@@ -1,7 +1,7 @@
 
 === JDBCMonitor
 
-A summary what the monitor is doing. When is the monitor up or down.
+The JDBC monitor checks that it is able to connect to a given JDBC URL and that it is able to get the database catalog from that URL.
 
 ==== Monitor facts
 
@@ -10,8 +10,6 @@ A summary what the monitor is doing. When is the monitor up or down.
 | Class Name     | `org.opennms.netmgt.poller.monitors.JDBCMonitor`
 | Remote Enabled | true
 |===
-
-NOTE: To use the JDBCMonitor with the _RemotePoller_, make sure the JDBC-Driver is available as a jar for the _RemotePoller_.
 
 ==== Configuration and Usage
 
@@ -26,11 +24,21 @@ NOTE: To use the JDBCMonitor with the _RemotePoller_, make sure the JDBC-Driver 
 | `timeout`  | DRAFT Timeout for the database-connection | optional | `where is the default from?`
 |===
 
+
+==== Provide the database driver
+
+The JDBCMonitor is based on _JDBC_ and requires a JDBC-Driver to comunicate with any database.
+Due to the fact that OpenNMS it self is using a Postgrsql Database, the Postgresql JDBC-Driver is availible out of the box.
+For all other database-systems a compatible JDBC-Driver has to be provided to OpenNMS as a _jar-file_.
+To provide a JDBC-Driver place the _driver-jar_ in the `lib-folder` of your OpenNMS.
+To use the JDBC-Monitor from a Remote-Poller, the _driver-jar_ has to be provided to the Remote-Poller too.
+
+@TODO how to add a jar to the remote-poller
+
 ==== Examples
 Some example configuration how to configure the monitor in the 'poller-configuration.xml'.
 
 [source, xml]
 ----
-<parameter key="args" value="-i {variable3} -t ${variable2}"/>
-<parameter key="args" value="http://${variable1}/${variable2}/static"/>
+
 ----
