@@ -53,6 +53,7 @@ public abstract class SaveOrUpdateOperation extends ImportOperation {
     private OnmsIpInterface m_currentInterface;
     
     private ScanManager m_scanManager;
+    private boolean m_rescanExisting = true;
     
     /**
      * <p>Constructor for SaveOrUpdateOperation.</p>
@@ -65,7 +66,7 @@ public abstract class SaveOrUpdateOperation extends ImportOperation {
      * @param provisionService a {@link org.opennms.netmgt.provision.service.ProvisionService} object.
      */
     public SaveOrUpdateOperation(String foreignSource, String foreignId, String nodeLabel, String building, String city, ProvisionService provisionService) {
-		this(null, foreignSource, foreignId, nodeLabel, building, city, provisionService);
+		this(null, foreignSource, foreignId, nodeLabel, building, city, provisionService, true);
 	}
 
 	/**
@@ -78,8 +79,9 @@ public abstract class SaveOrUpdateOperation extends ImportOperation {
 	 * @param building a {@link java.lang.String} object.
 	 * @param city a {@link java.lang.String} object.
 	 * @param provisionService a {@link org.opennms.netmgt.provision.service.ProvisionService} object.
+         * @param rescanExisting a {@link java.lang.Boolean} object
 	 */
-	public SaveOrUpdateOperation(Integer nodeId, String foreignSource, String foreignId, String nodeLabel, String building, String city, ProvisionService provisionService) {
+	public SaveOrUpdateOperation(Integer nodeId, String foreignSource, String foreignId, String nodeLabel, String building, String city, ProvisionService provisionService, boolean rescanExisting) {
 	    super(provisionService);
 	    
         m_node = new OnmsNode();
@@ -91,6 +93,7 @@ public abstract class SaveOrUpdateOperation extends ImportOperation {
         m_node.setForeignId(foreignId);
         m_node.getAssetRecord().setBuilding(building);
         m_node.getAssetRecord().setCity(city);
+        m_rescanExisting = rescanExisting;
 	}
 	
 	/**
@@ -141,8 +144,12 @@ public abstract class SaveOrUpdateOperation extends ImportOperation {
      */
     @Override
     public void scan() {
+        if (m_rescanExisting) {
     	updateSnmpData();
+	} else {
+            LOG.debug("Skipping scan for node {}: rescanExisting is false", getNode());
 	}
+    }
 	
     /**
      * <p>updateSnmpData</p>
@@ -186,6 +193,10 @@ public abstract class SaveOrUpdateOperation extends ImportOperation {
      */
     protected OnmsNode getNode() {
         return m_node;
+    }
+
+    protected boolean getRescanExisting() {
+        return m_rescanExisting;
     }
 
     /**

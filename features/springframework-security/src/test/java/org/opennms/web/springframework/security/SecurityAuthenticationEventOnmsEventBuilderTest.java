@@ -33,7 +33,6 @@ import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.replay;
 import static org.easymock.EasyMock.verify;
 
-import java.text.DateFormat;
 import java.util.Arrays;
 import java.util.Date;
 

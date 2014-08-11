@@ -31,11 +31,9 @@ package org.opennms.netmgt.config;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.test.JUnitConfigurationEnvironment;
-
 import org.springframework.test.context.ContextConfiguration;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
@@ -53,5 +51,16 @@ public class DataCollectionConfigDaoTest {
        Assert.assertNotNull(config);
        Assert.assertTrue(config instanceof DefaultDataCollectionConfigDao);
        Assert.assertEquals(new Long(60000), ((DefaultDataCollectionConfigDao) config).getReloadCheckInterval());
+   }
+
+   @Test
+   public void testResourceTypes() {
+       long start = System.nanoTime();
+       DataCollectionConfigDao config = DataCollectionConfigFactory.getInstance();
+       for (int i=0; i<1000; i++) {
+           Assert.assertNotNull(config.getConfiguredResourceTypes().get("hrStorageIndex"));
+       }
+       long end = System.nanoTime();
+       System.err.println("Test took " + ((end - start)/1000) + " us");
    }
 }

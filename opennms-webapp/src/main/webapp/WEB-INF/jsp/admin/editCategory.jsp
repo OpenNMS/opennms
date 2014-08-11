@@ -2,8 +2,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -43,6 +43,62 @@
 	<jsp:param name="breadcrumb" value="Show" />
 </jsp:include>
 
+<script type="text/javascript">
+var nodesToAddAuto = {
+  <c:forEach items="${model.nodes}" var="node"><c:if test="${node.foreignSource == null}">"${node.id}": "${node.label}",</c:if>
+  </c:forEach>
+};
+
+var nodesToDeleteAuto = {
+  <c:forEach items="${model.sortedMemberNodes}" var="node"><c:if test="${node.foreignSource == null}">"${node.id}": "${node.label}",</c:if>
+  </c:forEach>
+};
+
+var nodesToAddReq = {
+  <c:forEach items="${model.nodes}" var="node"><c:if test="${node.foreignSource != null}">"${node.id}": "${node.label}",</c:if>
+  </c:forEach>
+};
+
+var nodesToDeleteReq = {
+  <c:forEach items="${model.sortedMemberNodes}" var="node"><c:if test="${node.foreignSource != null}">"${node.id}": "${node.label}",</c:if>
+  </c:forEach>
+};
+
+function populateOptGroupFromList(elementName, list) {
+	var optgroupElem = document.getElementById(elementName);
+	if (optgroupElem == null) {
+		return;
+	}
+	while (optgroupElem.childElementCount > 0) {
+		optgroupElem.remove(0);
+	}
+	
+	for (var nodeId in list) {
+		var optionElem = document.createElement("option");
+		optionElem.value = nodeId;
+		optionElem.textContent = list[nodeId];
+		optgroupElem.appendChild(optionElem);
+	}
+}
+
+function populateAutoNodes() {
+	populateOptGroupFromList("toAddAutoGroup", nodesToAddAuto);
+	populateOptGroupFromList("toDeleteAutoGroup", nodesToDeleteAuto);
+}
+
+function populateReqNodes() {
+	populateOptGroupFromList("toAddReqGroup", nodesToAddReq);
+	populateOptGroupFromList("toDeleteReqGroup", nodesToDeleteReq);
+}
+
+function toggleReqNodes() {
+	var addGroup = document.getElementById("toAddReqGroup");
+	var deleteGroup = document.getElementById("toDeleteReqGroup");
+	addGroup.disabled = !(addGroup.disabled);
+	deleteGroup.disabled = !(deleteGroup.disabled);
+}
+</script>
+
 <h3>Edit Surveillance Category ${model.category.name}</h3>
 
 <p>
@@ -68,11 +124,10 @@ Category '${model.category.name}' has ${fn:length(model.sortedMemberNodes)} node
     </tr>
       
     <tr>
-      <td class="normal">  
-    <select name="toAdd" size="20" multiple>
-	  <c:forEach items="${model.nodes}" var="node">
-	    <option value="${node.id}">${node.label}</option>
-	  </c:forEach>
+      <td class="normal">
+    <select id="toAdd" name="toAdd" size="20" multiple>
+        <optgroup id="toAddAutoGroup" label="Auto-Provisioned Nodes"></optgroup>
+	    <optgroup id="toAddReqGroup" disabled="true" label="Requisitioned Nodes"></optgroup>
     </select>
       </td>
       
@@ -83,15 +138,25 @@ Category '${model.category.name}' has ${fn:length(model.sortedMemberNodes)} node
         <input type="submit" name="action" value="&#139;&#139; Remove"/>
       </td>
     
-      <td class="normal">  
-    <select name="toDelete" size="20" multiple>
-	  <c:forEach items="${model.sortedMemberNodes}" var="node">
-	    <option value="${node.id}">${node.label}</option>
-	  </c:forEach>
+      <td class="normal">
+    <select id="toDelete" name="toDelete" size="20" multiple>
+        <optgroup id="toDeleteAutoGroup" label="Auto-Provisioned Nodes"></optgroup>
+	    <optgroup id="toDeleteReqGroup" disabled="true" label="Requisitioned Nodes"></optgroup>
     </select>
+      </td>
+    </tr>
+    <tr>
+      <td colspan="3">
+        <input id="toggleCheckbox" type="checkbox" onchange="javascript:toggleReqNodes()" />
+        <label for="toggleCheckbox">Check this box to enable requisitioned nodes (changes <strong>will</strong> be lost on next synchronization)</label>
       </td>
     </tr>
   </table>
 </form>
+
+<script type="text/javascript">
+populateAutoNodes();
+populateReqNodes();
+</script>
 
 <jsp:include page="/includes/footer.jsp" flush="false"/>

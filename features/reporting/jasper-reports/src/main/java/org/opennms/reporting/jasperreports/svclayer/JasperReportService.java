@@ -190,7 +190,7 @@ public class JasperReportService implements ReportService {
                                 if (defaultValues.containsKey(reportParm.getName()) && (defaultValues.get(reportParm.getName()) != null)) {
                                     intParm.setValue((Integer) defaultValues.get(reportParm.getName()));
                                 } else {
-                                    intParm.setValue(new Integer(0));
+                                    intParm.setValue(Integer.valueOf(0));
                                 }
                                 intParms.add(intParm);
                                 continue;
@@ -242,7 +242,7 @@ public class JasperReportService implements ReportService {
                                     dateParm.setDisplayName(reportParm.getName());
                                 }
                                 dateParm.setName(reportParm.getName());
-                                dateParm.setCount(new Integer(1));
+                                dateParm.setCount(Integer.valueOf(1));
                                 dateParm.setInterval("day");
                                 dateParm.setHours(0);
                                 dateParm.setMinutes(0);
@@ -274,7 +274,7 @@ public class JasperReportService implements ReportService {
                                     dateParm.setDisplayName(reportParm.getName());
                                 }
                                 dateParm.setName(reportParm.getName());
-                                dateParm.setCount(new Integer(1));
+                                dateParm.setCount(Integer.valueOf(1));
                                 dateParm.setInterval("day");
                                 dateParm.setHours(0);
                                 dateParm.setMinutes(0);
@@ -421,7 +421,8 @@ public class JasperReportService implements ReportService {
      * @return a sub report parameter map as {@link java.util.HashMap<String,Object>} object
      */
     private HashMap<String, Object> buildSubreport(final String mainReportId, final JasperReport mainReport) {
-        String repositoryId = mainReportId.substring(0, mainReportId.indexOf('_'));
+        int idx = mainReportId.indexOf('_');
+        String repositoryId = idx > -1 ? mainReportId.substring(0, idx) : "local";
         HashMap<String, Object> subreportMap = new HashMap<String, Object>();
 
         // Filter parameter for sub reports

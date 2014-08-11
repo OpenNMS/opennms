@@ -81,18 +81,20 @@ public class DefaultPollerConfigDao implements InitializingBean {
         try {
             file = getConfigResource().getFile();
         } catch (IOException e) {
-            LOG.info("Resource '{}' does not seem to have an underlying File object; using ", getConfigResource());
+            LOG.info("Resource '{}' does not seem to have an underlying File object; using input stream", getConfigResource());
         }
         
         try {
             if (file != null) {
                 lastModified = file.lastModified();
                 stream = new FileInputStream(file);
+                LOG.debug("loadConfig: creating new PollerConfigFactory from file path: {}", file.getPath());
             } else {
                 lastModified = System.currentTimeMillis();
                 stream = getConfigResource().getInputStream();
+                LOG.debug("loadConfig: creating new PollerConfigFactory from input stream");
             }
-    
+
             setPollerConfig(new PollerConfigFactory(lastModified, stream, getLocalServer(), isVerifyServer()));
         } finally {
             if (stream != null) stream.close();

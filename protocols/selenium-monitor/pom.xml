@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>org.opennms.protocols</artifactId>
-    <version>1.13.4-SNAPSHOT</version>
+    <version>1.13.5-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.protocols</groupId>
@@ -11,7 +11,7 @@
   <name>OpenNMS Protocols Selenium Monitor</name>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <seleniumVersion>2.7.0</seleniumVersion>
+    <seleniumVersion>2.42.2</seleniumVersion>
   </properties>
   <packaging>bundle</packaging>
   <build>
@@ -95,6 +95,12 @@
         <groupId>org.seleniumhq.selenium</groupId>
         <artifactId>selenium-chrome-driver</artifactId>
         <version>${seleniumVersion}</version>
+    </dependency>
+
+    <dependency>
+        <groupId>com.github.detro.ghostdriver</groupId>
+        <artifactId>phantomjsdriver</artifactId>
+        <version>1.1.0</version>
     </dependency>
     
     <dependency>

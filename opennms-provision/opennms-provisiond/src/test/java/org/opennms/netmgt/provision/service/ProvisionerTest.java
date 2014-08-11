@@ -131,7 +131,7 @@ import org.springframework.test.context.ContextConfiguration;
 @ContextConfiguration(locations={
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-mockDao.xml",
-        "classpath:/META-INF/opennms/applicationContext-mockEventd.xml",
+        "classpath:/META-INF/opennms/applicationContext-daemon.xml",
         "classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml",
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
         "classpath:/META-INF/opennms/applicationContext-provisiond.xml",
@@ -339,6 +339,11 @@ public class ProvisionerTest extends ProvisioningTestCase implements Initializin
         final NodeScan scan = m_provisioner.createNodeScan(node.getId(), node.getForeignSource(), node.getForeignId());
         runScan(scan);
 
+        // Make sure that we wait long enough for the node scan to run
+        while(getInterfaceDao().countAll() < 4) {
+            Thread.sleep(500);
+        }
+
         assertEquals(1, getNodeDao().countAll());
 
         //Verify ipinterface count
@@ -530,6 +535,11 @@ public class ProvisionerTest extends ProvisioningTestCase implements Initializin
         final NodeScan scan = m_provisioner.createNodeScan(node.getId(), node.getForeignSource(), node.getForeignId());
         runScan(scan);
 
+        // Make sure that we wait long enough for the node scan to run
+        while(getInterfaceDao().countAll() < 2) {
+            Thread.sleep(500);
+        }
+
         //Verify distpoller count
         assertEquals(1, getDistPollerDao().countAll());
 
@@ -586,6 +596,11 @@ public class ProvisionerTest extends ProvisioningTestCase implements Initializin
 
         final NodeScan scan = m_provisioner.createNodeScan(node.getId(), node.getForeignSource(), node.getForeignId());
         runScan(scan);
+
+        // Make sure that we wait long enough for the node scan to run
+        while(getInterfaceDao().countAll() < 2) {
+            Thread.sleep(500);
+        }
 
         //Verify distpoller count
         assertEquals(1, getDistPollerDao().countAll());
@@ -652,6 +667,11 @@ public class ProvisionerTest extends ProvisioningTestCase implements Initializin
         final NodeScan scan = m_provisioner.createNodeScan(node.getId(), node.getForeignSource(), node.getForeignId());
         runScan(scan);
 
+        // Make sure that we wait long enough for the node scan to run
+        while(getInterfaceDao().countAll() < 3) {
+            Thread.sleep(500);
+        }
+
         //Verify distpoller count
         assertEquals(1, getDistPollerDao().countAll());
 
@@ -712,6 +732,11 @@ public class ProvisionerTest extends ProvisioningTestCase implements Initializin
 
         final NodeScan scan = m_provisioner.createNodeScan(node.getId(), node.getForeignSource(), node.getForeignId());
         runScan(scan);
+
+        // Make sure that we wait long enough for the node scan to run
+        while(getInterfaceDao().countAll() < 3) {
+            Thread.sleep(500);
+        }
 
         //Verify distpoller count
         assertEquals(1, getDistPollerDao().countAll());

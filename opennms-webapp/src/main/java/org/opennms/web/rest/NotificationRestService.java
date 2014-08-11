@@ -90,7 +90,7 @@ public class NotificationRestService extends OnmsRestService {
     public OnmsNotification getNotification(@PathParam("notifId") String notifId) {
         readLock();
         try {
-            return m_notifDao.get(new Integer(notifId));
+            return m_notifDao.get(Integer.valueOf(notifId));
         } finally {
             readUnlock();
         }
@@ -153,7 +153,7 @@ public class NotificationRestService extends OnmsRestService {
         writeLock();
         
         try {
-            OnmsNotification notif=m_notifDao.get(new Integer(notifId));
+            OnmsNotification notif=m_notifDao.get(Integer.valueOf(notifId));
             if(ack==null) {
                 throw new  IllegalArgumentException("Must supply the 'ack' parameter, set to either 'true' or 'false'");
             }

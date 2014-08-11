@@ -42,6 +42,7 @@ import javax.sql.DataSource;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.db.DataSourceFactory;
+import org.opennms.core.logging.Logging;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.VacuumdConfigFactory;
 import org.opennms.netmgt.config.vacuumd.Action;
@@ -97,6 +98,15 @@ public class Vacuumd extends AbstractServiceDaemon implements Runnable, EventLis
     }
 
     /**
+     */
+    static synchronized void destroySingleton() {
+        if (m_singleton != null) {
+            m_singleton.stop();
+            m_singleton = null;
+        }
+    }
+
+    /**
      * <p>Constructor for Vacuumd.</p>
      */
     public Vacuumd() {
@@ -139,12 +149,16 @@ public class Vacuumd extends AbstractServiceDaemon implements Runnable, EventLis
         }
     }
 
+    private void createAndStartThread() {
+        m_thread = new Thread(Logging.preserve(this), "Vacuumd-Thread");
+        m_thread.start();
+    }
+
     /** {@inheritDoc} */
     @Override
     protected void onStart() {
         m_startTime = System.currentTimeMillis();
-        m_thread = new Thread(this, "Vacuumd-Thread");
-        m_thread.start();
+        createAndStartThread();
         m_scheduler.start();
     }
 
@@ -152,7 +166,7 @@ public class Vacuumd extends AbstractServiceDaemon implements Runnable, EventLis
     @Override
     protected void onStop() {
         m_stopped = true;
-        if (m_scheduler != null) {
+        if (m_scheduler != null && m_scheduler.getStatus() == RUNNING) {
             m_scheduler.stop();
         }
     }
@@ -167,8 +181,7 @@ public class Vacuumd extends AbstractServiceDaemon implements Runnable, EventLis
     /** {@inheritDoc} */
     @Override
     protected void onResume() {
-        m_thread = new Thread(this, "Vacuumd-Thread");
-        m_thread.start();
+        createAndStartThread();
         m_scheduler.resume();
     }
 

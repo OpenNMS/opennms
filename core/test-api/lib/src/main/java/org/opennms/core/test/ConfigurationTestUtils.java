@@ -43,9 +43,9 @@ import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.util.regex.Matcher;
 
-
 import org.junit.Assert;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
@@ -60,6 +60,9 @@ public abstract class ConfigurationTestUtils extends Assert {
     private static final String POM_FILE = "pom.xml";
     // TODO: rename this constant
     private static final String DAEMON_DIRECTORY = "opennms-base-assembly";
+    
+    private static final Logger LOG = LoggerFactory.getLogger(ConfigurationTestUtils.class);
+
 
     /**
      * <p>getUrlForResource</p>
@@ -371,7 +374,9 @@ public abstract class ConfigurationTestUtils extends Assert {
     public static void setRelativeRrdBaseDirectory(String relativePath) {
         File rrdDir = new File(getCurrentDirectory(), relativePath);
         if (!rrdDir.exists()) {
-            rrdDir.mkdirs();
+        	if (!rrdDir.mkdirs()) {
+        		LOG.warn("Could not make directory: {}",rrdDir.getPath());
+        	}
         }
         System.setProperty("rrd.base.dir", rrdDir.getAbsolutePath());
     }
@@ -384,7 +389,9 @@ public abstract class ConfigurationTestUtils extends Assert {
     public static void setRelativeImporterDirectory(String relativeImporterDirectory) {
         File cacheDir = new File(getCurrentDirectory(), relativeImporterDirectory);
         if (!cacheDir.exists()) {
-            cacheDir.mkdirs();
+        	if (!cacheDir.mkdirs()) {
+        		LOG.warn("Could not make directory: {}",cacheDir.getPath());
+        	}
         }
         System.setProperty("importer.requisition.dir", cacheDir.getAbsolutePath());
     }
@@ -397,7 +404,9 @@ public abstract class ConfigurationTestUtils extends Assert {
     public static void setRelativeForeignSourceDirectory(String relativeForeignSourceDirectory) {
             File xmlDir = new File(getCurrentDirectory(), relativeForeignSourceDirectory);
             if (!xmlDir.exists()) {
-                xmlDir.mkdirs();
+            	if (!xmlDir.mkdirs()) {
+                	LOG.warn("Could not make directory: {}",xmlDir.getPath());
+            	}
             }
             System.setProperty("importer.foreign-source.dir", xmlDir.getAbsolutePath());
     }

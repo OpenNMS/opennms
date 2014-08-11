@@ -173,7 +173,7 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
                         LOG.info("run: calling onEvent on {} for event {} dbid {} with time {}", m_listener.getName(), event.getUei(), event.getDbid(), event.getTime());
 
                         // Make sure we restore our log4j logging prefix after onEvent is called
-                        Map mdc = Logging.getCopyOfContextMap();
+                        Map<String,String> mdc = Logging.getCopyOfContextMap();
                         try {
                             m_listener.onEvent(event);
                         } finally {

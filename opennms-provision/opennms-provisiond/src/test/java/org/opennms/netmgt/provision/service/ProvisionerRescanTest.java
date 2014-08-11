@@ -79,7 +79,7 @@ import org.springframework.transaction.annotation.Transactional;
 @ContextConfiguration(locations={
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-mockDao.xml",
-        "classpath:/META-INF/opennms/applicationContext-mockEventd.xml",
+        "classpath:/META-INF/opennms/applicationContext-daemon.xml",
         "classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml",
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
         "classpath:/META-INF/opennms/applicationContext-provisiond.xml",
@@ -208,6 +208,7 @@ public class ProvisionerRescanTest implements InitializingBean {
 
         setupLogging("DEBUG");
         m_eventAnticipator.reset();
+        anticipateNoRescanFirstNodeEvents();
         anticipateNoRescanSecondNodeEvents();
         importFromResource("classpath:/testNoRescanOnImport-part2.xml", false);
         m_eventAnticipator.verifyAnticipated();
@@ -224,6 +225,17 @@ public class ProvisionerRescanTest implements InitializingBean {
         }
         
         setupLogging("ERROR");
+    }
+
+    private void anticipateNoRescanFirstNodeEvents() {
+        final String name = this.getClass().getSimpleName();
+
+        EventBuilder builder = new EventBuilder(EventConstants.NODE_UPDATED_EVENT_UEI, name);
+        builder.setNodeid(1);
+        builder.addParam(EventConstants.PARM_NODE_LABEL, "a");
+        builder.addParam(EventConstants.PARM_NODE_LABEL_SOURCE, "U");
+        builder.addParam(EventConstants.PARM_RESCAN_EXISTING, "false");
+        m_eventAnticipator.anticipateEvent(builder.getEvent());
     }
 
     private void anticipateNoRescanSecondNodeEvents() {

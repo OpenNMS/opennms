@@ -49,7 +49,6 @@ import org.opennms.netmgt.collection.api.AttributeGroupType;
 import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionSet;
 import org.opennms.netmgt.collection.api.ServiceCollector;
-import org.opennms.netmgt.config.DataCollectionConfigFactory;
 import org.opennms.netmgt.config.WmiDataCollectionConfigFactory;
 import org.opennms.netmgt.config.WmiPeerFactory;
 import org.opennms.netmgt.config.wmi.Attrib;
@@ -107,6 +106,7 @@ public class WmiCollector implements ServiceCollector {
         // Create a new collection set.
         final WmiCollectionSet collectionSet = new WmiCollectionSet();
         collectionSet.setCollectionTimestamp(new Date());
+        final WmiSingleInstanceCollectionResource nodeResource = new WmiSingleInstanceCollectionResource(agent);
 
         // Iterate through the WMI collection groups.
         for (final Wpm wpm : collection.getWpms().getWpm()) {
@@ -153,7 +153,7 @@ public class WmiCollector implements ServiceCollector {
                                 }
                                 resource = new WmiMultiInstanceCollectionResource(agent,instance,wpm.getResourceType());
                             } else {
-                                resource = new WmiSingleInstanceCollectionResource(agent);
+                                resource = nodeResource;
                             }
 
 

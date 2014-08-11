@@ -29,8 +29,11 @@
 package org.opennms.smoketest;
 
 import org.junit.Before;
+import org.junit.FixMethodOrder;
 import org.junit.Test;
+import org.junit.runners.MethodSorters;
 
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class PathOutagesPageTest extends OpenNMSSeleniumTestCase {
     @Before
     public void setUp() throws Exception {
@@ -39,7 +42,7 @@ public class PathOutagesPageTest extends OpenNMSSeleniumTestCase {
     }
 
     @Test
-    public void testPathOutagesPage() throws Exception {
+    public void a_testPathOutagesPage() throws Exception {
         waitForText("All path outages");
         waitForText("Critical Path IP");
         waitForText("# of Nodes");

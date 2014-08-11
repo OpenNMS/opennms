@@ -31,6 +31,8 @@
 
 <%@page import="org.opennms.web.lldp.LldpElementFactory"%>
 <%@page import="org.opennms.web.lldp.LldpElementNode"%>
+<%@page import="org.opennms.web.ospf.OspfElementFactory"%>
+<%@page import="org.opennms.web.ospf.OspfElementNode"%>
 <%@page language="java"
 	contentType="text/html"
 	session="true"
@@ -167,6 +169,9 @@
     
     LldpElementNode lldp = LldpElementFactory.getInstance(getServletContext()).getLldpElement(nodeId);
     nodeModel.put("lldp", lldp);
+    OspfElementNode ospf = OspfElementFactory.getInstance(getServletContext()).getOspfElement(nodeId);
+    nodeModel.put("ospf", ospf);
+    
     nodeModel.put("resources", m_resourceService.findNodeChildResources(node_db));
     nodeModel.put("vlans", NetworkElementFactory.getInstance(getServletContext()).getVlansOnNode(nodeId));
     nodeModel.put("criticalPath", PathOutageFactory.getPrettyCriticalPath(nodeId));
@@ -260,6 +265,27 @@
   <jsp:param name="enableExtJS" value="false"/>
 </jsp:include>
 
+<script type="text/javascript">
+function confirmAssetEdit() {
+  var confirmText = "You are about to edit asset fields for a node that was provisioned " +
+    "through a requisition. Any edits made here will be rolled back the next " +
+    "time the requisition \"${model.node.foreignSource}\" is " +
+    "synchronized (typically every 24 hours) or the node manually rescanned.\n\n" +
+    "To learn the best way to make permanent asset changes, talk to your " +
+    "OpenNMS administrator.";
+<c:if test="${model.foreignSource != null}">
+<% if (!request.isUserInRole(Authentication.ROLE_READONLY)) { %>
+    return confirm(confirmText);
+<% } else { %>
+    return true;
+<% } %>
+</c:if>
+<c:if test="${model.foreignSource == null}">
+  return true;
+</c:if>
+}
+</script>
+
 <div class="onms">
 <h2>Node: ${model.label} (ID: ${model.id})</h2>
 <c:if test="${model.foreignSource != null}">
@@ -295,7 +321,7 @@
       <c:param name="node" value="${model.id}"/>
     </c:url>
     <li class="o-menuitem">
-      <a href="<c:out value="${assetLink}"/>">Asset Info</a>
+      <a href="<c:out value="${assetLink}"/>" onclick="return confirmAssetEdit()">Asset Info</a>
     </li>
 
     <c:if test="${! empty model.statusSite}">
@@ -430,7 +456,7 @@
     </table>
   </c:if>
 
-  <!-- Asset box, if info available --> 
+  <!-- Lldp box, if info available --> 
   <c:if test="${! empty model.lldp }">
     <h3 class="o-box">Lldp Information</h3>
     <table class="o-box">
@@ -449,6 +475,33 @@
       <tr>
         <th>last poll time</th>
         <td>${model.lldp.lldpLastPollTime}</td>
+      </tr>
+    </table>
+  </c:if>
+
+  <!-- Ospf box, if info available --> 
+  <c:if test="${! empty model.ospf }">
+    <h3 class="o-box">Ospf Information</h3>
+    <table class="o-box">
+      <tr>
+        <th>Router Id</th>
+        <td>${model.ospf.ospfRouterId}</td>
+      </tr>
+      <tr>
+        <th>Version Number</th>
+        <td>${model.ospf.ospfVersionNumber}</td>
+      </tr>
+      <tr>
+        <th>Admin Status</th>
+        <td>${model.ospf.ospfAdminStat}</td>
+      </tr>
+      <tr>
+        <th>create time</th>
+        <td>${model.ospf.ospfCreateTime}</td>
+      </tr>
+      <tr>
+        <th>last poll time</th>
+        <td>${model.ospf.ospfLastPollTime}</td>
       </tr>
     </table>
   </c:if>

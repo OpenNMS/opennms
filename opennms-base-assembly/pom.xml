@@ -3,7 +3,7 @@
   <parent>
     <artifactId>opennms</artifactId>
     <groupId>org.opennms</groupId>
-    <version>1.13.4-SNAPSHOT</version>
+    <version>1.13.5-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-base-assembly</artifactId>
@@ -342,6 +342,11 @@
       <groupId>org.opennms.features</groupId>
       <artifactId>org.opennms.features.jdbc-collector</artifactId>
       <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.poller</groupId>
+      <artifactId>org.opennms.features.poller.remote</artifactId>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.opennms.features.ticketing</groupId>

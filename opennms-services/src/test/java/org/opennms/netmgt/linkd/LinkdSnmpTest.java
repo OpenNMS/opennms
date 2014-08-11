@@ -69,9 +69,12 @@ import org.opennms.netmgt.linkd.snmp.OspfIfTable;
 import org.opennms.netmgt.linkd.snmp.OspfIfTableEntry;
 import org.opennms.netmgt.linkd.snmp.OspfNbrTable;
 import org.opennms.netmgt.linkd.snmp.OspfNbrTableEntry;
+import org.opennms.netmgt.linkd.snmp.QBridgeDot1dTpFdbTable;
+import org.opennms.netmgt.linkd.snmp.QBridgeDot1dTpFdbTableEntry;
 import org.opennms.netmgt.model.IsIsElement.IsisAdminState;
 import org.opennms.netmgt.model.IsIsLink.IsisISAdjNeighSysType;
 import org.opennms.netmgt.model.IsIsLink.IsisISAdjState;
+import org.opennms.netmgt.model.topology.OspfNbrInterface;
 import org.opennms.netmgt.nb.Nms10205bNetworkBuilder;
 import org.opennms.netmgt.nb.TestNetworkBuilder;
 import org.opennms.netmgt.snmp.CollectionTracker;
@@ -534,7 +537,7 @@ public class LinkdSnmpTest extends TestNetworkBuilder implements InitializingBea
 
 	@Test
     @JUnitSnmpAgents(value={
-        @JUnitSnmpAgent(host=MIKROTIK_IP, port=161, resource="classpath:linkd/nms102/"+MIKROTIK_NAME+"-"+MIKROTIK_IP+"-walk.txt")
+        @JUnitSnmpAgent(host=MIKROTIK_IP, port=161, resource=MIKROTIK_SNMP_RESOURCE)
     })
     public void testMtxrWlRtabTableCollection() throws Exception {
         
@@ -1604,6 +1607,45 @@ public class LinkdSnmpTest extends TestNetworkBuilder implements InitializingBea
             checkSwitch5Row(lldpLocTableEntry);
         }
     }
+
+    @Test
+    @JUnitSnmpAgents(value={
+            @JUnitSnmpAgent(host="10.1.1.2", port=161, resource="classpath:linkd/nms4930/dlink_DES-3026.properties")
+    })
+    public void testDot1qTpFdbTableWalk() throws Exception {
+
+    	String trackerName = "dot1qTpFdbTable";
+    	QBridgeDot1dTpFdbTable dot1qTpFdbTable = new QBridgeDot1dTpFdbTable(InetAddressUtils.addr("10.1.1.2"));
+        CollectionTracker[] tracker = new CollectionTracker[0];
+        tracker = new CollectionTracker[] {dot1qTpFdbTable};
+    	SnmpAgentConfig  config = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName("10.1.1.2"));
+
+        SnmpWalker walker =  SnmpUtils.createWalker(config, trackerName, tracker);
+
+        walker.start();
+
+        try {
+            walker.waitFor();
+            if (walker.timedOut()) {
+                assertEquals(false, true);
+            }  else if (walker.failed()) {
+                assertEquals(false, true);
+           }
+        } catch (final InterruptedException e) {
+            assertEquals(false, true);
+            return;
+        }
+
+        final Collection<QBridgeDot1dTpFdbTableEntry> entries = dot1qTpFdbTable.getEntries();
+        assertEquals(61, entries.size());
+
+        for (QBridgeDot1dTpFdbTableEntry link: entries) {
+        	System.out.println(link.getQBridgeDot1dTpFdbAddress());
+        	System.out.println(link.getQBridgeDot1dTpFdbPort());
+        	System.out.println(link.getQBridgeDot1dTpFdbStatus());
+        }
+    }
+
 
     private void checkSwitch1Row(LldpLocTableEntry lldpLocTableEntry) {
         final Integer lldpLocPortNum = lldpLocTableEntry.getLldpLocPortNum();

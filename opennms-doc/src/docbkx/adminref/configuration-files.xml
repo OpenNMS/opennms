@@ -573,20 +573,6 @@
 		</para>
 	</section>
 
-	<section id="events-archiver-configuration.xml">
-		<title>events-archiver-configuration.xml</title>
-		<para>
-			Configuration for the event archiver daemon.
-		</para>
-	</section>
-	
-	<section id="events.archiver.properties">
-		<title>events.archiver.properties</title>
-		<para>
-			Logging configuration for the event archiver daemon.
-		</para>
-	</section>
-	
 	<section id="groups.xml">
 		<title>groups.xml</title>
 		<para>

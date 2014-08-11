@@ -91,14 +91,6 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
     private TransactionTemplate m_template;
     
     /**
-     * <p>getTemplate</p>
-     *
-     * @return a {@link org.springframework.transaction.support.TransactionTemplate} object.
-     */
-    public TransactionTemplate getTemplate() {
-        return m_template;
-    }
-    /**
      * <p>setTemplate</p>
      *
      * @param template a {@link org.springframework.transaction.support.TransactionTemplate} object.

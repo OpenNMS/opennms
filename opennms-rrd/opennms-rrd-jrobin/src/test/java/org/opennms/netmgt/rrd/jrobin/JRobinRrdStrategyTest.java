@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -494,6 +494,22 @@ public class JRobinRrdStrategyTest {
                 "--font", "TITLE:18:",
                 "CDEF:something=1",
                 "PRINT:something:AVERAGE:\"%le\""
+        };
+
+        JRobinRrdGraphDetails graphDetails = (JRobinRrdGraphDetails) m_strategy.createGraphReturnDetails(StringUtils.arrayToDelimitedString(command, " "), new File(""));
+        assertNotNull("graph details object", graphDetails);
+    }
+
+    @Test
+    public void testHRule() throws Exception {
+        long end = System.currentTimeMillis();
+        long start = end - (24 * 60 * 60 * 1000);
+        String[] command = new String[]{
+            "--start=" + start,
+            "--end=" + end,
+            "--font=DEFAULT:16",
+            "--font", "TITLE:18:",
+            "HRULE:2#ff0000"
         };
 
         JRobinRrdGraphDetails graphDetails = (JRobinRrdGraphDetails) m_strategy.createGraphReturnDetails(StringUtils.arrayToDelimitedString(command, " "), new File(""));

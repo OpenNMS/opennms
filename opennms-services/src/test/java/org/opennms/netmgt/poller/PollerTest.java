@@ -1160,27 +1160,36 @@ public class PollerTest {
 
 	}
 
-    @Test
+    @Test(timeout=30000)
 	public void testSuspendPollingResumeService() {
 
 		MockService svc = m_network.getService(1, "192.168.1.2", "SMTP");
 
+		assertTrue(svc.getPollCount() < 1);
+
 		startDaemons();
 
-		sleep(2000);
+		while (svc.getPollCount() < 1) {
+			sleep(500);
+		}
 		assertTrue(0 < svc.getPollCount());
 
 		m_eventMgr.sendEventToListeners(MockEventUtil
 				.createSuspendPollingServiceEvent("Test", svc));
 		svc.resetPollCount();
 
-		sleep(5000);
-		assertEquals(0, svc.getPollCount());
+		for (int i = 0; i < 10; i++) {
+			// Make sure that the count remains at zero
+			assertEquals(0, svc.getPollCount());
+			sleep(500);
+		}
 
 		m_eventMgr.sendEventToListeners(MockEventUtil
 				.createResumePollingServiceEvent("Test", svc));
 
-		sleep(2000);
+		while (svc.getPollCount() < 1) {
+			sleep(500);
+		}
 		assertTrue(0 < svc.getPollCount());
 
 	}

@@ -29,8 +29,11 @@
 package org.opennms.smoketest;
 
 import org.junit.Before;
+import org.junit.FixMethodOrder;
 import org.junit.Test;
+import org.junit.runners.MethodSorters;
 
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class SupportPageTest extends OpenNMSSeleniumTestCase {
     @Before
     public void setUp() throws Exception {
@@ -44,14 +47,14 @@ public class SupportPageTest extends OpenNMSSeleniumTestCase {
     }
 
     @Test
-    public void testAllTextIsPresent() throws Exception {
+    public void a_testAllTextIsPresent() throws Exception {
         waitForText("Commercial Support");
         waitForText("About");
         waitForText("Other Support Options");
     }
 
     @Test
-    public void testAllLinksArePresent() throws InterruptedException {		
+    public void b_testAllLinksArePresent() throws InterruptedException {		
         waitForElement("link=About the OpenNMS Web Console");
         waitForElement("link=Release Notes");
         waitForElement("link=Online Documentation");
@@ -61,14 +64,14 @@ public class SupportPageTest extends OpenNMSSeleniumTestCase {
         waitForElement("link=the OpenNMS.com support page");
     }
     @Test
-    public void testAllFormsArePresent() throws InterruptedException {
+    public void c_testAllFormsArePresent() throws InterruptedException {
         waitForText("Username:");
         waitForText("Password:");
         waitForElement("css=input[type=reset]");
         assertEquals("Log In", selenium.getValue("css=input[type=submit]"));
     }
     @Test
-    public void testAllLinks() throws Exception {
+    public void d_testAllLinks() throws Exception {
         clickAndWait("link=About the OpenNMS Web Console");
         waitForText("OpenNMS Web Console");
         waitForText("License and Copyright");

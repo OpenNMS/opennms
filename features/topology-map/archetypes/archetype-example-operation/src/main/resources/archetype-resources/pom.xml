@@ -11,6 +11,10 @@
     <name>OpenNMS Features Example Operation Module</name>
     <description>This is an OSGi bundle created with the OpenNMS Operation archetype</description>
 
+    <properties>
+      <opennms.dependency.version>1.13.5-SNAPSHOT</opennms.dependency.version>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>org.osgi</groupId>
@@ -21,13 +25,13 @@
         <dependency>
             <groupId>org.opennms.osgi.features.topology</groupId>
             <artifactId>opennms-topology-api</artifactId>
-            <version>1.13.4-SNAPSHOT</version>
+            <version>${opennms.dependency.version}</version>
             <type>pom</type>
         </dependency>
         <dependency>
             <groupId>org.opennms.osgi.features.topology</groupId>
             <artifactId>vaadin</artifactId>
-            <version>1.13.4-SNAPSHOT</version>
+            <version>${opennms.dependency.version}</version>
             <type>pom</type>
         </dependency>
     </dependencies>

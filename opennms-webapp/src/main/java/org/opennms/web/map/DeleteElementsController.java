@@ -104,7 +104,7 @@ public class DeleteElementsController extends MapsLoggingController {
             String[] mapids = elems.split(",");
             elemeids = new Integer[mapids.length];
             for (int i = 0; i<mapids.length;i++) {
-                elemeids[i] = new Integer(mapids[i]);
+                elemeids[i] = Integer.valueOf(mapids[i]);
             }
 
 			boolean actionfound = false;
