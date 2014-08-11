@@ -130,7 +130,7 @@ public class MockNetworkTest extends TestCase {
         }
 
 		@Override
-		public void visitOutage(MockPathOutage m_currentOutage) {
+		public void visitPathOutage(MockPathOutage m_currentOutage) {
 			outageCount++;
 			
 		}

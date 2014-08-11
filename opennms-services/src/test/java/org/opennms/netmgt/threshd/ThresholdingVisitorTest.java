@@ -543,7 +543,7 @@ public class ThresholdingVisitorTest {
                 network.addService("HTTP"); // Adding HTTP on node 5
             }
         }
-        network.addOutage(1, InetAddressUtils.addr("192.168.1.1"), "ICMP");
+        network.addPathOutage(1, InetAddressUtils.addr("192.168.1.1"), "ICMP");
 
         MockDatabase db = new MockDatabase();
         db.populate(network);
@@ -1139,7 +1139,7 @@ public class ThresholdingVisitorTest {
             network.addService("ICMP");
             network.addService("SNMP");
         }
-        network.addOutage(1, InetAddressUtils.addr("192.168.1.1"), "ICMP");
+        network.addPathOutage(1, InetAddressUtils.addr("192.168.1.1"), "ICMP");
 
         MockDatabase db = new MockDatabase();
         db.populate(network);
@@ -1987,7 +1987,7 @@ public class ThresholdingVisitorTest {
         network.addService("ICMP");
         network.addService("SNMP");
         network.addService("HTTP");
-        network.addOutage(1, InetAddressUtils.addr("192.168.1.1"), "ICMP");
+        network.addPathOutage(1, InetAddressUtils.addr("192.168.1.1"), "ICMP");
         MockDatabase db = new MockDatabase();
         db.populate(network);
         if (ifName != null)

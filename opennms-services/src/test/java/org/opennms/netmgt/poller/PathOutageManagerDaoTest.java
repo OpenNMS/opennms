@@ -38,6 +38,7 @@ import java.util.Set;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.db.DataSourceFactory;
@@ -64,6 +65,7 @@ import org.opennms.netmgt.xml.event.Event;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.opennms.test.mock.MockUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.annotation.Repeat;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -132,7 +134,7 @@ public class PathOutageManagerDaoTest implements TemporaryDatabaseAware<MockData
 		m_network.addNode(1, "Router");
 		m_network.addInterface("192.168.1.1");
 		m_network.addService("ICMP");
-		m_network.addOutage(1, InetAddressUtils.addr("192.168.1.1"), "ICMP");
+		m_network.addPathOutage(1, InetAddressUtils.addr("192.168.1.1"), "ICMP");
 		m_network.addService("SMTP");
 		m_network.addService("SNMP");
 		m_network.addInterface("192.168.1.2");
@@ -147,7 +149,7 @@ public class PathOutageManagerDaoTest implements TemporaryDatabaseAware<MockData
 		m_network.addNode(3, "Firewall");
 		m_network.addInterface("192.168.1.4");
 		m_network.addService("SMTP");
-		m_network.addOutage(3, InetAddressUtils.addr("192.168.1.4"), "SMTP");
+		m_network.addPathOutage(3, InetAddressUtils.addr("192.168.1.4"), "SMTP");
 		m_network.addService("HTTP");
 		m_network.addInterface("192.168.1.5");
 		m_network.addService("SMTP");
@@ -289,6 +291,18 @@ public class PathOutageManagerDaoTest implements TemporaryDatabaseAware<MockData
 			Set<Integer> less = m_pathOutageManager.getDependencyNodesByNodeId(3);
 			assertEquals(1, less.size());
 	}
+	
+	/**
+	 * Use this method to compare the speed of Hibernate to JDBC
+	 **/
+	@Ignore
+	@Test
+	public void testMethod500Times() throws SQLException {
+		for (int i = 0; i < 500; i++) {
+			test();
+		}
+	}
+	
 
 	class OutageChecker extends Querier {
 		private Event m_lostSvcEvent;

@@ -35,9 +35,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.List;
+import java.util.Set;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.db.DataSourceFactory;
@@ -64,6 +66,7 @@ import org.opennms.netmgt.xml.event.Event;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.opennms.test.mock.MockUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.annotation.Repeat;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 import org.opennms.netmgt.poller.QueryManager;
@@ -83,7 +86,7 @@ import org.opennms.netmgt.poller.QueryManager;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase(tempDbClass=MockDatabase.class,reuseDatabase=false)
-public class PathOutageFactoryJDBCTest implements TemporaryDatabaseAware<MockDatabase> {
+public class PathOutageManagerJdbcTest implements TemporaryDatabaseAware<MockDatabase> {
     private static final String CAPSD_CONFIG = "\n"
             + "<capsd-configuration max-suspect-thread-pool-size=\"2\" max-rescan-thread-pool-size=\"3\"\n"
             + "   delete-propagation-enabled=\"true\">\n"
@@ -101,8 +104,8 @@ public class PathOutageFactoryJDBCTest implements TemporaryDatabaseAware<MockDat
 	 @Autowired
 	 private QueryManager m_queryManager;
 	
-	private static PathOutageFactory getInstance() {
-		return new PathOutageFactory();
+	private static PathOutageManagerJdbcImpl getInstance() {
+		return new PathOutageManagerJdbcImpl();
 	}
 	
 
@@ -130,7 +133,7 @@ public class PathOutageFactoryJDBCTest implements TemporaryDatabaseAware<MockDat
 		m_network.addNode(1, "Router");
 		m_network.addInterface("192.168.1.1");
 		m_network.addService("ICMP");
-		m_network.addOutage(1, InetAddressUtils.addr("192.168.1.1"), "ICMP");
+		m_network.addPathOutage(1, InetAddressUtils.addr("192.168.1.1"), "ICMP");
 		m_network.addService("SMTP");
 		m_network.addService("SNMP");
 		m_network.addInterface("192.168.1.2");
@@ -145,7 +148,7 @@ public class PathOutageFactoryJDBCTest implements TemporaryDatabaseAware<MockDat
 		m_network.addNode(3, "Firewall");
 		m_network.addInterface("192.168.1.4");
 		m_network.addService("SMTP");
-		m_network.addOutage(3, InetAddressUtils.addr("192.168.1.4"), "SMTP");
+		m_network.addPathOutage(3, InetAddressUtils.addr("192.168.1.4"), "SMTP");
 		m_network.addService("HTTP");
 		m_network.addInterface("192.168.1.5");
 		m_network.addService("SMTP");
@@ -249,40 +252,55 @@ public class PathOutageFactoryJDBCTest implements TemporaryDatabaseAware<MockDat
 		//final Connection conn = DataSourceFactory.getInstance().getConnection();
 		final Connection conn = m_db.getConnection();
 		
-		String[] ar = PathOutageFactory.getInstance().getLabelAndStatus("1", conn);
+		String[] ar = PathOutageManagerJdbcImpl.getInstance().getLabelAndStatus("1", conn);
 		assertEquals("Router", ar[0]);
 		assertEquals("Normal", ar[1]);
 		assertEquals("All Services Up", ar[2]);
-		String[] cr = PathOutageFactory.getInstance().getLabelAndStatus("3", conn);
+		String[] cr = PathOutageManagerJdbcImpl.getInstance().getLabelAndStatus("3", conn);
 		assertEquals("Firewall", cr[0]);
 		assertEquals("Normal", cr[1]);
 		assertEquals("All Services Up", cr[2]);
-		List<String> lno = PathOutageFactory.getInstance().getNodesInPath("192.168.1.1", "ICMP");
+		List<String> lno = PathOutageManagerJdbcImpl.getInstance().getNodesInPath("192.168.1.1", "ICMP");
 		assertEquals("1",lno.get(0));
-		List<String> vno = PathOutageFactory.getInstance().getNodesInPath("192.168.1.4", "SMTP");
+		List<String> vno = PathOutageManagerJdbcImpl.getInstance().getNodesInPath("192.168.1.4", "SMTP");
 		assertEquals("3",vno.get(0));
-		List<String[]> all = PathOutageFactory.getInstance().getAllCriticalPaths();
+		List<String[]> all = PathOutageManagerJdbcImpl.getInstance().getAllCriticalPaths();
 		assertEquals("192.168.1.1",all.get(0)[0]);
 		assertEquals("ICMP", all.get(0)[1]);
 		assertEquals("192.168.1.4",all.get(1)[0]);
 		assertEquals("SMTP",all.get(1)[1]);
-		String[] dat = PathOutageFactory.getInstance().getCriticalPathData("192.168.1.1", "ICMP");
+		String[] dat = PathOutageManagerJdbcImpl.getInstance().getCriticalPathData("192.168.1.1", "ICMP");
 		assertEquals("Router", dat[0]);
 		assertEquals("1", dat[1]);
 		assertEquals("1", dat[2]);
 		assertEquals("Normal", dat[3]);
-		String mm = PathOutageFactory.getInstance().getPrettyCriticalPath(1);
+		String mm = PathOutageManagerJdbcImpl.getInstance().getPrettyCriticalPath(1);
 		assertEquals("192.168.1.1 ICMP", mm);
-		String nn = PathOutageFactory.getInstance().getPrettyCriticalPath(3);
+		String nn = PathOutageManagerJdbcImpl.getInstance().getPrettyCriticalPath(3);
 		assertEquals("192.168.1.4 SMTP", nn);
-		String[] pa = PathOutageFactory.getInstance().getCriticalPath(1);
+		String[] pa = PathOutageManagerJdbcImpl.getInstance().getCriticalPath(1);
 		assertEquals("192.168.1.1", pa[0]);
 		assertEquals("ICMP", pa[1]);
-		String[] nc = PathOutageFactory.getInstance().getCriticalPath(3);
+		String[] nc = PathOutageManagerJdbcImpl.getInstance().getCriticalPath(3);
 		assertEquals("192.168.1.4", nc[0]);
 		assertEquals("SMTP", nc[1]);
 		
+		Set<Integer> test = PathOutageManagerJdbcImpl.getInstance().getDependencyNodesByCriticalPath("192.168.1.1");
+		assertEquals(1, test.size());
 		
+		Set<Integer> less = PathOutageManagerJdbcImpl.getInstance().getDependencyNodesByNodeId(3);
+		assertEquals(1, less.size());
+	}
+	
+	/**
+	 * Use this method to compare the speed of Hibernate to JDBC
+	 **/
+	@Ignore
+	@Test
+	public void testMethod500Times() throws SQLException {
+		for (int i = 0; i < 500; i++) {
+			test();
+		}
 	}
 
 	class OutageChecker extends Querier {

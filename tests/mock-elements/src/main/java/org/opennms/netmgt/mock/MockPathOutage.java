@@ -95,7 +95,7 @@ public class MockPathOutage extends MockElement{
         @Override
     public void visit(MockVisitor v) {
         super.visit(v);
-        v.visitOutage(this);
+        v.visitPathOutage(this);
         
     }
     

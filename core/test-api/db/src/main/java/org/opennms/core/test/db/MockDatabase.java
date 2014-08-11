@@ -111,7 +111,7 @@ public class MockDatabase extends TemporaryDatabasePostgreSQL implements EventWr
             }
             
             @Override
-            public void visitOutage(MockPathOutage out) {
+            public void visitPathOutage(MockPathOutage out) {
             	writeOutage(out);
             }
         };

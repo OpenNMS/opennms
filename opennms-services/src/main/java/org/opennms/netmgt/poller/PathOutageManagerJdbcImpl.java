@@ -52,7 +52,7 @@ import org.opennms.netmgt.config.OpennmsServerConfigFactory;
  * @version $Id: $
  * @since 1.8.1
  */
-public class PathOutageFactory implements PathOutageManager{
+public class PathOutageManagerJdbcImpl implements PathOutageManager{
 
     private static final String GET_CRITICAL_PATHS = "SELECT DISTINCT criticalpathip, criticalpathservicename FROM pathoutage ORDER BY criticalpathip, criticalpathservicename";
 
@@ -85,7 +85,7 @@ public class PathOutageFactory implements PathOutageManager{
     public static final String NO_CRITICAL_PATH = "Not Configured";
 
     public static PathOutageManager getInstance() {
-        return new PathOutageFactory();
+        return new PathOutageManagerJdbcImpl();
     }
 
     /**
@@ -99,7 +99,7 @@ public class PathOutageFactory implements PathOutageManager{
     @Override
     public List<String[]> getAllCriticalPaths() throws SQLException {
         final Connection conn = DataSourceFactory.getInstance().getConnection();
-        final DBUtils d = new DBUtils(PathOutageFactory.class, conn);
+        final DBUtils d = new DBUtils(PathOutageManagerJdbcImpl.class, conn);
 
         final List<String[]> paths = new ArrayList<String[]>();
 
@@ -133,7 +133,7 @@ public class PathOutageFactory implements PathOutageManager{
      */
     @Override
     public String getPrettyCriticalPath(int nodeID) throws SQLException {
-        final DBUtils d = new DBUtils(PathOutageFactory.class);
+        final DBUtils d = new DBUtils(PathOutageManagerJdbcImpl.class);
         String result = NO_CRITICAL_PATH;
 
         try {
@@ -193,7 +193,7 @@ public class PathOutageFactory implements PathOutageManager{
     @Override
     public List<String> getNodesInPath(String criticalPathIp, String criticalPathServiceName) throws SQLException {
         final Connection conn = DataSourceFactory.getInstance().getConnection();
-        final DBUtils d = new DBUtils(PathOutageFactory.class, conn);
+        final DBUtils d = new DBUtils(PathOutageManagerJdbcImpl.class, conn);
 
         final List<String> pathNodes = new ArrayList<String>();
 
@@ -227,7 +227,7 @@ public class PathOutageFactory implements PathOutageManager{
      */
     @Override
     public String[] getLabelAndStatus(String nodeIDStr, Connection conn) throws SQLException {
-        final DBUtils d = new DBUtils(PathOutageFactory.class);
+        final DBUtils d = new DBUtils(PathOutageManagerJdbcImpl.class);
 
         try {
             int countManagedSvcs = 0;
@@ -313,7 +313,7 @@ public class PathOutageFactory implements PathOutageManager{
     @Override
     public String[] getCriticalPathData(String criticalPathIp, String criticalPathServiceName) throws SQLException {
         final Connection conn = DataSourceFactory.getInstance().getConnection();
-        final DBUtils d = new DBUtils(PathOutageFactory.class, conn);
+        final DBUtils d = new DBUtils(PathOutageManagerJdbcImpl.class, conn);
 
         String[] result = new String[4];
         int nodeCount=0;
@@ -419,7 +419,7 @@ public class PathOutageFactory implements PathOutageManager{
     @Override
     public Set<Integer> getDependencyNodesByCriticalPath(String criticalpathip) throws SQLException {
 	    final Connection conn = DataSourceFactory.getInstance().getConnection();
-	    final DBUtils d = new DBUtils(PathOutageFactory.class, conn);
+	    final DBUtils d = new DBUtils(PathOutageManagerJdbcImpl.class, conn);
 	    Set<Integer> pathNodes = new TreeSet<Integer>();
         try {
             PreparedStatement stmt = conn.prepareStatement(GET_NODES_IN_PATHS);
@@ -441,7 +441,7 @@ public class PathOutageFactory implements PathOutageManager{
     @Override
 	public Set<Integer> getDependencyNodesByNodeId(int nodeid) throws SQLException {
 	    final Connection conn = DataSourceFactory.getInstance().getConnection();
-	    final DBUtils d = new DBUtils(PathOutageFactory.class, conn);
+	    final DBUtils d = new DBUtils(PathOutageManagerJdbcImpl.class, conn);
 
 	    Set<Integer> pathNodes = new TreeSet<Integer>();
         try {
