@@ -1,0 +1,91 @@
+
+=== JDBCQueryMonitor
+
+The JDBCQueryMonitor runs an sql-query against a database and is able to verify the result of the query.
+A read-only connection is used to run the sql-query, so the data in the database is not altered.
+It is based on the http://www.oracle.com/technetwork/java/javase/jdbc/index.html[JDBC] technology to connect and communicate with the database.
+
+==== Monitor facts
+
+[options="autowidth"]
+|===
+| Class Name     | `org.opennms.netmgt.poller.monitors.JDBCQueryMonitor`
+| Remote Enabled | false
+|===
+
+==== Configuration and Usage
+
+.Monitor specific parameters for the JDBCQueryMonitor
+[options="header, autowidth"]
+|===
+| Parameter  | Description                                                        | Required | Default value
+| `driver`   | JDBC-Driver class to use                                           | required | `com.sybase.jdbc2.jdbc.SybDriver`
+| `url`      | JDBC-Url to connect to.                                            | required | `jdbc:sybase:Tds:OPENNMS_JDBC_HOSTNAME/tempdb`
+| `user`     | Database user                                                      | required | `sa`
+| `password` | Database password                                                  | required | (empty)
+| `query`    | The sql-query to run                                               | required | `-`
+| `action`   | What evaluation action to perform                                  | required | `row_count`
+| `column`   | The result column to evaluate against                              | optional | `-`
+| `operator` | Operator to use for the evaluation                                 | required | `>=`
+| `operand`  | The operand to compair against the sql-query result                | required | depends on the action
+| `message`  | The message to use if the service is down                          | optional | generic message depending on the action
+| `timeout`  | Timeout in ms for the database-connection                          | optional | `3000`
+| `retries`  | How many retries should be performed before failing the test       | optional | `0`
+|===
+
+NOTE: The _OPENNMS_JDBC_HOSTNAME_ is replaced in the _url_ parameter the IP or resolved hostname of the interface the monitored service is assigned to. 
+
+.Available _action_ parameters and there default _operand_
+[options="header, autowidth"]
+|===
+| Parameter        | Description                                                                | Default operand
+| `row_count`      | The amount of returned rows is compared, not a value of the resulting rows | `1`
+| `compare_string` | Strings are always checked for equility with the operand                   | `-`
+| `compare_int`    | An integer from a column of the first result row is compaird               | `1`             
+| `compare_bool`   | TODO - MIGHT NOT BE IMPLEMETED                                             | ``
+|===
+
+.Available _operand_ parameters
+[options="header, autowidth"]
+|===
+| Parameter | XML entiry 
+| `=`       |
+| `<`       | &lt
+| `>`       | &gt
+| `!=`      |
+| `<=`      |
+| `>=`      |
+|===
+
+==== Evaluating the action - operator - operand
+
+Only the first result row returned by the sql-query is evaluated.
+The evaluation can be against the value of one column or the amount of rows returned by the sql-query.
+
+==== Provide the database driver
+
+The JDBCQueryMonitor is based on _JDBC_ and requires a JDBC-Driver to communicate with any database.
+Due to the fact that OpenNMS it self is using a Postgrsql Database, the Postgresql JDBC-Driver is available out of the box.
+For all other database-systems a compatible JDBC-Driver has to be provided to OpenNMS as a _jar-file_.
+To provide a JDBC-Driver place the _driver-jar_ in the `lib-folder` of your OpenNMS.
+To use the JDBCMonitor from a Remote-Poller, the _driver-jar_ has to be provided to the Remote-Poller too.
+
+==== Examples
+The following example checks if the amount of events in the OpenNMS database is less-than 250000.
+
+[source, xml]
+----
+<service name="OpenNMS_DB_EventLimit" interval="30000" user-defined="true" status="on">
+  <parameter key="driver" value="org.postgresql.Driver"/>
+  <parameter key="url" value="jdbc:postgresql://OPENNMS_JDBC_HOSTNAME:5432/opennms"/>
+  <parameter key="user" value="opennms"/>
+  <parameter key="password" value="opennms"/>
+
+  <parameter key="query" value="select eventid from events" />  
+  <parameter key="action" value="row_count" />
+  <parameter key="operand" value="250000" />
+  <parameter key="operator" value="&lt>" /> 
+</service>
+
+<monitor service="OpenNMS_DB_EventLimit" class-name="org.opennms.netmgt.poller.monitors.JDBCQueryMonitor" />
+----
