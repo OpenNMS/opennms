@@ -29,6 +29,7 @@
 package org.opennms.netmgt.dao.hibernate;
 
 import java.net.InetAddress;
+import java.util.List;
 
 import org.opennms.netmgt.dao.api.OspfElementDao;
 import org.opennms.netmgt.model.OspfElement;
@@ -61,6 +62,11 @@ public class OspfElementDaoHibernate extends AbstractDaoHibernate<OspfElement, I
 	public OspfElement findByRouterId(InetAddress routerId) {
         return findUnique("from OspfElement rec where rec.ospfRouterId = ?", routerId);
 	}
+
+    @Override
+    public List<OspfElement> findAllByRouterId(InetAddress routerId) {
+        return find("from OspfElement rec where rec.ospfRouterId = ?", routerId);
+    }
 
 
 }

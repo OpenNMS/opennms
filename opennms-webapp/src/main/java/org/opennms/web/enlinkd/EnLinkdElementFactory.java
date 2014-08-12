@@ -138,39 +138,60 @@ public class EnLinkdElementFactory implements InitializingBean, EnLinkdElementFa
 	public List<OspfLinkNode> getOspfLinks(int nodeId) {
 		List<OspfLinkNode> nodelinks = new ArrayList<OspfLinkNode>(); 
 		for (OspfLink link: m_ospfLinkDao.findByNodeId(Integer.valueOf(nodeId))) {
-			nodelinks.add(convertFromModel(nodeId,link));
+			nodelinks.addAll(convertFromModel(nodeId,link));
 		}
 		return nodelinks;
 	}
 	
 	@Transactional
-	private OspfLinkNode convertFromModel(int nodeid, OspfLink link) {
-		OspfLinkNode linknode = new OspfLinkNode();
-		linknode.setOspfIpAddr(str(link.getOspfIpAddr()));
-		linknode.setOspfAddressLessIndex(link.getOspfAddressLessIndex());
-		linknode.setOspfIfIndex(link.getOspfIfIndex());
-		
-		OspfElement ospfelement= m_ospfElementDao.findByRouterId(link.getOspfRemRouterId());
-		if (ospfelement != null) {
-			linknode.setOspfRemRouterId(getRemRouterIdString(str(link.getOspfRemRouterId()),ospfelement.getNode().getLabel()));
-			linknode.setOspfRemRouterUrl(getNodeUrl(ospfelement.getNode().getId()));
-		} else {
-			linknode.setOspfRemRouterId(str(link.getOspfRemRouterId()));
-		}
-		
-		linknode.setOspfRemIpAddr(str(link.getOspfRemIpAddr()));
-		linknode.setOspfRemAddressLessIndex(link.getOspfRemAddressLessIndex());
-		
-		if (ospfelement != null && linknode.getOspfRemIpAddr() != null) 
-			linknode.setOspfRemPortUrl(getIpInterfaceUrl(ospfelement.getNode().getId(), linknode.getOspfRemIpAddr()));
-		
-		linknode.setOspfLinkCreateTime(Util.formatDateToUIString(link.getOspfLinkCreateTime()));
-		linknode.setOspfLinkLastPollTime(Util.formatDateToUIString(link.getOspfLinkLastPollTime()));
-		
-		return linknode;
-	}
-	
-	@Override
+	private List<OspfLinkNode> convertFromModel(int nodeid, OspfLink link) {
+        List<OspfLinkNode> linkNodes = new ArrayList<OspfLinkNode>();
+
+        List<OspfElement> ospfElements = m_ospfElementDao.findAllByRouterId(link.getOspfRemRouterId());
+
+        if (ospfElements.size() > 0) {
+            for (OspfElement ospfElement : ospfElements) {
+                OspfLinkNode linknode = new OspfLinkNode();
+                linknode.setOspfIpAddr(str(link.getOspfIpAddr()));
+                linknode.setOspfAddressLessIndex(link.getOspfAddressLessIndex());
+                linknode.setOspfIfIndex(link.getOspfIfIndex());
+
+                linknode.setOspfRemRouterId(getRemRouterIdString(str(link.getOspfRemRouterId()), ospfElement.getNode().getLabel()));
+                linknode.setOspfRemRouterUrl(getNodeUrl(ospfElement.getNode().getId()));
+
+                linknode.setOspfRemIpAddr(str(link.getOspfRemIpAddr()));
+                linknode.setOspfRemAddressLessIndex(link.getOspfRemAddressLessIndex());
+
+                if (ospfElement != null && linknode.getOspfRemIpAddr() != null)
+                    linknode.setOspfRemPortUrl(getIpInterfaceUrl(ospfElement.getNode().getId(), linknode.getOspfRemIpAddr()));
+
+                linknode.setOspfLinkCreateTime(Util.formatDateToUIString(link.getOspfLinkCreateTime()));
+                linknode.setOspfLinkLastPollTime(Util.formatDateToUIString(link.getOspfLinkLastPollTime()));
+
+                linkNodes.add(linknode);
+            }
+
+        } else {
+            OspfLinkNode linknode = new OspfLinkNode();
+            linknode.setOspfIpAddr(str(link.getOspfIpAddr()));
+            linknode.setOspfAddressLessIndex(link.getOspfAddressLessIndex());
+            linknode.setOspfIfIndex(link.getOspfIfIndex());
+
+            linknode.setOspfRemRouterId(str(link.getOspfRemRouterId()));
+
+            linknode.setOspfRemIpAddr(str(link.getOspfRemIpAddr()));
+            linknode.setOspfRemAddressLessIndex(link.getOspfRemAddressLessIndex());
+
+            linknode.setOspfLinkCreateTime(Util.formatDateToUIString(link.getOspfLinkCreateTime()));
+            linknode.setOspfLinkLastPollTime(Util.formatDateToUIString(link.getOspfLinkLastPollTime()));
+
+            linkNodes.add(linknode);
+        }
+
+        return linkNodes;
+    }
+
+    @Override
 	public LldpElementNode getLldpElement(int nodeId) {
 		return convertFromModel(m_lldpElementDao.findByNodeId(Integer.valueOf(nodeId)));
 	}
