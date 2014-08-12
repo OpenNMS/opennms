@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+  xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+  xsi:schemaLocation="
+    http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd
+    http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd
+  ">
+
+  <changeSet author="agalue" id="1.13.5-hwEntity">
+    <validCheckSum>ANY</validCheckSum>
+
+    <createTable tableName="hwEntity">
+      <column name="id" type="integer">
+        <constraints primaryKey="true" nullable="false" />
+      </column>
+      <column name="parentId" type="integer"/>
+      <column name="nodeId" type="integer">
+        <constraints nullable="false" />
+      </column>
+      <column name="entPhysicalIndex" type="integer">
+        <constraints nullable="false" />
+      </column>
+      <column name="entPhysicalParentRelPos" type="integer"/>
+      <column name="entPhysicalName" type="varchar(64)"/>
+      <column name="entPhysicalDescr" type="varchar(64)"/>
+      <column name="entPhysicalAlias" type="varchar(64)"/>
+      <column name="entPhysicalVendorType" type="varchar(64)"/>
+      <column name="entPhysicalClass" type="varchar(64)"/>
+      <column name="entPhysicalMfgName" type="varchar(64)"/>
+      <column name="entPhysicalModelName" type="varchar(64)"/>
+      <column name="entPhysicalHardwareRev" type="varchar(64)"/>
+      <column name="entPhysicalFirmwareRev" type="varchar(64)"/>
+      <column name="entPhysicalSoftwareRev" type="varchar(64)"/>
+      <column name="entPhysicalSerialNum" type="varchar(64)"/>
+      <column name="entPhysicalAssetID" type="varchar(64)"/>
+      <column name="entPhysicalIsFRU" type="boolean"/>
+      <column name="entPhysicalMfgDate" type="datetime"/>
+      <column name="entPhysicalUris" type="varchar(256)"/>
+    </createTable>
+
+    <ext:addAutoIncrement tableName="hwEntity" columnName="id" sequenceName="opennmsNxtId" />
+    <addForeignKeyConstraint constraintName="fk_hwEntity_parent" onDelete="CASCADE" baseTableName="hwEntity" baseColumnNames="parentId" referencedTableName="hwEntity" referencedColumnNames="id" />
+    <addForeignKeyConstraint constraintName="fk_hwEntity_node" onDelete="CASCADE" baseTableName="hwEntity" baseColumnNames="nodeId" referencedTableName="node" referencedColumnNames="nodeId" />
+
+    <createIndex tableName="hwEntity" indexName="hwEntity_node_unique_idx" unique="true">
+      <column name="nodeId" />
+      <column name="entPhysicalIndex" />
+    </createIndex>
+
+    <rollback>
+      <dropTable tableName="hwEntity" />
+    </rollback>
+  </changeSet>
+
+  <changeSet author="agalue" id="1.13.5-hwEntityAttributeType">
+    <validCheckSum>ANY</validCheckSum>
+
+    <createTable tableName="hwEntityAttributeType">
+      <column name="id" type="integer">
+        <constraints primaryKey="true" nullable="false" />
+      </column>
+      <column name="attribName" type="varchar(64)">
+        <constraints nullable="false" />
+      </column>
+      <column name="attribType" type="varchar(64)">
+        <constraints nullable="false" />
+      </column>
+    </createTable>
+
+    <ext:addAutoIncrement tableName="hwEntityAttributeType" columnName="id" sequenceName="opennmsNxtId" />
+
+    <createIndex tableName="hwEntityAttributeType" indexName="hwEntityAttributeType_unique_idx" unique="true">
+      <column name="attribName" />
+    </createIndex>
+
+    <rollback>
+      <dropTable tableName="hwEntityAttributeType" />
+    </rollback>
+  </changeSet>
+
+  <changeSet author="agalue" id="1.13.5-hwEntityAttribute">
+    <validCheckSum>ANY</validCheckSum>
+
+    <createTable tableName="hwEntityAttribute">
+      <column name="id" type="integer">
+        <constraints primaryKey="true" nullable="false" />
+      </column>
+      <column name="hwEntityId" type="integer">
+        <constraints nullable="false" />
+      </column>
+      <column name="hwAttribTypeId" type="integer">
+        <constraints nullable="false" />
+      </column>
+      <column name="attribValue" type="varchar(256)">
+        <constraints nullable="false" />
+      </column>
+    </createTable>
+
+    <ext:addAutoIncrement tableName="hwEntityAttribute" columnName="id" sequenceName="opennmsNxtId" />
+    <addForeignKeyConstraint constraintName="fk_hwEntity_hwEntityAttribute" onDelete="CASCADE" baseTableName="hwEntityAttribute" baseColumnNames="hwEntityId" referencedTableName="hwEntity" referencedColumnNames="id" />
+    <addForeignKeyConstraint constraintName="fk_hwEntityAttribute_hwEntityAttributeType" onDelete="CASCADE" baseTableName="hwEntityAttribute" baseColumnNames="hwAttribTypeId" referencedTableName="hwEntityAttributeType" referencedColumnNames="id" />
+    <createIndex tableName="hwEntityAttribute" indexName="hwEntityAttribute_unique_idx" unique="true">
+      <column name="hwEntityId" />
+      <column name="hwAttribTypeId" />
+    </createIndex>
+
+    <rollback>
+      <dropTable tableName="hwEntityAttribute" />
+    </rollback>
+  </changeSet>
+
+</databaseChangeLog>

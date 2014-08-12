@@ -79,6 +79,9 @@ drop table group_user cascade;
 drop table category_user cascade;
 drop table category_group cascade;
 drop table filterfavorites cascade;
+drop table hwentity cascade;
+drop table hwentityattribute cascade;
+drop table hwentityattributetype cascade;
 
 drop sequence catNxtId;
 drop sequence nodeNxtId;
@@ -351,7 +354,6 @@ create table node (
 	lastCapsdPoll   timestamp with time zone,
 	foreignSource	varchar(64),
 	foreignId       varchar(64),
-
 	constraint pk_nodeID primary key (nodeID),
 	constraint fk_dpName foreign key (dpName) references distPoller
 );
@@ -2658,3 +2660,56 @@ CREATE TABLE filterfavorites (
   CONSTRAINT pk_filterid PRIMARY KEY (filterid)
 );
 CREATE INDEX filternamesidx ON filterfavorites (username, filtername, page);
+
+--##################################################################
+--# Hardware Inventory Tables
+--##################################################################
+
+create table hwEntity (
+    id                      integer default nextval('opennmsNxtId') not null,
+    parentId                integer,
+    nodeId                  integer,
+    entPhysicalIndex        integer not null,
+    entPhysicalParentRelPos integer,
+    entPhysicalName         varchar(64),
+    entPhysicalDescr        varchar(64),
+    entPhysicalAlias        varchar(64),
+    entPhysicalVendorType   varchar(64),
+    entPhysicalClass        varchar(64),
+    entPhysicalMfgName      varchar(64),
+    entPhysicalModelName    varchar(64),
+    entPhysicalHardwareRev  varchar(64),
+    entPhysicalFirmwareRev  varchar(64),
+    entPhysicalSoftwareRev  varchar(64),
+    entPhysicalSerialNum    varchar(64),
+    entPhysicalAssetID      varchar(64),
+    entPhysicalIsFRU        bool, 
+    entPhysicalMfgDate      timestamp,
+    entPhysicalUris         varchar(256),
+    constraint pk_hwEntity_id primary key (id),
+    constraint fk_hwEntity_parent foreign key (parentId) references hwEntity (id),
+    constraint fk_hwEntity_node foreign key (nodeId) references node ON DELETE CASCADE
+);
+create index hwEntity_nodeId_idx on hwEntity(nodeid);
+create index hwEntity_entPhysicalIndex_idx on hwEntity(entPhysicalIndex);
+create unique index hwEntity_node_unique_idx on hwEntity(nodeId,entPhysicalIndex);
+
+create table hwEntityAttributeType (
+    id         integer default nextval('opennmsNxtId') not null,
+    attribName varchar(128) not null,
+    attribType varchar(128) not null,
+    constraint pk_hwEntity_attributeType_id primary key (id)
+);
+create unique index hwEntityAttributeType_unique_idx on hwEntityAttributeType(attribName);
+
+create table hwEntityAttribute (
+    id             integer default nextval('opennmsNxtId') not null,
+    hwEntityId     integer not null,
+    hwAttribTypeId integer not null,
+    attribValue    varchar(256),
+    constraint pk_hwEntity_attribute_id primary key (id),
+    constraint fk_hwEntity_hwEntityAttribute foreign key (hwEntityId) references hwEntity (id),
+    constraint fk_hwEntityAttribute_hwEntityAttributeType foreign key (hwAttribTypeId) references hwEntityAttributeType (id) 
+);
+create unique index hwEntityAttribute_unique_idx on hwEntityAttribute(hwEntityId,hwAttribTypeId);
+
