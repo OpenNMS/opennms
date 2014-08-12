@@ -43,7 +43,6 @@ NOTE: The _OPENNMS_JDBC_HOSTNAME_ is replaced in the _url_ parameter the IP or r
 | `row_count`      | The amount of returned rows is compared, not a value of the resulting rows | `1`
 | `compare_string` | Strings are always checked for equility with the operand                   | `-`
 | `compare_int`    | An integer from a column of the first result row is compaird               | `1`             
-| `compare_bool`   | TODO - MIGHT NOT BE IMPLEMETED                                             | ``
 |===
 
 .Available _operand_ parameters
