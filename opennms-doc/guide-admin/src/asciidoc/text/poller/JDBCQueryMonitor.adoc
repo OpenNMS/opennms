@@ -2,7 +2,7 @@
 === JDBCQueryMonitor
 
 The JDBCQueryMonitor runs an sql-query against a database and is able to verify the result of the query.
-A read-only connection is used to run the sql-query, so the data in the database is not altered.
+A read-only connection is used to run the SQL query, so the data in the database is not altered.
 It is based on the http://www.oracle.com/technetwork/java/javase/jdbc/index.html[JDBC] technology to connect and communicate with the database.
 
 ==== Monitor facts
@@ -20,35 +20,35 @@ It is based on the http://www.oracle.com/technetwork/java/javase/jdbc/index.html
 |===
 | Parameter  | Description                                                        | Required | Default value
 | `driver`   | JDBC-Driver class to use                                           | required | `com.sybase.jdbc2.jdbc.SybDriver`
-| `url`      | JDBC-Url to connect to.                                            | required | `jdbc:sybase:Tds:OPENNMS_JDBC_HOSTNAME/tempdb`
+| `url`      | JDBC-URL to connect to.                                            | required | `jdbc:sybase:Tds:OPENNMS_JDBC_HOSTNAME/tempdb`
 | `user`     | Database user                                                      | required | `sa`
 | `password` | Database password                                                  | required | (empty)
-| `query`    | The sql-query to run                                               | required | `-`
+| `query`    | The SQL query to run                                               | required | `-`
 | `action`   | What evaluation action to perform                                  | required | `row_count`
 | `column`   | The result column to evaluate against                              | optional | `-`
 | `operator` | Operator to use for the evaluation                                 | required | `>=`
-| `operand`  | The operand to compair against the sql-query result                | required | depends on the action
+| `operand`  | The operand to compare against the SQL query result                | required | depends on the action
 | `message`  | The message to use if the service is down. 
-               Both operands and the operator are added to the messate too.       | optional | generic message depending on the action
-| `timeout`  | Timeout in ms for the database-connection                          | optional | `3000`
+               Both operands and the operator are added to the message too.       | optional | generic message depending on the action
+| `timeout`  | Timeout in ms for the database connection                          | optional | `3000`
 | `retries`  | How many retries should be performed before failing the test       | optional | `0`
 |===
 
-NOTE: The _OPENNMS_JDBC_HOSTNAME_ is replaced in the _url_ parameter the IP or resolved hostname of the interface the monitored service is assigned to. 
+NOTE: The _OPENNMS_JDBC_HOSTNAME_ is replaced in the _url_ parameter with the IP or resolved hostname of the interface the monitored service is assigned to. 
 
-.Available _action_ parameters and there default _operand_
+.Available _action_ parameters and their default _operand_
 [options="header, autowidth"]
 |===
 | Parameter        | Description                                                                | Default operand
-| `row_count`      | The amount of returned rows is compared, not a value of the resulting rows | `1`
-| `compare_string` | Strings are always checked for equility with the operand                   | `-`
-| `compare_int`    | An integer from a column of the first result row is compaird               | `1`             
+| `row_count`      | The number of returned rows is compared, not a value of the resulting rows | `1`
+| `compare_string` | Strings are always checked for equality with the operand                   | `-`
+| `compare_int`    | An integer from a column of the first result row is compared               | `1`             
 |===
 
 .Available _operand_ parameters
 [options="header, autowidth"]
 |===
-| Parameter | XML entiry to uses in xml configs
+| Parameter | XML entity to use in XML configs
 | `=`       | `=`
 | `<`       | `&lt;`
 | `>`       | `&gt;`
@@ -60,18 +60,18 @@ NOTE: The _OPENNMS_JDBC_HOSTNAME_ is replaced in the _url_ parameter the IP or r
 ==== Evaluating the action - operator - operand
 
 Only the first result row returned by the sql-query is evaluated.
-The evaluation can be against the value of one column or the amount of rows returned by the sql-query.
+The evaluation can be against the value of one column or the number of rows returned by the SQL query.
 
 ==== Provide the database driver
 
 The JDBCQueryMonitor is based on _JDBC_ and requires a JDBC-Driver to communicate with any database.
-Due to the fact that OpenNMS it self is using a Postgrsql Database, the Postgresql JDBC-Driver is available out of the box.
-For all other database-systems a compatible JDBC-Driver has to be provided to OpenNMS as a _jar-file_.
-To provide a JDBC-Driver place the _driver-jar_ in the `lib-folder` of your OpenNMS.
-To use the JDBCMonitor from a Remote-Poller, the _driver-jar_ has to be provided to the Remote-Poller too.
+Due to the fact that OpenNMS itself uses a PostgreSQL database, the PostgreSQL JDBC-Driver is available out of the box.
+For all other database systems a compatible JDBC-Driver has to be provided to OpenNMS as a _jar-file_.
+To provide a JDBC-Driver place the _driver-jar_ in the `lib` folder of your OpenNMS.
+To use the JDBCMonitor from a remote poller, the _driver-jar_ has to be provided to the remote poller too. This may be tricky or impossible when using the Java Webstart remote poller, because of code-signing requirements.
 
 ==== Examples
-The following example checks if the amount of events in the OpenNMS database is less-than 250000.
+The following example checks if the number of events in the OpenNMS database is fewer than 250000.
 
 [source, xml]
 ----
@@ -85,7 +85,7 @@ The following example checks if the amount of events in the OpenNMS database is 
   <parameter key="action" value="row_count" />
   <parameter key="operand" value="250000" />
   <parameter key="operator" value="&lt;" /> 
-  <parameter key="message" value="to many events in OpenNMS database" />
+  <parameter key="message" value="too many events in OpenNMS database" />
 </service>
 
 <monitor service="OpenNMS_DB_EventLimit" class-name="org.opennms.netmgt.poller.monitors.JDBCQueryMonitor" />
