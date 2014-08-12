@@ -1,7 +1,8 @@
 
 === JDBCMonitor
 
-The JDBC monitor checks that it is able to connect to a given JDBC URL and that it is able to get the database catalog from that URL.
+The JDBCMonitor checks that it is able to connect to a Database and checks if it is able to get the database catalog from that databasemanagementsystem.
+It is based on the http://www.oracle.com/technetwork/java/javase/jdbc/index.html[JDBC] technology to connect and communicate with the database.
 
 ==== Monitor facts
 
@@ -16,14 +17,16 @@ The JDBC monitor checks that it is able to connect to a given JDBC URL and that 
 .Monitor specific parameters for the JDBCMonitor
 [options="header, autowidth"]
 |===
-| Parameter  | Description                               | Required | Default value
-| `driver`   | DRAFT JDBC-Driver class                   | required | `PostgreSQL Driver used by OpenNMS it self`
-| `url`      | DRAFT JDBC-Url IP4v address? DBTool?      | required | `Url for the OpenNMS database`
-| `user`     | DRAFT Database user                       | required | `User of for the OpenNMS database`
-| `password` | DRAFT Database password                   | required | `Password for the OpenNMS database`
-| `timeout`  | DRAFT Timeout for the database-connection | optional | `where is the default from?`
+| Parameter  | Description                                                        | Required | Default value
+| `driver`   | JDBC-Driver class to use                                           | required | `com.sybase.jdbc2.jdbc.SybDriver`
+| `url`      | JDBC-Url to connect to.                                            | required | `jdbc:sybase:Tds:OPENNMS_JDBC_HOSTNAME/tempdb`
+| `user`     | Database user                                                      | required | `sa`
+| `password` | Database password                                                  | required | (empty)
+| `timeout`  | Timeout in ms for the database-connection                          | optional | `3000`
+| `retries`  | How many retries should be performed before failing the test       | optional | `0`
 |===
 
+NOTE: The _OPENNMS_JDBC_HOSTNAME_ is replaced in the _url_ parameter the IP or resolved hostname of the interface the monitored service is assigned to. 
 
 ==== Provide the database driver
 
