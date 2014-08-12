@@ -28,7 +28,8 @@ It is based on the http://www.oracle.com/technetwork/java/javase/jdbc/index.html
 | `column`   | The result column to evaluate against                              | optional | `-`
 | `operator` | Operator to use for the evaluation                                 | required | `>=`
 | `operand`  | The operand to compair against the sql-query result                | required | depends on the action
-| `message`  | The message to use if the service is down                          | optional | generic message depending on the action
+| `message`  | The message to use if the service is down. 
+               Both operands and the operator are added to the messate too.       | optional | generic message depending on the action
 | `timeout`  | Timeout in ms for the database-connection                          | optional | `3000`
 | `retries`  | How many retries should be performed before failing the test       | optional | `0`
 |===
