@@ -30,18 +30,24 @@ NOTE: The _OPENNMS_JDBC_HOSTNAME_ is replaced in the _url_ parameter the IP or r
 
 ==== Provide the database driver
 
-The JDBCMonitor is based on _JDBC_ and requires a JDBC-Driver to comunicate with any database.
-Due to the fact that OpenNMS it self is using a Postgrsql Database, the Postgresql JDBC-Driver is availible out of the box.
+The JDBCMonitor is based on _JDBC_ and requires a JDBC-Driver to communicate with any database.
+Due to the fact that OpenNMS it self is using a Postgrsql Database, the Postgresql JDBC-Driver is available out of the box.
 For all other database-systems a compatible JDBC-Driver has to be provided to OpenNMS as a _jar-file_.
 To provide a JDBC-Driver place the _driver-jar_ in the `lib-folder` of your OpenNMS.
 To use the JDBC-Monitor from a Remote-Poller, the _driver-jar_ has to be provided to the Remote-Poller too.
 
-@TODO how to add a jar to the remote-poller
 
 ==== Examples
-Some example configuration how to configure the monitor in the 'poller-configuration.xml'.
+The following example checks if the Postgresql database used by OpenNMS is available.
 
 [source, xml]
 ----
+<service name="OpenNMS_DBMS" interval="30000" user-defined="true" status="on">
+  <parameter key="driver" value="org.postgresql.Driver"/>
+  <parameter key="url" value="jdbc:postgresql://OPENNMS_JDBC_HOSTNAME:5432/opennms"/>
+  <parameter key="user" value="opennms"/>
+  <parameter key="password" value="opennms"/>
+</service>
 
+<monitor service="OpenNMS_DBMS"       class-name="org.opennms.netmgt.poller.monitors.JDBCMonitor" />
 ----
