@@ -34,7 +34,7 @@ The JDBCMonitor is based on _JDBC_ and requires a JDBC-Driver to communicate wit
 Due to the fact that OpenNMS it self is using a Postgrsql Database, the Postgresql JDBC-Driver is available out of the box.
 For all other database-systems a compatible JDBC-Driver has to be provided to OpenNMS as a _jar-file_.
 To provide a JDBC-Driver place the _driver-jar_ in the `lib-folder` of your OpenNMS.
-To use the JDBC-Monitor from a Remote-Poller, the _driver-jar_ has to be provided to the Remote-Poller too.
+To use the JDBCMonitor from a Remote-Poller, the _driver-jar_ has to be provided to the Remote-Poller too.
 
 
 ==== Examples
