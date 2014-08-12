@@ -7,35 +7,34 @@ To install the ActiveMQ event forwarder between two OpenNMS systems, "dispatcher
 - Upgrade to the latest build from the `pjsm/2.0` branch.
 - Log into Karaf.
 - Run this command to start the default ActiveMQ broker (with broker name "opennms") on OpenNMS:
-    ```
-    features:install opennms-activemq
-    ```
+
+        features:install opennms-activemq
+
 - Verify that ActiveMQ has opened public port 61616 on the receiver system.
 - Verify that there are no errors on the log.
 - Install the Event Receiver feature that uses the local ActiveMQ broker:
-    ```
-    features:install opennms-activemq-event-receiver
-    ```
+
+        features:install opennms-activemq-event-receiver
 
 ## Dispatcher
 
 - Upgrade to the latest build from the `pjsm/2.0` branch.
 - Log into Karaf.
 - Run this command to install the default ActiveMQ dispatcher configuration:
-    ```
-    features:install opennms-activemq-dispatcher-config
-    ```
+
+        features:install opennms-activemq-dispatcher-config
+
 - Update the configuration with the broker URI of the receiver system:
-    ```
-    config:edit -f org.apache.activemq.server-dispatcher
-    config:propset broker-name [location name]
-    config:propset brokerUri tcp://[receiver IP address]:61616
-    config:update
-    ```
+
+        config:edit -f org.apache.activemq.server-dispatcher
+        config:propset broker-name [location name]
+        config:propset brokerUri tcp://[receiver IP address]:61616
+        config:update
+
 - Install the Event Forwarder feature:
-    ```
-    features:install opennms-activemq-event-forwarder
-    ```
+
+        features:install opennms-activemq-event-forwarder
+
 - Verify that there are no errors in the log.
 - Verify that localhost port 61716 has been opened by ActiveMQ for local connections.
 - Verify in the Karaf log that the network connector to `brokerUri` has been opened.
