@@ -49,13 +49,13 @@ NOTE: The _OPENNMS_JDBC_HOSTNAME_ is replaced in the _url_ parameter the IP or r
 .Available _operand_ parameters
 [options="header, autowidth"]
 |===
-| Parameter | XML entiry 
-| `=`       |
+| Parameter | XML entiry to uses in xml configs
+| `=`       | `=`
 | `<`       | `&lt;`
 | `>`       | `&gt;`
-| `!=`      |
-| `<=`      |
-| `>=`      |
+| `!=`      | `!=`
+| `<=`      | `&lt;=`
+| `>=`      | `&gt;=`
 |===
 
 ==== Evaluating the action - operator - operand
