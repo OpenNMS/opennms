@@ -444,7 +444,7 @@ public abstract class AbstractLinkdTopologyProvider extends AbstractTopologyProv
         VertexHopGraphProvider.VertexHopCriteria criterion = null;
 
         if (node != null) {
-            final Vertex defaultVertex = getVertex(TOPOLOGY_NAMESPACE_LINKD, node.getNodeId());
+            final Vertex defaultVertex = getVertex(node);
             if (defaultVertex != null) {
                 VertexHopGraphProvider.FocusNodeHopCriteria hopCriteria = new VertexHopGraphProvider.FocusNodeHopCriteria();
                 hopCriteria.add(defaultVertex);
