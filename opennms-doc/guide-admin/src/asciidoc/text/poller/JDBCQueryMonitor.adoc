@@ -51,8 +51,8 @@ NOTE: The _OPENNMS_JDBC_HOSTNAME_ is replaced in the _url_ parameter the IP or r
 |===
 | Parameter | XML entiry 
 | `=`       |
-| `<`       | &lt;
-| `>`       | &gt;
+| `<`       | `&lt;`
+| `>`       | `&gt;`
 | `!=`      |
 | `<=`      |
 | `>=`      |
