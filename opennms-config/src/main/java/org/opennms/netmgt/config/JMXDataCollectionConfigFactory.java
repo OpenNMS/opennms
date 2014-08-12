@@ -259,9 +259,9 @@ public final class JMXDataCollectionConfigFactory {
             for(CompAttrib compAttrib : mbean.getCompAttribList()) {
                 for (CompMember compMember : compAttrib.getCompMemberList()) {
                     Attrib attribWrapper = new Attrib();
-                    compAttrib.setName(compAttrib.getName() + "|" + compMember.getName());
-                    compAttrib.setAlias(compMember.getAlias());
-                    compAttrib.setType(compMember.getType());
+                    attribWrapper.setName(compAttrib.getName() + "|" + compMember.getName());
+                    attribWrapper.setAlias(compMember.getAlias());
+                    attribWrapper.setType(compMember.getType());
                     list.add(attribWrapper);
                 }
             }
