@@ -50,8 +50,8 @@ NOTE: The _OPENNMS_JDBC_HOSTNAME_ is replaced in the _url_ parameter the IP or r
 |===
 | Parameter | XML entiry 
 | `=`       |
-| `<`       | &lt
-| `>`       | &gt
+| `<`       | &lt;
+| `>`       | &gt;
 | `!=`      |
 | `<=`      |
 | `>=`      |
@@ -84,7 +84,8 @@ The following example checks if the amount of events in the OpenNMS database is 
   <parameter key="query" value="select eventid from events" />  
   <parameter key="action" value="row_count" />
   <parameter key="operand" value="250000" />
-  <parameter key="operator" value="&lt>" /> 
+  <parameter key="operator" value="&lt;" /> 
+  <parameter key="message" value="to many events in OpenNMS database" />
 </service>
 
 <monitor service="OpenNMS_DB_EventLimit" class-name="org.opennms.netmgt.poller.monitors.JDBCQueryMonitor" />
