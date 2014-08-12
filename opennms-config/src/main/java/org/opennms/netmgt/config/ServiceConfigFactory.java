@@ -103,7 +103,6 @@ public final class ServiceConfigFactory {
         for (Service s : m_config.getServiceCollection()) {
             slist[count++] = s;
         }
-
         return slist;
     }
 }
