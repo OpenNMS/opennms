@@ -1,7 +1,7 @@
 
 === JDBCQueryMonitor
 
-The _JDBCQueryMonitor_ runs an sql-query against a database and is able to verify the result of the query.
+The _JDBCQueryMonitor_ runs an SQL query against a database and is able to verify the result of the query.
 A read-only connection is used to run the SQL query, so the data in the database is not altered.
 It is based on the http://www.oracle.com/technetwork/java/javase/jdbc/index.html[JDBC] technology to connect and communicate with the database.
 
@@ -81,7 +81,6 @@ The following example checks if the number of events in the OpenNMS database is 
   <parameter key="url" value="jdbc:postgresql://OPENNMS_JDBC_HOSTNAME:5432/opennms"/>
   <parameter key="user" value="opennms"/>
   <parameter key="password" value="opennms"/>
-
   <parameter key="query" value="select eventid from events" />  
   <parameter key="action" value="row_count" />
   <parameter key="operand" value="250000" />
