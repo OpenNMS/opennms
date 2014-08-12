@@ -24,7 +24,7 @@
           <importRepositories>true</importRepositories>
           <!-- 
             Don't import other repositories that are already inside well-organized feature hierarchies
-            outside of OpenNMS (Karaf, ActiveMQ).
+            outside of OpenNMS (Karaf, ActiveMQ, Camel).
           -->
           <importRepositoryExclusions>
             <value>karaf-${karafVersion}</value>

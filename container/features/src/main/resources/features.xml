@@ -11,18 +11,11 @@
     <!-- This broker configuration will configure a broker to talk to a remote OpenNMS machine -->
     <feature name="opennms-activemq-dispatcher-config" description="OpenNMS :: Features :: ActiveMQ :: Dispatcher Broker Config" version="${project.version}">
       <configfile override="true" finalname="/etc/activemq-dispatcher.xml">mvn:org.opennms.features.activemq/org.opennms.features.activemq.broker/${project.version}/xml/activemq-dispatcher</configfile>
+      <!-- Don't overwrite any existing properties file -->
+      <configfile finalname="/etc/org.apache.activemq.server-dispatcher.cfg">mvn:org.opennms.features.activemq/org.opennms.features.activemq.broker/${project.version}/cfg/activemq-dispatcher</configfile>
     </feature>
 
     <feature name="opennms-activemq-dispatcher" description="OpenNMS :: Features :: ActiveMQ :: Dispatcher Broker" version="${project.version}">
-      <config override="true" name="org.apache.activemq.server-default">
-        # Needs to be globally unique
-        broker-name localhost
-        # Location of configuration file from opennms-activemq-dispatcher-config
-        config ${karaf.base}/etc/activemq-dispatcher.xml
-        # Parameters used to replace values in the configuration file
-        brokerUri tcp://127.0.0.1:61616
-        data ${karaf.data}/activemq
-      </config>
       <feature>opennms-activemq-dispatcher-config</feature>
       <feature>activemq</feature>
     </feature>
@@ -30,17 +23,11 @@
     <!-- This broker configuration will configure a local ActiveMQ broker to process messages on the OpenNMS machine -->
     <feature name="opennms-activemq-config" description="OpenNMS :: Features :: ActiveMQ :: Broker Config" version="${project.version}">
       <configfile override="true" finalname="/etc/activemq-receiver.xml">mvn:org.opennms.features.activemq/org.opennms.features.activemq.broker/${project.version}/xml/activemq-receiver</configfile>
+      <!-- Don't overwrite any existing properties file -->
+      <configfile finalname="/etc/org.apache.activemq.server-broker.cfg">mvn:org.opennms.features.activemq/org.opennms.features.activemq.broker/${project.version}/cfg/activemq-receiver</configfile>
     </feature>
 
     <feature name="opennms-activemq" description="OpenNMS :: Features :: ActiveMQ :: Broker" version="${project.version}">
-      <config override="true" name="org.apache.activemq.server-default">
-        # Needs to be globally unique
-        broker-name opennms
-        # Location of configuration file from opennms-activemq-receiver-config
-        config ${karaf.base}/etc/activemq-receiver.xml
-        # Parameters used to replace values in the configuration file
-        data ${karaf.data}/activemq
-      </config>
       <feature>opennms-activemq-config</feature>
       <feature>activemq</feature>
     </feature>
