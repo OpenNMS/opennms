@@ -16,9 +16,7 @@
         <constraints primaryKey="true" nullable="false" />
       </column>
       <column name="parentId" type="integer"/>
-      <column name="nodeId" type="integer">
-        <constraints nullable="false" />
-      </column>
+      <column name="nodeId" type="integer"/>
       <column name="entPhysicalIndex" type="integer">
         <constraints nullable="false" />
       </column>
@@ -61,10 +59,10 @@
       <column name="id" type="integer">
         <constraints primaryKey="true" nullable="false" />
       </column>
-      <column name="attribName" type="varchar(64)">
+      <column name="attribName" type="varchar(128)">
         <constraints nullable="false" />
       </column>
-      <column name="attribType" type="varchar(64)">
+      <column name="attribClass" type="varchar(32)">
         <constraints nullable="false" />
       </column>
     </createTable>
