@@ -35,6 +35,7 @@
     <feature name="opennms-activemq-event-forwarder" description="OpenNMS :: Features :: ActiveMQ :: Event Forwarder" version="${project.version}">
       <feature>camel-core</feature>
       <feature>camel-blueprint</feature>
+      <feature>camel-http</feature>
       <feature>activemq-camel</feature>
       <feature>opennms-activemq-dispatcher</feature>
       <bundle dependency="true">mvn:org.opennms.core/org.opennms.core.camel/${project.version}</bundle>
@@ -44,6 +45,7 @@
     <feature name="opennms-activemq-event-receiver" description="OpenNMS :: Features :: ActiveMQ :: Event Receiver" version="${project.version}">
       <feature>camel-core</feature>
       <feature>camel-blueprint</feature>
+      <feature>camel-http</feature>
       <feature>activemq-camel</feature>
       <feature>opennms-activemq</feature>
       <bundle dependency="true">mvn:org.opennms.core/org.opennms.core.camel/${project.version}</bundle>
