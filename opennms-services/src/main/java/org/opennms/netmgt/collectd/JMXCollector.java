@@ -288,6 +288,7 @@ public abstract class JMXCollector implements ServiceCollector {
         final boolean useMbeanForRrds = ParameterMap.getKeyedBoolean(map, ParameterName.USE_MBEAN_NAME_FOR_RRDS.toString(), false);
         final String port = ParameterMap.getKeyedString(map, ParameterName.PORT.toString(), null);
         final String friendlyName = ParameterMap.getKeyedString(map, ParameterName.FRIENDLY_NAME.toString(), port);
+        // TODO mvr remove useFriendlyName and determine if friendlyName or serviceName should be used based on if property is set
         final String collDir = useFriendlyName ? friendlyName : serviceName;
         final int retries = ParameterMap.getKeyedInteger(map, ParameterName.RETRY.toString(), 3);
 
