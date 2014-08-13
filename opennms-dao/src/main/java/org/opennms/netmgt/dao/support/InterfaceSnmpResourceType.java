@@ -139,7 +139,7 @@ public class InterfaceSnmpResourceType implements OnmsResourceType {
         
     }
     
-    private ArrayList<OnmsResource> populateResourceList(File parent, File relPath, OnmsNode node, Boolean isForeign) {
+    private List<OnmsResource> populateResourceList(File parent, File relPath, OnmsNode node, Boolean isForeign) {
             
         ArrayList<OnmsResource> resources = new ArrayList<OnmsResource>();
 

@@ -102,7 +102,7 @@ public abstract class UserManager {
     /**
      * The duty schedules for each user
      */
-    protected HashMap<String, List<DutySchedule>> m_dutySchedules;
+    protected Map<String, List<DutySchedule>> m_dutySchedules;
     private Header oldHeader;
 
     /**

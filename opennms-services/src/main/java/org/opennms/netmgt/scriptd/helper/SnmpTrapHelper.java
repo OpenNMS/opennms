@@ -32,6 +32,7 @@ import java.math.BigInteger;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.HashMap;
+import java.util.Map;
 
 import org.opennms.core.utils.Base64;
 import org.opennms.core.utils.InetAddressUtils;
@@ -100,7 +101,7 @@ public class SnmpTrapHelper {
      * Map of factories for generating different types of SNMP variable binding
      * content
      */
-    private HashMap<String, Object> m_factoryMap;
+    private Map<String, Object> m_factoryMap;
 
     /**
      * Constructs a new SNMPTrapHelper.

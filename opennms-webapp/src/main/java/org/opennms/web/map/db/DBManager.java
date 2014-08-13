@@ -754,7 +754,7 @@ public class DBManager extends Manager {
 
             statement = conn.createStatement();
             rs = statement.executeQuery(sqlQuery);
-            Vector<DbElement> elements = rs2ElementVector(rs);
+            List<DbElement> elements = rs2ElementVector(rs);
             rs.close();
             statement.close();
 
@@ -786,7 +786,7 @@ public class DBManager extends Manager {
             statement = conn.prepareStatement(sqlQuery);
             statement.setInt(1, mapid);
             rs = statement.executeQuery();
-            Vector<DbElement> elements = rs2ElementVector(rs);
+            List<DbElement> elements = rs2ElementVector(rs);
             DbElement[] el = null;
             if (elements != null) {
                 el = new DbElement[elements.size()];
@@ -815,7 +815,7 @@ public class DBManager extends Manager {
             statement = conn.prepareStatement(sqlQuery);
             statement.setInt(1, mapid);
             rs = statement.executeQuery();
-            Vector<DbElement> elements = rs2ElementVector(rs);
+            List<DbElement> elements = rs2ElementVector(rs);
             DbElement[] el = null;
             if (elements != null) {
                 el = new DbElement[elements.size()];
@@ -845,7 +845,7 @@ public class DBManager extends Manager {
             statement = conn.prepareStatement(sqlQuery);
             statement.setInt(1, mapid);
             rs = statement.executeQuery();
-            Vector<DbElement> elements = rs2ElementVector(rs);
+            List<DbElement> elements = rs2ElementVector(rs);
             DbElement[] el = null;
             if (elements != null) {
                 el = new DbElement[elements.size()];
@@ -877,7 +877,7 @@ public class DBManager extends Manager {
             elementLabel = "%" + elementLabel + "%";
             statement.setString(1, elementLabel);
             rs = statement.executeQuery();
-            Vector<DbElement> elements = rs2ElementVector(rs);
+            List<DbElement> elements = rs2ElementVector(rs);
             DbElement[] el = new DbElement[elements.size()];
             el = elements.toArray(el);
             return el;
@@ -1555,7 +1555,7 @@ public class DBManager extends Manager {
      * @throws org.opennms.web.map.MapsException if any.
      */
     @Override
-    public Vector<Integer> getDeletedNodes() throws MapsException {
+    public List<Integer> getDeletedNodes() throws MapsException {
         Connection conn = createConnection();
         Statement statement = null;
         ResultSet rs = null;
@@ -1710,7 +1710,7 @@ public class DBManager extends Manager {
         return element;
     }
 
-    private Vector<DbElement> rs2ElementVector(ResultSet rs)
+    private List<DbElement> rs2ElementVector(ResultSet rs)
             throws SQLException, MapsException {
         Vector<DbElement> vecElem = null;
         boolean firstTime = true;

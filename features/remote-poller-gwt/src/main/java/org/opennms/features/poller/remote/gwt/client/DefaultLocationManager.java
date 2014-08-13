@@ -301,7 +301,7 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
      *
      * @return a {@link java.util.ArrayList} object.
      */
-    public ArrayList<LocationInfo> getLocationsForLocationPanel() {
+    public List<LocationInfo> getLocationsForLocationPanel() {
         
         // Use an ArrayList so that it has good random-access efficiency
         // since the pageable lists use get() to fetch based on index.

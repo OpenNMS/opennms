@@ -30,6 +30,7 @@ package org.opennms.systemreport.system;
 
 import java.lang.management.ManagementFactory;
 import java.lang.management.ThreadInfo;
+import java.util.Map;
 import java.util.TreeMap;
 
 import org.apache.commons.exec.CommandLine;
@@ -58,8 +59,8 @@ public class ThreadReportPlugin extends AbstractSystemReportPlugin {
     }
 
     @Override
-    public TreeMap<String, Resource> getEntries() {
-        final TreeMap<String,Resource> map = new TreeMap<String,Resource>();
+    public Map<String, Resource> getEntries() {
+        final Map<String,Resource> map = new TreeMap<String,Resource>();
 
         final StringBuilder sb = new StringBuilder();
         try {

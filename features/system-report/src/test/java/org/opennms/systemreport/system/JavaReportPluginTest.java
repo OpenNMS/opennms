@@ -30,6 +30,7 @@ package org.opennms.systemreport.system;
 
 import static org.junit.Assert.assertTrue;
 
+import java.util.Map;
 import java.util.TreeMap;
 
 import javax.annotation.Resource;
@@ -52,7 +53,7 @@ public class JavaReportPluginTest extends ReportPluginTestCase {
     @Test
     public void testJavaReportPlugin() {
         assertTrue(listContains(JavaReportPlugin.class));
-        final TreeMap<String, org.springframework.core.io.Resource> entries = m_javaReportPlugin.getEntries();
+        final Map<String, org.springframework.core.io.Resource> entries = m_javaReportPlugin.getEntries();
         final float classVer = Float.valueOf(getResourceText(entries.get("Class Version")));
         assertTrue(classVer >= 49.0);
     }
@@ -60,7 +61,7 @@ public class JavaReportPluginTest extends ReportPluginTestCase {
     @Test
     public void testOSPlugin() {
         assertTrue(listContains(OSReportPlugin.class));
-        final TreeMap<String, org.springframework.core.io.Resource> entries = m_osReportPlugin.getEntries();
+        final Map<String, org.springframework.core.io.Resource> entries = m_osReportPlugin.getEntries();
         assertTrue(entries.containsKey("Architecture"));
         assertTrue(entries.containsKey("Name"));
         assertTrue(entries.containsKey("Distribution"));

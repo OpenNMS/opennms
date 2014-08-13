@@ -76,11 +76,11 @@ public class DataManager implements MapRemoteEventHandler {
         getLocationsMap().put(locationInfo.getName(), locationInfo);
     }
 
-    public TreeSet<String> getAllApplicationNames() {
+    public Set<String> getAllApplicationNames() {
         return new TreeSet<String>(getApplicationsMap().keySet());
     }
 
-    public TreeSet<String> getAllLocationNames() {
+    public Set<String> getAllLocationNames() {
         return new TreeSet<String>(getLocationsMap().keySet());
     }
 
@@ -122,8 +122,8 @@ public class DataManager implements MapRemoteEventHandler {
         return getLocationsMap().values();
     }
 
-    public ArrayList<ApplicationInfo> getApplications() {
-        ArrayList<ApplicationInfo> applicationList = new ArrayList<ApplicationInfo>();
+    public List<ApplicationInfo> getApplications() {
+        List<ApplicationInfo> applicationList = new ArrayList<ApplicationInfo>();
         
         applicationList.addAll(getApplicationsMap().values());
         Collections.sort(applicationList);

@@ -29,6 +29,7 @@
 package org.opennms.protocols.wmi;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.opennms.protocols.wmi.wbem.OnmsWbemObjectSet;
 
@@ -367,7 +368,7 @@ public class WmiManager {
 	}
 
 	private void performResultCheck(final WmiResult wmiResult, final WmiParams params) throws WmiException {
-	    final ArrayList<Object> wmiObjects = wmiResult.getResponse();
+	    final List<Object> wmiObjects = wmiResult.getResponse();
 
 		int matches = 0;
 		final int total = wmiObjects.size();

@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.opennms.features.topology.api.GraphContainer;
@@ -23,17 +25,17 @@ public class GCFilterableContainer extends AbstractBeanContainer<VertexRef, Vert
 	 * Mapping from Item ID to parent Item ID for items included in the filtered
 	 * container.
 	 */
-	private HashMap<VertexRef, VertexRef> filteredParent = null;
+	private Map<VertexRef, VertexRef> filteredParent = null;
 
 	/**
 	 * Mapping from Item ID to a list of child IDs when filtered
 	 */
-	private HashMap<VertexRef, LinkedList<VertexRef>> filteredChildren = null;
+	private Map<VertexRef, LinkedList<VertexRef>> filteredChildren = null;
 
 	/**
 	 * List that contains all filtered root elements of the container.
 	 */
-	private LinkedList<VertexRef> filteredRoots = null;
+	private List<VertexRef> filteredRoots = null;
 
 	/**
 	 * Determines how filtering of the container is done.
@@ -418,7 +420,7 @@ public class GCFilterableContainer extends AbstractBeanContainer<VertexRef, Vert
 	  * @return true if the itemId should be included in the filtered container.
 	  */
 	 private boolean filterIncludingParents(Vertex itemId,
-			 HashSet<Vertex> includedItems) {
+			 Set<Vertex> includedItems) {
 		 boolean toBeIncluded = passesFilters(itemId);
 
 		 Collection<Vertex> childList = m_graphContainer.getBaseTopology().getChildren(itemId, m_graphContainer.getCriteria());

@@ -122,7 +122,7 @@ public abstract class GroupManager {
     /**
      * The duty schedules for each group
      */
-    protected static HashMap<String, List<DutySchedule>> m_dutySchedules;
+    protected static Map<String, List<DutySchedule>> m_dutySchedules;
 
     /**
      * A mapping of Group object by name

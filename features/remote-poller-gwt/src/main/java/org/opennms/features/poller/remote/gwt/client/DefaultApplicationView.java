@@ -28,13 +28,10 @@
 
 package org.opennms.features.poller.remote.gwt.client;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.TreeSet;
-
 import org.opennms.features.poller.remote.gwt.client.FilterPanel.StatusSelectionChangedEvent;
 import org.opennms.features.poller.remote.gwt.client.location.LocationInfo;
 
@@ -320,7 +317,7 @@ public class DefaultApplicationView implements ApplicationView, ResizeHandler {
      * @see org.opennms.features.poller.remote.gwt.client.ApplicationView#updateLocationList(java.util.ArrayList)
      */
     @Override
-    public void updateLocationList( ArrayList<LocationInfo> locationsForLocationPanel) {
+    public void updateLocationList(List<LocationInfo> locationsForLocationPanel) {
         getLocationPanel().updateLocationList(locationsForLocationPanel);
     }
 
@@ -338,7 +335,7 @@ public class DefaultApplicationView implements ApplicationView, ResizeHandler {
      * @see org.opennms.features.poller.remote.gwt.client.ApplicationView#updateApplicationList(java.util.ArrayList)
      */
     @Override
-    public void updateApplicationList(ArrayList<ApplicationInfo> applications) {
+    public void updateApplicationList(List<ApplicationInfo> applications) {
         getLocationPanel().updateApplicationList(applications);
     }
 
@@ -346,7 +343,7 @@ public class DefaultApplicationView implements ApplicationView, ResizeHandler {
      * @see org.opennms.features.poller.remote.gwt.client.ApplicationView#updateApplicationNames(java.util.TreeSet)
      */
     @Override
-    public void updateApplicationNames(TreeSet<String> allApplicationNames) {
+    public void updateApplicationNames(Set<String> allApplicationNames) {
         getLocationPanel().updateApplicationNames(allApplicationNames);
     }
 

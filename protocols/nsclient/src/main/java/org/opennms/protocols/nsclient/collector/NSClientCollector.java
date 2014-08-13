@@ -81,7 +81,7 @@ public class NSClientCollector implements ServiceCollector {
 
     // Don't make this static because each service will have its own
     // copy and the key won't require the service name as part of the key.
-    private final HashMap<Integer, NSClientAgentState> m_scheduledNodes = new HashMap<Integer, NSClientAgentState>();
+    private final Map<Integer, NSClientAgentState> m_scheduledNodes = new HashMap<Integer, NSClientAgentState>();
 
 
     private static class NSClientCollectionAttributeType extends AbstractCollectionAttributeType {
@@ -353,7 +353,7 @@ public class NSClientCollector implements ServiceCollector {
         private final NsclientManager m_manager;
         private final NSClientAgentConfig m_agentConfig; // Do we need to keep this?
         private final String m_address;
-        private final HashMap<String, NSClientGroupState> m_groupStates = new HashMap<String, NSClientGroupState>();
+        private final Map<String, NSClientGroupState> m_groupStates = new HashMap<String, NSClientGroupState>();
 
         public NSClientAgentState(InetAddress address, Map<String, Object> parameters) {
             m_address = InetAddressUtils.str(address);

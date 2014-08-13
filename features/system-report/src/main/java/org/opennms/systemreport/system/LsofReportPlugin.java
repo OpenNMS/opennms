@@ -29,6 +29,7 @@
 package org.opennms.systemreport.system;
 
 import java.io.File;
+import java.util.Map;
 import java.util.TreeMap;
 
 import org.apache.commons.exec.CommandLine;
@@ -53,8 +54,8 @@ public class LsofReportPlugin extends AbstractSystemReportPlugin {
     }
 
     @Override
-    public TreeMap<String, Resource> getEntries() {
-        final TreeMap<String,Resource> map = new TreeMap<String,Resource>();
+    public Map<String, Resource> getEntries() {
+        final Map<String,Resource> map = new TreeMap<String,Resource>();
         String lsofOutput = null;
 
         final String lsof = findBinary("lsof");
