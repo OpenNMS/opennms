@@ -1304,7 +1304,7 @@ public class SnmpEventInfoTest {
 		"<snmp-config port=\"161\" retry=\"3\" timeout=\"800\" read-community=\"public\" version=\"v2c\" xmlns=\"http://xmlns.opennms.org/xsd/config/snmp\"/>\n";
     	
     	  SnmpPeerFactory.setInstance(new SnmpPeerFactory(snmpConfigXml));
-          assertEquals(snmpConfigXml, SnmpPeerFactory.marshallConfig());
+          assertXmlEquals(snmpConfigXml, SnmpPeerFactory.marshallConfig());
 
           SnmpEventInfo info = new SnmpEventInfo();
           info.setVersion("v2c");
@@ -1314,7 +1314,7 @@ public class SnmpEventInfoTest {
           SnmpPeerFactory.getInstance().define(info);
           
           String actualConfig = SnmpPeerFactory.marshallConfig();
-          assertEquals(expectedConfig, actualConfig);
+          assertXmlEquals(expectedConfig, actualConfig);
     }
     
     
@@ -1339,7 +1339,7 @@ public class SnmpEventInfoTest {
     	
 
         SnmpPeerFactory.setInstance(new SnmpPeerFactory(snmpConfigXml));
-        assertEquals(snmpConfigXml, SnmpPeerFactory.marshallConfig());
+        assertXmlEquals(snmpConfigXml, SnmpPeerFactory.marshallConfig());
 
         SnmpEventInfo info = new SnmpEventInfo();
         info.setVersion("v2c");
@@ -1350,7 +1350,7 @@ public class SnmpEventInfoTest {
         SnmpPeerFactory.getInstance().define(info);
         
         String actualConfig = SnmpPeerFactory.marshallConfig();
-        assertEquals(expectedConfig, actualConfig);
+        assertXmlEquals(expectedConfig, actualConfig);
     }
     
     /**
