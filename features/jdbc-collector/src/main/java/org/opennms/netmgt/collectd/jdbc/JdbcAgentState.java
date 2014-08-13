@@ -59,7 +59,7 @@ public class JdbcAgentState {
     Properties m_dbProps = null;
     
     private String m_address;
-    private HashMap<String, JdbcGroupState> m_groupStates = new HashMap<String, JdbcGroupState>();
+    private Map<String, JdbcGroupState> m_groupStates = new HashMap<String, JdbcGroupState>();
     
     public JdbcAgentState(InetAddress address, Map<String, Object> parameters) {
         // Save the target's address or hostname.

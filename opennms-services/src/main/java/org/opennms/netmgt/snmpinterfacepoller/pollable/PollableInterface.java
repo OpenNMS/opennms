@@ -54,7 +54,7 @@ public class PollableInterface {
     
     private PollableNetwork m_parent;
     
-    private HashMap<String, PollableSnmpInterface> m_pollablesnmpinterface;
+    private Map<String, PollableSnmpInterface> m_pollablesnmpinterface;
 
     private String m_packageName;
     

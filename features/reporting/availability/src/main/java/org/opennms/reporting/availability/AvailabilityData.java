@@ -36,6 +36,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Map;
 import java.util.TreeMap;
 import java.util.concurrent.Callable;
 
@@ -281,7 +282,7 @@ public class AvailabilityData {
             }
             LOG.debug("Cleaned Nodes {}", m_nodes);
             
-            TreeMap<Double, List<String>> topOffenders = getPercentNode();
+            Map<Double, List<String>> topOffenders = getPercentNode();
 
             LOG.debug("TOP OFFENDERS {}", topOffenders);
             if (m_nodes.size() <= 0) {
@@ -393,7 +394,7 @@ public class AvailabilityData {
      *
      * @return a {@link java.util.TreeMap} object.
      */
-    public TreeMap<Double, List<String>> getPercentNode() {
+    public Map<Double, List<String>> getPercentNode() {
         int days = m_daysInLastMonth;
         long endTime = m_lastMonthEndTime;
         Calendar cal = new GregorianCalendar();

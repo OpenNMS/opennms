@@ -115,7 +115,7 @@ public class DutySchedule implements Cloneable {
      * @param aSchedule
      *            Vector filled with 7 Boolean objects and two String objects
      */
-    public DutySchedule(Vector<?> aSchedule) {
+    public DutySchedule(List<?> aSchedule) {
         m_days = new BitSet(7);
 
         // set each day that is set to true
@@ -241,7 +241,7 @@ public class DutySchedule implements Cloneable {
      * @return a Vector properly formatted to reflect this DutySchedule
      * @deprecated call the individual getters
      */
-    public Vector<Object> getAsVector() {
+    public List<Object> getAsVector() {
         Vector<Object> vector = new Vector<Object>();
 
         for (int i = 0; i < 7; i++) {

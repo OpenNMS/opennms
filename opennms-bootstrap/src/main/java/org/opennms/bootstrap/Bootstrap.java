@@ -40,6 +40,7 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Arrays;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.StringTokenizer;
@@ -138,7 +139,7 @@ public class Bootstrap {
      * @returns A new ClassLoader with the specified search list
      * @return a {@link java.lang.ClassLoader} object.
      */
-    public static ClassLoader newClassLoader(LinkedList<URL> urls) {
+    public static ClassLoader newClassLoader(List<URL> urls) {
         URL[] urlsArray = urls.toArray(new URL[0]);
 
         return URLClassLoader.newInstance(urlsArray);
@@ -156,7 +157,7 @@ public class Bootstrap {
      *            LinkedList to append found JARs onto
      * @throws java.net.MalformedURLException if any.
      */
-    public static void loadClasses(File dir, boolean recursive, LinkedList<URL> urls) throws MalformedURLException {
+    public static void loadClasses(File dir, boolean recursive, List<URL> urls) throws MalformedURLException {
         // Add the directory
         urls.add(dir.toURI().toURL());
 

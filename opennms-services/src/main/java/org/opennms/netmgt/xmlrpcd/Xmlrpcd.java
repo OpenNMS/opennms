@@ -32,6 +32,7 @@ import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.util.Enumeration;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
@@ -41,7 +42,6 @@ import org.opennms.netmgt.config.OpennmsServerConfigFactory;
 import org.opennms.netmgt.config.XmlrpcdConfigFactory;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.xml.event.Event;
-
 import org.opennms.netmgt.config.xmlrpcd.XmlrpcServer;
 import org.opennms.netmgt.config.xmlrpcd.ExternalServers;
 import org.slf4j.Logger;
@@ -69,18 +69,18 @@ public class Xmlrpcd extends AbstractServiceDaemon {
     /**
      * The communication queues -- ArrayList of FifoQueues
      */
-    private ArrayList<FifoQueue<Event>> m_eventlogQs = new ArrayList<FifoQueue<Event>>();
+    private List<FifoQueue<Event>> m_eventlogQs = new ArrayList<FifoQueue<Event>>();
 
     /**
      * The queue processing threads -- ArrayList of EventQueueProcessors
      */
-    private ArrayList<EventQueueProcessor> m_processors = new ArrayList<EventQueueProcessor>();
+    private List<EventQueueProcessor> m_processors = new ArrayList<EventQueueProcessor>();
 
     /**
      * The class instance used to receive new events from for the system.
      *  -- ArrayList of BroadcastEventProcessors
      */
-    private ArrayList<BroadcastEventProcessor> m_eventReceivers = new ArrayList<BroadcastEventProcessor>();
+    private List<BroadcastEventProcessor> m_eventReceivers = new ArrayList<BroadcastEventProcessor>();
 
     private OpennmsServerConfigFactory m_serverConfig;
 

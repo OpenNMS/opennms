@@ -32,6 +32,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
 import java.util.Collection;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
@@ -201,7 +202,7 @@ public class XmlRpcServiceExporter extends RemoteExporter implements Initializin
 
     }
 
-    private String toArgList(@SuppressWarnings("rawtypes") Vector params) {
+    private String toArgList(@SuppressWarnings("rawtypes") List params) {
         StringBuffer sb = new StringBuffer();
         for(int i = 0; i < params.size(); i++) {
             if (i != 0) sb.append(", ");
