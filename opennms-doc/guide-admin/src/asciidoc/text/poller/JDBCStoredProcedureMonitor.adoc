@@ -44,30 +44,35 @@ This may be tricky or impossible when using the _Java Webstart Remote Poller_, b
 
 
 ==== Examples
-The following example checks a stored procedure added to the PostgreSQL database used by OpenNMS.
+The following example checks a stored procedure added to the PostgreSQL database used by OpenNMS. 
+The stored procedure returns true as long as less than 250000 events are in the events table of OpenNMS.
 
 Stored procedure
 [source, sql]
 ----
-CREATE OR REPLACE FUNCTION test_sp() RETURNS boolean AS
-begin
-	return true;
-end;
+CREATE OR REPLACE FUNCTION eventlimit_sp() RETURNS boolean AS
+$BODY$DECLARE
+num_events integer;
+BEGIN
+	SELECT COUNT(*) into num_events from events;
+	RETURN num_events > 250000;
+END;$BODY$
 LANGUAGE plpgsql VOLATILE NOT LEAKPROOF
 COST 100;
+
 ----
 
 
 [source, xml]
 ----
-<service name="JDBCSPTestPostgreSQL" interval="300000" user-defined="true" status="on">
+<service name="OpenNMS-DB-SP-Event-Limit" interval="300000" user-defined="true" status="on">
   <parameter key="driver" value="org.postgresql.Driver"/>
   <parameter key="url" value="jdbc:postgresql://OPENNMS_JDBC_HOSTNAME:5432/opennms"/>
   <parameter key="user" value="opennms"/>
   <parameter key="password" value="opennms"/>
-  <parameter key="stored-procedure" value="test_sp"/>
+  <parameter key="stored-procedure" value="eventlimit_sp"/>
   <parameter key="schema" value="public"/>
 </service>
 
-<monitor service="JDBCSPTestPostgreSQL" class-name="org.opennms.netmgt.poller.monitors.JDBCStoredProcedureMonitor"/>
+<monitor service="OpenNMS-DB-SP-Event-Limit" class-name="org.opennms.netmgt.poller.monitors.JDBCStoredProcedureMonitor"/>
 ----
