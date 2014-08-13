@@ -89,18 +89,20 @@ install: build
 	##
 	## Setup the provision adapter packages
 	##
-	install -d -m 755 debian/opennms-plugin-provisioning-{dns,link,map,rancid,snmp-asset}/usr/share/java/opennms
-	install -d -m 755 debian/opennms-plugin-provisioning-{link,map,snmp-asset}/etc/opennms
-	install -d -m 755 debian/opennms-plugin-provisioning-{link,map,snmp-asset}/var/lib/opennms/etc-pristine
-	mv debian/temp/lib/opennms-dns-provisioning-adapter*.jar         debian/opennms-plugin-provisioning-dns/usr/share/java/opennms/
-	mv debian/temp/lib/opennms-link-provisioning-adapter*.jar        debian/opennms-plugin-provisioning-link/usr/share/java/opennms/
-	mv debian/temp/lib/opennms-map-provisioning-adapter*.jar         debian/opennms-plugin-provisioning-map/usr/share/java/opennms/
-	mv debian/temp/lib/opennms-rancid-provisioning-adapter*.jar      debian/opennms-plugin-provisioning-rancid/usr/share/java/opennms/
-	mv debian/temp/lib/opennms-snmp-asset-provisioning-adapter*.jar  debian/opennms-plugin-provisioning-snmp-asset/usr/share/java/opennms/
-	mv debian/temp/etc/link-adapter-configuration.xml                debian/opennms-plugin-provisioning-link/etc/opennms/
-	mv debian/temp/etc/endpoint-configuration.xml                    debian/opennms-plugin-provisioning-link/etc/opennms/
-	mv debian/temp/etc/mapsadapter-configuration.xml                 debian/opennms-plugin-provisioning-map/etc/opennms/
-	mv debian/temp/etc/snmp-asset-adapter-configuration.xml          debian/opennms-plugin-provisioning-snmp-asset/etc/opennms/
+	install -d -m 755 debian/opennms-plugin-provisioning-{dns,link,map,rancid,snmp-asset,hardware-inventory}/usr/share/java/opennms
+	install -d -m 755 debian/opennms-plugin-provisioning-{link,map,snmp-asset,hardware-inventory}/etc/opennms
+	install -d -m 755 debian/opennms-plugin-provisioning-{link,map,snmp-asset,hardware-inventory}/var/lib/opennms/etc-pristine
+	mv debian/temp/lib/opennms-dns-provisioning-adapter*.jar                 debian/opennms-plugin-provisioning-dns/usr/share/java/opennms/
+	mv debian/temp/lib/opennms-link-provisioning-adapter*.jar                debian/opennms-plugin-provisioning-link/usr/share/java/opennms/
+	mv debian/temp/lib/opennms-map-provisioning-adapter*.jar                 debian/opennms-plugin-provisioning-map/usr/share/java/opennms/
+	mv debian/temp/lib/opennms-rancid-provisioning-adapter*.jar              debian/opennms-plugin-provisioning-rancid/usr/share/java/opennms/
+	mv debian/temp/lib/opennms-snmp-asset-provisioning-adapter*.jar          debian/opennms-plugin-provisioning-snmp-asset/usr/share/java/opennms/
+	mv debian/temp/lib/opennms-hardware-inventory-provisioning-adapter*.jar  debian/opennms-plugin-provisioning-hardware-inventory/usr/share/java/opennms/
+	mv debian/temp/etc/link-adapter-configuration.xml                        debian/opennms-plugin-provisioning-link/etc/opennms/
+	mv debian/temp/etc/endpoint-configuration.xml                            debian/opennms-plugin-provisioning-link/etc/opennms/
+	mv debian/temp/etc/mapsadapter-configuration.xml                         debian/opennms-plugin-provisioning-map/etc/opennms/
+	mv debian/temp/etc/snmp-asset-adapter-configuration.xml                  debian/opennms-plugin-provisioning-snmp-asset/etc/opennms/
+	mv debian/temp/etc/hardware-inventory-adapter-configuration.xml          debian/opennms-plugin-provisioning-hardware-inventory/etc/opennms/
 	find debian/opennms-plugin*/etc/opennms -type f -execdir chmod 644 {} \;
 	
 	# etc-pristine version
@@ -108,6 +110,7 @@ install: build
 	mv debian/opennms-common/var/lib/opennms/etc-pristine/endpoint-configuration.xml           debian/opennms-plugin-provisioning-link/var/lib/opennms/etc-pristine/
 	mv debian/opennms-common/var/lib/opennms/etc-pristine/mapsadapter-configuration.xml        debian/opennms-plugin-provisioning-map/var/lib/opennms/etc-pristine/
 	mv debian/opennms-common/var/lib/opennms/etc-pristine/snmp-asset-adapter-configuration.xml debian/opennms-plugin-provisioning-snmp-asset/var/lib/opennms/etc-pristine/
+	mv debian/opennms-common/var/lib/opennms/etc-pristine/hardware-inventory-adapter-configuration.xml debian/opennms-plugin-provisioning-hardware-inventory/var/lib/opennms/etc-pristine/
 	
 	##
 	## Setup the protocol packages
