@@ -47,7 +47,7 @@ This may be tricky or impossible when using the _Java Webstart Remote Poller_, b
 The following example checks a stored procedure added to the PostgreSQL database used by OpenNMS.
 
 Stored procedure
-[source, xml]
+[source, sql]
 ----
 CREATE OR REPLACE FUNCTION test_sp() RETURNS boolean AS
 begin
