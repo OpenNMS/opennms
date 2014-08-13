@@ -38,7 +38,7 @@
   </bean>
 
   <!-- Camel unmarshalling processor -->
-  <bean id="unmarshaller" class="org.opennms.features.activemq.eventreceiver.CastorUtilsUnmarshalProcessor"/>
+  <bean id="unmarshaller" class="org.opennms.features.activemq.eventreceiver.JaxbUtilsUnmarshalProcessor"/>
 
   <camelContext id="activeMqEventReceiverCamelContext" xmlns="http://camel.apache.org/schema/blueprint">
     <propertyPlaceholder id="properties" location="blueprint:eventReceiverProperties" />

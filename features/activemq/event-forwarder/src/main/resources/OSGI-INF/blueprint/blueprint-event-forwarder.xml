@@ -44,7 +44,7 @@
   </bean>
 
   <!-- Camel marshalling processor -->
-  <bean id="marshaller" class="org.opennms.features.activemq.eventforwarder.CastorUtilsMarshalProcessor"/>
+  <bean id="marshaller" class="org.opennms.features.activemq.eventforwarder.JaxbUtilsMarshalProcessor"/>
 
   <!-- Event listener that connects the EventIpcManager to this Camel context -->
   <bean id="eventForwarder" class="org.opennms.features.activemq.eventforwarder.internal.DefaultEventForwarder">
