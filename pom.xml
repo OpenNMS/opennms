@@ -1641,6 +1641,11 @@
         <version>${project.version}</version>
       </dependency>
       <dependency>
+        <groupId>org.opennms</groupId>
+        <artifactId>opennms-hardware-inventory-provisioning-adapter</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
         <groupId>org.opennms.features.sms-reflector</groupId>
         <artifactId>sms-gateway</artifactId>
         <version>${project.version}</version>

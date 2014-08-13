@@ -91,7 +91,7 @@ public class OnmsHwEntityAttribute implements Serializable, Comparable<OnmsHwEnt
     }
 
     @XmlID
-    @XmlAttribute(name="id")
+    @XmlAttribute(name="attributeId")
     @Transient
     public String getOnmsHwEntityAttributeId() {
         return getId() == null ? null : getId().toString();
