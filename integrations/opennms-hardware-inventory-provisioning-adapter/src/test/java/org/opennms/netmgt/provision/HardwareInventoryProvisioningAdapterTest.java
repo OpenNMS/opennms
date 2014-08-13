@@ -94,7 +94,7 @@ public class HardwareInventoryProvisioningAdapterTest implements InitializingBea
         MockLogAppender.setupLogging(true);
 
         NetworkBuilder nb = new NetworkBuilder();
-        nb.addNode("HQ").setForeignSource("Cisco").setForeignId("1");
+        nb.addNode("HQ").setForeignSource("Cisco").setForeignId("1").setSysObjectId(".1.3.6.1.4.1.9.1.222");
         nb.addInterface("192.168.0.1").setIsSnmpPrimary("P").setIsManaged("P");
         m_nodeDao.save(nb.getCurrentNode());
         m_nodeDao.flush();
@@ -113,7 +113,7 @@ public class HardwareInventoryProvisioningAdapterTest implements InitializingBea
 
     @Test
     @Transactional
-    public void testAdd() throws Exception {
+    public void testDiscoverSnmpEntities() throws Exception {
         int nodeId = m_nodeDao.findByForeignId("Cisco", "1").getId();
         m_adapter.processPendingOperationForNode(m_addOperation);
         OnmsHwEntity root = m_entityDao.findRootByNodeId(nodeId);

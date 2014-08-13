@@ -43,7 +43,7 @@ public class EntityPhysicalTableTracker extends TableTracker {
     private static final Logger LOG = LoggerFactory.getLogger(EntityPhysicalTableTracker.class);
 
     private List<OnmsHwEntity> entities = new ArrayList<OnmsHwEntity>();
-    
+
     public EntityPhysicalTableTracker() {
         super(EntityPhysicalTableRow.ELEMENTS);
     }

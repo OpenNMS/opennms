@@ -74,6 +74,21 @@ public class EntityPhysicalTableRow extends SnmpRowResult {
         entPhysicalUris
     };
 
+    public static final String[] CLASSES = new String[] {
+        null,
+        "other",
+        "unknown",
+        "chassis",
+        "backplane",
+        "container",
+        "powerSupply",
+        "fan",
+        "sensor",
+        "module",
+        "port",
+        "stack"
+    };
+
     public EntityPhysicalTableRow(int columnCount, SnmpInstId instance) {
         super(columnCount, instance);
     }
@@ -97,7 +112,7 @@ public class EntityPhysicalTableRow extends SnmpRowResult {
             entity.setEntPhysicalContainedIn(v.toInt());
         v = getValue(entPhysicalClass);
         if (v != null)
-            entity.setEntPhysicalClass(v.toDisplayString());
+            entity.setEntPhysicalClass(CLASSES[v.toInt()]);
         v = getValue(entPhysicalParentRelPos);
         if (v != null)
             entity.setEntPhysicalParentRelPos(v.toInt());

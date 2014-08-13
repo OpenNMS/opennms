@@ -40,14 +40,16 @@ import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventForwarder;
 import org.opennms.netmgt.model.events.annotations.EventHandler;
 import org.opennms.netmgt.model.events.annotations.EventListener;
-import org.opennms.netmgt.provision.snmp.EntityPhysicalTableTracker;
+import org.opennms.netmgt.provision.plugin.SnmpEntityPlugin;
+import org.opennms.netmgt.provision.plugin.ScriptEntityPlugin;
+import org.opennms.netmgt.provision.plugin.EntityPlugin;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
-import org.opennms.netmgt.snmp.SnmpUtils;
-import org.opennms.netmgt.snmp.SnmpWalker;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 
@@ -84,10 +86,7 @@ public class HardwareInventoryProvisioningAdapter extends SimplerQueuedProvision
         synchronizeInventory(nodeId);
     }
 
-    // FIXME Load and Execute Plugins
-    // FIXME StandardEntityMibInventoryPlugin
-    // FIXME VendorEntityMibInventoryPlugin
-    private void synchronizeInventory(int nodeId) throws ProvisioningAdapterException {
+    private void synchronizeInventory(int nodeId) {
         final OnmsNode node = m_nodeDao.get(nodeId);
         if (node == null) {
             throw new ProvisioningAdapterException("Failed to return node for given nodeId: " + nodeId);
@@ -99,36 +98,30 @@ public class HardwareInventoryProvisioningAdapter extends SimplerQueuedProvision
         }
         final InetAddress ipAddress = intf.getIpAddress();
 
-        SnmpAgentConfig agentConfig = m_snmpConfigDao.getAgentConfig(ipAddress);
-        LOG.debug("synchronizeInventory: Getting ENTITY-MIB using {}", agentConfig);
-
-        final EntityPhysicalTableTracker tracker = new EntityPhysicalTableTracker();
-        final String trackerName = tracker.getClass().getSimpleName() + '_' + nodeId;
-        SnmpWalker walker = SnmpUtils.createWalker(agentConfig, trackerName, tracker);
-        walker.start();
+        EventBuilder ebldr = null;
         try {
-            walker.waitFor();
-            if (walker.timedOut()) {
-                LOG.info("synchronizeInventory: Aborting entities scan: Agent timed out while scanning the {} table", trackerName);
-                return;
-            }  else if (walker.failed()) {
-                LOG.info("synchronizeInventory: Aborting entities scan: Agent failed while scanning the {} table: {}", trackerName,walker.getErrorMessage());
-                return;
+            EntityPlugin plugin = null;
+            if (node.getSysObjectId() == null) {
+                plugin = new ScriptEntityPlugin();
+            } else {
+                SnmpAgentConfig agentConfig = m_snmpConfigDao.getAgentConfig(ipAddress);
+                plugin = new SnmpEntityPlugin(agentConfig);
             }
-        } catch (final InterruptedException e) {
-            LOG.error("synchronizeInventory: ENTITY-MIB node collection interrupted, exiting",e );
-            return;
-        }
-        
-        OnmsHwEntity root = tracker.getRootEntity();
-        if (root == null) {
-            LOG.error("synchronizeInventory: Cannot get root entity for nodeId {}", nodeId);
-            return;
+            OnmsHwEntity root = plugin.getRootEntity(nodeId, ipAddress);
+            node.setRootHwEntity(root);
+            m_nodeDao.saveOrUpdate(node);
+            m_nodeDao.flush();
+            ebldr = new EventBuilder(EventConstants.HARDWARE_INVENTORY_SUCCESSFUL_UEI, "Provisiond." + NAME);
+        } catch (Throwable e) {
+            ebldr = new EventBuilder(EventConstants.HARDWARE_INVENTORY_FAILED_UEI, "Provisiond." + NAME);
+            ebldr.addParam(EventConstants.PARM_REASON, e.getMessage());
         }
 
-        node.setRootHwEntity(root);
-        m_nodeDao.saveOrUpdate(node);
-        m_nodeDao.flush();
+        if (ebldr != null) {
+            ebldr.setNodeid(nodeId);
+            ebldr.setInterface(ipAddress);
+            getEventForwarder().sendNow(ebldr.getEvent());
+        }
     }
 
     @Override
