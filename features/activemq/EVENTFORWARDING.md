@@ -24,10 +24,10 @@ To install the ActiveMQ event forwarder between two OpenNMS systems, "dispatcher
 
         features:install opennms-activemq-dispatcher-config
 
-- Update the configuration with the broker URI of the receiver system:
+- Update the configuration with the broker URI of the receiver system: (we should probably clarify these property names in the near future)
 
         config:edit -f org.apache.activemq.server-dispatcher
-        config:propset broker-name [location name]
+        config:propset broker-name [globally unique name for the dispatcher's broker]
         config:propset brokerUri tcp://[receiver IP address]:61616
         config:update
 
