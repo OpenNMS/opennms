@@ -49,8 +49,12 @@ The following example checks a stored procedure added to the PostgreSQL database
 Stored procedure
 [source, xml]
 ----
-TODO
-the stored procedure
+CREATE OR REPLACE FUNCTION test_sp() RETURNS boolean AS
+begin
+	return true;
+end;
+LANGUAGE plpgsql VOLATILE NOT LEAKPROOF
+COST 100;
 ----
 
 
