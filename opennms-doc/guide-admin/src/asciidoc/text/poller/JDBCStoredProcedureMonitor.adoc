@@ -62,7 +62,6 @@ COST 100;
 
 ----
 
-
 [source, xml]
 ----
 <service name="OpenNMS-DB-SP-Event-Limit" interval="300000" user-defined="true" status="on">
