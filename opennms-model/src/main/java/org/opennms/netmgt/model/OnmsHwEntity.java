@@ -50,6 +50,7 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
@@ -71,6 +72,7 @@ public class OnmsHwEntity implements Serializable {
 
     private Integer m_entPhysicalIndex;
     private Integer m_entPhysicalParentRelPos;
+    private Integer m_entPhysicalContainedIn;
     private String m_entPhysicalName;
     private String m_entPhysicalDescr;
     private String m_entPhysicalAlias;
@@ -113,7 +115,7 @@ public class OnmsHwEntity implements Serializable {
     }
 
     @XmlID
-    @XmlAttribute(name="id")
+    @XmlAttribute(name="entityId")
     @Transient
     public String getOnmsHwEntityId() {
         return getId() == null ? null : getId().toString();
@@ -124,6 +126,7 @@ public class OnmsHwEntity implements Serializable {
     }
 
     @Column(nullable=false)
+    @XmlAttribute
     public Integer getEntPhysicalIndex() {
         return m_entPhysicalIndex;
     }
@@ -132,7 +135,18 @@ public class OnmsHwEntity implements Serializable {
         this.m_entPhysicalIndex = entPhysicalIndex;
     }
 
+    @Transient
+    @XmlAttribute(name="parentId")
+    public Integer getEntPhysicalContainedIn() {
+        return m_entPhysicalContainedIn;
+    }
+    
+    public void setEntPhysicalContainedIn(Integer entPhysicalContainedIn) {
+        this.m_entPhysicalContainedIn = entPhysicalContainedIn;
+    }
+
     @Column
+    @XmlElement
     public String getEntPhysicalDescr() {
         return m_entPhysicalDescr;
     }
@@ -142,6 +156,7 @@ public class OnmsHwEntity implements Serializable {
     }
 
     @Column
+    @XmlElement
     public String getEntPhysicalVendorType() {
         return m_entPhysicalVendorType;
     }
@@ -151,6 +166,7 @@ public class OnmsHwEntity implements Serializable {
     }
 
     @Column
+    @XmlElement
     public String getEntPhysicalClass() {
         return m_entPhysicalClass;
     }
@@ -160,6 +176,7 @@ public class OnmsHwEntity implements Serializable {
     }
 
     @Column
+    @XmlElement
     public Integer getEntPhysicalParentRelPos() {
         return m_entPhysicalParentRelPos;
     }
@@ -169,6 +186,7 @@ public class OnmsHwEntity implements Serializable {
     }
 
     @Column
+    @XmlElement
     public String getEntPhysicalName() {
         return m_entPhysicalName;
     }
@@ -178,6 +196,7 @@ public class OnmsHwEntity implements Serializable {
     }
 
     @Column
+    @XmlElement
     public String getEntPhysicalHardwareRev() {
         return m_entPhysicalHardwareRev;
     }
@@ -187,6 +206,7 @@ public class OnmsHwEntity implements Serializable {
     }
 
     @Column
+    @XmlElement
     public String getEntPhysicalFirmwareRev() {
         return m_entPhysicalFirmwareRev;
     }
@@ -196,6 +216,7 @@ public class OnmsHwEntity implements Serializable {
     }
 
     @Column
+    @XmlElement
     public String getEntPhysicalSoftwareRev() {
         return m_entPhysicalSoftwareRev;
     }
@@ -205,6 +226,7 @@ public class OnmsHwEntity implements Serializable {
     }
 
     @Column
+    @XmlElement
     public String getEntPhysicalSerialNum() {
         return m_entPhysicalSerialNum;
     }
@@ -214,6 +236,7 @@ public class OnmsHwEntity implements Serializable {
     }
 
     @Column
+    @XmlElement
     public String getEntPhysicalMfgName() {
         return m_entPhysicalMfgName;
     }
@@ -223,6 +246,7 @@ public class OnmsHwEntity implements Serializable {
     }
 
     @Column
+    @XmlElement
     public String getEntPhysicalModelName() {
         return m_entPhysicalModelName;
     }
@@ -232,6 +256,7 @@ public class OnmsHwEntity implements Serializable {
     }
 
     @Column
+    @XmlElement
     public String getEntPhysicalAlias() {
         return m_entPhysicalAlias;
     }
@@ -241,6 +266,7 @@ public class OnmsHwEntity implements Serializable {
     }
 
     @Column
+    @XmlElement
     public String getEntPhysicalAssetID() {
         return m_entPhysicalAssetID;
     }
@@ -250,6 +276,7 @@ public class OnmsHwEntity implements Serializable {
     }
 
     @Column
+    @XmlElement
     public Boolean getEntPhysicalIsFRU() {
         return m_entPhysicalIsFRU;
     }
@@ -259,6 +286,7 @@ public class OnmsHwEntity implements Serializable {
     }
 
     @Column
+    @XmlElement
     public Date getEntPhysicalMfgDate() {
         return m_entPhysicalMfgDate;
     }
@@ -268,6 +296,7 @@ public class OnmsHwEntity implements Serializable {
     }
 
     @Column
+    @XmlElement
     public String getEntPhysicalUris() {
         return m_entPhysicalUris;
     }
@@ -278,6 +307,7 @@ public class OnmsHwEntity implements Serializable {
 
     @ManyToOne(cascade={CascadeType.ALL}, optional=true)
     @JoinColumn(name="parentId")
+    @XmlTransient
     public OnmsHwEntity getParent() {
         return m_parent;
     }
@@ -286,6 +316,8 @@ public class OnmsHwEntity implements Serializable {
         this.m_parent = parent;
     }
 
+    @XmlElement(name="hwEntity")
+    @XmlElementWrapper(name="children")
     @OneToMany(mappedBy="parent", fetch=FetchType.LAZY, cascade={CascadeType.ALL})
     public Set<OnmsHwEntity> getChildren() {
         return m_children;
@@ -302,7 +334,7 @@ public class OnmsHwEntity implements Serializable {
 
     @OneToOne(fetch=FetchType.LAZY) // FIXME: optional=false
     @JoinColumn(name="nodeId")
-    @XmlElement(name="nodeId")
+    @XmlAttribute(name="nodeId")
     @XmlJavaTypeAdapter(NodeIdAdapter.class)
     public OnmsNode getNode() {
         return m_node;
