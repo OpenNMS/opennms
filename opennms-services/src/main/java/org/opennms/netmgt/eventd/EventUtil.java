@@ -63,7 +63,7 @@ import org.slf4j.LoggerFactory;
  * @author <A HREF="mailto:weave@oculan.com">Brain Weaver </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
-public final class EventUtil {
+public abstract class EventUtil {
     private static final Logger LOG = LoggerFactory.getLogger(EventUtil.class);
 	/**
 	 * The Event ID xml

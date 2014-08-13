@@ -38,7 +38,7 @@ package org.opennms.web.element;
  * @version $Id: $
  * @since 1.8.1
  */
-public class Converter {
+public abstract class Converter {
  
  /**
   * <p>highToLow</p>

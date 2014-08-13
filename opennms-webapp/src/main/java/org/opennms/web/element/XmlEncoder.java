@@ -44,7 +44,7 @@ package org.opennms.web.element;
  * @version $Id: $
  * @since 1.8.1
  */
-public final class XmlEncoder {
+public abstract class XmlEncoder {
 	/**
 	 * <p>encode</p>
 	 *

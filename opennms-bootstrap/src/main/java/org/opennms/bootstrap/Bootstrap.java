@@ -47,7 +47,7 @@ import java.util.StringTokenizer;
 /**
  * Bootstrap application for starting OpenNMS.
  */
-public class Bootstrap {
+public abstract class Bootstrap {
     protected static final String BOOT_PROPERTIES_NAME = "bootstrap.properties";
     protected static final String RRD_PROPERTIES_NAME = "rrd-configuration.properties";
     protected static final String LIBRARY_PROPERTIES_NAME = "libraries.properties";

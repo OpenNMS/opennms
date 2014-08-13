@@ -59,7 +59,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @author <A HREF="mailto:mike@opennms.org">Mike Jamison </A>
  */
-public class JBossConnectionFactory {
+public abstract class JBossConnectionFactory {
     
     private static final Logger LOG = LoggerFactory.getLogger(JBossConnectionFactory.class);
     static String[] packages = {"org.jboss.naming.*", "org.jboss.interfaces.*"};

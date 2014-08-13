@@ -56,7 +56,7 @@ import org.slf4j.LoggerFactory;
  * @author ranger
  * @version $Id: $
  */
-public class MX4JConnectionFactory {
+public abstract class MX4JConnectionFactory {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(MX4JConnectionFactory.class);
   

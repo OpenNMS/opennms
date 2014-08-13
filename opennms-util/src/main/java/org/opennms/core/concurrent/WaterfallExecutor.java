@@ -39,7 +39,7 @@ import java.util.concurrent.Future;
 /**
  * @author Seth
  */
-public class WaterfallExecutor {
+public abstract class WaterfallExecutor {
     public static void waterfall(Iterable<ExecutorService> executors, Callable<Callable<?>> callable) throws InterruptedException, ExecutionException {
         waterfall(executors.iterator(), callable);
     }

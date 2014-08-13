@@ -39,7 +39,7 @@ import java.util.List;
  * @author <a href="mailto:ranger@opennms.org">Benjamin Reed</a>
  * @version $Id: $
  */
-public class CollectionMath {
+public abstract class CollectionMath {
 
 	/**
 	 * Get the number of null entries in a {@link List}

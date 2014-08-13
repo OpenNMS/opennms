@@ -5,7 +5,7 @@ import org.opennms.netmgt.model.LldpElement.LldpChassisIdSubType;
 import org.opennms.netmgt.model.LldpLink.LldpPortIdSubType;
 import org.opennms.netmgt.snmp.SnmpValue;
 
-public class LldpHelper {
+public abstract class LldpHelper {
 
     public static String decodeLldpChassisId(final SnmpValue lldpchassisid, Integer lldpLocChassisidSubType) {
     	String  lldpLocChassisId = lldpchassisid.toDisplayString();

@@ -36,7 +36,7 @@ import java.io.IOException;
  * @author <a href="mailto:jason@opennms.org">Jason</a>
  * @author <a href="http://www.opennms.org">OpenNMS</a>
  */
-public class FileBackup {
+public abstract class FileBackup {
     /**
      * <p>makeBackup</p>
      *
