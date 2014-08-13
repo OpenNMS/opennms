@@ -13,7 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class VmwareCimQuery {
+public abstract class VmwareCimQuery {
     public static Map<Integer, String> m_healthStates;
 
     static {

@@ -2,7 +2,7 @@ package org.opennms.netmgt.syslogd;
 
 import java.sql.SQLException;
 
-public interface SyslogdIPMgr {
+public abstract interface SyslogdIPMgr {
 
 	void dataSourceSync() throws SQLException;
 	

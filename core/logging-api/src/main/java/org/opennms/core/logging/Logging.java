@@ -5,7 +5,7 @@ import java.util.concurrent.Callable;
 
 import org.slf4j.MDC;
 
-public class Logging {
+public abstract class Logging {
     public static final String PREFIX_KEY = "prefix";
 
     public static <T> T withPrefix(final String prefix, final Callable<T> callable) throws Exception {

@@ -45,7 +45,7 @@ import org.apache.commons.cli.PosixParser;
  *
  * @author <A HREF="mailto:matt.raykowski@gmail.com">Matt Raykowski </A>
  */
-public class CheckWmi {
+public abstract class CheckWmi {
 
 	/**
 	 * <p>main</p>

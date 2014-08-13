@@ -38,7 +38,7 @@ package org.opennms.netmgt.rtc;
  * @author <A HREF="http://www.opennms.org">OpenNMS </A>
  * @version $Id: $
  */
-public final class RTCConstants {
+public abstract class RTCConstants {
     /**
      * The value returned by RTC if a nodeid/ip/svc tuple does not belong to a
      * category.

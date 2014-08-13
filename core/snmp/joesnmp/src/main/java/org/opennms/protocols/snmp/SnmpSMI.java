@@ -39,7 +39,7 @@ import org.opennms.protocols.snmp.asn1.ASN1;
  * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
  * 
  */
-public class SnmpSMI {
+public abstract class SnmpSMI {
     /**
      * Defines the positive and negative whole numbers, including zero. The
      * value is represented as a 32-bit signed integer.

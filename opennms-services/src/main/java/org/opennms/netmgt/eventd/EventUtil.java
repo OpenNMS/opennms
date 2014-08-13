@@ -41,7 +41,7 @@ import org.opennms.netmgt.xml.event.Event;
  * @author <A HREF="mailto:weave@oculan.com">Brain Weaver </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
-public interface EventUtil {
+public abstract interface EventUtil {
 
 	/**
 	 * Retrieve nodeLabel from the node table of the database given a particular
