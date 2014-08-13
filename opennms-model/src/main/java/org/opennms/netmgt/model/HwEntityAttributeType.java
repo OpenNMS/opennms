@@ -52,7 +52,7 @@ import org.springframework.core.style.ToStringCreator;
 @Table(name="hwEntityAttributeType")
 @XmlAccessorType(XmlAccessType.NONE)
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-public class HwEntityAttributeType implements Serializable {
+public class HwEntityAttributeType implements Serializable, Comparable<HwEntityAttributeType> {
 
     private static final long serialVersionUID = -136267386674546238L;
 
@@ -60,15 +60,15 @@ public class HwEntityAttributeType implements Serializable {
 
     private String m_attributeName;
 
-    private String m_attributeType;
+    private String m_attributeClass;
 
     public HwEntityAttributeType() {
     }
 
-    public HwEntityAttributeType(String name, String type) {
+    public HwEntityAttributeType(String attributeName, String attributeClass) {
         super();
-        this.m_attributeName = name;
-        this.m_attributeType = type;
+        this.m_attributeName = attributeName;
+        this.m_attributeClass = attributeClass;
     }
 
     @Id
@@ -104,13 +104,13 @@ public class HwEntityAttributeType implements Serializable {
         this.m_attributeName = attributeName;
     }
 
-    @Column(name="attribType")
-    public String getType() {
-        return m_attributeType;
+    @Column(name="attribClass")
+    public String getAttributeClass() {
+        return m_attributeClass;
     }
 
-    public void setType(String attributeType) {
-        this.m_attributeType = attributeType;
+    public void setAttributeClass(String attributeClass) {
+        this.m_attributeClass = attributeClass;
     }
 
     @Override
@@ -118,8 +118,28 @@ public class HwEntityAttributeType implements Serializable {
         return new ToStringCreator(this)
         .append("id", m_id)
         .append("name", m_attributeName)
-        .append("type", m_attributeType)
+        .append("type", m_attributeClass)
         .toString();
+    }
+
+    @Override
+    public int hashCode() {
+        return toString().hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof HwEntityAttributeType) {
+            HwEntityAttributeType other = (HwEntityAttributeType) obj;
+            if (m_attributeName != null &&  other.m_attributeName != null && m_attributeName.equals(other.m_attributeName))
+                return true;
+        }
+        return false;
+    }
+
+    @Override
+    public int compareTo(HwEntityAttributeType o) {
+        return o.getName().compareTo(getName());
     }
 
 }

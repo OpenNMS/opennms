@@ -108,6 +108,12 @@
   <bean id="hwEntityDao" class="org.opennms.netmgt.dao.hibernate.HwEntityDaoHibernate">
     <property name="sessionFactory" ref="sessionFactory" />
   </bean>
+
+  <onmsgi:service interface="org.opennms.netmgt.dao.api.HwEntityAttributeTypeDao" ref="hwEntityAttributeTypeDao" />
+
+  <bean id="hwEntityAttributeTypeDao" class="org.opennms.netmgt.dao.hibernate.HwEntityAttributeTypeDaoHibernate">
+    <property name="sessionFactory" ref="sessionFactory" />
+  </bean>
   
   <onmsgi:service interface="org.opennms.netmgt.dao.api.LldpLinkDao" ref="lldpLinkDao" />
     

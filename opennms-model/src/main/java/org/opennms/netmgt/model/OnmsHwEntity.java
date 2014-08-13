@@ -327,6 +327,33 @@ public class OnmsHwEntity implements Serializable {
         m_hwAttributes.add(attr);
     }
 
+    public void addAttribute(String name, String type, String value) {
+        HwEntityAttributeType attribType = new HwEntityAttributeType(name, type);
+        addAttribute(attribType, value);
+    }
+
+    @XmlTransient
+    @Transient
+    public String getAttributeValue(String typeName) {
+        for (OnmsHwEntityAttribute attr : m_hwAttributes) {
+            if (attr.getTypeName().equals(typeName)) {
+                return attr.getValue();
+            }
+        }
+        return null;
+    }
+
+    @XmlTransient
+    @Transient
+    public String getAttributeClass(String typeName) {
+        for (OnmsHwEntityAttribute attr : m_hwAttributes) {
+            if (attr.getTypeName().equals(typeName)) {
+                return attr.getType().getAttributeClass();
+            }
+        }
+        return null;
+    }
+
     @Transient
     @XmlTransient
     public boolean isRoot() {
@@ -343,8 +370,28 @@ public class OnmsHwEntity implements Serializable {
     public String toString() {
         return new ToStringCreator(this)
         .append("id", m_id)
+        .append("parent", m_parent)
+        .append("nodeId", m_node == null ? null : m_node.getId())
         .append("entPhysicalIndex", m_entPhysicalIndex)
         .toString();
+    }
+
+    @Override
+    public int hashCode() {
+        return toString().hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof OnmsHwEntity) {
+            OnmsHwEntity other = (OnmsHwEntity) obj;
+            if (m_entPhysicalIndex != null &&  other.m_entPhysicalIndex != null && m_entPhysicalIndex.equals(other.m_entPhysicalIndex)) {
+                if (m_node != null &&  other.m_node != null && m_node.getId().equals(other.m_node.getId())) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
 }

@@ -2695,10 +2695,10 @@ create index hwEntity_entPhysicalIndex_idx on hwEntity(entPhysicalIndex);
 create unique index hwEntity_node_unique_idx on hwEntity(nodeId,entPhysicalIndex);
 
 create table hwEntityAttributeType (
-    id         integer default nextval('opennmsNxtId') not null,
-    attribName varchar(128) not null,
-    attribType varchar(128) not null,
-    constraint pk_hwEntity_attributeType_id primary key (id)
+    id          integer default nextval('opennmsNxtId') not null,
+    attribName  varchar(128) not null,
+    attribClass varchar(32) not null,
+    constraint  pk_hwEntity_attributeType_id primary key (id)
 );
 create unique index hwEntityAttributeType_unique_idx on hwEntityAttributeType(attribName);
 

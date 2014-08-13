@@ -30,6 +30,7 @@ package org.opennms.netmgt.model;
 
 import java.io.Serializable;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -55,7 +56,7 @@ import org.springframework.core.style.ToStringCreator;
 @Table(name="hwEntityAttribute")
 @XmlAccessorType(XmlAccessType.NONE)
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-public class OnmsHwEntityAttribute implements Serializable {
+public class OnmsHwEntityAttribute implements Serializable, Comparable<OnmsHwEntityAttribute> {
 
     private static final long serialVersionUID = 468469978315437731L;
 
@@ -111,7 +112,7 @@ public class OnmsHwEntityAttribute implements Serializable {
         m_hwEntity = hwEntity;
     }
 
-    @ManyToOne(optional=false)
+    @ManyToOne(optional=false, cascade={CascadeType.ALL})
     @JoinColumn(name="hwAttribTypeId")
     @XmlTransient
     public HwEntityAttributeType getType() {
@@ -128,12 +129,12 @@ public class OnmsHwEntityAttribute implements Serializable {
         return m_attributeType == null ? null : m_attributeType.getName();
     }
 
-    @Column    
+    @Column(name="attribValue")
+    @XmlAttribute(name="value")
     public String getValue() {
         return m_attributeValue;
     }
 
-    @XmlAttribute(name="value")
     public void setValue(String attributeValue) {
         this.m_attributeValue = attributeValue;
     }
@@ -142,9 +143,33 @@ public class OnmsHwEntityAttribute implements Serializable {
     public String toString() {
         return new ToStringCreator(this)
         .append("id", m_id)
+        .append("entity", m_hwEntity == null ? null : m_hwEntity.getEntPhysicalIndex())
         .append("type", m_attributeType)
         .append("value", m_attributeValue)
         .toString();
+    }
+
+    @Override
+    public int hashCode() {
+        return toString().hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof OnmsHwEntityAttribute) {
+            OnmsHwEntityAttribute other = (OnmsHwEntityAttribute) obj;
+            if (m_attributeType != null &&  other.m_attributeType != null && m_attributeType.equals(other.m_attributeType)) {
+                if (m_hwEntity != null &&  other.m_hwEntity != null && m_hwEntity.equals(other.m_hwEntity)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public int compareTo(OnmsHwEntityAttribute o) {
+        return o.getType().compareTo(getType());
     }
 
 }
