@@ -111,19 +111,6 @@ public class UpdateGroupController extends AbstractController implements Initial
     }
 
     /**
-     * @param allCategories
-     * @param categoryListInGroup
-     * @return
-     */
-    @SuppressWarnings("unused")
-    private String[] removeAll(String[] a,  String[] b) {
-        ArrayList<String> list = new ArrayList<String>();
-        list.addAll(Arrays.asList(a));
-        list.removeAll(Arrays.asList(b));
-        return list.toArray(new String[list.size()]);
-    }
-
-    /**
      * <p>afterPropertiesSet</p>
      *
      * @throws java.lang.Exception if any.

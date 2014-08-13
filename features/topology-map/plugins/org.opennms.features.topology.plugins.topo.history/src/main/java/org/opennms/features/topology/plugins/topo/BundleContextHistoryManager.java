@@ -81,37 +81,6 @@ public class BundleContextHistoryManager extends AbstractHistoryManager {
 	public synchronized String getHistoryHash(String userId) {
 		return loadProperties(m_bundleContext).getProperty(userId);
 	}
-	
-	/**
-	 * Removes the saved history entry for userId.
-	 * It also removes the history-Entry for the historyHash originally used by the user.
-	 * But only if it is not referenced anywhere else.
-	 * 
-	 * @param userId The user we want to clean up the history entries for.
-	 * @param properties The already loaded properties, where the user and the history is stored in.
-	 */
-    // TODO this cleanup does not work, because the history button uses the existing fragments. We need an aging algorithm for that
-	private void cleanUp(String userId, Properties properties) {
-		// we only need to cleanup if there is a entry
-		if (properties.containsKey(userId)) { 
-			String historyHash = properties.getProperty(userId);
-			int usageCount = 0;
-			for (Object eachKey : properties.keySet()) {
-				String eachValue = properties.getProperty((String)eachKey);
-				if (eachValue != null && eachValue.equals(historyHash)) {
-					usageCount++;
-				}
-			}
-			
-			// if usageCount == 1, we can delete the entry for 
-			// the historyHash. Otherwise it must stay, because
-			// another user has the same history.
-			if (usageCount == 1) {
-				properties.remove(historyHash);
-			}
-		}
-		
-	}
 
 	private String toXML(SavedHistory hist) {
 		StringWriter writer = new StringWriter();

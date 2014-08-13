@@ -190,19 +190,6 @@ public class BSFNotificationStrategy implements NotificationStrategy {
             if (NotificationManager.PARAM_MICROBLOG_USERNAME.equals(arg.getSwitch())) bsfManager.declareBean("microblog_username", arg.getValue(), String.class);
         }
     }
-
-    @SuppressWarnings("unused")
-    private String getSwitchValue(String argSwitch) {
-        String value = null;
-        for (Argument arg : m_arguments) {
-            if (arg.getSwitch().equals(argSwitch)) {
-                value = arg.getValue();
-            }
-        }
-        if (value != null && value.equals("")) value = null;
-
-        return value;
-    }
     
     private String getSwitchSubstitution(String argSwitch) {
         String value = null;

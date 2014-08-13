@@ -255,26 +255,6 @@ public class ImportOperationsManager {
             Thread.currentThread().interrupt();
         }
     }
-    
-    /**
-     * <p>getOperations</p>
-     *
-     * @return a {@link java.util.Collection} object.
-     */
-    public Collection<ImportOperation> getOperations() {
-        return Collections.list(new OperationIterator());
-    }
-    
-    @SuppressWarnings("unused")
-    private Runnable sequence(final Executor pool, final Runnable a, final Runnable b) {
-        return new Runnable() {
-            @Override
-            public void run() {
-                a.run();
-                pool.execute(b);
-            }
-        };
-    }
 
     /**
      * <p>setForeignSource</p>
@@ -306,26 +286,14 @@ public class ImportOperationsManager {
     public void auditNodes(Requisition requisition) {
         requisition.visit(new RequisitionAccountant(this));
     }
-
-    @SuppressWarnings("unused")
-    private Runnable persister(final ImportOperation oper) {
-        Runnable r = new Runnable() {
-                @Override
-        	public void run() {
-        		oper.persist();
-        	}
-        };
-        return r;
-    }
     
-    @SuppressWarnings("unused")
-    private Runnable scanner(final ImportOperation oper) {
-        return new Runnable() {
-            @Override
-            public void run() {
-                LOG.info("Preprocess: {}", oper);
-                oper.scan();
-            }
-        };
-    }
+    /**
+     * <p>getOperations</p>
+     *
+     * @return a {@link java.util.Collection} object.
+     */
+     public Collection<ImportOperation> getOperations() {
+    	 return Collections.list(new OperationIterator());
+     }
+
 }

@@ -32,9 +32,6 @@ import java.lang.management.ManagementFactory;
 import java.lang.management.ThreadInfo;
 import java.util.TreeMap;
 
-import org.apache.commons.exec.CommandLine;
-import org.apache.commons.exec.DefaultExecutor;
-import org.apache.commons.exec.ExecuteWatchdog;
 import org.opennms.systemreport.AbstractSystemReportPlugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -74,28 +71,5 @@ public class ThreadReportPlugin extends AbstractSystemReportPlugin {
         }
 
         return map;
-    }
-
-    private void triggerThreadDump() {
-        String kill = findBinary("kill");
-        
-        if (kill != null) {
-            for (final Integer pid : getOpenNMSProcesses()) {
-                LOG.debug("pid = {}", pid);
-                CommandLine command = CommandLine.parse(kill + " -3 " + pid.toString());
-                try {
-                    LOG.trace("running '{}'", command);
-                    DefaultExecutor executor = new DefaultExecutor();
-                    executor.setWatchdog(new ExecuteWatchdog(5000));
-                    int exitValue = executor.execute(command);
-                    LOG.trace("finished '{}'", command);
-                    if (exitValue != 0) {
-                        LOG.warn("'{}' exited non-zero: {}", command, exitValue);
-                    }
-                } catch (final Exception e) {
-                    LOG.warn("Unable to run kill -3 on '{}': you might need to run system-report as root.", pid, e);
-                }
-            }
-        }
     }
 }

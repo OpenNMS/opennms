@@ -354,21 +354,4 @@ public class LegacyAvailabilityDataService implements AvailabilityDataService {
             throw new AvailabilityDataServiceException("failed to load data collection configuration");
         }
     }
-
-    /**
-     * Closes the database connection.
-     */
-    private void closeConnection() {
-        if (m_availConn != null) {
-            try {
-                m_availConn.close();
-                m_availConn = null;
-            } catch (Throwable t) {
-                LOG.warn("initialize: an exception occured while closing the JDBC connection", t);
-            }
-        }
-    }
-
-
-
 }

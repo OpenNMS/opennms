@@ -95,38 +95,7 @@ public class Alarmd implements SpringServiceDaemon, DisposableBean {
         }
         
     }
-
-    @EventHandler(uei = "uei.opennms.org/internal/reloadDaemonConfig")
-    private void handleReloadEvent(Event e) {
-    	LOG.info("Received reload configuration event: {}", e);
-
-    	//Currently, Alarmd has no configuration... I'm sure this will change soon.
-
-
-    	List<Parm> parmCollection = e.getParmCollection();
-    	for (Parm parm : parmCollection) {
-
-    		String parmName = parm.getParmName();
-    		if("daemonName".equals(parmName)) {
-    			if (parm.getValue() == null || parm.getValue().getContent() == null) {
-    				LOG.warn("The daemonName parameter has no value, ignoring.");
-    				return;
-    			}
-
-    			List<Northbounder> nbis = getNorthboundInterfaces();
-    			for (Northbounder nbi : nbis) {
-    				if (parm.getValue().getContent().contains(nbi.getName())) {
-    					LOG.debug("Handling reload event for NBI: {}", nbi.getName());
-    					LOG.debug("Reloading NBI configuration for interface {} not yet implemented.", nbi.getName());
-    					return;
-    				}
-    			}
-    		}
-    	}
-    }
-
-
-
+    
 	/**
      * <p>setPersister</p>
      *
