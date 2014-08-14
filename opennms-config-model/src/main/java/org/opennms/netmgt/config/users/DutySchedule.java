@@ -120,7 +120,7 @@ public class DutySchedule {
      * @param aSchedule
      *            filled with 7 Boolean objects and two String objects
      */
-    public DutySchedule(List<Object> aSchedule) {
+    public DutySchedule(Vector<Object> aSchedule) {
         m_days = new BitSet(7);
 
         // set each day that is set to true
