@@ -2,7 +2,7 @@
 === LdapMonitor
 
 The LDAP monitor tests for LDAP service availability.
-The LDAP monitor first tries to established a TCP connection on the specified port.
+The LDAP monitor first tries to establish a TCP connection on the specified port.
 Then, if it succeeds, it will attempt to establish an LDAP connection and do a simple search.
 If the search returns a result within the specified timeout and attempts, the service will be considered available.
 The scope of the LDAP search is limited to the immediate subordinates of the base object.
