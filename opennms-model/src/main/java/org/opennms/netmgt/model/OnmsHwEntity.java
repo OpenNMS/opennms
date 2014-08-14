@@ -342,6 +342,17 @@ public class OnmsHwEntity implements Serializable {
 
     public void setNode(OnmsNode node) {
         m_node = node;
+        setNodeRecursively(this, node);
+    }
+
+    private void setNodeRecursively(OnmsHwEntity entity, OnmsNode node) {
+        for (OnmsHwEntity e : entity.getChildren()) {
+            System.err.println("Setting node " + node.getId() + " on entity " + entity.getEntPhysicalIndex());
+            e.setNode(node);
+            if (hasChildren()) {
+                setNodeRecursively(e, node);
+            }
+        }
     }
 
     @OneToMany(mappedBy="hwEntity", fetch=FetchType.LAZY, cascade={CascadeType.ALL}, orphanRemoval=true)
