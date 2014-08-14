@@ -39,6 +39,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
 
+import org.jfree.util.Log;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
@@ -823,7 +824,11 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
             if (group.equals(rnode.getGroup())) {
                 boolean stateUp = rnode.isStateUp();
                 rnode.setStateUp(false);
-                updateConfiguration(nodeId.intValue(), rnode, m_cp, true);
+                try {
+                	updateConfiguration(nodeId.intValue(), rnode, m_cp, true);
+                } catch (ProvisioningAdapterException pae) {
+                	log().error("updateGroupConfiguration: group: " + group + "failed set down for rancid node: " + rnode.getDeviceName() + "Reason: " + pae.getMessage());
+                }
                 rnode.setStateUp(stateUp);
             }
         }
