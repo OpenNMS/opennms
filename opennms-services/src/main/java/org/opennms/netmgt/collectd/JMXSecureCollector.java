@@ -52,7 +52,6 @@ public class JMXSecureCollector extends JMXCollector {
         //If "friendly-name" is not specified in collectd-configuration.xml, then directory
         //name will be the "port" parameter.
         setServiceName("ssl-jmxmp");
-        setUseFriendlyName(true);
     }
 
     @Override

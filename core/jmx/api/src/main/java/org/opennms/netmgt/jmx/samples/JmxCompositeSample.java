@@ -28,17 +28,17 @@
 
 package org.opennms.netmgt.jmx.samples;
 
-import org.opennms.netmgt.config.collectd.jmx.CompMember;
-import org.opennms.netmgt.config.collectd.jmx.Mbean;
-
 import javax.management.Attribute;
 import javax.management.openmbean.CompositeData;
+
+import org.opennms.netmgt.config.collectd.jmx.CompMember;
+import org.opennms.netmgt.config.collectd.jmx.Mbean;
 
 /**
  * A {@link JmxCompositeSample} should be created each time the {@link org.opennms.netmgt.jmx.JmxCollector}
  * collects a MBean Composite Member.
  */
-public class JmxCompositeSample extends JmxAttributeSample {
+public class JmxCompositeSample extends AbstractJmxSample {
 
     /**
      * The Composite Member the Composite Data belongs to.
@@ -56,12 +56,16 @@ public class JmxCompositeSample extends JmxAttributeSample {
         this.compositeMember = compositeMember;
     }
 
+    public CompMember getCompositeMember() {
+        return compositeMember;
+    }
+
     public String getCompositeKey() {
         return compositeMember.getName();
     }
 
     @Override
-    public String getValueAsString() {
+    public String getCollectedValueAsString() {
         Object value = compositeData.get(getCompositeKey());
         if (value != null) {
             return value.toString();

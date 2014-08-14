@@ -28,40 +28,35 @@
 
 package org.opennms.netmgt.jmx.samples;
 
-import org.opennms.netmgt.config.collectd.jmx.Mbean;
+import java.util.Objects;
 
 import javax.management.Attribute;
+
+import org.opennms.netmgt.config.collectd.jmx.Attrib;
+import org.opennms.netmgt.config.collectd.jmx.Mbean;
 
 /**
  * A {@link JmxAttributeSample} should be created each time the {@link org.opennms.netmgt.jmx.JmxCollector}
  * collects a MBean Attribute.
  */
-public class JmxAttributeSample {
-    /**
-     * The MBean to which the attribute belongs.
-     */
-    private final Mbean mbean;
-
-    /**
-     * The collected attribute.
-     */
-    private final Attribute attribute;
+public class JmxAttributeSample extends AbstractJmxSample {
 
     public JmxAttributeSample(Mbean mbean, Attribute attribute) {
-        this.mbean = mbean;
-        this.attribute = attribute;
+        super(mbean, attribute);
     }
 
-    public Attribute getAttribute() {
-        return attribute;
+    public Attrib getAttrib() {
+        for (Attrib eachAttrib : getMbean().getAttribList()) {
+            if (Objects.equals(getCollectedAttribute().getName(), eachAttrib.getName())) {
+                return eachAttrib;
+            }
+        }
+        return null;
     }
 
-    public Mbean getMbean() {
-        return mbean;
-    }
-
-    public String getValueAsString() {
-        final Object value = attribute.getValue();
+    @Override
+    public String getCollectedValueAsString() {
+        final Object value = getCollectedAttribute().getValue();
         if (value != null) {
             return value.toString();
         }

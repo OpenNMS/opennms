@@ -31,6 +31,7 @@ import org.opennms.netmgt.config.DataCollectionConfigFactory;
 import org.opennms.netmgt.config.MibObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.jmx.support.JmxUtils;
 
 
 /**
@@ -48,7 +49,7 @@ import org.slf4j.LoggerFactory;
  */
 public class JMXDataSource implements Cloneable {
     private static final Logger LOG = LoggerFactory.getLogger(JMXDataSource.class);
-	private static final int MAX_DS_NAME_LENGTH = 19;
+
 	/** Constant <code>RRD_ERROR="RRD_ERROR"</code> */
 	public static final String RRD_ERROR = "RRD_ERROR";
 
@@ -203,11 +204,12 @@ public class JMXDataSource implements Cloneable {
 
                 // Truncate MIB object name/alias if it exceeds the 19 char max for
                 // RRD data source names.
-                if (this.getName().length() > MAX_DS_NAME_LENGTH) {
-                        LOG.warn("buildDataSourceList: Mib object name/alias '{}' exceeds 19 char maximum for RRD data source names, truncating.", obj.getAlias());
-                        char[] temp = this.getName().toCharArray();
-                        this.setName(String.copyValueOf(temp, 0, MAX_DS_NAME_LENGTH));
-                }
+                this.setName(org.opennms.netmgt.jmx.JmxUtils.trimAttributeName(this.getName()));
+//                if (this.getName().length() > MAX_DS_NAME_LENGTH) {
+//                        LOG.warn("buildDataSourceList: Mib object name/alias '{}' exceeds 19 char maximum for RRD data source names, truncating.", obj.getAlias());
+//                        char[] temp = this.getName().toCharArray();
+//                        this.setName(String.copyValueOf(temp, 0, MAX_DS_NAME_LENGTH));
+//                }
 
                 // Map MIB object data type to RRD data type
                 this.setType(JMXDataSource.mapType(obj.getType()));

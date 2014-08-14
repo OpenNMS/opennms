@@ -28,6 +28,14 @@
 
 package org.opennms.netmgt.collectd;
 
+import java.io.File;
+import java.lang.reflect.UndeclaredThrowableException;
+import java.net.InetAddress;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.utils.AlphaNumeric;
 import org.opennms.core.utils.InetAddressUtils;
@@ -48,8 +56,6 @@ import org.opennms.netmgt.collection.support.SingleResourceCollectionSet;
 import org.opennms.netmgt.config.JMXDataCollectionConfigFactory;
 import org.opennms.netmgt.config.collectd.jmx.Attrib;
 import org.opennms.netmgt.config.collectd.jmx.Mbean;
-import org.opennms.netmgt.jmx.samples.JmxAttributeSample;
-import org.opennms.netmgt.jmx.samples.JmxCompositeSample;
 import org.opennms.netmgt.jmx.DefaultJmxCollector;
 import org.opennms.netmgt.jmx.JmxCollector;
 import org.opennms.netmgt.jmx.JmxCollectorConfig;
@@ -61,14 +67,6 @@ import org.opennms.netmgt.model.events.EventProxy;
 import org.opennms.netmgt.rrd.RrdRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.File;
-import java.lang.reflect.UndeclaredThrowableException;
-import java.net.InetAddress;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * This class performs the collection and storage of data. The derived class
@@ -119,18 +117,6 @@ import java.util.Map;
  */
 public abstract class JMXCollector implements ServiceCollector {
     private static final Logger LOG = LoggerFactory.getLogger(JMXCollector.class);
-
-    /**
-     * RRD data source name max length.
-     */
-    private static final int MAX_DS_NAME_LENGTH = 19;
-
-    /**
-     * In some circumstances there may be many instances of a given service
-     * but running on different ports. Rather than using the port as the
-     * identifier users may define a more meaningful name.
-     */
-    private boolean useFriendlyName = false;
 
     /**
      * Interface attribute key used to store a JMXNodeInfo object which holds
@@ -204,7 +190,7 @@ public abstract class JMXCollector implements ServiceCollector {
                 try {
                     ctest.close();
                 } catch (final Throwable t) {
-                    LOG.debug("initialize: an exception occured while closing the JDBC connection");
+                    LOG.debug("initialize: an exception occurred while closing the JDBC connection");
                 }
             }
         }
@@ -282,14 +268,13 @@ public abstract class JMXCollector implements ServiceCollector {
      */
     @Override
     public CollectionSet collect(CollectionAgent agent, EventProxy eproxy, Map<String, Object> map) {
+        final Map<String, String> stringMap = JmxUtils.convertToStringMap(map);
         final InetAddress ipaddr = agent.getAddress();
         final JMXNodeInfo nodeInfo = agent.getAttribute(NODE_INFO_KEY);
         final String collectionName = agent.getAttribute("collectionName");
-        final boolean useMbeanForRrds = ParameterMap.getKeyedBoolean(map, ParameterName.USE_MBEAN_NAME_FOR_RRDS.toString(), false);
         final String port = ParameterMap.getKeyedString(map, ParameterName.PORT.toString(), null);
         final String friendlyName = ParameterMap.getKeyedString(map, ParameterName.FRIENDLY_NAME.toString(), port);
-        // TODO mvr remove useFriendlyName and determine if friendlyName or serviceName should be used based on if property is set
-        final String collDir = useFriendlyName ? friendlyName : serviceName;
+        final String collDir = JmxUtils.getCollectionDirectory(stringMap, friendlyName, serviceName);
         final int retries = ParameterMap.getKeyedInteger(map, ParameterName.RETRY.toString(), 3);
 
         // result objects
@@ -303,7 +288,7 @@ public abstract class JMXCollector implements ServiceCollector {
             config.setAgentAddress(InetAddressUtils.str(ipaddr));
             config.setConnectionName(getConnectionName());
             config.setRetries(retries);
-            config.setServiceProperties(JmxUtils.convertToStringMap(map));
+            config.setServiceProperties(stringMap);
             config.setJmxCollection(JMXDataCollectionConfigFactory.getInstance().getJmxCollection(collectionName));
 
             final JmxCollector jmxCollector = new DefaultJmxCollector();
@@ -314,28 +299,28 @@ public abstract class JMXCollector implements ServiceCollector {
                 @Override
                 public void process(JmxAttributeSample attributeSample) {
                     final String objectName = attributeSample.getMbean().getObjectname();
-                    final String attributeName = attributeSample.getAttribute().getName();
+                    final String attributeName = attributeSample.getCollectedAttribute().getName();
                     final AttributeGroupType attribGroupType = getAttributeGroupType(attributeSample.getMbean());
 
                     JMXDataSource ds = nodeInfo.getDsMap().get(objectName + "|" + attributeName);
                     JMXCollectionAttributeType attribType = new JMXCollectionAttributeType(ds, attribGroupType);
-                    collectionResource.setAttributeValue(attribType, attributeSample.getValueAsString());
+                    collectionResource.setAttributeValue(attribType, attributeSample.getCollectedValueAsString());
                 }
 
                 @Override
                 public void process(JmxCompositeSample compositeSample) {
                     final String objectName = compositeSample.getMbean().getObjectname();
-                    final String attributeName = compositeSample.getAttribute().getName();
+                    final String attributeName = compositeSample.getCollectedAttribute().getName();
                     final AttributeGroupType attribGroupType = getAttributeGroupType(compositeSample.getMbean());
 
                     JMXDataSource ds = nodeInfo.getDsMap().get(objectName + "|" + attributeName + "|" + compositeSample.getCompositeKey());
                     JMXCollectionAttributeType attribType = new JMXCollectionAttributeType(ds, attribGroupType);
-                    collectionResource.setAttributeValue(attribType, compositeSample.getValueAsString());
+                    collectionResource.setAttributeValue(attribType, compositeSample.getCollectedValueAsString());
                 }
 
                 private AttributeGroupType getAttributeGroupType(Mbean mbean) {
                     //All JMX collected values are per node
-                    final String groupName = useMbeanForRrds ? mbean.getName() : mbean.getObjectname();
+                    final String groupName = JmxUtils.getGroupName(stringMap, mbean);
                     if (!groupNameAttributeGroupTypeMap.containsKey(groupName)) {
                         final AttributeGroupType attribGroupType = new AttributeGroupType(fixGroupName(groupName), AttributeGroupType.IF_TYPE_ALL);
                         groupNameAttributeGroupTypeMap.put(groupName, attribGroupType);
@@ -372,8 +357,7 @@ public abstract class JMXCollector implements ServiceCollector {
      * from the provided list of MBeanObject objects.
      *
      * @param collectionName Collection name
-     * @param oidList        List of MBeanObject objects defining the oid's to be
-     *                       collected via JMX.
+     * @param attributeMap   List of MBeanObject objects defining the attributes to be collected via JMX.
      * @return list of RRDDataSource objects
      */
     protected static Map<String, JMXDataSource> buildDataSourceList(String collectionName, Map<String, List<Attrib>> attributeMap) {
@@ -439,13 +423,7 @@ public abstract class JMXCollector implements ServiceCollector {
                      * Truncate MBean object name/alias if it exceeds 19 char
                      * max for RRD data source names.
                      */
-                    String ds_name = attr.getAlias();
-                    if (ds_name.length() > MAX_DS_NAME_LENGTH) {
-                        LOG.warn("buildDataSourceList: alias '{}' exceeds 19 char maximum for RRD data source names, truncating.", attr.getAlias());
-                        char[] temp = ds_name.toCharArray();
-                        ds_name = String.copyValueOf(temp, 0,
-                                MAX_DS_NAME_LENGTH);
-                    }
+                    String ds_name = JmxUtils.trimAttributeName(attr.getAlias());
                     ds.setName(ds_name);
 
                     // Map MBean object data type to RRD data type
@@ -468,15 +446,6 @@ public abstract class JMXCollector implements ServiceCollector {
         }
 
         return dsList;
-    }
-
-    /**
-     * <p>Setter for the field <code>useFriendlyName</code>.</p>
-     *
-     * @param useFriendlyName a boolean.
-     */
-    public void setUseFriendlyName(boolean useFriendlyName) {
-        this.useFriendlyName = useFriendlyName;
     }
 
     private static class JMXCollectionAttributeType extends AbstractCollectionAttributeType {

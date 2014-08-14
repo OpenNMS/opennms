@@ -28,13 +28,15 @@
 
 package org.opennms.netmgt.jmx;
 
-import org.junit.Assert;
-import org.junit.Test;
-
 import java.util.HashMap;
 import java.util.Map;
 
+import org.junit.Assert;
+import org.junit.Test;
+
 public class JmxUtilsTest {
+
+    private static final int MAX_DS_NAME_LENGTH = 19;
 
     @Test
     public void testConvert() {
@@ -72,4 +74,48 @@ public class JmxUtilsTest {
         Map<String, String> output = JmxUtils.convertToStringMap(null);
         Assert.assertNull(output);
     }
+
+    @Test
+    public void testGetCollectionDirectory() {
+        Map<String, String> input = new HashMap<>();
+        input.put("port", "100");
+
+        String collectionDir = JmxUtils.getCollectionDirectory(input, "ulf", "alf");
+        Assert.assertEquals("ulf", collectionDir);
+
+        String collectionDir2 = JmxUtils.getCollectionDirectory(input, null, null);
+        Assert.assertEquals("100", collectionDir2);
+
+        String collectionDir3 = JmxUtils.getCollectionDirectory(input, null, "alf");
+        Assert.assertEquals("alf", collectionDir3);
+
+        String collectionDir4 = JmxUtils.getCollectionDirectory(input, "ulf", null);
+        Assert.assertEquals("ulf", collectionDir4);
+
+        try {
+            JmxUtils.getCollectionDirectory(null, null, null);
+            Assert.fail("NullPointerException should have been thrown.");
+        } catch (NullPointerException npe) {
+
+        }
+
+        try {
+            JmxUtils.getCollectionDirectory(new HashMap<String, String>(), null, null);
+            Assert.fail("NullPointerException should have been thrown.");
+        } catch (NullPointerException npe) {
+
+        }
+    }
+
+    @Test
+    public void shouldTrimName() {
+        final String shortName = "short";
+        final String exactName = "abcdefghijklmnopqrs"; // 19 chars
+        final String exceeded = "abcdefghijklmnopqrstuvwxyz"; // 26 chars
+
+        Assert.assertEquals("short", JmxUtils.trimAttributeName(shortName));
+        Assert.assertEquals("abcdefghijklmnopqrs", JmxUtils.trimAttributeName(exactName));
+        Assert.assertEquals("abcdefghijklmnopqrs", JmxUtils.trimAttributeName(exceeded));
+    }
+
 }

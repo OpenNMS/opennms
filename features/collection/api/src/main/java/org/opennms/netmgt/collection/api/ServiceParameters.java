@@ -128,7 +128,7 @@ public class ServiceParameters {
         return "domain: " + getDomain() + ", "
         + "storeByNodeID: " + getStoreByNodeID() + ", "
         + "storeByIfAlias: " + getStoreByIfAlias() + ", "
-        + "storFlagOverride: " + getStorFlagOverride() + ", "
+        + "storeFlagOverride: " + getStorFlagOverride() + ", "
         + "ifAliasComment: " + getIfAliasComment();
     }
 

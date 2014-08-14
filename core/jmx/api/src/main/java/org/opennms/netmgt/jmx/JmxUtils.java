@@ -31,8 +31,18 @@ package org.opennms.netmgt.jmx;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
+
+import org.opennms.netmgt.collection.api.ServiceParameters;
+import org.opennms.netmgt.config.collectd.jmx.Mbean;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public final class JmxUtils {
+
+    private static final Logger LOG = LoggerFactory.getLogger(JmxUtils.class);
+
+    private static final int MAX_ATTRIBUTE_NAME_LENGTH = 19;
 
     /**
      * Converts the map, so that it only contains String values. All non String values will be removed (null values included).
@@ -44,7 +54,7 @@ public final class JmxUtils {
      * @param map The map to be converted. May be null.
      * @return An unmodifiable map containing only String values from the input map, or null if input map was null.
      */
-    public static Map<String, String> convertToStringMap(Map<String, Object> map) {
+    public static Map<String, String> convertToStringMap(final Map<String, Object> map) {
         if (map != null) {
             Map<String, String> convertedProperties = new HashMap<>();
             for (Map.Entry<String, Object> eachEntry : map.entrySet()) {
@@ -57,8 +67,35 @@ public final class JmxUtils {
         return null;
     }
 
+    public static String getCollectionDirectory(final Map<String, String> map, final String friendlyName, final String serviceName) {
+        Objects.requireNonNull(map, "Map must be initialized!");
+
+        if (friendlyName != null && !friendlyName.isEmpty()) {
+            return friendlyName;
+        }
+        if (serviceName != null && !serviceName.isEmpty()) {
+            return serviceName.toLowerCase();
+        }
+        final String port = map.get(ServiceParameters.ParameterName.PORT.toString());
+        Objects.requireNonNull(port, "Map must contain a value for key 'port'.");
+        return map.get(port);
+    }
+
+    public static String trimAttributeName(String input) {
+        if (input != null && input.length() > MAX_ATTRIBUTE_NAME_LENGTH) {
+            LOG.warn("attribute '{}' exceeds {} char maximum for RRD data source names, truncating.", MAX_ATTRIBUTE_NAME_LENGTH, input);
+            input = input.substring(0, MAX_ATTRIBUTE_NAME_LENGTH);
+        }
+        return input;
+    }
+
+    public static String getGroupName(final Map<String, String> map, final Mbean mbean) {
+        final boolean useMbeanForRrds = Boolean.valueOf(map.get(ServiceParameters.ParameterName.USE_MBEAN_NAME_FOR_RRDS.toString()));
+        final String groupName = useMbeanForRrds ? mbean.getName() : mbean.getObjectname();
+        return groupName;
+    }
+
     private JmxUtils() {
 
     }
-
 }

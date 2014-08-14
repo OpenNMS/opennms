@@ -35,11 +35,12 @@
 
 package org.opennms.netmgt.config.collectd.jmx;
 
+import java.util.Objects;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
-import java.util.Objects;
 
 
 @XmlRootElement(name = "comp-member")
@@ -122,6 +123,22 @@ public class CompMember implements java.io.Serializable {
 
     public void setType(final String type) {
         this._type = type;
+    }
+
+    /**
+     * Converts this {@link org.opennms.netmgt.config.collectd.jmx.CompMember} to an {@link org.opennms.netmgt.config.collectd.jmx.Attrib}.
+     * This is basically to use most of the APIs which have already been written for Attrib.
+     *
+     * @return The converted CompMember as an Attrib.
+     */
+    public Attrib toAttrib() {
+        Attrib attrib = new Attrib();
+        attrib.setAlias(_alias);
+        attrib.setMaxval(_maxval);
+        attrib.setMinval(_minval);
+        attrib.setType(_type);
+        attrib.setName(_name);
+        return attrib;
     }
 
 }
