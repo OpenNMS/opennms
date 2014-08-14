@@ -241,7 +241,7 @@ public class DutySchedule implements Cloneable {
      * @return a Vector properly formatted to reflect this DutySchedule
      * @deprecated call the individual getters
      */
-    public List<Object> getAsVector() {
+    public Vector<Object> getAsVector() {
         Vector<Object> vector = new Vector<Object>();
 
         for (int i = 0; i < 7; i++) {
