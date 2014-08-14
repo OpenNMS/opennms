@@ -11,101 +11,101 @@
   <changeSet author="agalue" id="1.13.5-hwEntity">
     <validCheckSum>ANY</validCheckSum>
 
-    <createTable tableName="hwEntity">
+    <createTable tableName="hwentity">
       <column name="id" type="integer">
         <constraints primaryKey="true" nullable="false" />
       </column>
-      <column name="parentId" type="integer"/>
-      <column name="nodeId" type="integer"/>
-      <column name="entPhysicalIndex" type="integer">
+      <column name="parentid" type="integer"/>
+      <column name="nodeid" type="integer"/>
+      <column name="entphysicalindex" type="integer">
         <constraints nullable="false" />
       </column>
-      <column name="entPhysicalParentRelPos" type="integer"/>
-      <column name="entPhysicalName" type="varchar(64)"/>
-      <column name="entPhysicalDescr" type="varchar(64)"/>
-      <column name="entPhysicalAlias" type="varchar(64)"/>
-      <column name="entPhysicalVendorType" type="varchar(64)"/>
-      <column name="entPhysicalClass" type="varchar(64)"/>
-      <column name="entPhysicalMfgName" type="varchar(64)"/>
-      <column name="entPhysicalModelName" type="varchar(64)"/>
-      <column name="entPhysicalHardwareRev" type="varchar(64)"/>
-      <column name="entPhysicalFirmwareRev" type="varchar(64)"/>
-      <column name="entPhysicalSoftwareRev" type="varchar(64)"/>
-      <column name="entPhysicalSerialNum" type="varchar(64)"/>
-      <column name="entPhysicalAssetID" type="varchar(64)"/>
-      <column name="entPhysicalIsFRU" type="boolean"/>
-      <column name="entPhysicalMfgDate" type="datetime"/>
-      <column name="entPhysicalUris" type="varchar(256)"/>
+      <column name="entphysicalparentrelpos" type="integer"/>
+      <column name="entphysicalname" type="varchar(128)"/>
+      <column name="entphysicaldescr" type="varchar(128)"/>
+      <column name="entphysicalalias" type="varchar(128)"/>
+      <column name="entphysicalvendortype" type="varchar(128)"/>
+      <column name="entphysicalclass" type="varchar(128)"/>
+      <column name="entphysicalmfgname" type="varchar(128)"/>
+      <column name="entphysicalmodelname" type="varchar(128)"/>
+      <column name="entphysicalhardwarerev" type="varchar(128)"/>
+      <column name="entphysicalfirmwarerev" type="varchar(128)"/>
+      <column name="entphysicalsoftwarerev" type="varchar(128)"/>
+      <column name="entphysicalserialnum" type="varchar(128)"/>
+      <column name="entphysicalassetid" type="varchar(128)"/>
+      <column name="entphysicalisfru" type="boolean"/>
+      <column name="entphysicalmfgdate" type="datetime"/>
+      <column name="entphysicaluris" type="varchar(256)"/>
     </createTable>
 
-    <ext:addAutoIncrement tableName="hwEntity" columnName="id" sequenceName="opennmsNxtId" />
-    <addForeignKeyConstraint constraintName="fk_hwEntity_parent" onDelete="CASCADE" baseTableName="hwEntity" baseColumnNames="parentId" referencedTableName="hwEntity" referencedColumnNames="id" />
-    <addForeignKeyConstraint constraintName="fk_hwEntity_node" onDelete="CASCADE" baseTableName="hwEntity" baseColumnNames="nodeId" referencedTableName="node" referencedColumnNames="nodeId" />
+    <ext:addAutoIncrement tableName="hwentity" columnName="id" sequenceName="opennmsnxtid" />
+    <addForeignKeyConstraint constraintName="fk_hwentity_parent" onDelete="CASCADE" baseTableName="hwentity" baseColumnNames="parentid" referencedTableName="hwentity" referencedColumnNames="id" />
+    <addForeignKeyConstraint constraintName="fk_hwentity_node" onDelete="CASCADE" baseTableName="hwentity" baseColumnNames="nodeid" referencedTableName="node" referencedColumnNames="nodeid" />
 
-    <createIndex tableName="hwEntity" indexName="hwEntity_node_unique_idx" unique="true">
-      <column name="nodeId" />
-      <column name="entPhysicalIndex" />
+    <createIndex tableName="hwentity" indexName="hwentity_node_unique_idx" unique="true">
+      <column name="nodeid" />
+      <column name="entphysicalindex" />
     </createIndex>
 
     <rollback>
-      <dropTable tableName="hwEntity" />
+      <dropTable tableName="hwentity" />
     </rollback>
   </changeSet>
 
   <changeSet author="agalue" id="1.13.5-hwEntityAttributeType">
     <validCheckSum>ANY</validCheckSum>
 
-    <createTable tableName="hwEntityAttributeType">
+    <createTable tableName="hwentityattributetype">
       <column name="id" type="integer">
         <constraints primaryKey="true" nullable="false" />
       </column>
-      <column name="attribName" type="varchar(128)">
+      <column name="attribname" type="varchar(128)">
         <constraints nullable="false" />
       </column>
-      <column name="attribClass" type="varchar(32)">
+      <column name="attribclass" type="varchar(32)">
         <constraints nullable="false" />
       </column>
     </createTable>
 
-    <ext:addAutoIncrement tableName="hwEntityAttributeType" columnName="id" sequenceName="opennmsNxtId" />
+    <ext:addAutoIncrement tableName="hwentityattributetype" columnName="id" sequenceName="opennmsnxtid" />
 
-    <createIndex tableName="hwEntityAttributeType" indexName="hwEntityAttributeType_unique_idx" unique="true">
-      <column name="attribName" />
+    <createIndex tableName="hwentityattributetype" indexName="hwentityattributetype_unique_idx" unique="true">
+      <column name="attribname" />
     </createIndex>
 
     <rollback>
-      <dropTable tableName="hwEntityAttributeType" />
+      <dropTable tableName="hwentityattributetype" />
     </rollback>
   </changeSet>
 
   <changeSet author="agalue" id="1.13.5-hwEntityAttribute">
     <validCheckSum>ANY</validCheckSum>
 
-    <createTable tableName="hwEntityAttribute">
+    <createTable tableName="hwentityattribute">
       <column name="id" type="integer">
         <constraints primaryKey="true" nullable="false" />
       </column>
-      <column name="hwEntityId" type="integer">
+      <column name="hwentityid" type="integer">
         <constraints nullable="false" />
       </column>
-      <column name="hwAttribTypeId" type="integer">
+      <column name="hwattribtypeid" type="integer">
         <constraints nullable="false" />
       </column>
-      <column name="attribValue" type="varchar(256)">
+      <column name="attribvalue" type="varchar(256)">
         <constraints nullable="false" />
       </column>
     </createTable>
 
-    <ext:addAutoIncrement tableName="hwEntityAttribute" columnName="id" sequenceName="opennmsNxtId" />
-    <addForeignKeyConstraint constraintName="fk_hwEntity_hwEntityAttribute" onDelete="CASCADE" baseTableName="hwEntityAttribute" baseColumnNames="hwEntityId" referencedTableName="hwEntity" referencedColumnNames="id" />
-    <addForeignKeyConstraint constraintName="fk_hwEntityAttribute_hwEntityAttributeType" onDelete="CASCADE" baseTableName="hwEntityAttribute" baseColumnNames="hwAttribTypeId" referencedTableName="hwEntityAttributeType" referencedColumnNames="id" />
-    <createIndex tableName="hwEntityAttribute" indexName="hwEntityAttribute_unique_idx" unique="true">
-      <column name="hwEntityId" />
-      <column name="hwAttribTypeId" />
+    <ext:addAutoIncrement tableName="hwentityattribute" columnName="id" sequenceName="opennmsnxtid" />
+    <addForeignKeyConstraint constraintName="fk_hwentity_hwentityattribute" onDelete="CASCADE" baseTableName="hwentityattribute" baseColumnNames="hwentityid" referencedTableName="hwentity" referencedColumnNames="id" />
+    <addForeignKeyConstraint constraintName="fk_hwentityattribute_hwentityattributetype" onDelete="CASCADE" baseTableName="hwentityattribute" baseColumnNames="hwattribtypeid" referencedTableName="hwentityattributetype" referencedColumnNames="id" />
+    <createIndex tableName="hwentityattribute" indexName="hwentityattribute_unique_idx" unique="true">
+      <column name="hwentityid" />
+      <column name="hwattribtypeid" />
     </createIndex>
 
     <rollback>
-      <dropTable tableName="hwEntityAttribute" />
+      <dropTable tableName="hwentityattribute" />
     </rollback>
   </changeSet>
 
