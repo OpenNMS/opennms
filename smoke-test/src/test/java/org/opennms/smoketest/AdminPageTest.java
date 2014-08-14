@@ -102,7 +102,6 @@ public class AdminPageTest extends OpenNMSSeleniumTestCase {
         clickAndWait("link=Configure SNMP Community Names by IP");
         waitForText("SNMP Config Lookup");
         waitForText("Updating SNMP Configuration");
-        waitForText("Content of snmp-config.xml");
         waitForText("Descriptions");
         waitForText("optimize this list");
         clickAndWait("link=Admin");
