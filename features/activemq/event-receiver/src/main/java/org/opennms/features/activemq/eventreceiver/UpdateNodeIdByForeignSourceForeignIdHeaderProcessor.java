@@ -17,6 +17,8 @@ public class UpdateNodeIdByForeignSourceForeignIdHeaderProcessor implements Proc
 
 	public static final String EVENT_HEADER_FOREIGNSOURCE = "foreignSource";
 	public static final String EVENT_HEADER_FOREIGNID = "foreignId";
+	public static final String EVENT_HEADER_LOCATION = "location";
+	
 
 	private NodeDao nodeDao;
 
@@ -32,7 +34,7 @@ public class UpdateNodeIdByForeignSourceForeignIdHeaderProcessor implements Proc
 	public void process(final Exchange exchange) throws Exception {
 		final Event event = exchange.getIn().getBody(Event.class);
 		
-		Endpoint from = exchange.getFromEndpoint();
+		String from = exchange.getIn().getHeader(EVENT_HEADER_LOCATION, String.class);
 
 		if (event.getNodeid() > 0) {
 			String foreignSource = exchange.getIn().getHeader(EVENT_HEADER_FOREIGNSOURCE, String.class);
@@ -42,8 +44,8 @@ public class UpdateNodeIdByForeignSourceForeignIdHeaderProcessor implements Proc
 
 			if (node != null && node.getId() != null) {
 				event.setNodeid(node.getId().longValue());
-				event.setDistPoller(from.getEndpointKey());
-				event.setSource("Endpoint="+from.getEndpointKey()+":"+event.getSource());
+				event.setDistPoller(from);
+				event.setSource("Endpoint="+from+":"+event.getSource());
 			} else {
 				LOG.warn("Could not find node {}/{} in the database, cannot update node ID to local value; discarding event", foreignSource, foreignId);
 				// Halt the route if we cannot translate the node ID
