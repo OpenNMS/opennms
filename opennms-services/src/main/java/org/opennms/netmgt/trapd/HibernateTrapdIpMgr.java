@@ -123,17 +123,6 @@ public class HibernateTrapdIpMgr implements TrapdIpMgr, InitializingBean {
         return longValue(m_knownips.remove(InetAddressUtils.getInetAddress(addr)));
     }
 
-    /* (non-Javadoc)
-     * @see org.opennms.netmgt.trapd.TrapdIpMgr#clearKnownIpsMap()
-     */
-    /**
-     * <p>clearKnownIpsMap</p>
-     */
-    @Override
-    public synchronized void clearKnownIpsMap() {
-        m_knownips.clear();
-    }
-
     private static long longValue(Integer result) {
         return (result == null ? -1 : result.longValue());
     }
