@@ -1,5 +1,6 @@
 package org.opennms.features.activemq.eventreceiver;
 
+import org.apache.camel.Endpoint;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.opennms.netmgt.dao.api.NodeDao;
@@ -30,6 +31,8 @@ public class UpdateNodeIdByForeignSourceForeignIdHeaderProcessor implements Proc
 	@Override
 	public void process(final Exchange exchange) throws Exception {
 		final Event event = exchange.getIn().getBody(Event.class);
+		
+		Endpoint from = exchange.getFromEndpoint();
 
 		if (event.getNodeid() > 0) {
 			String foreignSource = exchange.getIn().getHeader(EVENT_HEADER_FOREIGNSOURCE, String.class);
@@ -39,6 +42,8 @@ public class UpdateNodeIdByForeignSourceForeignIdHeaderProcessor implements Proc
 
 			if (node != null && node.getId() != null) {
 				event.setNodeid(node.getId().longValue());
+				event.setDistPoller(from.getEndpointKey());
+				event.setSource("Endpoint="+from.getEndpointKey()+":"+event.getSource());
 			} else {
 				LOG.warn("Could not find node {}/{} in the database, cannot update node ID to local value; discarding event", foreignSource, foreignId);
 				// Halt the route if we cannot translate the node ID
