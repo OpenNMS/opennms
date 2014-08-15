@@ -57,6 +57,9 @@ import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.style.ToStringCreator;
 
 @XmlRootElement(name = "hwEntity")
@@ -65,6 +68,7 @@ import org.springframework.core.style.ToStringCreator;
 @XmlAccessorType(XmlAccessType.NONE)
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class OnmsHwEntity implements Serializable {
+    private static final Logger LOG = LoggerFactory.getLogger(OnmsHwEntity.class);
 
     private static final long serialVersionUID = -543872118396806431L;
 
@@ -348,7 +352,7 @@ public class OnmsHwEntity implements Serializable {
     private void setNodeRecursively(OnmsHwEntity entity, OnmsNode node) {
         for (OnmsHwEntity e : entity.getChildren()) {
             if (e.getNode() == null) {
-                System.err.println("Setting nodeId " + node.getId() + " on entity " + entity.getEntPhysicalIndex() + " contained in " + entity.getEntPhysicalContainedIn());
+                LOG.trace("Setting nodeId {} on entity {} contained in {}", node.getId(), e.getEntPhysicalIndex(), e.getEntPhysicalContainedIn());
                 e.setNode(node);
             }
             if (e.hasChildren()) {

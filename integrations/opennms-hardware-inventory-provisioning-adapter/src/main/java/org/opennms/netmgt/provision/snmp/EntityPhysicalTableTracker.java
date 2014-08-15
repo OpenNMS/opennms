@@ -60,7 +60,7 @@ public class EntityPhysicalTableTracker extends TableTracker {
     @Override
     public void rowCompleted(SnmpRowResult row) {
         OnmsHwEntity entity = ((EntityPhysicalTableRow) row).getOnmsHwEntity();
-        LOG.debug("rowCompleted: found entity {}: {}", entity.getEntPhysicalName(), entity.getEntPhysicalIndex());
+        LOG.debug("rowCompleted: found entity {}, index: {}, parent: {}", entity.getEntPhysicalName(), entity.getEntPhysicalIndex(), entity.getEntPhysicalContainedIn());
         if (entity.getEntPhysicalContainedIn() != null && entity.getEntPhysicalContainedIn() > 0) {
             for (OnmsHwEntity e : entities) {
                 if (e.getEntPhysicalIndex() == entity.getEntPhysicalContainedIn()) {

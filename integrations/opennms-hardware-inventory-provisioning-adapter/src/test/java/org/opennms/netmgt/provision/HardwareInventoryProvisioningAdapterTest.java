@@ -99,7 +99,7 @@ public class HardwareInventoryProvisioningAdapterTest implements InitializingBea
     private HwEntityDao m_entityDao;
 
     private List<TestOperation> m_operations = new ArrayList<TestOperation>();
-    
+
     @Override
     public void afterPropertiesSet() throws Exception {
         BeanUtils.assertAutowiring(this);
@@ -114,7 +114,7 @@ public class HardwareInventoryProvisioningAdapterTest implements InitializingBea
         nb.addNode("R1").setForeignSource("Cisco").setForeignId("1").setSysObjectId(".1.3.6.1.4.1.9.1.222");
         nb.addInterface("192.168.0.1").setIsSnmpPrimary("P").setIsManaged("P");
         m_nodeDao.save(nb.getCurrentNode());
-        
+
         nb.addNode("R2").setForeignSource("Cisco").setForeignId("2").setSysObjectId(".1.3.6.1.4.1.9.1.222");
         nb.addInterface("192.168.0.2").setIsSnmpPrimary("P").setIsManaged("P");
         m_nodeDao.save(nb.getCurrentNode());
@@ -149,14 +149,16 @@ public class HardwareInventoryProvisioningAdapterTest implements InitializingBea
     public void testDiscoverSnmpEntities() throws Exception {
         for (TestOperation op : m_operations) {
             m_adapter.processPendingOperationForNode(op.operation);
+
             OnmsHwEntity root = m_entityDao.findRootByNodeId(op.nodeId);
             Assert.assertNotNull(root);
             FileWriter w = new FileWriter("target/" + op.nodeId + ".xml");
             JaxbUtils.marshal(root, w);
             w.close();
+
+            m_nodeDao.flush();
+            m_entityDao.flush();
         }
-        m_nodeDao.flush();
-        m_entityDao.flush();
         Assert.assertEquals(112, m_entityDao.countAll());
     }
 
