@@ -31,6 +31,12 @@ To install the ActiveMQ event forwarder between two OpenNMS systems, "dispatcher
         config:propset brokerUri tcp://[receiver IP address]:61616
         config:update
 
+- Set the location name that the Event Forwarder will append as a header to outgoing messages:
+
+        config:edit org.opennms.features.activemq.eventforwarder
+        config:propset location [location name]
+        config:update
+
 - Install the Event Forwarder feature:
 
         features:install opennms-activemq-event-forwarder

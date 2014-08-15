@@ -59,7 +59,7 @@ public class JdbcTrapdIpMgr implements TrapdIpMgr, InitializingBean {
     /**
      * A Map of IP addresses and node IDs
      */
-    private Map<String, Long> m_knownips = new HashMap<String, Long>();
+    protected final Map<String, Long> m_knownips = new HashMap<String, Long>();
 
     /**
      * Default construct for the instance.
@@ -120,17 +120,6 @@ public class JdbcTrapdIpMgr implements TrapdIpMgr, InitializingBean {
             return -1;
         }
         return longValue(m_knownips.remove(addr));
-    }
-
-    /* (non-Javadoc)
-     * @see org.opennms.netmgt.trapd.TrapdIpMgr#clearKnownIpsMap()
-     */
-    /**
-     * <p>clearKnownIpsMap</p>
-     */
-    @Override
-    public synchronized void clearKnownIpsMap() {
-        m_knownips.clear();
     }
 
     private static long longValue(Long result) {
