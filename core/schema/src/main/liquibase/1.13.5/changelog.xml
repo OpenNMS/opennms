@@ -46,6 +46,12 @@
       <column name="nodeid" />
       <column name="entphysicalindex" />
     </createIndex>
+    <createIndex tableName="hwentity" indexName="hwentity_entphysicalindex_idx">
+      <column name="entphysicalindex" />
+    </createIndex>
+    <createIndex tableName="hwentity" indexName="hwentity_nodeid_idx">
+      <column name="nodeid" />
+    </createIndex>
 
     <rollback>
       <dropTable tableName="hwentity" />

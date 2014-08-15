@@ -71,7 +71,7 @@ public class OnmsHwEntity implements Serializable {
     private Integer m_id;
 
     private Integer m_entPhysicalIndex;
-    private Integer m_entPhysicalParentRelPos;
+    private Integer m_entPhysicalParentRelPos; // FIXME This can be removed
     private Integer m_entPhysicalContainedIn;
     private String m_entPhysicalName;
     private String m_entPhysicalDescr;
@@ -347,9 +347,11 @@ public class OnmsHwEntity implements Serializable {
 
     private void setNodeRecursively(OnmsHwEntity entity, OnmsNode node) {
         for (OnmsHwEntity e : entity.getChildren()) {
-            System.err.println("Setting node " + node.getId() + " on entity " + entity.getEntPhysicalIndex());
-            e.setNode(node);
-            if (hasChildren()) {
+            if (e.getNode() == null) {
+                System.err.println("Setting nodeId " + node.getId() + " on entity " + entity.getEntPhysicalIndex() + " contained in " + entity.getEntPhysicalContainedIn());
+                e.setNode(node);
+            }
+            if (e.hasChildren()) {
                 setNodeRecursively(e, node);
             }
         }
@@ -400,7 +402,7 @@ public class OnmsHwEntity implements Serializable {
     @Transient
     @XmlTransient
     public boolean isRoot() {
-        return m_parent == null;
+        return m_parent == null || m_entPhysicalIndex == 0;
     }
 
     @Transient

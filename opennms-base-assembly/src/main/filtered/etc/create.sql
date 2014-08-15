@@ -2687,8 +2687,8 @@ create table hwEntity (
     entPhysicalMfgDate      timestamp,
     entPhysicalUris         varchar(256),
     constraint pk_hwEntity_id primary key (id),
-    constraint fk_hwEntity_parent foreign key (parentId) references hwEntity (id),
-    constraint fk_hwEntity_node foreign key (nodeId) references node ON DELETE CASCADE
+    constraint fk_hwEntity_parent foreign key (parentId) references hwEntity (id) on delete cascade,
+    constraint fk_hwEntity_node foreign key (nodeId) references node on delete cascade
 );
 create index hwEntity_nodeId_idx on hwEntity(nodeid);
 create index hwEntity_entPhysicalIndex_idx on hwEntity(entPhysicalIndex);
@@ -2706,10 +2706,10 @@ create table hwEntityAttribute (
     id             integer default nextval('opennmsNxtId') not null,
     hwEntityId     integer not null,
     hwAttribTypeId integer not null,
-    attribValue    varchar(256),
+    attribValue    varchar(256) not null,
     constraint pk_hwEntity_attribute_id primary key (id),
-    constraint fk_hwEntity_hwEntityAttribute foreign key (hwEntityId) references hwEntity (id),
-    constraint fk_hwEntityAttribute_hwEntityAttributeType foreign key (hwAttribTypeId) references hwEntityAttributeType (id) 
+    constraint fk_hwEntity_hwEntityAttribute foreign key (hwEntityId) references hwEntity (id) on delete cascade,
+    constraint fk_hwEntityAttribute_hwEntityAttributeType foreign key (hwAttribTypeId) references hwEntityAttributeType (id) on delete cascade
 );
 create unique index hwEntityAttribute_unique_idx on hwEntityAttribute(hwEntityId,hwAttribTypeId);
 

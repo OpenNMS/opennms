@@ -28,18 +28,20 @@
 
 package org.opennms.netmgt.provision;
 
-import java.io.StringWriter;
+import java.io.FileWriter;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
+import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.dao.api.HwEntityDao;
 import org.opennms.netmgt.dao.api.NodeDao;
@@ -49,7 +51,6 @@ import org.opennms.netmgt.provision.SimpleQueuedProvisioningAdapter.AdapterOpera
 import org.opennms.netmgt.provision.SimpleQueuedProvisioningAdapter.AdapterOperationSchedule;
 import org.opennms.netmgt.provision.SimpleQueuedProvisioningAdapter.AdapterOperationType;
 import org.opennms.test.JUnitConfigurationEnvironment;
-
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -70,8 +71,23 @@ import org.springframework.transaction.annotation.Transactional;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase(dirtiesContext = false)
-@JUnitSnmpAgent(host = "192.168.0.1", resource = "entPhysicalTable-cisco.properties")
+@JUnitSnmpAgents(value={
+        @JUnitSnmpAgent(host="192.168.0.1", resource="entPhysicalTable-cisco-r1.properties"),
+        @JUnitSnmpAgent(host="192.168.0.2", resource="entPhysicalTable-cisco-r2.properties"),
+        @JUnitSnmpAgent(host="192.168.0.3", resource="entPhysicalTable-cisco-r3.properties"),
+        @JUnitSnmpAgent(host="192.168.0.4", resource="entPhysicalTable-cisco-r4.properties")
+})
 public class HardwareInventoryProvisioningAdapterTest implements InitializingBean {
+
+    public final static class TestOperation {
+        public Integer nodeId;
+        public AdapterOperation operation;
+        public TestOperation(Integer nodeId, AdapterOperation operation) {
+            super();
+            this.nodeId = nodeId;
+            this.operation = operation;
+        }
+    }
 
     @Autowired
     private HardwareInventoryProvisioningAdapter m_adapter;
@@ -82,8 +98,8 @@ public class HardwareInventoryProvisioningAdapterTest implements InitializingBea
     @Autowired
     private HwEntityDao m_entityDao;
 
-    private AdapterOperation m_addOperation;
-
+    private List<TestOperation> m_operations = new ArrayList<TestOperation>();
+    
     @Override
     public void afterPropertiesSet() throws Exception {
         BeanUtils.assertAutowiring(this);
@@ -94,16 +110,33 @@ public class HardwareInventoryProvisioningAdapterTest implements InitializingBea
         MockLogAppender.setupLogging(true);
 
         NetworkBuilder nb = new NetworkBuilder();
-        nb.addNode("HQ").setForeignSource("Cisco").setForeignId("1").setSysObjectId(".1.3.6.1.4.1.9.1.222");
+
+        nb.addNode("R1").setForeignSource("Cisco").setForeignId("1").setSysObjectId(".1.3.6.1.4.1.9.1.222");
         nb.addInterface("192.168.0.1").setIsSnmpPrimary("P").setIsManaged("P");
         m_nodeDao.save(nb.getCurrentNode());
+        
+        nb.addNode("R2").setForeignSource("Cisco").setForeignId("2").setSysObjectId(".1.3.6.1.4.1.9.1.222");
+        nb.addInterface("192.168.0.2").setIsSnmpPrimary("P").setIsManaged("P");
+        m_nodeDao.save(nb.getCurrentNode());
+
+        nb.addNode("R3").setForeignSource("Cisco").setForeignId("3").setSysObjectId(".1.3.6.1.4.1.9.1.222");
+        nb.addInterface("192.168.0.3").setIsSnmpPrimary("P").setIsManaged("P");
+        m_nodeDao.save(nb.getCurrentNode());
+
+        nb.addNode("R4").setForeignSource("Cisco").setForeignId("4").setSysObjectId(".1.3.6.1.4.1.9.1.222");
+        nb.addInterface("192.168.0.4").setIsSnmpPrimary("P").setIsManaged("P");
+        m_nodeDao.save(nb.getCurrentNode());
+
         m_nodeDao.flush();
 
         m_adapter.afterPropertiesSet();
 
-        Integer nodeId = m_nodeDao.findByForeignId("Cisco", "1").getId();
-        AdapterOperationSchedule op = new AdapterOperationSchedule(0, 1, 1, TimeUnit.SECONDS);
-        m_addOperation = m_adapter.new AdapterOperation(nodeId, AdapterOperationType.ADD, op);
+        for (int i=1; i<=4; i++) {
+            Integer nodeId = m_nodeDao.findByForeignId("Cisco", Integer.toString(i)).getId();
+            AdapterOperationSchedule ops = new AdapterOperationSchedule(0, 1, 1, TimeUnit.SECONDS);        
+            AdapterOperation op = m_adapter.new AdapterOperation(nodeId, AdapterOperationType.ADD, ops);
+            m_operations.add(new TestOperation(nodeId, op));
+        }
     }
 
     @AfterTransaction
@@ -114,13 +147,17 @@ public class HardwareInventoryProvisioningAdapterTest implements InitializingBea
     @Test
     @Transactional
     public void testDiscoverSnmpEntities() throws Exception {
-        int nodeId = m_nodeDao.findByForeignId("Cisco", "1").getId();
-        m_adapter.processPendingOperationForNode(m_addOperation);
-        OnmsHwEntity root = m_entityDao.findRootByNodeId(nodeId);
-        Assert.assertNotNull(root);
-        StringWriter w = new StringWriter();
-        JaxbUtils.marshal(root, w);
-        System.out.println(w);
+        for (TestOperation op : m_operations) {
+            m_adapter.processPendingOperationForNode(op.operation);
+            OnmsHwEntity root = m_entityDao.findRootByNodeId(op.nodeId);
+            Assert.assertNotNull(root);
+            FileWriter w = new FileWriter("target/" + op.nodeId + ".xml");
+            JaxbUtils.marshal(root, w);
+            w.close();
+        }
+        m_nodeDao.flush();
+        m_entityDao.flush();
+        Assert.assertEquals(112, m_entityDao.countAll());
     }
 
 }

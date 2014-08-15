@@ -61,11 +61,11 @@ public class EntityPhysicalTableTracker extends TableTracker {
     public void rowCompleted(SnmpRowResult row) {
         OnmsHwEntity entity = ((EntityPhysicalTableRow) row).getOnmsHwEntity();
         LOG.debug("rowCompleted: found entity {}: {}", entity.getEntPhysicalName(), entity.getEntPhysicalIndex());
-        if (entity.getEntPhysicalContainedIn() != 0) {
+        if (entity.getEntPhysicalContainedIn() != null && entity.getEntPhysicalContainedIn() > 0) {
             for (OnmsHwEntity e : entities) {
                 if (e.getEntPhysicalIndex() == entity.getEntPhysicalContainedIn()) {
                     e.addChildEntity(entity);
-                    continue;
+                    break;
                 }
             }
         }
