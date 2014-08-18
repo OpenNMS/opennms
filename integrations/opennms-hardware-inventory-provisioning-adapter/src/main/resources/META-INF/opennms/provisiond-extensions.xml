@@ -5,6 +5,7 @@
 	<bean name="hardwareInventoryProvisioningAdapter" class="org.opennms.netmgt.provision.HardwareInventoryProvisioningAdapter">
 		<property name="eventForwarder" ref="eventForwarder" />
 		<property name="nodeDao" ref="nodeDao" />
+		<property name="hwEntityDao" ref="hwEntityDao" />
 		<property name="snmpPeerFactory" ref="snmpPeerFactory" />
 		<property name="template" ref="transactionTemplate" />
 	</bean>

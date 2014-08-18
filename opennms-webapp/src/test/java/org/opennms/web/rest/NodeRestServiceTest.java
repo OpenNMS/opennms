@@ -453,6 +453,29 @@ public class NodeRestServiceTest extends AbstractSpringJerseyRestTestCase {
         assertTrue(xml, xml.contains("totalCount=\"0\""));
     }
 
+    @Test
+    @JUnitTemporaryDatabase
+    public void testNodeWithoutHardwareInventory() throws Exception {
+        createIpInterface();
+        sendRequest(GET, "/nodes/1/hardwareInventory", 400); // node doesn't have a root entity
+    }
+
+    @Test
+    @JUnitTemporaryDatabase
+    public void testHardwareInventory() throws Exception {
+        createIpInterface();
+        String entity = "<hwEntity parentId=\"0\" entPhysicalIndex=\"1\">" +
+        "<entPhysicalClass>chassis</entPhysicalClass>" +
+        "<entPhysicalDescr>3620 chassis, Hw Serial#: 0, Hw Revision: 0xFF</entPhysicalDescr>" +
+        "<entPhysicalName></entPhysicalName>" +
+        "<entPhysicalParentRelPos>-1</entPhysicalParentRelPos>" +
+        "<entPhysicalVendorType>.1.3.6.1.4.1.9.12.3.1.3.43</entPhysicalVendorType>" +
+        "</hwEntity>";
+        sendPost("/nodes/1/hardwareInventory", entity, 303, null);
+        String xml = sendRequest(GET, "/nodes/1/hardwareInventory", 200);
+        assertTrue(xml, xml.contains(".1.3.6.1.4.1.9.12.3.1.3.43"));
+    }
+
     @Override
     protected void createNode() throws Exception {
         String node = "<node type=\"A\" label=\"TestMachine" + m_nodeCounter + "\">" +

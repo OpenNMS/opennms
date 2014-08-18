@@ -42,10 +42,6 @@
     <addForeignKeyConstraint constraintName="fk_hwentity_parent" onDelete="CASCADE" baseTableName="hwentity" baseColumnNames="parentid" referencedTableName="hwentity" referencedColumnNames="id" />
     <addForeignKeyConstraint constraintName="fk_hwentity_node" onDelete="CASCADE" baseTableName="hwentity" baseColumnNames="nodeid" referencedTableName="node" referencedColumnNames="nodeid" />
 
-    <createIndex tableName="hwentity" indexName="hwentity_node_unique_idx" unique="true">
-      <column name="nodeid" />
-      <column name="entphysicalindex" />
-    </createIndex>
     <createIndex tableName="hwentity" indexName="hwentity_entphysicalindex_idx">
       <column name="entphysicalindex" />
     </createIndex>

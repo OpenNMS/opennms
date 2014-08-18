@@ -32,6 +32,7 @@ import java.net.InetAddress;
 
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.api.SnmpAgentConfigFactory;
+import org.opennms.netmgt.dao.api.HwEntityDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsHwEntity;
 import org.opennms.netmgt.model.OnmsIpInterface;
@@ -46,10 +47,8 @@ import org.opennms.netmgt.provision.plugin.EntityPlugin;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 
@@ -58,6 +57,7 @@ public class HardwareInventoryProvisioningAdapter extends SimplerQueuedProvision
     private static final Logger LOG = LoggerFactory.getLogger(HardwareInventoryProvisioningAdapter.class);
 
     private NodeDao m_nodeDao;
+    private HwEntityDao m_hwEntityDao;
     private EventForwarder m_eventForwarder;
     private SnmpAgentConfigFactory m_snmpConfigDao;
 
@@ -70,6 +70,7 @@ public class HardwareInventoryProvisioningAdapter extends SimplerQueuedProvision
     @Override
     public void afterPropertiesSet() throws Exception {
         Assert.notNull(m_nodeDao, "Node DAO cannot be null");
+        Assert.notNull(m_hwEntityDao, "Hardware Entity DAO cannot be null");
         Assert.notNull(m_snmpConfigDao, "SNMP Configuration DAO cannot be null");
         Assert.notNull(m_eventForwarder, "Event Forwarder cannot be null");
     }
@@ -86,11 +87,13 @@ public class HardwareInventoryProvisioningAdapter extends SimplerQueuedProvision
         synchronizeInventory(nodeId);
     }
 
+    // FIXME Set on the configuration file if the data must be overridden if exist. 
     private void synchronizeInventory(int nodeId) {
         final OnmsNode node = m_nodeDao.get(nodeId);
         if (node == null) {
             throw new ProvisioningAdapterException("Failed to return node for given nodeId: " + nodeId);
         }
+        final OnmsHwEntity currentRoot = m_hwEntityDao.findRootByNodeId(node.getId());
 
         final OnmsIpInterface intf = node.getPrimaryInterface();
         if (intf == null) {
@@ -107,10 +110,15 @@ public class HardwareInventoryProvisioningAdapter extends SimplerQueuedProvision
                 SnmpAgentConfig agentConfig = m_snmpConfigDao.getAgentConfig(ipAddress);
                 plugin = new SnmpEntityPlugin(agentConfig);
             }
-            OnmsHwEntity root = plugin.getRootEntity(nodeId, ipAddress);
-            node.setRootHwEntity(root);
-            m_nodeDao.saveOrUpdate(node);
-            m_nodeDao.flush();
+            // EntityPlugin should always return a valid root otherwise it will throw an exception.
+            OnmsHwEntity newRoot = plugin.getRootEntity(nodeId, ipAddress);
+            // If there is an entity associated with the node it should be removed first, in order to override the data.
+            if (currentRoot != null) {
+                m_hwEntityDao.delete(currentRoot);
+            }
+            newRoot.setNode(node);
+            m_hwEntityDao.saveOrUpdate(newRoot);
+            m_hwEntityDao.flush();
             ebldr = new EventBuilder(EventConstants.HARDWARE_INVENTORY_SUCCESSFUL_UEI, "Provisiond." + NAME);
         } catch (Throwable e) {
             ebldr = new EventBuilder(EventConstants.HARDWARE_INVENTORY_FAILED_UEI, "Provisiond." + NAME);
@@ -127,6 +135,14 @@ public class HardwareInventoryProvisioningAdapter extends SimplerQueuedProvision
     @Override
     public void doNotifyConfigChange(final int nodeId) throws ProvisioningAdapterException {
         LOG.debug("doNodeConfigChanged: nodeid: {}", nodeId);
+    }
+
+    public HwEntityDao getHwEntityDao() {
+        return m_hwEntityDao;
+    }
+
+    public void setHwEntityDao(HwEntityDao hwEntityDao) {
+        this.m_hwEntityDao = hwEntityDao;
     }
 
     public NodeDao getNodeDao() {

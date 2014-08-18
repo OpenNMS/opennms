@@ -39,7 +39,7 @@ public class HwEntityDaoHibernate extends AbstractDaoHibernate<OnmsHwEntity, Int
 
     @Override
     public OnmsHwEntity findRootByNodeId(Integer nodeId) {
-        return (OnmsHwEntity) findUnique("from OnmsHwEntity e where e.parent = null and e.node.id = ?", nodeId);
+        return (OnmsHwEntity) findUnique("from OnmsHwEntity e where e.parent is null and e.node.id = ?", nodeId);
     }
 
 }

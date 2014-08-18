@@ -201,8 +201,6 @@ public class OnmsNode extends OnmsEntity implements Serializable, Comparable<Onm
 
     private PathElement m_pathElement;
 
-    private OnmsHwEntity m_rootHwEntity;
-
     /**
      * <p>Constructor for OnmsNode.</p>
      */
@@ -1063,33 +1061,6 @@ public class OnmsNode extends OnmsEntity implements Serializable, Comparable<Onm
         return false;
     }
 
-    /**
-     * The root hardware entity associated with this node
-     *
-     * @return a {@link org.opennms.netmgt.model.OnmsHwEntity} object.
-     */
-    @OneToOne(mappedBy="node", cascade=CascadeType.ALL, fetch=FetchType.LAZY, optional=true)
-    @XmlTransient
-    public OnmsHwEntity getRootHwEntity() {
-        return m_rootHwEntity;
-    }
-
-    /**
-     * <p>setRootHwEntity</p>
-     *
-     * @param rootHwEntity a {@link org.opennms.netmgt.model.OnmsHwEntity} object.
-     */
-    public void setRootHwEntity(OnmsHwEntity rootHwEntity) {
-        if (rootHwEntity == null) {
-            m_rootHwEntity = null;
-            return;
-        }
-        if (!rootHwEntity.isRoot())
-            throw new IllegalArgumentException("Invalid root HwEntity " + rootHwEntity);
-        rootHwEntity.setNode(this);
-        m_rootHwEntity = rootHwEntity;
-    }
-    
     /**
      * <p>toString</p>
      *

@@ -36,6 +36,7 @@ import java.util.concurrent.TimeUnit;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
@@ -51,6 +52,7 @@ import org.opennms.netmgt.provision.SimpleQueuedProvisioningAdapter.AdapterOpera
 import org.opennms.netmgt.provision.SimpleQueuedProvisioningAdapter.AdapterOperationSchedule;
 import org.opennms.netmgt.provision.SimpleQueuedProvisioningAdapter.AdapterOperationType;
 import org.opennms.test.JUnitConfigurationEnvironment;
+
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -70,7 +72,7 @@ import org.springframework.transaction.annotation.Transactional;
         "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml"
 })
 @JUnitConfigurationEnvironment
-@JUnitTemporaryDatabase(dirtiesContext = false)
+@JUnitTemporaryDatabase
 @JUnitSnmpAgents(value={
         @JUnitSnmpAgent(host="192.168.0.1", resource="entPhysicalTable-cisco-r1.properties"),
         @JUnitSnmpAgent(host="192.168.0.2", resource="entPhysicalTable-cisco-r2.properties"),
@@ -152,6 +154,7 @@ public class HardwareInventoryProvisioningAdapterTest implements InitializingBea
 
             OnmsHwEntity root = m_entityDao.findRootByNodeId(op.nodeId);
             Assert.assertNotNull(root);
+            Assert.assertTrue(root.isRoot());
             FileWriter w = new FileWriter("target/" + op.nodeId + ".xml");
             JaxbUtils.marshal(root, w);
             w.close();

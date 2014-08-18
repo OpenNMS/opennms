@@ -42,7 +42,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
@@ -57,7 +56,6 @@ import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.style.ToStringCreator;
@@ -109,7 +107,7 @@ public class OnmsHwEntity implements Serializable {
     @Column(nullable=false)
     @XmlTransient
     @SequenceGenerator(name="opennmsSequence", sequenceName="opennmsNxtId")
-    @GeneratedValue(generator="opennmsSequence")    
+    @GeneratedValue(generator="opennmsSequence")
     public Integer getId() {
         return m_id;
     }
@@ -309,15 +307,21 @@ public class OnmsHwEntity implements Serializable {
         this.m_entPhysicalUris = entPhysicalUris;
     }
 
+    @XmlTransient
     @ManyToOne(cascade={CascadeType.ALL}, optional=true)
     @JoinColumn(name="parentId")
-    @XmlTransient
     public OnmsHwEntity getParent() {
         return m_parent;
     }
 
     public void setParent(OnmsHwEntity parent) {
         this.m_parent = parent;
+    }
+
+    @Transient
+    @XmlAttribute(name="parentId")
+    public Integer getParentId() {
+        return m_parent == null ? null : m_parent.getEntPhysicalIndex();
     }
 
     @XmlElement(name="hwEntity")
@@ -336,7 +340,7 @@ public class OnmsHwEntity implements Serializable {
         getChildren().add(child);        
     }
 
-    @OneToOne(fetch=FetchType.LAZY) // FIXME: optional=false
+    @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="nodeId")
     @XmlAttribute(name="nodeId")
     @XmlJavaTypeAdapter(NodeIdAdapter.class)
@@ -381,8 +385,6 @@ public class OnmsHwEntity implements Serializable {
         addAttribute(attribType, value);
     }
 
-    @XmlTransient
-    @Transient
     public String getAttributeValue(String typeName) {
         for (OnmsHwEntityAttribute attr : m_hwAttributes) {
             if (attr.getTypeName().equals(typeName)) {
@@ -392,8 +394,6 @@ public class OnmsHwEntity implements Serializable {
         return null;
     }
 
-    @XmlTransient
-    @Transient
     public String getAttributeClass(String typeName) {
         for (OnmsHwEntityAttribute attr : m_hwAttributes) {
             if (attr.getTypeName().equals(typeName)) {
@@ -404,13 +404,11 @@ public class OnmsHwEntity implements Serializable {
     }
 
     @Transient
-    @XmlTransient
     public boolean isRoot() {
         return m_parent == null || m_entPhysicalIndex == 0;
     }
 
     @Transient
-    @XmlTransient
     public boolean hasChildren() {
         return !m_hwAttributes.isEmpty();
     }

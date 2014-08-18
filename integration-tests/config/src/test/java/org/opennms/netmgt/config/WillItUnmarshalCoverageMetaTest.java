@@ -99,7 +99,7 @@ public class WillItUnmarshalCoverageMetaTest {
         ignoreFile(new File(getDaemonEtcDirectory(), "syslog/OpenSSH.syslog.xml"));
         ignoreFile(new File(getDaemonEtcDirectory(), "syslog/POSIX.syslog.xml"));
         ignoreFile(new File(getDaemonEtcDirectory(), "syslog/Sudo.syslog.xml"));
-        
+        ignoreFile(new File(getDaemonEtcDirectory(), "hardware-inventory-adapter-configuration.xml")); // FIXME This is temporary, the test should include this file once the implementation exist
         ignoreFile(new File(getDaemonEtcDirectory(), "log4j2.xml"));
         LOG.debug("FILES.size() = {}", FILES.size());
     }

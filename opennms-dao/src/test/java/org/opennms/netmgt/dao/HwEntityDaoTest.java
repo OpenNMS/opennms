@@ -28,11 +28,10 @@
 
 package org.opennms.netmgt.dao;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.netmgt.dao.api.HwEntityAttributeTypeDao;
@@ -42,6 +41,7 @@ import org.opennms.netmgt.model.HwEntityAttributeType;
 import org.opennms.netmgt.model.OnmsHwEntity;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.test.JUnitConfigurationEnvironment;
+
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -101,8 +101,8 @@ public class HwEntityDaoTest implements InitializingBean {
         m_hwEntityAttributeTypeDao.flush();
 
         OnmsNode node = getNode();
-        assertNotNull(node);
-        assertNotNull(node.getId());
+        Assert.assertNotNull(node);
+        Assert.assertNotNull(node.getId());
 
         OnmsHwEntity root = new OnmsHwEntity();
         root.setEntPhysicalIndex(1);
@@ -123,23 +123,26 @@ public class HwEntityDaoTest implements InitializingBean {
 
         root.addChildEntity(m1);
         root.addChildEntity(m2);
-        assertNotNull(m1.getParent());
-        assertNotNull(m2.getParent());
+        Assert.assertNotNull(m1.getParent());
+        Assert.assertNotNull(m2.getParent());
 
-        node.setRootHwEntity(root);
-        assertNotNull(root.getNode());
-        assertEquals(2, root.getChildren().size());
-        assertNotNull(node.getRootHwEntity());
+        root.setNode(node);
+        Assert.assertNotNull(root.getNode());
+        Assert.assertEquals(2, root.getChildren().size());
 
-        m_nodeDao.saveOrUpdate(node);
-        m_nodeDao.flush();
+        m_hwEntityDao.saveOrUpdate(root);
+        m_hwEntityDao.flush();
 
         OnmsHwEntity e = m_hwEntityDao.findRootByNodeId(node.getId());
-        assertNotNull(e);
-        assertEquals(2, e.getChildren().size());
-        assertEquals("chassis", e.getEntPhysicalClass());
+        Assert.assertNotNull(e);
+        Assert.assertNotNull(e.getNode());
+        Assert.assertEquals(e.getNode().getId(), node.getId());
+        Assert.assertEquals(2, e.getChildren().size());
+        Assert.assertEquals("chassis", e.getEntPhysicalClass());
         OnmsHwEntity c = e.getChildren().iterator().next();
-        assertEquals("4", c.getAttributeValue("cpu"));
+        Assert.assertEquals("4", c.getAttributeValue("cpu"));
+
+        Assert.assertNull(m_hwEntityDao.findRootByNodeId(10000));
     }
 
 }

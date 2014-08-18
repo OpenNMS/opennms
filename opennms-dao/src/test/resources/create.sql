@@ -354,6 +354,7 @@ create table node (
 	lastCapsdPoll   timestamp with time zone,
 	foreignSource	varchar(64),
 	foreignId       varchar(64),
+
 	constraint pk_nodeID primary key (nodeID),
 	constraint fk_dpName foreign key (dpName) references distPoller
 );
@@ -2692,7 +2693,6 @@ create table hwEntity (
 );
 create index hwEntity_nodeId_idx on hwEntity(nodeid);
 create index hwEntity_entPhysicalIndex_idx on hwEntity(entPhysicalIndex);
-create unique index hwEntity_node_unique_idx on hwEntity(nodeId,entPhysicalIndex);
 
 create table hwEntityAttributeType (
     id          integer default nextval('opennmsNxtId') not null,
