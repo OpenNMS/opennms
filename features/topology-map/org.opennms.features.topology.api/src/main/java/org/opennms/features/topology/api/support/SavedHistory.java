@@ -95,7 +95,7 @@ public class SavedHistory {
 
         Criteria[] criterias = graphContainer.getCriteria();
         for (Criteria crit : criterias) {
-            if (crit instanceof VertexHopGraphProvider.VertexHopCriteria) {
+            if (crit instanceof VertexHopGraphProvider.VertexHopCriteria && crit.getNamespace().equals("nodes")) {
                 retVal.addAll(((VertexHopGraphProvider.VertexHopCriteria) crit).getVertices());
             }
         }
