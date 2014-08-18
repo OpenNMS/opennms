@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2010-2014 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,14 +26,32 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.dao.api;
+package org.opennms.netmgt.config.hardware;
 
-import org.opennms.netmgt.model.HwEntityAttributeType;
+import java.util.ArrayList;
+import java.util.List;
 
-public interface HwEntityAttributeTypeDao extends OnmsDao<HwEntityAttributeType, Integer> {
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 
-    public HwEntityAttributeType findTypeByName(String name);
+@XmlRootElement(name="hardware-inventory-adapter-configuration")
+@XmlAccessorType(XmlAccessType.NONE)
+public class HwInventoryAdapterConfiguration {
+    
+    List<HwExtension> extensions = new ArrayList<HwExtension>();
 
-    public HwEntityAttributeType findTypeByOid(String oid);
+    @XmlElement(name="hw-extension")
+    public List<HwExtension> getExtensions() {
+        return extensions;
+    }
 
+    public void setExtensions(List<HwExtension> extensions) {
+        this.extensions = extensions;
+    }
+
+    public void addExtension(HwExtension extension) {
+        extensions.add(extension);
+    }
 }

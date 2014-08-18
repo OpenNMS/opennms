@@ -96,8 +96,8 @@ public class HwEntityDaoTest implements InitializingBean {
     @Test
     @Transactional
     public void testFindRootByNodeId() {
-        HwEntityAttributeType cpu = new HwEntityAttributeType("cpu", "integer");
-        m_hwEntityAttributeTypeDao.save(cpu);
+        HwEntityAttributeType ram = new HwEntityAttributeType(".1.3.6.1.4.1.9.9.195.1.1.1.1", "ram", "integer");
+        m_hwEntityAttributeTypeDao.save(ram);
         m_hwEntityAttributeTypeDao.flush();
 
         OnmsNode node = getNode();
@@ -113,13 +113,13 @@ public class HwEntityDaoTest implements InitializingBean {
         m1.setEntPhysicalIndex(2);
         m1.setEntPhysicalClass("module");
         m1.setEntPhysicalName("M1");
-        m1.addAttribute(cpu, "4");
+        m1.addAttribute(ram, "4");
 
         OnmsHwEntity m2 = new OnmsHwEntity();
         m2.setEntPhysicalIndex(3);
         m2.setEntPhysicalClass("module");
         m2.setEntPhysicalName("M2");
-        m2.addAttribute(cpu, "2");
+        m2.addAttribute(ram, "2");
 
         root.addChildEntity(m1);
         root.addChildEntity(m2);
@@ -140,7 +140,7 @@ public class HwEntityDaoTest implements InitializingBean {
         Assert.assertEquals(2, e.getChildren().size());
         Assert.assertEquals("chassis", e.getEntPhysicalClass());
         OnmsHwEntity c = e.getChildren().iterator().next();
-        Assert.assertEquals("4", c.getAttributeValue("cpu"));
+        Assert.assertEquals("4", c.getAttributeValue("ram"));
 
         Assert.assertNull(m_hwEntityDao.findRootByNodeId(10000));
     }

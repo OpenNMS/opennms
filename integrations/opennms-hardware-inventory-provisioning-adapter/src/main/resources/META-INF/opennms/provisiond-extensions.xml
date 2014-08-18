@@ -2,11 +2,17 @@
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.springframework.org/schema/beans
         http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
 
+	<bean id="hwInventoryAdapterConfigurationDao" class="org.opennms.netmgt.config.DefaultHwInventoryAdapterConfigurationDao">
+		<property name="configResource" value="file:${opennms.home}/etc/hardware-inventory-adapter-configuration.xml" />
+	</bean>
+
 	<bean name="hardwareInventoryProvisioningAdapter" class="org.opennms.netmgt.provision.HardwareInventoryProvisioningAdapter">
 		<property name="eventForwarder" ref="eventForwarder" />
 		<property name="nodeDao" ref="nodeDao" />
 		<property name="hwEntityDao" ref="hwEntityDao" />
+		<property name="hwEntityAttributeTypeDao" ref="hwEntityAttributeTypeDao" />
 		<property name="snmpPeerFactory" ref="snmpPeerFactory" />
+		<property name="hwInventoryAdapterConfigurationDao" ref="hwInventoryAdapterConfigurationDao" />
 		<property name="template" ref="transactionTemplate" />
 	</bean>
 

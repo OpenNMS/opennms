@@ -69,13 +69,14 @@ public class HwEntityAttributeTypeDaoTest implements InitializingBean {
     @Test
     @Transactional
     public void testSaveType() {
-        HwEntityAttributeType cpu = new HwEntityAttributeType("cpu", "integer");
-        m_hwEntityAttributeTypeDao.save(cpu);
+        HwEntityAttributeType ram = new HwEntityAttributeType(".1.3.6.1.4.1.9.9.195.1.1.1.1", "ram", "integer");
+        m_hwEntityAttributeTypeDao.save(ram);
         m_hwEntityAttributeTypeDao.flush();
 
-        HwEntityAttributeType type = m_hwEntityAttributeTypeDao.findTypeByName("cpu");
+        HwEntityAttributeType type = m_hwEntityAttributeTypeDao.findTypeByName("ram");
         assertNotNull(type);
-        assertEquals("cpu", type.getName());
+        assertEquals("ram", type.getName());
+        assertEquals(".1.3.6.1.4.1.9.9.195.1.1.1.1", type.getOid());
         assertEquals("integer", type.getAttributeClass());
         assertEquals(new Integer(1), type.getId());
     }

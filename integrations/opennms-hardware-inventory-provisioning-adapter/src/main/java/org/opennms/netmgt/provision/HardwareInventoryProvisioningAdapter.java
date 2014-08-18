@@ -31,7 +31,9 @@ package org.opennms.netmgt.provision;
 import java.net.InetAddress;
 
 import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.config.HwInventoryAdapterConfigurationDao;
 import org.opennms.netmgt.config.api.SnmpAgentConfigFactory;
+import org.opennms.netmgt.dao.api.HwEntityAttributeTypeDao;
 import org.opennms.netmgt.dao.api.HwEntityDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsHwEntity;
@@ -42,7 +44,6 @@ import org.opennms.netmgt.model.events.EventForwarder;
 import org.opennms.netmgt.model.events.annotations.EventHandler;
 import org.opennms.netmgt.model.events.annotations.EventListener;
 import org.opennms.netmgt.provision.plugin.SnmpEntityPlugin;
-import org.opennms.netmgt.provision.plugin.ScriptEntityPlugin;
 import org.opennms.netmgt.provision.plugin.EntityPlugin;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.xml.event.Event;
@@ -58,8 +59,10 @@ public class HardwareInventoryProvisioningAdapter extends SimplerQueuedProvision
 
     private NodeDao m_nodeDao;
     private HwEntityDao m_hwEntityDao;
+    private HwEntityAttributeTypeDao m_hwEntityAttributeTypeDao;
     private EventForwarder m_eventForwarder;
     private SnmpAgentConfigFactory m_snmpConfigDao;
+    private HwInventoryAdapterConfigurationDao m_hwInventoryAdapterConfigurationDao;
 
     public static final String NAME = "HardwareInventoryProvisioningAdapter";
 
@@ -71,7 +74,9 @@ public class HardwareInventoryProvisioningAdapter extends SimplerQueuedProvision
     public void afterPropertiesSet() throws Exception {
         Assert.notNull(m_nodeDao, "Node DAO cannot be null");
         Assert.notNull(m_hwEntityDao, "Hardware Entity DAO cannot be null");
+        Assert.notNull(m_hwEntityAttributeTypeDao, "Hardware Entity Attribute Type DAO cannot be null");
         Assert.notNull(m_snmpConfigDao, "SNMP Configuration DAO cannot be null");
+        Assert.notNull(m_hwInventoryAdapterConfigurationDao, "Hardware Inventory Configuration DAO cannot be null");
         Assert.notNull(m_eventForwarder, "Event Forwarder cannot be null");
     }
 
@@ -105,10 +110,12 @@ public class HardwareInventoryProvisioningAdapter extends SimplerQueuedProvision
         try {
             EntityPlugin plugin = null;
             if (node.getSysObjectId() == null) {
-                plugin = new ScriptEntityPlugin();
+                LOG.warn("Skiping hardware discover because the node {} doesn't support SNMP", nodeId);
+                return;
+                // TODO, use ScriptEntityPlugin
             } else {
                 SnmpAgentConfig agentConfig = m_snmpConfigDao.getAgentConfig(ipAddress);
-                plugin = new SnmpEntityPlugin(agentConfig);
+                plugin = new SnmpEntityPlugin(m_hwEntityAttributeTypeDao, m_hwInventoryAdapterConfigurationDao.getConfiguration(), agentConfig);
             }
             // EntityPlugin should always return a valid root otherwise it will throw an exception.
             OnmsHwEntity newRoot = plugin.getRootEntity(nodeId, ipAddress);
@@ -145,6 +152,14 @@ public class HardwareInventoryProvisioningAdapter extends SimplerQueuedProvision
         this.m_hwEntityDao = hwEntityDao;
     }
 
+    public HwEntityAttributeTypeDao getHwEntityAttributeTypeDao() {
+        return m_hwEntityAttributeTypeDao;
+    }
+
+    public void setHwEntityAttributeTypeDao(HwEntityAttributeTypeDao hwEntityAttributeTypeDao) {
+        this.m_hwEntityAttributeTypeDao = hwEntityAttributeTypeDao;
+    }
+
     public NodeDao getNodeDao() {
         return m_nodeDao;
     }
@@ -169,6 +184,14 @@ public class HardwareInventoryProvisioningAdapter extends SimplerQueuedProvision
         this.m_snmpConfigDao = snmpConfigDao;
     }
 
+    public HwInventoryAdapterConfigurationDao getHwAdapterConfigurationDao() {
+        return m_hwInventoryAdapterConfigurationDao;
+    }
+
+    public void setHwInventoryAdapterConfigurationDao(HwInventoryAdapterConfigurationDao hwInventoryAdapterConfigurationDao) {
+        this.m_hwInventoryAdapterConfigurationDao = hwInventoryAdapterConfigurationDao;
+    }
+
     @Override
     public String getName() {
         return NAME;
@@ -180,9 +203,7 @@ public class HardwareInventoryProvisioningAdapter extends SimplerQueuedProvision
             EventBuilder ebldr = null;
             LOG.debug("Reloading the Hardware Inventory adapter configuration");
             try {
-
-                // FIXME Reload Configuration
-
+                m_hwInventoryAdapterConfigurationDao.reload();
                 ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_SUCCESSFUL_UEI, "Provisiond." + NAME);
                 ebldr.addParam(EventConstants.PARM_DAEMON_NAME, "Provisiond." + NAME);
             } catch (Throwable e) {

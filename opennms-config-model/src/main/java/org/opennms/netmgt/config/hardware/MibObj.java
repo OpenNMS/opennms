@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2010-2014 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,14 +26,54 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.dao.api;
+package org.opennms.netmgt.config.hardware;
 
-import org.opennms.netmgt.model.HwEntityAttributeType;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlRootElement;
 
-public interface HwEntityAttributeTypeDao extends OnmsDao<HwEntityAttributeType, Integer> {
+import org.opennms.netmgt.snmp.SnmpObjId;
 
-    public HwEntityAttributeType findTypeByName(String name);
+@XmlRootElement
+@XmlAccessorType(XmlAccessType.NONE)
+public class MibObj {
+    
+    private String oid;
+    
+    private String type;
+    
+    private String alias;
 
-    public HwEntityAttributeType findTypeByOid(String oid);
+    @XmlAttribute
+    public String getOid() {
+        return oid;
+    }
+
+    public SnmpObjId getSnmpObjId() {
+        return SnmpObjId.get(oid);
+    }
+
+    public void setOid(String oid) {
+        this.oid = oid;
+    }
+
+    @XmlAttribute
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    @XmlAttribute
+    public String getAlias() {
+        return alias;
+    }
+
+    public void setAlias(String alias) {
+        this.alias = alias;
+    }
 
 }

@@ -45,6 +45,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+import org.opennms.netmgt.snmp.SnmpObjId;
 import org.springframework.core.style.ToStringCreator;
 
 @XmlRootElement(name = "hwEntityAttributeType")
@@ -58,6 +59,8 @@ public class HwEntityAttributeType implements Serializable, Comparable<HwEntityA
 
     private Integer m_id;
 
+    private String m_attributeOid;
+    
     private String m_attributeName;
 
     private String m_attributeClass;
@@ -65,8 +68,9 @@ public class HwEntityAttributeType implements Serializable, Comparable<HwEntityA
     public HwEntityAttributeType() {
     }
 
-    public HwEntityAttributeType(String attributeName, String attributeClass) {
+    public HwEntityAttributeType(String attributeOid, String attributeName, String attributeClass) {
         super();
+        this.m_attributeOid = attributeOid;
         this.m_attributeName = attributeName;
         this.m_attributeClass = attributeClass;
     }
@@ -104,6 +108,20 @@ public class HwEntityAttributeType implements Serializable, Comparable<HwEntityA
         this.m_attributeName = attributeName;
     }
 
+    @Column(name="attribOid", unique=true, nullable=false)
+    public String getOid() {
+        return m_attributeOid;
+    }
+
+    public void setOid(String attributeOid) {
+        this.m_attributeOid = attributeOid;
+    }
+
+    @Transient
+    public SnmpObjId getSnmpObjId() {
+        return SnmpObjId.get(m_attributeOid);
+    }
+
     @Column(name="attribClass")
     public String getAttributeClass() {
         return m_attributeClass;
@@ -117,8 +135,9 @@ public class HwEntityAttributeType implements Serializable, Comparable<HwEntityA
     public String toString() {
         return new ToStringCreator(this)
         .append("id", m_id)
+        .append("oid", m_attributeOid)
         .append("name", m_attributeName)
-        .append("type", m_attributeClass)
+        .append("class", m_attributeClass)
         .toString();
     }
 
@@ -131,7 +150,9 @@ public class HwEntityAttributeType implements Serializable, Comparable<HwEntityA
     public boolean equals(Object obj) {
         if (obj instanceof HwEntityAttributeType) {
             HwEntityAttributeType other = (HwEntityAttributeType) obj;
-            if (m_attributeName != null &&  other.m_attributeName != null && m_attributeName.equals(other.m_attributeName))
+            if (m_attributeName != null && other.m_attributeName != null && m_attributeName.equals(other.m_attributeName))
+                return true;
+            if (m_attributeOid != null && other.m_attributeOid != null && m_attributeOid.equals(other.m_attributeOid))
                 return true;
         }
         return false;

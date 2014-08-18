@@ -29,11 +29,15 @@
 package org.opennms.netmgt.provision.snmp;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import org.opennms.netmgt.model.HwEntityAttributeType;
 import org.opennms.netmgt.model.OnmsHwEntity;
 import org.opennms.netmgt.snmp.RowCallback;
 import org.opennms.netmgt.snmp.SnmpInstId;
+import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpRowResult;
 import org.opennms.netmgt.snmp.TableTracker;
 import org.slf4j.Logger;
@@ -43,18 +47,20 @@ public class EntityPhysicalTableTracker extends TableTracker {
     private static final Logger LOG = LoggerFactory.getLogger(EntityPhysicalTableTracker.class);
 
     private List<OnmsHwEntity> entities = new ArrayList<OnmsHwEntity>();
+    private Map<SnmpObjId, HwEntityAttributeType> vendorAttributes = new HashMap<SnmpObjId, HwEntityAttributeType>();
 
-    public EntityPhysicalTableTracker() {
-        super(EntityPhysicalTableRow.ELEMENTS);
+    public EntityPhysicalTableTracker(Map<SnmpObjId, HwEntityAttributeType> vendorAttributes, SnmpObjId[] oids) {
+        super(oids);
+        this.vendorAttributes = vendorAttributes;
     }
 
-    public EntityPhysicalTableTracker(RowCallback rowProcessor) {
-        super(rowProcessor, EntityPhysicalTableRow.ELEMENTS);
+    public EntityPhysicalTableTracker(RowCallback rowProcessor, SnmpObjId[] oids) {
+        super(rowProcessor, oids);
     }
 
     @Override
     public SnmpRowResult createRowResult(int columnCount, SnmpInstId instance) {
-        return new EntityPhysicalTableRow(columnCount, instance);
+        return new EntityPhysicalTableRow(vendorAttributes, columnCount, instance);
     }
 
     @Override

@@ -44,7 +44,6 @@ import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
@@ -90,17 +89,6 @@ public class OnmsHwEntityAttribute implements Serializable, Comparable<OnmsHwEnt
         m_id = id;
     }
 
-    @XmlID
-    @XmlAttribute(name="attributeId")
-    @Transient
-    public String getOnmsHwEntityAttributeId() {
-        return getId() == null ? null : getId().toString();
-    }
-
-    public void setOnmsHwEntityAttributeId(final String id) {
-        setId(Integer.valueOf(id));
-    }
-
     @ManyToOne(optional=false, fetch=FetchType.LAZY)
     @JoinColumn(name="hwEntityId")
     @XmlTransient
@@ -127,6 +115,12 @@ public class OnmsHwEntityAttribute implements Serializable, Comparable<OnmsHwEnt
     @XmlAttribute(name="name")
     public String getTypeName() {
         return m_attributeType == null ? null : m_attributeType.getName();
+    }
+
+    @Transient
+    @XmlAttribute(name="oid")
+    public String getTypeOid() {
+        return m_attributeType == null ? null : m_attributeType.getOid();
     }
 
     @Column(name="attribValue")

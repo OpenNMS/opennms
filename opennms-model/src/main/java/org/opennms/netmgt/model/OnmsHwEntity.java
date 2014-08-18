@@ -366,6 +366,8 @@ public class OnmsHwEntity implements Serializable {
     }
 
     @OneToMany(mappedBy="hwEntity", fetch=FetchType.LAZY, cascade={CascadeType.ALL}, orphanRemoval=true)
+    @XmlElement(name="hwEntityAttribute")
+    @XmlElementWrapper(name="vendorAttributes")
     public Set<OnmsHwEntityAttribute> getHwEntityAttributes() {
         return m_hwAttributes;
     }
@@ -378,11 +380,6 @@ public class OnmsHwEntity implements Serializable {
         OnmsHwEntityAttribute attr = new OnmsHwEntityAttribute(type, value);
         attr.setHwEntity(this);
         m_hwAttributes.add(attr);
-    }
-
-    public void addAttribute(String name, String type, String value) {
-        HwEntityAttributeType attribType = new HwEntityAttributeType(name, type);
-        addAttribute(attribType, value);
     }
 
     public String getAttributeValue(String typeName) {

@@ -36,7 +36,6 @@ import java.util.concurrent.TimeUnit;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
@@ -44,6 +43,8 @@ import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
 import org.opennms.core.xml.JaxbUtils;
+import org.opennms.netmgt.config.hardware.HwExtension;
+import org.opennms.netmgt.config.hardware.HwInventoryAdapterConfiguration;
 import org.opennms.netmgt.dao.api.HwEntityDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.NetworkBuilder;
@@ -52,7 +53,6 @@ import org.opennms.netmgt.provision.SimpleQueuedProvisioningAdapter.AdapterOpera
 import org.opennms.netmgt.provision.SimpleQueuedProvisioningAdapter.AdapterOperationSchedule;
 import org.opennms.netmgt.provision.SimpleQueuedProvisioningAdapter.AdapterOperationType;
 import org.opennms.test.JUnitConfigurationEnvironment;
-
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -133,7 +133,8 @@ public class HardwareInventoryProvisioningAdapterTest implements InitializingBea
 
         m_adapter.afterPropertiesSet();
 
-        for (int i=1; i<=4; i++) {
+        for (int i=1; i<=1; i++) {
+//        for (int i=1; i<=4; i++) {
             Integer nodeId = m_nodeDao.findByForeignId("Cisco", Integer.toString(i)).getId();
             AdapterOperationSchedule ops = new AdapterOperationSchedule(0, 1, 1, TimeUnit.SECONDS);        
             AdapterOperation op = m_adapter.new AdapterOperation(nodeId, AdapterOperationType.ADD, ops);
@@ -149,6 +150,12 @@ public class HardwareInventoryProvisioningAdapterTest implements InitializingBea
     @Test
     @Transactional
     public void testDiscoverSnmpEntities() throws Exception {
+        HwInventoryAdapterConfiguration config = m_adapter.getHwAdapterConfigurationDao().getConfiguration();
+        Assert.assertEquals(1, config.getExtensions().size());
+        HwExtension ext = config.getExtensions().get(0);
+        Assert.assertEquals("CISCO-ENTITY-EXT-MIB", ext.getName());
+        Assert.assertEquals(5, ext.getMibObjects().size());
+
         for (TestOperation op : m_operations) {
             m_adapter.processPendingOperationForNode(op.operation);
 
@@ -162,7 +169,8 @@ public class HardwareInventoryProvisioningAdapterTest implements InitializingBea
             m_nodeDao.flush();
             m_entityDao.flush();
         }
-        Assert.assertEquals(112, m_entityDao.countAll());
+        Assert.assertEquals(42, m_entityDao.countAll());
+//        Assert.assertEquals(112, m_entityDao.countAll());
     }
 
 }

@@ -64,6 +64,9 @@
       <column name="attribname" type="varchar(128)">
         <constraints nullable="false" />
       </column>
+      <column name="attriboid" type="varchar(128)">
+        <constraints nullable="false" />
+      </column>
       <column name="attribclass" type="varchar(32)">
         <constraints nullable="false" />
       </column>
@@ -71,8 +74,11 @@
 
     <ext:addAutoIncrement tableName="hwentityattributetype" columnName="id" sequenceName="opennmsnxtid" />
 
-    <createIndex tableName="hwentityattributetype" indexName="hwentityattributetype_unique_idx" unique="true">
+    <createIndex tableName="hwentityattributetype" indexName="hwentityattributetype_unique_name_dx" unique="true">
       <column name="attribname" />
+    </createIndex>
+    <createIndex tableName="hwentityattributetype" indexName="hwentityattributetype_unique_oid_idx" unique="true">
+      <column name="attriboid" />
     </createIndex>
 
     <rollback>

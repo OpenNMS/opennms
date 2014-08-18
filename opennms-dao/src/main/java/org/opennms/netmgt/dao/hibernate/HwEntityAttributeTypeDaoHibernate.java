@@ -38,9 +38,13 @@ public class HwEntityAttributeTypeDaoHibernate extends AbstractDaoHibernate<HwEn
     }
 
     @Override
-    public HwEntityAttributeType findTypeByName(String typeName) {
-        return (HwEntityAttributeType) findUnique("from HwEntityAttributeType t where t.name = ?", typeName);
+    public HwEntityAttributeType findTypeByName(String name) {
+        return (HwEntityAttributeType) findUnique("from HwEntityAttributeType t where t.name = ?", name);
     }
 
+    @Override
+    public HwEntityAttributeType findTypeByOid(String oid) {
+        return (HwEntityAttributeType) findUnique("from HwEntityAttributeType t where t.oid = ?", oid);
+    }
 
 }

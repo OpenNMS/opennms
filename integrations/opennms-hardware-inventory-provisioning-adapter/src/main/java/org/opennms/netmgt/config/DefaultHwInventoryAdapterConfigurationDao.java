@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2010-2014 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,14 +26,30 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.dao.api;
+package org.opennms.netmgt.config;
 
-import org.opennms.netmgt.model.HwEntityAttributeType;
+import org.opennms.core.xml.AbstractJaxbConfigDao;
+import org.opennms.netmgt.config.hardware.HwInventoryAdapterConfiguration;
 
-public interface HwEntityAttributeTypeDao extends OnmsDao<HwEntityAttributeType, Integer> {
+public class DefaultHwInventoryAdapterConfigurationDao extends AbstractJaxbConfigDao<HwInventoryAdapterConfiguration, HwInventoryAdapterConfiguration>  implements HwInventoryAdapterConfigurationDao {
 
-    public HwEntityAttributeType findTypeByName(String name);
+    public DefaultHwInventoryAdapterConfigurationDao() {
+        super(HwInventoryAdapterConfiguration.class, "hardware-inventory-adapter-configuration");
+    }
 
-    public HwEntityAttributeType findTypeByOid(String oid);
+    @Override
+    public HwInventoryAdapterConfiguration getConfiguration() {
+        return getContainer().getObject();
+    }
+
+    @Override
+    public void reload() {
+        getContainer().reload();
+    }
+
+    @Override
+    protected HwInventoryAdapterConfiguration translateConfig(HwInventoryAdapterConfiguration config) {
+        return config;
+    }
 
 }

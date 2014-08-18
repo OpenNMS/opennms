@@ -28,6 +28,10 @@
 
 package org.opennms.netmgt.provision.snmp;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import org.opennms.netmgt.model.HwEntityAttributeType;
 import org.opennms.netmgt.model.OnmsHwEntity;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
@@ -89,8 +93,11 @@ public class EntityPhysicalTableRow extends SnmpRowResult {
         "stack"
     };
 
-    public EntityPhysicalTableRow(int columnCount, SnmpInstId instance) {
+    private Map<SnmpObjId, HwEntityAttributeType> vendorAttributes = new HashMap<SnmpObjId, HwEntityAttributeType>();
+
+    public EntityPhysicalTableRow(Map<SnmpObjId, HwEntityAttributeType> vendorAttributes, int columnCount, SnmpInstId instance) {
         super(columnCount, instance);
+        this.vendorAttributes = vendorAttributes;
     }
 
     public int getEntPhysicalIndex() {
@@ -149,6 +156,14 @@ public class EntityPhysicalTableRow extends SnmpRowResult {
         v = getValue(entPhysicalUris);
         if (v != null)
             entity.setEntPhysicalUris(v.toDisplayString());
+        if (vendorAttributes != null && vendorAttributes.size() > 0) {
+            for (Map.Entry<SnmpObjId, HwEntityAttributeType> entry : vendorAttributes.entrySet()) {
+                v = getValue(entry.getKey());
+                if (v != null) {
+                    entity.addAttribute(entry.getValue(), v.toDisplayString());
+                }                
+            }
+        }
         return entity;
     }
 }   
