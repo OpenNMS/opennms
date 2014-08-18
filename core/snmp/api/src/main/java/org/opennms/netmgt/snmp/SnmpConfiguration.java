@@ -37,7 +37,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement(name="snmpConfiguration")
 public class SnmpConfiguration {
-    
+	
     public static final int DEFAULT_TIMEOUT = 3000;
     public static final int DEFAULT_PORT = 161;
     public static final int VERSION1 = 1;
@@ -102,9 +102,10 @@ public class SnmpConfiguration {
     private String m_authProtocol;
     private String m_privProtocol;
     private String m_privPassPhrase;
-    private String m_contextName;
     private String m_engineId;
     private String m_contextEngineId;
+    private String m_contextName;
+    private String m_enterpriseId;
     
     public SnmpConfiguration() {
         this(DEFAULTS);
@@ -126,9 +127,10 @@ public class SnmpConfiguration {
             setTimeout(config.getTimeout());
             setVersion(config.getVersion());
             setWriteCommunity(config.getWriteCommunity());
+            setEnterpriseId(config.getEnterpriseId());
             setContextName(config.getContextName());
-            setEngineId(config.getEngineId());
             setContextEngineId(config.getContextEngineId());
+            setEngineId(config.getEngineId());            
         }
     }
 
@@ -287,28 +289,39 @@ public class SnmpConfiguration {
         m_privPassPhrase = privPassPhrase;
     }
     
-    public final String getContextName() {
-        return m_contextName;
-    }
-    
-    public final void setContextName(String contextName) {
-        m_contextName = contextName;
-    }
-    
     public final String getEngineId() {
-        return m_engineId;
+    	return m_engineId;
     }
     
-    public final void setEngineId(String engineId) {
-        m_engineId = engineId;
+    public final void setEngineId(final String engineId) {
+    	m_engineId = engineId;
     }
     
     public final String getContextEngineId() {
-        return m_contextEngineId;
+    	return m_contextEngineId;
     }
     
-    public final void setContextEngineId(String contextEngineId) {
-        m_contextEngineId = contextEngineId;
+    public final void setContextEngineId(final String contextEngineId) {
+    	m_contextEngineId = contextEngineId;
     }
-
+    
+    public final String getContextName() {
+    	return m_contextName;
+    }
+    
+    public void setContextName(final String contextName) {
+    	m_contextName = contextName;
+    }
+    
+    public final String getEnterpriseId() {
+    	return m_enterpriseId;
+    }
+    
+    public void setEnterpriseId(final String enterpriseId) {
+    	m_enterpriseId = enterpriseId;
+    }
+    
+    public boolean isVersion3() {
+    	return getVersion() == VERSION3;
+    }
 }

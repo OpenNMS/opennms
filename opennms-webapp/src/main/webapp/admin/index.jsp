@@ -44,58 +44,58 @@
 
 <script type="text/javascript" >
 
-  function addInterfacePost()
-  {
-      document.addInterface.action="admin/newInterface.jsp?action=new";
-      document.addInterface.submit();
-  }
-  
-  function deletePost()
-  {
-      document.deleteNodes.submit();
-  }
+    function addInterfacePost()
+    {
+        document.addInterface.action = "admin/newInterface.jsp?action=new";
+        document.addInterface.submit();
+    }
 
-  function submitPost()
-  {
-      document.getNodes.submit();
-  }
+    function deletePost()
+    {
+        document.deleteNodes.submit();
+    }
 
-  function manageRanges()
-  {
-    document.manageRanges.submit();
-  }
-  
-  function snmpManagePost()
-  {
-    document.snmpManage.submit();
-  }
-  
-  function manageSnmp()
-  {
-    document.manageSnmp.submit();
-  }
-  
-  function snmpConfigPost()
-  {
-    document.snmpConfig.action="admin/snmpConfig.jsp";
-    document.snmpConfig.submit();
-  }
-  
-  function networkConnection()
-  {
-    document.networkConnection.submit();
-  }
-  
-  function dns()
-  {
-    document.dns.submit();
-  }
-  
-  function communication()
-  {
-      document.communication.submit();
-  }
-  
+    function submitPost()
+    {
+        document.getNodes.submit();
+    }
+
+    function manageRanges()
+    {
+        document.manageRanges.submit();
+    }
+
+    function snmpManagePost()
+    {
+        document.snmpManage.submit();
+    }
+
+    function manageSnmp()
+    {
+        document.manageSnmp.submit();
+    }
+
+    function snmpConfigPost()
+    {
+        document.snmpConfig.action = "admin/snmpConfig?action=default";
+        document.snmpConfig.submit();
+    }
+
+    function networkConnection()
+    {
+        document.networkConnection.submit();
+    }
+
+    function dns()
+    {
+        document.dns.submit();
+    }
+
+    function communication()
+    {
+        document.communication.submit();
+    }
+
 </script>
 
 <form method="post" name="getNodes" action="admin/getNodes">
