@@ -272,7 +272,8 @@ public class DefaultGlobalReportRepository implements GlobalReportRepository {
      * @return report repository as {@link org.opennms.features.reporting.repository.ReportRepository} object
      */
     protected ReportRepository getRepositoryForReport(String reportId) {
-        String repositoryId = reportId.substring(0, reportId.indexOf(REPOSITORY_REPORT_SEP));
+        int idx = reportId.indexOf(REPOSITORY_REPORT_SEP);
+        String repositoryId = idx > -1 ? reportId.substring(0, idx) : "local";
         logger.debug("getRepositoryForReport was called for: '{}' result repository: '{}'", reportId, repositoryId);
         return this.getRepositoryById(repositoryId);
     }

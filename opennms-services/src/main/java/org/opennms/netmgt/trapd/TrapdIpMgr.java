@@ -48,7 +48,7 @@ public interface TrapdIpMgr {
      *             Thrown if the connection cannot be created or a database
      *             error occurs.
      */
-    public abstract void dataSourceSync() throws SQLException;
+    void dataSourceSync() throws SQLException;
 
     /**
      * Returns the nodeid for the IP Address
@@ -57,7 +57,7 @@ public interface TrapdIpMgr {
      *            The IP Address to query.
      * @return The node ID of the IP Address if known.
      */
-    public abstract long getNodeId(String addr);
+    long getNodeId(String addr);
 
     /**
      * Sets the IP Address and Node ID in the Map.
@@ -68,7 +68,7 @@ public interface TrapdIpMgr {
      *            The Node ID to add.
      * @return The nodeid if it existed in the map.
      */
-    public abstract long setNodeId(String addr, long nodeid);
+    long setNodeId(String addr, long nodeid);
 
     /**
      * Removes an address from the node ID map.
@@ -77,11 +77,6 @@ public interface TrapdIpMgr {
      *            The address to remove from the node ID map.
      * @return The nodeid that was in the map.
      */
-    public abstract long removeNodeId(String addr);
-
-    /**
-     * <p>clearKnownIpsMap</p>
-     */
-    public abstract void clearKnownIpsMap();
+    long removeNodeId(String addr);
 
 }
