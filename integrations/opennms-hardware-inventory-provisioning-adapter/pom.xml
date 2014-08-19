@@ -31,6 +31,11 @@
       <artifactId>snmp-dependencies</artifactId>
       <type>pom</type>
     </dependency>
+    <dependency>
+      <groupId>ma.glasnost.orika</groupId>
+      <artifactId>orika-core</artifactId>
+    </dependency>
+
     <!-- test dependencies -->
     <dependency>
       <groupId>org.opennms</groupId>

@@ -123,10 +123,6 @@ public class OnmsHwEntity implements Serializable {
         return getId() == null ? null : getId().toString();
     }
 
-    public void setOnmsHwEntityId(final String id) {
-        setId(Integer.valueOf(id));
-    }
-
     @Column(nullable=false)
     @XmlAttribute
     public Integer getEntPhysicalIndex() {
@@ -377,7 +373,7 @@ public class OnmsHwEntity implements Serializable {
     }
 
     public void addAttribute(HwEntityAttributeType type, String value) {
-        OnmsHwEntityAttribute attr = new OnmsHwEntityAttribute(type, value);
+        final OnmsHwEntityAttribute attr = new OnmsHwEntityAttribute(type, value);
         attr.setHwEntity(this);
         m_hwAttributes.add(attr);
     }
@@ -413,7 +409,6 @@ public class OnmsHwEntity implements Serializable {
     @Override
     public String toString() {
         return new ToStringCreator(this)
-        .append("id", m_id)
         .append("parent", m_parent)
         .append("nodeId", m_node == null ? null : m_node.getId())
         .append("entPhysicalIndex", m_entPhysicalIndex)

@@ -136,8 +136,7 @@ public class OnmsHwEntityAttribute implements Serializable, Comparable<OnmsHwEnt
     @Override
     public String toString() {
         return new ToStringCreator(this)
-        .append("id", m_id)
-        .append("entity", m_hwEntity == null ? null : m_hwEntity.getEntPhysicalIndex())
+        .append("entityIndex", m_hwEntity == null ? null : m_hwEntity.getEntPhysicalIndex())
         .append("type", m_attributeType)
         .append("value", m_attributeValue)
         .toString();
