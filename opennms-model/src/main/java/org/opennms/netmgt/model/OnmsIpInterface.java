@@ -470,7 +470,6 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
     
     @Transient 
     @XmlAttribute
-    @JsonIgnore
     public int getMonitoredServiceCount () {
     	return m_monitoredServices.size();
     }
