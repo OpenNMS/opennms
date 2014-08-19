@@ -64,10 +64,5 @@
             <artifactId>org.opennms.features.ticketing.api</artifactId>
             <scope>provided</scope>
         </dependency>
-        <dependency>
-            <groupId>org.opennms</groupId>
-            <artifactId>opennms-services</artifactId>
-            <scope>provided</scope>
-        </dependency>
     </dependencies>
 </project>

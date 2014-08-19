@@ -38,11 +38,11 @@ import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.dao.api.CategoryDao;
 import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.events.api.EventProxy;
+import org.opennms.netmgt.events.api.EventProxyException;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.events.EventBuilder;
-import org.opennms.netmgt.model.events.EventProxy;
-import org.opennms.netmgt.model.events.EventProxyException;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.web.svclayer.AdminCategoryService;
 import org.springframework.jdbc.datasource.lookup.DataSourceLookupFailureException;
@@ -103,7 +103,7 @@ public class DefaultAdminCategoryService implements
     /**
      * <p>setEventProxy</p>
      *
-     * @param eventProxy a {@link org.opennms.netmgt.model.events.EventProxy} object.
+     * @param eventProxy a {@link org.opennms.netmgt.events.api.EventProxy} object.
      */
     public void setEventProxy(EventProxy eventProxy) {
         m_eventProxy = eventProxy;

@@ -1529,6 +1529,11 @@
         <version>${project.version}</version>
       </dependency>
       <dependency>
+        <groupId>org.opennms.features.events</groupId>
+        <artifactId>org.opennms.features.events.api</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
         <groupId>org.opennms.features.collection</groupId>
         <artifactId>org.opennms.features.collection.api</artifactId>
         <version>${project.version}</version>

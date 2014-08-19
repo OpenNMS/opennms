@@ -31,7 +31,7 @@ package org.openoss.opennms.spring.qosd;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.AssetRecordDao;
 import org.opennms.netmgt.dao.api.NodeDao;
-import org.opennms.netmgt.model.events.EventIpcManager;
+import org.opennms.netmgt.events.api.EventIpcManager;
 import org.opennms.netmgt.xml.event.Event;
 import org.openoss.opennms.spring.dao.OnmsAlarmOssjMapper;
 import org.openoss.opennms.spring.dao.OssDao;
@@ -78,7 +78,7 @@ public interface QoSD {
 	/**
 	 * Used by Spring Application context to pass in EventIpcManager
 	 *
-	 * @param eventIpcManager a {@link org.opennms.netmgt.model.events.EventIpcManager} object.
+	 * @param eventIpcManager a {@link org.opennms.netmgt.events.api.EventIpcManager} object.
 	 */
 	public abstract void setEventIpcManager(EventIpcManager eventIpcManager);
 

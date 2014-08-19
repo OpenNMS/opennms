@@ -45,7 +45,7 @@ import org.opennms.netmgt.config.PollOutagesConfig;
 import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
-import org.opennms.netmgt.model.events.EventIpcManager;
+import org.opennms.netmgt.events.api.EventIpcManager;
 import org.opennms.netmgt.poller.pollables.DbPollEvent;
 import org.opennms.netmgt.poller.pollables.PollEvent;
 import org.opennms.netmgt.poller.pollables.PollableNetwork;
@@ -114,7 +114,7 @@ public class Poller extends AbstractServiceDaemon {
     /**
      * <p>getEventManager</p>
      *
-     * @return a {@link org.opennms.netmgt.model.events.EventIpcManager} object.
+     * @return a {@link org.opennms.netmgt.events.api.EventIpcManager} object.
      */
     public EventIpcManager getEventManager() {
         return m_eventMgr;
@@ -123,7 +123,7 @@ public class Poller extends AbstractServiceDaemon {
     /**
      * <p>setEventManager</p>
      *
-     * @param eventMgr a {@link org.opennms.netmgt.model.events.EventIpcManager} object.
+     * @param eventMgr a {@link org.opennms.netmgt.events.api.EventIpcManager} object.
      */
     void setEventManager(EventIpcManager eventMgr) {
         m_eventMgr = eventMgr;

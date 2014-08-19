@@ -22,6 +22,10 @@
       <artifactId>opennms-model</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.opennms.features.events</groupId>
+      <artifactId>org.opennms.features.events.api</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>rancid-dependencies</artifactId>
       <type>pom</type>
@@ -36,11 +40,6 @@
       <type>pom</type>
     </dependency>
     <!-- test dependencies -->
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-services</artifactId>
-      <scope>test</scope>
-    </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-dao-mock</artifactId>

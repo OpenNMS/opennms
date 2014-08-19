@@ -36,10 +36,5 @@
     </plugins>
   </build>
   <dependencies>
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-services</artifactId>
-      <scope>compile</scope>
-    </dependency>
   </dependencies>
 </project>

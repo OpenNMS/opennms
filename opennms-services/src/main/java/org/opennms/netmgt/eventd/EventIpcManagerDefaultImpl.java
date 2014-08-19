@@ -45,11 +45,11 @@ import java.util.concurrent.TimeUnit;
 
 import org.opennms.core.logging.Logging;
 import org.opennms.core.concurrent.LogPreservingThreadFactory;
-import org.opennms.netmgt.model.events.EventIpcBroadcaster;
-import org.opennms.netmgt.model.events.EventIpcManager;
-import org.opennms.netmgt.model.events.EventIpcManagerProxy;
-import org.opennms.netmgt.model.events.EventListener;
-import org.opennms.netmgt.model.events.EventProxyException;
+import org.opennms.netmgt.events.api.EventIpcBroadcaster;
+import org.opennms.netmgt.events.api.EventIpcManager;
+import org.opennms.netmgt.events.api.EventIpcManagerProxy;
+import org.opennms.netmgt.events.api.EventListener;
+import org.opennms.netmgt.events.api.EventProxyException;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Events;
 import org.opennms.netmgt.xml.event.Log;
@@ -210,7 +210,7 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
      * <p>send</p>
      *
      * @param eventLog a {@link org.opennms.netmgt.xml.event.Log} object.
-     * @throws org.opennms.netmgt.model.events.EventProxyException if any.
+     * @throws org.opennms.netmgt.events.api.EventProxyException if any.
      */
     @Override
     public void send(Log eventLog) throws EventProxyException {
@@ -363,7 +363,7 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
     /**
      * Register an event listener interested in the passed UEI.
      *
-     * @param listener a {@link org.opennms.netmgt.model.events.EventListener} object.
+     * @param listener a {@link org.opennms.netmgt.events.api.EventListener} object.
      * @param uei a {@link java.lang.String} object.
      */
     @Override
@@ -402,7 +402,7 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
      * stopped until the 'removeEventListener(EventListener listener)' method is
      * called.
      *
-     * @param listener a {@link org.opennms.netmgt.model.events.EventListener} object.
+     * @param listener a {@link org.opennms.netmgt.events.api.EventListener} object.
      * @param uei a {@link java.lang.String} object.
      */
     @Override
@@ -587,7 +587,7 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
     /**
      * <p>getEventIpcManagerProxy</p>
      *
-     * @return a {@link org.opennms.netmgt.model.events.EventIpcManagerProxy} object.
+     * @return a {@link org.opennms.netmgt.events.api.EventIpcManagerProxy} object.
      */
     public EventIpcManagerProxy getEventIpcManagerProxy() {
         return m_eventIpcManagerProxy;
@@ -596,7 +596,7 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
     /**
      * <p>setEventIpcManagerProxy</p>
      *
-     * @param eventIpcManagerProxy a {@link org.opennms.netmgt.model.events.EventIpcManagerProxy} object.
+     * @param eventIpcManagerProxy a {@link org.opennms.netmgt.events.api.EventIpcManagerProxy} object.
      */
     public void setEventIpcManagerProxy(EventIpcManagerProxy eventIpcManagerProxy) {
         m_eventIpcManagerProxy = eventIpcManagerProxy;

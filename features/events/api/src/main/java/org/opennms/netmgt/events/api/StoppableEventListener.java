@@ -26,33 +26,22 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.model.events;
+package org.opennms.netmgt.events.api;
 
-import org.opennms.netmgt.xml.event.Event;
-import org.opennms.netmgt.xml.event.Log;
+import java.io.Closeable;
+
 
 /**
- * <p>EventForwarder interface.</p>
+ * StoppableEventListener
  *
- * @author ranger
+ * @author brozow
  * @version $Id: $
  */
-public interface EventForwarder {
+public interface StoppableEventListener extends EventListener, Closeable {
     
     /**
-     * Called by a service to send an event to eventd
-     *
-     * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
+     * Override close() so that we can avoid specifying a checked exception.
      */
-    public void sendNow(Event event);
-
-    /**
-     * Called by a service to send a set of events to eventd
-     *
-     * @param eventLog a {@link org.opennms.netmgt.xml.event.Log} object.
-     */
-    public void sendNow(Log eventLog);
-
-
-
+    @Override
+    void close();
 }

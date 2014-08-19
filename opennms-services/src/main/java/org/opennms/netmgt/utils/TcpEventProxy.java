@@ -42,8 +42,8 @@ import java.nio.charset.Charset;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.xml.JaxbUtils;
-import org.opennms.netmgt.model.events.EventProxy;
-import org.opennms.netmgt.model.events.EventProxyException;
+import org.opennms.netmgt.events.api.EventProxy;
+import org.opennms.netmgt.events.api.EventProxyException;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Events;
 import org.opennms.netmgt.xml.event.Log;
@@ -55,6 +55,8 @@ import org.slf4j.LoggerFactory;
  * typically used by the poller framework plugins that perform service
  * monitoring to send out appropriate events. Can also be used by capsd,
  * discovery etc.
+ * 
+ * @deprecated Use ActiveMQ JMS instead of a custom TCP protocol.
  *
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
@@ -127,7 +129,7 @@ public final class TcpEventProxy implements EventProxy {
      *            the events to be sent out
      * @exception UndeclaredThrowableException
      *                thrown if the send fails for any reason
-     * @throws org.opennms.netmgt.model.events.EventProxyException if any.
+     * @throws org.opennms.netmgt.events.api.EventProxyException if any.
      */
     @Override
     public void send(Log eventLog) throws EventProxyException {

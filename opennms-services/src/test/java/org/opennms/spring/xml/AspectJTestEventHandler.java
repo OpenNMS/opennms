@@ -29,8 +29,8 @@
 package org.opennms.spring.xml;
 
 import org.opennms.netmgt.EventConstants;
-import org.opennms.netmgt.model.events.annotations.EventHandler;
-import org.opennms.netmgt.model.events.annotations.EventListener;
+import org.opennms.netmgt.events.api.annotations.EventHandler;
+import org.opennms.netmgt.events.api.annotations.EventListener;
 import org.opennms.netmgt.xml.event.Event;
 
 @EventListener(name="AspectJTestEventHandler")

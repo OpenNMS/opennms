@@ -43,9 +43,9 @@ import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.capsd.plugins.IcmpPlugin;
 import org.opennms.netmgt.config.OpennmsServerConfigFactory;
 import org.opennms.netmgt.config.PollerConfig;
+import org.opennms.netmgt.events.api.EventIpcManager;
+import org.opennms.netmgt.events.api.EventListener;
 import org.opennms.netmgt.model.events.EventBuilder;
-import org.opennms.netmgt.model.events.EventIpcManager;
-import org.opennms.netmgt.model.events.EventListener;
 import org.opennms.netmgt.poller.pollables.PendingPollEvent;
 import org.opennms.netmgt.poller.pollables.PollContext;
 import org.opennms.netmgt.poller.pollables.PollEvent;
@@ -92,7 +92,7 @@ public class DefaultPollContext implements PollContext, EventListener {
     /**
      * <p>getEventManager</p>
      *
-     * @return a {@link org.opennms.netmgt.model.events.EventIpcManager} object.
+     * @return a {@link org.opennms.netmgt.events.api.EventIpcManager} object.
      */
     public EventIpcManager getEventManager() {
         return m_eventManager;
@@ -101,7 +101,7 @@ public class DefaultPollContext implements PollContext, EventListener {
     /**
      * <p>setEventManager</p>
      *
-     * @param eventManager a {@link org.opennms.netmgt.model.events.EventIpcManager} object.
+     * @param eventManager a {@link org.opennms.netmgt.events.api.EventIpcManager} object.
      */
     public void setEventManager(EventIpcManager eventManager) {
         m_eventManager = eventManager;

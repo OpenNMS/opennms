@@ -65,11 +65,9 @@
       <artifactId>quartz-dependencies</artifactId>
       <type>pom</type>
     </dependency>
-    <!-- runtime only dependencies -->
     <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-services</artifactId>
-      <scope>runtime</scope>
+      <groupId>org.opennms.features.events</groupId>
+      <artifactId>org.opennms.features.events.api</artifactId>
     </dependency>
     <!-- test dependencies -->
     <dependency>

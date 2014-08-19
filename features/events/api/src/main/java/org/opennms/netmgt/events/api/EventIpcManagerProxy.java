@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.model.events;
+package org.opennms.netmgt.events.api;
 
 import java.util.Collection;
 import java.util.List;
@@ -58,7 +58,7 @@ public class EventIpcManagerProxy implements EventIpcManager {
     /**
      * <p>addEventListener</p>
      *
-     * @param listener a {@link org.opennms.netmgt.model.events.EventListener} object.
+     * @param listener a {@link org.opennms.netmgt.events.api.EventListener} object.
      * @param ueiList a {@link java.util.List} object.
      */
     public void addEventListener(EventListener listener, List<String> ueiList) {
@@ -69,7 +69,7 @@ public class EventIpcManagerProxy implements EventIpcManager {
     /**
      * <p>addEventListener</p>
      *
-     * @param listener a {@link org.opennms.netmgt.model.events.EventListener} object.
+     * @param listener a {@link org.opennms.netmgt.events.api.EventListener} object.
      * @param uei a {@link java.lang.String} object.
      */
     @Override
@@ -95,7 +95,7 @@ public class EventIpcManagerProxy implements EventIpcManager {
     /**
      * <p>removeEventListener</p>
      *
-     * @param listener a {@link org.opennms.netmgt.model.events.EventListener} object.
+     * @param listener a {@link org.opennms.netmgt.events.api.EventListener} object.
      * @param ueiList a {@link java.util.List} object.
      */
     public void removeEventListener(EventListener listener, List<String> ueiList) {
@@ -106,7 +106,7 @@ public class EventIpcManagerProxy implements EventIpcManager {
     /**
      * <p>removeEventListener</p>
      *
-     * @param listener a {@link org.opennms.netmgt.model.events.EventListener} object.
+     * @param listener a {@link org.opennms.netmgt.events.api.EventListener} object.
      * @param uei a {@link java.lang.String} object.
      */
     @Override
@@ -133,7 +133,7 @@ public class EventIpcManagerProxy implements EventIpcManager {
      * <p>send</p>
      *
      * @param eventLog a {@link org.opennms.netmgt.xml.event.Log} object.
-     * @throws org.opennms.netmgt.model.events.EventProxyException if any.
+     * @throws org.opennms.netmgt.events.api.EventProxyException if any.
      */
     @Override
     public void send(Log eventLog) throws EventProxyException {
@@ -166,7 +166,7 @@ public class EventIpcManagerProxy implements EventIpcManager {
     /**
      * <p>getDelegate</p>
      *
-     * @return a {@link org.opennms.netmgt.model.events.EventIpcManager} object.
+     * @return a {@link org.opennms.netmgt.events.api.EventIpcManager} object.
      */
     public EventIpcManager getDelegate() {
         return m_delegate;
@@ -175,7 +175,7 @@ public class EventIpcManagerProxy implements EventIpcManager {
     /**
      * <p>setDelegate</p>
      *
-     * @param delegate a {@link org.opennms.netmgt.model.events.EventIpcManager} object.
+     * @param delegate a {@link org.opennms.netmgt.events.api.EventIpcManager} object.
      */
     public void setDelegate(EventIpcManager delegate) {
         m_delegate = delegate;

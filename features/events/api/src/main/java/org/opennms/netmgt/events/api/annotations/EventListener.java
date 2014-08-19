@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2012 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,37 +26,32 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.eventd;
+package org.opennms.netmgt.events.api.annotations;
+
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Inherited;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+import org.opennms.netmgt.events.api.AnnotationBasedEventListenerAdapter;
 
 /**
- * <p>EventIpcException class.</p>
+ * Annotation that is used to denote methods on a class that act as event listener callbacks.
+ * The {@link AnnotationBasedEventListenerAdapter} is used inside a Spring context to activate
+ * classes that are {@link EventListener}-annotated by using its 
+ * {@link AnnotationBasedEventListenerAdapter#setAnnotatedListener(Object)} method.
  *
- * @author <A HREF="mailto:weave@oculan.com">Brian Weaver </A>
- * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
- * @author <A HREF="mailto:weave@oculan.com">Brian Weaver </A>
- * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @version $Id: $
  */
-public final class EventIpcException extends Exception {
+@Inherited
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.TYPE)
+public @interface EventListener {
 
-    private static final long serialVersionUID = 2603347979765739877L;
+    String name();
 
-    /**
-     * Default class constructor. Constructs a new exception with a default
-     * message.
-     */
-    public EventIpcException() {
-        super("EventIpcException");
-    }
+    String logPrefix() default "";
 
-    /**
-     * Constructs a new exception with the passed string as the message
-     * encapsulated in the exception.
-     *
-     * @param s
-     *            The exception's message.
-     */
-    public EventIpcException(String s) {
-        super(s);
-    }
 }

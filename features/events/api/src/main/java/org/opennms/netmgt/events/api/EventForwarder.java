@@ -26,39 +26,33 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.model.events;
+package org.opennms.netmgt.events.api;
 
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Log;
 
 /**
- * This is the interface used to send events into the event subsystem - It is
- * typically used by the poller framework plugins that perform service
- * monitoring to send out appropriate events. Can also be used by capsd,
- * discovery etc.
+ * <p>EventForwarder interface.</p>
  *
- * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
+ * @author ranger
+ * @version $Id: $
  */
-public interface EventProxy {
+public interface EventForwarder {
+    
     /**
-     * This method is called to send the event out
+     * Called by a service to send an event to eventd
      *
-     * @param event
-     *            the event to be sent out
-     * @exception EventProxyException
-     *                thrown if the send fails for any reason
-     * @throws org.opennms.netmgt.model.events.EventProxyException if any.
+     * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
      */
-    public void send(Event event) throws EventProxyException;
+    public void sendNow(Event event);
 
     /**
-     * This method is called to send an event log containing multiple events out
+     * Called by a service to send a set of events to eventd
      *
-     * @param eventLog
-     *            the events to be sent out
-     * @exception EventProxyException
-     *                thrown if the send fails for any reason
-     * @throws org.opennms.netmgt.model.events.EventProxyException if any.
+     * @param eventLog a {@link org.opennms.netmgt.xml.event.Log} object.
      */
-    public void send(Log eventLog) throws EventProxyException;
+    public void sendNow(Log eventLog);
+
+
+
 }

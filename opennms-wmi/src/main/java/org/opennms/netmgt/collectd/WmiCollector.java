@@ -54,7 +54,7 @@ import org.opennms.netmgt.config.WmiPeerFactory;
 import org.opennms.netmgt.config.wmi.Attrib;
 import org.opennms.netmgt.config.wmi.WmiCollection;
 import org.opennms.netmgt.config.wmi.Wpm;
-import org.opennms.netmgt.model.events.EventProxy;
+import org.opennms.netmgt.events.api.EventProxy;
 import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.protocols.wmi.WmiClient;
 import org.opennms.protocols.wmi.WmiException;

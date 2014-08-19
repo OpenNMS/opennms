@@ -34,8 +34,8 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
-import org.opennms.netmgt.model.events.EventIpcManager;
-import org.opennms.netmgt.model.events.EventListener;
+import org.opennms.netmgt.events.api.EventIpcManager;
+import org.opennms.netmgt.events.api.EventListener;
 import org.opennms.netmgt.xml.event.Event;
 import org.springframework.util.Assert;
 
@@ -111,7 +111,7 @@ public class Correlator extends AbstractServiceDaemon implements CorrelationEngi
 	/**
 	 * <p>setEventIpcManager</p>
 	 *
-	 * @param eventIpcManager a {@link org.opennms.netmgt.model.events.EventIpcManager} object.
+	 * @param eventIpcManager a {@link org.opennms.netmgt.events.api.EventIpcManager} object.
 	 */
 	public void setEventIpcManager(final EventIpcManager eventIpcManager) {
 		m_eventIpcManager = eventIpcManager;

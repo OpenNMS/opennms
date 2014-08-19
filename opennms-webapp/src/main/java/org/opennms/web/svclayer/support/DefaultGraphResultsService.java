@@ -36,12 +36,12 @@ import org.opennms.netmgt.dao.api.GraphDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.ResourceDao;
 import org.opennms.netmgt.dao.api.RrdDao;
+import org.opennms.netmgt.events.api.EventProxy;
+import org.opennms.netmgt.events.api.EventProxyException;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.PrefabGraph;
 import org.opennms.netmgt.model.RrdGraphAttribute;
 import org.opennms.netmgt.model.events.EventBuilder;
-import org.opennms.netmgt.model.events.EventProxy;
-import org.opennms.netmgt.model.events.EventProxyException;
 import org.opennms.web.graph.Graph;
 import org.opennms.web.graph.GraphResults;
 import org.opennms.web.graph.RelativeTimePeriod;
@@ -338,7 +338,7 @@ public class DefaultGraphResultsService implements GraphResultsService, Initiali
     /**
      * <p>setEventProxy</p>
      *
-     * @param eventProxy a {@link org.opennms.netmgt.model.events.EventProxy}
+     * @param eventProxy a {@link org.opennms.netmgt.events.api.EventProxy}
      * object.
      */
     public void setEventProxy(EventProxy eventProxy) {

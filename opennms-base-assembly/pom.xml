@@ -155,11 +155,6 @@
   <dependencies>
     <dependency>
       <groupId>org.opennms</groupId>
-      <artifactId>opennms-services</artifactId>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
       <artifactId>opennms-ackd</artifactId>
     </dependency>
     <dependency>

@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.model.events;
 
+import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.model.AbstractEntityVisitor;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
@@ -55,7 +56,7 @@ public class UpdateEventVisitor extends AbstractEntityVisitor {
     /**
      * <p>Constructor for UpdateEventVisitor.</p>
      *
-     * @param eventForwarder a {@link org.opennms.netmgt.model.events.EventForwarder} object.
+     * @param eventForwarder a {@link org.opennms.netmgt.events.api.EventForwarder} object.
      */
     public UpdateEventVisitor(EventForwarder eventForwarder, boolean rescanExisting) {
         m_eventForwarder = eventForwarder;

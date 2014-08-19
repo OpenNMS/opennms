@@ -84,7 +84,7 @@ import org.opennms.netmgt.config.xmpConfig.XmpConfig;
 import org.opennms.netmgt.config.xmpDataCollection.Group;
 import org.opennms.netmgt.config.xmpDataCollection.MibObj;
 import org.opennms.netmgt.config.xmpDataCollection.XmpCollection;
-import org.opennms.netmgt.model.events.EventProxy;
+import org.opennms.netmgt.events.api.EventProxy;
 import org.opennms.netmgt.protocols.xmp.config.XmpAgentConfig;
 import org.opennms.netmgt.protocols.xmp.config.XmpConfigFactory;
 import org.opennms.netmgt.protocols.xmp.config.XmpPeerFactory;

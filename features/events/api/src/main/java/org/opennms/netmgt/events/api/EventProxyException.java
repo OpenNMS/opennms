@@ -26,21 +26,50 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.model.events.annotations;
-
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+package org.opennms.netmgt.events.api;
 
 /**
- * EventPostProcessor
- *
- * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
- * @version $Id: $
+ * <p>EventProxyException class.</p>
  */
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.METHOD)
-public @interface EventPostProcessor {
+public class EventProxyException extends Exception {
+    
+    /**
+     * 
+     */
+    private static final long serialVersionUID = -5163171630068781718L;
 
+    /**
+     * <p>Constructor for EventProxyException.</p>
+     */
+    public EventProxyException() {
+        super();
+    }
+    
+    /**
+     * <p>Constructor for EventProxyException.</p>
+     *
+     * @param message a {@link java.lang.String} object.
+     */
+    public EventProxyException(String message) {
+        super(message);
+    }
+    
+    /**
+     * <p>Constructor for EventProxyException.</p>
+     *
+     * @param message a {@link java.lang.String} object.
+     * @param cause a {@link java.lang.Throwable} object.
+     */
+    public EventProxyException(String message, Throwable cause) {
+        super(message, cause);
+    }
+    
+    /**
+     * <p>Constructor for EventProxyException.</p>
+     *
+     * @param cause a {@link java.lang.Throwable} object.
+     */
+    public EventProxyException(Throwable cause) {
+        super(cause);
+    }
 }

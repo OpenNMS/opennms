@@ -30,8 +30,8 @@ package org.opennms.netmgt.passive.jmx;
 
 import org.opennms.core.db.DataSourceFactory;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
-import org.opennms.netmgt.model.events.EventIpcManager;
-import org.opennms.netmgt.model.events.EventIpcManagerFactory;
+import org.opennms.netmgt.events.api.EventIpcManager;
+import org.opennms.netmgt.events.api.EventIpcManagerFactory;
 import org.opennms.netmgt.passive.PassiveStatusKeeper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

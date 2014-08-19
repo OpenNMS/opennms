@@ -38,14 +38,14 @@ import java.util.Map;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.dao.api.GraphDao;
 import org.opennms.netmgt.dao.api.ResourceDao;
+import org.opennms.netmgt.events.api.EventProxy;
+import org.opennms.netmgt.events.api.EventProxyException;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.PrefabGraph;
 import org.opennms.netmgt.model.ResourceTypeUtils;
 import org.opennms.netmgt.model.RrdGraphAttribute;
 import org.opennms.netmgt.model.events.EventBuilder;
-import org.opennms.netmgt.model.events.EventProxy;
-import org.opennms.netmgt.model.events.EventProxyException;
 import org.opennms.web.api.Util;
 import org.opennms.web.svclayer.ResourceService;
 import org.slf4j.Logger;
@@ -106,7 +106,7 @@ public class DefaultResourceService implements ResourceService, InitializingBean
     /**
      * <p>setEventProxy</p>
      *
-     * @param eventProxy a {@link org.opennms.netmgt.model.events.EventProxy} object.
+     * @param eventProxy a {@link org.opennms.netmgt.events.api.EventProxy} object.
      */
     public void setEventProxy(EventProxy eventProxy) {
         m_eventProxy = eventProxy;

@@ -10,6 +10,9 @@
   <packaging>pom</packaging>
   <name>OpenNMS Features</name>
   <modules>
+    <!-- Events -->
+    <module>events</module>
+
     <module>collection</module>
     <module>instrumentationLogReader</module>
     <module>jdbc-collector</module>

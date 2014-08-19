@@ -34,20 +34,19 @@
  */
 package org.opennms.netmgt.provision.adapters.link;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.events.api.EventForwarder;
+import org.opennms.netmgt.events.api.annotations.EventHandler;
+import org.opennms.netmgt.events.api.annotations.EventListener;
 import org.opennms.netmgt.model.DataLinkInterface;
 import org.opennms.netmgt.model.OnmsLinkState;
 import org.opennms.netmgt.model.OnmsLinkState.LinkState;
 import org.opennms.netmgt.model.OnmsLinkState.LinkStateTransition;
-import org.opennms.netmgt.model.events.EventForwarder;
-import org.opennms.netmgt.model.events.annotations.EventHandler;
-import org.opennms.netmgt.model.events.annotations.EventListener;
 import org.opennms.netmgt.provision.adapters.link.endpoint.EndPointTypeValidator;
 import org.opennms.netmgt.provision.adapters.link.endpoint.dao.EndPointConfigurationDao;
 import org.opennms.netmgt.xml.event.Event;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 
 @EventListener(name="LinkEventCorrelator")
@@ -505,7 +504,7 @@ public class LinkEventCorrelator {
     /**
      * <p>setEventForwarder</p>
      *
-     * @param forwarder a {@link org.opennms.netmgt.model.events.EventForwarder} object.
+     * @param forwarder a {@link org.opennms.netmgt.events.api.EventForwarder} object.
      */
     public void setEventForwarder(EventForwarder forwarder) {
         m_forwarder = forwarder;

@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2012 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,50 +26,19 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.model.events;
+package org.opennms.netmgt.events.api;
+
+import org.opennms.netmgt.xml.event.Event;
 
 /**
- * <p>EventProxyException class.</p>
+ * Back-end interface for the EventIpcManager.  Used by eventd to send events
+ * to interested listeners.
  */
-public class EventProxyException extends Exception {
-    
+public interface EventIpcBroadcaster {
     /**
-     * 
-     */
-    private static final long serialVersionUID = -5163171630068781718L;
-
-    /**
-     * <p>Constructor for EventProxyException.</p>
-     */
-    public EventProxyException() {
-        super();
-    }
-    
-    /**
-     * <p>Constructor for EventProxyException.</p>
+     * Called by eventd to send an event to all interested listeners.
      *
-     * @param message a {@link java.lang.String} object.
+     * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
      */
-    public EventProxyException(String message) {
-        super(message);
-    }
-    
-    /**
-     * <p>Constructor for EventProxyException.</p>
-     *
-     * @param message a {@link java.lang.String} object.
-     * @param cause a {@link java.lang.Throwable} object.
-     */
-    public EventProxyException(String message, Throwable cause) {
-        super(message, cause);
-    }
-    
-    /**
-     * <p>Constructor for EventProxyException.</p>
-     *
-     * @param cause a {@link java.lang.Throwable} object.
-     */
-    public EventProxyException(Throwable cause) {
-        super(cause);
-    }
+    void broadcastNow(Event event);
 }

@@ -42,7 +42,7 @@ import org.opennms.netmgt.config.UserManager;
 import org.opennms.netmgt.config.notifd.Queue;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.dao.api.NodeDao;
-import org.opennms.netmgt.model.events.EventIpcManager;
+import org.opennms.netmgt.events.api.EventIpcManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -341,7 +341,7 @@ public final class Notifd extends AbstractServiceDaemon {
     /**
      * <p>getEventManager</p>
      *
-     * @return a {@link org.opennms.netmgt.model.events.EventIpcManager} object.
+     * @return a {@link org.opennms.netmgt.events.api.EventIpcManager} object.
      */
     public EventIpcManager getEventManager() {
         return m_eventManager;

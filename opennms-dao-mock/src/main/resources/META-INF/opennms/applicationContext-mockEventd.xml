@@ -11,7 +11,7 @@
 
     <bean id="transactionManager" class="org.opennms.netmgt.dao.mock.MockTransactionManager" />
 
-    <bean id="eventIpcManager" name="eventSubscriptionService, eventForwarder" class="org.opennms.netmgt.model.events.EventIpcManagerProxy">
+    <bean id="eventIpcManager" name="eventSubscriptionService, eventForwarder" class="org.opennms.netmgt.events.api.EventIpcManagerProxy">
         <qualifier value="standard" />
     </bean>
     

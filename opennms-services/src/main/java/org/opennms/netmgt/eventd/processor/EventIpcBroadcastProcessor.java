@@ -30,8 +30,8 @@ package org.opennms.netmgt.eventd.processor;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.opennms.netmgt.model.events.EventIpcBroadcaster;
-import org.opennms.netmgt.model.events.EventProcessor;
+import org.opennms.netmgt.events.api.EventIpcBroadcaster;
+import org.opennms.netmgt.events.api.EventProcessor;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Header;
 import org.springframework.beans.factory.InitializingBean;
@@ -71,7 +71,7 @@ public class EventIpcBroadcastProcessor implements EventProcessor, InitializingB
     /**
      * <p>getEventIpcBroadcaster</p>
      *
-     * @return a {@link org.opennms.netmgt.model.events.EventIpcBroadcaster} object.
+     * @return a {@link org.opennms.netmgt.events.api.EventIpcBroadcaster} object.
      */
     public EventIpcBroadcaster getEventIpcBroadcaster() {
         return m_eventIpcBroadcaster;
@@ -80,7 +80,7 @@ public class EventIpcBroadcastProcessor implements EventProcessor, InitializingB
     /**
      * <p>setEventIpcBroadcaster</p>
      *
-     * @param eventIpcManager a {@link org.opennms.netmgt.model.events.EventIpcBroadcaster} object.
+     * @param eventIpcManager a {@link org.opennms.netmgt.events.api.EventIpcBroadcaster} object.
      */
     public void setEventIpcBroadcaster(EventIpcBroadcaster eventIpcManager) {
         m_eventIpcBroadcaster = eventIpcManager;

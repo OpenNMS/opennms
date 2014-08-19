@@ -35,10 +35,10 @@
 package org.opennms.netmgt.provision.adapters.link;
 
 import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.model.DataLinkInterface;
 import org.opennms.netmgt.model.OnmsLinkState.LinkStateTransition;
 import org.opennms.netmgt.model.events.EventBuilder;
-import org.opennms.netmgt.model.events.EventForwarder;
 import org.opennms.netmgt.xml.event.Event;
 public class LinkEventSendingStateTransition implements LinkStateTransition {
 
@@ -50,7 +50,7 @@ public class LinkEventSendingStateTransition implements LinkStateTransition {
      * <p>Constructor for LinkEventSendingStateTransition.</p>
      *
      * @param dataLinkInterface a {@link org.opennms.netmgt.model.DataLinkInterface} object.
-     * @param eventForwarder a {@link org.opennms.netmgt.model.events.EventForwarder} object.
+     * @param eventForwarder a {@link org.opennms.netmgt.events.api.EventForwarder} object.
      * @param nodeLinkService a {@link org.opennms.netmgt.provision.adapters.link.NodeLinkService} object.
      */
     public LinkEventSendingStateTransition(DataLinkInterface dataLinkInterface, EventForwarder eventForwarder, NodeLinkService nodeLinkService) {

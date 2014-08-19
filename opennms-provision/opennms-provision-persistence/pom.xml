@@ -118,12 +118,6 @@
       <artifactId>spring-web-dependencies</artifactId>
       <type>pom</type>
     </dependency>
-    <!-- runtime only dependencies -->
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-services</artifactId>
-      <scope>runtime</scope>
-    </dependency>
     <!-- test dependencies -->
     <dependency>
       <groupId>org.opennms</groupId>

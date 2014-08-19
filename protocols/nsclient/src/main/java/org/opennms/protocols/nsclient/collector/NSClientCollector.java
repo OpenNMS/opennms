@@ -56,7 +56,7 @@ import org.opennms.netmgt.collection.support.SingleResourceCollectionSet;
 import org.opennms.netmgt.config.nsclient.Attrib;
 import org.opennms.netmgt.config.nsclient.NsclientCollection;
 import org.opennms.netmgt.config.nsclient.Wpm;
-import org.opennms.netmgt.model.events.EventProxy;
+import org.opennms.netmgt.events.api.EventProxy;
 import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.protocols.nsclient.NSClientAgentConfig;
 import org.opennms.protocols.nsclient.NsclientCheckParams;

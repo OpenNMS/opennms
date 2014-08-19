@@ -36,8 +36,8 @@ import java.util.concurrent.Callable;
 import org.opennms.core.concurrent.WaterfallCallable;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.api.EventConfDao;
+import org.opennms.netmgt.events.api.EventIpcManager;
 import org.opennms.netmgt.model.events.EventBuilder;
-import org.opennms.netmgt.model.events.EventIpcManager;
 import org.opennms.netmgt.snmp.TrapNotification;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.eventconf.Logmsg;
@@ -270,7 +270,7 @@ class TrapQueueProcessor implements WaterfallCallable, InitializingBean {
     /**
      * <p>getEventMgr</p>
      *
-     * @return a {@link org.opennms.netmgt.model.events.EventIpcManager} object.
+     * @return a {@link org.opennms.netmgt.events.api.EventIpcManager} object.
      */
     public EventIpcManager getEventManager() {
         return m_eventMgr;
@@ -279,7 +279,7 @@ class TrapQueueProcessor implements WaterfallCallable, InitializingBean {
     /**
      * <p>setEventMgr</p>
      *
-     * @param eventMgr a {@link org.opennms.netmgt.model.events.EventIpcManager} object.
+     * @param eventMgr a {@link org.opennms.netmgt.events.api.EventIpcManager} object.
      */
     public void setEventManager(EventIpcManager eventMgr) {
         m_eventMgr = eventMgr;

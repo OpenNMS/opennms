@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.model.events;
+package org.opennms.netmgt.events.api;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -41,11 +41,11 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.opennms.core.logging.Logging;
-import org.opennms.netmgt.model.events.annotations.EventExceptionHandler;
-import org.opennms.netmgt.model.events.annotations.EventHandler;
-import org.opennms.netmgt.model.events.annotations.EventListener;
-import org.opennms.netmgt.model.events.annotations.EventPostProcessor;
-import org.opennms.netmgt.model.events.annotations.EventPreProcessor;
+import org.opennms.netmgt.events.api.annotations.EventExceptionHandler;
+import org.opennms.netmgt.events.api.annotations.EventHandler;
+import org.opennms.netmgt.events.api.annotations.EventListener;
+import org.opennms.netmgt.events.api.annotations.EventPostProcessor;
+import org.opennms.netmgt.events.api.annotations.EventPreProcessor;
 import org.opennms.netmgt.xml.event.Event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -81,7 +81,7 @@ public class AnnotationBasedEventListenerAdapter implements StoppableEventListen
      *
      * @param name a {@link java.lang.String} object.
      * @param annotatedListener a {@link java.lang.Object} object.
-     * @param subscriptionService a {@link org.opennms.netmgt.model.events.EventSubscriptionService} object.
+     * @param subscriptionService a {@link org.opennms.netmgt.events.api.EventSubscriptionService} object.
      */
     public  AnnotationBasedEventListenerAdapter(String name, Object annotatedListener, EventSubscriptionService subscriptionService) {
         m_name = name;
@@ -94,7 +94,7 @@ public class AnnotationBasedEventListenerAdapter implements StoppableEventListen
      * <p>Constructor for AnnotationBasedEventListenerAdapter.</p>
      *
      * @param annotatedListener a {@link java.lang.Object} object.
-     * @param subscriptionService a {@link org.opennms.netmgt.model.events.EventSubscriptionService} object.
+     * @param subscriptionService a {@link org.opennms.netmgt.events.api.EventSubscriptionService} object.
      */
     public AnnotationBasedEventListenerAdapter(Object annotatedListener, EventSubscriptionService subscriptionService) {
         this(null, annotatedListener, subscriptionService);
@@ -433,7 +433,7 @@ public class AnnotationBasedEventListenerAdapter implements StoppableEventListen
     /**
      * <p>setEventSubscriptionService</p>
      *
-     * @param subscriptionService a {@link org.opennms.netmgt.model.events.EventSubscriptionService} object.
+     * @param subscriptionService a {@link org.opennms.netmgt.events.api.EventSubscriptionService} object.
      */
     public void setEventSubscriptionService(EventSubscriptionService subscriptionService) {
         m_subscriptionService = subscriptionService;

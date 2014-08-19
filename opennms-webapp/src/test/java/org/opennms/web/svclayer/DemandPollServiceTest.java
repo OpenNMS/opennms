@@ -46,13 +46,13 @@ import org.easymock.IAnswer;
 import org.opennms.core.criteria.Criteria;
 import org.opennms.netmgt.dao.api.DemandPollDao;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
+import org.opennms.netmgt.events.api.EventProxyException;
 import org.opennms.netmgt.model.DemandPoll;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
-import org.opennms.netmgt.model.events.EventProxyException;
 import org.opennms.web.services.PollerService;
 import org.opennms.web.svclayer.support.DefaultDemandPollService;
 

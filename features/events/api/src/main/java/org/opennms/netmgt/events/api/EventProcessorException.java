@@ -1,4 +1,4 @@
-package org.opennms.netmgt.model.events;
+package org.opennms.netmgt.events.api;
 
 public class EventProcessorException extends Exception {
     private static final long serialVersionUID = 3720890967518487477L;

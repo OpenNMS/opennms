@@ -93,12 +93,14 @@
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-model</artifactId>
-      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-services</artifactId>
-      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.collection</groupId>
+      <artifactId>org.opennms.features.collection.api</artifactId>
     </dependency>
     <dependency>
       <groupId>commons-jxpath</groupId>

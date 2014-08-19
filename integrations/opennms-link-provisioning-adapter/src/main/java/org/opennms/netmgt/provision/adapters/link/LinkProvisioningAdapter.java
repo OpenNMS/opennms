@@ -28,17 +28,15 @@
 
 package org.opennms.netmgt.provision.adapters.link;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import org.opennms.core.spring.BeanUtils;
-
 import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.events.api.annotations.EventHandler;
+import org.opennms.netmgt.events.api.annotations.EventListener;
 import org.opennms.netmgt.model.events.EventUtils;
-import org.opennms.netmgt.model.events.annotations.EventHandler;
-import org.opennms.netmgt.model.events.annotations.EventListener;
 import org.opennms.netmgt.provision.SimplerQueuedProvisioningAdapter;
 import org.opennms.netmgt.xml.event.Event;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;

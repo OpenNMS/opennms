@@ -35,11 +35,11 @@ import org.opennms.api.integration.ticketing.PluginException;
 import org.opennms.api.integration.ticketing.Ticket;
 import org.opennms.api.integration.ticketing.Ticket.State;
 import org.opennms.netmgt.dao.api.AlarmDao;
+import org.opennms.netmgt.events.api.EventIpcManager;
+import org.opennms.netmgt.events.api.EventIpcManagerFactory;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.TroubleTicketState;
 import org.opennms.netmgt.model.events.EventBuilder;
-import org.opennms.netmgt.model.events.EventIpcManager;
-import org.opennms.netmgt.model.events.EventIpcManagerFactory;
 import org.opennms.netmgt.xml.event.Event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -271,7 +271,7 @@ public class DefaultTicketerServiceLayer implements TicketerServiceLayer, Initia
     /**
      * <p>getEventIpcManager</p>
      *
-     * @return a {@link org.opennms.netmgt.model.events.EventIpcManager} object.
+     * @return a {@link org.opennms.netmgt.events.api.EventIpcManager} object.
      */
     public EventIpcManager getEventIpcManager() {
         return m_eventIpcManager;
@@ -280,7 +280,7 @@ public class DefaultTicketerServiceLayer implements TicketerServiceLayer, Initia
     /**
      * <p>setEventIpcManager</p>
      *
-     * @param ipcManager a {@link org.opennms.netmgt.model.events.EventIpcManager} object.
+     * @param ipcManager a {@link org.opennms.netmgt.events.api.EventIpcManager} object.
      */
     public void setEventIpcManager(EventIpcManager ipcManager) {
         m_eventIpcManager = ipcManager;

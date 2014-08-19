@@ -31,9 +31,9 @@ package org.opennms.netmgt.eventd;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.api.EventConfDao;
 import org.opennms.netmgt.capsd.EventUtils;
+import org.opennms.netmgt.events.api.EventIpcManager;
+import org.opennms.netmgt.events.api.EventListener;
 import org.opennms.netmgt.model.events.EventBuilder;
-import org.opennms.netmgt.model.events.EventIpcManager;
-import org.opennms.netmgt.model.events.EventListener;
 import org.opennms.netmgt.xml.event.Event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,7 +56,7 @@ public class BroadcastEventProcessor implements EventListener {
     /**
      * <p>Constructor for BroadcastEventProcessor.</p>
      *
-     * @param eventIpcManager a {@link org.opennms.netmgt.model.events.EventIpcManager} object.
+     * @param eventIpcManager a {@link org.opennms.netmgt.events.api.EventIpcManager} object.
      * @param eventConfDao a {@link org.opennms.netmgt.config.api.EventConfDao} object.
      */
     public BroadcastEventProcessor(EventIpcManager eventIpcManager, EventConfDao eventConfDao) {

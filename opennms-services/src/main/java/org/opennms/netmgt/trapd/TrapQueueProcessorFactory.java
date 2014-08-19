@@ -32,7 +32,7 @@ import javax.annotation.Resource;
 
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.netmgt.config.api.EventConfDao;
-import org.opennms.netmgt.model.events.EventIpcManager;
+import org.opennms.netmgt.events.api.EventIpcManager;
 import org.opennms.netmgt.snmp.TrapNotification;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;

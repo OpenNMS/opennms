@@ -52,29 +52,6 @@ public class EventConstants {
      */
     public static final String POSTGRES_DATE_FORMAT = "\'Dy Mon DD HH24:MI:SS Tz YYYY\'";
 
-    /**
-     * The string property set on JMS messages to indicate the encoding to be
-     * used.
-     */
-    public static final String JMS_MSG_PROP_CHAR_ENCODING = "char_encoding";
-
-    /**
-     * The value for the string property set on JMS messages to indicate the
-     * encoding to be used.
-     */
-    public static final String JMS_MSG_PROP_CHAR_ENCODING_VALUE = "US-ASCII";
-
-    /**
-     * The string property set on JMS messages to indicate the sender service.
-     */
-    public static final String JMS_MSG_PROP_SENDER = "sender";
-
-    /**
-     * The string property set on JMS messages broadcast from eventd - to use
-     * UEI(s) as a filter.
-     */
-    public static final String JMS_MSG_PROP_UEI_SELECTOR = "ueiSelector";
-
     //
     // The eventUEIs used by OpenNMS
     //

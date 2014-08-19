@@ -30,10 +30,10 @@ package org.opennms.web.services;
 
 
 import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.events.api.EventProxy;
+import org.opennms.netmgt.events.api.EventProxyException;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.events.EventBuilder;
-import org.opennms.netmgt.model.events.EventProxy;
-import org.opennms.netmgt.model.events.EventProxyException;
 import org.opennms.netmgt.xml.event.Event;
 
 /**
@@ -50,7 +50,7 @@ public class DefaultPollerService implements PollerService {
 	/**
 	 * <p>setEventProxy</p>
 	 *
-	 * @param eventProxy a {@link org.opennms.netmgt.model.events.EventProxy} object.
+	 * @param eventProxy a {@link org.opennms.netmgt.events.api.EventProxy} object.
 	 */
 	public void setEventProxy(EventProxy eventProxy) {
 		m_eventProxy = eventProxy;

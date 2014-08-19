@@ -6,7 +6,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.opennms.core.concurrent.PausibleScheduledThreadPoolExecutor;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
-import org.opennms.netmgt.model.events.EventListener;
+import org.opennms.netmgt.events.api.EventListener;
 import org.opennms.netmgt.xml.event.Event;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;

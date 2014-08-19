@@ -35,7 +35,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.opennms.netmgt.config.api.EventConfDao;
-import org.opennms.netmgt.model.events.EventProcessor;
+import org.opennms.netmgt.events.api.EventProcessor;
 import org.opennms.netmgt.xml.event.AlarmData;
 import org.opennms.netmgt.xml.event.Autoaction;
 import org.opennms.netmgt.xml.event.Event;

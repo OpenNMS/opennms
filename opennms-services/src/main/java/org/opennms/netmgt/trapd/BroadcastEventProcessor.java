@@ -32,8 +32,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.opennms.netmgt.EventConstants;
-import org.opennms.netmgt.model.events.EventIpcManager;
-import org.opennms.netmgt.model.events.EventListener;
+import org.opennms.netmgt.events.api.EventIpcManager;
+import org.opennms.netmgt.events.api.EventListener;
 import org.opennms.netmgt.xml.event.Event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,7 +57,7 @@ public final class BroadcastEventProcessor implements EventListener, Initializin
     /**
      * <p>Constructor for BroadcastEventProcessor.</p>
      *
-     * @param eventMgr a {@link org.opennms.netmgt.model.events.EventIpcManager} object.
+     * @param eventMgr a {@link org.opennms.netmgt.events.api.EventIpcManager} object.
      * @param trapdIpMgr a {@link org.opennms.netmgt.trapd.TrapdIpMgr} object.
      */
     public BroadcastEventProcessor(EventIpcManager eventMgr, TrapdIpMgr trapdIpMgr) {
@@ -68,7 +68,7 @@ public final class BroadcastEventProcessor implements EventListener, Initializin
     /**
      * <p>getEventManager</p>
      *
-     * @return a {@link org.opennms.netmgt.model.events.EventIpcManager} object.
+     * @return a {@link org.opennms.netmgt.events.api.EventIpcManager} object.
      */
     public EventIpcManager getEventManager() {
         return m_eventMgr;

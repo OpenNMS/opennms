@@ -39,7 +39,7 @@ import javax.sql.DataSource;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.dao.api.EventdServiceManager;
 import org.opennms.netmgt.eventd.EventdConstants;
-import org.opennms.netmgt.model.events.EventProcessor;
+import org.opennms.netmgt.events.api.EventProcessor;
 import org.opennms.netmgt.xml.event.Event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
