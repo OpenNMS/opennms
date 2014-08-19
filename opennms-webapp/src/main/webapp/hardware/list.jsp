@@ -91,10 +91,13 @@
         out.println("<tr class='treegrid-" + entity.getId() + parentCls + "'>");
         out.println("<td>" + getTitle(entity) + "</td><td>" + getContent(entity) + "</td>");
         out.println("</tr>");
-        for (OnmsHwEntity child : entity.getChildren()) {
-            out.println("<tr class='treegrid-" + child.getId() + " treegrid-parent-" + child.getParent().getId() + "'>");
-            out.println("<td>" + getTitle(child) + "</td><td>" + getContent(child) + "</td>");
-            out.println("</tr>");
+        List<OnmsHwEntity> children = new ArrayList<OnmsHwEntity>(entity.getChildren());
+        Collections.sort(children, new Comparator<OnmsHwEntity>() {
+            public int compare(OnmsHwEntity o1, OnmsHwEntity o2) {
+                return o1.getEntPhysicalName().compareTo(o2.getEntPhysicalName());
+            }
+        });
+        for (OnmsHwEntity child : children) {
             printTree(out, child);
         }
     }
