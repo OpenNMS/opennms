@@ -45,7 +45,7 @@ public class MibObj {
     
     private String alias;
 
-    @XmlAttribute
+    @XmlAttribute(name="oid", required=true)
     public String getOid() {
         return oid;
     }
@@ -58,7 +58,7 @@ public class MibObj {
         this.oid = oid;
     }
 
-    @XmlAttribute
+    @XmlAttribute(name="type", required=false)
     public String getType() {
         return type;
     }
@@ -67,7 +67,7 @@ public class MibObj {
         this.type = type;
     }
 
-    @XmlAttribute
+    @XmlAttribute(name="alias", required=true)
     public String getAlias() {
         return alias;
     }

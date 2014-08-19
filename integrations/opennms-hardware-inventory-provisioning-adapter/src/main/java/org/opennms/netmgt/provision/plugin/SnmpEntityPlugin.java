@@ -29,14 +29,15 @@
 package org.opennms.netmgt.provision.plugin;
 
 import java.net.InetAddress;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.opennms.netmgt.config.hardware.HwExtension;
 import org.opennms.netmgt.config.hardware.HwInventoryAdapterConfiguration;
 import org.opennms.netmgt.config.hardware.MibObj;
-import org.opennms.netmgt.dao.api.HwEntityAttributeTypeDao;
 import org.opennms.netmgt.model.HwEntityAttributeType;
 import org.opennms.netmgt.model.OnmsHwEntity;
 import org.opennms.netmgt.provision.snmp.EntityPhysicalTableRow;
@@ -45,6 +46,7 @@ import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpWalker;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,37 +56,33 @@ public class SnmpEntityPlugin implements EntityPlugin {
 
     private SnmpAgentConfig agentConfig;
     private Map<SnmpObjId, HwEntityAttributeType> vendorAttributes = new HashMap<SnmpObjId, HwEntityAttributeType>();
+    private HwInventoryAdapterConfiguration adapterConfiguration;
 
-    public SnmpEntityPlugin(HwEntityAttributeTypeDao attributeTypeDao, HwInventoryAdapterConfiguration hwInventoryAdapterConfiguration, SnmpAgentConfig agentConfig) {
+    public SnmpEntityPlugin(HwInventoryAdapterConfiguration adapterConfiguration, Map<SnmpObjId, HwEntityAttributeType> vendorAttributes, SnmpAgentConfig agentConfig) {
         this.agentConfig = agentConfig;
-        
-        for (HwEntityAttributeType type : attributeTypeDao.findAll()) {
-            vendorAttributes.put(type.getSnmpObjId(), type);
-        }
-        for (HwExtension ext : hwInventoryAdapterConfiguration.getExtensions()) {
-            for (MibObj obj : ext.getMibObjects()) {
-                HwEntityAttributeType type = vendorAttributes.get(obj.getSnmpObjId());
-                if (type == null) {
-                    type = new HwEntityAttributeType(obj.getOid(), obj.getAlias(), obj.getType());
-                    LOG.info("Creating attribute type {}", type);
-                    attributeTypeDao.save(type);
-                    vendorAttributes.put(type.getSnmpObjId(), type);
-                }
-            }
-        }
+        this.vendorAttributes = vendorAttributes;
+        this.adapterConfiguration = adapterConfiguration;
     }
 
     @Override
-    public OnmsHwEntity getRootEntity(int nodeId, InetAddress ipAddress) throws EntityPluginException {
+    public OnmsHwEntity getRootEntity(int nodeId, String sysOid, InetAddress ipAddress) throws EntityPluginException {
         LOG.debug("getRootEntity: Getting ENTITY-MIB using {}", agentConfig);
 
-        final SnmpObjId[] vendorOids = vendorAttributes.keySet().toArray(new SnmpObjId[vendorAttributes.size()]);
-        LOG.debug("Vendor attributes: {}", vendorAttributes.values());
+        List<SnmpObjId> vendorOidList = new ArrayList<SnmpObjId>();
+        for (HwExtension ext : adapterConfiguration.getExtensions()) {
+            if (sysOid.startsWith(ext.getSysOidMask())) {
+                for (MibObj obj : ext.getMibObjects()) {
+                    vendorOidList.add(obj.getSnmpObjId());
+                }
+            }
+        }
+
+        final SnmpObjId[] vendorOids = vendorOidList.toArray(new SnmpObjId[vendorOidList.size()]);
         final SnmpObjId[] allOids = (SnmpObjId[]) ArrayUtils.addAll(EntityPhysicalTableRow.ELEMENTS, vendorOids);
-        
         final EntityPhysicalTableTracker tracker = new EntityPhysicalTableTracker(vendorAttributes, allOids);
         final String trackerName = tracker.getClass().getSimpleName() + '_' + nodeId;
-        SnmpWalker walker = SnmpUtils.createWalker(agentConfig, trackerName, tracker);
+
+        final SnmpWalker walker = SnmpUtils.createWalker(agentConfig, trackerName, tracker);
         walker.start();
         try {
             walker.waitFor();
@@ -96,7 +94,7 @@ public class SnmpEntityPlugin implements EntityPlugin {
         } catch (final InterruptedException e) {
             throw new EntityPluginException("ENTITY-MIB node collection interrupted, exiting");
         }
-        
+
         OnmsHwEntity root = tracker.getRootEntity();
         if (root == null) {
             throw new EntityPluginException("Cannot get root entity for nodeId " + nodeId);

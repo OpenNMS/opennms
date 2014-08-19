@@ -37,7 +37,7 @@ import org.opennms.netmgt.model.OnmsHwEntity;
 public class ScriptEntityPlugin implements EntityPlugin {
 
     @Override
-    public OnmsHwEntity getRootEntity(int nodeId, InetAddress ipAddress) throws EntityPluginException {
+    public OnmsHwEntity getRootEntity(int nodeId, String sysOid, InetAddress ipAddress) throws EntityPluginException {
         throw new EntityPluginException("ScriptEntityPlugin has not been implementet yet.");
     }
 

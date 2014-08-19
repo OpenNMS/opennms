@@ -47,7 +47,7 @@ public class HwExtension {
     
     private List<MibObj> mibObjects = new ArrayList<MibObj>();
 
-    @XmlAttribute
+    @XmlAttribute(name="name", required=true)
     public String getName() {
         return name;
     }
@@ -56,7 +56,7 @@ public class HwExtension {
         this.name = name;
     }
 
-    @XmlAttribute
+    @XmlAttribute(name="sysOidMask", required=true)
     public String getSysOidMask() {
         return sysOidMask;
     }
@@ -65,7 +65,7 @@ public class HwExtension {
         this.sysOidMask = sysOidMask;
     }
 
-    @XmlElement(name="mibObj")
+    @XmlElement(name="mibObj", required=true)
     public List<MibObj> getMibObjects() {
         return mibObjects;
     }

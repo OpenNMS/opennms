@@ -34,6 +34,6 @@ import org.opennms.netmgt.model.OnmsHwEntity;
 
 public interface EntityPlugin {
 
-    OnmsHwEntity getRootEntity(int nodeId, InetAddress ipAddress) throws EntityPluginException;
+    OnmsHwEntity getRootEntity(int nodeId, String sysOid, InetAddress ipAddress) throws EntityPluginException;
 
 }

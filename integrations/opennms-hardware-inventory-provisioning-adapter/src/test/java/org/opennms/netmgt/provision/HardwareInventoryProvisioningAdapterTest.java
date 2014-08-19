@@ -133,8 +133,7 @@ public class HardwareInventoryProvisioningAdapterTest implements InitializingBea
 
         m_adapter.afterPropertiesSet();
 
-        for (int i=1; i<=1; i++) {
-//        for (int i=1; i<=4; i++) {
+        for (int i=1; i<=4; i++) {
             Integer nodeId = m_nodeDao.findByForeignId("Cisco", Integer.toString(i)).getId();
             AdapterOperationSchedule ops = new AdapterOperationSchedule(0, 1, 1, TimeUnit.SECONDS);        
             AdapterOperation op = m_adapter.new AdapterOperation(nodeId, AdapterOperationType.ADD, ops);
@@ -169,8 +168,7 @@ public class HardwareInventoryProvisioningAdapterTest implements InitializingBea
             m_nodeDao.flush();
             m_entityDao.flush();
         }
-        Assert.assertEquals(42, m_entityDao.countAll());
-//        Assert.assertEquals(112, m_entityDao.countAll());
+        Assert.assertEquals(112, m_entityDao.countAll());
     }
 
 }
