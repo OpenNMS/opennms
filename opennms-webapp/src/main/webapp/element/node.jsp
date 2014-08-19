@@ -324,6 +324,13 @@ function confirmAssetEdit() {
       <a href="<c:out value="${assetLink}"/>" onclick="return confirmAssetEdit()">Asset Info</a>
     </li>
 
+    <c:url var="hardwareLink" value="hardware/list.jsp">
+      <c:param name="node" value="${model.id}"/>
+    </c:url>
+    <li class="o-menuitem">
+      <a href="<c:out value="${hardwareLink}"/>">Hardware Info</a>
+    </li>
+ 
     <c:if test="${! empty model.statusSite}">
       <c:url var="siteLink" value="siteStatusView.htm">
         <c:param name="statusSite" value="${model.statusSite}"/>
