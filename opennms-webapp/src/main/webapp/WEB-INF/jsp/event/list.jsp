@@ -414,7 +414,7 @@
         </tr>
        
         <tr valign="top" class="<%= events[i].getSeverity().getLabel() %>">
-          <td colspan="5"><%=events[i].getLogMessage()%></td>
+          <td colspan="5"><%=WebSecurityUtils.sanitizeString(events[i].getLogMessage(), true)%></td>
         </tr>
        
       <% } /*end for*/%>

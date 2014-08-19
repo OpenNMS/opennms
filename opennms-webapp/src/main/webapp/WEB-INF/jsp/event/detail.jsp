@@ -193,7 +193,7 @@
           <th>Log&nbsp;Message</th>
         </tr>
         <tr class="<%= event.getSeverity().getLabel() %>">
-          <td><%=event.getLogMessage()%></td>
+          <td><%=WebSecurityUtils.sanitizeString(event.getLogMessage(), true)%></td>
         </tr>
       </table>
 
@@ -202,7 +202,7 @@
           <th>Description</th>
         </tr>
         <tr class="<%= event.getSeverity().getLabel() %>">
-          <td><%=event.getDescription()%></td>
+          <td><%=WebSecurityUtils.sanitizeString(event.getDescription(), true)%></td>
         </tr>
       </table>
       

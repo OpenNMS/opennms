@@ -479,7 +479,7 @@
 			<% }%>
           </c:if>
           </td>
-          <td class="divider"><%=alarms[i].getLogMessage()%></td>
+          <td class="divider"><%=WebSecurityUtils.sanitizeString(alarms[i].getLogMessage(), true)%></td>
         </tr> 
       <% } /*end for*/%>
 

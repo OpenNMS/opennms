@@ -212,7 +212,7 @@
         <th>Log&nbsp;Message</th>
     </tr>
     <tr class="<%=alarm.getSeverity().getLabel()%>">
-        <td><%=alarm.getLogMessage()%></td>
+        <td><%=WebSecurityUtils.sanitizeString(alarm.getLogMessage(), true)%></td>
     </tr>
 </table>
 
@@ -238,7 +238,7 @@
         <th>Description</th>
     </tr>
     <tr class="<%=alarm.getSeverity().getLabel()%>">
-        <td><%=alarm.getDescription()%></td>
+        <td><%=WebSecurityUtils.sanitizeString(alarm.getDescription(), true)%></td>
     </tr>
 </table>
 
