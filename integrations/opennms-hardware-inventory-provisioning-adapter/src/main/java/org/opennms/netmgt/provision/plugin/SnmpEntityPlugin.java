@@ -29,15 +29,12 @@
 package org.opennms.netmgt.provision.plugin;
 
 import java.net.InetAddress;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.ArrayUtils;
-import org.opennms.netmgt.config.hardware.HwExtension;
 import org.opennms.netmgt.config.hardware.HwInventoryAdapterConfiguration;
-import org.opennms.netmgt.config.hardware.MibObj;
 import org.opennms.netmgt.model.HwEntityAttributeType;
 import org.opennms.netmgt.model.OnmsHwEntity;
 import org.opennms.netmgt.provision.snmp.EntityPhysicalTableRow;
@@ -55,28 +52,22 @@ public class SnmpEntityPlugin implements EntityPlugin {
     private static final Logger LOG = LoggerFactory.getLogger(SnmpEntityPlugin.class);
 
     private SnmpAgentConfig agentConfig;
+    private String nodeSysOid;
     private Map<SnmpObjId, HwEntityAttributeType> vendorAttributes = new HashMap<SnmpObjId, HwEntityAttributeType>();
     private HwInventoryAdapterConfiguration adapterConfiguration;
 
-    public SnmpEntityPlugin(HwInventoryAdapterConfiguration adapterConfiguration, Map<SnmpObjId, HwEntityAttributeType> vendorAttributes, SnmpAgentConfig agentConfig) {
-        this.agentConfig = agentConfig;
-        this.vendorAttributes = vendorAttributes;
+    public SnmpEntityPlugin(HwInventoryAdapterConfiguration adapterConfiguration, Map<SnmpObjId, HwEntityAttributeType> vendorAttributes, SnmpAgentConfig agentConfig, String nodeSysOid) {
         this.adapterConfiguration = adapterConfiguration;
+        this.vendorAttributes = vendorAttributes;
+        this.agentConfig = agentConfig;
+        this.nodeSysOid = nodeSysOid;
     }
 
     @Override
-    public OnmsHwEntity getRootEntity(int nodeId, String sysOid, InetAddress ipAddress) throws EntityPluginException {
+    public OnmsHwEntity getRootEntity(int nodeId, InetAddress ipAddress) throws EntityPluginException {
         LOG.debug("getRootEntity: Getting ENTITY-MIB using {}", agentConfig);
 
-        List<SnmpObjId> vendorOidList = new ArrayList<SnmpObjId>();
-        for (HwExtension ext : adapterConfiguration.getExtensions()) {
-            if (sysOid.startsWith(ext.getSysOidMask())) {
-                for (MibObj obj : ext.getMibObjects()) {
-                    vendorOidList.add(obj.getSnmpObjId());
-                }
-            }
-        }
-
+        final List<SnmpObjId> vendorOidList = adapterConfiguration.getVendorOid(nodeSysOid);
         final SnmpObjId[] vendorOids = vendorOidList.toArray(new SnmpObjId[vendorOidList.size()]);
         final SnmpObjId[] allOids = (SnmpObjId[]) ArrayUtils.addAll(EntityPhysicalTableRow.ELEMENTS, vendorOids);
         final EntityPhysicalTableTracker tracker = new EntityPhysicalTableTracker(vendorAttributes, allOids);

@@ -123,10 +123,10 @@ public class HardwareInventoryProvisioningAdapter extends SimplerQueuedProvision
                 // TODO, use ScriptEntityPlugin
             } else {
                 SnmpAgentConfig agentConfig = m_snmpConfigDao.getAgentConfig(ipAddress);
-                plugin = new SnmpEntityPlugin(m_hwInventoryAdapterConfigurationDao.getConfiguration(), m_vendorAttributes, agentConfig);
+                plugin = new SnmpEntityPlugin(m_hwInventoryAdapterConfigurationDao.getConfiguration(), m_vendorAttributes, agentConfig, node.getSysObjectId());
             }
             // EntityPlugin should always return a valid root otherwise it will throw an exception.
-            OnmsHwEntity newRoot = plugin.getRootEntity(nodeId, node.getSysObjectId(), ipAddress);
+            OnmsHwEntity newRoot = plugin.getRootEntity(nodeId, ipAddress);
             // If there is an entity associated with the node it should be removed first, in order to override the data.
             final OnmsHwEntity currentRoot = m_hwEntityDao.findRootByNodeId(node.getId());
             if (currentRoot != null) {

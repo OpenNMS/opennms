@@ -1,0 +1,4 @@
+1. Implement package filter, to discover entities only for the desired list of nodes.
+2. Filter parts by configuring a blacklist for entPhysicalModelName (to ignore certain entities).
+3. WebUI for entities
+4. Placeholders for events and notifications

@@ -36,10 +36,12 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.opennms.netmgt.snmp.SnmpObjId;
+
 @XmlRootElement(name="hardware-inventory-adapter-configuration")
 @XmlAccessorType(XmlAccessType.NONE)
 public class HwInventoryAdapterConfiguration {
-    
+
     List<HwExtension> extensions = new ArrayList<HwExtension>();
 
     @XmlElement(name="hw-extension")
@@ -54,4 +56,17 @@ public class HwInventoryAdapterConfiguration {
     public void addExtension(HwExtension extension) {
         extensions.add(extension);
     }
+
+    public List<SnmpObjId> getVendorOid(String nodeSysOid) {
+        final List<SnmpObjId> vendorOidList = new ArrayList<SnmpObjId>();
+        for (HwExtension ext : getExtensions()) {
+            if (nodeSysOid.startsWith(ext.getSysOidMask())) {
+                for (MibObj obj : ext.getMibObjects()) {
+                    vendorOidList.add(obj.getSnmpObjId());
+                }
+            }
+        }
+        return vendorOidList;
+    }
+
 }
