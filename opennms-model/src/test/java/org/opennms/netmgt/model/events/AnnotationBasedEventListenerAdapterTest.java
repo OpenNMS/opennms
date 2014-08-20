@@ -64,7 +64,7 @@ public class AnnotationBasedEventListenerAdapterTest {
     private Set<String> m_subscriptions;
     
     @EventListener(name=ANNOTATED_NAME)
-    private static class AnnotatedListener {
+    public static class AnnotatedListener {
         
         public int preProcessedEvents = 0;
         public int receivedEventCount = 0;
