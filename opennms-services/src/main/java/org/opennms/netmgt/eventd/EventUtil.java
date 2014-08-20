@@ -300,6 +300,17 @@ public abstract class EventUtil {
 	static final String TAG_PERCENT_SIGN = "pctsign";
 
 	/**
+         * The string that starts the expansion for a hardware field - used to lookup values
+         * of hardware attributes by their index|name 
+         */
+        static final String HARDWARE_BEGIN = "hardware[";
+
+        /**
+         * The string that ends the expansion of a hardware
+         */
+        static final String HARDWARE_END_SUFFIX = "]";
+
+	/**
 	 * <P>
 	 * This method is used to escape required values from strings that may
 	 * contain those values. If the passed string contains the passed value then
@@ -545,6 +556,16 @@ public abstract class EventUtil {
 				retParmVal = assetFieldValue;
 			else
 				retParmVal = "Unknown";
+                } else if (parm.startsWith(HARDWARE_BEGIN)) {
+                    retParmVal = null;
+                    String hwFieldValue = null;
+                    if (event.getNodeid() > 0) {
+                            hwFieldValue = getHardwareFieldValue(parm, event.getNodeid());
+                    }
+                    if (hwFieldValue != null)
+                            retParmVal = hwFieldValue;
+                    else
+                            retParmVal = "Unknown";
 		}
 
 		return (retParmVal == null ? null : retParmVal.trim());
@@ -1108,5 +1129,89 @@ public abstract class EventUtil {
 
         return retParmVal;
 
+    }
+
+    /**
+     * Helper method.
+     * 
+     * @deprecated Replace with standard DAO calls instead of using JDBC
+     * @param parm
+     * @param event
+     * @return The value of a hardware field based on the nodeid of the event 
+     */
+    private static String getHardwareFieldValue(String parm, long nodeId) {
+        String retParmVal = null;
+        int end = parm.lastIndexOf(HARDWARE_END_SUFFIX);
+        // The "hardware[" start of this parameter is 6 characters long
+        String[] parts = parm.substring(HARDWARE_BEGIN.length(),end).split(":");
+        if (parts.length != 2) {
+            return null;
+        }
+        String sql = null;
+        boolean isCustomAttr = !parts[1].startsWith("entPhysical");
+        if (isCustomAttr) {
+            sql = "SELECT a.attribValue FROM hwEntityAttribute a, hwEntity h, hwEntityAttributeType t WHERE h.nodeId = " + String.valueOf(nodeId) + " AND a.hwEntityId = h.id AND a.hwAttribTypeId = t.id AND t.attribName = '" + parts[1] + "'";
+        } else {
+            sql = "SELECT " + parts[1] + " + FROM hwEntity WHERE nodeId = " + String.valueOf(nodeId);
+        }
+        if (parts[0].matches("^\\d+$")) {
+            // entPhysicalIndex
+            if (isCustomAttr) {
+                sql += " AND h.entPhysicalIndex = " + parts[0];
+            } else {
+                sql += " AND entPhysicalIndex = " + parts[0];
+            }
+        } else {
+            if (parts[0].startsWith("~")) {
+                // ~regexOverEntPhysicalName
+                if (isCustomAttr) {
+                    sql = " AND h.entPhysicalName ~ '" + parts[0].substring(1) + "'";
+                } else {
+                    sql = " AND entPhysicalName ~ '" + parts[0].substring(1) + "'";
+                }
+            } else {
+                // entPhysicalName
+                if (isCustomAttr) {
+                    sql = " AND h.entPhysicalName = '" + parts[0] + "'";
+                } else {
+                    sql = " AND entPhysicalName = '" + parts[0] + "'";
+                }
+            }
+        }
+        java.sql.Connection dbConn = null;
+        try {
+            Statement stmt = null;
+            try {
+                // Get datbase connection from the factory
+                dbConn = DataSourceFactory.getInstance().getConnection();
+                // Issue query and extract nodeLabel from result set
+                stmt = dbConn.createStatement();
+                ResultSet rs = stmt.executeQuery(sql);
+                if (rs.next()) {
+                    retParmVal = rs.getString(1);
+                }
+            } catch (SQLException sqlE) {
+                // do nothing
+            } finally {
+                // Close the statement
+                if (stmt != null) {
+                    try {
+                        stmt.close();
+                    } catch (Throwable e) {
+                        // do nothing
+                    }
+                }
+            }
+        } finally {
+            // Close the database connection
+            if (dbConn != null) {
+                try {
+                    dbConn.close();
+                } catch (Throwable t) {
+                    // do nothing
+                }
+            }
+        }
+        return retParmVal;
     }
 }
