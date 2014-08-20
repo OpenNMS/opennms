@@ -677,7 +677,6 @@ find $RPM_BUILD_ROOT%{instprefix}/lib ! -type d | \
 	grep -v 'xmp' | \
 	grep -v 'org.opennms.features.juniper-tca-collector' | \
 	grep -v 'opennms_jmx_config_generator' | \
-	grep -v 'orika' | \
 	sort >> %{_tmppath}/files.main
 find $RPM_BUILD_ROOT%{instprefix}/etc -type d | \
 	sed -e "s,^$RPM_BUILD_ROOT,%dir ," | \
@@ -792,7 +791,6 @@ rm -rf $RPM_BUILD_ROOT
 %files plugin-provisioning-hardware-inventory
 %defattr(664 root root 775)
 %{instprefix}/lib/opennms-hardware-inventory-provisioning-adapter*.jar
-%{instprefix}/lib/orika-*.jar
 %config(noreplace) %{instprefix}/etc/hardware-inventory-adapter-configuration.xml
 %{sharedir}/etc-pristine/hardware-inventory-adapter-configuration.xml
 
