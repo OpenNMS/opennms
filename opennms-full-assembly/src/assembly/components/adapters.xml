@@ -14,6 +14,8 @@
         <include>org.opennms:opennms-snmp-asset-provisioning-adapter:jar:${project.version}</include>
         <include>org.opennms:opennms-rancid-provisioning-adapter:jar:${project.version}</include>
         <include>org.opennms:opennms-hardware-inventory-provisioning-adapter:jar:${project.version}</include>
+        <!-- external dependency of the hardware inventory adapter -->
+        <include>ma.glasnost.orika:orika-core:jar:${orikaVersion}</include>
       </includes>
       <fileMode>0644</fileMode>
       <directoryMode>0755</directoryMode>

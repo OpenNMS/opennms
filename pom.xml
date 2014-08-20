@@ -1069,6 +1069,7 @@
     <xalanVersion>2.7.1</xalanVersion>
     <xercesVersion>2.9.1</xercesVersion>
     <xmlApisVersion>1.4.01</xmlApisVersion>
+    <orikaVersion>1.4.5</orikaVersion>
 
     <springVersion>3.2.4.RELEASE</springVersion>
     <!-- ALWAYS change aspectj to match the version referenced in the spring poms -->
@@ -3233,7 +3234,7 @@
       <dependency>
         <groupId>ma.glasnost.orika</groupId>
         <artifactId>orika-core</artifactId>
-        <version>1.4.5</version>
+        <version>${orikaVersion}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
