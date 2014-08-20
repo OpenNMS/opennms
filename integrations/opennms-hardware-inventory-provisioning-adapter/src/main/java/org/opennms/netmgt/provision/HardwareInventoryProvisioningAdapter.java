@@ -32,10 +32,6 @@ import java.net.InetAddress;
 import java.util.HashMap;
 import java.util.Map;
 
-import ma.glasnost.orika.MapperFacade;
-import ma.glasnost.orika.MapperFactory;
-import ma.glasnost.orika.impl.DefaultMapperFactory;
-
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.HwInventoryAdapterConfigurationDao;
 import org.opennms.netmgt.config.api.SnmpAgentConfigFactory;
@@ -75,7 +71,6 @@ public class HardwareInventoryProvisioningAdapter extends SimplerQueuedProvision
     private HwInventoryAdapterConfigurationDao m_hwInventoryAdapterConfigurationDao;
 
     private Map<SnmpObjId, HwEntityAttributeType> m_vendorAttributes = new HashMap<SnmpObjId, HwEntityAttributeType>();
-    private MapperFacade m_mapper;
 
     public static final String NAME = "HardwareInventoryProvisioningAdapter";
 
@@ -91,9 +86,6 @@ public class HardwareInventoryProvisioningAdapter extends SimplerQueuedProvision
         Assert.notNull(m_snmpConfigDao, "SNMP Configuration DAO cannot be null");
         Assert.notNull(m_hwInventoryAdapterConfigurationDao, "Hardware Inventory Configuration DAO cannot be null");
         Assert.notNull(m_eventForwarder, "Event Forwarder cannot be null");
-        MapperFactory factory = new DefaultMapperFactory.Builder().build();
-        factory.classMap(OnmsHwEntity.class, OnmsHwEntity.class).exclude("id").exclude("node").register();
-        m_mapper = factory.getMapperFacade();
         initializeVendorAttributes();
     }
 
@@ -138,13 +130,11 @@ public class HardwareInventoryProvisioningAdapter extends SimplerQueuedProvision
             // If there is an entity associated with the node it should be removed first, in order to override the data.
             final OnmsHwEntity currentRoot = m_hwEntityDao.findRootByNodeId(node.getId());
             if (currentRoot != null) {
-                LOG.info("Merging existing hardware information for nodeId {}", nodeId);
-                m_mapper.map(newRoot, currentRoot);
-                m_hwEntityDao.update(currentRoot);
-            } else {
-                newRoot.setNode(node);
-                m_hwEntityDao.save(newRoot);
+                m_hwEntityDao.delete(currentRoot);
             }
+            newRoot.setNode(node);
+            m_hwEntityDao.saveOrUpdate(newRoot);
+            m_hwEntityDao.flush();
             ebldr = new EventBuilder(EventConstants.HARDWARE_INVENTORY_SUCCESSFUL_UEI, "Provisiond." + NAME);
         } catch (Throwable e) {
             ebldr = new EventBuilder(EventConstants.HARDWARE_INVENTORY_FAILED_UEI, "Provisiond." + NAME);

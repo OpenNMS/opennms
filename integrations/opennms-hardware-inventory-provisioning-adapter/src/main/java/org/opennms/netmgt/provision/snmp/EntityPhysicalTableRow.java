@@ -37,11 +37,8 @@ import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpRowResult;
 import org.opennms.netmgt.snmp.SnmpValue;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class EntityPhysicalTableRow extends SnmpRowResult {
-    private static final Logger LOG = LoggerFactory.getLogger(EntityPhysicalTableRow.class);
 
     public final static SnmpObjId entPhysicalDescr = SnmpObjId.get(".1.3.6.1.2.1.47.1.1.1.1.2");
     public final static SnmpObjId entPhysicalVendorType = SnmpObjId.get(".1.3.6.1.2.1.47.1.1.1.1.3");
@@ -163,7 +160,6 @@ public class EntityPhysicalTableRow extends SnmpRowResult {
             for (Map.Entry<SnmpObjId, HwEntityAttributeType> entry : vendorAttributes.entrySet()) {
                 v = getValue(entry.getKey());
                 if (v != null) {
-                    LOG.debug("adding attribute {} -> {} = {}", entity.getEntPhysicalName(), entry.getValue().getName(), v.toDisplayString());
                     entity.addAttribute(entry.getValue(), v.toDisplayString());
                 }                
             }

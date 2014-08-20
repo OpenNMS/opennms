@@ -1064,7 +1064,6 @@ public abstract class EventUtil {
      * @param event
      * @return The value of an asset field based on the nodeid of the event 
      */
-	// FIXME Check if there is a way to inject AssetRecordDao and HwEntityDao through Spring on opennms-services/src/main/resources/META-INF/opennms/applicationContext-eventDaemon.xml
     private static String getAssetFieldValue(String parm, long nodeId) {
         String retParmVal = null;
         int end = parm.lastIndexOf(ASSET_END_SUFFIX);

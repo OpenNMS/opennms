@@ -3229,12 +3229,6 @@
         <artifactId>groovy-all</artifactId>
         <version>${groovyVersion}</version>
       </dependency>
-      <!-- Required by opennms-hardware-inventory-provisioning-adapter -->
-      <dependency>
-        <groupId>ma.glasnost.orika</groupId>
-        <artifactId>orika-core</artifactId>
-        <version>1.4.5</version>
-      </dependency>
     </dependencies>
   </dependencyManagement>
   <repositories>

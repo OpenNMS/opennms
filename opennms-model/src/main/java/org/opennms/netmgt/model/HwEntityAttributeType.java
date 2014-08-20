@@ -39,6 +39,8 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
@@ -46,7 +48,7 @@ import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.springframework.core.style.ToStringCreator;
 
-@XmlRootElement(name="hwEntityAttributeType")
+@XmlRootElement(name = "hwEntityAttributeType")
 @Entity
 @Table(name="hwEntityAttributeType")
 @XmlAccessorType(XmlAccessType.NONE)
@@ -86,6 +88,17 @@ public class HwEntityAttributeType implements Serializable, Comparable<HwEntityA
         m_id = id;
     }
 
+    @XmlID
+    @XmlAttribute(name="id")
+    @Transient
+    public String getHwEntityAttributeTypeId() {
+        return getId() == null ? null : getId().toString();
+    }
+
+    public void setOnmsHwEntityAttributeId(final String id) {
+        setId(Integer.valueOf(id));
+    }
+
     @Column(name="attribName", unique=true, nullable=false)
     public String getName() {
         return m_attributeName;
@@ -121,6 +134,7 @@ public class HwEntityAttributeType implements Serializable, Comparable<HwEntityA
     @Override
     public String toString() {
         return new ToStringCreator(this)
+        .append("id", m_id)
         .append("oid", m_attributeOid)
         .append("name", m_attributeName)
         .append("class", m_attributeClass)
@@ -136,8 +150,9 @@ public class HwEntityAttributeType implements Serializable, Comparable<HwEntityA
     public boolean equals(Object obj) {
         if (obj instanceof HwEntityAttributeType) {
             HwEntityAttributeType other = (HwEntityAttributeType) obj;
-            if ( (m_attributeName != null && other.m_attributeName != null && m_attributeName.equals(other.m_attributeName)) &&
-                 (m_attributeOid != null && other.m_attributeOid != null && m_attributeOid.equals(other.m_attributeOid)) )
+            if (m_attributeName != null && other.m_attributeName != null && m_attributeName.equals(other.m_attributeName))
+                return true;
+            if (m_attributeOid != null && other.m_attributeOid != null && m_attributeOid.equals(other.m_attributeOid))
                 return true;
         }
         return false;
