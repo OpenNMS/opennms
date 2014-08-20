@@ -43,10 +43,10 @@ import org.opennms.features.poller.remote.gwt.client.remoteevents.ApplicationUpd
 import org.opennms.features.poller.remote.gwt.client.remoteevents.LocationUpdatedRemoteEvent;
 import org.opennms.netmgt.dao.api.EventDao;
 import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.events.api.EventParameterUtils;
 import org.opennms.netmgt.events.api.annotations.EventHandler;
 import org.opennms.netmgt.events.api.annotations.EventListener;
 import org.opennms.netmgt.model.OnmsEvent;
-import org.opennms.netmgt.model.events.Parameter;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 import org.slf4j.Logger;
@@ -230,7 +230,7 @@ public class LocationBroadcastProcessor implements InitializingBean, DisposableB
             LOG.warn("handleLocationEvent called, but no eventHandler is registered");
             return;
         }
-        handleEventParms(Parameter.decode(event.getEventParms()));
+        handleEventParms(EventParameterUtils.decode(event.getEventParms()));
     }
     private void handleLocationEvent(final Event event) {
         if (m_eventHandler == null) {

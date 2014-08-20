@@ -44,8 +44,8 @@ import org.opennms.netmgt.eventd.EventdConstants;
 import org.opennms.netmgt.events.api.EventDatabaseConstants;
 import org.opennms.netmgt.events.api.EventProcessor;
 import org.opennms.netmgt.events.api.EventProcessorException;
+import org.opennms.netmgt.events.api.EventParameterUtils;
 import org.opennms.netmgt.model.OnmsSeverity;
-import org.opennms.netmgt.model.events.Parameter;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Header;
 import org.opennms.netmgt.xml.event.Operaction;
@@ -217,7 +217,7 @@ public final class JdbcEventWriter extends AbstractJdbcPersister implements Even
             // eventParms
 
             // Replace any null bytes with a space, otherwise postgres will complain about encoding in UNICODE 
-            final String parametersString=Parameter.format(event);
+            final String parametersString=EventParameterUtils.format(event);
             set(insStmt, 11, EventDatabaseConstants.format(parametersString, 0));
 
             // eventCreateTime

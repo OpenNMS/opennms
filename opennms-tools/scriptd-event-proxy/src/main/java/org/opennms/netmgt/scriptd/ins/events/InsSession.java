@@ -46,11 +46,11 @@ import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.dao.api.EventDao;
 import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.events.api.EventParameterUtils;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsSeverity;
-import org.opennms.netmgt.model.events.Parameter;
 import org.opennms.netmgt.xml.event.AlarmData;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Logmsg;
@@ -350,7 +350,7 @@ class InsSession extends InsAbstractSession {
         final String eventParms = ev.getEventParms();
 		if (eventParms != null) {
         	LOG.debug("Setting Event Parms: {}", eventParms);
-        	final List<Parm> parms = Parameter.decode(eventParms);
+        	final List<Parm> parms = EventParameterUtils.decode(eventParms);
             if (parms != null) e.setParmCollection(parms);
         } else {
             LOG.info("No Event parms found.");

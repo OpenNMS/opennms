@@ -26,12 +26,11 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.model.events;
+package org.opennms.netmgt.events.api;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.opennms.netmgt.events.api.EventDatabaseConstants;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Value;
@@ -42,7 +41,7 @@ import org.opennms.netmgt.xml.event.Value;
  *
  * @author <A HREF="mailto:weave@oculan.com">Brian Weaver</A>
  */
-public final class Parameter {
+public final class EventParameterUtils {
     /**
      * Format the list of event parameters
      * @param event TODO
