@@ -594,6 +594,11 @@ public class ConfigTesterTest {
     }
 
     @Test
+    public void testHardwareInventoryAdapterConfiguration() {
+        ignoreConfigFile("hardware-inventory-adapter-configuration.xml");
+    }
+
+    @Test
     public void zz001testAllConfigs() {
         ConfigTester.main(new String[] { "-a" });
     }
