@@ -48,7 +48,7 @@ import org.slf4j.LoggerFactory;
 /**
  * <P>
  * This class is designed to be used by the service poller framework to test the
- * availability of the DNS service on remote interfaces. The class implements
+ * availability of the SMB service on remote interfaces. The class implements
  * the ServiceMonitor interface that allows it to be used along with other
  * plug-ins by the service poller framework.
  * </P>
