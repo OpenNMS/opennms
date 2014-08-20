@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt;
+package org.opennms.netmgt.events.api;
 
 import java.math.BigInteger;
 import java.text.DateFormat;

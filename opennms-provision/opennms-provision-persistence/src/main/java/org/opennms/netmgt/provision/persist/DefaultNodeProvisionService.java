@@ -31,11 +31,11 @@ package org.opennms.netmgt.provision.persist;
 import javax.servlet.http.HttpServletRequest;
 
 import org.opennms.core.spring.BeanUtils;
-import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.SnmpEventInfo;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.dao.TransactionAwareEventForwarder;
 import org.opennms.netmgt.dao.api.CategoryDao;
+import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.events.api.EventProxy;
 import org.opennms.netmgt.events.api.EventProxyException;

@@ -38,7 +38,7 @@ import java.net.InetAddress;
 import java.util.List;
 
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventIpcManagerFactory;
 import org.opennms.netmgt.events.api.EventListener;
 import org.opennms.netmgt.model.OnmsNode.NodeLabelSource;

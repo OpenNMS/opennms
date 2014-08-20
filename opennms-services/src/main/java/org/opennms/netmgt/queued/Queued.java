@@ -30,8 +30,8 @@ package org.opennms.netmgt.queued;
 
 import java.util.Set;
 
-import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
+import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventIpcManager;
 import org.opennms.netmgt.events.api.EventListener;
 import org.opennms.netmgt.model.events.EventUtils;

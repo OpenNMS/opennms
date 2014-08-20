@@ -29,19 +29,19 @@
 package org.opennms.netmgt.model.events;
 
 import static org.opennms.core.utils.InetAddressUtils.str;
-import static org.opennms.netmgt.EventConstants.INTERFACE_DELETED_EVENT_UEI;
-import static org.opennms.netmgt.EventConstants.NODE_ADDED_EVENT_UEI;
-import static org.opennms.netmgt.EventConstants.NODE_DELETED_EVENT_UEI;
-import static org.opennms.netmgt.EventConstants.NODE_GAINED_INTERFACE_EVENT_UEI;
-import static org.opennms.netmgt.EventConstants.NODE_GAINED_SERVICE_EVENT_UEI;
-import static org.opennms.netmgt.EventConstants.NODE_UPDATED_EVENT_UEI;
-import static org.opennms.netmgt.EventConstants.PARM_IP_HOSTNAME;
-import static org.opennms.netmgt.EventConstants.PARM_NODE_LABEL;
-import static org.opennms.netmgt.EventConstants.PARM_NODE_LABEL_SOURCE;
-import static org.opennms.netmgt.EventConstants.PARM_NODE_SYSDESCRIPTION;
-import static org.opennms.netmgt.EventConstants.PARM_NODE_SYSNAME;
-import static org.opennms.netmgt.EventConstants.PARM_RESCAN_EXISTING;
-import static org.opennms.netmgt.EventConstants.SERVICE_DELETED_EVENT_UEI;
+import static org.opennms.netmgt.events.api.EventConstants.INTERFACE_DELETED_EVENT_UEI;
+import static org.opennms.netmgt.events.api.EventConstants.NODE_ADDED_EVENT_UEI;
+import static org.opennms.netmgt.events.api.EventConstants.NODE_DELETED_EVENT_UEI;
+import static org.opennms.netmgt.events.api.EventConstants.NODE_GAINED_INTERFACE_EVENT_UEI;
+import static org.opennms.netmgt.events.api.EventConstants.NODE_GAINED_SERVICE_EVENT_UEI;
+import static org.opennms.netmgt.events.api.EventConstants.NODE_UPDATED_EVENT_UEI;
+import static org.opennms.netmgt.events.api.EventConstants.PARM_IP_HOSTNAME;
+import static org.opennms.netmgt.events.api.EventConstants.PARM_NODE_LABEL;
+import static org.opennms.netmgt.events.api.EventConstants.PARM_NODE_LABEL_SOURCE;
+import static org.opennms.netmgt.events.api.EventConstants.PARM_NODE_SYSDESCRIPTION;
+import static org.opennms.netmgt.events.api.EventConstants.PARM_NODE_SYSNAME;
+import static org.opennms.netmgt.events.api.EventConstants.PARM_RESCAN_EXISTING;
+import static org.opennms.netmgt.events.api.EventConstants.SERVICE_DELETED_EVENT_UEI;
 
 import java.net.InetAddress;
 import java.util.Collection;

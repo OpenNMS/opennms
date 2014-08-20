@@ -42,7 +42,6 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.MapsAdapterConfig;
 import org.opennms.netmgt.config.MapsAdapterConfigFactory;
 import org.opennms.netmgt.config.map.adapter.Celement;
@@ -51,6 +50,7 @@ import org.opennms.netmgt.config.map.adapter.Csubmap;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.OnmsMapDao;
 import org.opennms.netmgt.dao.api.OnmsMapElementDao;
+import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.events.api.annotations.EventHandler;
 import org.opennms.netmgt.events.api.annotations.EventListener;

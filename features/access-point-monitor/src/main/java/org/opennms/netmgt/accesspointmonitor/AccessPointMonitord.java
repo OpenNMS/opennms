@@ -9,7 +9,6 @@ import java.util.Set;
 
 import javax.xml.bind.JAXBException;
 
-import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.accesspointmonitor.AccessPointMonitorConfig;
 import org.opennms.netmgt.config.accesspointmonitor.AccessPointMonitorConfigFactory;
 import org.opennms.netmgt.config.accesspointmonitor.Package;
@@ -18,6 +17,7 @@ import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.dao.AccessPointDao;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventIpcManager;
 import org.opennms.netmgt.events.api.annotations.EventHandler;
 import org.opennms.netmgt.events.api.annotations.EventListener;

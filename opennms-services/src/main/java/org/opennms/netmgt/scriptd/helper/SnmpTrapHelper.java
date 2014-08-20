@@ -35,8 +35,8 @@ import java.util.HashMap;
 
 import org.opennms.core.utils.Base64;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.eventd.EventUtil;
+import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpTrapBuilder;
 import org.opennms.netmgt.snmp.SnmpUtils;
@@ -1099,8 +1099,8 @@ public class SnmpTrapHelper {
     public void sendTL1AutonomousMsgTrap(Event event, String destAddr, int destPort, String trapVersion, String community) throws SnmpTrapHelperException, UnknownHostException {
         
         // Check first thing that the event is of the right type.
-        if (! org.opennms.netmgt.EventConstants.TL1_AUTONOMOUS_MESSAGE_UEI.equals(event.getUei())) {
-            throw new SnmpTrapHelperException("The event must have a UEI of " + org.opennms.netmgt.EventConstants.TL1_AUTONOMOUS_MESSAGE_UEI);
+        if (! org.opennms.netmgt.events.api.EventConstants.TL1_AUTONOMOUS_MESSAGE_UEI.equals(event.getUei())) {
+            throw new SnmpTrapHelperException("The event must have a UEI of " + org.opennms.netmgt.events.api.EventConstants.TL1_AUTONOMOUS_MESSAGE_UEI);
         }
         
         // Create a TrapBuilder and bootstrap it according to trapVersion

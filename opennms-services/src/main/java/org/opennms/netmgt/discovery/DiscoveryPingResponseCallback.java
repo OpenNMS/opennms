@@ -31,8 +31,8 @@ package org.opennms.netmgt.discovery;
 import java.net.InetAddress;
 
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.DiscoveryConfigFactory;
+import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventIpcManagerFactory;
 import org.opennms.netmgt.icmp.EchoPacket;
 import org.opennms.netmgt.icmp.PingResponseCallback;

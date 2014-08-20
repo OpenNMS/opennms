@@ -43,9 +43,9 @@ import java.util.regex.Pattern;
 import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.WebSecurityUtils;
-import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.capsd.DbIpInterfaceEntry;
 import org.opennms.netmgt.capsd.DbSnmpInterfaceEntry;
+import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Snmp;
@@ -387,7 +387,7 @@ public final class EventUtil {
 		} else if (parm.equals(TAG_TIME)) {
 			String eventTime = event.getTime(); //This will be in GMT
 			try {
-				Date actualDate = org.opennms.netmgt.EventConstants.parseToDate(eventTime);
+				Date actualDate = org.opennms.netmgt.events.api.EventConstants.parseToDate(eventTime);
 				DateFormat df = DateFormat.getDateTimeInstance(DateFormat.FULL,
 						DateFormat.FULL);
 				retParmVal = df.format(actualDate);
@@ -401,7 +401,7 @@ public final class EventUtil {
 		} else if (parm.equals(TAG_SHORT_TIME)) {
 			String eventTime = event.getTime(); //This will be in GMT
 			try {
-				Date actualDate = org.opennms.netmgt.EventConstants.parseToDate(eventTime);
+				Date actualDate = org.opennms.netmgt.events.api.EventConstants.parseToDate(eventTime);
 				DateFormat df = DateFormat.getDateTimeInstance(DateFormat.SHORT,
 								DateFormat.SHORT);
 				retParmVal = df.format(actualDate);

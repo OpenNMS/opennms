@@ -35,7 +35,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.web.svclayer.TroubleTicketProxy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

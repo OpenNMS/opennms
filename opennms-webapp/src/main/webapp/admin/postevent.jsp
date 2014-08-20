@@ -33,8 +33,7 @@
 	session="true"
 	import="
 		java.util.*,
-                org.opennms.web.api.Util,
-                org.opennms.netmgt.EventConstants,
+                org.opennms.web.api.Util,org.opennms.netmgt.events.api.EventConstants,
                 org.opennms.netmgt.xml.event.Event,
                 org.opennms.netmgt.xml.event.Parm,
                 org.opennms.netmgt.xml.event.Value,

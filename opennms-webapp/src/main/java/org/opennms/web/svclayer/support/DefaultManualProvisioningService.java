@@ -43,11 +43,11 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.apache.commons.beanutils.MethodUtils;
 import org.opennms.core.spring.PropertyPath;
-import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.CapsdConfig;
 import org.opennms.netmgt.dao.api.CategoryDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.ServiceTypeDao;
+import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventProxy;
 import org.opennms.netmgt.events.api.EventProxyException;
 import org.opennms.netmgt.model.OnmsAssetRecord;

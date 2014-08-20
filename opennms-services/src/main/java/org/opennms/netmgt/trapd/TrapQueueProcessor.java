@@ -235,7 +235,7 @@ class TrapQueueProcessor implements WaterfallCallable, InitializingBean {
      */
     private void sendNewSuspectEvent(String trapInterface) {
         // construct event with 'trapd' as source
-        EventBuilder bldr = new EventBuilder(org.opennms.netmgt.EventConstants.NEW_SUSPECT_INTERFACE_EVENT_UEI, "trapd");
+        EventBuilder bldr = new EventBuilder(org.opennms.netmgt.events.api.EventConstants.NEW_SUSPECT_INTERFACE_EVENT_UEI, "trapd");
         bldr.setInterface(addr(trapInterface));
         bldr.setHost(LOCALHOST_ADDRESS);
 

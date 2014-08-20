@@ -41,10 +41,10 @@ import org.opennms.netmgt.dao.util.AutoAction;
 import org.opennms.netmgt.dao.util.OperatorAction;
 import org.opennms.netmgt.dao.util.SnmpInfo;
 import org.opennms.netmgt.eventd.EventdConstants;
+import org.opennms.netmgt.events.api.EventDatabaseConstants;
 import org.opennms.netmgt.events.api.EventProcessor;
 import org.opennms.netmgt.events.api.EventProcessorException;
 import org.opennms.netmgt.model.OnmsSeverity;
-import org.opennms.netmgt.model.events.Constants;
 import org.opennms.netmgt.model.events.Parameter;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Header;
@@ -75,9 +75,9 @@ import org.springframework.jdbc.core.JdbcTemplate;
  * it doesn't have any details. :P
  * http://issues.opennms.org/browse/NMS-3033
  *
- * @see org.opennms.netmgt.model.events.Constants#MULTIPLE_VAL_DELIM
- * @see org.opennms.netmgt.model.events.Constants#DB_ATTRIB_DELIM
- * @see org.opennms.netmgt.model.events.Constants#NAME_VAL_DELIM
+ * @see org.opennms.netmgt.events.api.EventDatabaseConstants#MULTIPLE_VAL_DELIM
+ * @see org.opennms.netmgt.events.api.EventDatabaseConstants#DB_ATTRIB_DELIM
+ * @see org.opennms.netmgt.events.api.EventDatabaseConstants#NAME_VAL_DELIM
  *
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Nataraj </A>
  * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
@@ -174,7 +174,7 @@ public final class JdbcEventWriter extends AbstractJdbcPersister implements Even
             insStmt.setInt(1, eventID);
 
             // eventUEI
-            insStmt.setString(2, Constants.format(event.getUei(), EVENT_UEI_FIELD_SIZE));
+            insStmt.setString(2, EventDatabaseConstants.format(event.getUei(), EVENT_UEI_FIELD_SIZE));
 
             // nodeID
             final Long nodeid = event.getNodeid();
@@ -187,22 +187,22 @@ public final class JdbcEventWriter extends AbstractJdbcPersister implements Even
             String hostname = getEventHost(event);
 
             // eventHost
-            set(insStmt, 5, Constants.format(hostname, EVENT_HOST_FIELD_SIZE));
+            set(insStmt, 5, EventDatabaseConstants.format(hostname, EVENT_HOST_FIELD_SIZE));
 
             // ipAddr
-            set(insStmt, 6, Constants.format(event.getInterface(), EVENT_INTERFACE_FIELD_SIZE));
+            set(insStmt, 6, EventDatabaseConstants.format(event.getInterface(), EVENT_INTERFACE_FIELD_SIZE));
 
             // eventDpName
             String dpName = "localhost";
             if (eventHeader != null && eventHeader.getDpName() != null) {
-                dpName = Constants.format(eventHeader.getDpName(), EVENT_DPNAME_FIELD_SIZE);
+                dpName = EventDatabaseConstants.format(eventHeader.getDpName(), EVENT_DPNAME_FIELD_SIZE);
             } else if (event.getDistPoller() != null) {
-                dpName = Constants.format(event.getDistPoller(), EVENT_DPNAME_FIELD_SIZE);
+                dpName = EventDatabaseConstants.format(event.getDistPoller(), EVENT_DPNAME_FIELD_SIZE);
             }
             insStmt.setString(7, dpName);
 
             // eventSnmpHost
-            set(insStmt, 8, Constants.format(event.getSnmphost(), EVENT_SNMPHOST_FIELD_SIZE));
+            set(insStmt, 8, EventDatabaseConstants.format(event.getSnmphost(), EVENT_SNMPHOST_FIELD_SIZE));
 
             // service identifier - convert the service name to a service id
             set(insStmt, 9, getEventServiceId(event));
@@ -218,24 +218,24 @@ public final class JdbcEventWriter extends AbstractJdbcPersister implements Even
 
             // Replace any null bytes with a space, otherwise postgres will complain about encoding in UNICODE 
             final String parametersString=Parameter.format(event);
-            set(insStmt, 11, Constants.format(parametersString, 0));
+            set(insStmt, 11, EventDatabaseConstants.format(parametersString, 0));
 
             // eventCreateTime
             final Timestamp eventCreateTime = new Timestamp(System.currentTimeMillis());
             insStmt.setTimestamp(12, eventCreateTime);
 
             // eventDescr
-            set(insStmt, 13, Constants.format(event.getDescr(), 0));
+            set(insStmt, 13, EventDatabaseConstants.format(event.getDescr(), 0));
 
             // eventLoggroup
-            set(insStmt, 14, (event.getLoggroupCount() > 0) ? Constants.format(event.getLoggroup(), EVENT_LOGGRP_FIELD_SIZE) : null);
+            set(insStmt, 14, (event.getLoggroupCount() > 0) ? EventDatabaseConstants.format(event.getLoggroup(), EVENT_LOGGRP_FIELD_SIZE) : null);
 
             // eventLogMsg
             // eventLog
             // eventDisplay
             if (event.getLogmsg() != null) {
                 // set log message
-                set(insStmt, 15, Constants.format(event.getLogmsg().getContent(), 0));
+                set(insStmt, 15, EventDatabaseConstants.format(event.getLogmsg().getContent(), 0));
                 String logdest = event.getLogmsg().getDest();
                 if (logdest.equals("logndisplay")) {
                     // if 'logndisplay' set both log and display column to yes
@@ -270,7 +270,7 @@ public final class JdbcEventWriter extends AbstractJdbcPersister implements Even
             set(insStmt, 18, OnmsSeverity.get(event.getSeverity()).getId());
 
             // eventPathOutage
-            set(insStmt, 19, (event.getPathoutage() != null) ? Constants.format(event.getPathoutage(), EVENT_PATHOUTAGE_FIELD_SIZE) : null);
+            set(insStmt, 19, (event.getPathoutage() != null) ? EventDatabaseConstants.format(event.getPathoutage(), EVENT_PATHOUTAGE_FIELD_SIZE) : null);
 
             // eventCorrelation
             set(insStmt, 20, (event.getCorrelation() != null) ? org.opennms.netmgt.dao.util.Correlation.format(event.getCorrelation(), EVENT_CORRELATION_FIELD_SIZE) : null);
@@ -279,7 +279,7 @@ public final class JdbcEventWriter extends AbstractJdbcPersister implements Even
             insStmt.setNull(21, Types.INTEGER);
 
             // eventOperInstruct
-            set(insStmt, 22, Constants.format(event.getOperinstruct(), EVENT_OPERINSTRUCT_FIELD_SIZE));
+            set(insStmt, 22, EventDatabaseConstants.format(event.getOperinstruct(), EVENT_OPERINSTRUCT_FIELD_SIZE));
 
             // eventAutoAction
             set(insStmt, 23, (event.getAutoactionCount() > 0) ? AutoAction.format(event.getAutoaction(), EVENT_AUTOACTION_FIELD_SIZE) : null);
@@ -295,7 +295,7 @@ public final class JdbcEventWriter extends AbstractJdbcPersister implements Even
                 }
 
                 set(insStmt, 24, OperatorAction.format(a, EVENT_OPERACTION_FIELD_SIZE));
-                set(insStmt, 25, Constants.format(b, EVENT_OPERACTION_MENU_FIELD_SIZE));
+                set(insStmt, 25, EventDatabaseConstants.format(b, EVENT_OPERACTION_MENU_FIELD_SIZE));
             } else {
                 insStmt.setNull(24, Types.VARCHAR);
                 insStmt.setNull(25, Types.VARCHAR);
@@ -306,7 +306,7 @@ public final class JdbcEventWriter extends AbstractJdbcPersister implements Even
 
             // eventTroubleTicket / eventTroubleTicket state
             if (event.getTticket() != null) {
-                set(insStmt, 27, Constants.format(event.getTticket().getContent(), EVENT_TTICKET_FIELD_SIZE));
+                set(insStmt, 27, EventDatabaseConstants.format(event.getTticket().getContent(), EVENT_TTICKET_FIELD_SIZE));
                 set(insStmt, 28, event.getTticket().getState().equals("on") ? 1 : 0);
             } else {
                 insStmt.setNull(27, Types.VARCHAR);
@@ -317,11 +317,11 @@ public final class JdbcEventWriter extends AbstractJdbcPersister implements Even
             set(insStmt, 29, (event.getForwardCount() > 0) ? org.opennms.netmgt.dao.util.Forward.format(event.getForward(), EVENT_FORWARD_FIELD_SIZE) : null);
 
             // event mouseOverText
-            set(insStmt, 30, Constants.format(event.getMouseovertext(), EVENT_MOUSEOVERTEXT_FIELD_SIZE));
+            set(insStmt, 30, EventDatabaseConstants.format(event.getMouseovertext(), EVENT_MOUSEOVERTEXT_FIELD_SIZE));
 
             // eventAckUser
             if (event.getAutoacknowledge() != null && event.getAutoacknowledge().getState().equals("on")) {
-                set(insStmt, 31, Constants.format(event.getAutoacknowledge().getContent(), EVENT_ACKUSER_FIELD_SIZE));
+                set(insStmt, 31, EventDatabaseConstants.format(event.getAutoacknowledge().getContent(), EVENT_ACKUSER_FIELD_SIZE));
 
                 // eventAckTime - if autoacknowledge is present,
                 // set time to event create time
@@ -332,7 +332,7 @@ public final class JdbcEventWriter extends AbstractJdbcPersister implements Even
             }
 
             // eventSource
-            set(insStmt, 33, Constants.format(event.getSource(), EVENT_SOURCE_FIELD_SIZE));
+            set(insStmt, 33, EventDatabaseConstants.format(event.getSource(), EVENT_SOURCE_FIELD_SIZE));
 
             // ifindex
             if (event.hasIfIndex()) {

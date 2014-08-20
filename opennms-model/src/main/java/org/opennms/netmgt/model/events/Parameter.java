@@ -31,6 +31,7 @@ package org.opennms.netmgt.model.events;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.opennms.netmgt.events.api.EventDatabaseConstants;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Value;
@@ -59,7 +60,7 @@ public final class Parameter {
         for (final Parm parm : event.getParmCollection()) {
             if (parm.getParmName() != null && parm.getValue() != null && parm.getValue().getContent() != null) {
                 if (!first) {
-                    parmbuf.append(Constants.MULTIPLE_VAL_DELIM);
+                    parmbuf.append(EventDatabaseConstants.MULTIPLE_VAL_DELIM);
                 }
                 parmbuf.append(format(parm));
                 first = false;
@@ -82,10 +83,10 @@ public final class Parameter {
         String type = pValue.getType();
         String encoding = pValue.getEncoding();
 
-        String tmp = Constants.escape(parm.getParmName(), Constants.NAME_VAL_DELIM);
-        String name = Constants.escape(tmp, Constants.MULTIPLE_VAL_DELIM);
-        tmp = Constants.escape(pValue.getContent(), Constants.NAME_VAL_DELIM);
-        String value = Constants.escape(tmp, Constants.MULTIPLE_VAL_DELIM);
+        String tmp = EventDatabaseConstants.escape(parm.getParmName(), EventDatabaseConstants.NAME_VAL_DELIM);
+        String name = EventDatabaseConstants.escape(tmp, EventDatabaseConstants.MULTIPLE_VAL_DELIM);
+        tmp = EventDatabaseConstants.escape(pValue.getContent(), EventDatabaseConstants.NAME_VAL_DELIM);
+        String value = EventDatabaseConstants.escape(tmp, EventDatabaseConstants.MULTIPLE_VAL_DELIM);
 
         String empty = "";
         name = (name != null ? name.trim() : empty);
@@ -95,17 +96,17 @@ public final class Parameter {
 
         StringBuffer buf = new StringBuffer();
         buf.append(name);
-        buf.append(Constants.NAME_VAL_DELIM);
+        buf.append(EventDatabaseConstants.NAME_VAL_DELIM);
         buf.append(value);
         buf.append('(');
         buf.append(type);
-        buf.append(Constants.DB_ATTRIB_DELIM);
+        buf.append(EventDatabaseConstants.DB_ATTRIB_DELIM);
         buf.append(encoding);
         buf.append(')');
 
         return buf.toString();
-        // return name + Constants.NAME_VAL_DELIM + value + "(" + type +
-        // Constants.DB_ATTRIB_DELIM + encoding + ")";
+        // return name + EventDatabaseConstants.NAME_VAL_DELIM + value + "(" + type +
+        // EventDatabaseConstants.DB_ATTRIB_DELIM + encoding + ")";
     }
     
     /**
@@ -118,10 +119,10 @@ public final class Parameter {
         if (eventparms == null ) return null;
         final List<Parm> parms = new ArrayList<Parm>();
   
-        String[] paramslistString = eventparms.split(Character.toString(Constants.MULTIPLE_VAL_DELIM));
+        String[] paramslistString = eventparms.split(Character.toString(EventDatabaseConstants.MULTIPLE_VAL_DELIM));
         if (paramslistString != null) {
                 for (int i =0; i< paramslistString.length;i++) {
-                    String[] paramEncoded = paramslistString[i].split(Character.toString(Constants.NAME_VAL_DELIM));
+                    String[] paramEncoded = paramslistString[i].split(Character.toString(EventDatabaseConstants.NAME_VAL_DELIM));
                     if (paramEncoded != null && paramEncoded.length == 2) {
                         Parm parm = new Parm();
                         parm.setParmName(paramEncoded[0]);
@@ -134,7 +135,7 @@ public final class Parameter {
                         } else {
                             value.setContent(paramEncoded[1].substring(0,startParamType));
                             String paramType=paramEncoded[1].substring(startParamType+1);
-                            String[] typeAndEncode = paramType.split(Character.toString(Constants.DB_ATTRIB_DELIM));
+                            String[] typeAndEncode = paramType.split(Character.toString(EventDatabaseConstants.DB_ATTRIB_DELIM));
                             if (typeAndEncode != null && typeAndEncode.length == 2) {
                                 value.setType(typeAndEncode[0]);
                                 value.setEncoding(typeAndEncode[1].split("\\)")[0]);

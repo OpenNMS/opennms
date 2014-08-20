@@ -36,8 +36,8 @@ import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.events.api.AnnotationBasedEventListenerAdapter;
+import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventSubscriptionService;
 import org.opennms.netmgt.events.api.annotations.EventExceptionHandler;
 import org.opennms.netmgt.events.api.annotations.EventHandler;

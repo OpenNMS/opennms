@@ -41,7 +41,7 @@ import java.util.List;
 
 import org.opennms.core.utils.Querier;
 import org.opennms.core.utils.SingleResultQuerier;
-import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventWriter;
 import org.opennms.netmgt.mock.MockInterface;
 import org.opennms.netmgt.mock.MockNetwork;

@@ -39,13 +39,13 @@ import java.util.concurrent.TimeUnit;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.PropertiesUtils;
-import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.SnmpAssetAdapterConfig;
 import org.opennms.netmgt.config.api.SnmpAgentConfigFactory;
 import org.opennms.netmgt.config.snmpAsset.adapter.AssetField;
 import org.opennms.netmgt.config.snmpAsset.adapter.MibObj;
 import org.opennms.netmgt.config.snmpAsset.adapter.MibObjs;
 import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.events.api.annotations.EventHandler;
 import org.opennms.netmgt.events.api.annotations.EventListener;

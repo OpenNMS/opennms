@@ -26,11 +26,10 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.model.events;
+package org.opennms.netmgt.events.api;
 
 import java.util.List;
 
-import org.opennms.netmgt.EventConstants;
 
 /**
  * This class contains the constants and methods related to inserting events
@@ -38,7 +37,7 @@ import org.opennms.netmgt.EventConstants;
  *
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
  */
-public class Constants extends EventConstants {
+public class EventDatabaseConstants extends EventConstants {
     /**
      * The 'parms' are added to a single column of the DB - the parm name and
      * value are added as delimiter separated list of ' <parmName>= <value>'
@@ -188,7 +187,7 @@ public class Constants extends EventConstants {
         if (origString == null)
             return null;
         
-        final String escapedString = Constants.escape(origString, '\u0000');
+        final String escapedString = EventDatabaseConstants.escape(origString, '\u0000');
 
         if (maxlen != 0 && escapedString.length() >= maxlen) {
             final StringBuffer buf = new StringBuffer(escapedString);

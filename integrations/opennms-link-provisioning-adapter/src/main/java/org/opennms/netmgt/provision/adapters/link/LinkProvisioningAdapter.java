@@ -29,7 +29,7 @@
 package org.opennms.netmgt.provision.adapters.link;
 
 import org.opennms.core.spring.BeanUtils;
-import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.annotations.EventHandler;
 import org.opennms.netmgt.events.api.annotations.EventListener;
 import org.opennms.netmgt.model.events.EventUtils;
