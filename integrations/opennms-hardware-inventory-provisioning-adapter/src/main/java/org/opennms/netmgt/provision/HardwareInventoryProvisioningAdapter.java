@@ -128,13 +128,15 @@ public class HardwareInventoryProvisioningAdapter extends SimplerQueuedProvision
             // EntityPlugin should always return a valid root otherwise it will throw an exception.
             OnmsHwEntity newRoot = plugin.getRootEntity(nodeId, ipAddress);
             // If there is an entity associated with the node it should be removed first, in order to override the data.
+            // TODO Maybe using Orika/Dozer could help 'merging' the content, but those libraries have several dependencies
+            //      that could conflict with the existing libraries.
             final OnmsHwEntity currentRoot = m_hwEntityDao.findRootByNodeId(node.getId());
             if (currentRoot != null) {
                 m_hwEntityDao.delete(currentRoot);
+                m_hwEntityDao.flush();
             }
             newRoot.setNode(node);
             m_hwEntityDao.saveOrUpdate(newRoot);
-            m_hwEntityDao.flush();
             ebldr = new EventBuilder(EventConstants.HARDWARE_INVENTORY_SUCCESSFUL_UEI, "Provisiond." + NAME);
         } catch (Throwable e) {
             ebldr = new EventBuilder(EventConstants.HARDWARE_INVENTORY_FAILED_UEI, "Provisiond." + NAME);
