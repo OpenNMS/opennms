@@ -39,7 +39,7 @@ import java.io.IOException;
 /**
  * This class holds all OpenNMS related config filenames
  */
-public final class ConfigFileConstants {
+public abstract class ConfigFileConstants {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(ConfigFileConstants.class);
 

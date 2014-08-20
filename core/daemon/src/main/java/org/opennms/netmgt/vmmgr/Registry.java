@@ -30,7 +30,7 @@ package org.opennms.netmgt.vmmgr;
 
 import org.springframework.context.ApplicationContext;
 
-public class Registry {
+public abstract class Registry {
 
 	private static ApplicationContext s_appContext;
 

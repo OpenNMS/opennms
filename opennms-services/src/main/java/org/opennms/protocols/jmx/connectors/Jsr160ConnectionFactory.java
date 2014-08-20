@@ -51,7 +51,7 @@ import org.slf4j.LoggerFactory;
  * @author <A HREF="mailto:mike@opennms.org">Mike Jamison </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
-public class Jsr160ConnectionFactory {
+public abstract class Jsr160ConnectionFactory {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(Jsr160ConnectionFactory.class);
     

@@ -37,7 +37,7 @@ import org.slf4j.LoggerFactory;
 
 
 
-class GeneralSettingsLoader {
+abstract class GeneralSettingsLoader {
 	private static final Logger LOG = LoggerFactory.getLogger(GeneralSettingsLoader.class);
 
 	/** Constant <code>log</code> */

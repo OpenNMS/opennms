@@ -31,7 +31,7 @@ package org.opennms.features.topology.app.internal.support;
 import com.vaadin.server.Page;
 import com.vaadin.server.Resource;
 
-public class FontAwesomeIcons {
+public abstract class FontAwesomeIcons {
 
     public static void load(Resource css){
         Page.getCurrent().getStyles().add(css);
