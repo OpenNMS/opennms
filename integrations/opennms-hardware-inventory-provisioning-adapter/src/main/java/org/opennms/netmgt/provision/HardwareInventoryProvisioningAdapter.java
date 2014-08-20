@@ -101,7 +101,6 @@ public class HardwareInventoryProvisioningAdapter extends SimplerQueuedProvision
         synchronizeInventory(nodeId);
     }
 
-    // FIXME Set on the configuration file if the data must be overridden if exist. 
     private void synchronizeInventory(int nodeId) {
         final OnmsNode node = m_nodeDao.get(nodeId);
         if (node == null) {
@@ -126,16 +125,22 @@ public class HardwareInventoryProvisioningAdapter extends SimplerQueuedProvision
                 plugin = new SnmpEntityPlugin(m_hwInventoryAdapterConfigurationDao.getConfiguration(), m_vendorAttributes, agentConfig, node.getSysObjectId());
             }
             // EntityPlugin should always return a valid root otherwise it will throw an exception.
-            OnmsHwEntity newRoot = plugin.getRootEntity(nodeId, ipAddress);
-            // If there is an entity associated with the node it should be removed first, in order to override the data.
-            // TODO Maybe using Orika/Dozer could help 'merging' the content, but those libraries have several dependencies
-            //      that could conflict with the existing libraries.
+            final OnmsHwEntity newRoot = plugin.getRootEntity(nodeId, ipAddress);
+            newRoot.setNode(node);
+            // If there is an entity tree associated with the node, and it is different than the discovered one,
+            // it should be removed first, in order to override the data.
             final OnmsHwEntity currentRoot = m_hwEntityDao.findRootByNodeId(node.getId());
-            if (currentRoot != null) {
+            if (newRoot.equals(currentRoot)) {
+                LOG.info("No changes detected on the hardware inventory for nodeId {}", nodeId);
+                return;
+            }
+            if (currentRoot == null) {
+                LOG.info("Saving hardware inventory for nodeId {}", nodeId);
+            } else {
+                LOG.info("Updating hardware inventory for nodeId {}. Old inventory {}, new inventory {}", nodeId, currentRoot.toString(), newRoot.toString());
                 m_hwEntityDao.delete(currentRoot);
                 m_hwEntityDao.flush();
             }
-            newRoot.setNode(node);
             m_hwEntityDao.saveOrUpdate(newRoot);
             ebldr = new EventBuilder(EventConstants.HARDWARE_INVENTORY_SUCCESSFUL_UEI, "Provisiond." + NAME);
         } catch (Throwable e) {

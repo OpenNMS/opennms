@@ -98,12 +98,13 @@ public class HardwareInventoryResource extends OnmsRestService {
             if (node == null) {
                 throw getException(Status.BAD_REQUEST, "setHardwareInventory: Can't find node " + nodeCriteria);
             }
-            OnmsHwEntity existing = m_hwEntityDao.findRootByNodeId(node.getId());
-            if (existing != null ) {
-                m_hwEntityDao.delete(existing);
-            }
             entity.setNode(node);
-            m_hwEntityDao.save(entity);
+            OnmsHwEntity existing = m_hwEntityDao.findRootByNodeId(node.getId());
+            if (!entity.equals(existing)) {
+                m_hwEntityDao.delete(existing);
+                m_hwEntityDao.flush();
+                m_hwEntityDao.save(entity);
+            }
             return Response.seeOther(m_uriInfo.getRequestUriBuilder().path(node.getNodeId()).build()).build();
         } finally {
             writeUnlock();

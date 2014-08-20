@@ -47,8 +47,9 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang.builder.ToStringStyle;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
-import org.springframework.core.style.ToStringCreator;
 
 @XmlRootElement(name = "hwEntityAttribute")
 @Entity
@@ -135,9 +136,8 @@ public class OnmsHwEntityAttribute implements Serializable, Comparable<OnmsHwEnt
 
     @Override
     public String toString() {
-        return new ToStringCreator(this)
-        .append("id", m_id)
-        .append("entity", m_hwEntity == null ? null : m_hwEntity.getEntPhysicalIndex())
+        return new ToStringBuilder(this.getClass().getSimpleName(), ToStringStyle.SHORT_PREFIX_STYLE)
+        .append("entPhysicalIndex", m_hwEntity == null ? null : m_hwEntity.getEntPhysicalIndex())
         .append("type", m_attributeType)
         .append("value", m_attributeValue)
         .toString();
@@ -150,20 +150,16 @@ public class OnmsHwEntityAttribute implements Serializable, Comparable<OnmsHwEnt
 
     @Override
     public boolean equals(Object obj) {
+        if (obj == null) return false;
         if (obj instanceof OnmsHwEntityAttribute) {
-            OnmsHwEntityAttribute other = (OnmsHwEntityAttribute) obj;
-            if (m_attributeType != null &&  other.m_attributeType != null && m_attributeType.equals(other.m_attributeType)) {
-                if (m_hwEntity != null &&  other.m_hwEntity != null && m_hwEntity.equals(other.m_hwEntity)) {
-                    return true;
-                }
-            }
+            return toString().equals(obj.toString());
         }
         return false;
     }
 
     @Override
     public int compareTo(OnmsHwEntityAttribute o) {
-        return o.getType().compareTo(getType());
+        return getTypeName().compareTo(o.getTypeName());
     }
 
 }

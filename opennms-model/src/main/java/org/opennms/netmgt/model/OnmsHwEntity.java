@@ -29,9 +29,11 @@
 package org.opennms.netmgt.model;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
-import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -55,17 +57,18 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang.builder.ToStringStyle;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.core.style.ToStringCreator;
 
 @XmlRootElement(name = "hwEntity")
 @Entity
 @Table(name="hwEntity")
 @XmlAccessorType(XmlAccessType.NONE)
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-public class OnmsHwEntity implements Serializable {
+public class OnmsHwEntity implements Serializable, Comparable<OnmsHwEntity> {
     private static final Logger LOG = LoggerFactory.getLogger(OnmsHwEntity.class);
 
     private static final long serialVersionUID = -543872118396806431L;
@@ -94,11 +97,11 @@ public class OnmsHwEntity implements Serializable {
 
     private OnmsNode m_node;
 
-    private Set<OnmsHwEntityAttribute> m_hwAttributes = new LinkedHashSet<OnmsHwEntityAttribute>();
+    private List<OnmsHwEntityAttribute> m_hwAttributes = new ArrayList<OnmsHwEntityAttribute>();
 
     private OnmsHwEntity m_parent;
 
-    private Set<OnmsHwEntity> m_children = new LinkedHashSet<OnmsHwEntity>();
+    private List<OnmsHwEntity> m_children = new ArrayList<OnmsHwEntity>();
 
     public OnmsHwEntity() {
     }
@@ -327,11 +330,11 @@ public class OnmsHwEntity implements Serializable {
     @XmlElement(name="hwEntity")
     @XmlElementWrapper(name="children")
     @OneToMany(mappedBy="parent", fetch=FetchType.LAZY, cascade={CascadeType.ALL})
-    public Set<OnmsHwEntity> getChildren() {
+    public List<OnmsHwEntity> getChildren() {
         return m_children;
     }
 
-    public void setChildren(Set<OnmsHwEntity> children) {
+    public void setChildren(List<OnmsHwEntity> children) {
         this.m_children = children;
     }
 
@@ -368,11 +371,11 @@ public class OnmsHwEntity implements Serializable {
     @OneToMany(mappedBy="hwEntity", fetch=FetchType.LAZY, cascade={CascadeType.ALL}, orphanRemoval=true)
     @XmlElement(name="hwEntityAttribute")
     @XmlElementWrapper(name="vendorAttributes")
-    public Set<OnmsHwEntityAttribute> getHwEntityAttributes() {
+    public List<OnmsHwEntityAttribute> getHwEntityAttributes() {
         return m_hwAttributes;
     }
 
-    public void setHwEntityAttributes(Set<OnmsHwEntityAttribute> hwAttributes) {
+    public void setHwEntityAttributes(List<OnmsHwEntityAttribute> hwAttributes) {
         m_hwAttributes = hwAttributes;
     }
 
@@ -412,11 +415,23 @@ public class OnmsHwEntity implements Serializable {
 
     @Override
     public String toString() {
-        return new ToStringCreator(this)
-        .append("id", m_id)
-        .append("parent", m_parent)
+        return new ToStringBuilder(this.getClass().getSimpleName(), ToStringStyle.SHORT_PREFIX_STYLE)
+        .append("parent", getParentId())
         .append("nodeId", m_node == null ? null : m_node.getId())
         .append("entPhysicalIndex", m_entPhysicalIndex)
+        .append("entPhysicalName", m_entPhysicalName)
+        .append("entPhysicalDescr", m_entPhysicalDescr)
+        .append("entPhysicalAlias", m_entPhysicalAlias)
+        .append("entPhysicalVendorType", m_entPhysicalVendorType)
+        .append("entPhysicalClass", m_entPhysicalClass)
+        .append("entPhysicalMfgName", m_entPhysicalMfgName)
+        .append("entPhysicalModelName", m_entPhysicalModelName)
+        .append("entPhysicalHardwareRev", m_entPhysicalHardwareRev)
+        .append("entPhysicalFirmwareRev", m_entPhysicalFirmwareRev)
+        .append("entPhysicalSoftwareRev", m_entPhysicalSoftwareRev)
+        .append("entPhysicalSerialNum", m_entPhysicalSerialNum)
+        .append("vendorAttributes", m_hwAttributes.toString())
+        .append("children", m_children.toString())
         .toString();
     }
 
@@ -427,15 +442,16 @@ public class OnmsHwEntity implements Serializable {
 
     @Override
     public boolean equals(Object obj) {
+        if (obj == null) return false;
         if (obj instanceof OnmsHwEntity) {
-            OnmsHwEntity other = (OnmsHwEntity) obj;
-            if (m_entPhysicalIndex != null &&  other.m_entPhysicalIndex != null && m_entPhysicalIndex.equals(other.m_entPhysicalIndex)) {
-                if (m_node != null &&  other.m_node != null && m_node.getId().equals(other.m_node.getId())) {
-                    return true;
-                }
-            }
+            return toString().equals(obj.toString());
         }
         return false;
+    }
+
+    @Override
+    public int compareTo(OnmsHwEntity o) {
+        return getEntPhysicalName().compareTo(o.getEntPhysicalName());
     }
 
 }
