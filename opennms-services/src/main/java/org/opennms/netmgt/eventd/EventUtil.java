@@ -1152,7 +1152,7 @@ public abstract class EventUtil {
         if (isCustomAttr) {
             sql = "SELECT a.attribValue FROM hwEntityAttribute a, hwEntity h, hwEntityAttributeType t WHERE h.nodeId = " + String.valueOf(nodeId) + " AND a.hwEntityId = h.id AND a.hwAttribTypeId = t.id AND t.attribName = '" + parts[1] + "'";
         } else {
-            sql = "SELECT " + parts[1] + " + FROM hwEntity WHERE nodeId = " + String.valueOf(nodeId);
+            sql = "SELECT " + parts[1] + " FROM hwEntity WHERE nodeId = " + String.valueOf(nodeId);
         }
         if (parts[0].matches("^\\d+$")) {
             // entPhysicalIndex
@@ -1165,16 +1165,16 @@ public abstract class EventUtil {
             if (parts[0].startsWith("~")) {
                 // ~regexOverEntPhysicalName
                 if (isCustomAttr) {
-                    sql = " AND h.entPhysicalName ~ '" + parts[0].substring(1) + "'";
+                    sql += " AND h.entPhysicalName ~ '" + parts[0].substring(1) + "'";
                 } else {
-                    sql = " AND entPhysicalName ~ '" + parts[0].substring(1) + "'";
+                    sql += " AND entPhysicalName ~ '" + parts[0].substring(1) + "'";
                 }
             } else {
                 // entPhysicalName
                 if (isCustomAttr) {
-                    sql = " AND h.entPhysicalName = '" + parts[0] + "'";
+                    sql += " AND h.entPhysicalName = '" + parts[0] + "'";
                 } else {
-                    sql = " AND entPhysicalName = '" + parts[0] + "'";
+                    sql += " AND entPhysicalName = '" + parts[0] + "'";
                 }
             }
         }
