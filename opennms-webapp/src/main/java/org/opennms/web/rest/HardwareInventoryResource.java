@@ -28,6 +28,9 @@
 
 package org.opennms.web.rest;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -40,9 +43,12 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Response.Status;
 
+import org.opennms.netmgt.dao.api.HwEntityAttributeTypeDao;
 import org.opennms.netmgt.dao.api.HwEntityDao;
 import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.model.HwEntityAttributeType;
 import org.opennms.netmgt.model.OnmsHwEntity;
+import org.opennms.netmgt.model.OnmsHwEntityAttribute;
 import org.opennms.netmgt.model.OnmsNode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -64,8 +70,11 @@ public class HardwareInventoryResource extends OnmsRestService {
     @Autowired
     private HwEntityDao m_hwEntityDao;
 
+    @Autowired
+    private HwEntityAttributeTypeDao m_hwEntityAttribTypeDao;
+
     @Context 
-    UriInfo m_uriInfo;
+    private UriInfo m_uriInfo;
 
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
@@ -99,15 +108,40 @@ public class HardwareInventoryResource extends OnmsRestService {
                 throw getException(Status.BAD_REQUEST, "setHardwareInventory: Can't find node " + nodeCriteria);
             }
             entity.setNode(node);
+            entity.fixRelationships();
+
+            Map<String,HwEntityAttributeType> typesMap = new HashMap<String, HwEntityAttributeType>();
+            updateTypes(typesMap, entity);
+            m_hwEntityAttribTypeDao.flush();
+
             OnmsHwEntity existing = m_hwEntityDao.findRootByNodeId(node.getId());
             if (existing != null && !entity.equals(existing)) {
                 m_hwEntityDao.delete(existing);
                 m_hwEntityDao.flush();
             }
             m_hwEntityDao.save(entity);
+
             return Response.seeOther(m_uriInfo.getRequestUriBuilder().path(node.getNodeId()).build()).build();
         } finally {
             writeUnlock();
+        }
+    }
+
+    private void updateTypes(Map<String, HwEntityAttributeType> typesMap, OnmsHwEntity entity) {
+        for (OnmsHwEntityAttribute a : entity.getHwEntityAttributes()) {
+            final String typeName = a.getTypeName();
+            if (!typesMap.containsKey(typeName)) {
+                HwEntityAttributeType t = m_hwEntityAttribTypeDao.findTypeByName(typeName);
+                if (t == null) {
+                    t = a.getType();
+                    m_hwEntityAttribTypeDao.save(t);
+                }
+                typesMap.put(t.getName(), t);
+            }
+            a.setType(typesMap.get(typeName));
+        }
+        for (OnmsHwEntity child : entity.getChildren()) {
+            updateTypes(typesMap, child);
         }
     }
 

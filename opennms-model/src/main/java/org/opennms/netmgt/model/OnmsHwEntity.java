@@ -355,14 +355,12 @@ public class OnmsHwEntity implements Serializable, Comparable<OnmsHwEntity> {
     }
 
     private void setNodeRecursively(OnmsHwEntity entity, OnmsNode node) {
-        for (OnmsHwEntity e : entity.getChildren()) {
-            if (e.getNode() == null) {
-                LOG.trace("Setting nodeId {} on entity {} contained in {}", node.getId(), e.getEntPhysicalIndex(), e.getEntPhysicalContainedIn());
-                e.setNode(node);
+        for (OnmsHwEntity child : entity.getChildren()) {
+            if (child.getNode() == null) {
+                LOG.trace("Setting nodeId {} on entity {} contained in {}", node.getId(), child.getEntPhysicalIndex(), child.getEntPhysicalContainedIn());
+                child.setNode(node);
             }
-            if (e.hasChildren()) {
-                setNodeRecursively(e, node);
-            }
+            setNodeRecursively(child, node);
         }
     }
 
@@ -452,4 +450,13 @@ public class OnmsHwEntity implements Serializable, Comparable<OnmsHwEntity> {
         return getEntPhysicalName().compareTo(o.getEntPhysicalName());
     }
 
+    public void fixRelationships() {
+        for (OnmsHwEntityAttribute attrib : m_hwAttributes) {
+            attrib.setHwEntity(this);
+        }
+        for (OnmsHwEntity child : m_children) {
+            child.setParent(this);
+            child.fixRelationships();
+        }
+    }
 }

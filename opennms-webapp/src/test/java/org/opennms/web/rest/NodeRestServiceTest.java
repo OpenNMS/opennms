@@ -34,7 +34,10 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.opennms.core.test.xml.XmlTest.assertXpathMatches;
 
+import java.io.File;
 import java.io.StringReader;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
@@ -56,6 +59,7 @@ import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.rest.AbstractSpringJerseyRestTestCase;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.model.OnmsCategory;
+import org.opennms.netmgt.model.OnmsHwEntity;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsNodeList;
 import org.opennms.test.JUnitConfigurationEnvironment;
@@ -464,16 +468,11 @@ public class NodeRestServiceTest extends AbstractSpringJerseyRestTestCase {
     @JUnitTemporaryDatabase
     public void testHardwareInventory() throws Exception {
         createIpInterface();
-        String entity = "<hwEntity parentId=\"0\" entPhysicalIndex=\"1\">" +
-        "<entPhysicalClass>chassis</entPhysicalClass>" +
-        "<entPhysicalDescr>3620 chassis, Hw Serial#: 0, Hw Revision: 0xFF</entPhysicalDescr>" +
-        "<entPhysicalName></entPhysicalName>" +
-        "<entPhysicalParentRelPos>-1</entPhysicalParentRelPos>" +
-        "<entPhysicalVendorType>.1.3.6.1.4.1.9.12.3.1.3.43</entPhysicalVendorType>" +
-        "</hwEntity>";
+        byte[] encoded = Files.readAllBytes(Paths.get("src/test/resources/hardware-inventory.xml"));
+        String entity = new String(encoded, "UTF-8");
         sendPost("/nodes/1/hardwareInventory", entity, 303, null);
         String xml = sendRequest(GET, "/nodes/1/hardwareInventory", 200);
-        assertTrue(xml, xml.contains(".1.3.6.1.4.1.9.12.3.1.3.43"));
+        assertTrue(xml, xml.contains("Cisco 7206VXR, 6-slot chassis"));
     }
 
     @Override

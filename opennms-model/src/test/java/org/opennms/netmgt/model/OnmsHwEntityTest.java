@@ -31,6 +31,7 @@ package org.opennms.netmgt.model;
 import junit.framework.Assert;
 
 import org.junit.Test;
+import org.opennms.core.xml.JaxbUtils;
 
 public class OnmsHwEntityTest {
 
@@ -44,6 +45,51 @@ public class OnmsHwEntityTest {
         Assert.assertFalse(r1.equals(r2));
         Assert.assertFalse(r1.equals(r4));
         Assert.assertFalse(r1.equals(null));
+    }
+
+    @Test
+    public void testTypes() {
+        HwEntityAttributeType cpu = new HwEntityAttributeType(".1.1.1.1", "cpu", "integer");
+        HwEntityAttributeType mem = new HwEntityAttributeType(".1.1.1.2", "mem", "integer");
+
+        OnmsHwEntity e = new OnmsHwEntity();
+        e.setId(1);
+        e.setEntPhysicalIndex(1);
+        e.setEntPhysicalName("Chassis");
+        e.addAttribute(cpu, "2");
+        e.addAttribute(mem, "128");
+
+        OnmsHwEntity c = new OnmsHwEntity();
+        c.setId(2);
+        c.setEntPhysicalIndex(2);
+        c.setEntPhysicalName("Module");
+        c.addAttribute(cpu, "1");
+        c.addAttribute(mem, "64");
+        e.addChildEntity(c);
+
+        OnmsNode n = new OnmsNode();
+        n.setId(1);
+        n.setLabel("n1");
+        e.setNode(n);
+
+        String xml = JaxbUtils.marshal(e);
+
+        OnmsHwEntity h = JaxbUtils.unmarshal(OnmsHwEntity.class, xml);
+        h.fixRelationships();
+
+        Assert.assertNotNull(h);
+        Assert.assertEquals(1,  h.getChildren().size());
+        checkAttributes(h);
+        checkAttributes(h.getChildren().get(0));
+
+        Assert.assertEquals(e, h);
+    }
+
+    private void checkAttributes(OnmsHwEntity h) {
+        for (OnmsHwEntityAttribute a : h.getHwEntityAttributes()) {
+            Assert.assertNotNull(a.getHwEntity());
+            Assert.assertNotNull(a.getType());
+        }
     }
 
     private OnmsHwEntity createEntity(String rootName, String childName1, String childName2, String ... attributes) {

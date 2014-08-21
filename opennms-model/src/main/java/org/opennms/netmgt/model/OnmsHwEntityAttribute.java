@@ -62,7 +62,7 @@ public class OnmsHwEntityAttribute implements Serializable, Comparable<OnmsHwEnt
 
     private Integer m_id;
 
-    private HwEntityAttributeType m_attributeType;
+    private HwEntityAttributeType m_attributeType = new HwEntityAttributeType();
 
     private String m_attributeValue;
 
@@ -115,13 +115,31 @@ public class OnmsHwEntityAttribute implements Serializable, Comparable<OnmsHwEnt
     @Transient
     @XmlAttribute(name="name")
     public String getTypeName() {
-        return m_attributeType == null ? null : m_attributeType.getName();
+        return m_attributeType.getName();
+    }
+
+    public void setTypeName(String typeName) {
+        m_attributeType.setName(typeName);
     }
 
     @Transient
     @XmlAttribute(name="oid")
     public String getTypeOid() {
-        return m_attributeType == null ? null : m_attributeType.getOid();
+        return m_attributeType.getOid();
+    }
+
+    public void setTypeOid(String typeOid) {
+        m_attributeType.setOid(typeOid);
+    }
+
+    @Transient
+    @XmlAttribute(name="class")
+    public String getTypeClass() {
+        return m_attributeType.getAttributeClass();
+    }
+
+    public void setTypeClass(String typeClass) {
+        m_attributeType.setAttributeClass(typeClass);
     }
 
     @Column(name="attribValue")

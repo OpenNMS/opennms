@@ -62,7 +62,7 @@ public class HwEntityAttributeType implements Serializable, Comparable<HwEntityA
     
     private String m_attributeName;
 
-    private String m_attributeClass;
+    private String m_attributeClass = "string";
 
     public HwEntityAttributeType() {
     }
