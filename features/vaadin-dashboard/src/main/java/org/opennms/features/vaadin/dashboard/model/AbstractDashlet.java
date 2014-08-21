@@ -60,6 +60,12 @@ public class AbstractDashlet implements Dashlet {
         m_dashletSpec = dashletSpec;
     }
 
+    private final void updateWallboard() {
+    }
+
+    private final void updateDashboard() {
+    }
+
     @Override
     public boolean isBoosted() {
         return false;

@@ -297,4 +297,27 @@ public class WmiClient implements IWmiClient {
     public static Date convertWmiDate(final String dateStr) throws ParseException {
         return new SimpleDateFormat("yyyyMMddHHmmss.ssssss+000").parse(dateStr);
     }
+
+    // TODO This needs to be completed.
+    @SuppressWarnings("unused")
+    private static boolean isNumeric(final String str) {
+        try {
+            Integer.parseInt(str);
+            return true;
+        } catch (final NumberFormatException nfe) {
+            return false;
+        }
+    }
+
+    // TODO this needs to be completed.
+    @SuppressWarnings("unused")
+    private static boolean isDate(final String str) {
+        // Parse the date.
+        try {
+            DateFormat.getDateInstance().parse(str);
+            return true;
+        } catch (final ParseException e) {
+            return false;
+        }
+    }
 }

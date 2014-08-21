@@ -87,6 +87,16 @@ public class OnmsMemo implements Serializable {
     @Column(name = "created")
     @Temporal(TemporalType.TIMESTAMP)
     private Date m_created;
+    
+    @PreUpdate
+    private void preUpdate() {
+        m_updated = new Date();
+    }
+
+    @PrePersist
+    private void prePersist() {
+        m_created = new Date();
+    }
 
     public String getBody() {
         return m_body;
