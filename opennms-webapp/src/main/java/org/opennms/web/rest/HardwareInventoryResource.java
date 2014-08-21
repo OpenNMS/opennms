@@ -100,11 +100,11 @@ public class HardwareInventoryResource extends OnmsRestService {
             }
             entity.setNode(node);
             OnmsHwEntity existing = m_hwEntityDao.findRootByNodeId(node.getId());
-            if (!entity.equals(existing)) {
+            if (existing != null && !entity.equals(existing)) {
                 m_hwEntityDao.delete(existing);
                 m_hwEntityDao.flush();
-                m_hwEntityDao.save(entity);
             }
+            m_hwEntityDao.save(entity);
             return Response.seeOther(m_uriInfo.getRequestUriBuilder().path(node.getNodeId()).build()).build();
         } finally {
             writeUnlock();
