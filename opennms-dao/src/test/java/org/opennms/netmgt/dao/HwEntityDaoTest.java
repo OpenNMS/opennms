@@ -49,6 +49,11 @@ import org.springframework.test.context.transaction.AfterTransaction;
 import org.springframework.test.context.transaction.BeforeTransaction;
 import org.springframework.transaction.annotation.Transactional;
 
+/**
+ * The Class HwEntityDaoTest.
+ * 
+ * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
+ */
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
@@ -62,37 +67,58 @@ import org.springframework.transaction.annotation.Transactional;
 @JUnitTemporaryDatabase(dirtiesContext=false)
 public class HwEntityDaoTest implements InitializingBean {
 
+    /** The node DAO. */
     @Autowired
     NodeDao m_nodeDao;
 
+    /** The hardware entity DAO. */
     @Autowired
     HwEntityDao m_hwEntityDao;
 
+    /** The hardware entity attribute type DAO. */
     @Autowired
     HwEntityAttributeTypeDao m_hwEntityAttributeTypeDao;
 
+    /** The database populator. */
     @Autowired
     DatabasePopulator m_populator;
 
+    /* (non-Javadoc)
+     * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
+     */
     @Override
     public void afterPropertiesSet() throws Exception {
         org.opennms.core.spring.BeanUtils.assertAutowiring(this);
     }
 
+    /**
+     * Sets the up.
+     */
     @BeforeTransaction
     public void setUp() {
         m_populator.populateDatabase();
     }
 
+    /**
+     * Tear down.
+     */
     @AfterTransaction
     public void tearDown() {
         m_populator.resetDatabase();
     }
 
+    /**
+     * Gets the node.
+     *
+     * @return the node
+     */
     public OnmsNode getNode() {
         return m_populator.getNode1();
     }
 
+    /**
+     * Test find entity.
+     */
     @Test
     @Transactional
     public void testFindEntity() {
@@ -149,7 +175,6 @@ public class HwEntityDaoTest implements InitializingBean {
 
         OnmsHwEntity e3 = m_hwEntityDao.findEntityByName(node.getId(), e1.getEntPhysicalName());
         Assert.assertTrue(e1.equals(e3));
-
     }
 
 }

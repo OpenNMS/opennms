@@ -60,6 +60,11 @@ import org.springframework.test.context.transaction.AfterTransaction;
 import org.springframework.test.context.transaction.BeforeTransaction;
 import org.springframework.transaction.annotation.Transactional;
 
+/**
+ * The Class HardwareInventoryProvisioningAdapterTest.
+ * 
+ * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
+ */
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations= {
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
@@ -81,9 +86,23 @@ import org.springframework.transaction.annotation.Transactional;
 })
 public class HardwareInventoryProvisioningAdapterTest implements InitializingBean {
 
+    /**
+     * The Class TestOperation.
+     */
     public final static class TestOperation {
+
+        /** The node id. */
         public Integer nodeId;
+
+        /** The operation. */
         public AdapterOperation operation;
+
+        /**
+         * The Constructor.
+         *
+         * @param nodeId the node id
+         * @param operation the operation
+         */
         public TestOperation(Integer nodeId, AdapterOperation operation) {
             super();
             this.nodeId = nodeId;
@@ -91,22 +110,34 @@ public class HardwareInventoryProvisioningAdapterTest implements InitializingBea
         }
     }
 
+    /** The m_adapter. */
     @Autowired
     private HardwareInventoryProvisioningAdapter m_adapter;
 
+    /** The node DAO. */
     @Autowired
     private NodeDao m_nodeDao;
 
+    /** The entity DAO. */
     @Autowired
     private HwEntityDao m_entityDao;
 
+    /** The operations. */
     private List<TestOperation> m_operations = new ArrayList<TestOperation>();
 
+    /* (non-Javadoc)
+     * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
+     */
     @Override
     public void afterPropertiesSet() throws Exception {
         BeanUtils.assertAutowiring(this);
     }
 
+    /**
+     * Sets the up.
+     *
+     * @throws Exception the exception
+     */
     @BeforeTransaction
     public void setUp() throws Exception {
         MockLogAppender.setupLogging(true);
@@ -141,11 +172,21 @@ public class HardwareInventoryProvisioningAdapterTest implements InitializingBea
         }
     }
 
+    /**
+     * Tear down.
+     *
+     * @throws Exception the exception
+     */
     @AfterTransaction
     public void tearDown() throws Exception{
         MockLogAppender.assertNoWarningsOrGreater();
     }
 
+    /**
+     * Test discover SNMP entities.
+     *
+     * @throws Exception the exception
+     */
     @Test
     @Transactional
     public void testDiscoverSnmpEntities() throws Exception {

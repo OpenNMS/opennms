@@ -43,26 +43,54 @@ import org.opennms.netmgt.snmp.TableTracker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * The Class EntityPhysicalTableTracker.
+ * 
+ * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
+ */
 public class EntityPhysicalTableTracker extends TableTracker {
+
+    /** The Constant LOG. */
     private static final Logger LOG = LoggerFactory.getLogger(EntityPhysicalTableTracker.class);
 
+    /** The entities. */
     private List<OnmsHwEntity> entities = new ArrayList<OnmsHwEntity>();
+
+    /** The vendor attributes. */
     private Map<SnmpObjId, HwEntityAttributeType> vendorAttributes = new HashMap<SnmpObjId, HwEntityAttributeType>();
 
+    /**
+     * The Constructor.
+     *
+     * @param vendorAttributes the vendor attributes
+     * @param oids the OIDs
+     */
     public EntityPhysicalTableTracker(Map<SnmpObjId, HwEntityAttributeType> vendorAttributes, SnmpObjId[] oids) {
         super(oids);
         this.vendorAttributes = vendorAttributes;
     }
 
+    /**
+     * The Constructor.
+     *
+     * @param rowProcessor the row processor
+     * @param oids the OIDs
+     */
     public EntityPhysicalTableTracker(RowCallback rowProcessor, SnmpObjId[] oids) {
         super(rowProcessor, oids);
     }
 
+    /* (non-Javadoc)
+     * @see org.opennms.netmgt.snmp.TableTracker#createRowResult(int, org.opennms.netmgt.snmp.SnmpInstId)
+     */
     @Override
     public SnmpRowResult createRowResult(int columnCount, SnmpInstId instance) {
         return new EntityPhysicalTableRow(vendorAttributes, columnCount, instance);
     }
 
+    /* (non-Javadoc)
+     * @see org.opennms.netmgt.snmp.TableTracker#rowCompleted(org.opennms.netmgt.snmp.SnmpRowResult)
+     */
     @Override
     public void rowCompleted(SnmpRowResult row) {
         OnmsHwEntity entity = ((EntityPhysicalTableRow) row).getOnmsHwEntity();
@@ -78,6 +106,11 @@ public class EntityPhysicalTableTracker extends TableTracker {
         entities.add(entity);
     }
 
+    /**
+     * Gets the root entity.
+     *
+     * @return the root entity
+     */
     public OnmsHwEntity getRootEntity() {
         for (OnmsHwEntity entity : entities) {
             if (entity.isRoot()) {

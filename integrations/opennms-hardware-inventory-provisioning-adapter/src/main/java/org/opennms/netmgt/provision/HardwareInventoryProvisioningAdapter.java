@@ -59,25 +59,51 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 
+/**
+ * The Class HardwareInventoryProvisioningAdapter.
+ * 
+ * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
+ */
 @EventListener(name=HardwareInventoryProvisioningAdapter.NAME)
 public class HardwareInventoryProvisioningAdapter extends SimplerQueuedProvisioningAdapter implements InitializingBean {
+
+    /** The Constant LOG. */
     private static final Logger LOG = LoggerFactory.getLogger(HardwareInventoryProvisioningAdapter.class);
 
-    private NodeDao m_nodeDao;
-    private HwEntityDao m_hwEntityDao;
-    private HwEntityAttributeTypeDao m_hwEntityAttributeTypeDao;
-    private EventForwarder m_eventForwarder;
-    private SnmpAgentConfigFactory m_snmpConfigDao;
-    private HwInventoryAdapterConfigurationDao m_hwInventoryAdapterConfigurationDao;
-
-    private Map<SnmpObjId, HwEntityAttributeType> m_vendorAttributes = new HashMap<SnmpObjId, HwEntityAttributeType>();
-
+    /** The Constant NAME. */
     public static final String NAME = "HardwareInventoryProvisioningAdapter";
 
+    /** The node DAO. */
+    private NodeDao m_nodeDao;
+
+    /** The hardware entity DAO. */
+    private HwEntityDao m_hwEntityDao;
+
+    /** The hardware entity attribute type DAO. */
+    private HwEntityAttributeTypeDao m_hwEntityAttributeTypeDao;
+
+    /** The event forwarder. */
+    private EventForwarder m_eventForwarder;
+
+    /** The SNMP configuration DAO. */
+    private SnmpAgentConfigFactory m_snmpConfigDao;
+
+    /** The hardware inventory adapter configuration DAO. */
+    private HwInventoryAdapterConfigurationDao m_hwInventoryAdapterConfigurationDao;
+
+    /** The vendor attributes. */
+    private Map<SnmpObjId, HwEntityAttributeType> m_vendorAttributes = new HashMap<SnmpObjId, HwEntityAttributeType>();
+
+    /**
+     * The Constructor.
+     */
     public HardwareInventoryProvisioningAdapter() {
         super(NAME);
     }
 
+    /* (non-Javadoc)
+     * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
+     */
     @Override
     public void afterPropertiesSet() throws Exception {
         Assert.notNull(m_nodeDao, "Node DAO cannot be null");
@@ -89,18 +115,29 @@ public class HardwareInventoryProvisioningAdapter extends SimplerQueuedProvision
         initializeVendorAttributes();
     }
 
+    /* (non-Javadoc)
+     * @see org.opennms.netmgt.provision.SimplerQueuedProvisioningAdapter#doAddNode(int)
+     */
     @Override
     public void doAddNode(final int nodeId) throws ProvisioningAdapterException {
         LOG.debug("doAdd: adding nodeid: {}", nodeId);
         synchronizeInventory(nodeId);
     }
 
+    /* (non-Javadoc)
+     * @see org.opennms.netmgt.provision.SimplerQueuedProvisioningAdapter#doUpdateNode(int)
+     */
     @Override
     public void doUpdateNode(final int nodeId) throws ProvisioningAdapterException {
         LOG.debug("doUpdate: updating nodeid: {}", nodeId);
         synchronizeInventory(nodeId);
     }
 
+    /**
+     * Synchronize inventory.
+     *
+     * @param nodeId the node id
+     */
     private void synchronizeInventory(int nodeId) {
         final OnmsNode node = m_nodeDao.get(nodeId);
         if (node == null) {
@@ -119,7 +156,6 @@ public class HardwareInventoryProvisioningAdapter extends SimplerQueuedProvision
             if (node.getSysObjectId() == null) {
                 LOG.warn("Skiping hardware discover because the node {} doesn't support SNMP", nodeId);
                 return;
-                // TODO, use ScriptEntityPlugin
             } else {
                 SnmpAgentConfig agentConfig = m_snmpConfigDao.getAgentConfig(ipAddress);
                 plugin = new SnmpEntityPlugin(m_hwInventoryAdapterConfigurationDao.getConfiguration(), m_vendorAttributes, agentConfig, node.getSysObjectId());
@@ -155,6 +191,9 @@ public class HardwareInventoryProvisioningAdapter extends SimplerQueuedProvision
         }
     }
 
+    /**
+     * Initialize vendor attributes.
+     */
     private void initializeVendorAttributes() {
         m_vendorAttributes.clear();
         for (HwEntityAttributeType type : m_hwEntityAttributeTypeDao.findAll()) {
@@ -173,64 +212,135 @@ public class HardwareInventoryProvisioningAdapter extends SimplerQueuedProvision
         }
     }
 
+    /* (non-Javadoc)
+     * @see org.opennms.netmgt.provision.SimplerQueuedProvisioningAdapter#doNotifyConfigChange(int)
+     */
     @Override
     public void doNotifyConfigChange(final int nodeId) throws ProvisioningAdapterException {
         LOG.debug("doNodeConfigChanged: nodeid: {}", nodeId);
     }
 
+    /**
+     * Gets the hardware entity DAO.
+     *
+     * @return the hardware entity DAO
+     */
     public HwEntityDao getHwEntityDao() {
         return m_hwEntityDao;
     }
 
+    /**
+     * Sets the hardware entity DAO.
+     *
+     * @param hwEntityDao the hardware entity DAO
+     */
     public void setHwEntityDao(HwEntityDao hwEntityDao) {
         this.m_hwEntityDao = hwEntityDao;
     }
 
+    /**
+     * Gets the hardware entity attribute type DAO.
+     *
+     * @return the hardware entity attribute type DAO
+     */
     public HwEntityAttributeTypeDao getHwEntityAttributeTypeDao() {
         return m_hwEntityAttributeTypeDao;
     }
 
+    /**
+     * Sets the hardware entity attribute type DAO.
+     *
+     * @param hwEntityAttributeTypeDao the hardware entity attribute type DAO
+     */
     public void setHwEntityAttributeTypeDao(HwEntityAttributeTypeDao hwEntityAttributeTypeDao) {
         this.m_hwEntityAttributeTypeDao = hwEntityAttributeTypeDao;
     }
 
+    /**
+     * Gets the node DAO.
+     *
+     * @return the node DAO
+     */
     public NodeDao getNodeDao() {
         return m_nodeDao;
     }
 
+    /**
+     * Sets the node DAO.
+     *
+     * @param dao the node DAO
+     */
     public void setNodeDao(final NodeDao dao) {
         m_nodeDao = dao;
     }
 
+    /**
+     * Gets the event forwarder.
+     *
+     * @return the event forwarder
+     */
     public EventForwarder getEventForwarder() {
         return m_eventForwarder;
     }
 
+    /**
+     * Sets the event forwarder.
+     *
+     * @param eventForwarder the event forwarder
+     */
     public void setEventForwarder(final EventForwarder eventForwarder) {
         m_eventForwarder = eventForwarder;
     }
 
+    /**
+     * Gets the SNMP peer factory.
+     *
+     * @return the SNMP peer factory
+     */
     public SnmpAgentConfigFactory getSnmpPeerFactory() {
         return m_snmpConfigDao;
     }
 
+    /**
+     * Sets the SNMP peer factory.
+     *
+     * @param snmpConfigDao the SNMP peer factory
+     */
     public void setSnmpPeerFactory(final SnmpAgentConfigFactory snmpConfigDao) {
         this.m_snmpConfigDao = snmpConfigDao;
     }
 
+    /**
+     * Gets the hardware adapter configuration DAO.
+     *
+     * @return the hardware adapter configuration DAO
+     */
     public HwInventoryAdapterConfigurationDao getHwAdapterConfigurationDao() {
         return m_hwInventoryAdapterConfigurationDao;
     }
 
+    /**
+     * Sets the hardware inventory adapter configuration DAO.
+     *
+     * @param hwInventoryAdapterConfigurationDao the hardware inventory adapter configuration DAO
+     */
     public void setHwInventoryAdapterConfigurationDao(HwInventoryAdapterConfigurationDao hwInventoryAdapterConfigurationDao) {
         this.m_hwInventoryAdapterConfigurationDao = hwInventoryAdapterConfigurationDao;
     }
 
+    /* (non-Javadoc)
+     * @see org.opennms.netmgt.provision.SimplerQueuedProvisioningAdapter#getName()
+     */
     @Override
     public String getName() {
         return NAME;
     }
 
+    /**
+     * Handle reload configuration event.
+     *
+     * @param event the event
+     */
     @EventHandler(uei = EventConstants.RELOAD_DAEMON_CONFIG_UEI)
     public void handleReloadConfigEvent(final Event event) {
         if (isReloadConfigEventTarget(event)) {
@@ -253,6 +363,12 @@ public class HardwareInventoryProvisioningAdapter extends SimplerQueuedProvision
         }
     }
 
+    /**
+     * Checks if is reload configuration event target.
+     *
+     * @param event the event
+     * @return true, if checks if is reload configuration event target
+     */
     private boolean isReloadConfigEventTarget(final Event event) {
         boolean isTarget = false;
         for (final Parm parm : event.getParmCollection()) {

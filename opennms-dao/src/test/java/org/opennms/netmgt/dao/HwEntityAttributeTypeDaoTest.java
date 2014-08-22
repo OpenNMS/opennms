@@ -45,6 +45,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
+/**
+ * The Class HwEntityAttributeTypeDaoTest.
+ * 
+ * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
+ */
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
@@ -58,14 +63,21 @@ import org.springframework.transaction.annotation.Transactional;
 @JUnitTemporaryDatabase(dirtiesContext=false)
 public class HwEntityAttributeTypeDaoTest implements InitializingBean {
 
+    /** The m_hw entity attribute type dao. */
     @Autowired
     HwEntityAttributeTypeDao m_hwEntityAttributeTypeDao;
 
+    /* (non-Javadoc)
+     * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
+     */
     @Override
     public void afterPropertiesSet() throws Exception {
         org.opennms.core.spring.BeanUtils.assertAutowiring(this);
     }
 
+    /**
+     * Test save type.
+     */
     @Test
     @Transactional
     public void testSaveType() {

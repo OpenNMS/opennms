@@ -30,12 +30,37 @@ package org.opennms.netmgt.dao.api;
 
 import org.opennms.netmgt.model.OnmsHwEntity;
 
+/**
+ * The Interface HwEntityDao.
+ * 
+ * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
+ */
 public interface HwEntityDao extends OnmsDao<OnmsHwEntity, Integer> {
 
+    /**
+     * Find root by node id.
+     *
+     * @param nodeId the node id
+     * @return the OpenNMS hardware entity
+     */
     public OnmsHwEntity findRootByNodeId(Integer nodeId);
 
+    /**
+     * Find entity by index.
+     *
+     * @param nodeId the node id
+     * @param entPhysicalIndex the entity physical index
+     * @return the OpenNMS hardware entity
+     */
     public OnmsHwEntity findEntityByIndex(Integer nodeId, Integer entPhysicalIndex);
 
+    /**
+     * Find entity by name.
+     *
+     * @param nodeId the node id
+     * @param entPhysicalName the entity physical name
+     * @return the OpenNMS hardware entity
+     */
     public OnmsHwEntity findEntityByName(Integer nodeId, String entPhysicalName);
 
 }

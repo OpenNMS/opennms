@@ -31,17 +31,31 @@ package org.opennms.netmgt.dao.hibernate;
 import org.opennms.netmgt.dao.api.HwEntityAttributeTypeDao;
 import org.opennms.netmgt.model.HwEntityAttributeType;
 
+/**
+ * The Class HwEntityAttributeTypeDaoHibernate.
+ * 
+ * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
+ */
 public class HwEntityAttributeTypeDaoHibernate extends AbstractDaoHibernate<HwEntityAttributeType, Integer> implements HwEntityAttributeTypeDao {
 
+    /**
+     * The Constructor.
+     */
     public HwEntityAttributeTypeDaoHibernate() {
         super(HwEntityAttributeType.class);
     }
 
+    /* (non-Javadoc)
+     * @see org.opennms.netmgt.dao.api.HwEntityAttributeTypeDao#findTypeByName(java.lang.String)
+     */
     @Override
     public HwEntityAttributeType findTypeByName(String name) {
         return (HwEntityAttributeType) findUnique("from HwEntityAttributeType t where t.name = ?", name);
     }
 
+    /* (non-Javadoc)
+     * @see org.opennms.netmgt.dao.api.HwEntityAttributeTypeDao#findTypeByOid(java.lang.String)
+     */
     @Override
     public HwEntityAttributeType findTypeByOid(String oid) {
         return (HwEntityAttributeType) findUnique("from HwEntityAttributeType t where t.oid = ?", oid);

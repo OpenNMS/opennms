@@ -28,26 +28,59 @@
 
 package org.opennms.netmgt.provision.plugin;
 
+/**
+ * The Class EntityPluginException.
+ * 
+ * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
+ */
 public class EntityPluginException extends Exception {
 
+    /** The Constant serialVersionUID. */
     private static final long serialVersionUID = 915744339081242021L;
 
+    /**
+     * The Constructor.
+     */
     public EntityPluginException() {
         super();
     }
 
+    /**
+     * The Constructor.
+     *
+     * @param message the message
+     * @param cause the cause
+     * @param enableSuppression the enable suppression
+     * @param writableStackTrace the writable stack trace
+     */
     public EntityPluginException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
         super(message, cause, enableSuppression, writableStackTrace);
     }
 
+    /**
+     * The Constructor.
+     *
+     * @param message the message
+     * @param cause the cause
+     */
     public EntityPluginException(String message, Throwable cause) {
         super(message, cause);
     }
 
+    /**
+     * The Constructor.
+     *
+     * @param message the message
+     */
     public EntityPluginException(String message) {
         super(message);
     }
 
+    /**
+     * The Constructor.
+     *
+     * @param cause the cause
+     */
     public EntityPluginException(Throwable cause) {
         super(cause);
     }

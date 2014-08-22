@@ -47,15 +47,36 @@ import org.opennms.netmgt.snmp.SnmpWalker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * The Class SnmpEntityPlugin.
+ * 
+ * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
+ */
 public class SnmpEntityPlugin implements EntityPlugin {
 
+    /** The Constant LOG. */
     private static final Logger LOG = LoggerFactory.getLogger(SnmpEntityPlugin.class);
 
+    /** The agent configuration. */
     private SnmpAgentConfig agentConfig;
+
+    /** The node system OID. */
     private String nodeSysOid;
+
+    /** The vendor attributes. */
     private Map<SnmpObjId, HwEntityAttributeType> vendorAttributes = new HashMap<SnmpObjId, HwEntityAttributeType>();
+
+    /** The adapter configuration. */
     private HwInventoryAdapterConfiguration adapterConfiguration;
 
+    /**
+     * The Constructor.
+     *
+     * @param adapterConfiguration the adapter configuration
+     * @param vendorAttributes the vendor attributes
+     * @param agentConfig the agent configuration
+     * @param nodeSysOid the node system OID
+     */
     public SnmpEntityPlugin(HwInventoryAdapterConfiguration adapterConfiguration, Map<SnmpObjId, HwEntityAttributeType> vendorAttributes, SnmpAgentConfig agentConfig, String nodeSysOid) {
         this.adapterConfiguration = adapterConfiguration;
         this.vendorAttributes = vendorAttributes;
@@ -63,6 +84,9 @@ public class SnmpEntityPlugin implements EntityPlugin {
         this.nodeSysOid = nodeSysOid;
     }
 
+    /* (non-Javadoc)
+     * @see org.opennms.netmgt.provision.plugin.EntityPlugin#getRootEntity(int, java.net.InetAddress)
+     */
     @Override
     public OnmsHwEntity getRootEntity(int nodeId, InetAddress ipAddress) throws EntityPluginException {
         LOG.debug("getRootEntity: Getting ENTITY-MIB using {}", agentConfig);

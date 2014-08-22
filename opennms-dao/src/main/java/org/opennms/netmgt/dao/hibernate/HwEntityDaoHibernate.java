@@ -31,22 +31,39 @@ package org.opennms.netmgt.dao.hibernate;
 import org.opennms.netmgt.dao.api.HwEntityDao;
 import org.opennms.netmgt.model.OnmsHwEntity;
 
+/**
+ * The Class HwEntityDaoHibernate.
+ * 
+ * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
+ */
 public class HwEntityDaoHibernate extends AbstractDaoHibernate<OnmsHwEntity, Integer> implements HwEntityDao {
 
+    /**
+     * The Constructor.
+     */
     public HwEntityDaoHibernate() {
         super(OnmsHwEntity.class);
     }
 
+    /* (non-Javadoc)
+     * @see org.opennms.netmgt.dao.api.HwEntityDao#findRootByNodeId(java.lang.Integer)
+     */
     @Override
     public OnmsHwEntity findRootByNodeId(Integer nodeId) {
         return (OnmsHwEntity) findUnique("from OnmsHwEntity e where e.parent is null and e.node.id = ?", nodeId);
     }
 
+    /* (non-Javadoc)
+     * @see org.opennms.netmgt.dao.api.HwEntityDao#findEntityByIndex(java.lang.Integer, java.lang.Integer)
+     */
     @Override
     public OnmsHwEntity findEntityByIndex(Integer nodeId, Integer entPhysicalIndex) {
         return (OnmsHwEntity) findUnique("from OnmsHwEntity e where e.node.id = ? and e.entPhysicalIndex = ?", nodeId, entPhysicalIndex);
     }
 
+    /* (non-Javadoc)
+     * @see org.opennms.netmgt.dao.api.HwEntityDao#findEntityByName(java.lang.Integer, java.lang.String)
+     */
     @Override
     public OnmsHwEntity findEntityByName(Integer nodeId, String entPhysicalName) {
         return (OnmsHwEntity) findUnique("from OnmsHwEntity e where e.node.id = ? and e.entPhysicalName = ?", nodeId, entPhysicalName);

@@ -32,8 +32,21 @@ import java.net.InetAddress;
 
 import org.opennms.netmgt.model.OnmsHwEntity;
 
+/**
+ * The Interface EntityPlugin.
+ * 
+ * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
+ */
 public interface EntityPlugin {
 
+    /**
+     * Gets the root entity.
+     *
+     * @param nodeId the node id
+     * @param ipAddress the IP address
+     * @return the root entity
+     * @throws EntityPluginException the entity Plugin exception
+     */
     OnmsHwEntity getRootEntity(int nodeId, InetAddress ipAddress) throws EntityPluginException;
 
 }

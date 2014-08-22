@@ -30,10 +30,27 @@ package org.opennms.netmgt.dao.api;
 
 import org.opennms.netmgt.model.HwEntityAttributeType;
 
+/**
+ * The Interface HwEntityAttributeTypeDao.
+ * 
+ * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
+ */
 public interface HwEntityAttributeTypeDao extends OnmsDao<HwEntityAttributeType, Integer> {
 
+    /**
+     * Find type by name.
+     *
+     * @param name the name
+     * @return the hardware entity attribute type
+     */
     public HwEntityAttributeType findTypeByName(String name);
 
+    /**
+     * Find type by OID.
+     *
+     * @param oid the OID
+     * @return the hardware entity attribute type
+     */
     public HwEntityAttributeType findTypeByOid(String oid);
 
 }

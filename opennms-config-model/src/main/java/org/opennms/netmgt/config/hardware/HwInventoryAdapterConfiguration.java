@@ -38,25 +38,52 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import org.opennms.netmgt.snmp.SnmpObjId;
 
+/**
+ * The Class HwInventoryAdapterConfiguration.
+ * 
+ * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
+ */
 @XmlRootElement(name="hardware-inventory-adapter-configuration")
 @XmlAccessorType(XmlAccessType.NONE)
 public class HwInventoryAdapterConfiguration {
 
+    /** The extensions. */
     List<HwExtension> extensions = new ArrayList<HwExtension>();
 
+    /**
+     * Gets the extensions.
+     *
+     * @return the extensions
+     */
     @XmlElement(name="hw-extension")
     public List<HwExtension> getExtensions() {
         return extensions;
     }
 
+    /**
+     * Sets the extensions.
+     *
+     * @param extensions the extensions
+     */
     public void setExtensions(List<HwExtension> extensions) {
         this.extensions = extensions;
     }
 
+    /**
+     * Adds the extension.
+     *
+     * @param extension the extension
+     */
     public void addExtension(HwExtension extension) {
         extensions.add(extension);
     }
 
+    /**
+     * Gets the vendor oid.
+     *
+     * @param nodeSysOid the node sys oid
+     * @return the vendor oid
+     */
     public List<SnmpObjId> getVendorOid(String nodeSysOid) {
         final List<SnmpObjId> vendorOidList = new ArrayList<SnmpObjId>();
         for (HwExtension ext : getExtensions()) {

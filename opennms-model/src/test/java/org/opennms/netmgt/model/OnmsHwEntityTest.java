@@ -33,8 +33,16 @@ import junit.framework.Assert;
 import org.junit.Test;
 import org.opennms.core.xml.JaxbUtils;
 
+/**
+ * The Class OnmsHwEntityTest.
+ * 
+ * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
+ */
 public class OnmsHwEntityTest {
 
+    /**
+     * Test equals.
+     */
     @Test
     public void testEquals() {
         OnmsHwEntity r1 = createEntity("Chassis", "Processor", "Module", "CPU", "Memory");
@@ -47,6 +55,9 @@ public class OnmsHwEntityTest {
         Assert.assertFalse(r1.equals(null));
     }
 
+    /**
+     * Test types.
+     */
     @Test
     public void testTypes() {
         HwEntityAttributeType cpu = new HwEntityAttributeType(".1.1.1.1", "cpu", "integer");
@@ -85,6 +96,11 @@ public class OnmsHwEntityTest {
         Assert.assertEquals(e, h);
     }
 
+    /**
+     * Check attributes.
+     *
+     * @param h the entity
+     */
     private void checkAttributes(OnmsHwEntity h) {
         for (OnmsHwEntityAttribute a : h.getHwEntityAttributes()) {
             Assert.assertNotNull(a.getHwEntity());
@@ -92,6 +108,15 @@ public class OnmsHwEntityTest {
         }
     }
 
+    /**
+     * Creates the entity.
+     *
+     * @param rootName the root name
+     * @param childName1 the child name1
+     * @param childName2 the child name2
+     * @param attributes the attributes
+     * @return the entity
+     */
     private OnmsHwEntity createEntity(String rootName, String childName1, String childName2, String ... attributes) {
         OnmsHwEntity r1 = new OnmsHwEntity();
         r1.setId(getRandomId());
@@ -125,6 +150,11 @@ public class OnmsHwEntityTest {
         return r1;
     }
 
+    /**
+     * Gets the random id.
+     *
+     * @return the random id
+     */
     public int getRandomId() {
         return 10 + (int)(Math.random()*100); 
     }

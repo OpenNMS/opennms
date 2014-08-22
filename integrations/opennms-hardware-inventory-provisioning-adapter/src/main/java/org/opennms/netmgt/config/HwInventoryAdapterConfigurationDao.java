@@ -30,9 +30,22 @@ package org.opennms.netmgt.config;
 
 import org.opennms.netmgt.config.hardware.HwInventoryAdapterConfiguration;
 
+/**
+ * The Interface HwInventoryAdapterConfigurationDao.
+ * 
+ * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
+ */
 public interface HwInventoryAdapterConfigurationDao {
 
+    /**
+     * Gets the configuration.
+     *
+     * @return the configuration
+     */
     HwInventoryAdapterConfiguration getConfiguration();
-    
+
+    /**
+     * Reload.
+     */
     void reload();
 }

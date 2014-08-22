@@ -38,26 +38,65 @@ import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpRowResult;
 import org.opennms.netmgt.snmp.SnmpValue;
 
+/**
+ * The Class EntityPhysicalTableRow.
+ * 
+ * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
+ */
 public class EntityPhysicalTableRow extends SnmpRowResult {
 
+    /** The Constant entPhysicalDescr. */
     public final static SnmpObjId entPhysicalDescr = SnmpObjId.get(".1.3.6.1.2.1.47.1.1.1.1.2");
+
+    /** The Constant entPhysicalVendorType. */
     public final static SnmpObjId entPhysicalVendorType = SnmpObjId.get(".1.3.6.1.2.1.47.1.1.1.1.3");
+
+    /** The Constant entPhysicalContainedIn. */
     public final static SnmpObjId entPhysicalContainedIn = SnmpObjId.get(".1.3.6.1.2.1.47.1.1.1.1.4");
+
+    /** The Constant entPhysicalClass. */
     public final static SnmpObjId entPhysicalClass = SnmpObjId.get(".1.3.6.1.2.1.47.1.1.1.1.5");
+
+    /** The Constant entPhysicalParentRelPos. */
     public final static SnmpObjId entPhysicalParentRelPos = SnmpObjId.get(".1.3.6.1.2.1.47.1.1.1.1.6");
+
+    /** The Constant entPhysicalName. */
     public final static SnmpObjId entPhysicalName = SnmpObjId.get(".1.3.6.1.2.1.47.1.1.1.1.7");
+
+    /** The Constant entPhysicalHardwareRev. */
     public final static SnmpObjId entPhysicalHardwareRev = SnmpObjId.get(".1.3.6.1.2.1.47.1.1.1.1.8");
+
+    /** The Constant entPhysicalFirmwareRev. */
     public final static SnmpObjId entPhysicalFirmwareRev = SnmpObjId.get(".1.3.6.1.2.1.47.1.1.1.1.9");
+
+    /** The Constant entPhysicalSoftwareRev. */
     public final static SnmpObjId entPhysicalSoftwareRev = SnmpObjId.get(".1.3.6.1.2.1.47.1.1.1.1.10");
+
+    /** The Constant entPhysicalSerialNum. */
     public final static SnmpObjId entPhysicalSerialNum = SnmpObjId.get(".1.3.6.1.2.1.47.1.1.1.1.11");
+
+    /** The Constant entPhysicalMfgName. */
     public final static SnmpObjId entPhysicalMfgName = SnmpObjId.get(".1.3.6.1.2.1.47.1.1.1.1.12");
+
+    /** The Constant entPhysicalModelName. */
     public final static SnmpObjId entPhysicalModelName = SnmpObjId.get(".1.3.6.1.2.1.47.1.1.1.1.13");
+
+    /** The Constant entPhysicalAlias. */
     public final static SnmpObjId entPhysicalAlias = SnmpObjId.get(".1.3.6.1.2.1.47.1.1.1.1.14");
+
+    /** The Constant entPhysicalAssetID. */
     public final static SnmpObjId entPhysicalAssetID = SnmpObjId.get(".1.3.6.1.2.1.47.1.1.1.1.15");
+
+    /** The Constant entPhysicalIsFRU. */
     public final static SnmpObjId entPhysicalIsFRU = SnmpObjId.get(".1.3.6.1.2.1.47.1.1.1.1.16");
+
+    /** The Constant entPhysicalMfgDate. */
     public final static SnmpObjId entPhysicalMfgDate = SnmpObjId.get(".1.3.6.1.2.1.47.1.1.1.1.17");
+
+    /** The Constant entPhysicalUris. */
     public final static SnmpObjId entPhysicalUris = SnmpObjId.get(".1.3.6.1.2.1.47.1.1.1.1.18");
 
+    /** The Constant ELEMENTS. */
     public static final SnmpObjId[] ELEMENTS = new SnmpObjId[] {
         entPhysicalDescr,
         entPhysicalVendorType,
@@ -78,6 +117,7 @@ public class EntityPhysicalTableRow extends SnmpRowResult {
         entPhysicalUris
     };
 
+    /** The Constant CLASSES. */
     public static final String[] CLASSES = new String[] {
         null,
         "other",
@@ -93,17 +133,35 @@ public class EntityPhysicalTableRow extends SnmpRowResult {
         "stack"
     };
 
+    /** The vendor attributes. */
     private Map<SnmpObjId, HwEntityAttributeType> vendorAttributes = new HashMap<SnmpObjId, HwEntityAttributeType>();
 
+    /**
+     * The Constructor.
+     *
+     * @param vendorAttributes the vendor attributes
+     * @param columnCount the column count
+     * @param instance the instance
+     */
     public EntityPhysicalTableRow(Map<SnmpObjId, HwEntityAttributeType> vendorAttributes, int columnCount, SnmpInstId instance) {
         super(columnCount, instance);
         this.vendorAttributes = vendorAttributes;
     }
 
+    /**
+     * Gets the entity physical index.
+     *
+     * @return the entity physical index
+     */
     public int getEntPhysicalIndex() {
         return getInstance().getLastSubId();
     }
 
+    /**
+     * Gets the hardware entity.
+     *
+     * @return the hardware entity
+     */
     public OnmsHwEntity getOnmsHwEntity() {
         SnmpValue v = null;
         final OnmsHwEntity entity = new OnmsHwEntity();

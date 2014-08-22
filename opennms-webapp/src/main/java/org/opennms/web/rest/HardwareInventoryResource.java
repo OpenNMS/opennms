@@ -61,6 +61,29 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.sun.jersey.spi.resource.PerRequest;
 
+/**
+ * The Class HardwareInventoryResource.
+ *
+ *  Retrieve the root entity (all hardware inventory)
+ *  GET /nodes/{nodeId}/hardwareInventory
+ *
+ *  Override the root entity (all hardware inventory)
+ *  POST /nodes/{nodeId}/hardwareInventory
+ *
+ *  Retrieve a specific entity
+ *  GET /nodes/{nodeId}/hardwareInventory/{entPhysicalIndex}
+ *
+ *  Delete a specific entity
+ *  DELETE /nodes/{nodeId}/hardwareInventory/{entPhysicalIndex}
+ *
+ *  Modify an existing entity
+ *  PUT /nodes/{nodeId}/hardwareInventory/{entPhysicalIndex}
+ *
+ *  Add a child entity
+ *  POST /nodes/{nodeId}/hardwareInventory/{entPhysicalIndex}
+ *
+ * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
+ */
 @Component
 @PerRequest
 @Scope("prototype")
@@ -68,18 +91,28 @@ import com.sun.jersey.spi.resource.PerRequest;
 @Transactional
 public class HardwareInventoryResource extends OnmsRestService {
 
+    /** The node DAO. */
     @Autowired
     private NodeDao m_nodeDao;
 
+    /** The hardware entity DAO. */
     @Autowired
     private HwEntityDao m_hwEntityDao;
 
+    /** The hardware entity attribute type DAO. */
     @Autowired
     private HwEntityAttributeTypeDao m_hwEntityAttribTypeDao;
 
+    /** The UEI info. */
     @Context 
     private UriInfo m_uriInfo;
 
+    /**
+     * Gets the hardware inventory.
+     *
+     * @param nodeCriteria the node criteria
+     * @return the hardware inventory
+     */
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public OnmsHwEntity getHardwareInventory(@PathParam("nodeCriteria") String nodeCriteria) {
@@ -96,6 +129,13 @@ public class HardwareInventoryResource extends OnmsRestService {
         }
     }
 
+    /**
+     * Gets the hardware entity by index.
+     *
+     * @param nodeCriteria the node criteria
+     * @param entPhysicalIndex the entity physical index
+     * @return the hardware entity by index
+     */
     @GET
     @Path("{entPhysicalIndex}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
@@ -109,6 +149,13 @@ public class HardwareInventoryResource extends OnmsRestService {
         }
     }
 
+    /**
+     * Sets the hardware inventory (root object)
+     *
+     * @param nodeCriteria the node criteria
+     * @param entity the root entity object
+     * @return the response
+     */
     @POST
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public Response setHardwareInventory(@PathParam("nodeCriteria") String nodeCriteria, OnmsHwEntity entity) {
@@ -139,6 +186,14 @@ public class HardwareInventoryResource extends OnmsRestService {
         }
     }
 
+    /**
+     * Adds the child.
+     *
+     * @param nodeCriteria the node criteria
+     * @param parentEntPhysicalIndex the parent entity physical index
+     * @param child the child
+     * @return the response
+     */
     @POST
     @Path("{parentEntPhysicalIndex}")
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
@@ -164,6 +219,14 @@ public class HardwareInventoryResource extends OnmsRestService {
         }
     }
 
+    /**
+     * Update hardware entity.
+     *
+     * @param nodeCriteria the node criteria
+     * @param entPhysicalIndex the entity physical index
+     * @param params the parameters
+     * @return the response
+     */
     @PUT
     @Path("{entPhysicalIndex}")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
@@ -196,6 +259,13 @@ public class HardwareInventoryResource extends OnmsRestService {
         }
     }
 
+    /**
+     * Delete hardware entity.
+     *
+     * @param nodeCriteria the node criteria
+     * @param entPhysicalIndex the entity physical index
+     * @return the response
+     */
     @DELETE
     @Path("{entPhysicalIndex}")
     public Response deleteHwEntity(@PathParam("nodeCriteria") String nodeCriteria, @PathParam("entPhysicalIndex") Integer entPhysicalIndex) {
@@ -210,6 +280,12 @@ public class HardwareInventoryResource extends OnmsRestService {
         }
     }
 
+    /**
+     * Gets the node.
+     *
+     * @param nodeCriteria the node criteria
+     * @return the node
+     */
     private OnmsNode getOnmsNode(String nodeCriteria) {
         OnmsNode node = m_nodeDao.get(nodeCriteria);
         if (node == null) {
@@ -218,6 +294,13 @@ public class HardwareInventoryResource extends OnmsRestService {
         return node;
     }
 
+    /**
+     * Gets the hardware entity.
+     *
+     * @param nodeId the node id
+     * @param entPhysicalIndex the entity physical index
+     * @return the hardware entity
+     */
     private OnmsHwEntity getHwEntity(Integer nodeId, Integer entPhysicalIndex) {
         OnmsHwEntity entity = m_hwEntityDao.findEntityByIndex(nodeId, entPhysicalIndex);
         if (entity == null ) {
@@ -226,6 +309,12 @@ public class HardwareInventoryResource extends OnmsRestService {
         return entity;
     }
 
+    /**
+     * Update types.
+     *
+     * @param typesMap the types map
+     * @param entity the entity
+     */
     private void updateTypes(Map<String, HwEntityAttributeType> typesMap, OnmsHwEntity entity) {
         for (OnmsHwEntityAttribute a : entity.getHwEntityAttributes()) {
             final String typeName = a.getTypeName();

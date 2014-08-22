@@ -35,43 +35,86 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import org.opennms.netmgt.snmp.SnmpObjId;
 
+/**
+ * The Class MibObj.
+ * 
+ * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
+ */
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.NONE)
 public class MibObj {
-    
+
+    /** The OID. */
     private String oid;
-    
+
+    /** The type. */
     private String type;
-    
+
+    /** The alias. */
     private String alias;
 
+    /**
+     * Gets the OID.
+     *
+     * @return the OID
+     */
     @XmlAttribute(name="oid", required=true)
     public String getOid() {
         return oid;
     }
 
+    /**
+     * Gets the SNMP OID id.
+     *
+     * @return the SNMP OID id
+     */
     public SnmpObjId getSnmpObjId() {
         return SnmpObjId.get(oid);
     }
 
+    /**
+     * Sets the OID.
+     *
+     * @param oid the OID
+     */
     public void setOid(String oid) {
         this.oid = oid;
     }
 
+    /**
+     * Gets the type.
+     *
+     * @return the type
+     */
     @XmlAttribute(name="type", required=false)
     public String getType() {
         return type;
     }
 
+    /**
+     * Sets the type.
+     *
+     * @param type the type
+     */
     public void setType(String type) {
         this.type = type;
     }
 
+    /**
+     * Gets the alias.
+     *
+     * @return the alias
+     */
     @XmlAttribute(name="alias", required=true)
     public String getAlias() {
         return alias;
     }
 
+    /**
+     * Sets the alias.
+     *
+     * @param alias the alias
+     */
     public void setAlias(String alias) {
         this.alias = alias;
     }

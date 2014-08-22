@@ -31,22 +31,39 @@ package org.opennms.netmgt.config;
 import org.opennms.core.xml.AbstractJaxbConfigDao;
 import org.opennms.netmgt.config.hardware.HwInventoryAdapterConfiguration;
 
+/**
+ * The Class DefaultHwInventoryAdapterConfigurationDao.
+ * 
+ * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
+ */
 public class DefaultHwInventoryAdapterConfigurationDao extends AbstractJaxbConfigDao<HwInventoryAdapterConfiguration, HwInventoryAdapterConfiguration>  implements HwInventoryAdapterConfigurationDao {
 
+    /**
+     * The Constructor.
+     */
     public DefaultHwInventoryAdapterConfigurationDao() {
         super(HwInventoryAdapterConfiguration.class, "hardware-inventory-adapter-configuration");
     }
 
+    /* (non-Javadoc)
+     * @see org.opennms.netmgt.config.HwInventoryAdapterConfigurationDao#getConfiguration()
+     */
     @Override
     public HwInventoryAdapterConfiguration getConfiguration() {
         return getContainer().getObject();
     }
 
+    /* (non-Javadoc)
+     * @see org.opennms.netmgt.config.HwInventoryAdapterConfigurationDao#reload()
+     */
     @Override
     public void reload() {
         getContainer().reload();
     }
 
+    /* (non-Javadoc)
+     * @see org.opennms.core.xml.AbstractJaxbConfigDao#translateConfig(java.lang.Object)
+     */
     @Override
     protected HwInventoryAdapterConfiguration translateConfig(HwInventoryAdapterConfiguration config) {
         return config;
