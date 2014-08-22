@@ -91,7 +91,7 @@ public class EntityPhysicalTableRow extends SnmpRowResult {
     public final static SnmpObjId entPhysicalIsFRU = SnmpObjId.get(".1.3.6.1.2.1.47.1.1.1.1.16");
 
     /** The Constant entPhysicalMfgDate. */
-    public final static SnmpObjId entPhysicalMfgDate = SnmpObjId.get(".1.3.6.1.2.1.47.1.1.1.1.17");
+    public final static SnmpObjId entPhysicalMfgDate = SnmpObjId.get(".1.3.6.1.2.1.47.1.1.1.1.17"); // FIXME Not parsed
 
     /** The Constant entPhysicalUris. */
     public final static SnmpObjId entPhysicalUris = SnmpObjId.get(".1.3.6.1.2.1.47.1.1.1.1.18");
@@ -167,10 +167,10 @@ public class EntityPhysicalTableRow extends SnmpRowResult {
         final OnmsHwEntity entity = new OnmsHwEntity();
         entity.setEntPhysicalIndex(getEntPhysicalIndex());
         v = getValue(entPhysicalDescr);
-        if (v != null)
+        if (v != null && !v.toDisplayString().trim().equals(""))
             entity.setEntPhysicalDescr(v.toDisplayString());
         v = getValue(entPhysicalVendorType);
-        if (v != null)
+        if (v != null && !v.toDisplayString().trim().equals(""))
             entity.setEntPhysicalVendorType(v.toDisplayString());
         v = getValue(entPhysicalContainedIn);
         if (v != null)
@@ -182,42 +182,42 @@ public class EntityPhysicalTableRow extends SnmpRowResult {
         if (v != null)
             entity.setEntPhysicalParentRelPos(v.toInt());
         v = getValue(entPhysicalName);
-        if (v != null)
+        if (v != null && !v.toDisplayString().trim().equals(""))
             entity.setEntPhysicalName(v.toDisplayString());
         v = getValue(entPhysicalHardwareRev);
-        if (v != null)
+        if (v != null && !v.toDisplayString().trim().equals(""))
             entity.setEntPhysicalHardwareRev(v.toDisplayString());
         v = getValue(entPhysicalFirmwareRev);
-        if (v != null)
+        if (v != null && !v.toDisplayString().trim().equals(""))
             entity.setEntPhysicalFirmwareRev(v.toDisplayString());
         v = getValue(entPhysicalSoftwareRev);
-        if (v != null)
+        if (v != null && !v.toDisplayString().trim().equals(""))
             entity.setEntPhysicalSoftwareRev(v.toDisplayString());
         v = getValue(entPhysicalSerialNum);
-        if (v != null)
+        if (v != null && !v.toDisplayString().trim().equals(""))
             entity.setEntPhysicalSerialNum(v.toDisplayString());
         v = getValue(entPhysicalMfgName);
-        if (v != null)
+        if (v != null && !v.toDisplayString().trim().equals(""))
             entity.setEntPhysicalMfgName(v.toDisplayString());
         v = getValue(entPhysicalModelName);
-        if (v != null)
+        if (v != null && !v.toDisplayString().trim().equals(""))
             entity.setEntPhysicalModelName(v.toDisplayString());
         v = getValue(entPhysicalAlias);
-        if (v != null)
+        if (v != null && !v.toDisplayString().trim().equals(""))
             entity.setEntPhysicalAlias(v.toDisplayString());
         v = getValue(entPhysicalAssetID);
-        if (v != null)
+        if (v != null && !v.toDisplayString().trim().equals(""))
             entity.setEntPhysicalAssetID(v.toDisplayString());
         v = getValue(entPhysicalIsFRU);
         if (v != null)
             entity.setEntPhysicalIsFRU(v.toInt() == 1 ? true : false);
         v = getValue(entPhysicalUris);
-        if (v != null)
+        if (v != null && !v.toDisplayString().trim().equals(""))
             entity.setEntPhysicalUris(v.toDisplayString());
         if (vendorAttributes != null && vendorAttributes.size() > 0) {
             for (Map.Entry<SnmpObjId, HwEntityAttributeType> entry : vendorAttributes.entrySet()) {
                 v = getValue(entry.getKey());
-                if (v != null) {
+                if (v != null && !v.toDisplayString().trim().equals("")) {
                     entity.addAttribute(entry.getValue(), v.toDisplayString());
                 }                
             }

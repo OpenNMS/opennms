@@ -87,7 +87,7 @@ public class OnmsHwEntity implements Serializable, Comparable<OnmsHwEntity> {
     private Integer m_entPhysicalIndex;
 
     /** The entity physical parent relative position. */
-    private Integer m_entPhysicalParentRelPos; // FIXME This can be removed
+    private Integer m_entPhysicalParentRelPos; // FIXME This is not being used
 
     /** The entity physical contained in. */
     private Integer m_entPhysicalContainedIn;
@@ -132,7 +132,7 @@ public class OnmsHwEntity implements Serializable, Comparable<OnmsHwEntity> {
     private Boolean m_entPhysicalIsFRU;
 
     /** The entity physical manufactured date. */
-    private Date m_entPhysicalMfgDate;
+    private Date m_entPhysicalMfgDate; // FIXME This is not being used
 
     /** The entity physical URIs. */
     private String m_entPhysicalUris;
@@ -225,7 +225,7 @@ public class OnmsHwEntity implements Serializable, Comparable<OnmsHwEntity> {
      * @return the entity physical contained in
      */
     @Transient
-    @XmlAttribute(name="parentId")
+    @XmlTransient
     public Integer getEntPhysicalContainedIn() {
         return m_entPhysicalContainedIn;
     }
@@ -586,8 +586,8 @@ public class OnmsHwEntity implements Serializable, Comparable<OnmsHwEntity> {
      * @return the parent id
      */
     @Transient
-    @XmlAttribute(name="parentId")
-    public Integer getParentId() {
+    @XmlAttribute(name="parentPhysicalIndex")
+    public Integer getParentIndex() {
         return m_parent == null ? null : m_parent.getEntPhysicalIndex();
     }
 
@@ -786,8 +786,8 @@ public class OnmsHwEntity implements Serializable, Comparable<OnmsHwEntity> {
     @Override
     public String toString() {
         return new ToStringBuilder(this.getClass().getSimpleName(), ToStringStyle.SHORT_PREFIX_STYLE)
-        .append("parent", getParentId())
         .append("nodeId", m_node == null ? null : m_node.getId())
+        .append("parentPhysicalIndex", getParentIndex())
         .append("entPhysicalIndex", m_entPhysicalIndex)
         .append("entPhysicalName", m_entPhysicalName)
         .append("entPhysicalDescr", m_entPhysicalDescr)
