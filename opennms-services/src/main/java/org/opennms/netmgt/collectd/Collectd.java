@@ -509,11 +509,11 @@ public class Collectd extends AbstractServiceDaemon implements
                  */
 
                 cSvc = new CollectableService(
-            	    iface, 
+                    iface, 
                     m_ifaceDao, 
                     spec, 
                     getScheduler(),
-                                              m_schedulingCompletedFlag,
+                    m_schedulingCompletedFlag,
                     m_transTemplate.getTransactionManager()
                 );
 

@@ -424,7 +424,7 @@ public final class EventExpander implements org.opennms.netmgt.dao.api.EventExpa
      * Expand parms in the event logmsg
      */
     private void expandParms(Logmsg logmsg, Event event, Map<String, Map<String, String>> decode) {
-        String strRet = org.opennms.netmgt.eventd.AbstractEventUtil.getInstance().expandParms(logmsg.getContent(), event, decode);
+        String strRet = AbstractEventUtil.getInstance().expandParms(logmsg.getContent(), event, decode);
         if (strRet != null) {
             logmsg.setContent(strRet);
         }
@@ -495,7 +495,7 @@ public final class EventExpander implements org.opennms.netmgt.dao.api.EventExpa
 
         // description
         if (event.getDescr() != null) {
-            strRet = org.opennms.netmgt.eventd.AbstractEventUtil.getInstance().expandParms(event.getDescr(), event,decode);
+            strRet = AbstractEventUtil.getInstance().expandParms(event.getDescr(), event,decode);
             if (strRet != null) {
                 event.setDescr(strRet);
                 strRet = null;

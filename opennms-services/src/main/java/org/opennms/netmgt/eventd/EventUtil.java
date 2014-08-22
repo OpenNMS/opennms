@@ -86,8 +86,6 @@ public interface EventUtil {
 	
 	String expandParms(String inp, Event event, Map<String, Map<String, String>> decode);
 
-	String escape(String string, char c);
-
 	String getNamedParmValue(String string, Event event);
 
 	void expandMapValues(Map<String, String> parmMap, Event event);

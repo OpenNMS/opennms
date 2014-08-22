@@ -112,7 +112,7 @@ public class MockDatabase extends TemporaryDatabasePostgreSQL implements EventWr
             
             @Override
             public void visitPathOutage(MockPathOutage out) {
-            	writeOutage(out);
+            	writePathOutage(out);
             }
         };
         network.visit(dbCreater);
@@ -136,7 +136,7 @@ public class MockDatabase extends TemporaryDatabasePostgreSQL implements EventWr
     }
 
     public void writeSnmpInterface(MockInterface iface) {
-    	LOG.info("Inserting into snmpInterface {} {} {}", Integer.valueOf(iface.getNodeId()), iface.getIfAlias(), iface.getIfIndex() );
+        LOG.info("Inserting into snmpInterface {} {} {}", Integer.valueOf(iface.getNodeId()), iface.getIfAlias(), iface.getIfIndex() );
         Object[] values = { Integer.valueOf(iface.getNodeId()), iface.getIfAlias(), iface.getIfIndex() };
         update("insert into snmpInterface (nodeID, snmpifAlias, snmpIfIndex) values (?, ?, ?);", values);
     }
@@ -157,7 +157,7 @@ public class MockDatabase extends TemporaryDatabasePostgreSQL implements EventWr
         update("insert into ifServices (nodeID, ipAddr, serviceID, status) values (?, ?, ?, ?);", values);
     }
 
-    public void writeOutage(MockPathOutage out) {
+    public void writePathOutage(MockPathOutage out) {
     	LOG.info("Inserting into pathoutage {} {} {}" ,out.getNodeId(), InetAddressUtils.str(out.getIpAddress()), out.getServiceName());
     	Object[] values = { Integer.valueOf(out.getNodeId()), InetAddressUtils.str(out.getIpAddress()), out.getServiceName() };
     	update("insert into pathoutage (nodeid, criticalpathip, criticalpathservicename) values (?, ?, ?);", values);

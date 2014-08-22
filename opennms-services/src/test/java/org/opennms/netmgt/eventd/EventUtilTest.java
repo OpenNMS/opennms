@@ -97,7 +97,7 @@ public class EventUtilTest {
      */
     @Test
     public void testEscape() {
-        assertEquals("m%onkeys%47rock", AbstractEventUtil.getInstance().escape("m%onkeys/rock", '/'));
+        assertEquals("m%onkeys%47rock", AbstractEventUtil.escape("m%onkeys/rock", '/'));
     }
 
     /*

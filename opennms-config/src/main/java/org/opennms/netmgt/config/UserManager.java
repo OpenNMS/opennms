@@ -74,7 +74,7 @@ import org.opennms.netmgt.model.OnmsUserList;
  * @author <a href="mailto:brozow@opennms.org">Matt Brozowski</a>
  * @author <a href="mailto:ranger@opennms.org">Benjamin Reed</a>
  */
-public abstract class UserManager implements UserConfig{
+public abstract class UserManager implements UserConfig {
     private static final char[] HEX = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
 
     private static final PasswordEncryptor m_passwordEncryptor = new StrongPasswordEncryptor();
