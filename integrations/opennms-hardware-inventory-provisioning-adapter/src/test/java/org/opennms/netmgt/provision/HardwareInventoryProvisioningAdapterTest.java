@@ -191,10 +191,17 @@ public class HardwareInventoryProvisioningAdapterTest implements InitializingBea
     @Transactional
     public void testDiscoverSnmpEntities() throws Exception {
         HwInventoryAdapterConfiguration config = m_adapter.getHwAdapterConfigurationDao().getConfiguration();
-        Assert.assertEquals(1, config.getExtensions().size());
+        Assert.assertEquals(2, config.getExtensions().size());
+
         HwExtension ext = config.getExtensions().get(0);
         Assert.assertEquals("CISCO-ENTITY-EXT-MIB", ext.getName());
         Assert.assertEquals(5, ext.getMibObjects().size());
+
+        ext = config.getExtensions().get(1);
+        Assert.assertEquals("CISCO-ENTITY-ASSET-MIB", ext.getName());
+        Assert.assertEquals(12, ext.getMibObjects().size());
+
+        Assert.assertEquals(17, m_adapter.getVendorAttributeMap().size());
 
         for (TestOperation op : m_operations) {
             m_adapter.processPendingOperationForNode(op.operation);
@@ -209,6 +216,7 @@ public class HardwareInventoryProvisioningAdapterTest implements InitializingBea
             m_nodeDao.flush();
             m_entityDao.flush();
         }
+
         Assert.assertEquals(112, m_entityDao.countAll());
     }
 

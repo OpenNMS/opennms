@@ -29,7 +29,9 @@
 package org.opennms.netmgt.config.hardware;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -79,10 +81,10 @@ public class HwInventoryAdapterConfiguration {
     }
 
     /**
-     * Gets the vendor oid.
+     * Gets the vendor OID.
      *
-     * @param nodeSysOid the node sys oid
-     * @return the vendor oid
+     * @param nodeSysOid the node system OID
+     * @return the vendor OID
      */
     public List<SnmpObjId> getVendorOid(String nodeSysOid) {
         final List<SnmpObjId> vendorOidList = new ArrayList<SnmpObjId>();
@@ -96,4 +98,19 @@ public class HwInventoryAdapterConfiguration {
         return vendorOidList;
     }
 
+    /**
+     * Gets the replacement map.
+     *
+     * @return the replacement map
+     */
+    public Map<String,String> getReplacementMap() {
+        final Map<String,String> replacementMap = new HashMap<String,String>();
+        for (HwExtension ext : getExtensions()) {
+            for (MibObj obj : ext.getMibObjects()) {
+                if (obj.getReplace() != null && !obj.getReplace().trim().isEmpty())
+                replacementMap.put(obj.getAlias(), obj.getReplace());
+            }
+        }
+        return replacementMap;
+    }
 }

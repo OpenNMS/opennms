@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.provision.snmp;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import org.opennms.netmgt.model.HwEntityAttributeType;
@@ -37,6 +36,8 @@ import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpRowResult;
 import org.opennms.netmgt.snmp.SnmpValue;
+import org.springframework.beans.BeanWrapper;
+import org.springframework.beans.PropertyAccessorFactory;
 
 /**
  * The Class EntityPhysicalTableRow.
@@ -134,18 +135,23 @@ public class EntityPhysicalTableRow extends SnmpRowResult {
     };
 
     /** The vendor attributes. */
-    private Map<SnmpObjId, HwEntityAttributeType> vendorAttributes = new HashMap<SnmpObjId, HwEntityAttributeType>();
+    private Map<SnmpObjId, HwEntityAttributeType> vendorAttributes;
+
+    /** The vendor attributes. */
+    private Map<String,String> replacementMap;
 
     /**
      * The Constructor.
      *
      * @param vendorAttributes the vendor attributes
+     * @param replacementMap the replacement map
      * @param columnCount the column count
      * @param instance the instance
      */
-    public EntityPhysicalTableRow(Map<SnmpObjId, HwEntityAttributeType> vendorAttributes, int columnCount, SnmpInstId instance) {
+    public EntityPhysicalTableRow(Map<SnmpObjId, HwEntityAttributeType> vendorAttributes, Map<String,String> replacementMap, int columnCount, SnmpInstId instance) {
         super(columnCount, instance);
         this.vendorAttributes = vendorAttributes;
+        this.replacementMap = replacementMap;
     }
 
     /**
@@ -167,11 +173,11 @@ public class EntityPhysicalTableRow extends SnmpRowResult {
         final OnmsHwEntity entity = new OnmsHwEntity();
         entity.setEntPhysicalIndex(getEntPhysicalIndex());
         v = getValue(entPhysicalDescr);
-        if (v != null && !v.toDisplayString().trim().equals(""))
-            entity.setEntPhysicalDescr(v.toDisplayString());
+        if (v != null && !v.toDisplayString().trim().isEmpty())
+            entity.setEntPhysicalDescr(v.toDisplayString().trim());
         v = getValue(entPhysicalVendorType);
-        if (v != null && !v.toDisplayString().trim().equals(""))
-            entity.setEntPhysicalVendorType(v.toDisplayString());
+        if (v != null && !v.toDisplayString().trim().isEmpty())
+            entity.setEntPhysicalVendorType(v.toDisplayString().trim());
         v = getValue(entPhysicalContainedIn);
         if (v != null)
             entity.setEntPhysicalContainedIn(v.toInt());
@@ -182,43 +188,52 @@ public class EntityPhysicalTableRow extends SnmpRowResult {
         if (v != null)
             entity.setEntPhysicalParentRelPos(v.toInt());
         v = getValue(entPhysicalName);
-        if (v != null && !v.toDisplayString().trim().equals(""))
-            entity.setEntPhysicalName(v.toDisplayString());
+        if (v != null && !v.toDisplayString().trim().isEmpty())
+            entity.setEntPhysicalName(v.toDisplayString().trim().trim());
         v = getValue(entPhysicalHardwareRev);
-        if (v != null && !v.toDisplayString().trim().equals(""))
-            entity.setEntPhysicalHardwareRev(v.toDisplayString());
+        if (v != null && !v.toDisplayString().trim().isEmpty())
+            entity.setEntPhysicalHardwareRev(v.toDisplayString().trim());
         v = getValue(entPhysicalFirmwareRev);
-        if (v != null && !v.toDisplayString().trim().equals(""))
-            entity.setEntPhysicalFirmwareRev(v.toDisplayString());
+        if (v != null && !v.toDisplayString().trim().isEmpty())
+            entity.setEntPhysicalFirmwareRev(v.toDisplayString().trim());
         v = getValue(entPhysicalSoftwareRev);
-        if (v != null && !v.toDisplayString().trim().equals(""))
-            entity.setEntPhysicalSoftwareRev(v.toDisplayString());
+        if (v != null && !v.toDisplayString().trim().isEmpty())
+            entity.setEntPhysicalSoftwareRev(v.toDisplayString().trim());
         v = getValue(entPhysicalSerialNum);
-        if (v != null && !v.toDisplayString().trim().equals(""))
-            entity.setEntPhysicalSerialNum(v.toDisplayString());
+        if (v != null && !v.toDisplayString().trim().isEmpty())
+            entity.setEntPhysicalSerialNum(v.toDisplayString().trim());
         v = getValue(entPhysicalMfgName);
-        if (v != null && !v.toDisplayString().trim().equals(""))
-            entity.setEntPhysicalMfgName(v.toDisplayString());
+        if (v != null && !v.toDisplayString().trim().isEmpty())
+            entity.setEntPhysicalMfgName(v.toDisplayString().trim());
         v = getValue(entPhysicalModelName);
-        if (v != null && !v.toDisplayString().trim().equals(""))
-            entity.setEntPhysicalModelName(v.toDisplayString());
+        if (v != null && !v.toDisplayString().trim().isEmpty())
+            entity.setEntPhysicalModelName(v.toDisplayString().trim());
         v = getValue(entPhysicalAlias);
-        if (v != null && !v.toDisplayString().trim().equals(""))
-            entity.setEntPhysicalAlias(v.toDisplayString());
+        if (v != null && !v.toDisplayString().trim().isEmpty())
+            entity.setEntPhysicalAlias(v.toDisplayString().trim());
         v = getValue(entPhysicalAssetID);
-        if (v != null && !v.toDisplayString().trim().equals(""))
-            entity.setEntPhysicalAssetID(v.toDisplayString());
+        if (v != null && !v.toDisplayString().trim().isEmpty())
+            entity.setEntPhysicalAssetID(v.toDisplayString().trim());
         v = getValue(entPhysicalIsFRU);
         if (v != null)
             entity.setEntPhysicalIsFRU(v.toInt() == 1 ? true : false);
         v = getValue(entPhysicalUris);
-        if (v != null && !v.toDisplayString().trim().equals(""))
+        if (v != null && !v.toDisplayString().trim().isEmpty())
             entity.setEntPhysicalUris(v.toDisplayString());
         if (vendorAttributes != null && vendorAttributes.size() > 0) {
+            BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(entity);
             for (Map.Entry<SnmpObjId, HwEntityAttributeType> entry : vendorAttributes.entrySet()) {
                 v = getValue(entry.getKey());
-                if (v != null && !v.toDisplayString().trim().equals("")) {
-                    entity.addAttribute(entry.getValue(), v.toDisplayString());
+                if (v != null && !v.toDisplayString().trim().isEmpty()) {
+                    String typeName = entry.getValue().getName();
+                    if (replacementMap.containsKey(typeName)) {
+                        String property = replacementMap.get(typeName);
+                        if (wrapper.isWritableProperty(property)) {
+                            wrapper.setPropertyValue(property, v.toDisplayString().trim());
+                        }
+                    } else {
+                        entity.addAttribute(entry.getValue(), v.toDisplayString().trim());
+                    }
                 }                
             }
         }

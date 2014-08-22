@@ -29,7 +29,6 @@
 package org.opennms.netmgt.provision.snmp;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -57,17 +56,22 @@ public class EntityPhysicalTableTracker extends TableTracker {
     private List<OnmsHwEntity> entities = new ArrayList<OnmsHwEntity>();
 
     /** The vendor attributes. */
-    private Map<SnmpObjId, HwEntityAttributeType> vendorAttributes = new HashMap<SnmpObjId, HwEntityAttributeType>();
+    private Map<SnmpObjId, HwEntityAttributeType> vendorAttributes;
+
+    /** The replacement map. */
+    private Map<String,String> replacementMap;
 
     /**
      * The Constructor.
      *
      * @param vendorAttributes the vendor attributes
-     * @param oids the OIDs
+     * @param oids the SNMP OIDs to collect
+     * @param replacementMap the replacement map
      */
-    public EntityPhysicalTableTracker(Map<SnmpObjId, HwEntityAttributeType> vendorAttributes, SnmpObjId[] oids) {
+    public EntityPhysicalTableTracker(Map<SnmpObjId, HwEntityAttributeType> vendorAttributes, SnmpObjId[] oids, Map<String,String> replacementMap) {
         super(oids);
         this.vendorAttributes = vendorAttributes;
+        this.replacementMap = replacementMap;
     }
 
     /**
@@ -85,7 +89,7 @@ public class EntityPhysicalTableTracker extends TableTracker {
      */
     @Override
     public SnmpRowResult createRowResult(int columnCount, SnmpInstId instance) {
-        return new EntityPhysicalTableRow(vendorAttributes, columnCount, instance);
+        return new EntityPhysicalTableRow(vendorAttributes, replacementMap, columnCount, instance);
     }
 
     /* (non-Javadoc)

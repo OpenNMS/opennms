@@ -26,14 +26,14 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.provision.plugin;
+package org.opennms.netmgt.provision;
 
 /**
  * The Class EntityPluginException.
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
-public class EntityPluginException extends Exception {
+public class HardwareInventoryException extends Exception {
 
     /** The Constant serialVersionUID. */
     private static final long serialVersionUID = 915744339081242021L;
@@ -41,7 +41,7 @@ public class EntityPluginException extends Exception {
     /**
      * The Constructor.
      */
-    public EntityPluginException() {
+    public HardwareInventoryException() {
         super();
     }
 
@@ -53,7 +53,7 @@ public class EntityPluginException extends Exception {
      * @param enableSuppression the enable suppression
      * @param writableStackTrace the writable stack trace
      */
-    public EntityPluginException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+    public HardwareInventoryException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
         super(message, cause, enableSuppression, writableStackTrace);
     }
 
@@ -63,7 +63,7 @@ public class EntityPluginException extends Exception {
      * @param message the message
      * @param cause the cause
      */
-    public EntityPluginException(String message, Throwable cause) {
+    public HardwareInventoryException(String message, Throwable cause) {
         super(message, cause);
     }
 
@@ -72,7 +72,7 @@ public class EntityPluginException extends Exception {
      *
      * @param message the message
      */
-    public EntityPluginException(String message) {
+    public HardwareInventoryException(String message) {
         super(message);
     }
 
@@ -81,7 +81,7 @@ public class EntityPluginException extends Exception {
      *
      * @param cause the cause
      */
-    public EntityPluginException(Throwable cause) {
+    public HardwareInventoryException(Throwable cause) {
         super(cause);
     }
 

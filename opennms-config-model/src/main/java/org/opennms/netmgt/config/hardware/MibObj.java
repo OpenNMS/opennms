@@ -35,6 +35,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import org.opennms.netmgt.snmp.SnmpObjId;
 
+// TODO: Auto-generated Javadoc
 /**
  * The Class MibObj.
  * 
@@ -52,6 +53,9 @@ public class MibObj {
 
     /** The alias. */
     private String alias;
+
+    /** The replace. */
+    private String replace;
 
     /**
      * Gets the OID.
@@ -117,6 +121,25 @@ public class MibObj {
      */
     public void setAlias(String alias) {
         this.alias = alias;
+    }
+
+    /**
+     * Gets the replace.
+     *
+     * @return the replace
+     */
+    @XmlAttribute(name="replace", required=false)
+    public String getReplace() {
+        return replace;
+    }
+
+    /**
+     * Sets the replace.
+     *
+     * @param replace the replace
+     */
+    public void setReplace(String replace) {
+        this.replace = replace;
     }
 
 }

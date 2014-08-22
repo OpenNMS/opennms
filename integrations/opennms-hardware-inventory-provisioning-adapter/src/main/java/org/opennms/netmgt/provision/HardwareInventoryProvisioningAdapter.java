@@ -30,8 +30,10 @@ package org.opennms.netmgt.provision;
 
 import java.net.InetAddress;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.HwInventoryAdapterConfigurationDao;
 import org.opennms.netmgt.config.api.SnmpAgentConfigFactory;
@@ -48,10 +50,12 @@ import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventForwarder;
 import org.opennms.netmgt.model.events.annotations.EventHandler;
 import org.opennms.netmgt.model.events.annotations.EventListener;
-import org.opennms.netmgt.provision.plugin.SnmpEntityPlugin;
-import org.opennms.netmgt.provision.plugin.EntityPlugin;
+import org.opennms.netmgt.provision.snmp.EntityPhysicalTableRow;
+import org.opennms.netmgt.provision.snmp.EntityPhysicalTableTracker;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpObjId;
+import org.opennms.netmgt.snmp.SnmpUtils;
+import org.opennms.netmgt.snmp.SnmpWalker;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 import org.slf4j.Logger;
@@ -152,16 +156,13 @@ public class HardwareInventoryProvisioningAdapter extends SimplerQueuedProvision
 
         EventBuilder ebldr = null;
         try {
-            EntityPlugin plugin = null;
             if (node.getSysObjectId() == null) {
                 LOG.warn("Skiping hardware discover because the node {} doesn't support SNMP", nodeId);
                 return;
-            } else {
-                SnmpAgentConfig agentConfig = m_snmpConfigDao.getAgentConfig(ipAddress);
-                plugin = new SnmpEntityPlugin(m_hwInventoryAdapterConfigurationDao.getConfiguration(), m_vendorAttributes, agentConfig, node.getSysObjectId());
             }
             // EntityPlugin should always return a valid root otherwise it will throw an exception.
-            final OnmsHwEntity newRoot = plugin.getRootEntity(nodeId, ipAddress);
+            SnmpAgentConfig agentConfig = m_snmpConfigDao.getAgentConfig(ipAddress);
+            final OnmsHwEntity newRoot = getRootEntity(agentConfig, node);
             newRoot.setNode(node);
             // If there is an entity tree associated with the node, and it is different than the discovered one,
             // it should be removed first, in order to override the data.
@@ -210,6 +211,45 @@ public class HardwareInventoryProvisioningAdapter extends SimplerQueuedProvision
                 }
             }
         }
+    }
+
+    /**
+     * Gets the root entity.
+     *
+     * @param agentConfig the agent configuration
+     * @param node the node
+     * @return the root entity
+     * @throws HardwareInventoryException the hardware inventory exception
+     */
+    private OnmsHwEntity getRootEntity(SnmpAgentConfig agentConfig, OnmsNode node) throws HardwareInventoryException {
+        LOG.debug("getRootEntity: Getting ENTITY-MIB using {}", agentConfig);
+
+        final List<SnmpObjId> vendorOidList = m_hwInventoryAdapterConfigurationDao.getConfiguration().getVendorOid(node.getSysObjectId());
+        final Map<String,String> replacementMap = m_hwInventoryAdapterConfigurationDao.getConfiguration().getReplacementMap();
+        final SnmpObjId[] vendorOids = vendorOidList.toArray(new SnmpObjId[vendorOidList.size()]);
+        final SnmpObjId[] allOids = (SnmpObjId[]) ArrayUtils.addAll(EntityPhysicalTableRow.ELEMENTS, vendorOids);
+        final EntityPhysicalTableTracker tracker = new EntityPhysicalTableTracker(m_vendorAttributes, allOids, replacementMap);
+        final String trackerName = tracker.getClass().getSimpleName() + '_' + node.getLabel();
+
+        final SnmpWalker walker = SnmpUtils.createWalker(agentConfig, trackerName, tracker);
+        walker.start();
+        try {
+            walker.waitFor();
+            if (walker.timedOut()) {
+                throw new HardwareInventoryException("Aborting entities scan: Agent timed out while scanning the " + trackerName + " table");
+            }  else if (walker.failed()) {
+                throw new HardwareInventoryException("Aborting entities scan: Agent failed while scanning the " + trackerName + " table: " + walker.getErrorMessage());
+            }
+        } catch (final InterruptedException e) {
+            throw new HardwareInventoryException("ENTITY-MIB node collection interrupted, exiting");
+        }
+
+        OnmsHwEntity root = tracker.getRootEntity();
+        if (root == null) {
+            throw new HardwareInventoryException("Cannot get root entity for node " + node);
+        }
+
+        return root;
     }
 
     /* (non-Javadoc)
@@ -381,4 +421,12 @@ public class HardwareInventoryProvisioningAdapter extends SimplerQueuedProvision
         return isTarget;
     }
 
+    /**
+     * Gets the vendor attribute map.
+     *
+     * @return the vendor attribute map
+     */
+    protected Map<SnmpObjId, HwEntityAttributeType> getVendorAttributeMap() {
+        return m_vendorAttributes;
+    }
 }

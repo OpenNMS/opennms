@@ -59,8 +59,6 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The Class OnmsHwEntity.
@@ -74,9 +72,6 @@ import org.slf4j.LoggerFactory;
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class OnmsHwEntity implements Serializable, Comparable<OnmsHwEntity> {
 
-    /** The Constant LOG. */
-    private static final Logger LOG = LoggerFactory.getLogger(OnmsHwEntity.class);
-
     /** The Constant serialVersionUID. */
     private static final long serialVersionUID = -543872118396806431L;
 
@@ -87,7 +82,7 @@ public class OnmsHwEntity implements Serializable, Comparable<OnmsHwEntity> {
     private Integer m_entPhysicalIndex;
 
     /** The entity physical parent relative position. */
-    private Integer m_entPhysicalParentRelPos; // FIXME This is not being used
+    private Integer m_entPhysicalParentRelPos;
 
     /** The entity physical contained in. */
     private Integer m_entPhysicalContainedIn;
@@ -221,7 +216,8 @@ public class OnmsHwEntity implements Serializable, Comparable<OnmsHwEntity> {
 
     /**
      * Gets the entity physical contained in.
-     *
+     * <p>This is used only by the ENTITY-MIB parser, it is not required to persist it on the database.</p>
+     * 
      * @return the entity physical contained in
      */
     @Transient
@@ -305,7 +301,7 @@ public class OnmsHwEntity implements Serializable, Comparable<OnmsHwEntity> {
      * @return the entity physical parent relative position
      */
     @Column
-    @XmlElement
+    @XmlTransient
     public Integer getEntPhysicalParentRelPos() {
         return m_entPhysicalParentRelPos;
     }
@@ -683,7 +679,6 @@ public class OnmsHwEntity implements Serializable, Comparable<OnmsHwEntity> {
     private void setNodeRecursively(OnmsHwEntity entity, OnmsNode node) {
         for (OnmsHwEntity child : entity.getChildren()) {
             if (child.getNode() == null) {
-                LOG.trace("Setting nodeId {} on entity {} contained in {}", node.getId(), child.getEntPhysicalIndex(), child.getEntPhysicalContainedIn());
                 child.setNode(node);
             }
             setNodeRecursively(child, node);
