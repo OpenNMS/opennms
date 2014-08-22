@@ -42,4 +42,14 @@ public class HwEntityDaoHibernate extends AbstractDaoHibernate<OnmsHwEntity, Int
         return (OnmsHwEntity) findUnique("from OnmsHwEntity e where e.parent is null and e.node.id = ?", nodeId);
     }
 
+    @Override
+    public OnmsHwEntity findEntityByIndex(Integer nodeId, Integer entPhysicalIndex) {
+        return (OnmsHwEntity) findUnique("from OnmsHwEntity e where e.node.id = ? and e.entPhysicalIndex = ?", nodeId, entPhysicalIndex);
+    }
+
+    @Override
+    public OnmsHwEntity findEntityByName(Integer nodeId, String entPhysicalName) {
+        return (OnmsHwEntity) findUnique("from OnmsHwEntity e where e.node.id = ? and e.entPhysicalName = ?", nodeId, entPhysicalName);
+    }
+
 }

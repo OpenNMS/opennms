@@ -31,6 +31,7 @@ package org.opennms.netmgt.model;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -143,7 +144,7 @@ public class OnmsHwEntity implements Serializable, Comparable<OnmsHwEntity> {
     public Integer getEntPhysicalContainedIn() {
         return m_entPhysicalContainedIn;
     }
-    
+
     public void setEntPhysicalContainedIn(Integer entPhysicalContainedIn) {
         this.m_entPhysicalContainedIn = entPhysicalContainedIn;
     }
@@ -341,6 +342,24 @@ public class OnmsHwEntity implements Serializable, Comparable<OnmsHwEntity> {
         getChildren().add(child);        
     }
 
+    public OnmsHwEntity getChildByIndex(Integer entPhysicalIndex) {
+        for (OnmsHwEntity child : m_children) {
+            if (child.getEntPhysicalIndex() == entPhysicalIndex) {
+                return child;
+            }
+        }
+        return null;
+    }
+
+    public void removeChildByIndex(Integer entPhysicalIndex) {
+        for (Iterator<OnmsHwEntity> it = m_children.iterator(); it.hasNext(); ) {
+            OnmsHwEntity child = it.next();
+            if (child.getEntPhysicalIndex() == entPhysicalIndex) {
+                it.remove();
+            }
+        }
+    }
+
     @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="nodeId")
     @XmlAttribute(name="nodeId")
@@ -381,22 +400,23 @@ public class OnmsHwEntity implements Serializable, Comparable<OnmsHwEntity> {
         m_hwAttributes.add(attr);
     }
 
-    public String getAttributeValue(String typeName) {
+    public OnmsHwEntityAttribute getAttribute(String typeName) {
         for (OnmsHwEntityAttribute attr : m_hwAttributes) {
             if (attr.getTypeName().equals(typeName)) {
-                return attr.getValue();
+                return attr;
             }
         }
         return null;
     }
 
+    public String getAttributeValue(String typeName) {
+        final OnmsHwEntityAttribute attr = getAttribute(typeName);
+        return attr == null ? null : attr.getValue();
+    }
+
     public String getAttributeClass(String typeName) {
-        for (OnmsHwEntityAttribute attr : m_hwAttributes) {
-            if (attr.getTypeName().equals(typeName)) {
-                return attr.getType().getAttributeClass();
-            }
-        }
-        return null;
+        final OnmsHwEntityAttribute attr = getAttribute(typeName);
+        return attr == null ? null : attr.getType().getAttributeClass();
     }
 
     @Transient

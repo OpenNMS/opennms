@@ -34,4 +34,8 @@ public interface HwEntityDao extends OnmsDao<OnmsHwEntity, Integer> {
 
     public OnmsHwEntity findRootByNodeId(Integer nodeId);
 
+    public OnmsHwEntity findEntityByIndex(Integer nodeId, Integer entPhysicalIndex);
+
+    public OnmsHwEntity findEntityByName(Integer nodeId, String entPhysicalName);
+
 }

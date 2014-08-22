@@ -32,8 +32,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -50,6 +52,8 @@ import org.opennms.netmgt.model.HwEntityAttributeType;
 import org.opennms.netmgt.model.OnmsHwEntity;
 import org.opennms.netmgt.model.OnmsHwEntityAttribute;
 import org.opennms.netmgt.model.OnmsNode;
+import org.springframework.beans.BeanWrapper;
+import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -81,15 +85,25 @@ public class HardwareInventoryResource extends OnmsRestService {
     public OnmsHwEntity getHardwareInventory(@PathParam("nodeCriteria") String nodeCriteria) {
         readLock();
         try {
-            OnmsNode node = m_nodeDao.get(nodeCriteria);
-            if (node == null) {
-                throw getException(Status.BAD_REQUEST, "getHardwareInventory: Can't find node " + nodeCriteria);
-            }
+            OnmsNode node = getOnmsNode(nodeCriteria);
             OnmsHwEntity entity = m_hwEntityDao.findRootByNodeId(node.getId());
             if (entity == null ) {
                 throw getException(Status.BAD_REQUEST, "getHardwareInventory: Can't find root hardware entity for node " + nodeCriteria);
             }
             return entity;
+        } finally {
+            readUnlock();
+        }
+    }
+
+    @GET
+    @Path("{entPhysicalIndex}")
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    public OnmsHwEntity getHwEntityByIndex(@PathParam("nodeCriteria") String nodeCriteria, @PathParam("entPhysicalIndex") Integer entPhysicalIndex) {
+        readLock();
+        try {
+            OnmsNode node = getOnmsNode(nodeCriteria);
+            return getHwEntity(node.getId(), entPhysicalIndex);
         } finally {
             readUnlock();
         }
@@ -103,10 +117,8 @@ public class HardwareInventoryResource extends OnmsRestService {
         }
         writeLock();
         try {
-            OnmsNode node = m_nodeDao.get(nodeCriteria);
-            if (node == null) {
-                throw getException(Status.BAD_REQUEST, "setHardwareInventory: Can't find node " + nodeCriteria);
-            }
+            OnmsNode node = getOnmsNode(nodeCriteria);
+
             entity.setNode(node);
             entity.fixRelationships();
 
@@ -121,10 +133,97 @@ public class HardwareInventoryResource extends OnmsRestService {
             }
             m_hwEntityDao.save(entity);
 
-            return Response.seeOther(m_uriInfo.getRequestUriBuilder().path(node.getNodeId()).build()).build();
+            return Response.seeOther(getRedirectUri(m_uriInfo)).build();
         } finally {
             writeUnlock();
         }
+    }
+
+    @POST
+    @Path("{parentEntPhysicalIndex}")
+    @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    public Response addChild(@PathParam("nodeCriteria") String nodeCriteria, @PathParam("parentEntPhysicalIndex") Integer parentEntPhysicalIndex, OnmsHwEntity child) {
+        writeLock();
+        try {
+            OnmsNode node = getOnmsNode(nodeCriteria);
+            OnmsHwEntity parent = getHwEntity(node.getId(), parentEntPhysicalIndex);
+            OnmsHwEntity currentChild = parent.getChildByIndex(child.getEntPhysicalIndex());
+            if (currentChild != null) {
+                parent.removeChildByIndex(currentChild.getEntPhysicalIndex());
+                m_hwEntityDao.save(parent);
+                m_hwEntityDao.flush();
+            }
+            child.setNode(node);
+            child.fixRelationships();
+            parent.addChildEntity(child);
+            m_hwEntityDao.save(parent);
+
+            return Response.seeOther(getRedirectUri(m_uriInfo)).build();
+        } finally {
+            writeUnlock();
+        }
+    }
+
+    @PUT
+    @Path("{entPhysicalIndex}")
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    public Response updateHwEntity(@PathParam("nodeCriteria") String nodeCriteria, @PathParam("entPhysicalIndex") Integer entPhysicalIndex, MultivaluedMapImpl params) {
+        writeLock();
+        try {
+            OnmsNode node = getOnmsNode(nodeCriteria);
+            OnmsHwEntity entity = getHwEntity(node.getId(), entPhysicalIndex);
+
+            BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(entity);
+            for(String key : params.keySet()) {
+                if (key.startsWith("entPhysical")) {
+                    if (wrapper.isWritableProperty(key)) {
+                        String stringValue = params.getFirst(key);
+                        Object value = wrapper.convertIfNecessary(stringValue, (Class<?>)wrapper.getPropertyType(key));
+                        wrapper.setPropertyValue(key, value);
+                    }
+                } else {
+                    OnmsHwEntityAttribute attr = entity.getAttribute(key);
+                    if (attr != null) {
+                        attr.setValue(params.getFirst(key));
+                    }
+                }
+            }
+            m_hwEntityDao.save(entity);
+
+            return Response.seeOther(getRedirectUri(m_uriInfo)).build();
+        } finally {
+            writeUnlock();
+        }
+    }
+
+    @DELETE
+    @Path("{entPhysicalIndex}")
+    public Response deleteHwEntity(@PathParam("nodeCriteria") String nodeCriteria, @PathParam("entPhysicalIndex") Integer entPhysicalIndex) {
+        writeLock();
+        try {
+            OnmsNode node = getOnmsNode(nodeCriteria);
+            OnmsHwEntity entity = getHwEntity(node.getId(), entPhysicalIndex);
+            m_hwEntityDao.delete(entity);
+            return Response.seeOther(getRedirectUri(m_uriInfo)).build();
+        } finally {
+            writeUnlock();
+        }
+    }
+
+    private OnmsNode getOnmsNode(String nodeCriteria) {
+        OnmsNode node = m_nodeDao.get(nodeCriteria);
+        if (node == null) {
+            throw getException(Status.BAD_REQUEST, "Can't find node " + nodeCriteria);
+        }
+        return node;
+    }
+
+    private OnmsHwEntity getHwEntity(Integer nodeId, Integer entPhysicalIndex) {
+        OnmsHwEntity entity = m_hwEntityDao.findEntityByIndex(nodeId, entPhysicalIndex);
+        if (entity == null ) {
+            throw getException(Status.BAD_REQUEST, "Can't find entity on node " + nodeId + " with index " + entPhysicalIndex);
+        }
+        return entity;
     }
 
     private void updateTypes(Map<String, HwEntityAttributeType> typesMap, OnmsHwEntity entity) {

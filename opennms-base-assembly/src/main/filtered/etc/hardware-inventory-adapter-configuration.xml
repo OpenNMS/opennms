@@ -1,6 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <hardware-inventory-adapter-configuration>
 
+  <!-- 
+       The standard ENTITY-MIB provides the following data:
+
+       EntPhysicalEntry ::= SEQUENCE {
+             entPhysicalIndex          PhysicalIndex,
+             entPhysicalDescr          SnmpAdminString,
+             entPhysicalVendorType     AutonomousType,
+             entPhysicalContainedIn    PhysicalIndexOrZero,
+             entPhysicalClass          PhysicalClass,
+             entPhysicalParentRelPos   Integer32,
+             entPhysicalName           SnmpAdminString,
+             entPhysicalHardwareRev    SnmpAdminString,
+             entPhysicalFirmwareRev    SnmpAdminString,
+             entPhysicalSoftwareRev    SnmpAdminString,
+             entPhysicalSerialNum      SnmpAdminString,
+             entPhysicalMfgName        SnmpAdminString,
+             entPhysicalModelName      SnmpAdminString,
+             entPhysicalAlias          SnmpAdminString,
+             entPhysicalAssetID        SnmpAdminString,
+             entPhysicalIsFRU          TruthValue,
+             entPhysicalMfgDate        DateAndTime,
+             entPhysicalUris           OCTET STRING
+       }
+  -->
+
   <hw-extension name="CISCO-ENTITY-EXT-MIB" sysOidMask=".1.3.6.1.4.1.9.">
     <mibObj alias="ceExtProcessorRam" type="integer" oid=".1.3.6.1.4.1.9.9.195.1.1.1.1" />
     <mibObj alias="ceExtNVRAMSize" type="integer" oid=".1.3.6.1.4.1.9.9.195.1.1.1.2" />
@@ -8,10 +33,5 @@
     <mibObj alias="ceExtProcessorRamOverflow" type="integer" oid=".1.3.6.1.4.1.9.9.195.1.1.1.4" />
     <mibObj alias="ceExtHCProcessorRam" type="integer" oid=".1.3.6.1.4.1.9.9.195.1.1.1.5" />
   </hw-extension> 
-
-  <package name="CISCO-ENTITY-EXT-MIB">
-    <filter>catincProduction</filter>
-    <hw-extension>CISCO-ENTITY-EXT-MIB</hw-extension>
-  </package>
 
 </hardware-inventory-adapter-configuration> 

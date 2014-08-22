@@ -95,7 +95,7 @@ public class HwEntityDaoTest implements InitializingBean {
 
     @Test
     @Transactional
-    public void testFindRootByNodeId() {
+    public void testFindEntity() {
         HwEntityAttributeType ram = new HwEntityAttributeType(".1.3.6.1.4.1.9.9.195.1.1.1.1", "ram", "integer");
         m_hwEntityAttributeTypeDao.save(ram);
         m_hwEntityAttributeTypeDao.flush();
@@ -133,16 +133,23 @@ public class HwEntityDaoTest implements InitializingBean {
         m_hwEntityDao.saveOrUpdate(root);
         m_hwEntityDao.flush();
 
-        OnmsHwEntity e = m_hwEntityDao.findRootByNodeId(node.getId());
-        Assert.assertNotNull(e);
-        Assert.assertNotNull(e.getNode());
-        Assert.assertEquals(e.getNode().getId(), node.getId());
-        Assert.assertEquals(2, e.getChildren().size());
-        Assert.assertEquals("chassis", e.getEntPhysicalClass());
-        OnmsHwEntity c = e.getChildren().iterator().next();
+        OnmsHwEntity e1 = m_hwEntityDao.findRootByNodeId(node.getId());
+        Assert.assertNotNull(e1);
+        Assert.assertNotNull(e1.getNode());
+        Assert.assertEquals(e1.getNode().getId(), node.getId());
+        Assert.assertEquals(2, e1.getChildren().size());
+        Assert.assertEquals("chassis", e1.getEntPhysicalClass());
+        OnmsHwEntity c = e1.getChildren().iterator().next();
         Assert.assertEquals("4", c.getAttributeValue("ram"));
 
         Assert.assertNull(m_hwEntityDao.findRootByNodeId(10000));
+
+        OnmsHwEntity e2 = m_hwEntityDao.findEntityByIndex(node.getId(), e1.getEntPhysicalIndex());
+        Assert.assertTrue(e1.equals(e2));
+
+        OnmsHwEntity e3 = m_hwEntityDao.findEntityByName(node.getId(), e1.getEntPhysicalName());
+        Assert.assertTrue(e1.equals(e3));
+
     }
 
 }

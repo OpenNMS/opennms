@@ -34,7 +34,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.opennms.core.test.xml.XmlTest.assertXpathMatches;
 
-import java.io.File;
 import java.io.StringReader;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -59,7 +58,6 @@ import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.rest.AbstractSpringJerseyRestTestCase;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.model.OnmsCategory;
-import org.opennms.netmgt.model.OnmsHwEntity;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsNodeList;
 import org.opennms.test.JUnitConfigurationEnvironment;
@@ -473,6 +471,26 @@ public class NodeRestServiceTest extends AbstractSpringJerseyRestTestCase {
         sendPost("/nodes/1/hardwareInventory", entity, 303, null);
         String xml = sendRequest(GET, "/nodes/1/hardwareInventory", 200);
         assertTrue(xml, xml.contains("Cisco 7206VXR, 6-slot chassis"));
+
+        xml = sendRequest(GET, "/nodes/1/hardwareInventory/42", 200);
+        assertTrue(xml, xml.contains("Cisco 7200 AC Power Supply"));
+
+        Map<String, String> params = new HashMap<String,String>();
+        params.put("entPhysicalSerialNum", "123456789");
+        params.put("ceExtProcessorRam", "256MB");
+        sendRequest(PUT, "/nodes/1/hardwareInventory/9", params, 303);
+        xml = sendRequest(GET, "/nodes/1/hardwareInventory/9", 200);
+        assertTrue(xml, xml.contains("<entPhysicalSerialNum>123456789</entPhysicalSerialNum>"));
+        assertTrue(xml, xml.contains("value=\"256MB\""));
+
+        sendPost("/nodes/1/hardwareInventory/9", "<hwEntity entPhysicalIndex=\"200\"><entPhysicalName>Sample1</entPhysicalName></hwEntity>", 303, null);
+        sendPost("/nodes/1/hardwareInventory/9", "<hwEntity entPhysicalIndex=\"17\"><entPhysicalName>Sample2</entPhysicalName></hwEntity>", 303, null);
+        xml = sendRequest(GET, "/nodes/1/hardwareInventory/9", 200);
+        assertTrue(xml, xml.contains("Sample1"));
+        assertTrue(xml, xml.contains("Sample2"));
+
+        sendRequest(DELETE, "/nodes/1/hardwareInventory/9", 303);
+        sendRequest(GET, "/nodes/1/hardwareInventory/9", 400);
     }
 
     @Override
