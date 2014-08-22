@@ -56,7 +56,7 @@ public class IpInterfaceTable extends CellTable<IpInterface> {
             @Override
             public String getStyleNames(IpInterface row, int rowIndex) {
                 String bgStyle;
-                if (row.getManaged().equals("U") || row.getManaged().equals("F") || row.getManaged().equals("N")) {
+                if (row.getManaged().equals("U") || row.getManaged().equals("F") || row.getManaged().equals("N") || row.getMonitoredServiceCount() < 1) {
                     bgStyle = "onms-ipinterface-status-unknown";
                 } else {
                     bgStyle = "onms-ipinterface-status-up";

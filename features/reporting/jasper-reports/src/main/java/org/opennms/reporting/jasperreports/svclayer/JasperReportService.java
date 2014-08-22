@@ -423,7 +423,7 @@ public class JasperReportService implements ReportService {
     private Map<String, Object> buildSubreport(final String mainReportId, final JasperReport mainReport) {
         int idx = mainReportId.indexOf('_');
         String repositoryId = idx > -1 ? mainReportId.substring(0, idx) : "local";
-        HashMap<String, Object> subreportMap = new HashMap<String, Object>();
+        Map<String, Object> subreportMap = new HashMap<String, Object>();
 
         // Filter parameter for sub reports
         for (JRParameter parameter : mainReport.getParameters()) {

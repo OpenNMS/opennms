@@ -41,13 +41,12 @@ import org.opennms.netmgt.xml.event.Event;
  * @author <A HREF="mailto:weave@oculan.com">Brain Weaver </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
-public abstract interface EventUtil {
+public interface EventUtil {
 
 	/**
 	 * Retrieve nodeLabel from the node table of the database given a particular
 	 * nodeId.
 	 * 
-	 * @deprecated Replace with standard DAO calls instead of using JDBC
 	 * @param nodeId
 	 *            Node identifier
 	 * 
@@ -62,7 +61,6 @@ public abstract interface EventUtil {
 	 * Retrieve ifAlias from the snmpinterface table of the database given a particular
 	 * nodeId and ipAddr.
 	 *
-     * @deprecated Replace with standard DAO calls instead of using JDBC
 	 * @param nodeId
 	 *            Node identifier
 	 * @param ipAddr
@@ -78,7 +76,6 @@ public abstract interface EventUtil {
     /**
      * Helper method.
      * 
-     * @deprecated Replace with standard DAO calls instead of using JDBC
      * @param parm
      * @param event
      * @return The value of an asset field based on the nodeid of the event 
