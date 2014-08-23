@@ -74,6 +74,9 @@ public class HardwareInventoryProvisioningAdapter extends SimplerQueuedProvision
     /** The Constant LOG. */
     private static final Logger LOG = LoggerFactory.getLogger(HardwareInventoryProvisioningAdapter.class);
 
+    /** The Constant PREFIX. */
+    public static final String PREFIX = "Provisiond.";
+
     /** The Constant NAME. */
     public static final String NAME = "HardwareInventoryProvisioningAdapter";
 
@@ -139,6 +142,10 @@ public class HardwareInventoryProvisioningAdapter extends SimplerQueuedProvision
 
     /**
      * Synchronize inventory.
+     * <p>Obtain the ENTITY-MIB and vendor attributes from the target node through SNMP.</p>
+     * <p>If the node has a hardware inventory data on the database, this is going to be overridden only,
+     * if the gathered data differs from the data at the database, otherwise the gathered data will be
+     * discarded.</p>
      *
      * @param nodeId the node id
      */
@@ -160,12 +167,9 @@ public class HardwareInventoryProvisioningAdapter extends SimplerQueuedProvision
                 LOG.warn("Skiping hardware discover because the node {} doesn't support SNMP", nodeId);
                 return;
             }
-            // EntityPlugin should always return a valid root otherwise it will throw an exception.
             SnmpAgentConfig agentConfig = m_snmpConfigDao.getAgentConfig(ipAddress);
             final OnmsHwEntity newRoot = getRootEntity(agentConfig, node);
             newRoot.setNode(node);
-            // If there is an entity tree associated with the node, and it is different than the discovered one,
-            // it should be removed first, in order to override the data.
             final OnmsHwEntity currentRoot = m_hwEntityDao.findRootByNodeId(node.getId());
             if (newRoot.equals(currentRoot)) {
                 LOG.info("No changes detected on the hardware inventory for nodeId {}", nodeId);
@@ -174,14 +178,14 @@ public class HardwareInventoryProvisioningAdapter extends SimplerQueuedProvision
             if (currentRoot == null) {
                 LOG.info("Saving hardware inventory for nodeId {}", nodeId);
             } else {
-                LOG.info("Updating hardware inventory for nodeId {}. Old inventory {}, new inventory {}", nodeId, currentRoot.toString(), newRoot.toString());
+                LOG.info("Updating hardware inventory for nodeId {}", nodeId);
                 m_hwEntityDao.delete(currentRoot);
                 m_hwEntityDao.flush();
             }
             m_hwEntityDao.saveOrUpdate(newRoot);
-            ebldr = new EventBuilder(EventConstants.HARDWARE_INVENTORY_SUCCESSFUL_UEI, "Provisiond." + NAME);
+            ebldr = new EventBuilder(EventConstants.HARDWARE_INVENTORY_SUCCESSFUL_UEI, PREFIX + NAME);
         } catch (Throwable e) {
-            ebldr = new EventBuilder(EventConstants.HARDWARE_INVENTORY_FAILED_UEI, "Provisiond." + NAME);
+            ebldr = new EventBuilder(EventConstants.HARDWARE_INVENTORY_FAILED_UEI, PREFIX + NAME);
             ebldr.addParam(EventConstants.PARM_REASON, e.getMessage());
         }
 
@@ -198,6 +202,7 @@ public class HardwareInventoryProvisioningAdapter extends SimplerQueuedProvision
     private void initializeVendorAttributes() {
         m_vendorAttributes.clear();
         for (HwEntityAttributeType type : m_hwEntityAttributeTypeDao.findAll()) {
+            LOG.debug("Loading attribute type {}", type);
             m_vendorAttributes.put(type.getSnmpObjId(), type);
         }
         for (HwExtension ext : m_hwInventoryAdapterConfigurationDao.getConfiguration().getExtensions()) {
@@ -389,13 +394,13 @@ public class HardwareInventoryProvisioningAdapter extends SimplerQueuedProvision
             try {
                 m_hwInventoryAdapterConfigurationDao.reload();
                 initializeVendorAttributes();
-                ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_SUCCESSFUL_UEI, "Provisiond." + NAME);
-                ebldr.addParam(EventConstants.PARM_DAEMON_NAME, "Provisiond." + NAME);
+                ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_SUCCESSFUL_UEI, PREFIX + NAME);
+                ebldr.addParam(EventConstants.PARM_DAEMON_NAME, PREFIX + NAME);
             } catch (Throwable e) {
-                LOG.info("Unable to reload SNMP asset adapter configuration", e);
-                ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_FAILED_UEI, "Provisiond." + NAME);
-                ebldr.addParam(EventConstants.PARM_DAEMON_NAME, "Provisiond." + NAME);
-                ebldr.addParam(EventConstants.PARM_REASON, e.getLocalizedMessage().substring(1, 128));
+                LOG.warn("Unable to reload Hardware Inventory adapter configuration", e);
+                ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_FAILED_UEI, PREFIX + NAME);
+                ebldr.addParam(EventConstants.PARM_DAEMON_NAME, PREFIX + NAME);
+                ebldr.addParam(EventConstants.PARM_REASON, e.getMessage());
             }
             if (ebldr != null) {
                 getEventForwarder().sendNow(ebldr.getEvent());
@@ -412,12 +417,12 @@ public class HardwareInventoryProvisioningAdapter extends SimplerQueuedProvision
     private boolean isReloadConfigEventTarget(final Event event) {
         boolean isTarget = false;
         for (final Parm parm : event.getParmCollection()) {
-            if (EventConstants.PARM_DAEMON_NAME.equals(parm.getParmName()) && ("Provisiond." + NAME).equalsIgnoreCase(parm.getValue().getContent())) {
+            if (EventConstants.PARM_DAEMON_NAME.equals(parm.getParmName()) && (PREFIX + NAME).equalsIgnoreCase(parm.getValue().getContent())) {
                 isTarget = true;
                 break;
             }
         }
-        LOG.debug("isReloadConfigEventTarget: Provisiond. {} was target of reload event: {}", isTarget, NAME);
+        LOG.debug("isReloadConfigEventTarget: Provisiond. {} was target of reload event: {}", NAME, isTarget);
         return isTarget;
     }
 
