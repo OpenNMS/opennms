@@ -101,6 +101,19 @@ image::../images/09_compare-branches.png[]
 The next dialog prepares your _pull request_ and you have to make sure you make the _pull request_ against the 'OpenNMS:development/docs' branch.
 By default you will see _OpenNMS:master_, you can change the branch by click on _Edit_(1) and switch from _OpenNMS:master_ to _OpenNMS:development/docs_(2).
 GitHub will use your last git commit message for the _pull request_ and you have a chance to add or change your commit message before sending the _pull request_.
+Please add the following text to your commit message:
+
+[source]
+----
+http://issues.opennms.org/browse/NMS-6698<1>
+
+Todo Review:<2>
+- [ ] Typo and grammar
+- [ ] Formatting and conventions
+- [ ] Content
+----
+<1> A backlink to the JIRA issue for easy navigation
+<2> Checkbox which helps to indicate the status of the review process
 
 .Switch target branch from OpenNMS:master to OpenNMS:development/docs
 image::../images/10_select-dev-docs.png[]
