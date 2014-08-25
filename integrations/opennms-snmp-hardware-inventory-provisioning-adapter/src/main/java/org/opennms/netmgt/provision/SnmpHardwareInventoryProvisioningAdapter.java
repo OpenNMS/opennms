@@ -35,7 +35,7 @@ import java.util.Map;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.opennms.netmgt.EventConstants;
-import org.opennms.netmgt.config.HwInventoryAdapterConfigurationDao;
+import org.opennms.netmgt.config.SnmpHwInventoryAdapterConfigDao;
 import org.opennms.netmgt.config.api.SnmpAgentConfigFactory;
 import org.opennms.netmgt.config.hardware.HwExtension;
 import org.opennms.netmgt.config.hardware.MibObj;
@@ -64,21 +64,21 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 
 /**
- * The Class HardwareInventoryProvisioningAdapter.
+ * The Class SnmpHardwareInventoryProvisioningAdapter.
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
-@EventListener(name=HardwareInventoryProvisioningAdapter.NAME)
-public class HardwareInventoryProvisioningAdapter extends SimplerQueuedProvisioningAdapter implements InitializingBean {
+@EventListener(name=SnmpHardwareInventoryProvisioningAdapter.NAME)
+public class SnmpHardwareInventoryProvisioningAdapter extends SimplerQueuedProvisioningAdapter implements InitializingBean {
 
     /** The Constant LOG. */
-    private static final Logger LOG = LoggerFactory.getLogger(HardwareInventoryProvisioningAdapter.class);
+    private static final Logger LOG = LoggerFactory.getLogger(SnmpHardwareInventoryProvisioningAdapter.class);
 
     /** The Constant PREFIX. */
     public static final String PREFIX = "Provisiond.";
 
     /** The Constant NAME. */
-    public static final String NAME = "HardwareInventoryProvisioningAdapter";
+    public static final String NAME = "SnmpHardwareInventoryProvisioningAdapter";
 
     /** The node DAO. */
     private NodeDao m_nodeDao;
@@ -96,7 +96,7 @@ public class HardwareInventoryProvisioningAdapter extends SimplerQueuedProvision
     private SnmpAgentConfigFactory m_snmpConfigDao;
 
     /** The hardware inventory adapter configuration DAO. */
-    private HwInventoryAdapterConfigurationDao m_hwInventoryAdapterConfigurationDao;
+    private SnmpHwInventoryAdapterConfigDao m_hwInventoryAdapterConfigDao;
 
     /** The vendor attributes. */
     private Map<SnmpObjId, HwEntityAttributeType> m_vendorAttributes = new HashMap<SnmpObjId, HwEntityAttributeType>();
@@ -104,7 +104,7 @@ public class HardwareInventoryProvisioningAdapter extends SimplerQueuedProvision
     /**
      * The Constructor.
      */
-    public HardwareInventoryProvisioningAdapter() {
+    public SnmpHardwareInventoryProvisioningAdapter() {
         super(NAME);
     }
 
@@ -117,7 +117,7 @@ public class HardwareInventoryProvisioningAdapter extends SimplerQueuedProvision
         Assert.notNull(m_hwEntityDao, "Hardware Entity DAO cannot be null");
         Assert.notNull(m_hwEntityAttributeTypeDao, "Hardware Entity Attribute Type DAO cannot be null");
         Assert.notNull(m_snmpConfigDao, "SNMP Configuration DAO cannot be null");
-        Assert.notNull(m_hwInventoryAdapterConfigurationDao, "Hardware Inventory Configuration DAO cannot be null");
+        Assert.notNull(m_hwInventoryAdapterConfigDao, "Hardware Inventory Configuration DAO cannot be null");
         Assert.notNull(m_eventForwarder, "Event Forwarder cannot be null");
         initializeVendorAttributes();
     }
@@ -205,7 +205,7 @@ public class HardwareInventoryProvisioningAdapter extends SimplerQueuedProvision
             LOG.debug("Loading attribute type {}", type);
             m_vendorAttributes.put(type.getSnmpObjId(), type);
         }
-        for (HwExtension ext : m_hwInventoryAdapterConfigurationDao.getConfiguration().getExtensions()) {
+        for (HwExtension ext : m_hwInventoryAdapterConfigDao.getConfiguration().getExtensions()) {
             for (MibObj obj : ext.getMibObjects()) {
                 HwEntityAttributeType type = m_vendorAttributes.get(obj.getSnmpObjId());
                 if (type == null) {
@@ -226,11 +226,11 @@ public class HardwareInventoryProvisioningAdapter extends SimplerQueuedProvision
      * @return the root entity
      * @throws HardwareInventoryException the hardware inventory exception
      */
-    private OnmsHwEntity getRootEntity(SnmpAgentConfig agentConfig, OnmsNode node) throws HardwareInventoryException {
+    private OnmsHwEntity getRootEntity(SnmpAgentConfig agentConfig, OnmsNode node) throws SnmpHardwareInventoryException {
         LOG.debug("getRootEntity: Getting ENTITY-MIB using {}", agentConfig);
 
-        final List<SnmpObjId> vendorOidList = m_hwInventoryAdapterConfigurationDao.getConfiguration().getVendorOid(node.getSysObjectId());
-        final Map<String,String> replacementMap = m_hwInventoryAdapterConfigurationDao.getConfiguration().getReplacementMap();
+        final List<SnmpObjId> vendorOidList = m_hwInventoryAdapterConfigDao.getConfiguration().getVendorOid(node.getSysObjectId());
+        final Map<String,String> replacementMap = m_hwInventoryAdapterConfigDao.getConfiguration().getReplacementMap();
         final SnmpObjId[] vendorOids = vendorOidList.toArray(new SnmpObjId[vendorOidList.size()]);
         final SnmpObjId[] allOids = (SnmpObjId[]) ArrayUtils.addAll(EntityPhysicalTableRow.ELEMENTS, vendorOids);
         final EntityPhysicalTableTracker tracker = new EntityPhysicalTableTracker(m_vendorAttributes, allOids, replacementMap);
@@ -241,17 +241,17 @@ public class HardwareInventoryProvisioningAdapter extends SimplerQueuedProvision
         try {
             walker.waitFor();
             if (walker.timedOut()) {
-                throw new HardwareInventoryException("Aborting entities scan: Agent timed out while scanning the " + trackerName + " table");
+                throw new SnmpHardwareInventoryException("Aborting entities scan: Agent timed out while scanning the " + trackerName + " table");
             }  else if (walker.failed()) {
-                throw new HardwareInventoryException("Aborting entities scan: Agent failed while scanning the " + trackerName + " table: " + walker.getErrorMessage());
+                throw new SnmpHardwareInventoryException("Aborting entities scan: Agent failed while scanning the " + trackerName + " table: " + walker.getErrorMessage());
             }
         } catch (final InterruptedException e) {
-            throw new HardwareInventoryException("ENTITY-MIB node collection interrupted, exiting");
+            throw new SnmpHardwareInventoryException("ENTITY-MIB node collection interrupted, exiting");
         }
 
         OnmsHwEntity root = tracker.getRootEntity();
         if (root == null) {
-            throw new HardwareInventoryException("Cannot get root entity for node " + node);
+            throw new SnmpHardwareInventoryException("Cannot get root entity for node " + node);
         }
 
         return root;
@@ -360,8 +360,8 @@ public class HardwareInventoryProvisioningAdapter extends SimplerQueuedProvision
      *
      * @return the hardware adapter configuration DAO
      */
-    public HwInventoryAdapterConfigurationDao getHwAdapterConfigurationDao() {
-        return m_hwInventoryAdapterConfigurationDao;
+    public SnmpHwInventoryAdapterConfigDao getHwAdapterConfigDao() {
+        return m_hwInventoryAdapterConfigDao;
     }
 
     /**
@@ -369,8 +369,8 @@ public class HardwareInventoryProvisioningAdapter extends SimplerQueuedProvision
      *
      * @param hwInventoryAdapterConfigurationDao the hardware inventory adapter configuration DAO
      */
-    public void setHwInventoryAdapterConfigurationDao(HwInventoryAdapterConfigurationDao hwInventoryAdapterConfigurationDao) {
-        this.m_hwInventoryAdapterConfigurationDao = hwInventoryAdapterConfigurationDao;
+    public void setHwInventoryAdapterConfigDao(SnmpHwInventoryAdapterConfigDao hwInventoryAdapterConfigDao) {
+        this.m_hwInventoryAdapterConfigDao = hwInventoryAdapterConfigDao;
     }
 
     /* (non-Javadoc)
@@ -392,7 +392,7 @@ public class HardwareInventoryProvisioningAdapter extends SimplerQueuedProvision
             EventBuilder ebldr = null;
             LOG.debug("Reloading the Hardware Inventory adapter configuration");
             try {
-                m_hwInventoryAdapterConfigurationDao.reload();
+                m_hwInventoryAdapterConfigDao.reload();
                 initializeVendorAttributes();
                 ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_SUCCESSFUL_UEI, PREFIX + NAME);
                 ebldr.addParam(EventConstants.PARM_DAEMON_NAME, PREFIX + NAME);

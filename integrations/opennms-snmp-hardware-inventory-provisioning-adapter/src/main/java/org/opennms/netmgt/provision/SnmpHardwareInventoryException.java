@@ -33,7 +33,7 @@ package org.opennms.netmgt.provision;
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
-public class HardwareInventoryException extends Exception {
+public class SnmpHardwareInventoryException extends Exception {
 
     /** The Constant serialVersionUID. */
     private static final long serialVersionUID = 915744339081242021L;
@@ -41,7 +41,7 @@ public class HardwareInventoryException extends Exception {
     /**
      * The Constructor.
      */
-    public HardwareInventoryException() {
+    public SnmpHardwareInventoryException() {
         super();
     }
 
@@ -53,7 +53,7 @@ public class HardwareInventoryException extends Exception {
      * @param enableSuppression the enable suppression
      * @param writableStackTrace the writable stack trace
      */
-    public HardwareInventoryException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+    public SnmpHardwareInventoryException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
         super(message, cause, enableSuppression, writableStackTrace);
     }
 
@@ -63,7 +63,7 @@ public class HardwareInventoryException extends Exception {
      * @param message the message
      * @param cause the cause
      */
-    public HardwareInventoryException(String message, Throwable cause) {
+    public SnmpHardwareInventoryException(String message, Throwable cause) {
         super(message, cause);
     }
 
@@ -72,7 +72,7 @@ public class HardwareInventoryException extends Exception {
      *
      * @param message the message
      */
-    public HardwareInventoryException(String message) {
+    public SnmpHardwareInventoryException(String message) {
         super(message);
     }
 
@@ -81,7 +81,7 @@ public class HardwareInventoryException extends Exception {
      *
      * @param cause the cause
      */
-    public HardwareInventoryException(Throwable cause) {
+    public SnmpHardwareInventoryException(Throwable cause) {
         super(cause);
     }
 

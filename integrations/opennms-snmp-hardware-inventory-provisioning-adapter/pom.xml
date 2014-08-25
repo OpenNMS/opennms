@@ -6,8 +6,8 @@
     <version>1.13.5-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
-  <artifactId>opennms-hardware-inventory-provisioning-adapter</artifactId>
-  <name>OpenNMS Integrations Hardware Inventory Provisioning Adapter</name>
+  <artifactId>opennms-snmp-hardware-inventory-provisioning-adapter</artifactId>
+  <name>OpenNMS Integrations SNMP Hardware Inventory Provisioning Adapter</name>
   <dependencies>
     <dependency>
       <groupId>org.opennms</groupId>

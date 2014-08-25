@@ -348,7 +348,7 @@
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
-      <artifactId>opennms-hardware-inventory-provisioning-adapter</artifactId>
+      <artifactId>opennms-snmp-hardware-inventory-provisioning-adapter</artifactId>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>

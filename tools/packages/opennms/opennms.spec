@@ -201,8 +201,8 @@ Requires(pre):	opennms-plugin-provisioning-rancid
 Requires:	opennms-plugin-provisioning-rancid
 Requires(pre):	opennms-plugin-provisioning-snmp-asset
 Requires:	opennms-plugin-provisioning-snmp-asset
-Requires(pre):	opennms-plugin-provisioning-hardware-inventory
-Requires:	opennms-plugin-provisioning-hardware-inventory
+Requires(pre):	opennms-plugin-provisioning-snmp-hardware-inventory
+Requires:	opennms-plugin-provisioning-snmp-hardware-inventory
 Requires(pre):	opennms-plugin-ticketer-centric
 Requires:	opennms-plugin-ticketer-centric
 Requires(pre):	opennms-plugin-ticketer-jira
@@ -302,15 +302,15 @@ fields with data fetched from SNMP GET requests.
 %{extrainfo2}
 
 
-%package plugin-provisioning-hardware-inventory
-Summary:	Hardware Inventory Provisioning Adapter for OpenNMS
+%package plugin-provisioning-snmp-hardware-inventory
+Summary:	SNMP Hardware Inventory Provisioning Adapter for OpenNMS
 Group:		Applications/System
 Requires(pre):	opennms-core = %{version}-%{release}
 Requires:	opennms-core = %{version}-%{release}
 
-%description plugin-provisioning-hardware-inventory
-The Hardware Inventory provisioning adapter responds to provisioning events by updating hardware
-fields with data fetched from the ENTITY-MIB and vendor implementations of this MIB.
+%description plugin-provisioning-snmp-hardware-inventory
+The SNMP Hardware Inventory provisioning adapter responds to provisioning events by updating 
+hardware fields with data fetched from the ENTITY-MIB and vendor extensions of this MIB.
 
 %{extrainfo}
 %{extrainfo2}
@@ -603,7 +603,7 @@ find $RPM_BUILD_ROOT%{instprefix}/etc ! -type d | \
 	grep -v 'otrs.properties' | \
 	grep -v '/rt.properties' | \
 	grep -v 'snmp-asset-adapter-configuration.xml' | \
-	grep -v 'hardware-inventory-adapter-configuration.xml' | \
+	grep -v 'snmp-hardware-inventory-adapter-configuration.xml' | \
 	grep -v 'xml-datacollection-config.xml' | \
 	grep -v 'xmp-config.xml' | \
 	grep -v 'xmp-datacollection-config.xml' | \
@@ -628,7 +628,7 @@ find $RPM_BUILD_ROOT%{sharedir}/etc-pristine ! -type d | \
 	grep -v 'otrs.properties' | \
 	grep -v '/rt.properties' | \
 	grep -v 'snmp-asset-adapter-configuration.xml' | \
-	grep -v 'hardware-inventory-adapter-configuration.xml' | \
+	grep -v 'snmp-hardware-inventory-adapter-configuration.xml' | \
 	grep -v 'xml-datacollection-config.xml' | \
 	grep -v 'xmp-config.xml' | \
 	grep -v 'xmp-datacollection-config.xml' | \
@@ -788,11 +788,11 @@ rm -rf $RPM_BUILD_ROOT
 %config(noreplace) %{instprefix}/etc/snmp-asset-adapter-configuration.xml
 %{sharedir}/etc-pristine/snmp-asset-adapter-configuration.xml
 
-%files plugin-provisioning-hardware-inventory
+%files plugin-provisioning-snmp-hardware-inventory
 %defattr(664 root root 775)
-%{instprefix}/lib/opennms-hardware-inventory-provisioning-adapter*.jar
-%config(noreplace) %{instprefix}/etc/hardware-inventory-adapter-configuration.xml
-%{sharedir}/etc-pristine/hardware-inventory-adapter-configuration.xml
+%{instprefix}/lib/opennms-snmp-hardware-inventory-provisioning-adapter*.jar
+%config(noreplace) %{instprefix}/etc/snmp-hardware-inventory-adapter-configuration.xml
+%{sharedir}/etc-pristine/snmp-hardware-inventory-adapter-configuration.xml
 
 %files plugin-protocol-cifs
 %defattr(664 root root 775)

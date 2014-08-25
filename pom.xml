@@ -1642,7 +1642,7 @@
       </dependency>
       <dependency>
         <groupId>org.opennms</groupId>
-        <artifactId>opennms-hardware-inventory-provisioning-adapter</artifactId>
+        <artifactId>opennms-snmp-hardware-inventory-provisioning-adapter</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>

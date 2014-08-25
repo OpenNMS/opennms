@@ -49,6 +49,7 @@ import org.opennms.netmgt.dao.api.HwEntityDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsHwEntity;
+import org.opennms.netmgt.provision.SnmpHardwareInventoryProvisioningAdapter;
 import org.opennms.netmgt.provision.SimpleQueuedProvisioningAdapter.AdapterOperation;
 import org.opennms.netmgt.provision.SimpleQueuedProvisioningAdapter.AdapterOperationSchedule;
 import org.opennms.netmgt.provision.SimpleQueuedProvisioningAdapter.AdapterOperationType;
@@ -61,7 +62,7 @@ import org.springframework.test.context.transaction.BeforeTransaction;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * The Class HardwareInventoryProvisioningAdapterTest.
+ * The Test Class for SnmpHardwareInventoryProvisioningAdapter.
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
@@ -84,7 +85,7 @@ import org.springframework.transaction.annotation.Transactional;
         @JUnitSnmpAgent(host="192.168.0.3", resource="entPhysicalTable-cisco-r3.properties"),
         @JUnitSnmpAgent(host="192.168.0.4", resource="entPhysicalTable-cisco-r4.properties")
 })
-public class HardwareInventoryProvisioningAdapterTest implements InitializingBean {
+public class SnmpHardwareInventoryProvisioningAdapterTest implements InitializingBean {
 
     /**
      * The Class TestOperation.
@@ -110,9 +111,9 @@ public class HardwareInventoryProvisioningAdapterTest implements InitializingBea
         }
     }
 
-    /** The m_adapter. */
+    /** The SNMP Hardware Provisioning Adapter. */
     @Autowired
-    private HardwareInventoryProvisioningAdapter m_adapter;
+    private SnmpHardwareInventoryProvisioningAdapter m_adapter;
 
     /** The node DAO. */
     @Autowired
@@ -190,7 +191,7 @@ public class HardwareInventoryProvisioningAdapterTest implements InitializingBea
     @Test
     @Transactional
     public void testDiscoverSnmpEntities() throws Exception {
-        HwInventoryAdapterConfiguration config = m_adapter.getHwAdapterConfigurationDao().getConfiguration();
+        HwInventoryAdapterConfiguration config = m_adapter.getHwAdapterConfigDao().getConfiguration();
         Assert.assertEquals(2, config.getExtensions().size());
 
         HwExtension ext = config.getExtensions().get(0);

@@ -18,7 +18,7 @@
     <module>opennms-rancid-provisioning-adapter</module>
     <module>opennms-rws</module>
     <module>opennms-snmp-asset-provisioning-adapter</module>
-    <module>opennms-hardware-inventory-provisioning-adapter</module>
+    <module>opennms-snmp-hardware-inventory-provisioning-adapter</module>
     <module>opennms-jasper-extensions</module>
     <module>opennms-vmware</module>
     <module>opennms-vtdxml-collector-handler</module>

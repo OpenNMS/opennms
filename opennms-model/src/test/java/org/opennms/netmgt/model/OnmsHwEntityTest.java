@@ -96,6 +96,34 @@ public class OnmsHwEntityTest {
         Assert.assertEquals(e, h);
     }
 
+    @Test
+    public void testRemove() throws Exception {
+        OnmsHwEntity e = new OnmsHwEntity();
+        e.setId(1);
+        e.setEntPhysicalIndex(1);
+        e.setEntPhysicalName("Chassis");
+
+        OnmsHwEntity c1 = new OnmsHwEntity();
+        c1.setId(2);
+        c1.setEntPhysicalIndex(2);
+        c1.setEntPhysicalName("Module 1");
+        e.addChildEntity(c1);
+
+        OnmsHwEntity c2 = new OnmsHwEntity();
+        c2.setId(3);
+        c2.setEntPhysicalIndex(3);
+        c2.setEntPhysicalName("Module 2");
+        e.addChildEntity(c2);
+
+        OnmsNode n = new OnmsNode();
+        n.setId(1);
+        n.setLabel("n1");
+        e.setNode(n);
+        
+        e.removeChild(c2);
+        Assert.assertEquals(1, e.getChildren().size());
+    }
+
     /**
      * Check attributes.
      *

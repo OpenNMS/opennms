@@ -52,6 +52,8 @@ import org.opennms.netmgt.model.HwEntityAttributeType;
 import org.opennms.netmgt.model.OnmsHwEntity;
 import org.opennms.netmgt.model.OnmsHwEntityAttribute;
 import org.opennms.netmgt.model.OnmsNode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -90,6 +92,7 @@ import com.sun.jersey.spi.resource.PerRequest;
 @Path("hardwareInventory")
 @Transactional
 public class HardwareInventoryResource extends OnmsRestService {
+    private static final Logger LOG = LoggerFactory.getLogger(HardwareInventoryResource.class);
 
     /** The node DAO. */
     @Autowired
@@ -169,6 +172,7 @@ public class HardwareInventoryResource extends OnmsRestService {
 
             OnmsHwEntity existing = m_hwEntityDao.findRootByNodeId(node.getId());
             if (existing != null && !entity.equals(existing)) {
+                LOG.debug("setHardwareInventory: removing existing hardware inventory from node {} ", nodeCriteria);
                 m_hwEntityDao.delete(existing);
                 m_hwEntityDao.flush();
             }
@@ -181,7 +185,7 @@ public class HardwareInventoryResource extends OnmsRestService {
     }
 
     /**
-     * Adds the child.
+     * Adds or replaces a child entity.
      *
      * @param nodeCriteria the node criteria
      * @param parentEntPhysicalIndex the parent entity physical index
@@ -191,22 +195,24 @@ public class HardwareInventoryResource extends OnmsRestService {
     @POST
     @Path("{parentEntPhysicalIndex}")
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public Response addChild(@PathParam("nodeCriteria") String nodeCriteria, @PathParam("parentEntPhysicalIndex") Integer parentEntPhysicalIndex, OnmsHwEntity child) {
+    public Response addOrReplaceChild(@PathParam("nodeCriteria") String nodeCriteria, @PathParam("parentEntPhysicalIndex") Integer parentEntPhysicalIndex, OnmsHwEntity child) {
         writeLock();
         try {
             OnmsNode node = getOnmsNode(nodeCriteria);
             fixEntity(node, child);
 
             OnmsHwEntity parent = getHwEntity(node.getId(), parentEntPhysicalIndex);
+            if (parent == null) {
+                throw getException(Status.BAD_REQUEST, "Can't find entity on node " + nodeCriteria + " with index " + parentEntPhysicalIndex);
+            }
             OnmsHwEntity currentChild = parent.getChildByIndex(child.getEntPhysicalIndex());
             if (currentChild != null) {
-                parent.removeChildByIndex(currentChild.getEntPhysicalIndex());
-                m_hwEntityDao.save(parent);
-                m_hwEntityDao.flush();
+                LOG.debug("addOrReplaceChild: removing entity {}", currentChild);
+                parent.removeChild(currentChild);
             }
             parent.addChildEntity(child);
+            LOG.debug("addOrReplaceChild: updating entity {}", child);
             m_hwEntityDao.save(parent);
-
             return Response.seeOther(getRedirectUri(m_uriInfo)).build();
         } finally {
             writeUnlock();

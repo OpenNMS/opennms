@@ -30,7 +30,6 @@ package org.opennms.netmgt.model;
 
 import java.io.Serializable;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -596,7 +595,7 @@ public class OnmsHwEntity implements Serializable, Comparable<OnmsHwEntity> {
      */
     @XmlElement(name="hwEntity")
     @XmlElementWrapper(name="children")
-    @Sort(type = SortType.NATURAL)
+    @Sort(type = SortType.NATURAL, comparator = OnmsHwEntity.class)
     @OneToMany(mappedBy="parent", fetch=FetchType.LAZY, cascade={CascadeType.ALL})
     public SortedSet<OnmsHwEntity> getChildren() {
         return m_children;
@@ -641,13 +640,8 @@ public class OnmsHwEntity implements Serializable, Comparable<OnmsHwEntity> {
      *
      * @param entPhysicalIndex the entity physical index
      */
-    public void removeChildByIndex(Integer entPhysicalIndex) {
-        for (Iterator<OnmsHwEntity> it = m_children.iterator(); it.hasNext(); ) {
-            OnmsHwEntity child = it.next();
-            if (child.getEntPhysicalIndex() == entPhysicalIndex) {
-                it.remove();
-            }
-        }
+    public void removeChild(OnmsHwEntity child) {
+        if (m_children != null) m_children.remove(child);
     }
 
     /**
@@ -773,11 +767,15 @@ public class OnmsHwEntity implements Serializable, Comparable<OnmsHwEntity> {
      */
     @Override
     public String toString() {
-        ToStringBuilder b = new ToStringBuilder(this.getClass().getSimpleName(), ToStringStyle.SHORT_PREFIX_STYLE)
-        .append("nodeId", m_node == null ? null : m_node.getId())
-        .append("parentPhysicalIndex", getParentIndex())
-        .append("entPhysicalIndex", m_entPhysicalIndex)
-        .append("entPhysicalName", m_entPhysicalName);
+        ToStringBuilder b = new ToStringBuilder(this.getClass().getSimpleName(), ToStringStyle.SHORT_PREFIX_STYLE);
+        if (m_node != null)
+            b.append("nodeId", m_node.getId());
+        if (getParentIndex() != null)
+            b.append("parentPhysicalIndex", getParentIndex());
+        if (m_entPhysicalIndex != null)
+            b.append("entPhysicalIndex", m_entPhysicalIndex);
+        if (m_entPhysicalName != null)
+            b.append("entPhysicalName", m_entPhysicalName);
         if (m_entPhysicalDescr != null)
             b.append("entPhysicalDescr", m_entPhysicalDescr);
         if (m_entPhysicalAlias != null)
@@ -831,10 +829,7 @@ public class OnmsHwEntity implements Serializable, Comparable<OnmsHwEntity> {
     @Override
     public int compareTo(OnmsHwEntity o) {
         if (o == null) return -1;
-        if (o.getEntPhysicalIndex() != null && getEntPhysicalIndex() != null) {
-            return o.getEntPhysicalIndex().compareTo(getEntPhysicalIndex());
-        }
-        return -1;
+        return toString().compareTo(o.toString());
     }
 
     /**
