@@ -99,6 +99,18 @@
                 <attrib name="PercentPhysDiskWriteTime" alias="wmiPDPctDiskWrTime" wmiObject="PercentDiskWriteTime" type="Gauge"/>
                 <!-- Rate at which I/Os to the disk were split into multiple I/Os -->
                 <attrib name="SplitPhysIOPerSec" alias="wmiPDSplitIOsPerSec" wmiObject="SplitIOPerSec" type="Gauge"/>
+                <!-- Current rate of read and write operations on the disk per second -->
+                <attrib name="DiskTransfersPerSec" alias="wmiPDTransPerSec" wmiObject="DiskTransfersPerSec" type="Gauge"/>
+                <!-- Average rate of read and write operations on the disk per second -->
+                <attrib name="AvgDiskSecPerTransfer" alias="wmiPDAvgTransPerSec" wmiObject="AvgDiskSecPerTransfer" type="Gauge"/>
+                <!-- Current number of requests queued and waiting for service on the disk -->
+                <attrib name="CurrentDiskQueueLength" alias="wmiPDQueueLen" wmiObject="CurrentDiskQueueLength" type="Gauge"/>
+                <!-- Average number of requests queued and waiting for service on the disk -->
+                <attrib name="AvgDiskQueueLength" alias="wmiPDAvgQueueLen" wmiObject="AvgDiskQueueLength" type="Gauge"/>
+                <!-- The percentage of time during the sample interval that the disk was busy -->
+                <attrib name="PercentDiskTime" alias="wmiPDPctBusyTime" wmiObject="PercentDiskTime" type="Gauge"/>
+                <!-- The percentage of time during the sample interval that the disk was idle -->
+                <attrib name="PercentIdleTime" alias="wmiPDPctIdleTime" wmiObject="PercentIdleTime" type="Gauge"/>
             </wpm>
 
             <!--  A group for collecting Logical Disk statistics.
