@@ -45,14 +45,14 @@ public class OnmsHwEntityTest {
      */
     @Test
     public void testEquals() {
-        OnmsHwEntity r1 = createEntity("Chassis", "Processor", "Module", "CPU", "Memory");
-        OnmsHwEntity r2 = createEntity("Chassis", "I/O", "Module");
-        OnmsHwEntity r3 = createEntity("Chassis", "Processor", "Module", "CPU", "Memory");
-        OnmsHwEntity r4 = createEntity("Chassis", "Processor", "Module", "CPU");
-        Assert.assertTrue(r1.equals(r3));
-        Assert.assertFalse(r1.equals(r2));
-        Assert.assertFalse(r1.equals(r4));
+        OnmsHwEntity r1 = createEntity("Chassis", new String[] {"Processor", "Module"}, new String[] {"CPU", "Memory"});
+        OnmsHwEntity r2 = createEntity("Chassis", new String[] {"Processor", "Module"}, new String[] {"CPU", "Memory"});
+        OnmsHwEntity r3 = createEntity("Chassis", new String[] {"Processor", "Module"},  new String[] {"CPU"});
+        OnmsHwEntity r4 = createEntity("Chassis", new String[] {"I/O", "Module"}, new String[] {});
         Assert.assertFalse(r1.equals(null));
+        Assert.assertFalse(r1.equals(r3));
+        Assert.assertFalse(r1.equals(r4));
+        Assert.assertTrue(r1.equals(r2));
     }
 
     /**
@@ -91,7 +91,7 @@ public class OnmsHwEntityTest {
         Assert.assertNotNull(h);
         Assert.assertEquals(1,  h.getChildren().size());
         checkAttributes(h);
-        checkAttributes(h.getChildren().get(0));
+        checkAttributes(h.getChildren().iterator().next());
 
         Assert.assertEquals(e, h);
     }
@@ -117,37 +117,35 @@ public class OnmsHwEntityTest {
      * @param attributes the attributes
      * @return the entity
      */
-    private OnmsHwEntity createEntity(String rootName, String childName1, String childName2, String ... attributes) {
-        OnmsHwEntity r1 = new OnmsHwEntity();
-        r1.setId(getRandomId());
-        r1.setEntPhysicalIndex(1);
-        r1.setEntPhysicalName(rootName);
+    private OnmsHwEntity createEntity(String rootName, String[] children, String[] attributes) {
+        OnmsHwEntity r = new OnmsHwEntity();
+        r.setId(getRandomId());
+        r.setEntPhysicalIndex(1);
+        r.setEntPhysicalName(rootName);
 
-        OnmsHwEntity c1 = new OnmsHwEntity();
-        c1.setId(getRandomId());
-        c1.setEntPhysicalIndex(2);
-        c1.setEntPhysicalName(childName1);
-
-        OnmsHwEntity c2 = new OnmsHwEntity();
-        c2.setId(getRandomId());
-        c2.setEntPhysicalIndex(3);
-        c2.setEntPhysicalName(childName2);
+        int index = 2;
+        for (String child : children) {
+            OnmsHwEntity c = new OnmsHwEntity();
+            c.setId(getRandomId());
+            c.setEntPhysicalIndex(index++);
+            c.setEntPhysicalName(child);
+            r.addChildEntity(c);
+        }
 
         for (int i = 0; i< attributes.length; i++) {
             HwEntityAttributeType a = new HwEntityAttributeType(".1.1.1." + i, attributes[i], "integer");
             a.setId(getRandomId());
-            c1.addAttribute(a, Integer.toString(i + 10));
+            r.addAttribute(a, Integer.toString(i + 10));
         }
-
-        r1.addChildEntity(c1);
-        r1.addChildEntity(c2);
 
         OnmsNode n = new OnmsNode();
         n.setId(1);
         n.setLabel("n1");
-        r1.setNode(n);
+        r.setNode(n);
 
-        return r1;
+        System.out.println(r);
+
+        return r;
     }
 
     /**
