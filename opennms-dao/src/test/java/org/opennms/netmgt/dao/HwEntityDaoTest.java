@@ -121,7 +121,7 @@ public class HwEntityDaoTest implements InitializingBean {
      */
     @Test
     @Transactional
-    public void testFindEntity() {
+    public void testEntityCycle() {
         HwEntityAttributeType ram = new HwEntityAttributeType(".1.3.6.1.4.1.9.9.195.1.1.1.1", "ram", "integer");
         m_hwEntityAttributeTypeDao.save(ram);
         m_hwEntityAttributeTypeDao.flush();
@@ -175,6 +175,10 @@ public class HwEntityDaoTest implements InitializingBean {
 
         OnmsHwEntity e3 = m_hwEntityDao.findEntityByName(node.getId(), e1.getEntPhysicalName());
         Assert.assertTrue(e1.equals(e3));
+
+        m_hwEntityDao.flush();
+
+        m_hwEntityDao.delete(e2.getId());
     }
 
 }

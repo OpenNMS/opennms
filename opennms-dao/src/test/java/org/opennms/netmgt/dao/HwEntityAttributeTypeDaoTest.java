@@ -80,7 +80,7 @@ public class HwEntityAttributeTypeDaoTest implements InitializingBean {
      */
     @Test
     @Transactional
-    public void testSaveType() {
+    public void testEntityCycle() {
         HwEntityAttributeType ram = new HwEntityAttributeType(".1.3.6.1.4.1.9.9.195.1.1.1.1", "ram", "integer");
         m_hwEntityAttributeTypeDao.save(ram);
         m_hwEntityAttributeTypeDao.flush();
@@ -91,6 +91,10 @@ public class HwEntityAttributeTypeDaoTest implements InitializingBean {
         assertEquals(".1.3.6.1.4.1.9.9.195.1.1.1.1", type.getOid());
         assertEquals("integer", type.getAttributeClass());
         assertEquals(new Integer(1), type.getId());
+
+        m_hwEntityAttributeTypeDao.flush();
+
+        m_hwEntityAttributeTypeDao.delete(type.getId());
     }
 
 }

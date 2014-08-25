@@ -30,7 +30,6 @@ package org.opennms.netmgt.model;
 
 import java.io.Serializable;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -41,6 +40,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -145,7 +145,7 @@ public class OnmsHwEntityAttribute implements Serializable, Comparable<OnmsHwEnt
      *
      * @return the type
      */
-    @ManyToOne(optional=false, cascade={CascadeType.ALL})
+    @ManyToOne(optional=false)
     @JoinColumn(name="hwAttribTypeId")
     @XmlTransient
     public HwEntityAttributeType getType() {

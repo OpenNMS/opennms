@@ -165,13 +165,7 @@ public class HardwareInventoryResource extends OnmsRestService {
         writeLock();
         try {
             OnmsNode node = getOnmsNode(nodeCriteria);
-
-            entity.setNode(node);
-            entity.fixRelationships();
-
-            Map<String,HwEntityAttributeType> typesMap = new HashMap<String, HwEntityAttributeType>();
-            updateTypes(typesMap, entity);
-            m_hwEntityAttribTypeDao.flush();
+            fixEntity(node, entity);
 
             OnmsHwEntity existing = m_hwEntityDao.findRootByNodeId(node.getId());
             if (existing != null && !entity.equals(existing)) {
@@ -201,6 +195,8 @@ public class HardwareInventoryResource extends OnmsRestService {
         writeLock();
         try {
             OnmsNode node = getOnmsNode(nodeCriteria);
+            fixEntity(node, child);
+
             OnmsHwEntity parent = getHwEntity(node.getId(), parentEntPhysicalIndex);
             OnmsHwEntity currentChild = parent.getChildByIndex(child.getEntPhysicalIndex());
             if (currentChild != null) {
@@ -208,8 +204,6 @@ public class HardwareInventoryResource extends OnmsRestService {
                 m_hwEntityDao.save(parent);
                 m_hwEntityDao.flush();
             }
-            child.setNode(node);
-            child.fixRelationships();
             parent.addChildEntity(child);
             m_hwEntityDao.save(parent);
 
@@ -307,6 +301,21 @@ public class HardwareInventoryResource extends OnmsRestService {
             throw getException(Status.BAD_REQUEST, "Can't find entity on node " + nodeId + " with index " + entPhysicalIndex);
         }
         return entity;
+    }
+
+    /**
+     * Fix entity.
+     *
+     * @param node the node
+     * @param entity the entity
+     */
+    private void fixEntity(OnmsNode node, OnmsHwEntity entity) {
+        entity.setNode(node);
+        entity.fixRelationships();
+
+        Map<String,HwEntityAttributeType> typesMap = new HashMap<String, HwEntityAttributeType>();
+        updateTypes(typesMap, entity);
+        m_hwEntityAttribTypeDao.flush();
     }
 
     /**
