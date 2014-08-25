@@ -224,6 +224,17 @@
                 <!-- PUT requests per second. -->
                 <attrib name="PutRequests" alias="wmiW3PutReq" wmiObject="TotalPutRequests" type="Counter" />
             </wpm>
+
+            <!-- A group for collecting Win32_OperatingSystem class statistics.
+             *  Check the keyvalue "Name" - if it's there (should be) collect this whole group.
+             *  wmiClass is the WMI object class.
+             *  Check every recheckInterval milliseconds (3600000 = 1hr)
+            -->
+            <wpm name="win32_OS" wmiClass="Win32_OperatingSystem" keyvalue="Name" wmiNamespace="root/cimv2"
+                 recheckInterval="3600000" ifType="all" resourceType="node">
+                <!-- The total amount, in kilobytes, of physical memory available to the operating system (this value does not necessarily indicate the true amount of physical memory, but what is reported to the operating system as available to it) -->
+                <attrib name="TotalVisibleMemorySize" alias="wmiOSMemTotal" wmiObject="TotalVisibleMemorySize" type="Gauge"/>
+            </wpm>
         </wpms>
     </wmi-collection>
 </wmi-datacollection-config>
