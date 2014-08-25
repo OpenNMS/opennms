@@ -39,11 +39,6 @@
       <groupId>org.opennms</groupId>
       <artifactId>opennms-model</artifactId>
     </dependency>
-    <!-- Only needed for TcpEventProxy -->
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-services</artifactId>
-    </dependency>
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>jfreechart-dependencies</artifactId>

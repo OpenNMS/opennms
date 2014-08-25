@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.utils;
+package org.opennms.netmgt.xmlrpcd;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.events.api.EventConstants;

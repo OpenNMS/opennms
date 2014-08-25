@@ -29,7 +29,6 @@
 package org.opennms.netmgt.eventd;
 
 import org.opennms.netmgt.config.api.EventConfDao;
-import org.opennms.netmgt.capsd.EventUtils;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventIpcManager;
 import org.opennms.netmgt.events.api.EventListener;
@@ -148,7 +147,7 @@ public class BroadcastEventProcessor implements EventListener {
         boolean isTarget = false;
         
         if (EventConstants.RELOAD_DAEMON_CONFIG_UEI.equals(event.getUei())) {
-            if ("Eventd".equalsIgnoreCase(EventUtils.getParm(event, EventConstants.PARM_DAEMON_NAME))) {
+            if ("Eventd".equalsIgnoreCase(EventUtil.getValueOfParm(EventConstants.PARM_DAEMON_NAME, event))) {
                 isTarget = true;
             }
         // Deprecating this one...

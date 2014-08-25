@@ -36,8 +36,8 @@ import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.opennms.netmgt.events.api.EventConstants;
-import org.opennms.netmgt.utils.XmlrpcUtil;
 import org.opennms.netmgt.xml.event.Event;
+import org.opennms.netmgt.xmlrpcd.XmlrpcUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

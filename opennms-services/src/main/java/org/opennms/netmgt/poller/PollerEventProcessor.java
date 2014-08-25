@@ -48,10 +48,10 @@ import org.opennms.netmgt.poller.pollables.PollableInterface;
 import org.opennms.netmgt.poller.pollables.PollableNetwork;
 import org.opennms.netmgt.poller.pollables.PollableNode;
 import org.opennms.netmgt.poller.pollables.PollableService;
-import org.opennms.netmgt.utils.XmlrpcUtil;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Value;
+import org.opennms.netmgt.xmlrpcd.XmlrpcUtil;
 
 /**
  * 

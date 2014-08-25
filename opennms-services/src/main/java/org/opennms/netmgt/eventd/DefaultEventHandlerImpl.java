@@ -30,6 +30,7 @@ package org.opennms.netmgt.eventd;
 
 import java.util.List;
 
+import org.opennms.netmgt.events.api.EventHandler;
 import org.opennms.netmgt.events.api.EventProcessor;
 import org.opennms.netmgt.events.api.EventProcessorException;
 import org.opennms.netmgt.xml.event.Event;

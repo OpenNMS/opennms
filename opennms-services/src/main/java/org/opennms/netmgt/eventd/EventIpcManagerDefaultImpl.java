@@ -45,6 +45,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.opennms.core.logging.Logging;
 import org.opennms.core.concurrent.LogPreservingThreadFactory;
+import org.opennms.netmgt.events.api.EventHandler;
 import org.opennms.netmgt.events.api.EventIpcBroadcaster;
 import org.opennms.netmgt.events.api.EventIpcManager;
 import org.opennms.netmgt.events.api.EventIpcManagerProxy;
@@ -252,7 +253,7 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
             m_eventHandlerPool.execute(m_eventHandler.createRunnable(eventLog));
         } catch (RejectedExecutionException e) {
             LOG.warn("Unable to queue event log to the event handler pool queue", e);
-            throw new UndeclaredEventException(e);
+            throw e;
         }
     }
 
@@ -530,7 +531,7 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
     /**
      * <p>getEventHandler</p>
      *
-     * @return a {@link org.opennms.netmgt.eventd.EventHandler} object.
+     * @return a {@link org.opennms.netmgt.events.api.EventHandler} object.
      */
     public EventHandler getEventHandler() {
         return m_eventHandler;
@@ -539,7 +540,7 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
     /**
      * <p>setEventHandler</p>
      *
-     * @param eventHandler a {@link org.opennms.netmgt.eventd.EventHandler} object.
+     * @param eventHandler a {@link org.opennms.netmgt.events.api.EventHandler} object.
      */
     public void setEventHandler(EventHandler eventHandler) {
         m_eventHandler = eventHandler;

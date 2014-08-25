@@ -34,9 +34,6 @@ package org.opennms.netmgt.eventd;
  *
  * @author <A HREF="mailto:weave@oculan.com">Sowmya Nataraj </A>
  * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
- * @author <A HREF="mailto:weave@oculan.com">Sowmya Nataraj </A>
- * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
- * @version $Id: $
  */
 public final class EventdConstants {
     /**
