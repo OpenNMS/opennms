@@ -65,9 +65,9 @@ public class JdbcCollector implements ServiceCollector {
     private static final Logger LOG = LoggerFactory.getLogger(JdbcCollector.class);
 
     private JdbcDataCollectionConfigDao m_jdbcCollectionDao;
-    private final HashMap<Integer, JdbcAgentState> m_scheduledNodes = new HashMap<Integer, JdbcAgentState>();
-    private HashMap<String, AttributeGroupType> m_groupTypeList = new HashMap<String, AttributeGroupType>();
-    private HashMap<String, JdbcCollectionAttributeType> m_attribTypeList = new HashMap<String, JdbcCollectionAttributeType>();
+    private final Map<Integer, JdbcAgentState> m_scheduledNodes = new HashMap<Integer, JdbcAgentState>();
+    private Map<String, AttributeGroupType> m_groupTypeList = new HashMap<String, AttributeGroupType>();
+    private Map<String, JdbcCollectionAttributeType> m_attribTypeList = new HashMap<String, JdbcCollectionAttributeType>();
     
     public JdbcDataCollectionConfigDao getJdbcCollectionDao() {
         return m_jdbcCollectionDao;

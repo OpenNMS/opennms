@@ -48,7 +48,7 @@ public class SnmpIfData {
     private final String m_ifAlias;
     
     private final Map<String,String> m_attributes = new HashMap<String,String>();
-
+    
     /**
      * <p>Constructor for SnmpIfData.</p>
      *
@@ -76,8 +76,8 @@ public class SnmpIfData {
         return (num == null ? dflt : num.intValue());
     }
 
-    protected static long nullSafeUnbox(Long num, int dflt) {
-        return (num == null ? dflt : num.intValue());
+    protected static long nullSafeUnbox(Long num, long dflt) {
+        return (num == null ? dflt : num.longValue());
     }
 
     /**

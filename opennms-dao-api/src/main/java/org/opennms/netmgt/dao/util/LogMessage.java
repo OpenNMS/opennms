@@ -41,7 +41,7 @@ import org.opennms.netmgt.xml.event.Logmsg;
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  * @version $Id: $
  */
-public final class LogMessage {
+public abstract class LogMessage {
     /**
      * Format the logmsg entry
      *

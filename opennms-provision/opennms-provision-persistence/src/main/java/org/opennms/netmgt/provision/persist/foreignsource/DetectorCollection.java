@@ -46,7 +46,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement(name="detectors")
 public class DetectorCollection implements List<PluginConfig> {
-    private LinkedList<PluginConfig> m_list = null;
+    private List<PluginConfig> m_list = null;
 
     public DetectorCollection() {
         m_list = new LinkedList<PluginConfig>();

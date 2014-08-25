@@ -83,7 +83,7 @@ public abstract class AbstractSystemReportPlugin implements SystemReportPlugin {
     }
 
     @Override
-    public TreeMap<String, Resource> getEntries() {
+    public Map<String, Resource> getEntries() {
         throw new UnsupportedOperationException("You must override getEntries()!");
     }
 

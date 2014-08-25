@@ -271,6 +271,12 @@
 
   <onmsgi:service interface="org.opennms.netmgt.dao.api.OutageDao" ref="outageDao" />
 
+   <bean id="pathOutageDao" class="org.opennms.netmgt.dao.hibernate.PathOutageDaoHibernate">
+    <property name="sessionFactory" ref="sessionFactory" />
+  </bean>
+
+  <onmsgi:service interface="org.opennms.netmgt.dao.api.PathOutageDao" ref="pathOutageDao" />
+
   <bean id="serviceTypeDao" class="org.opennms.netmgt.dao.hibernate.ServiceTypeDaoHibernate">
     <property name="sessionFactory" ref="sessionFactory" />
   </bean>
@@ -373,6 +379,8 @@
     <property name="configResource" ref="surveillanceViewConfigResourceLocation" />
   </bean>
   
+  <onmsgi:service interface="org.opennms.netmgt.dao.api.SurveillanceViewConfigDao" ref="surveillanceViewConfigDao" />
+  
   <bean id="databaseReportConfigResourceLocation" class="java.lang.String">
     <constructor-arg value="file:${opennms.home}/etc/database-reports.xml" />
   </bean>
@@ -380,6 +388,8 @@
   <bean id="databaseReportConfigDao" class="org.opennms.netmgt.dao.castor.DefaultDatabaseReportConfigDao">
     <property name="configResource" ref="databaseReportConfigResourceLocation" />
   </bean>
+  
+  <onmsgi:service interface="org.opennms.netmgt.dao.api.DatabaseReportConfigDao" ref="databaseReportConfigDao" />
   
   <bean id="availabilityReportConfigResourceLocation" class="java.lang.String">
     <constructor-arg value="file:${opennms.home}/etc/availability-reports.xml" />
@@ -389,6 +399,8 @@
     <property name="configResource" ref="availabilityReportConfigResourceLocation" />
   </bean>
   
+  <onmsgi:service interface="org.opennms.netmgt.dao.api.OnmsReportConfigDao" ref="availabilityReportConfigDao" />
+  
   <bean id="jasperReportConfigResourceLocation" class="java.lang.String">
     <constructor-arg value="file:${opennms.home}/etc/jasper-reports.xml" />
   </bean>
@@ -397,11 +409,7 @@
     <property name="configResource" ref="jasperReportConfigResourceLocation" />
   </bean>
   
-  <bean id="databaseSchemaConfigFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-    <property name="staticMethod"><value>org.opennms.netmgt.config.DatabaseSchemaConfigFactory.init</value></property>
-  </bean>
-
-  <bean id="databaseSchemaConfigFactory" class="org.opennms.netmgt.config.DatabaseSchemaConfigFactory" depends-on="databaseSchemaConfigFactory-init" factory-method="getInstance"/>
+  <onmsgi:service interface="org.opennms.netmgt.dao.api.JasperReportConfigDao" ref="jasperReportConfigDao" />
 
   <bean id="filterDaoFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
     <property name="staticMethod"><value>org.opennms.netmgt.filter.FilterDaoFactory.setInstance</value></property>
@@ -419,46 +427,13 @@
     <property name="sessionFactory" ref="sessionFactory" />
   </bean>
 
+  <onmsgi:service interface="org.opennms.netmgt.dao.api.FilterFavoriteDao" ref="filterFavoriteDao" />
+
   <bean id="topologyDao" class="org.opennms.netmgt.dao.hibernate.TopologyDaoHibernate">
     <property name="sessionFactory" ref="sessionFactory" />
   </bean>
 
   <onmsgi:service interface="org.opennms.netmgt.dao.api.TopologyDao" ref="topologyDao" />
-
-  <bean id="collectdConfig" class="org.opennms.netmgt.config.CollectdConfigFactory"/>
-
-  <bean id="dataCollectionConfigResourceLocation" class="java.lang.String">
-    <constructor-arg value="file:${opennms.home}/etc/datacollection-config.xml" />
-  </bean>
-
-  <bean id="dataCollectionConfigDirectoryLocation" class="java.lang.String">
-    <constructor-arg value="${opennms.home}/etc/datacollection" />
-  </bean>
-
-  <bean id="dataCollectionConfigReloadCheckInterval" class="java.lang.Long">
-    <constructor-arg value="${org.opennms.snmp.dataCollectionConfig.reloadCheckInterval:30000}" />
-  </bean>
-
-  <bean id="dataCollectionConfigDao" class="org.opennms.netmgt.config.DefaultDataCollectionConfigDao">
-    <property name="configResource" ref="dataCollectionConfigResourceLocation" />
-    <property name="configDirectory" ref="dataCollectionConfigDirectoryLocation" />
-    <property name="reloadCheckInterval" ref="dataCollectionConfigReloadCheckInterval" />
-  </bean>
-
-  <bean id="dataCollectionConfig-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-    <property name="staticMethod">
-      <value>org.opennms.netmgt.config.DataCollectionConfigFactory.setInstance</value>
-    </property>
-    <property name="arguments">
-      <list>
-        <ref bean="dataCollectionConfigDao" />
-      </list>
-    </property>
-  </bean>
-
-  <bean id="dataCollectionConfig" class="org.opennms.netmgt.config.DataCollectionConfigFactory" depends-on="dataCollectionConfig-init" factory-method="getInstance" />
-
-  <onmsgi:service interface="org.opennms.netmgt.config.DataCollectionConfigDao" ref="dataCollectionConfigDao" />
 
   <bean id="resourceDao" class="org.opennms.netmgt.dao.support.DefaultResourceDao">
     <property name="nodeDao" ref="nodeDao" />
@@ -478,6 +453,8 @@
     <property name="rrdBinaryPath" value="${rrd.binary}" />
   </bean>
 
+  <onmsgi:service interface="org.opennms.netmgt.dao.api.RrdDao" ref="rrdDao" />
+
   <bean id="statsdConfigResourceLocation" class="java.lang.String">
     <constructor-arg value="file:${opennms.home}/etc/statsd-configuration.xml" />
   </bean>
@@ -487,6 +464,8 @@
     <property name="reloadCheckInterval" value="-1" />
   </bean>
   
+  <onmsgi:service interface="org.opennms.netmgt.dao.api.StatisticsDaemonConfigDao" ref="statsdConfigDao" />
+  
   <bean id="javamailConfigResourceLocation" class="java.lang.String">
     <constructor-arg value="file:${opennms.home}/etc/javamail-configuration.xml" />
   </bean>
@@ -495,6 +474,8 @@
     <property name="configResource" ref="javamailConfigResourceLocation" />
     <property name="reloadCheckInterval" value="-1" />
   </bean>
+
+  <onmsgi:service interface="org.opennms.netmgt.dao.api.JavaMailConfigurationDao" ref="javamailConfigDao" />
 
   <bean id="onmsMapDao" class="org.opennms.netmgt.dao.hibernate.OnmsMapDaoHibernate">
     <property name="sessionFactory" ref="sessionFactory" />
@@ -514,18 +495,11 @@
   
   <onmsgi:service interface="org.opennms.netmgt.dao.api.DataLinkInterfaceDao" ref="dataLinkInterfaceDao" />
 
-  <bean id="init-snmpPeerFactory" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-    <property name="staticMethod"><value>org.opennms.netmgt.config.SnmpPeerFactory.init</value></property>
-  </bean>
-
-  <bean id="snmpPeerFactory" class="org.opennms.netmgt.config.SnmpPeerFactory" depends-on="init-snmpPeerFactory" factory-method="getInstance"/>
-
-  <onmsgi:service interface="org.opennms.netmgt.config.api.SnmpAgentConfigFactory" ref="snmpPeerFactory"/>
-  
   <bean id="simpleJdbcTemplate" class="org.springframework.jdbc.core.simple.SimpleJdbcTemplate">
     <constructor-arg ref="jdbcTemplate" />
   </bean>
 
   <bean id="alarmStatisticsService" class="org.opennms.netmgt.dao.stats.DefaultAlarmStatisticsService" />
 
+  <onmsgi:service interface="org.opennms.netmgt.dao.stats.AlarmStatisticsService" ref="alarmStatisticsService" />
 </beans>

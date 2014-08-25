@@ -15,11 +15,7 @@
         <qualifier value="standard" />
     </bean>
     
-    <bean id="eventdConfigManager-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-        <property name="staticMethod"><value>org.opennms.netmgt.config.EventdConfigFactory.init</value></property>
-    </bean>
-
-    <bean id="eventdConfigManager" class="org.opennms.netmgt.config.EventdConfigFactory" depends-on="eventdConfigManager-init" factory-method="getInstance"/>
+    <bean id="eventdConfigManager" class="org.opennms.netmgt.config.EventdConfigManager"/>
 
     <bean id="eventIpcManagerHandlerPoolSize" factory-bean="eventdConfigManager" factory-method="getReceivers"/>
     <bean id="eventIpcManagerHandlerQueueLength" factory-bean="eventdConfigManager" factory-method="getQueueLength"/>

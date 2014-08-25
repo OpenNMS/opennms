@@ -43,7 +43,7 @@ import org.opennms.netmgt.xml.event.Event;
  * Preferences - Java - Code Style - Code Templates
  * @version $Id: $
  */
-public class MockNode extends MockContainer<MockNetwork,MockInterface> {
+public class MockNode extends MockContainer<MockNetwork, MockElement> {
 
     String m_label;
 

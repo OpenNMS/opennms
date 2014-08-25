@@ -39,7 +39,7 @@ import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONParser;
 import com.google.gwt.json.client.JSONValue;
 
-public class KscReportRestResponseMapper {
+public abstract class KscReportRestResponseMapper {
 
     public static List<KscReport> translate(final Response response) {
         final String jsonText = response.getText();

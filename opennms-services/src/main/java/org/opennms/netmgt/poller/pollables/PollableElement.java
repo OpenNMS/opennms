@@ -263,8 +263,10 @@ public abstract class PollableElement {
             obtainTreeLock(timeout);
             return c.call();
         } catch (RuntimeException e) {
+        	LOG.error("Unexpected exception: " + e.getMessage(), e);
             throw e;
         } catch (Throwable e) {
+        	LOG.error("Unexpected exception: " + e.getMessage(), e);
             throw new RuntimeException(e);
         } finally {
             releaseTreeLock();

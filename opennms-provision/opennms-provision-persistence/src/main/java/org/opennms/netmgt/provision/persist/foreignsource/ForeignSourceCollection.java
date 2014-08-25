@@ -50,7 +50,7 @@ import org.opennms.core.xml.ValidateUsing;
 @XmlRootElement(name="foreign-sources")
 @ValidateUsing("foreign-sources.xsd")
 public class ForeignSourceCollection implements List<ForeignSource> {
-    private LinkedList<ForeignSource> m_list = null;
+    private List<ForeignSource> m_list = null;
 
 	/**
 	 * <p>Constructor for ForeignSourceCollection.</p>

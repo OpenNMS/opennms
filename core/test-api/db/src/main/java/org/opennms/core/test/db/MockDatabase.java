@@ -30,6 +30,7 @@ package org.opennms.core.test.db;
 
 import static org.opennms.core.utils.InetAddressUtils.str;
 
+import java.net.InetAddress;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
@@ -39,6 +40,7 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.Querier;
 import org.opennms.core.utils.SingleResultQuerier;
 import org.opennms.netmgt.events.api.EventConstants;
@@ -47,6 +49,7 @@ import org.opennms.netmgt.events.api.EventParameterUtils;
 import org.opennms.netmgt.mock.MockInterface;
 import org.opennms.netmgt.mock.MockNetwork;
 import org.opennms.netmgt.mock.MockNode;
+import org.opennms.netmgt.mock.MockPathOutage;
 import org.opennms.netmgt.mock.MockService;
 import org.opennms.netmgt.mock.MockVisitor;
 import org.opennms.netmgt.mock.MockVisitorAdapter;
@@ -106,6 +109,11 @@ public class MockDatabase extends TemporaryDatabasePostgreSQL implements EventWr
             public void visitService(MockService svc) {
                 writeService(svc);
             }
+            
+            @Override
+            public void visitPathOutage(MockPathOutage out) {
+            	writePathOutage(out);
+            }
         };
         network.visit(dbCreater);
         
@@ -128,6 +136,7 @@ public class MockDatabase extends TemporaryDatabasePostgreSQL implements EventWr
     }
 
     public void writeSnmpInterface(MockInterface iface) {
+        LOG.info("Inserting into snmpInterface {} {} {}", Integer.valueOf(iface.getNodeId()), iface.getIfAlias(), iface.getIfIndex() );
         Object[] values = { Integer.valueOf(iface.getNodeId()), iface.getIfAlias(), iface.getIfIndex() };
         update("insert into snmpInterface (nodeID, snmpifAlias, snmpIfIndex) values (?, ?, ?);", values);
     }
@@ -146,6 +155,12 @@ public class MockDatabase extends TemporaryDatabasePostgreSQL implements EventWr
         String status = svc.getMgmtStatus().toDbString();
         Object[] values = { Integer.valueOf(svc.getNodeId()), str(svc.getAddress()), Integer.valueOf(svc.getId()), status };
         update("insert into ifServices (nodeID, ipAddr, serviceID, status) values (?, ?, ?, ?);", values);
+    }
+
+    public void writePathOutage(MockPathOutage out) {
+    	LOG.info("Inserting into pathoutage {} {} {}" ,out.getNodeId(), InetAddressUtils.str(out.getIpAddress()), out.getServiceName());
+    	Object[] values = { Integer.valueOf(out.getNodeId()), InetAddressUtils.str(out.getIpAddress()), out.getServiceName() };
+    	update("insert into pathoutage (nodeid, criticalpathip, criticalpathservicename) values (?, ?, ?);", values);
     }
 
     public String getNextOutageIdStatement() {

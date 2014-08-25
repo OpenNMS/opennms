@@ -28,11 +28,8 @@
 
 package org.opennms.features.poller.remote.gwt.client;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import java.util.TreeSet;
-
 import org.opennms.features.poller.remote.gwt.client.location.LocationInfo;
 
 public interface ApplicationView {
@@ -51,15 +48,15 @@ public interface ApplicationView {
     public abstract void updateSelectedApplications( Set<ApplicationInfo> applications);
 
     public abstract void updateLocationList(
-            ArrayList<LocationInfo> locationsForLocationPanel);
+            List<LocationInfo> locationsForLocationPanel);
 
     public abstract void setSelectedTag(String selectedTag, List<String> allTags);
 
     public abstract void updateApplicationList(
-            ArrayList<ApplicationInfo> applications);
+            List<ApplicationInfo> applications);
 
     public abstract void updateApplicationNames(
-            TreeSet<String> allApplicationNames);
+            Set<String> allApplicationNames);
 
     public abstract void fitMapToLocations(GWTBounds locationBounds);
 

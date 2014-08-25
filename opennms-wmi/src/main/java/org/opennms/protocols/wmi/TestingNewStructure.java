@@ -42,7 +42,7 @@ import org.opennms.protocols.wmi.wbem.OnmsWbemPropertySet;
  * @author ranger
  * @version $Id: $
  */
-public class TestingNewStructure {
+public abstract class TestingNewStructure {
     /**
      * <p>main</p>
      *

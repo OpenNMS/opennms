@@ -38,7 +38,7 @@ import org.smslib.USSDSessionStatus;
  * @author ranger
  * @version $Id: $
  */
-public class MobileMsgResponseMatchers {
+public abstract class MobileMsgResponseMatchers {
     private static final Logger LOG = LoggerFactory.getLogger(MobileMsgResponseMatchers.class);
 
 	/**

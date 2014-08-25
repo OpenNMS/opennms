@@ -30,8 +30,7 @@ package org.opennms.systemreport.system;
 
 import static org.junit.Assert.assertTrue;
 
-import java.util.TreeMap;
-
+import java.util.Map;
 import javax.annotation.Resource;
 
 import org.junit.Test;
@@ -48,7 +47,7 @@ public class TopReportPluginTest extends ReportPluginTestCase {
 
     @Test
     public void testTopReportPlugin() {
-        final TreeMap<String, org.springframework.core.io.Resource> entries = m_topReportPlugin.getEntries();
+        final Map<String, org.springframework.core.io.Resource> entries = m_topReportPlugin.getEntries();
         assertTrue(entries.containsKey("Output"));
     }
 }

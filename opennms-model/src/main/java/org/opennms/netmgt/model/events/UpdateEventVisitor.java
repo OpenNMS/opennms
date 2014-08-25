@@ -91,20 +91,4 @@ public class UpdateEventVisitor extends AbstractEntityVisitor {
     private Event createNodeUpdatedEvent(OnmsNode node) {
         return EventUtils.createNodeUpdatedEvent(m_eventSource, node.getId(), node.getLabel(), node.getLabelSource(), m_rescanExisting);
     }
-
-    @SuppressWarnings("unused")
-    private Event createIpInterfaceUpdatedEvent(OnmsIpInterface iface) {
-        return null;
-    }
-    
-    @SuppressWarnings("unused")
-    private Event createSnmpInterfaceUpdatedEvent(OnmsSnmpInterface iface) {
-        return null;
-    }
-
-    @SuppressWarnings("unused")
-    private Event createMonitoredServiceUpdatedEvent(OnmsMonitoredService monSvc) {
-        return null;
-    }
-
 }

@@ -64,14 +64,14 @@ public abstract class CollectorTestUtils {
         service.addParameter(collectionParm);
         pkg.addService(service);
 
-        CollectionSpecification spec = new CollectionSpecification(pkg, svcName, svcCollector);
+        CollectionSpecification spec = new CollectionSpecification(pkg, svcName, svcCollector, new DefaultCollectdInstrumentation());
         return spec;
     }
 
     public static void persistCollectionSet(CollectionSpecification spec, CollectionSet collectionSet) {
         RrdRepository repository=spec.getRrdRepository("default");
         System.err.println("repository = " + repository);
-        ServiceParameters params=new ServiceParameters(spec.getReadOnlyPropertyMap());
+        ServiceParameters params = spec.getServiceParameters();
         System.err.println("service parameters = " + params);
         BasePersister persister;
         if (Boolean.getBoolean("org.opennms.rrd.storeByGroup")) {

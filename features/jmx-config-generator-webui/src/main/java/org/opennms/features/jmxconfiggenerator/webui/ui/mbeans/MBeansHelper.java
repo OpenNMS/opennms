@@ -44,7 +44,7 @@ import org.opennms.xmlns.xsd.config.jmx_datacollection.Mbean;
  * 
  * @author Markus von Rüden
  */
-public class MBeansHelper {
+public abstract class MBeansHelper {
 
 	public static List getMBeansTreeElements(Mbean input) {
 		return getMBeansTreeElements(input, true);

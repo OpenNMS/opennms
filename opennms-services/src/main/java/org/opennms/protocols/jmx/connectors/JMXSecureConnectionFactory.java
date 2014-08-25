@@ -52,7 +52,7 @@ import java.util.Map;
  * @author ranger
  * @version $Id: $
  */
-public class JMXSecureConnectionFactory {
+public abstract class JMXSecureConnectionFactory {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(JMXSecureConnectionFactory.class);
 

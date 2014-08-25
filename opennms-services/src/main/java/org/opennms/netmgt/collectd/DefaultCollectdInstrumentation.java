@@ -29,6 +29,7 @@
 package org.opennms.netmgt.collectd;
 
 import org.opennms.core.logging.Logging;
+import org.opennms.netmgt.collection.api.CollectionInstrumentation;
 import org.opennms.netmgt.collection.api.CollectionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,7 +38,7 @@ import org.slf4j.LoggerFactory;
 /**
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  */
-public class DefaultCollectdInstrumentation implements CollectdInstrumentation {
+public class DefaultCollectdInstrumentation implements CollectionInstrumentation {
     public static final Logger LOG = LoggerFactory.getLogger(DefaultCollectdInstrumentation.class);
 
     @Override

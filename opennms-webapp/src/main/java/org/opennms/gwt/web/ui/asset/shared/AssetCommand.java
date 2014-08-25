@@ -30,6 +30,7 @@ package org.opennms.gwt.web.ui.asset.shared;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
@@ -54,7 +55,7 @@ public class AssetCommand implements IsSerializable {
 
     private String m_autoenable;
 
-    private ArrayList<String> m_autoenableOptions;
+    private List<String> m_autoenableOptions;
 
     private String m_building;
 
@@ -68,7 +69,7 @@ public class AssetCommand implements IsSerializable {
 
     private String m_connection;
 
-    private ArrayList<String> m_connectionOptions;
+    private List<String> m_connectionOptions;
 
     private Float m_longitude;
     
@@ -238,7 +239,7 @@ public class AssetCommand implements IsSerializable {
         return m_autoenable;
     }
 
-    public ArrayList<String> getAutoenableOptions() {
+    public List<String> getAutoenableOptions() {
         return m_autoenableOptions;
     }
 
@@ -266,7 +267,7 @@ public class AssetCommand implements IsSerializable {
         return m_connection;
     }
 
-    public ArrayList<String> getConnectionOptions() {
+    public List<String> getConnectionOptions() {
         return m_connectionOptions;
     }
 
@@ -564,7 +565,7 @@ public class AssetCommand implements IsSerializable {
         m_autoenable = autoenable;
     }
 
-    public void setAutoenableOptions(ArrayList<String> autoenableOptions) {
+    public void setAutoenableOptions(List<String> autoenableOptions) {
         m_autoenableOptions = autoenableOptions;
     }
 
@@ -592,7 +593,7 @@ public class AssetCommand implements IsSerializable {
         m_connection = connection;
     }
 
-    public void setConnectionOptions(ArrayList<String> connectionOptions) {
+    public void setConnectionOptions(List<String> connectionOptions) {
         m_connectionOptions = connectionOptions;
     }
 

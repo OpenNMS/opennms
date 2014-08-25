@@ -41,7 +41,7 @@ public class Interface extends StandardNamedObject {
     /**
      * List of services.
      */
-    private ArrayList<Service> m_services;
+    private List<Service> m_services;
 
     private static class ServiceComparator {
         private String m_svcname;
@@ -89,7 +89,7 @@ public class Interface extends StandardNamedObject {
      * @param services
      *            Services to be set for this interface.
      */
-    public Interface(String name, ArrayList<Service> services) {
+    public Interface(String name, List<Service> services) {
         setName(name);
         if (services == null)
             m_services = new ArrayList<Service>();
@@ -190,7 +190,7 @@ public class Interface extends StandardNamedObject {
      * @param services
      *            Services for this interface to be set.
      */
-    public Interface(ArrayList<Service> services) {
+    public Interface(List<Service> services) {
         if (services == null)
             m_services = new ArrayList<Service>();
         else

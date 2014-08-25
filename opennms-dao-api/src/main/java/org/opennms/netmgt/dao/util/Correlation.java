@@ -45,7 +45,7 @@ import org.springframework.dao.DataAccessException;
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  * @see org.opennms.netmgt.events.api.EventDatabaseConstants#VALUE_TRUNCATE_INDICATOR
  */
-public class Correlation {
+public abstract class Correlation {
     private static final Logger LOG = LoggerFactory.getLogger(Correlation.class);
     /**
      * Format the correlation block to have the xml

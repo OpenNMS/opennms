@@ -203,7 +203,7 @@ public class QueryManagerDaoImpl implements QueryManager {
         
         for (OnmsOutage outage : outages) {
             outage.setIfRegainedService(closeDate);
-            m_outageDao.save(outage);
+            m_outageDao.update(outage);
         }
 
         criteria = new Criteria(OnmsOutage.class);
@@ -219,7 +219,7 @@ public class QueryManagerDaoImpl implements QueryManager {
         
         for (OnmsOutage outage : outages) {
             outage.setIfRegainedService(closeDate);
-            m_outageDao.save(outage);
+            m_outageDao.update(outage);
         }
     }
     
@@ -244,7 +244,7 @@ public class QueryManagerDaoImpl implements QueryManager {
         for (OnmsOutage outage : outages) {
             outage.setIfRegainedService(closeDate);
             outage.setServiceRegainedEvent(m_eventDao.get(eventId));
-            m_outageDao.save(outage);
+            m_outageDao.update(outage);
         }
     }
     
@@ -271,7 +271,7 @@ public class QueryManagerDaoImpl implements QueryManager {
         for (OnmsOutage outage : outages) {
             outage.setIfRegainedService(closeDate);
             outage.setServiceRegainedEvent(m_eventDao.get(eventId));
-            m_outageDao.save(outage);
+            m_outageDao.update(outage);
         }
     }
     
@@ -301,8 +301,13 @@ public class QueryManagerDaoImpl implements QueryManager {
         for (OnmsOutage outage : outages) {
             outage.setIfRegainedService(closeDate);
             outage.setServiceRegainedEvent(m_eventDao.get(eventId));
-            m_outageDao.save(outage);
+            m_outageDao.update(outage);
+            LOG.info("Calling closeOutagesForService: {}",outage);
+            
         }
+        
+        
+        
     }
 
     @Override

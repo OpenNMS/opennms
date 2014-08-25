@@ -41,8 +41,9 @@
         org.opennms.core.utils.DBUtils,
         org.opennms.core.utils.WebSecurityUtils,
         org.opennms.web.element.*,
-        org.opennms.netmgt.poller.PathOutageFactory,
-        org.opennms.netmgt.model.OnmsNode,org.opennms.netmgt.events.api.EventConstants,
+        org.opennms.netmgt.poller.PathOutageManagerJdbcImpl,
+        org.opennms.netmgt.model.OnmsNode,
+        org.opennms.netmgt.events.api.EventConstants,
         org.opennms.netmgt.xml.event.Event,
         org.opennms.web.api.Util,
         org.exolab.castor.xml.ValidationException,
@@ -129,76 +130,13 @@
 
     private static final String GET_NODES_IN_PATH = "SELECT DISTINCT pathoutage.nodeid FROM pathoutage, ipinterface WHERE pathoutage.criticalpathip=? AND pathoutage.nodeid=ipinterface.nodeid AND ipinterface.ismanaged!='D' ORDER BY nodeid";
 
-    private static Set<Integer> getAllDependencyNodesByCriticalPath(String criticalpathip) throws SQLException {
-	    Set<Integer> allPathNodes = getDependencyNodesByCriticalPath(criticalpathip);
-	    Set<Integer> currentNodes=allPathNodes;
-	    while (currentNodes.size() > 0) {
-	        Set<Integer> nextIterationNodes=new TreeSet<Integer>();
-	        for (Integer pathnodeid : currentNodes ) {
-	            nextIterationNodes.addAll(getDependencyNodesByNodeid(pathnodeid));
-	        }
-	        allPathNodes.addAll(nextIterationNodes);
-	        currentNodes=nextIterationNodes;
-	    }
-	    return allPathNodes;        
-    }
-    
-
     private static Set<Integer> getDependencyNodesByCriticalPath(String criticalpathip) throws SQLException {
-	    final Connection conn = DataSourceFactory.getInstance().getConnection();
-	    final DBUtils d = new DBUtils(PathOutageFactory.class, conn);
-	    Set<Integer> pathNodes = new TreeSet<Integer>();
-        try {
-            PreparedStatement stmt = conn.prepareStatement(GET_NODES_IN_PATH);
-            d.watch(stmt);
-            stmt.setString(1, criticalpathip);
-
-            ResultSet rs = stmt.executeQuery();
-            d.watch(rs);
-            while (rs.next()) {
-                pathNodes.add(rs.getInt(1));
-            }
-        } finally {
-            d.cleanUp();
-        }
-	    return pathNodes;
+	    return PathOutageManagerJdbcImpl.getInstance().getDependencyNodesByCriticalPath(criticalpathip);
         
     }
-    
-	private static Set<Integer> getAllDependencyNodesByNodeid(int nodeid) throws SQLException {
-	    Set<Integer> allPathNodes = getDependencyNodesByNodeid(nodeid);
-	    Set<Integer> currentNodes=allPathNodes;
-	    while (currentNodes.size() > 0) {
-	        Set<Integer> nextIterationNodes=new TreeSet<Integer>();
-	        for (Integer pathnodeid : currentNodes ) {
-	            nextIterationNodes.addAll(getDependencyNodesByNodeid(pathnodeid));
-	        }
-	        allPathNodes.addAll(nextIterationNodes);
-	        currentNodes=nextIterationNodes;
-	    }
-	    return allPathNodes;
-	}
 	
-	private static Set<Integer> getDependencyNodesByNodeid(int nodeid) throws SQLException {
-	    final Connection conn = DataSourceFactory.getInstance().getConnection();
-	    final DBUtils d = new DBUtils(PathOutageFactory.class, conn);
-
-	    Set<Integer> pathNodes = new TreeSet<Integer>();
-        try {
-            PreparedStatement stmt = conn.prepareStatement(GET_DEPENDENCY_NODES_BY_NODEID);
-            d.watch(stmt);
-            stmt.setInt(1, nodeid);
-
-            ResultSet rs = stmt.executeQuery();
-            d.watch(rs);
-            while (rs.next()) {
-                pathNodes.add(rs.getInt(1));
-            }
-        } finally {
-            d.cleanUp();
-        }
-	    
-	    return pathNodes;
+	private static Set<Integer> getDependencyNodesByNodeId(int nodeid) throws SQLException {
+	    return PathOutageManagerJdbcImpl.getInstance().getDependencyNodesByNodeId(nodeid);
 	}
 	
 	public void sendOutagesChangedEvent() throws ServletException {
@@ -519,7 +457,7 @@ Could not find an outage to edit because no outage name parameter was specified 
 					int newNodeId = WebSecurityUtils.safeParseInt(newNode);
 					addNode(theOutage, newNodeId);
 					if (request.getParameter("addPathOutageNodeRadio") != null) {
-						for (Integer pathOutageNodeid: getAllDependencyNodesByNodeid(newNodeId)) {
+						for (Integer pathOutageNodeid: getDependencyNodesByNodeId(newNodeId)) {
 						    addNode(theOutage,pathOutageNodeid.intValue());
 						}
 					}
@@ -534,7 +472,7 @@ Could not find an outage to edit because no outage name parameter was specified 
 					newInterface.setAddress(newIface);
 					addInterface(theOutage, newInterface);
 					if (request.getParameter("addPathOutageInterfaceRadio") != null) {
-						for (Integer pathOutageNodeid: getAllDependencyNodesByCriticalPath(newIface)) {
+						for (Integer pathOutageNodeid: getDependencyNodesByCriticalPath(newIface)) {
 						    addNode(theOutage,pathOutageNodeid.intValue());
 						}
 					}

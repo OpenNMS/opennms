@@ -67,6 +67,7 @@ import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventIpcManager;
 import org.opennms.netmgt.events.api.EventIpcManagerFactory;
 import org.opennms.netmgt.events.api.EventListener;
+import org.opennms.netmgt.eventd.AbstractEventUtil;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventUtils;
 import org.opennms.netmgt.xml.event.Event;
@@ -349,7 +350,7 @@ public final class BroadcastEventProcessor implements EventListener {
             final boolean wasAcked = wa;
             final Map<String, String> parmMap = rebuildParameterMap(notifId, resolutionPrefix, skipNumericPrefix);
             
-            EventUtil.expandMapValues(parmMap, 
+            AbstractEventUtil.getInstance().expandMapValues(parmMap, 
                     getNotificationManager().getEvent(Integer.parseInt(parmMap.get("eventID"))));
             
             String queueID = getNotificationManager().getQueueForNotification(notifId);
@@ -723,14 +724,14 @@ public final class BroadcastEventProcessor implements EventListener {
         paramMap.put("eventID", String.valueOf(event.getDbid()));
         paramMap.put("eventUEI", event.getUei());
 
-        EventUtil.expandMapValues(paramMap, event);
+        AbstractEventUtil.getInstance().expandMapValues(paramMap, event);
 
         return Collections.unmodifiableMap(paramMap);
         
     }
 
     private static void nullSafeExpandedPut(final String key, final String value, final Event event, Map<String, String> paramMap) {
-        String result = EventUtil.expandParms(value, event);
+        String result = AbstractEventUtil.getInstance().expandParms(value, event);
         paramMap.put(key, (result == null ? value : result));
     }
 

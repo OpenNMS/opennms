@@ -111,7 +111,7 @@ public abstract class AbstractXmlCollectionHandler implements XmlCollectionHandl
     private RrdRepository m_rrdRepository;
 
     /** The XML resource type Map. */
-    private HashMap<String, XmlResourceType> m_resourceTypeList = new HashMap<String, XmlResourceType>();
+    private Map<String, XmlResourceType> m_resourceTypeList = new HashMap<String, XmlResourceType>();
 
     /** The Node Level Resource. */
     private XmlSingleInstanceCollectionResource m_nodeResource;

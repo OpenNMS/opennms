@@ -66,7 +66,7 @@ import org.slf4j.LoggerFactory;
  * @author ranger
  * @version $Id: $
  */
-public class JBossConnectionFactory {
+public abstract class JBossConnectionFactory {
     
 	private static final Logger LOG = LoggerFactory.getLogger(JBossConnectionFactory.class);
 

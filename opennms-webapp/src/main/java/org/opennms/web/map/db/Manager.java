@@ -31,8 +31,6 @@ package org.opennms.web.map.db;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
-import java.util.Vector;
-
 import org.opennms.web.map.MapsException;
 import org.opennms.web.map.view.VElementInfo;
 import org.opennms.web.map.view.VMapInfo;
@@ -311,7 +309,7 @@ public abstract class Manager {
 	 * @return a {@link java.util.Vector} object.
 	 * @throws org.opennms.web.map.MapsException if any.
 	 */
-	public abstract Vector<VElementInfo> getAllElementInfo() throws MapsException ;
+	public abstract List<VElementInfo> getAllElementInfo() throws MapsException ;
 	
 	/**
 	 * <p>getAlarmedElements</p>
@@ -327,7 +325,7 @@ public abstract class Manager {
 	 * @return a {@link java.util.Vector} object.
 	 * @throws org.opennms.web.map.MapsException if any.
 	 */
-	public abstract Vector<Integer> getDeletedNodes() throws MapsException;
+	public abstract List<Integer> getDeletedNodes() throws MapsException;
 
 	/**
 	 * <p>getAvails</p>

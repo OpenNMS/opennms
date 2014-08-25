@@ -32,7 +32,7 @@ package org.opennms.netmgt.vmmgr;
  * 
  * @author Alejandro Galue <agalue@opennms.org>
  */
-public class ControllerUtils {
+public abstract class ControllerUtils {
 
     /** The controller. */
     private static Controller controller;

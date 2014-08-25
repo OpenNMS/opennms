@@ -38,7 +38,7 @@ import org.opennms.netmgt.xml.event.Snmp;
  * @author <A HREF="mailto:weave@oculan.com">Brian Weaver </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
-public final class SnmpInfo {
+public abstract class SnmpInfo {
     /**
      * <P>
      * Converts the SNMP information from the event into a string that can be

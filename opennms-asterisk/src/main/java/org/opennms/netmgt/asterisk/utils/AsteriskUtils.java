@@ -39,7 +39,7 @@ import org.opennms.core.utils.PropertiesUtils;
  * @param pattern A pattern to expand
  * @version $Id: $
  */
-public class AsteriskUtils {
+public abstract class AsteriskUtils {
     /**
      * <p>expandPattern</p>
      *

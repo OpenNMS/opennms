@@ -41,7 +41,7 @@ import org.slf4j.LoggerFactory;
  * @author <a href="mailto:jamesz@opennms.com">James Zuo </a>
  * @version $Id: $
  */
-public final class XmlrpcUtil {
+public abstract class XmlrpcUtil {
 
 	private static final Logger LOG = LoggerFactory.getLogger(XmlrpcUtil.class);
 

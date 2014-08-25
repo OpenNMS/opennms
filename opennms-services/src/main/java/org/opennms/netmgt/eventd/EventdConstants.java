@@ -35,7 +35,7 @@ package org.opennms.netmgt.eventd;
  * @author <A HREF="mailto:weave@oculan.com">Sowmya Nataraj </A>
  * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
  */
-public final class EventdConstants {
+public abstract class EventdConstants {
     /**
      * The SQL statement necessary to read service id and service name into map.
      */

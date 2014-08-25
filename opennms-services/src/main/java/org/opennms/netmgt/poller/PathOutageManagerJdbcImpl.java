@@ -34,6 +34,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.utils.DBUtils;
@@ -50,7 +52,7 @@ import org.opennms.netmgt.config.OpennmsServerConfigFactory;
  * @version $Id: $
  * @since 1.8.1
  */
-public abstract class PathOutageFactory {
+public class PathOutageManagerJdbcImpl implements PathOutageManager{
 
     private static final String GET_CRITICAL_PATHS = "SELECT DISTINCT criticalpathip, criticalpathservicename FROM pathoutage ORDER BY criticalpathip, criticalpathservicename";
 
@@ -74,8 +76,17 @@ public abstract class PathOutageFactory {
 
     private static final String IS_CRITICAL_PATH_MANAGED = "SELECT count(*) FROM ifservices WHERE ipaddr=? AND status='A' AND serviceid=(SELECT serviceid FROM service WHERE servicename=?)";
 
+    private static final String GET_DEPENDENCY_NODES_BY_NODEID="select po.nodeid from pathoutage po left join ipinterface intf on po.criticalpathip=intf.ipaddr where intf.nodeid=?";
+
+    private static final String GET_NODES_IN_PATHS = "SELECT DISTINCT pathoutage.nodeid FROM pathoutage, ipinterface WHERE pathoutage.criticalpathip=? AND pathoutage.nodeid=ipinterface.nodeid AND ipinterface.ismanaged!='D' ORDER BY nodeid";
+
+    
     /** Constant <code>NO_CRITICAL_PATH="Not Configured"</code> */
     public static final String NO_CRITICAL_PATH = "Not Configured";
+
+    public static PathOutageManager getInstance() {
+        return new PathOutageManagerJdbcImpl();
+    }
 
     /**
      * <p>
@@ -85,9 +96,10 @@ public abstract class PathOutageFactory {
      * @return a {@link java.util.List} object.
      * @throws java.sql.SQLException if any.
      */
-    public static List<String[]> getAllCriticalPaths() throws SQLException {
+    @Override
+    public List<String[]> getAllCriticalPaths() throws SQLException {
         final Connection conn = DataSourceFactory.getInstance().getConnection();
-        final DBUtils d = new DBUtils(PathOutageFactory.class, conn);
+        final DBUtils d = new DBUtils(PathOutageManagerJdbcImpl.class, conn);
 
         final List<String[]> paths = new ArrayList<String[]>();
 
@@ -119,8 +131,9 @@ public abstract class PathOutageFactory {
      * @return a {@link java.lang.String} object.
      * @throws java.sql.SQLException if any.
      */
-    public static String getPrettyCriticalPath(int nodeID) throws SQLException {
-        final DBUtils d = new DBUtils(PathOutageFactory.class);
+    @Override
+    public String getPrettyCriticalPath(int nodeID) throws SQLException {
+        final DBUtils d = new DBUtils(PathOutageManagerJdbcImpl.class);
         String result = NO_CRITICAL_PATH;
 
         try {
@@ -141,7 +154,8 @@ public abstract class PathOutageFactory {
         return result;
     }
 
-    public static String[] getCriticalPath(int nodeId) {
+    @Override
+    public String[] getCriticalPath(int nodeId) {
         final String[] cpath = new String[2];
         Querier querier = new Querier(DataSourceFactory.getInstance(), GET_CRITICAL_PATH_BY_NODEID) {
     
@@ -176,9 +190,10 @@ public abstract class PathOutageFactory {
      * @return a {@link java.util.List} object.
      * @throws java.sql.SQLException if any.
      */
-    public static List<String> getNodesInPath(String criticalPathIp, String criticalPathServiceName) throws SQLException {
+    @Override
+    public List<String> getNodesInPath(String criticalPathIp, String criticalPathServiceName) throws SQLException {
         final Connection conn = DataSourceFactory.getInstance().getConnection();
-        final DBUtils d = new DBUtils(PathOutageFactory.class, conn);
+        final DBUtils d = new DBUtils(PathOutageManagerJdbcImpl.class, conn);
 
         final List<String> pathNodes = new ArrayList<String>();
 
@@ -210,8 +225,9 @@ public abstract class PathOutageFactory {
      * @return an array of {@link java.lang.String} objects.
      * @throws java.sql.SQLException if any.
      */
-    public static String[] getLabelAndStatus(String nodeIDStr, Connection conn) throws SQLException {
-        final DBUtils d = new DBUtils(PathOutageFactory.class);
+    @Override
+    public String[] getLabelAndStatus(String nodeIDStr, Connection conn) throws SQLException {
+        final DBUtils d = new DBUtils(PathOutageManagerJdbcImpl.class);
 
         try {
             int countManagedSvcs = 0;
@@ -294,9 +310,10 @@ public abstract class PathOutageFactory {
      * @return an array of {@link java.lang.String} objects.
      * @throws java.sql.SQLException if any.
      */
-    public static String[] getCriticalPathData(String criticalPathIp, String criticalPathServiceName) throws SQLException {
+    @Override
+    public String[] getCriticalPathData(String criticalPathIp, String criticalPathServiceName) throws SQLException {
         final Connection conn = DataSourceFactory.getInstance().getConnection();
-        final DBUtils d = new DBUtils(PathOutageFactory.class, conn);
+        final DBUtils d = new DBUtils(PathOutageManagerJdbcImpl.class, conn);
 
         String[] result = new String[4];
         int nodeCount=0;
@@ -398,4 +415,49 @@ public abstract class PathOutageFactory {
         }
         return result;
     }
+  
+    @Override
+    public Set<Integer> getDependencyNodesByCriticalPath(String criticalpathip) throws SQLException {
+	    final Connection conn = DataSourceFactory.getInstance().getConnection();
+	    final DBUtils d = new DBUtils(PathOutageManagerJdbcImpl.class, conn);
+	    Set<Integer> pathNodes = new TreeSet<Integer>();
+        try {
+            PreparedStatement stmt = conn.prepareStatement(GET_NODES_IN_PATHS);
+            d.watch(stmt);
+            stmt.setString(1, criticalpathip);
+
+            ResultSet rs = stmt.executeQuery();
+            d.watch(rs);
+            while (rs.next()) {
+                pathNodes.add(rs.getInt(1));
+            }
+        } finally {
+            d.cleanUp();
+        }
+	    return pathNodes;
+        
+    }
+    
+    @Override
+	public Set<Integer> getDependencyNodesByNodeId(int nodeid) throws SQLException {
+	    final Connection conn = DataSourceFactory.getInstance().getConnection();
+	    final DBUtils d = new DBUtils(PathOutageManagerJdbcImpl.class, conn);
+
+	    Set<Integer> pathNodes = new TreeSet<Integer>();
+        try {
+            PreparedStatement stmt = conn.prepareStatement(GET_DEPENDENCY_NODES_BY_NODEID);
+            d.watch(stmt);
+            stmt.setInt(1, nodeid);
+
+            ResultSet rs = stmt.executeQuery();
+            d.watch(rs);
+            while (rs.next()) {
+                pathNodes.add(rs.getInt(1));
+            }
+        } finally {
+            d.cleanUp();
+        }
+	    
+	    return pathNodes;
+	}
 }

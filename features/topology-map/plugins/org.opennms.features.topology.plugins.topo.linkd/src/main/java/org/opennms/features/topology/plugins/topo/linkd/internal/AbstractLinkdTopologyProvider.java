@@ -212,15 +212,6 @@ public abstract class AbstractLinkdTopologyProvider extends AbstractTopologyProv
 
     }
 
-    private static String getIfStatusString(int ifStatusNum) {
-          if (ifStatusNum < OPER_ADMIN_STATUS.length) {
-              return OPER_ADMIN_STATUS[ifStatusNum];
-          } else {
-              return "Unknown (" + ifStatusNum + ")";
-          }
-      }
-
-
     public String getConfigurationFile() {
         return m_configurationFile;
     }

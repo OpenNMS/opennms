@@ -41,7 +41,7 @@ import org.opennms.netmgt.xml.event.Value;
  *
  * @author <A HREF="mailto:weave@oculan.com">Brian Weaver</A>
  */
-public final class EventParameterUtils {
+public abstract class EventParameterUtils {
     /**
      * Format the list of event parameters
      * @param event TODO

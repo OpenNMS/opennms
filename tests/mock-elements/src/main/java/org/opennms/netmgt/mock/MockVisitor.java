@@ -81,4 +81,11 @@ public interface MockVisitor {
      */
     public void visitService(MockService s);
 
+    /**
+     * <p>visitPathOutage</p>
+     * 
+     * @param m_currentOutage a {@link org.opennms.netmgt.mock.MockPathOutage} object.
+     */
+	public void visitPathOutage(MockPathOutage m_currentOutage);
+
 }

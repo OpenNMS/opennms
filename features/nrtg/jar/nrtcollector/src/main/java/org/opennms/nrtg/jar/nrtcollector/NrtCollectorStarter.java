@@ -42,7 +42,7 @@ import org.springframework.stereotype.Component;
  * @author Markus Neumann
  */
 @Component
-public class NrtCollectorStarter {
+public abstract class NrtCollectorStarter {
 
     private static final Logger logger = LoggerFactory.getLogger(NrtCollectorStarter.class);
 
