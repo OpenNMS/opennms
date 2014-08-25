@@ -33,6 +33,12 @@
                 <attrib name="PoolNonpagedAllocs" alias="wmiOSMemNPPAllocs" wmiObject="PoolNonpagedAllocs" type="Counter"/>
                 <!-- Number of calls to allocate space in the paged pool -->
                 <attrib name="PoolPagedAllocs" alias="wmiOSMemPPAllocs" wmiObject="PoolPagedAllocs" type="Counter"/>
+                <!-- Number of pages read from disk to resolve hard page faults (hard page faults occur when a process requires code or data that is not in its working set or elsewhere in physical memory, and must be retrieved from disk) -->
+                <attrib name="PagesInputPerSec" alias="wmiOSMemPgInSec" wmiObject="PagesInputPerSec" type="Gauge"/>
+                <!-- Number of pages written to disk to free up space in physical memory (this may indicate that physical memory is in short supply) -->
+                <attrib name="PagesOutputPerSec" alias="wmiOSMemPgOutSec" wmiObject="PagesOutputPerSec" type="Gauge"/>
+                <!-- Number of pages read from or written to disk to resolve hard page faults (this is the sum of PagesInputPerSec and PagesOutputPerSec) -->
+                <attrib name="PagesPerSec" alias="wmiOSMemPgInOutSec" wmiObject="PagesPerSec" type="Gauge"/>
             </wpm>
 
             <!--  A group for collecting System Objects statistics.
