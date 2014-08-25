@@ -32,6 +32,7 @@
 <%@page language="java" contentType="text/html" session="true" %>
   
 <%@page import="org.opennms.core.utils.InetAddressUtils" %>
+<%@page import="org.opennms.core.utils.WebSecurityUtils" %>
 <%@page import="org.opennms.netmgt.model.OnmsAlarm" %>
 <%@page import="org.opennms.netmgt.model.OnmsFilterFavorite"%>
 <%@page import="org.opennms.web.alarm.AcknowledgeType" %>
@@ -495,7 +496,7 @@
 			<% }%>
           </c:if>
           </td>
-          <td class="divider"><%=alarms[i].getLogMsg()%></td>
+          <td class="divider"><%=WebSecurityUtils.sanitizeString(alarms[i].getLogMsg(), true)%></td>
         </tr> 
       <% } /*end for*/%>
 
