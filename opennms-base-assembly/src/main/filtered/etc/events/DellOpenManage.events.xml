@@ -1147,7 +1147,7 @@
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			DellOpenManage Event: Amperage Probe Failre: non-recoverable value
+			DellOpenManage Event: Amperage Probe Failure: non-recoverable value
 			&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
