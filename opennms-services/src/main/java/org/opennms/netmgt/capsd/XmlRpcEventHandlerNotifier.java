@@ -63,7 +63,7 @@ public class XmlRpcEventHandlerNotifier {
     /**
      * <p>eventHandler</p>
      */
-    @Pointcut("@annotation(org.opennms.netmgt.model.events.annotations.EventHandler)")
+    @Pointcut("@annotation(org.opennms.netmgt.events.api.annotations.EventHandler)")
     public void eventHandler() {}
     
     /**
