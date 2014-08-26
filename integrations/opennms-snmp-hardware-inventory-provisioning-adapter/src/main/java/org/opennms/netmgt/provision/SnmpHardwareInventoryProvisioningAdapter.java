@@ -207,9 +207,9 @@ public class SnmpHardwareInventoryProvisioningAdapter extends SimplerQueuedProvi
         }
         for (HwExtension ext : m_hwInventoryAdapterConfigDao.getConfiguration().getExtensions()) {
             for (MibObj obj : ext.getMibObjects()) {
-                HwEntityAttributeType type = m_vendorAttributes.get(obj.getSnmpObjId());
+                HwEntityAttributeType type = m_vendorAttributes.get(obj.getOid());
                 if (type == null) {
-                    type = new HwEntityAttributeType(obj.getOid(), obj.getAlias(), obj.getType());
+                    type = new HwEntityAttributeType(obj.getOid().toString(), obj.getAlias(), obj.getType());
                     LOG.info("Creating attribute type {}", type);
                     m_hwEntityAttributeTypeDao.save(type);
                     m_vendorAttributes.put(type.getSnmpObjId(), type);

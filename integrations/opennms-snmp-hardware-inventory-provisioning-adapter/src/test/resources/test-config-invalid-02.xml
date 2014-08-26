@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hardware-inventory-adapter-configuration>
+
+  <hw-extension name="Bad-Config" sysOidMask=".1.3.6.1.4.1.9.">
+    <mibObj alias="ceAssetSerialNumber" type="string" oid="foo.Bar" /> <!--  Invalid OID -->
+  </hw-extension> 
+
+</hardware-inventory-adapter-configuration> 

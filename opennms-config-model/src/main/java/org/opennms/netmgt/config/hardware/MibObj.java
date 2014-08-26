@@ -28,28 +28,35 @@
 
 package org.opennms.netmgt.config.hardware;
 
+import java.io.Serializable;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.opennms.netmgt.snmp.SnmpObjId;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class MibObj.
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
-@XmlRootElement
+@XmlRootElement(name="MibObj")
+@XmlType(propOrder={"oid", "type", "alias", "replace"})
 @XmlAccessorType(XmlAccessType.NONE)
-public class MibObj {
+public class MibObj implements Serializable {
+
+    /** The Constant serialVersionUID. */
+    private static final long serialVersionUID = 4849169529250761780L;
 
     /** The OID. */
-    private String oid;
+    private SnmpObjId oid;
 
-    /** The type. */
-    private String type;
+    /** The type or attribute class (defaults to 'string'). */
+    private String type = "string";
 
     /** The alias. */
     private String alias;
@@ -58,30 +65,56 @@ public class MibObj {
     private String replace;
 
     /**
-     * Gets the OID.
+     * The Constructor.
+     */
+    public MibObj() {}
+
+    /**
+     * The Constructor.
+     *
+     * @param oid the SNMP Object ID
+     * @param type the type
+     * @param alias the alias
+     */
+    public MibObj(SnmpObjId oid, String type, String alias) {
+        this.oid = oid;
+        this.type = type;
+        this.alias = alias;
+    }
+
+    /**
+     * The Constructor.
+     *
+     * @param oid the SNMP Object ID
+     * @param type the type
+     * @param alias the alias
+     * @param replace the replace
+     */
+    public MibObj(SnmpObjId oid, String type, String alias, String replace) {
+        this(oid, type, alias);
+        if (!replace.startsWith("entPhysical")) {
+            throw new IllegalArgumentException("Invalid replace field " + replace);
+        }
+        this.replace = replace;
+    }
+
+    /**
+     * Gets the SNMP object ID.
      *
      * @return the OID
      */
     @XmlAttribute(name="oid", required=true)
-    public String getOid() {
+    @XmlJavaTypeAdapter(SnmpObjIdAdapter.class)
+    public SnmpObjId getOid() {
         return oid;
     }
 
     /**
-     * Gets the SNMP OID id.
+     * Sets the SNMP object ID.
      *
-     * @return the SNMP OID id
+     * @param oid the SNMP object ID
      */
-    public SnmpObjId getSnmpObjId() {
-        return SnmpObjId.get(oid);
-    }
-
-    /**
-     * Sets the OID.
-     *
-     * @param oid the OID
-     */
-    public void setOid(String oid) {
+    public void setOid(SnmpObjId oid) {
         this.oid = oid;
     }
 
@@ -125,7 +158,7 @@ public class MibObj {
 
     /**
      * Gets the replace.
-     *
+     * 
      * @return the replace
      */
     @XmlAttribute(name="replace", required=false)
@@ -135,11 +168,24 @@ public class MibObj {
 
     /**
      * Sets the replace.
+     * <p>Most be a valid attribute of <code>org.opennms.netmgt.model.OnmsHwEntity</code>.
+     * Otherwise, an IllegalArgumentException will be thrown.</p>
      *
      * @param replace the replace
      */
     public void setReplace(String replace) {
+        if (replace != null && !replace.startsWith("entPhysical")) {
+            throw new IllegalArgumentException("Invalid replace field " + replace);
+        }
         this.replace = replace;
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return "MibObj [oid=" + oid + ", type=" + type + ", alias=" + alias + ", replace=" + replace + "]";
     }
 
 }

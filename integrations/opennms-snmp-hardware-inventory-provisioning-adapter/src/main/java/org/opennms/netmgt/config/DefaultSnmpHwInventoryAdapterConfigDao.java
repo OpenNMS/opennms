@@ -28,8 +28,17 @@
 
 package org.opennms.netmgt.config;
 
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
+
 import org.opennms.core.xml.AbstractJaxbConfigDao;
+import org.opennms.netmgt.config.hardware.HwExtension;
 import org.opennms.netmgt.config.hardware.HwInventoryAdapterConfiguration;
+import org.opennms.netmgt.config.hardware.MibObj;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The Class DefaultSnmpHwInventoryAdapterConfigDao.
@@ -37,6 +46,9 @@ import org.opennms.netmgt.config.hardware.HwInventoryAdapterConfiguration;
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
 public class DefaultSnmpHwInventoryAdapterConfigDao extends AbstractJaxbConfigDao<HwInventoryAdapterConfiguration, HwInventoryAdapterConfiguration>  implements SnmpHwInventoryAdapterConfigDao {
+
+    /** The Constant LOG. */
+    private static final Logger LOG = LoggerFactory.getLogger(DefaultSnmpHwInventoryAdapterConfigDao.class);
 
     /**
      * The Constructor.
@@ -66,6 +78,30 @@ public class DefaultSnmpHwInventoryAdapterConfigDao extends AbstractJaxbConfigDa
      */
     @Override
     protected HwInventoryAdapterConfiguration translateConfig(HwInventoryAdapterConfiguration config) {
+        final Set<String> oids = new HashSet<String>();
+        final Set<String> names = new HashSet<String>();
+
+        for (HwExtension ext : config.getExtensions()) {
+            for (Iterator<MibObj> it = ext.getMibObjects().iterator(); it.hasNext();) {
+                MibObj obj = it.next();
+                final String oid = obj.getOid().toString();
+                if (oids.contains(oid)) {
+                    LOG.warn("Duplicate OID detected, ignoring {} (please fix the configuration file)", obj);
+                    it.remove();
+                    continue;
+                } else {
+                    oids.add(oid);
+                }
+                if (names.contains(obj.getAlias())) {
+                    LOG.warn("Duplicate Alias detected, ignoring {} (please fix the configuration file)", obj);
+                    it.remove();
+                    continue;
+                } else {
+                    names.add(obj.getAlias());
+                }
+            }
+        }
+
         return config;
     }
 

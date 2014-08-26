@@ -193,6 +193,8 @@ public class SnmpHardwareInventoryProvisioningAdapterTest implements Initializin
     public void testDiscoverSnmpEntities() throws Exception {
         HwInventoryAdapterConfiguration config = m_adapter.getHwAdapterConfigDao().getConfiguration();
         Assert.assertEquals(2, config.getExtensions().size());
+        Assert.assertEquals(5, config.getExtensions().get(0).getMibObjects().size());
+        Assert.assertEquals(12, config.getExtensions().get(1).getMibObjects().size());
 
         HwExtension ext = config.getExtensions().get(0);
         Assert.assertEquals("CISCO-ENTITY-EXT-MIB", ext.getName());

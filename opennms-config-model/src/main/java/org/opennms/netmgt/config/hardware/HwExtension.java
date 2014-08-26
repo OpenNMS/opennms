@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.config.hardware;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,7 +45,10 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement(name="hw-extension")
 @XmlAccessorType(XmlAccessType.NONE)
-public class HwExtension {
+public class HwExtension implements Serializable {
+
+    /** The Constant serialVersionUID. */
+    private static final long serialVersionUID = 3230325207779649291L;
 
     /** The name. */
     private String name;
@@ -54,6 +58,22 @@ public class HwExtension {
 
     /** The MIB objects. */
     private List<MibObj> mibObjects = new ArrayList<MibObj>();
+
+    /**
+     * The Constructor.
+     */
+    public HwExtension() {}
+
+    /**
+     * The Constructor.
+     *
+     * @param name the name
+     * @param sysOidMask the system OID mask
+     */
+    public HwExtension(String name, String sysOidMask) {
+        this.name = name;
+        this.sysOidMask = sysOidMask;
+    }
 
     /**
      * Gets the name.
@@ -104,12 +124,46 @@ public class HwExtension {
     }
 
     /**
+     * Gets the MIB object by alias.
+     *
+     * @param name the name
+     * @return the MIB object by alias
+     */
+    public MibObj getMibObjectByAlias(String name) {
+        for (MibObj obj : mibObjects) {
+            if (obj.getAlias().equals(name)) {
+                return obj;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Gets the MIB object by OID.
+     *
+     * @param oid the OID
+     * @return the MIB object by OID
+     */
+    public MibObj getMibObjectByOid(String oid) {
+        for (MibObj obj : mibObjects) {
+            if (obj.getOid().toString().equals(oid)) {
+                return obj;
+            }
+        }
+        return null;
+    }
+
+    /**
      * Sets the MIB objects.
      *
      * @param mibObjects the MIB objects
      */
     public void setMibObjects(List<MibObj> mibObjects) {
-        this.mibObjects = mibObjects;
+        if (mibObjects == null) {
+            this.mibObjects.clear(); 
+        } else {
+            this.mibObjects = mibObjects;
+        }
     }
 
     /**
@@ -120,4 +174,18 @@ public class HwExtension {
     public void addMibObject(MibObj mibObj) {
         mibObjects.add(mibObj);
     }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    /**
+     * To string.
+     *
+     * @return the string
+     */
+    @Override
+    public String toString() {
+        return "HwExtension [name=" + name + ", sysOidMask=" + sysOidMask + ", mibObjects=" + mibObjects + "]";
+    }
+
 }

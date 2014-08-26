@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.config.hardware;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -47,7 +48,10 @@ import org.opennms.netmgt.snmp.SnmpObjId;
  */
 @XmlRootElement(name="hardware-inventory-adapter-configuration")
 @XmlAccessorType(XmlAccessType.NONE)
-public class HwInventoryAdapterConfiguration {
+public class HwInventoryAdapterConfiguration implements Serializable {
+
+    /** The Constant serialVersionUID. */
+    private static final long serialVersionUID = 3072173311787052813L;
 
     /** The extensions. */
     List<HwExtension> extensions = new ArrayList<HwExtension>();
@@ -91,7 +95,7 @@ public class HwInventoryAdapterConfiguration {
         for (HwExtension ext : getExtensions()) {
             if (nodeSysOid.startsWith(ext.getSysOidMask())) {
                 for (MibObj obj : ext.getMibObjects()) {
-                    vendorOidList.add(obj.getSnmpObjId());
+                    vendorOidList.add(obj.getOid());
                 }
             }
         }
@@ -107,10 +111,20 @@ public class HwInventoryAdapterConfiguration {
         final Map<String,String> replacementMap = new HashMap<String,String>();
         for (HwExtension ext : getExtensions()) {
             for (MibObj obj : ext.getMibObjects()) {
-                if (obj.getReplace() != null && !obj.getReplace().trim().isEmpty())
-                replacementMap.put(obj.getAlias(), obj.getReplace());
+                if (obj.getReplace() != null && !obj.getReplace().trim().isEmpty()) {
+                    replacementMap.put(obj.getAlias(), obj.getReplace());
+                }
             }
         }
         return replacementMap;
     }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return "HwInventoryAdapterConfiguration [extensions=" + extensions + "]";
+    }
+
 }
