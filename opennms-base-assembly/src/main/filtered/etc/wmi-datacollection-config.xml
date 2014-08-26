@@ -101,8 +101,8 @@
                 <attrib name="SplitPhysIOPerSec" alias="wmiPDSplitIOsPerSec" wmiObject="SplitIOPerSec" type="Gauge"/>
                 <!-- Current rate of read and write operations on the disk per second -->
                 <attrib name="DiskTransfersPerSec" alias="wmiPDTransPerSec" wmiObject="DiskTransfersPerSec" type="Gauge"/>
-                <!-- Average rate of read and write operations on the disk per second -->
-                <attrib name="AvgDiskSecPerTransfer" alias="wmiPDAvgTransPerSec" wmiObject="AvgDiskSecPerTransfer" type="Gauge"/>
+                <!-- Completion time, in seconds, of the average disk transfer -->
+                <attrib name="AvgDiskSecPerTransfer" alias="wmiPDAvgSecPerTrans" wmiObject="AvgDiskSecPerTransfer" type="Gauge"/>
                 <!-- Current number of requests queued and waiting for service on the disk -->
                 <attrib name="CurrentDiskQueueLength" alias="wmiPDQueueLen" wmiObject="CurrentDiskQueueLength" type="Gauge"/>
                 <!-- Average number of requests queued and waiting for service on the disk -->
