@@ -148,7 +148,14 @@ public class SnmpConfigRestService extends OnmsRestService {
     public Response setSnmpInfo(@PathParam("ipAddr") final String ipAddress, final SnmpInfo snmpInfo) {
         writeLock();
         try {
-            final SnmpEventInfo eventInfo = snmpInfo.createEventInfo(ipAddress);
+            final SnmpEventInfo eventInfo;
+            if (ipAddress.contains("-")) {
+                final String[] addrs = SnmpConfigRestService.getAddresses(ipAddress);
+                eventInfo = snmpInfo.createEventInfo(addrs[0], addrs[1]);
+            } else {
+                eventInfo = snmpInfo.createEventInfo(ipAddress);
+            }
+
             m_snmpPeerFactory.define(eventInfo);
             SnmpPeerFactory.saveCurrent(); //TODO: this shouldn't be a static call
             return Response.seeOther(getRedirectUri(m_uriInfo)).build();
@@ -175,7 +182,13 @@ public class SnmpConfigRestService extends OnmsRestService {
         try {
             final SnmpInfo info = new SnmpInfo();
             setProperties(params, info);
-            final SnmpEventInfo eventInfo = info.createEventInfo(ipAddress);
+            final SnmpEventInfo eventInfo;
+            if (ipAddress.contains("-")) {
+                final String[] addrs = SnmpConfigRestService.getAddresses(ipAddress);
+                eventInfo = info.createEventInfo(addrs[0], addrs[1]);
+            } else {
+                eventInfo = info.createEventInfo(ipAddress);
+            }
             m_snmpPeerFactory.define(eventInfo);
             SnmpPeerFactory.saveCurrent();
             return Response.seeOther(getRedirectUri(m_uriInfo)).build();
@@ -186,4 +199,11 @@ public class SnmpConfigRestService extends OnmsRestService {
         }
     }
 
+    protected static String[] getAddresses(final String input) {
+        if (input == null || input.trim().isEmpty()) {
+            return new String[] { null, null };
+        } else {
+            return input.trim().split("-", 2);
+        }
+    }
 }

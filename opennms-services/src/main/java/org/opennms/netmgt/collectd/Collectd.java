@@ -1501,4 +1501,9 @@ public class Collectd extends AbstractServiceDaemon implements
     public static String getLoggingCategory() {
     	return LOG4J_CATEGORY;
     }
+
+    public long getCollectableServiceCount() {
+        return m_collectableServices.size();
+    }
+
 }

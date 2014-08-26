@@ -120,6 +120,12 @@ public class Collectd extends AbstractSpringContextJmxServiceDaemon<org.opennms.
             return 0L;
         }
     }
+    
+    @Override
+    public long getCollectableServiceCount() {
+        return getDaemon().getCollectableServiceCount();
+    }
+    
     private ThreadPoolExecutor getExecutor() {
         return (ThreadPoolExecutor) ((LegacyScheduler) getDaemon().getScheduler()).getRunner();
     }

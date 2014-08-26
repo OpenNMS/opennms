@@ -42,13 +42,14 @@ import org.opennms.netmgt.snmp.SnmpAgentAddress;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.io.InputStreamResource;
 
 public class ProxySnmpAgentConfigFactory extends SnmpPeerFactory {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(ProxySnmpAgentConfigFactory.class);
 
-    public ProxySnmpAgentConfigFactory(InputStream config) throws MarshalException, ValidationException, FileNotFoundException, IOException {
-        super(config);
+    public ProxySnmpAgentConfigFactory(final InputStream config) throws MarshalException, ValidationException, FileNotFoundException, IOException {
+        super(new InputStreamResource(config));
     }
 
     @Override
