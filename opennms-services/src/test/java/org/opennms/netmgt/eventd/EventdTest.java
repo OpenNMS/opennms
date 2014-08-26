@@ -117,7 +117,7 @@ public class EventdTest implements InitializingBean {
     @Test(timeout=30000)
     public void testPersistEvent() throws Exception {
         CriteriaBuilder cb = new CriteriaBuilder(OnmsEvent.class);
-        cb.eq("eventuei", EventConstants.NODE_DOWN_EVENT_UEI);
+        cb.eq("eventUei", EventConstants.NODE_DOWN_EVENT_UEI);
         assertEquals(0, m_eventDao.countMatching(cb.toCriteria()));
 
         OnmsNode node = m_databasePopulator.getNode1();
@@ -143,7 +143,7 @@ public class EventdTest implements InitializingBean {
         assertEquals(2, m_eventDao.countMatching(cb.toCriteria()));
 
         assertNull(generatedEvent.getInterfaceAddress());
-        cb.isNull("ipaddr");
+        cb.isNull("ipAddr");
         assertEquals("failed, found: " + m_eventDao.findMatching(cb.toCriteria()), 2, m_eventDao.countMatching(cb.toCriteria()));
     }
 
@@ -153,7 +153,7 @@ public class EventdTest implements InitializingBean {
     @Test(timeout=30000)
     public void testPersistEventWithService() throws Exception {
         CriteriaBuilder cb = new CriteriaBuilder(OnmsEvent.class);
-        cb.eq("eventuei", EventConstants.SERVICE_UNRESPONSIVE_EVENT_UEI);
+        cb.eq("eventUei", EventConstants.SERVICE_UNRESPONSIVE_EVENT_UEI);
         assertEquals(0, m_eventDao.countMatching(cb.toCriteria()));
         assertNotNull(m_serviceTypeDao.findByName("ICMP"));
 
