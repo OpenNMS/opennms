@@ -29,6 +29,7 @@
 package org.opennms.web.rest;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 
 import java.io.File;
@@ -200,72 +201,166 @@ public class SnmpConfigRestServiceTest extends AbstractSpringJerseyRestTestCase 
 		dumpConfig();
 	}
 	
+        @Test
+        public void testSetNewValueForSnmpV3() throws Exception {
+                String url = "/snmpConfig/1.1.1.1";
+
+                // Testing GET Collection
+                SnmpInfo changedConfig = getXmlObject(m_jaxbContext, url, 200, SnmpInfo.class);
+                SnmpInfo expectedConfig = createSnmpInfoWithDefaultsForSnmpV3("1.1.1.1");
+                assertConfiguration(expectedConfig, changedConfig); // check if expected defaults matches actual defaults
+                
+                // change values
+                changedConfig.setAuthPassPhrase("authPassPhrase");
+                changedConfig.setAuthProtocol("authProtocol");
+                changedConfig.setReadCommunity("readCommunity");
+                changedConfig.setWriteCommunity("writeCommunity");
+                changedConfig.setContextEngineId("contextEngineId");
+                changedConfig.setContextName("contextName");
+                changedConfig.setEngineId("engineId");
+                changedConfig.setEnterpriseId("enterpriseId");
+                changedConfig.setMaxRepetitions(1000);
+                changedConfig.setMaxVarsPerPdu(2000);
+                changedConfig.setPort(3000);
+                changedConfig.setProxyHost("127.0.0.1");
+                changedConfig.setPrivPassPhrase("privPassPhrase");
+                changedConfig.setPrivProtocol("privProtocol");
+                changedConfig.setRetries(4000);
+                changedConfig.setSecurityLevel(5000);
+                changedConfig.setSecurityName("securityName");
+                changedConfig.setTimeout(6000);
+                changedConfig.setVersion("v3");
+                changedConfig.setMaxRequestSize(7000);
+
+                // store them via REST
+                putXmlObject(m_jaxbContext, url, 303, changedConfig, "/snmpConfig/1.1.1.1");
+                
+                // prepare expected Result
+                expectedConfig = new SnmpInfo();
+                expectedConfig.setAuthPassPhrase("authPassPhrase");
+                expectedConfig.setAuthProtocol("authProtocol");
+                expectedConfig.setContextEngineId("contextEngineId");
+                expectedConfig.setContextName("contextName");
+                expectedConfig.setEngineId("engineId");
+                expectedConfig.setEnterpriseId("enterpriseId");
+                expectedConfig.setMaxRepetitions(1000);
+                expectedConfig.setMaxVarsPerPdu(2000);
+                expectedConfig.setPort(3000);
+                expectedConfig.setProxyHost("127.0.0.1");
+                expectedConfig.setPrivPassPhrase("privPassPhrase");
+                expectedConfig.setPrivProtocol("privProtocol");
+                expectedConfig.setRetries(4000);
+                expectedConfig.setSecurityLevel(5000);
+                expectedConfig.setSecurityName("securityName");
+                expectedConfig.setTimeout(6000);
+                expectedConfig.setVersion("v3");
+                expectedConfig.setMaxRequestSize(7000);
+                expectedConfig.setReadCommunity(null);
+                expectedConfig.setWriteCommunity(null);
+                
+                // read via REST
+                SnmpInfo newConfig = getXmlObject(m_jaxbContext, url, 200, SnmpInfo.class);
+                
+                // check ...
+                assertConfiguration(expectedConfig, newConfig); // ... if changes were made
+
+                dumpConfig();
+        }
+        
 	@Test
-	public void testSetNewValueForSnmpV3() throws Exception {
-		String url = "/snmpConfig/1.1.1.1";
+	public void testGetAddresses() throws Exception {
+	    String[] addrs = SnmpConfigRestService.getAddresses(null);
+	    assertEquals(2, addrs.length);
+	    assertEquals(null, addrs[0]);
+	    
+	    addrs = SnmpConfigRestService.getAddresses("   ");
+	    assertEquals(2, addrs.length);
+            assertEquals(null, addrs[0]);
 
-		// Testing GET Collection
-		SnmpInfo changedConfig = getXmlObject(m_jaxbContext, url, 200, SnmpInfo.class);
-		SnmpInfo expectedConfig = createSnmpInfoWithDefaultsForSnmpV3("1.1.1.1");
-		assertConfiguration(expectedConfig, changedConfig); // check if expected defaults matches actual defaults
-		
-		// change values
-		changedConfig.setAuthPassPhrase("authPassPhrase");
-		changedConfig.setAuthProtocol("authProtocol");
-		changedConfig.setReadCommunity("readCommunity");
-		changedConfig.setWriteCommunity("writeCommunity");
-		changedConfig.setContextEngineId("contextEngineId");
-		changedConfig.setContextName("contextName");
-		changedConfig.setEngineId("engineId");
-		changedConfig.setEnterpriseId("enterpriseId");
-		changedConfig.setMaxRepetitions(1000);
-		changedConfig.setMaxVarsPerPdu(2000);
-		changedConfig.setPort(3000);
-		changedConfig.setProxyHost("127.0.0.1");
-		changedConfig.setPrivPassPhrase("privPassPhrase");
-		changedConfig.setPrivProtocol("privProtocol");
-		changedConfig.setRetries(4000);
-		changedConfig.setSecurityLevel(5000);
-		changedConfig.setSecurityName("securityName");
-		changedConfig.setTimeout(6000);
-		changedConfig.setVersion("v3");
-		changedConfig.setMaxRequestSize(7000);
+            addrs = SnmpConfigRestService.getAddresses("192.168.0.1");
+            assertEquals(1, addrs.length);
+            assertEquals("192.168.0.1", addrs[0]);
 
-		// store them via REST
-		putXmlObject(m_jaxbContext, url, 303, changedConfig, "/snmpConfig/1.1.1.1");
-		
-		// prepare expected Result
-		expectedConfig = new SnmpInfo();
-		expectedConfig.setAuthPassPhrase("authPassPhrase");
-		expectedConfig.setAuthProtocol("authProtocol");
-		expectedConfig.setContextEngineId("contextEngineId");
-		expectedConfig.setContextName("contextName");
-		expectedConfig.setEngineId("engineId");
-		expectedConfig.setEnterpriseId("enterpriseId");
-		expectedConfig.setMaxRepetitions(1000);
-		expectedConfig.setMaxVarsPerPdu(2000);
-		expectedConfig.setPort(3000);
-		expectedConfig.setProxyHost("127.0.0.1");
-		expectedConfig.setPrivPassPhrase("privPassPhrase");
-		expectedConfig.setPrivProtocol("privProtocol");
-		expectedConfig.setRetries(4000);
-		expectedConfig.setSecurityLevel(5000);
-		expectedConfig.setSecurityName("securityName");
-		expectedConfig.setTimeout(6000);
-		expectedConfig.setVersion("v3");
-		expectedConfig.setMaxRequestSize(7000);
-		expectedConfig.setReadCommunity(null);
-		expectedConfig.setWriteCommunity(null);
-		
-		// read via REST
-		SnmpInfo newConfig = getXmlObject(m_jaxbContext, url, 200, SnmpInfo.class);
-		
-		// check ...
-		assertConfiguration(expectedConfig, newConfig); // ... if changes were made
-
-		dumpConfig();
+            addrs = SnmpConfigRestService.getAddresses("192.168.0.1-192.168.0.255");
+            assertEquals(2, addrs.length);
+            assertEquals("192.168.0.1", addrs[0]);
+            assertEquals("192.168.0.255", addrs[1]);
 	}
-	
+
+        @Test
+        public void testSetRanges() throws Exception {
+                String url = "/snmpConfig/1.1.1.1";
+                String urlRange = "/snmpConfig/1.1.1.1-2.2.2.2";
+
+                // Testing GET Collection
+                SnmpInfo changedConfig = getXmlObject(m_jaxbContext, url, 200, SnmpInfo.class);
+                SnmpInfo expectedConfig = createSnmpInfoWithDefaultsForSnmpV3("1.1.1.1");
+                assertConfiguration(expectedConfig, changedConfig); // check if expected defaults matches actual defaults
+
+                // change values
+                changedConfig.setAuthPassPhrase("authPassPhrase");
+                changedConfig.setAuthProtocol("authProtocol");
+                changedConfig.setReadCommunity("readCommunity");
+                changedConfig.setWriteCommunity("writeCommunity");
+                changedConfig.setContextEngineId("contextEngineId");
+                changedConfig.setContextName("contextName");
+                changedConfig.setEngineId("engineId");
+                changedConfig.setEnterpriseId("enterpriseId");
+                changedConfig.setMaxRepetitions(1000);
+                changedConfig.setMaxVarsPerPdu(2000);
+                changedConfig.setPort(3000);
+                changedConfig.setProxyHost("127.0.0.1");
+                changedConfig.setPrivPassPhrase("privPassPhrase");
+                changedConfig.setPrivProtocol("privProtocol");
+                changedConfig.setRetries(4000);
+                changedConfig.setSecurityLevel(5000);
+                changedConfig.setSecurityName("securityName");
+                changedConfig.setTimeout(6000);
+                changedConfig.setVersion("v3");
+                changedConfig.setMaxRequestSize(7000);
+
+                // store them via REST
+                putXmlObject(m_jaxbContext, urlRange, 303, changedConfig, urlRange);
+                
+                // prepare expected Result
+                expectedConfig = new SnmpInfo();
+                expectedConfig.setAuthPassPhrase("authPassPhrase");
+                expectedConfig.setAuthProtocol("authProtocol");
+                expectedConfig.setContextEngineId("contextEngineId");
+                expectedConfig.setContextName("contextName");
+                expectedConfig.setEngineId("engineId");
+                expectedConfig.setEnterpriseId("enterpriseId");
+                expectedConfig.setMaxRepetitions(1000);
+                expectedConfig.setMaxVarsPerPdu(2000);
+                expectedConfig.setPort(3000);
+                expectedConfig.setProxyHost("127.0.0.1");
+                expectedConfig.setPrivPassPhrase("privPassPhrase");
+                expectedConfig.setPrivProtocol("privProtocol");
+                expectedConfig.setRetries(4000);
+                expectedConfig.setSecurityLevel(5000);
+                expectedConfig.setSecurityName("securityName");
+                expectedConfig.setTimeout(6000);
+                expectedConfig.setVersion("v3");
+                expectedConfig.setMaxRequestSize(7000);
+                expectedConfig.setReadCommunity(null);
+                expectedConfig.setWriteCommunity(null);
+                
+                // read via REST
+                SnmpInfo newConfig = getXmlObject(m_jaxbContext, url, 200, SnmpInfo.class);
+                
+                // check ...
+                assertConfiguration(expectedConfig, newConfig); // ... if changes were made
+
+                SnmpInfo otherConfig = createSnmpInfoWithDefaultsForSnmpV3("3.3.3.3");
+                assertFalse(newConfig.equals(otherConfig));
+
+                expectedConfig = createSnmpInfoWithDefaultsForSnmpV3("1.2.3.4");
+                newConfig = getXmlObject(m_jaxbContext, "/snmpConfig/1.2.3.4", 200, SnmpInfo.class);
+                assertEquals(expectedConfig, newConfig);
+
+                dumpConfig();
+        }
+        
 	private void dumpConfig() throws Exception {
 		IOUtils.copy(new FileInputStream(m_snmpConfigFile), System.out);
 	}

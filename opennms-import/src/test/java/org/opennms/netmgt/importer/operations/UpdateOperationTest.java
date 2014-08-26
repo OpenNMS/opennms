@@ -35,6 +35,7 @@ import junit.framework.TestCase;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
+import org.springframework.core.io.InputStreamResource;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.importer.config.types.InterfaceSnmpPrimaryType;
 
@@ -60,7 +61,7 @@ public class UpdateOperationTest extends TestCase {
 				"\n" + 
 				"</snmp-config>").getBytes());
 		
-		SnmpPeerFactory.setInstance(new SnmpPeerFactory(in));
+		SnmpPeerFactory.setInstance(new SnmpPeerFactory(new InputStreamResource(in)));
 		
 		
 		AbstractSaveOrUpdateOperation op = new UpdateOperation(new Integer(1), "imported:", "1", "node1", "theoffice", "pittsboro");

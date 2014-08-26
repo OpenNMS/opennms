@@ -100,7 +100,7 @@ public class CollectorConfigDaoImplTest extends TestCase {
         stream.close();
 
         stream = getInputStreamForFile("/org/opennms/netmgt/config/snmp-config.xml");
-        SnmpPeerFactory.setInstance(new SnmpPeerFactory(stream));
+        SnmpPeerFactory.setInstance(new SnmpPeerFactory(new InputStreamResource(stream)));
         stream.close();
 
         stream = getInputStreamForFile("/org/opennms/netmgt/config/datacollection-config.xml");

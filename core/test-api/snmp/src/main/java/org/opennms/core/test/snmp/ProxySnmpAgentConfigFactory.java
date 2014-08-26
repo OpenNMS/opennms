@@ -42,11 +42,12 @@ import org.opennms.netmgt.config.SnmpAgentConfigProxyMapper;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.snmp.SnmpAgentAddress;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
+import org.springframework.core.io.InputStreamResource;
 
 public class ProxySnmpAgentConfigFactory extends SnmpPeerFactory {
 
-    public ProxySnmpAgentConfigFactory(InputStream config) throws MarshalException, ValidationException, FileNotFoundException, IOException {
-        super(config);
+    public ProxySnmpAgentConfigFactory(final InputStream config) throws MarshalException, ValidationException, FileNotFoundException, IOException {
+        super(new InputStreamResource(config));
     }
 
     public SnmpAgentConfig getAgentConfig(final InetAddress address) {
