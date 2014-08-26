@@ -595,7 +595,7 @@ public class ConfigTesterTest {
 
     @Test
     public void testHardwareInventoryAdapterConfiguration() {
-        testConfigFile("snmp-hardware-inventory-adapter-configuration.xml");
+        ignoreConfigFile("snmp-hardware-inventory-adapter-configuration.xml");
     }
 
     @Test
