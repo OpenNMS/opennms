@@ -89,9 +89,9 @@ install: build
 	##
 	## Setup the provision adapter packages
 	##
-	install -d -m 755 debian/opennms-plugin-provisioning-{dns,link,map,rancid,snmp-asset,hardware-inventory}/usr/share/java/opennms
-	install -d -m 755 debian/opennms-plugin-provisioning-{link,map,snmp-asset,hardware-inventory}/etc/opennms
-	install -d -m 755 debian/opennms-plugin-provisioning-{link,map,snmp-asset,hardware-inventory}/var/lib/opennms/etc-pristine
+	install -d -m 755 debian/opennms-plugin-provisioning-{dns,link,map,rancid,snmp-asset,snmp-hardware-inventory}/usr/share/java/opennms
+	install -d -m 755 debian/opennms-plugin-provisioning-{link,map,snmp-asset,snmp-hardware-inventory}/etc/opennms
+	install -d -m 755 debian/opennms-plugin-provisioning-{link,map,snmp-asset,snmp-hardware-inventory}/var/lib/opennms/etc-pristine
 	mv debian/temp/lib/opennms-dns-provisioning-adapter*.jar                 debian/opennms-plugin-provisioning-dns/usr/share/java/opennms/
 	mv debian/temp/lib/opennms-link-provisioning-adapter*.jar                debian/opennms-plugin-provisioning-link/usr/share/java/opennms/
 	mv debian/temp/lib/opennms-map-provisioning-adapter*.jar                 debian/opennms-plugin-provisioning-map/usr/share/java/opennms/
