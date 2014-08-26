@@ -1596,4 +1596,8 @@ public class Collectd extends AbstractServiceDaemon implements
         }
     }
 
+    public long getCollectableServiceCount() {
+        return m_collectableServices.size();
+    }
+
 }
