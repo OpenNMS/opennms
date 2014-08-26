@@ -47,17 +47,17 @@ import org.hibernate.annotations.Type;
  */
 @Entity
 @Table(name="pathoutage")
-public class OnmsPathOutage implements Serializable{
-	
+public class OnmsPathOutage implements Serializable {
+
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 2180867754702562743L;
-	
+
 	private InetAddress m_criticalPathIp;
 	private String m_criticalPathServiceName;
 	private OnmsNode m_node;
-	
+
 	/**
 	 * <p>Contructor for OnmsPathOutage</p>
 	 * 
@@ -70,37 +70,37 @@ public class OnmsPathOutage implements Serializable{
 		m_criticalPathIp = criticalPathIp;
 		m_criticalPathServiceName = criticalPathServiceName;
 	}
-	
+
 	public OnmsPathOutage() {
-		
+
 	}
-	
+
 	/**
-     * The node this asset information belongs to.
-     *
-     * @return a {@link org.opennms.netmgt.model.OnmsNode} object.
-     */
-	@Id
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "nodeid")
-    public OnmsNode getNode() {
-        return m_node;
-    }
-    
-    public void setNode(OnmsNode node) {
-    	m_node = node;
-    }
-	
+	 * The node this asset information belongs to.
+	 *
+	 * @return a {@link org.opennms.netmgt.model.OnmsNode} object.
+	 */
+	@OneToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "nodeid")
+	public OnmsNode getNode() {
+		return m_node;
+	}
+
+	public void setNode(OnmsNode node) {
+		m_node = node;
+	}
+
 	/**
 	 * <p>Getter for field <code>m_nodeId</code>.</p>
 	 * 
 	 * @return an int
 	 */
+	@Id
 	@Column(name="nodeid", nullable = false)
 	public int getNodeId() {
 		return m_node.getId();
 	}
-	
+
 	/**
 	 * <p>Setter for field <code>m_nodeId</code>.</p>
 	 * 
@@ -109,7 +109,7 @@ public class OnmsPathOutage implements Serializable{
 	public void setNodeId(int nodeId) {
 		m_node.setNodeId(String.valueOf(nodeId));
 	}
-	
+
 	/**
 	 * <p>Getter for field <code>m_criticalPathIp</code>.</p>
 	 * 
@@ -120,7 +120,7 @@ public class OnmsPathOutage implements Serializable{
 	public InetAddress getCriticalPathIp() {
 		return m_criticalPathIp;
 	}
-	
+
 	/**
 	 * <p>Setter for field <code>m_criticalPathIp</code>.</p>
 	 * 
@@ -129,7 +129,7 @@ public class OnmsPathOutage implements Serializable{
 	public void setCriticalPathIp(InetAddress criticalPathIp) {
 		m_criticalPathIp = criticalPathIp;
 	}
-	
+
 	/**
 	 * <p>Getter for field <code>m_criticalPathServiceName</code>.</p>
 	 * 
@@ -139,7 +139,7 @@ public class OnmsPathOutage implements Serializable{
 	public String getCriticalPathServiceName() {
 		return m_criticalPathServiceName;
 	}
-	
+
 	/**
 	 * <p>Setter for field <code>m_criticalPathServiceName</code>.</p>
 	 * 
@@ -148,5 +148,4 @@ public class OnmsPathOutage implements Serializable{
 	public void setCriticalPathServiceName(String criticalPathServiceName) {
 		m_criticalPathServiceName = criticalPathServiceName;
 	}
-	
 }
