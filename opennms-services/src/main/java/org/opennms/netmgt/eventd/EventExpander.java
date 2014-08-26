@@ -95,34 +95,15 @@ import org.springframework.util.Assert;
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
  */
 public final class EventExpander implements org.opennms.netmgt.dao.api.EventExpander, EventProcessor, InitializingBean {
+
     private EventConfDao m_eventConfDao;
-    
-    /**
-     * The enterprise ID prefix - incoming events and the events in event.conf
-     * can have EIDs that have the partial EIDs as in '18.1.1.6' instead of
-     * '.1.3.6.1.4.1.18.1.1.6'. When a event lookup is done based on the EID, a
-     * lookup with both the partial and the full EID is done
-     */
-/*
- * This is never used
- * TODO: delete this code
-    private final static String ENTERPRISE_PRE = ".1.3.6.1.4.1";
-*/
+
     /**
      * The default event UEI - if the event lookup into the 'event.conf' fails,
      * the event is loaded with information from this default UEI
      */
     private static final String DEFAULT_EVENT_UEI = "uei.opennms.org/default/event";
 
-    /**
-     * The default trap UEI - if the trap lookup into the 'event.conf' fails,
-     * the trap event is loaded with information from this default UEI
-     */
-/*
- * This is never used
- * TODO: delete this code soon
-    private final static String DEFAULT_TRAP_UEI = "uei.opennms.org/default/trap";
-*/
     public EventExpander() {
     }
 
