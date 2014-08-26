@@ -70,9 +70,9 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
 
         public abstract boolean equals(Object obj);
 
-        public abstract int getSourceIfIndex();
+        public abstract Integer getSourceIfIndex();
 
-        public abstract int getTargetIfIndex();
+        public abstract Integer getTargetIfIndex();
 
         public abstract String getType();
 
@@ -127,12 +127,12 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
         }
 
         @Override
-        public int getSourceIfIndex() {
+        public Integer getSourceIfIndex() {
             return getSourceLink().getLldpPortIfindex();
         }
 
         @Override
-        public int getTargetIfIndex() {
+        public Integer getTargetIfIndex() {
             return getTargetLink().getLldpPortIfindex();
         }
 
@@ -170,12 +170,12 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
         }
 
         @Override
-        public int getSourceIfIndex() {
+        public Integer getSourceIfIndex() {
             return getSourceLink().getOspfIfIndex();
         }
 
         @Override
-        public int getTargetIfIndex() {
+        public Integer getTargetIfIndex() {
             return getTargetLink().getOspfIfIndex();
         }
 
@@ -223,12 +223,12 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
         }
 
         @Override
-        public int getSourceIfIndex() {
+        public Integer getSourceIfIndex() {
             return m_sourceIfindex;
         }
 
         @Override
-        public int getTargetIfIndex() {
+        public Integer getTargetIfIndex() {
             return m_targetIfindex;
         }
 
@@ -270,12 +270,12 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
         }
 
         @Override
-        public int getSourceIfIndex() {
+        public Integer getSourceIfIndex() {
             return 0;
         }
 
         @Override
-        public int getTargetIfIndex() {
+        public Integer getTargetIfIndex() {
             return 0;
         }
 
