@@ -328,7 +328,7 @@ public class AdminSnmpConfigForIpPageTest extends OpenNMSSeleniumTestCase {
     	selenium.click("name=saveConfig");
     	waitForPageToLoad();
         assertTrue(selenium.isAlertPresent());
-        assertEquals("You must select either 'send Event' or 'save locally'. It is possible to select both options.", selenium.getAlert());
+        assertEquals("You must select either 'Send Event' or 'Save locally'. It is possible to select both options.", selenium.getAlert());
     }
     
 }
