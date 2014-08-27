@@ -26,36 +26,33 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.eventd;
+package org.opennms.netmgt.dao.hibernate;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.sql.DataSource;
-
 import org.opennms.netmgt.dao.api.EventdServiceManager;
+import org.opennms.netmgt.dao.api.ServiceTypeDao;
+import org.opennms.netmgt.model.OnmsServiceType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.dao.DataAccessException;
-import org.springframework.dao.IncorrectResultSizeDataAccessException;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowCallbackHandler;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 /**
- * <p>JdbcEventdServiceManager class.</p>
+ * <p>EventdServiceManagerHibernate class.</p>
  *
  * @author ranger
  * @version $Id: $
  */
-public class JdbcEventdServiceManager implements InitializingBean, EventdServiceManager {
+@Transactional
+public class EventdServiceManagerHibernate implements InitializingBean, EventdServiceManager {
     
-    private static final Logger LOG = LoggerFactory.getLogger(JdbcEventdServiceManager.class);
+    private static final Logger LOG = LoggerFactory.getLogger(EventdServiceManagerHibernate.class);
     
-    private DataSource m_dataSource;
+    private ServiceTypeDao m_serviceTypeDao;
 
     /**
      * Cache of service names to service IDs.
@@ -63,9 +60,9 @@ public class JdbcEventdServiceManager implements InitializingBean, EventdService
     private Map<String, Integer> m_serviceMap = new HashMap<String, Integer>();
 
     /**
-     * <p>Constructor for JdbcEventdServiceManager.</p>
+     * <p>Constructor for EventdServiceManagerHibernate.</p>
      */
-    public JdbcEventdServiceManager() {
+    public EventdServiceManagerHibernate() {
     }
 
     /* (non-Javadoc)
@@ -81,23 +78,17 @@ public class JdbcEventdServiceManager implements InitializingBean, EventdService
         } else {
             LOG.debug("Could not find entry for '{}' in service name cache.  Looking up in database.", serviceName);
             
-            int serviceId;
-            try {
-                serviceId = new JdbcTemplate(m_dataSource).queryForInt("SELECT serviceID FROM service WHERE serviceName = ?", new Object[] { serviceName });
-            } catch (IncorrectResultSizeDataAccessException e) {
-                if (e.getActualSize() == 0) {
-                    LOG.debug("Did not find entry for '{}' in database.", serviceName);
-                    return -1; // not found
-                } else {
-                    throw e; // more than one found... WTF?!?!
-                }
+            OnmsServiceType serviceType = m_serviceTypeDao.findByName(serviceName);
+            if (serviceType == null) {
+                LOG.debug("Did not find entry for '{}' in database.", serviceName);
+                return -1;
             }
             
-            m_serviceMap.put(serviceName, serviceId);
+            LOG.debug("Found entry for '{}' (ID {}) in database.  Adding to service name cache.", serviceName, serviceType.getId());
+
+            m_serviceMap.put(serviceType.getName(), serviceType.getId());
             
-            LOG.debug("Found entry for '{}' (ID {}) in database.  Adding to service name cache.", serviceName, serviceId);
-            
-            return serviceId;
+            return serviceType.getId();
         }
     }
 
@@ -111,12 +102,9 @@ public class JdbcEventdServiceManager implements InitializingBean, EventdService
     public synchronized void dataSourceSync() {
         m_serviceMap.clear();
         
-        new JdbcTemplate(m_dataSource).query(EventdConstants.SQL_DB_SVC_TABLE_READ, new RowCallbackHandler() {
-            @Override
-            public void processRow(ResultSet resultSet) throws SQLException {
-                m_serviceMap.put(resultSet.getString(2), resultSet.getInt(1));
-            }
-        });
+        for (OnmsServiceType serviceType : m_serviceTypeDao.findAll()) {
+            m_serviceMap.put(serviceType.getName(), serviceType.getId());
+        }
     }
 
     /**
@@ -126,24 +114,24 @@ public class JdbcEventdServiceManager implements InitializingBean, EventdService
      */
     @Override
     public void afterPropertiesSet() throws Exception {
-        Assert.state(m_dataSource != null, "property dataSource must be set");
+        Assert.state(m_serviceTypeDao != null, "property serviceTypeDao must be set");
     }
 
     /**
-     * <p>getDataSource</p>
+     * <p>getServiceTypeDao</p>
      *
-     * @return a {@link javax.sql.DataSource} object.
+     * @return a {@link org.opennms.netmgt.dao.api.ServiceTypeDao} object.
      */
-    public DataSource getDataSource() {
-        return m_dataSource;
+    public ServiceTypeDao getServiceTypeDao() {
+        return m_serviceTypeDao;
     }
 
     /**
-     * <p>setDataSource</p>
+     * <p>setServiceTypeDao</p>
      *
-     * @param dataSource a {@link javax.sql.DataSource} object.
+     * @param serviceTypeDao a {@link org.opennms.netmgt.dao.api.ServiceTypeDao} object.
      */
-    public void setDataSource(DataSource dataSource) {
-        m_dataSource = dataSource;
+    public void setServiceTypeDao(ServiceTypeDao serviceTypeDao) {
+        m_serviceTypeDao = serviceTypeDao;
     }
 }

@@ -30,9 +30,7 @@ package org.opennms.netmgt.poller;
 
 import static org.junit.Assert.assertEquals;
 
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Timestamp;
 import java.util.List;
 import java.util.Set;
 
@@ -48,7 +46,6 @@ import org.opennms.core.test.db.MockDatabase;
 import org.opennms.core.test.db.TemporaryDatabaseAware;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.utils.Querier;
 import org.opennms.netmgt.dao.api.PathOutageDao;
 import org.opennms.netmgt.dao.support.NullRrdStrategy;
 import org.opennms.netmgt.mock.MockElement;
@@ -65,7 +62,6 @@ import org.opennms.netmgt.xml.event.Event;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.opennms.test.mock.MockUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.annotation.Repeat;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -300,58 +296,6 @@ public class PathOutageManagerDaoTest implements TemporaryDatabaseAware<MockData
 	public void testMethod500Times() throws SQLException {
 		for (int i = 0; i < 500; i++) {
 			test();
-		}
-	}
-	
-
-	class OutageChecker extends Querier {
-		private Event m_lostSvcEvent;
-
-		private Timestamp m_lostSvcTime;
-
-		private MockService m_svc;
-
-		private Event m_regainedSvcEvent;
-
-		private Timestamp m_regainedSvcTime;
-
-		OutageChecker(MockService svc, Event lostSvcEvent) throws Exception {
-			this(svc, lostSvcEvent, null);
-		}
-
-		OutageChecker(MockService svc, Event lostSvcEvent,
-				Event regainedSvcEvent) {
-			super(m_db,
-					"select * from outages where nodeid = ? and ipAddr = ? and serviceId = ?");
-
-			m_svc = svc;
-			m_lostSvcEvent = lostSvcEvent;
-			m_lostSvcTime = m_db.convertEventTimeToTimeStamp(m_lostSvcEvent
-					.getTime());
-			m_regainedSvcEvent = regainedSvcEvent;
-			if (m_regainedSvcEvent != null)
-				m_regainedSvcTime = m_db
-						.convertEventTimeToTimeStamp(m_regainedSvcEvent
-								.getTime());
-		}
-
-                @Override
-		public void processRow(ResultSet rs) throws SQLException {
-			assertEquals(m_svc.getNodeId(), rs.getInt("nodeId"));
-			assertEquals(m_svc.getIpAddr(), rs.getString("ipAddr"));
-			assertEquals(m_svc.getId(), rs.getInt("serviceId"));
-			assertEquals(m_lostSvcEvent.getDbid(), Integer.valueOf(rs.getInt("svcLostEventId")));
-			assertEquals(m_lostSvcTime, rs.getTimestamp("ifLostService"));
-			assertEquals(getRegainedEventId(), rs
-					.getObject("svcRegainedEventId"));
-			assertEquals(m_regainedSvcTime, rs
-					.getTimestamp("ifRegainedService"));
-		}
-
-		private Integer getRegainedEventId() {
-			if (m_regainedSvcEvent == null)
-				return null;
-			return Integer.valueOf(m_regainedSvcEvent.getDbid());
 		}
 	}
 

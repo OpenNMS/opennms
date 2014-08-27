@@ -36,10 +36,6 @@ package org.opennms.netmgt.eventd;
  * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
  */
 public abstract class EventdConstants {
-    /**
-     * The SQL statement necessary to read service id and service name into map.
-     */
-    public static final String SQL_DB_SVC_TABLE_READ = "SELECT serviceID, serviceName FROM service";
 
     /**
      * The SQL insertion string used by eventd to store the event information

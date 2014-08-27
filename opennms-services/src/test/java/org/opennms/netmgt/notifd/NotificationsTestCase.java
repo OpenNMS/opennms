@@ -55,6 +55,8 @@ import org.opennms.netmgt.config.mock.MockUserManager;
 import org.opennms.netmgt.config.users.Contact;
 import org.opennms.netmgt.config.users.User;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
+import org.opennms.netmgt.eventd.AbstractEventUtil;
+import org.opennms.netmgt.mock.EventUtilJdbcImpl;
 import org.opennms.netmgt.mock.MockNetwork;
 import org.opennms.netmgt.mock.MockNotification;
 import org.opennms.netmgt.mock.MockPollerConfig;
@@ -62,6 +64,10 @@ import org.opennms.netmgt.mock.NotificationAnticipator;
 import org.opennms.test.DaoTestConfigBean;
 import org.opennms.test.mock.MockUtil;
 
+/**
+ * @deprecated Please develop new unit tests by using the Spring unit test
+ * framework instead of this base class.
+ */
 public class NotificationsTestCase {
 
     protected Notifd m_notifd;
@@ -91,6 +97,8 @@ public class NotificationsTestCase {
     
         m_eventMgr = new MockEventIpcManager();
         m_eventMgr.setEventWriter(m_db);
+        
+        AbstractEventUtil.setInstance(new EventUtilJdbcImpl());
         
         m_notifdConfig = new MockNotifdConfigManager(ConfigurationTestUtils.getConfigForResourceWithReplacements(this, "notifd-configuration.xml"));
         m_notifdConfig.setNextNotifIdSql(m_db.getNextNotifIdSql());

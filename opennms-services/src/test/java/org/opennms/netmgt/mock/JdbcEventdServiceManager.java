@@ -26,33 +26,41 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.eventd;
+package org.opennms.netmgt.mock;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.sql.DataSource;
+
 import org.opennms.netmgt.dao.api.EventdServiceManager;
-import org.opennms.netmgt.dao.api.ServiceTypeDao;
-import org.opennms.netmgt.model.OnmsServiceType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.dao.DataAccessException;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.util.Assert;
 
 /**
- * <p>DaoEventdServiceManager class.</p>
+ * <p>JdbcEventdServiceManager class.</p>
  *
  * @author ranger
  * @version $Id: $
  */
-@Transactional(readOnly = true)
-public class DaoEventdServiceManager implements InitializingBean, EventdServiceManager {
+public class JdbcEventdServiceManager implements InitializingBean, EventdServiceManager {
     
-    private static final Logger LOG = LoggerFactory.getLogger(DaoEventdServiceManager.class);
+    /**
+     * The SQL statement necessary to read service id and service name into map.
+     */
+    private static final String SQL_DB_SVC_TABLE_READ = "SELECT serviceID, serviceName FROM service";
+
+    private static final Logger LOG = LoggerFactory.getLogger(JdbcEventdServiceManager.class);
     
-    private ServiceTypeDao m_serviceTypeDao;
+    private DataSource m_dataSource;
 
     /**
      * Cache of service names to service IDs.
@@ -60,9 +68,9 @@ public class DaoEventdServiceManager implements InitializingBean, EventdServiceM
     private Map<String, Integer> m_serviceMap = new HashMap<String, Integer>();
 
     /**
-     * <p>Constructor for DaoEventdServiceManager.</p>
+     * <p>Constructor for JdbcEventdServiceManager.</p>
      */
-    public DaoEventdServiceManager() {
+    public JdbcEventdServiceManager() {
     }
 
     /* (non-Javadoc)
@@ -78,17 +86,23 @@ public class DaoEventdServiceManager implements InitializingBean, EventdServiceM
         } else {
             LOG.debug("Could not find entry for '{}' in service name cache.  Looking up in database.", serviceName);
             
-            OnmsServiceType serviceType = m_serviceTypeDao.findByName(serviceName);
-            if (serviceType == null) {
-                LOG.debug("Did not find entry for '{}' in database.", serviceName);
-                return -1;
+            int serviceId;
+            try {
+                serviceId = new JdbcTemplate(m_dataSource).queryForInt("SELECT serviceID FROM service WHERE serviceName = ?", new Object[] { serviceName });
+            } catch (IncorrectResultSizeDataAccessException e) {
+                if (e.getActualSize() == 0) {
+                    LOG.debug("Did not find entry for '{}' in database.", serviceName);
+                    return -1; // not found
+                } else {
+                    throw e; // more than one found... WTF?!?!
+                }
             }
             
-            LOG.debug("Found entry for '{}' (ID {}) in database.  Adding to service name cache.", serviceName, serviceType.getId());
-
-            m_serviceMap.put(serviceType.getName(), serviceType.getId());
+            m_serviceMap.put(serviceName, serviceId);
             
-            return serviceType.getId();
+            LOG.debug("Found entry for '{}' (ID {}) in database.  Adding to service name cache.", serviceName, serviceId);
+            
+            return serviceId;
         }
     }
 
@@ -102,9 +116,12 @@ public class DaoEventdServiceManager implements InitializingBean, EventdServiceM
     public synchronized void dataSourceSync() {
         m_serviceMap.clear();
         
-        for (OnmsServiceType serviceType : m_serviceTypeDao.findAll()) {
-            m_serviceMap.put(serviceType.getName(), serviceType.getId());
-        }
+        new JdbcTemplate(m_dataSource).query(SQL_DB_SVC_TABLE_READ, new RowCallbackHandler() {
+            @Override
+            public void processRow(ResultSet resultSet) throws SQLException {
+                m_serviceMap.put(resultSet.getString(2), resultSet.getInt(1));
+            }
+        });
     }
 
     /**
@@ -114,24 +131,24 @@ public class DaoEventdServiceManager implements InitializingBean, EventdServiceM
      */
     @Override
     public void afterPropertiesSet() throws Exception {
-        Assert.state(m_serviceTypeDao != null, "property serviceTypeDao must be set");
+        Assert.state(m_dataSource != null, "property dataSource must be set");
     }
 
     /**
-     * <p>getServiceTypeDao</p>
+     * <p>getDataSource</p>
      *
-     * @return a {@link org.opennms.netmgt.dao.api.ServiceTypeDao} object.
+     * @return a {@link javax.sql.DataSource} object.
      */
-    public ServiceTypeDao getServiceTypeDao() {
-        return m_serviceTypeDao;
+    public DataSource getDataSource() {
+        return m_dataSource;
     }
 
     /**
-     * <p>setServiceTypeDao</p>
+     * <p>setDataSource</p>
      *
-     * @param serviceTypeDao a {@link org.opennms.netmgt.dao.api.ServiceTypeDao} object.
+     * @param dataSource a {@link javax.sql.DataSource} object.
      */
-    public void setServiceTypeDao(ServiceTypeDao serviceTypeDao) {
-        m_serviceTypeDao = serviceTypeDao;
+    public void setDataSource(DataSource dataSource) {
+        m_dataSource = dataSource;
     }
 }

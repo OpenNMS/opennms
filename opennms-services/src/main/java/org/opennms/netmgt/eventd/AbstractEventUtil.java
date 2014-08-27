@@ -38,6 +38,7 @@ import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.xml.event.Event;
@@ -292,8 +293,23 @@ public abstract class AbstractEventUtil implements EventUtil {
 	 */
 	protected static final String TAG_PERCENT_SIGN = "pctsign";
 
+	private static EventUtil m_instance = null; 
+
 	public static EventUtil getInstance() {
-		return new EventUtilJdbcImpl();
+		if (m_instance == null) {
+			return BeanUtils.getBean("eventDaemonContext", "eventUtil", EventUtil.class);
+		} else {
+			return m_instance;
+		}
+	}
+
+	/**
+	 * Used only for unit testing.
+	 * 
+	 * @param instance
+	 */
+	public static void setInstance(EventUtil instance) {
+		m_instance = instance;
 	}
 
 	/**

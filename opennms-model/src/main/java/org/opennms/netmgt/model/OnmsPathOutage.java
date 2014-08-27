@@ -33,11 +33,14 @@ import java.net.InetAddress;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
+import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
+
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Parameter;
 import org.hibernate.annotations.Type;
 
 /**
@@ -54,25 +57,26 @@ public class OnmsPathOutage implements Serializable {
 	 */
 	private static final long serialVersionUID = 2180867754702562743L;
 
+	private int m_nodeId;
 	private InetAddress m_criticalPathIp;
 	private String m_criticalPathServiceName;
 	private OnmsNode m_node;
 
 	/**
-	 * <p>Contructor for OnmsPathOutage</p>
+	 * <p>Constructor for OnmsPathOutage</p>
 	 * 
 	 * @param an int
 	 * @param an InetAddress
 	 * @param a String
 	 */
 	public OnmsPathOutage(OnmsNode node, InetAddress criticalPathIp, String criticalPathServiceName) {
+		m_nodeId = node.getId();
 		m_node = node;
 		m_criticalPathIp = criticalPathIp;
 		m_criticalPathServiceName = criticalPathServiceName;
 	}
 
 	public OnmsPathOutage() {
-
 	}
 
 	/**
@@ -80,8 +84,8 @@ public class OnmsPathOutage implements Serializable {
 	 *
 	 * @return a {@link org.opennms.netmgt.model.OnmsNode} object.
 	 */
-	@OneToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "nodeid")
+	@OneToOne
+	@PrimaryKeyJoinColumn
 	public OnmsNode getNode() {
 		return m_node;
 	}
@@ -91,23 +95,29 @@ public class OnmsPathOutage implements Serializable {
 	}
 
 	/**
-	 * <p>Getter for field <code>m_nodeId</code>.</p>
+	 * Because the pathOutage table uses the node ID as its ID, this set of 
+	 * annotations uses a Hibernate "foreign" strategy ID generator so that 
+	 * the foreign key of a related object (the "node") is used as the ID of this object.
+	 * This is known as a bidirectional one-to-one primary key relationship.
 	 * 
-	 * @return an int
+	 * @see http://fruzenshtein.com/bidirectional-one-to-one-primary-key-association/
+	 * 
+	 * @return
 	 */
 	@Id
-	@Column(name="nodeid", nullable = false)
+	@Column(name="nodeId")
+	@GeneratedValue(generator="nodeGenerator")
+	@GenericGenerator(
+		name="nodeGenerator", 
+		strategy="foreign", 
+		parameters=@Parameter(name="property", value="node")
+	)
 	public int getNodeId() {
-		return m_node.getId();
+		return m_nodeId;
 	}
 
-	/**
-	 * <p>Setter for field <code>m_nodeId</code>.</p>
-	 * 
-	 * @param an int
-	 */
-	public void setNodeId(int nodeId) {
-		m_node.setNodeId(String.valueOf(nodeId));
+	public void setNodeId(int id) {
+		m_nodeId = id;
 	}
 
 	/**

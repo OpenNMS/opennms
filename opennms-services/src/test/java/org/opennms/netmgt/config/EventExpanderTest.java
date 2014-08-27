@@ -8,7 +8,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.netmgt.config.api.EventConfDao;
+import org.opennms.netmgt.eventd.AbstractEventUtil;
 import org.opennms.netmgt.eventd.EventExpander;
+import org.opennms.netmgt.mock.EventUtilJdbcImpl;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.test.JUnitConfigurationEnvironment;
@@ -26,6 +28,7 @@ import org.springframework.test.context.ContextConfiguration;
 })
 @JUnitConfigurationEnvironment
 public class EventExpanderTest {
+
     @Autowired
     private EventConfDao m_eventConfDao;
 
@@ -33,6 +36,9 @@ public class EventExpanderTest {
 
     @Before
     public void setUp() {
+        // Use the JDBC EventUtil so that it works with the mock datasource
+        AbstractEventUtil.setInstance(new EventUtilJdbcImpl());
+
         m_eventExpander = new EventExpander();
         m_eventExpander.setEventConfDao(m_eventConfDao);
         m_eventExpander.afterPropertiesSet();

@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.eventd;
+package org.opennms.netmgt.mock;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -36,6 +36,7 @@ import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.capsd.DbIpInterfaceEntry;
 import org.opennms.netmgt.capsd.DbSnmpInterfaceEntry;
+import org.opennms.netmgt.eventd.AbstractEventUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,6 +44,9 @@ import org.slf4j.LoggerFactory;
  * EventUtil is used primarily for the event parm expansion - has methods used
  * by all the event components to send in the event and the element to expanded
  * and have the 'expanded' value sent back
+ * 
+ * @deprecated This JDBC implementation is only used by test classes that are too
+ * old to use Spring initialization.
  *
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
  * @author <A HREF="mailto:weave@oculan.com">Brain Weaver </A>

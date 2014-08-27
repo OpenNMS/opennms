@@ -58,7 +58,7 @@
   <bean id="eventIpcManagerHandlerPoolSize" factory-bean="eventdConfigManager" factory-method="getReceivers"/>
   <bean id="eventIpcManagerHandlerQueueLength" factory-bean="eventdConfigManager" factory-method="getQueueLength"/>
   
-  <bean id="eventdServiceManager" class="org.opennms.netmgt.eventd.DaoEventdServiceManager">
+  <bean id="eventdServiceManager" class="org.opennms.netmgt.dao.hibernate.EventdServiceManagerHibernate">
     <property name="serviceTypeDao" ref="serviceTypeDao"/>
   </bean>
   
@@ -126,6 +126,6 @@
     <constructor-arg><ref bean="eventConfDao"/></constructor-arg>
   </bean>
 
-  <bean id="eventUtilDaoImpl" class="org.opennms.netmgt.eventd.EventUtilDaoImpl" />
+  <bean id="eventUtil" class="org.opennms.netmgt.eventd.EventUtilDaoImpl" />
 
 </beans>

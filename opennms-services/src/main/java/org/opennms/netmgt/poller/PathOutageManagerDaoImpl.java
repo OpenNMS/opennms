@@ -322,44 +322,50 @@ public class PathOutageManagerDaoImpl implements PathOutageManager{
     }
     @Override
     public Set<Integer> getDependencyNodesByCriticalPath(String criticalPathip) {
-       	Set<Integer> depNodes = new TreeSet<Integer>();
-    	    	
-    	final org.opennms.core.criteria.Criteria crit = new org.opennms.core.criteria.Criteria(OnmsPathOutage.class)
-    	.addRestriction(new EqRestriction("criticalPathIp", criticalPathip))
+        Set<Integer> depNodes = new TreeSet<Integer>();
+
+        final org.opennms.core.criteria.Criteria crit = new org.opennms.core.criteria.Criteria(OnmsPathOutage.class)
+        .setAliases(Arrays.asList(new Alias[] {
+            new Alias("node", "node", JoinType.LEFT_JOIN)
+        }))
+        .addRestriction(new EqRestriction("criticalPathIp", criticalPathip))
         .setOrders(Arrays.asList(new Order[] {
-        		Order.asc("nodeId")
+            Order.asc("node")
         }));
-    	
-    	List<OnmsPathOutage> l = pathOutageDao.findMatching(crit);
-       	for (OnmsPathOutage cur : l) {
-       		List<OnmsIpInterface> iface = ipInterfaceDao.findByNodeId(cur.getNodeId());
-       		for (OnmsIpInterface one : iface) {
-       			if (one.getIsManaged() != "D") {
-       				depNodes.add(cur.getNodeId());
-       			}
-       		}
-    	}
-    	
-    	return depNodes;
+
+        List<OnmsPathOutage> l = pathOutageDao.findMatching(crit);
+        for (OnmsPathOutage cur : l) {
+        	List<OnmsIpInterface> iface = ipInterfaceDao.findByNodeId(cur.getNode().getId());
+        	for (OnmsIpInterface one : iface) {
+        		if (one.getIsManaged() != "D") {
+        			depNodes.add(cur.getNode().getId());
+        		}
+        	}
+        }
+
+        return depNodes;
     }
-    
+
     @Override
     public Set<Integer> getDependencyNodesByNodeId(int nodeId) {
     	Set<Integer> depNodes = new TreeSet<Integer>();
-    	
+
     	final org.opennms.core.criteria.Criteria crit = new org.opennms.core.criteria.Criteria(OnmsPathOutage.class) 
-    	.addRestriction(new EqRestriction("nodeId", nodeId));
-    	
+    	.setAliases(Arrays.asList(new Alias[] {
+    		new Alias("node", "node", JoinType.LEFT_JOIN)
+    	}))
+    	.addRestriction(new EqRestriction("node.id", nodeId));
+
     	List<OnmsPathOutage> l = pathOutageDao.findMatching(crit);
     	for (OnmsPathOutage cur: l) {
-    		List<OnmsIpInterface> iface = ipInterfaceDao.findByNodeId(cur.getNodeId());
+    		List<OnmsIpInterface> iface = ipInterfaceDao.findByNodeId(cur.getNode().getId());
     		for (OnmsIpInterface one: iface) {
     			if (one.getIpAddress().equals(cur.getCriticalPathIp())) {
-    				depNodes.add(cur.getNodeId());
+    				depNodes.add(cur.getNode().getId());
     			}
     		}
-    	}    	
-    	
+    	}
+
     	return depNodes;
     }
 }

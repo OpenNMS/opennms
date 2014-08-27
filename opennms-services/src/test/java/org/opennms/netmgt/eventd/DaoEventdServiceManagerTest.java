@@ -7,6 +7,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.netmgt.dao.api.ServiceTypeDao;
+import org.opennms.netmgt.dao.hibernate.EventdServiceManagerHibernate;
 import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,11 +27,11 @@ public class DaoEventdServiceManagerTest {
     @Autowired
     private ServiceTypeDao m_serviceTypeDao;
 
-    DaoEventdServiceManager m_eventdServiceManager;
+    EventdServiceManagerHibernate m_eventdServiceManager;
 
     @Before
     public void setUp() throws Exception {
-        m_eventdServiceManager = new DaoEventdServiceManager();
+        m_eventdServiceManager = new EventdServiceManagerHibernate();
         m_eventdServiceManager.setServiceTypeDao(m_serviceTypeDao);
         m_eventdServiceManager.afterPropertiesSet();
     }
