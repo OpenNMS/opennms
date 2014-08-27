@@ -183,7 +183,7 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
      *
      * @throws java.io.IOException if any.
      */
-    public static void saveCurrent() throws IOException {
+    public void saveCurrent() throws IOException {
         saveToFile(getFile());
     }
 

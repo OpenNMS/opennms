@@ -245,7 +245,7 @@ public class FactoryBasedSnmpConfigDao implements SnmpConfigDao, InitializingBea
 
     private void saveCurrent() {
         try {
-            SnmpPeerFactory.saveCurrent();
+            SnmpPeerFactory.getInstance().saveCurrent();
         } catch (final IOException e) {
             TRANSLATOR.translate("save current SNMP configure", e);
         }

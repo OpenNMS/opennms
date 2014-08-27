@@ -783,7 +783,7 @@ public class Collectd extends AbstractServiceDaemon implements
             
             LOG.debug("configureSNMPHandler: processing configure SNMP event: {}", info);
             SnmpPeerFactory.getInstance().define(info);
-            SnmpPeerFactory.saveCurrent();
+            SnmpPeerFactory.getInstance().saveCurrent();
             LOG.debug("configureSNMPHandler: process complete. {}", info);
             
         } catch (Throwable e) {
