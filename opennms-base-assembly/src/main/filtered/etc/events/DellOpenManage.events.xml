@@ -67,7 +67,7 @@
 		alertPreviousStatus=%parm[#5]%
 		alertData=%parm[#6]%&lt;/p&gt;
 	</logmsg>
-	<severity>Indeterminate</severity>
+	<severity>Normal</severity>
 	<varbindsdecode>
 		<parmid>parm[#4]</parmid>
 		<decode varbinddecodedstring="other" varbindvalue="1"/>
@@ -154,7 +154,7 @@
 		alertPreviousStatus=%parm[#5]%
 		alertData=%parm[#6]%&lt;/p&gt;
 	</logmsg>
-	<severity>Indeterminate</severity>
+	<severity>Critical</severity>
 	<varbindsdecode>
 		<parmid>parm[#4]</parmid>
 		<decode varbinddecodedstring="other" varbindvalue="1"/>
@@ -241,7 +241,7 @@
 		alertPreviousStatus=%parm[#5]%
 		alertData=%parm[#6]%&lt;/p&gt;
 	</logmsg>
-	<severity>Indeterminate</severity>
+	<severity>Minor</severity>
 	<varbindsdecode>
 		<parmid>parm[#4]</parmid>
 		<decode varbinddecodedstring="other" varbindvalue="1"/>
@@ -328,7 +328,7 @@
 		alertPreviousStatus=%parm[#5]%
 		alertData=%parm[#6]%&lt;/p&gt;
 	</logmsg>
-	<severity>Indeterminate</severity>
+	<severity>Warning</severity>
 	<varbindsdecode>
 		<parmid>parm[#4]</parmid>
 		<decode varbinddecodedstring="other" varbindvalue="1"/>
@@ -415,7 +415,7 @@
 		alertPreviousStatus=%parm[#5]%
 		alertData=%parm[#6]%&lt;/p&gt;
 	</logmsg>
-	<severity>Indeterminate</severity>
+	<severity>Minor</severity>
 	<varbindsdecode>
 		<parmid>parm[#4]</parmid>
 		<decode varbinddecodedstring="other" varbindvalue="1"/>
@@ -589,7 +589,7 @@
 		alertPreviousStatus=%parm[#5]%
 		alertData=%parm[#6]%&lt;/p&gt;
 	</logmsg>
-	<severity>Indeterminate</severity>
+	<severity>Cleared</severity>
 	<varbindsdecode>
 		<parmid>parm[#4]</parmid>
 		<decode varbinddecodedstring="other" varbindvalue="1"/>
@@ -676,7 +676,7 @@
 		alertPreviousStatus=%parm[#5]%
 		alertData=%parm[#6]%&lt;/p&gt;
 	</logmsg>
-	<severity>Indeterminate</severity>
+	<severity>Major</severity>
 	<varbindsdecode>
 		<parmid>parm[#4]</parmid>
 		<decode varbinddecodedstring="other" varbindvalue="1"/>
@@ -763,7 +763,7 @@
 		alertPreviousStatus=%parm[#5]%
 		alertData=%parm[#6]%&lt;/p&gt;
 	</logmsg>
-	<severity>Indeterminate</severity>
+	<severity>Minor</severity>
 	<varbindsdecode>
 		<parmid>parm[#4]</parmid>
 		<decode varbinddecodedstring="other" varbindvalue="1"/>
@@ -850,7 +850,7 @@
 		alertPreviousStatus=%parm[#5]%
 		alertData=%parm[#6]%&lt;/p&gt;
 	</logmsg>
-	<severity>Indeterminate</severity>
+	<severity>Minor</severity>
 	<varbindsdecode>
 		<parmid>parm[#4]</parmid>
 		<decode varbinddecodedstring="other" varbindvalue="1"/>
@@ -937,7 +937,7 @@
 		alertPreviousStatus=%parm[#5]%
 		alertData=%parm[#6]%&lt;/p&gt;
 	</logmsg>
-	<severity>Indeterminate</severity>
+	<severity>Cleared</severity>
 	<varbindsdecode>
 		<parmid>parm[#4]</parmid>
 		<decode varbinddecodedstring="other" varbindvalue="1"/>
@@ -1024,7 +1024,7 @@
 		alertPreviousStatus=%parm[#5]%
 		alertData=%parm[#6]%&lt;/p&gt;
 	</logmsg>
-	<severity>Indeterminate</severity>
+	<severity>Minor</severity>
 	<varbindsdecode>
 		<parmid>parm[#4]</parmid>
 		<decode varbinddecodedstring="other" varbindvalue="1"/>
@@ -1111,7 +1111,7 @@
 		alertPreviousStatus=%parm[#5]%
 		alertData=%parm[#6]%&lt;/p&gt;
 	</logmsg>
-	<severity>Indeterminate</severity>
+	<severity>Minor</severity>
 	<varbindsdecode>
 		<parmid>parm[#4]</parmid>
 		<decode varbinddecodedstring="other" varbindvalue="1"/>
@@ -1198,7 +1198,7 @@
 		alertPreviousStatus=%parm[#5]%
 		alertData=%parm[#6]%&lt;/p&gt;
 	</logmsg>
-	<severity>Indeterminate</severity>
+	<severity>Warning</severity>
 	<varbindsdecode>
 		<parmid>parm[#4]</parmid>
 		<decode varbinddecodedstring="other" varbindvalue="1"/>
@@ -1285,7 +1285,7 @@
 		alertPreviousStatus=%parm[#5]%
 		alertData=%parm[#6]%&lt;/p&gt;
 	</logmsg>
-	<severity>Indeterminate</severity>
+	<severity>Cleared</severity>
 	<varbindsdecode>
 		<parmid>parm[#4]</parmid>
 		<decode varbinddecodedstring="other" varbindvalue="1"/>
@@ -1372,7 +1372,7 @@
 		alertPreviousStatus=%parm[#5]%
 		alertData=%parm[#6]%&lt;/p&gt;
 	</logmsg>
-	<severity>Indeterminate</severity>
+	<severity>Warning</severity>
 	<varbindsdecode>
 		<parmid>parm[#4]</parmid>
 		<decode varbinddecodedstring="other" varbindvalue="1"/>
@@ -1459,7 +1459,7 @@
 		alertPreviousStatus=%parm[#5]%
 		alertData=%parm[#6]%&lt;/p&gt;
 	</logmsg>
-	<severity>Indeterminate</severity>
+	<severity>Major</severity>
 	<varbindsdecode>
 		<parmid>parm[#4]</parmid>
 		<decode varbinddecodedstring="other" varbindvalue="1"/>
@@ -1546,7 +1546,7 @@
 		alertPreviousStatus=%parm[#5]%
 		alertData=%parm[#6]%&lt;/p&gt;
 	</logmsg>
-	<severity>Indeterminate</severity>
+	<severity>Warning</severity>
 	<varbindsdecode>
 		<parmid>parm[#4]</parmid>
 		<decode varbinddecodedstring="other" varbindvalue="1"/>
@@ -1633,7 +1633,7 @@
 		alertPreviousStatus=%parm[#5]%
 		alertData=%parm[#6]%&lt;/p&gt;
 	</logmsg>
-	<severity>Indeterminate</severity>
+	<severity>Cleared</severity>
 	<varbindsdecode>
 		<parmid>parm[#4]</parmid>
 		<decode varbinddecodedstring="other" varbindvalue="1"/>
@@ -1720,7 +1720,7 @@
 		alertPreviousStatus=%parm[#5]%
 		alertData=%parm[#6]%&lt;/p&gt;
 	</logmsg>
-	<severity>Indeterminate</severity>
+	<severity>Minor</severity>
 	<varbindsdecode>
 		<parmid>parm[#4]</parmid>
 		<decode varbinddecodedstring="other" varbindvalue="1"/>
@@ -1807,7 +1807,7 @@
 		alertPreviousStatus=%parm[#5]%
 		alertData=%parm[#6]%&lt;/p&gt;
 	</logmsg>
-	<severity>Indeterminate</severity>
+	<severity>Major</severity>
 	<varbindsdecode>
 		<parmid>parm[#4]</parmid>
 		<decode varbinddecodedstring="other" varbindvalue="1"/>
@@ -1894,7 +1894,7 @@
 		alertPreviousStatus=%parm[#5]%
 		alertData=%parm[#6]%&lt;/p&gt;
 	</logmsg>
-	<severity>Indeterminate</severity>
+	<severity>Warning</severity>
 	<varbindsdecode>
 		<parmid>parm[#4]</parmid>
 		<decode varbinddecodedstring="other" varbindvalue="1"/>
@@ -1981,7 +1981,7 @@
 		alertPreviousStatus=%parm[#5]%
 		alertData=%parm[#6]%&lt;/p&gt;
 	</logmsg>
-	<severity>Indeterminate</severity>
+	<severity>Cleared</severity>
 	<varbindsdecode>
 		<parmid>parm[#4]</parmid>
 		<decode varbinddecodedstring="other" varbindvalue="1"/>
@@ -2068,7 +2068,7 @@
 		alertPreviousStatus=%parm[#5]%
 		alertData=%parm[#6]%&lt;/p&gt;
 	</logmsg>
-	<severity>Indeterminate</severity>
+	<severity>Major</severity>
 	<varbindsdecode>
 		<parmid>parm[#4]</parmid>
 		<decode varbinddecodedstring="other" varbindvalue="1"/>
@@ -2155,7 +2155,7 @@
 		alertPreviousStatus=%parm[#5]%
 		alertData=%parm[#6]%&lt;/p&gt;
 	</logmsg>
-	<severity>Indeterminate</severity>
+	<severity>Cleared</severity>
 	<varbindsdecode>
 		<parmid>parm[#4]</parmid>
 		<decode varbinddecodedstring="other" varbindvalue="1"/>
@@ -2242,7 +2242,7 @@
 		alertPreviousStatus=%parm[#5]%
 		alertData=%parm[#6]%&lt;/p&gt;
 	</logmsg>
-	<severity>Indeterminate</severity>
+	<severity>Minor</severity>
 	<varbindsdecode>
 		<parmid>parm[#4]</parmid>
 		<decode varbinddecodedstring="other" varbindvalue="1"/>
@@ -2329,7 +2329,7 @@
 		alertPreviousStatus=%parm[#5]%
 		alertData=%parm[#6]%&lt;/p&gt;
 	</logmsg>
-	<severity>Indeterminate</severity>
+	<severity>Major</severity>
 	<varbindsdecode>
 		<parmid>parm[#4]</parmid>
 		<decode varbinddecodedstring="other" varbindvalue="1"/>
@@ -2416,7 +2416,7 @@
 		alertPreviousStatus=%parm[#5]%
 		alertData=%parm[#6]%&lt;/p&gt;
 	</logmsg>
-	<severity>Indeterminate</severity>
+	<severity>Cleared</severity>
 	<varbindsdecode>
 		<parmid>parm[#4]</parmid>
 		<decode varbinddecodedstring="other" varbindvalue="1"/>
@@ -2503,7 +2503,7 @@
 		alertPreviousStatus=%parm[#5]%
 		alertData=%parm[#6]%&lt;/p&gt;
 	</logmsg>
-	<severity>Indeterminate</severity>
+	<severity>Minor</severity>
 	<varbindsdecode>
 		<parmid>parm[#4]</parmid>
 		<decode varbinddecodedstring="other" varbindvalue="1"/>
@@ -2590,7 +2590,7 @@
 		alertPreviousStatus=%parm[#5]%
 		alertData=%parm[#6]%&lt;/p&gt;
 	</logmsg>
-	<severity>Indeterminate</severity>
+	<severity>Major</severity>
 	<varbindsdecode>
 		<parmid>parm[#4]</parmid>
 		<decode varbinddecodedstring="other" varbindvalue="1"/>
@@ -2677,7 +2677,7 @@
 		alertPreviousStatus=%parm[#5]%
 		alertData=%parm[#6]%&lt;/p&gt;
 	</logmsg>
-	<severity>Indeterminate</severity>
+	<severity>Warning</severity>
 	<varbindsdecode>
 		<parmid>parm[#4]</parmid>
 		<decode varbinddecodedstring="other" varbindvalue="1"/>
@@ -2764,7 +2764,7 @@
 		alertPreviousStatus=%parm[#5]%
 		alertData=%parm[#6]%&lt;/p&gt;
 	</logmsg>
-	<severity>Indeterminate</severity>
+	<severity>Major</severity>
 	<varbindsdecode>
 		<parmid>parm[#4]</parmid>
 		<decode varbinddecodedstring="other" varbindvalue="1"/>
@@ -2851,7 +2851,7 @@
 		alertPreviousStatus=%parm[#5]%
 		alertData=%parm[#6]%&lt;/p&gt;
 	</logmsg>
-	<severity>Indeterminate</severity>
+	<severity>Warning</severity>
 	<varbindsdecode>
 		<parmid>parm[#4]</parmid>
 		<decode varbinddecodedstring="other" varbindvalue="1"/>
@@ -2938,7 +2938,7 @@
 		alertPreviousStatus=%parm[#5]%
 		alertData=%parm[#6]%&lt;/p&gt;
 	</logmsg>
-	<severity>Indeterminate</severity>
+	<severity>Normal</severity>
 	<varbindsdecode>
 		<parmid>parm[#4]</parmid>
 		<decode varbinddecodedstring="other" varbindvalue="1"/>
@@ -3025,7 +3025,7 @@
 		alertPreviousStatus=%parm[#5]%
 		alertData=%parm[#6]%&lt;/p&gt;
 	</logmsg>
-	<severity>Indeterminate</severity>
+	<severity>Warning</severity>
 	<varbindsdecode>
 		<parmid>parm[#4]</parmid>
 		<decode varbinddecodedstring="other" varbindvalue="1"/>
@@ -3112,7 +3112,7 @@
 		alertPreviousStatus=%parm[#5]%
 		alertData=%parm[#6]%&lt;/p&gt;
 	</logmsg>
-	<severity>Indeterminate</severity>
+	<severity>Minor</severity>
 	<varbindsdecode>
 		<parmid>parm[#4]</parmid>
 		<decode varbinddecodedstring="other" varbindvalue="1"/>
@@ -3200,7 +3200,7 @@
 		alertPreviousStatus=%parm[#5]%
 		alertData=%parm[#6]%&lt;/p&gt;
 	</logmsg>
-	<severity>Indeterminate</severity>
+	<severity>Major</severity>
 	<varbindsdecode>
 		<parmid>parm[#4]</parmid>
 		<decode varbinddecodedstring="other" varbindvalue="1"/>
@@ -3287,7 +3287,7 @@
 		alertPreviousStatus=%parm[#5]%
 		alertData=%parm[#6]%&lt;/p&gt;
 	</logmsg>
-	<severity>Indeterminate</severity>
+	<severity>Cleared</severity>
 	<varbindsdecode>
 		<parmid>parm[#4]</parmid>
 		<decode varbinddecodedstring="other" varbindvalue="1"/>
@@ -3374,7 +3374,7 @@
 		alertPreviousStatus=%parm[#5]%
 		alertData=%parm[#6]%&lt;/p&gt;
 	</logmsg>
-	<severity>Indeterminate</severity>
+	<severity>Major</severity>
 	<varbindsdecode>
 		<parmid>parm[#4]</parmid>
 		<decode varbinddecodedstring="other" varbindvalue="1"/>
@@ -3461,7 +3461,7 @@
 		alertPreviousStatus=%parm[#5]%
 		alertData=%parm[#6]%&lt;/p&gt;
 	</logmsg>
-	<severity>Indeterminate</severity>
+	<severity>Cleared</severity>
 	<varbindsdecode>
 		<parmid>parm[#4]</parmid>
 		<decode varbinddecodedstring="other" varbindvalue="1"/>
@@ -3548,7 +3548,7 @@
 		alertPreviousStatus=%parm[#5]%
 		alertData=%parm[#6]%&lt;/p&gt;
 	</logmsg>
-	<severity>Indeterminate</severity>
+	<severity>Minor</severity>
 	<varbindsdecode>
 		<parmid>parm[#4]</parmid>
 		<decode varbinddecodedstring="other" varbindvalue="1"/>
@@ -3635,7 +3635,7 @@
 		alertPreviousStatus=%parm[#5]%
 		alertData=%parm[#6]%&lt;/p&gt;
 	</logmsg>
-	<severity>Indeterminate</severity>
+	<severity>Minor</severity>
 	<varbindsdecode>
 		<parmid>parm[#4]</parmid>
 		<decode varbinddecodedstring="other" varbindvalue="1"/>
@@ -3722,7 +3722,7 @@
 		alertPreviousStatus=%parm[#5]%
 		alertData=%parm[#6]%&lt;/p&gt;
 	</logmsg>
-	<severity>Indeterminate</severity>
+	<severity>Cleared</severity>
 	<varbindsdecode>
 		<parmid>parm[#4]</parmid>
 		<decode varbinddecodedstring="other" varbindvalue="1"/>
@@ -3809,7 +3809,7 @@
 		alertPreviousStatus=%parm[#5]%
 		alertData=%parm[#6]%&lt;/p&gt;
 	</logmsg>
-	<severity>Indeterminate</severity>
+	<severity>Minor</severity>
 	<varbindsdecode>
 		<parmid>parm[#4]</parmid>
 		<decode varbinddecodedstring="other" varbindvalue="1"/>
@@ -3896,7 +3896,7 @@
 		alertPreviousStatus=%parm[#5]%
 		alertData=%parm[#6]%&lt;/p&gt;
 	</logmsg>
-	<severity>Indeterminate</severity>
+	<severity>Major</severity>
 	<varbindsdecode>
 		<parmid>parm[#4]</parmid>
 		<decode varbinddecodedstring="other" varbindvalue="1"/>
@@ -3983,7 +3983,7 @@
 		alertPreviousStatus=%parm[#5]%
 		alertData=%parm[#6]%&lt;/p&gt;
 	</logmsg>
-	<severity>Indeterminate</severity>
+	<severity>Normal</severity>
 	<varbindsdecode>
 		<parmid>parm[#4]</parmid>
 		<decode varbinddecodedstring="other" varbindvalue="1"/>
@@ -4070,7 +4070,7 @@
 		alertPreviousStatus=%parm[#5]%
 		alertData=%parm[#6]%&lt;/p&gt;
 	</logmsg>
-	<severity>Indeterminate</severity>
+	<severity>Warning</severity>
 	<varbindsdecode>
 		<parmid>parm[#4]</parmid>
 		<decode varbinddecodedstring="other" varbindvalue="1"/>
@@ -4157,7 +4157,7 @@
 		alertPreviousStatus=%parm[#5]%
 		alertData=%parm[#6]%&lt;/p&gt;
 	</logmsg>
-	<severity>Indeterminate</severity>
+	<severity>Warning</severity>
 	<varbindsdecode>
 		<parmid>parm[#4]</parmid>
 		<decode varbinddecodedstring="other" varbindvalue="1"/>
@@ -4244,7 +4244,7 @@
 		alertPreviousStatus=%parm[#5]%
 		alertData=%parm[#6]%&lt;/p&gt;
 	</logmsg>
-	<severity>Indeterminate</severity>
+	<severity>Cleared</severity>
 	<varbindsdecode>
 		<parmid>parm[#4]</parmid>
 		<decode varbinddecodedstring="other" varbindvalue="1"/>
@@ -4331,7 +4331,7 @@
 		alertPreviousStatus=%parm[#5]%
 		alertData=%parm[#6]%&lt;/p&gt;
 	</logmsg>
-	<severity>Indeterminate</severity>
+	<severity>Minor</severity>
 	<varbindsdecode>
 		<parmid>parm[#4]</parmid>
 		<decode varbinddecodedstring="other" varbindvalue="1"/>
@@ -4418,7 +4418,7 @@
 		alertPreviousStatus=%parm[#5]%
 		alertData=%parm[#6]%&lt;/p&gt;
 	</logmsg>
-	<severity>Indeterminate</severity>
+	<severity>Warning</severity>
 	<varbindsdecode>
 		<parmid>parm[#4]</parmid>
 		<decode varbinddecodedstring="other" varbindvalue="1"/>
@@ -4505,7 +4505,7 @@
 		alertPreviousStatus=%parm[#5]%
 		alertData=%parm[#6]%&lt;/p&gt;
 	</logmsg>
-	<severity>Indeterminate</severity>
+	<severity>Minor</severity>
 	<varbindsdecode>
 		<parmid>parm[#4]</parmid>
 		<decode varbinddecodedstring="other" varbindvalue="1"/>
