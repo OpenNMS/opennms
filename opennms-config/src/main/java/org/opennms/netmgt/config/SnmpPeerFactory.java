@@ -183,7 +183,7 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
      * @throws org.exolab.castor.xml.MarshalException if any.
      * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    public static void saveCurrent() throws IOException {
+    public void saveCurrent() throws IOException {
         saveToFile(getFile());
     }
 

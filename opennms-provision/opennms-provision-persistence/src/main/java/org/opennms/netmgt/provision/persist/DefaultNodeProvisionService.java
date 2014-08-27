@@ -107,7 +107,7 @@ public class DefaultNodeProvisionService implements NodeProvisionService, Initia
                 info.setFirstIPAddress(ipAddress);
                 info.setVersion(snmpVersion);
                 m_snmpPeerFactory.define(info);
-                SnmpPeerFactory.saveCurrent();
+                m_snmpPeerFactory.saveCurrent();
             } catch (Throwable e) {
                 throw new NodeProvisionException("unable to add SNMP community information", e);
             }
