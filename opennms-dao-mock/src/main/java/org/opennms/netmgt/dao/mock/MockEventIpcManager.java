@@ -43,8 +43,8 @@ import javax.sql.DataSource;
 
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.opennms.core.concurrent.LogPreservingThreadFactory;
-import org.opennms.netmgt.config.EventdConfigManager;
 import org.opennms.netmgt.config.api.EventConfDao;
+import org.opennms.netmgt.config.api.EventdConfig;
 import org.opennms.netmgt.dao.api.EventExpander;
 import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.events.api.EventIpcBroadcaster;
@@ -341,14 +341,13 @@ public class MockEventIpcManager implements EventForwarder, EventProxy, EventIpc
         }
     }
 
-    public EventdConfigManager getEventdConfigMgr() {
+    public EventdConfig getEventdConfig() {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public void setEventdConfigMgr(final EventdConfigManager eventdConfigMgr) {
+    public void setEventdConfig(final EventdConfig eventdConfig) {
         // TODO Auto-generated method stub
-        
     }
 
     public void setDataSource(final DataSource instance) {
