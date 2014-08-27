@@ -43,32 +43,15 @@ import org.opennms.netmgt.config.service.ServiceConfiguration;
  * This factory class is designed to be the main interface between the service
  * configuration information and the users of the information. When initialized
  * the factory loads the configuration from the file system, allowing access to
- * the information by others. The <code>init<code> method may be called by more
- * than one thread, but <em>MUST</em> be called by at least one thread before
- * the factory can be used.</p>
- *
- * <p>The factory supports the singleton design pattern, and thus the configuration
- * is loaded only once. All callers get the same reference unless a call to <code>
- * reload</code> is made. After than any saved instances of the factory can still
- * be referenced. Old references will not reflect any changes in the file if the
- * factory is reloaded.</p>
+ * the information by others.
  *
  * @author <a href="mailto:weave@oculan.com">Weave</a>
  */
 public final class ServiceConfigFactory {
     private static final Logger LOG = LoggerFactory.getLogger(ServiceConfigFactory.class);
-    /**
-     * The singleton instance of this factory
-     */
-    private static ServiceConfigFactory m_singleton = null;
 
     /**
-     * This member is set to true if the configuration file has been loaded.
-     */
-    private static boolean m_loaded = false;
-
-    /**
-     * The loaded configuration after is has been unmarhsalled by castor.
+     * The loaded configuration after is has been unmarshalled by castor.
      */
     private ServiceConfiguration m_config;
 
@@ -82,32 +65,8 @@ public final class ServiceConfigFactory {
      * @exception java.io.IOException
      *                Thrown if the specified config file cannot be read
      */
-    private ServiceConfigFactory(String configFile) throws IOException {
-        m_config = JaxbUtils.unmarshal(ServiceConfiguration.class, new File(configFile));
-    }
-
-    /**
-     * Load the config from the default config file and create the singleton
-     * instance of this factory.
-     *
-     * @exception java.io.IOException
-     *                Thrown if the specified config file cannot be read
-     * @throws java.io.IOException if any.
-     */
-    public static synchronized void init() throws IOException {
-        if (m_loaded) {
-            // init already called - return
-            // to reload, reload() will need to be called
-            return;
-        }
-
-        File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.SERVICE_CONF_FILE_NAME);
-
-
-        LOG.debug("ServiceConfigFactory.init: config file path {}", cfgFile.getPath());
-
-        m_singleton = new ServiceConfigFactory(cfgFile.getPath());
-        m_loaded = true;
+    public ServiceConfigFactory() {
+        reload();
     }
 
     /**
@@ -117,37 +76,15 @@ public final class ServiceConfigFactory {
      *                Thrown if the specified config file cannot be read/loaded
      * @throws java.io.IOException if any.
      */
-    public static synchronized void reload() throws IOException {
-        m_singleton = null;
-        m_loaded = false;
-
-        init();
+    public synchronized void reload() {
+        try {
+            File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.SERVICE_CONF_FILE_NAME);
+            LOG.debug("ServiceConfigFactory.init: config file path {}", cfgFile.getPath());
+            m_config = JaxbUtils.unmarshal(ServiceConfiguration.class, cfgFile);
+        } catch (IOException e) {
+            // Should never happen
+            LOG.error("Could not open configuration file: " + ConfigFileConstants.SERVICE_CONF_FILE_NAME, e);
     }
-
-    /**
-     * Returns the currently defined singleton instance of the factory. There is
-     * only one instance of the configuration information, and it will not
-     * change unless the <code>reload</code> method is called.
-     *
-     * @return The singular instance of the factory class.
-     * @throws java.lang.IllegalStateException
-     *             Thrown if the factory has not yet been initialized.
-     */
-    public static synchronized ServiceConfigFactory getInstance() {
-        if (!m_loaded)
-            throw new IllegalStateException("Factory not initialized");
-
-        return m_singleton;
-    }
-    
-    /**
-     * <p>setInstance</p>
-     *
-     * @param instance a {@link org.opennms.netmgt.config.ServiceConfigFactory} object.
-     */
-    public static synchronized void setInstance(ServiceConfigFactory instance) {
-        m_loaded = true;
-        m_singleton = instance;
     }
 
     /**
@@ -166,7 +103,6 @@ public final class ServiceConfigFactory {
         for (Service s : m_config.getServiceCollection()) {
             slist[count++] = s;
         }
-
         return slist;
     }
 }

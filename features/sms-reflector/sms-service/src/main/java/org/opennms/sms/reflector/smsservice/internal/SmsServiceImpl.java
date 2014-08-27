@@ -278,7 +278,7 @@ public class SmsServiceImpl implements SmsService {
 
 	/** {@inheritDoc} */
         @Override
-	public ArrayList<String> expandGroup(String groupName) {
+	public List<String> expandGroup(String groupName) {
 		return m_service.expandGroup(groupName);
 	}
 

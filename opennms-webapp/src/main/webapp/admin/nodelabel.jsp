@@ -33,7 +33,7 @@
 	contentType="text/html"
 	session="true"
 	import="
-	  org.opennms.netmgt.utils.NodeLabel,
+	  org.opennms.netmgt.utils.NodeLabelJDBCImpl,
     org.opennms.netmgt.model.OnmsNode.NodeLabelSource,
 		org.opennms.web.servlet.MissingParameterException,
 		org.opennms.core.utils.WebSecurityUtils,
@@ -65,8 +65,8 @@
 
     int nodeId = WebSecurityUtils.safeParseInt( nodeIdString );
 
-    NodeLabel currentLabel = NodeLabel.retrieveLabel( nodeId );
-    NodeLabel autoLabel = NodeLabel.computeLabel( nodeId );
+    NodeLabelJDBCImpl currentLabel = NodeLabelJDBCImpl.getInstance().retrieveLabel( nodeId );
+    NodeLabelJDBCImpl autoLabel = NodeLabelJDBCImpl.getInstance().computeLabel( nodeId );
 
     if( currentLabel == null || autoLabel == null ) {
         // XXX handle this WAY better, very awful

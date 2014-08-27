@@ -52,7 +52,7 @@ public class BeanInfo {
     
     private String keyAlias;
     
-    private ArrayList<Object> operations;
+    private List<Object> operations;
     
     private List<String> attributes;
     
@@ -117,7 +117,7 @@ public class BeanInfo {
      *
      * @return a {@link java.util.ArrayList} object.
      */
-    public ArrayList<Object> getOperations() {
+    public List<Object> getOperations() {
         return operations;
     }
 

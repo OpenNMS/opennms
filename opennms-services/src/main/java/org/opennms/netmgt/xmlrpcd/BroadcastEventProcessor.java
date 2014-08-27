@@ -31,6 +31,7 @@ package org.opennms.netmgt.xmlrpcd;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.opennms.core.queue.FifoQueue;
 import org.opennms.core.queue.FifoQueueException;
@@ -65,7 +66,7 @@ final class BroadcastEventProcessor implements EventListener {
     /**
      * Subscribed events for this listener
      */
-    private final HashSet<String> m_events;
+    private final Set<String> m_events;
 
     /**
      * Suffix used to create a unique name for event registration

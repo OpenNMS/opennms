@@ -30,6 +30,7 @@ package org.opennms.protocols.wmi;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -43,7 +44,7 @@ public class WmiResult {
 	/**
 	 * Stores the response from the server.
 	 */
-	private ArrayList<Object> m_Response = null;
+	private List<Object> m_Response = null;
 
 	/**
 	 * Stores the result of the check.
@@ -69,7 +70,7 @@ public class WmiResult {
 	/**
 	 * This member is used to convert result codes to strings and vice versa.
 	 */
-	public static HashMap<String, Short> StateStrings = new HashMap<String, Short>();
+	public static Map<String, Short> StateStrings = new HashMap<String, Short>();
 
 	/**
 	 * Populates the member used for converting result codes to strings and
@@ -117,7 +118,7 @@ public class WmiResult {
 	 * @param response
 	 *            the response value from the server.
 	 */
-	WmiResult(final ArrayList<Object> response) {
+	WmiResult(final List<Object> response) {
 		m_Response = response;
 	}
 
@@ -126,7 +127,7 @@ public class WmiResult {
 	 *
 	 * @return the value of the server response.
 	 */
-	public ArrayList<Object> getResponse() {
+	public List<Object> getResponse() {
 		return m_Response;
 	}
 

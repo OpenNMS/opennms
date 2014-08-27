@@ -73,7 +73,7 @@ public class Node extends StandardNamedObject {
     /**
      * List of outages.
      */
-    private ArrayList<Interface> m_interfaces;
+    private List<Interface> m_interfaces = new ArrayList<Interface>();
 
     /**
      * Flag indicating an Outage
@@ -151,7 +151,7 @@ public class Node extends StandardNamedObject {
      * @param id
      *            node id.
      */
-    public Node(String name, ArrayList<Interface> interfaces, int id) {
+    public Node(String name, List<Interface> interfaces, int id) {
         m_nodeid = id;
         setName(name);
         m_interfaces = interfaces;
@@ -164,7 +164,7 @@ public class Node extends StandardNamedObject {
      * @param interfaces
      *            Interfaces for this node to be set.
      */
-    public Node(ArrayList<Interface> interfaces) {
+    public Node(List<Interface> interfaces) {
         m_interfaces = interfaces;
         m_downTime = 0;
     }
@@ -264,7 +264,7 @@ public class Node extends StandardNamedObject {
      *
      * @return A list of interfaces.
      */
-    public ArrayList<Interface> getInterfaces() {
+    public List<Interface> getInterfaces() {
         return m_interfaces;
     }
 

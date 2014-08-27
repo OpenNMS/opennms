@@ -76,7 +76,8 @@ import org.springframework.transaction.annotation.Transactional;
         //"classpath:/META-INF/opennms/applicationContext-reportingCore.xml",
         //"classpath:/org/opennms/web/svclayer/applicationContext-svclayer.xml",
         "classpath:/META-INF/opennms/applicationContext-insertData-enabled.xml",
-        "classpath:/testSiteStatusServiceContext.xml"
+        "classpath:/testSiteStatusServiceContext.xml",
+        "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml"
 })
 @JUnitConfigurationEnvironment
 public class DefaultSiteStatusServiceIntegrationTest implements InitializingBean {

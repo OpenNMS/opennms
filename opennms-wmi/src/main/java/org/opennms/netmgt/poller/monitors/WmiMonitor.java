@@ -29,11 +29,10 @@
 package org.opennms.netmgt.poller.monitors;
 
 import java.net.InetAddress;
-import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import org.opennms.core.utils.InetAddressUtils;
-
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.TimeoutTracker;
 import org.opennms.netmgt.config.WmiPeerFactory;
@@ -203,7 +202,7 @@ public class WmiMonitor extends AbstractServiceMonitor {
 					continue;
 				}
 
-				final ArrayList<Object> wmiObjects = response.getResponse();
+				final List<Object> wmiObjects = response.getResponse();
 
 				final StringBuffer reasonBuffer = new StringBuffer();
 				reasonBuffer.append("Constraint '").append(matchType).append(" ").append(clientParams.getCompareOperation()).append(" ").append(clientParams.getCompareValue()).append("' failed for value of ");

@@ -29,6 +29,7 @@
 package org.opennms.netmgt.config.statsd.model;
 
 import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * Represents a configured report that can be applied to packages.
@@ -41,7 +42,7 @@ import java.util.LinkedHashMap;
 public class Report {
     private String m_name;
     private String m_className;
-    private LinkedHashMap<String, String> m_parameters = new LinkedHashMap<String, String>();
+    private Map<String, String> m_parameters = new LinkedHashMap<String, String>();
     
     /**
      * <p>getClassName</p>
@@ -80,7 +81,7 @@ public class Report {
      *
      * @return a {@link java.util.LinkedHashMap} object.
      */
-    public LinkedHashMap<String, String> getParameters() {
+    public Map<String, String> getParameters() {
         return m_parameters;
     }
     /**
@@ -88,7 +89,7 @@ public class Report {
      *
      * @param parameters a {@link java.util.LinkedHashMap} object.
      */
-    public void setParameters(LinkedHashMap<String, String> parameters) {
+    public void setParameters(Map<String, String> parameters) {
         m_parameters = parameters;
     }
     /**

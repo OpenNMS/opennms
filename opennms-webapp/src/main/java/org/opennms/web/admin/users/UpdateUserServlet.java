@@ -43,7 +43,7 @@ import javax.servlet.http.HttpSession;
 
 import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.netmgt.config.UserFactory;
-import org.opennms.netmgt.config.UserManager.ContactType;
+import org.opennms.netmgt.config.api.UserConfig.ContactType;
 import org.opennms.netmgt.config.users.Contact;
 import org.opennms.netmgt.config.users.DutySchedule;
 import org.opennms.netmgt.config.users.Password;

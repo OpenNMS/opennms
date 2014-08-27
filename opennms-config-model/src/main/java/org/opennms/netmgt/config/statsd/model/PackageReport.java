@@ -29,6 +29,7 @@
 package org.opennms.netmgt.config.statsd.model;
 
 import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * Represents a report that is configured on a specific package.
@@ -42,7 +43,7 @@ public class PackageReport {
     private Report m_report;
     private String m_schedule;
     private boolean m_enabled;
-    private LinkedHashMap<String, String> m_parameters = new LinkedHashMap<String, String>();
+    private Map<String, String> m_parameters = new LinkedHashMap<String, String>();
     private String m_description;
     private Long m_retainInterval;
     private StatsdPackage m_pkg;
@@ -68,7 +69,7 @@ public class PackageReport {
      *
      * @return a {@link java.util.LinkedHashMap} object.
      */
-    public LinkedHashMap<String, String> getParameters() {
+    public Map<String, String> getParameters() {
         return m_parameters;
     }
     /**
@@ -76,7 +77,7 @@ public class PackageReport {
      *
      * @param parameters a {@link java.util.LinkedHashMap} object.
      */
-    public void setParameters(LinkedHashMap<String, String> parameters) {
+    public void setParameters(Map<String, String> parameters) {
         m_parameters = parameters;
     }
     /**
@@ -93,7 +94,7 @@ public class PackageReport {
      *
      * @return a {@link java.util.LinkedHashMap} object.
      */
-    public LinkedHashMap<String, String> getAggregateParameters() {
+    public Map<String, String> getAggregateParameters() {
         LinkedHashMap<String, String> agg = new LinkedHashMap<String, String>(getReport().getParameters());
         agg.putAll(getParameters());
         return agg;

@@ -538,15 +538,55 @@ Optionally, you can set additional options as key=value pairs.  For example:
 
 Valid options are:
 
-=over 8
+=over 4
 
-=item * version: v1 or v2c
+=item * version: v1 or v2c or v3
 
 =item * port: the port of the SNMP agent
 
 =item * timeout: the timeout, in milliseconds
 
 =item * retries: the number of retries before giving up
+
+=item * max-repetitions: maximum repetitions (defaults to 2)
+
+=item * max-vars-per-pdu: maximum variables per PDU (defaults to 10)
+
+=back
+
+SNMPv3 options:
+
+=over 4
+
+=item * security-name: the USM name
+
+=item * security-level: 1, 2, 3
+
+=over 4
+
+=item * 1: noAuthNoPriv (default)
+
+=item * 2: authNoPriv
+
+=item * 3: authPriv
+
+=back
+
+=item * priv-protocol: DES, AES, AES192, AES256
+
+=item * priv-pass-phrase: the password for privacy protocol
+
+=item * auth-protocol: MD5, SHA
+
+=item * auth-pass-phrase: the password for the authentication protocol
+
+=item * engine-id: the unique engine ID of the SNMP agent
+
+=item * context-engine-id: the context ending ID
+
+=item * context-name: the context name
+
+=item * enterprise-id: the enterprise ID
 
 =back
 

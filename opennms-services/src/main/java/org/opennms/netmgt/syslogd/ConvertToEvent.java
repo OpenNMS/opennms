@@ -211,7 +211,7 @@ final class ConvertToEvent {
         final String hostAddress = message.getHostAddress();
         if (hostAddress != null && hostAddress.length() > 0) {
             // Set nodeId
-            long nodeId = SyslogdIPMgr.getNodeId(hostAddress);
+            long nodeId = SyslogdIPMgrJDBCImpl.getInstance().getNodeId(hostAddress);
             if (nodeId != -1) {
                 bldr.setNodeid(nodeId);
             }

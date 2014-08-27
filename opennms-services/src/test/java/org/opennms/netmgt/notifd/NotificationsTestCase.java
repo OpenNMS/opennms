@@ -39,6 +39,7 @@ import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.db.MockDatabase;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.TimeConverter;
 import org.opennms.netmgt.config.NotificationCommandManager;
 import org.opennms.netmgt.config.NotificationManager;

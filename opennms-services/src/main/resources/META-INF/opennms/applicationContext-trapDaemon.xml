@@ -24,11 +24,6 @@
     <property name="backlogQ" ref="trapdBacklogQ"/>
   </bean>
   
-  <bean id="trapdConfig-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" lazy-init="true">
-    <property name="staticMethod"><value>org.opennms.netmgt.config.TrapdConfigFactory.init</value></property>
-  </bean>
-
-  <bean id="trapdConfig" class="org.opennms.netmgt.config.TrapdConfigFactory" depends-on="trapdConfig-init" lazy-init="true" factory-method="getInstance"/>
   
   <!--
   <bean id="trapdIpMgr" class="org.opennms.netmgt.trapd.JdbcTrapdIpMgr">

@@ -47,6 +47,7 @@ import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.xml.CastorUtils;
+import org.opennms.netmgt.config.api.DatabaseSchemaConfig;
 import org.opennms.netmgt.config.filter.Column;
 import org.opennms.netmgt.config.filter.DatabaseSchema;
 import org.opennms.netmgt.config.filter.Join;
@@ -62,7 +63,7 @@ import org.opennms.netmgt.config.filter.Table;
  *
  * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj </a>
  */
-public final class DatabaseSchemaConfigFactory {
+public final class DatabaseSchemaConfigFactory implements DatabaseSchemaConfig{
     private final ReadWriteLock m_globalLock = new ReentrantReadWriteLock();
     private final Lock m_readLock = m_globalLock.readLock();
     private final Lock m_writeLock = m_globalLock.writeLock();

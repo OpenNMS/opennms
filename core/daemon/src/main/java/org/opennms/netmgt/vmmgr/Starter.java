@@ -43,6 +43,7 @@ import javax.management.MBeanServer;
 
 import org.apache.commons.io.IOUtils;
 import org.opennms.core.logging.Logging;
+import org.opennms.netmgt.config.ServiceConfigFactory;
 import org.opennms.netmgt.config.service.Service;
 import org.opennms.netmgt.config.service.types.InvokeAtType;
 import org.slf4j.Logger;
@@ -240,7 +241,7 @@ public class Starter {
         Invoker invoker = new Invoker();
         invoker.setServer(server);
         invoker.setAtType(InvokeAtType.START);
-        List<InvokerService> services = InvokerService.createServiceList(Invoker.getDefaultServiceConfigFactory().getServices());
+        List<InvokerService> services = InvokerService.createServiceList(new ServiceConfigFactory().getServices());
         invoker.setServices(services);
         invoker.instantiateClasses();
 
