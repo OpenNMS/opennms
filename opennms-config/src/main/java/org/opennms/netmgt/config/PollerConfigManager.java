@@ -1025,7 +1025,7 @@ abstract public class PollerConfigManager implements PollerConfig {
                     }
                     LOG.debug("Loaded monitor for service: {}, class-name: {}", monitor.getService(), monitor.getClassName());
                 } catch (final ClassNotFoundException e) {
-                    LOG.warn("Unable to load monitor for service: {}, class-name: {}", monitor.getService(), monitor.getClassName(), e);
+                    LOG.warn("Unable to load monitor for service: {}, class-name: {}: {}", monitor.getService(), monitor.getClassName(), e.getMessage());
                 } catch (ConfigObjectRetrievalFailureException e) {
                     LOG.warn("{} {}", e.getMessage(), e.getRootCause(), e);
                 }
