@@ -54,7 +54,8 @@
     }
 
     public String getTitle(OnmsHwEntity entity) {
-        return entity.getEntPhysicalName() + " (entPhysicalIndex=" + entity.getEntPhysicalIndex() + ")";
+        String id = entity.getEntPhysicalName() == null ? "[Unknown]" : entity.getEntPhysicalName();
+        return id + " (entPhysicalIndex=" + entity.getEntPhysicalIndex() + ")";
     }
 
     public String getContent(OnmsHwEntity entity) {
@@ -91,13 +92,7 @@
         out.println("<tr class='treegrid-" + entity.getId() + parentCls + "'>");
         out.println("<td>" + getTitle(entity) + "</td><td>" + getContent(entity) + "</td>");
         out.println("</tr>");
-        List<OnmsHwEntity> children = new ArrayList<OnmsHwEntity>(entity.getChildren());
-        Collections.sort(children, new Comparator<OnmsHwEntity>() {
-            public int compare(OnmsHwEntity o1, OnmsHwEntity o2) {
-                return o1.getEntPhysicalName().compareTo(o2.getEntPhysicalName());
-            }
-        });
-        for (OnmsHwEntity child : children) {
+        for (OnmsHwEntity child : entity.getChildren()) {
             printTree(out, child);
         }
     }
