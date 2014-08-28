@@ -37,7 +37,11 @@ public class SnmpConfigAccessService {
         try {
             m_executor.submit(new Runnable() {
                 @Override public void run() {
-                    // We don't need to do anything, just make sure any pending requests are finished.
+                    try {
+                        SnmpPeerFactory.getInstance().saveCurrent();
+                    } catch (final IOException e) {
+                        LOG.debug("Failed to save SNMP configuration.", e);
+                    }
                 }
             }).get();
         } catch (final InterruptedException e) {
@@ -50,20 +54,16 @@ public class SnmpConfigAccessService {
     public SnmpAgentConfig getAgentConfig(final InetAddress addr) {
         return submitAndWait(new Callable<SnmpAgentConfig>() {
             @Override public SnmpAgentConfig call() throws Exception {
+                flushAll();
                 return SnmpPeerFactory.getInstance().getAgentConfig(addr);
             }
         });
     }
 
-    public void defineAndSave(final SnmpEventInfo eventInfo) {
+    public void define(final SnmpEventInfo eventInfo) {
         submitWriteOp(new Runnable() {
             @Override public void run() {
-                try {
-                    SnmpPeerFactory.getInstance().define(eventInfo);
-                    SnmpPeerFactory.getInstance().saveCurrent();
-                } catch (final IOException e) {
-                    LOG.warn("Failed to update snmp-config with data: {}", eventInfo, e);
-                }
+                SnmpPeerFactory.getInstance().define(eventInfo);
             }
         });
     }

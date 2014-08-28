@@ -46,6 +46,7 @@
             <outputDirectory>/</outputDirectory>
             <includes>
                 <include>bin/admin</include>
+                <include>bin/client</include>
                 <include>bin/start</include>
                 <include>bin/stop</include>
             </includes>

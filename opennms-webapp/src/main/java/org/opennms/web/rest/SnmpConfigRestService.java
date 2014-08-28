@@ -163,7 +163,7 @@ public class SnmpConfigRestService extends OnmsRestService {
                 eventInfo = snmpInfo.createEventInfo(ipAddress);
             }
 
-            m_accessService.defineAndSave(eventInfo);
+            m_accessService.define(eventInfo);
             return Response.seeOther(getRedirectUri(m_uriInfo)).build();
         } catch (final Throwable e) {
             return Response.serverError().build();
@@ -195,7 +195,7 @@ public class SnmpConfigRestService extends OnmsRestService {
             } else {
                 eventInfo = info.createEventInfo(ipAddress);
             }
-            m_accessService.defineAndSave(eventInfo);
+            m_accessService.define(eventInfo);
             return Response.seeOther(getRedirectUri(m_uriInfo)).build();
         } catch (final Throwable e) {
             return Response.serverError().build();
