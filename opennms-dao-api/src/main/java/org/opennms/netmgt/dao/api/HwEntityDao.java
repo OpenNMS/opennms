@@ -63,4 +63,24 @@ public interface HwEntityDao extends OnmsDao<OnmsHwEntity, Integer> {
      */
     public OnmsHwEntity findEntityByName(Integer nodeId, String entPhysicalName);
 
+    /**
+     * Gets the attribute value.
+     *
+     * @param nodeId the node id
+     * @param entPhysicalIndex the entity physical index
+     * @param attributeName the name of the desired attribute
+     * @return the attribute value
+     */
+    public String getAttributeValue(Integer nodeId, Integer entPhysicalIndex, String attributeName);
+
+    /**
+     * Gets the attribute value.
+     *
+     * @param nodeId the node id
+     * @param nameSource either the value of entPhysicalName or a regular expression to be applied over the entPhysicalName (should start with '~')
+     * @param attributeName the name of the desired attribute
+     * @return the attribute value
+     */
+    public String getAttributeValue(Integer nodeId, String nameSource, String attributeName);
+
 }

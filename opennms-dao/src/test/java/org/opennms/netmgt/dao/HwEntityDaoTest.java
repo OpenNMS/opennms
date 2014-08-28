@@ -157,9 +157,11 @@ public class HwEntityDaoTest implements InitializingBean {
         Assert.assertNotNull(root.getNode());
         Assert.assertEquals(2, root.getChildren().size());
 
+        // Test saving root entity
         m_hwEntityDao.saveOrUpdate(root);
         m_hwEntityDao.flush();
 
+        // Test valid findRootByNodeId
         OnmsHwEntity e1 = m_hwEntityDao.findRootByNodeId(node.getId());
         Assert.assertNotNull(e1);
         Assert.assertNotNull(e1.getNode());
@@ -169,17 +171,28 @@ public class HwEntityDaoTest implements InitializingBean {
         OnmsHwEntity c = e1.getChildren().iterator().next();
         Assert.assertEquals("4", c.getAttributeValue("ram"));
 
+        // Test invalid findRootByNodeId
         Assert.assertNull(m_hwEntityDao.findRootByNodeId(10000));
 
+        // Test findEntityByIndex
         OnmsHwEntity e2 = m_hwEntityDao.findEntityByIndex(node.getId(), e1.getEntPhysicalIndex());
         Assert.assertTrue(e1.equals(e2));
 
+        // Test findEntityByName
         OnmsHwEntity e3 = m_hwEntityDao.findEntityByName(node.getId(), e1.getEntPhysicalName());
         Assert.assertTrue(e1.equals(e3));
 
-        m_hwEntityDao.flush();
+        // Test getAttributeValue
+        Assert.assertEquals("Chassis", m_hwEntityDao.getAttributeValue(node.getId(), 1, "entPhysicalName"));
+        Assert.assertEquals("4", m_hwEntityDao.getAttributeValue(node.getId(), 2, "ram"));
+        Assert.assertEquals("chassis", m_hwEntityDao.getAttributeValue(node.getId(), "Chassis", "entPhysicalClass"));
+        Assert.assertEquals("4", m_hwEntityDao.getAttributeValue(node.getId(), "~^M1", "ram"));
 
+        // Test delete
+        m_hwEntityDao.flush();
         m_hwEntityDao.delete(e2.getId());
+        m_hwEntityDao.flush();
+        Assert.assertNull(m_hwEntityDao.get(e2.getId()));
     }
 
 }
