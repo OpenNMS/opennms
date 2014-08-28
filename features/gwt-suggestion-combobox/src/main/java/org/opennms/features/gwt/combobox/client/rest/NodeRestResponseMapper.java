@@ -40,7 +40,7 @@ import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONParser;
 import com.google.gwt.json.client.JSONValue;
 
-public class NodeRestResponseMapper {
+public abstract class NodeRestResponseMapper {
 
     
     public static List<NodeDetail> mapNodeJSONtoNodeDetail(final String jsonString) {

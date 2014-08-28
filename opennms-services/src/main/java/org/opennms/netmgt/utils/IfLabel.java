@@ -51,7 +51,7 @@ import org.slf4j.LoggerFactory;
  * @author <a href="mailto:larry@opennms.org">Lawrence Karnowski </a>
  * @author <a href="mailto:seth@opennms.org">Seth Leger </a>
  */
-public class IfLabel {
+public abstract class IfLabel {
 
 	private static final Logger LOG = LoggerFactory.getLogger(IfLabel.class);
 	

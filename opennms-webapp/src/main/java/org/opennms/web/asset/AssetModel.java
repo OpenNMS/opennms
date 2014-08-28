@@ -487,20 +487,6 @@ public class AssetModel {
         return s_columns;
     }
 
-    //TODO: no one is calling this now... delete soon.
-    @SuppressWarnings("unused")
-    private static boolean isColumnValid(String column) {
-        Assert.notNull(column, "argument column cannot be null");
-
-        for (String[] assetColumn : s_columns) {
-            if (column.equals(assetColumn[1])) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
     /**
      * Hard-coded (for now) list of human-readable asset columns and the
      * corresponding database column.

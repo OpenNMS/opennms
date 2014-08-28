@@ -56,7 +56,7 @@ import org.opennms.netmgt.poller.ServiceMonitor;
  * 
  * @author Alejandro Galue <agalue@opennms.org>
  */
-public class MonitorTester {
+public abstract class MonitorTester {
 
     private static final String CMD_SYNTAX = "poller-test [options]";
 

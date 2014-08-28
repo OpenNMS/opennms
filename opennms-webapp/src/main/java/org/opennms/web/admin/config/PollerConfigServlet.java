@@ -37,6 +37,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Properties;
 import java.util.StringTokenizer;
 
@@ -79,9 +80,9 @@ public class PollerConfigServlet extends HttpServlet {
 
     protected String redirectSuccess;
 
-    HashMap<String, Service> pollerServices = new HashMap<String, Service>();
+    Map<String, Service> pollerServices = new HashMap<String, Service>();
 
-    HashMap<String, ProtocolPlugin> capsdProtocols = new HashMap<String, ProtocolPlugin>();
+    Map<String, ProtocolPlugin> capsdProtocols = new HashMap<String, ProtocolPlugin>();
 
     java.util.List<ProtocolPlugin> capsdColl = new ArrayList<ProtocolPlugin>();
 

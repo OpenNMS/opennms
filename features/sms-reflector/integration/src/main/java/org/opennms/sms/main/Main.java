@@ -37,7 +37,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
  * @author brozow
  * @version $Id: $
  */
-public class Main {
+public abstract class Main {
 
     /**
      * <p>main</p>

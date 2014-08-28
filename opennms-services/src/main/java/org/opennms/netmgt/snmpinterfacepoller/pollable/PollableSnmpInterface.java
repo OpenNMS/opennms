@@ -58,7 +58,7 @@ public class PollableSnmpInterface implements ReadyRunnable {
 
     private volatile Schedule m_schedule;
 
-    private HashMap<Integer,OnmsSnmpInterface> m_snmpinterfaces;
+    private Map<Integer,OnmsSnmpInterface> m_snmpinterfaces;
     
     private PollableSnmpInterfaceConfig m_snmppollableconfig;
 

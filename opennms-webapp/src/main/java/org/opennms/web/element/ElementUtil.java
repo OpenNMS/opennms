@@ -986,15 +986,4 @@ public abstract class ElementUtil {
     	}
     	return NetworkElementFactory.getInstance(servletContext).isRouteInfoNode(nodeId);
     }
-    
-    @SuppressWarnings("unused")
-    private static String encodeUrl(String in) {
-    	String out = "";
-		try {
-			out = URLEncoder.encode(in, "UTF-8");
-		} catch (UnsupportedEncodingException e) {
-			// ignore
-		}
-		return out;
-    }
 }

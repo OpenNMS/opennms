@@ -35,7 +35,7 @@ package org.opennms.web.svclayer.outage;
  * @version $Id: $
  * @since 1.8.1
  */
-public class SuppressOutageCheckBoxConstants {
+public abstract class SuppressOutageCheckBoxConstants {
 
 	/** Constant <code>SELECTED_OUTAGES="SELECTED_OUTAGES"</code> */
 	public static final String SELECTED_OUTAGES = "SELECTED_OUTAGES";

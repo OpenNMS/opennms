@@ -32,6 +32,7 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.opennms.api.reporting.ReportFormat;
 import org.opennms.api.reporting.ReportMode;
@@ -213,7 +214,7 @@ public class ReportParameters implements Serializable {
      * 
      * @return a {@link java.util.HashMap} object.
      */
-    public HashMap<String, Object> getReportParms(ReportMode mode) {
+    public Map<String, Object> getReportParms(ReportMode mode) {
         
         HashMap <String,Object>parmMap = new HashMap<String, Object>();
         
@@ -269,7 +270,7 @@ public class ReportParameters implements Serializable {
      *
      * @return a {@link java.util.HashMap} object.
      */
-    public HashMap<String, Object> getReportParms() {
+    public Map<String, Object> getReportParms() {
         
         return getReportParms(ReportMode.IMMEDIATE);
         

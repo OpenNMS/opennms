@@ -29,6 +29,7 @@
 package org.opennms.protocols.snmp;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.opennms.protocols.snmp.asn1.ASN1;
 import org.opennms.protocols.snmp.asn1.AsnDecodingException;
@@ -76,7 +77,7 @@ public class SnmpPduTrap extends Object implements SnmpSyntax, Cloneable {
     /**
      * The list of variable bindings for the trap.
      */
-    private ArrayList<SnmpVarBind> m_variables;
+    private List<SnmpVarBind> m_variables = new ArrayList<SnmpVarBind>();
 
     /**
      * The ASN.1 type for the SNMPv1 Trap.

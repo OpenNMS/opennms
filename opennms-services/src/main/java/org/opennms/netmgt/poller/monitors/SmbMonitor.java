@@ -48,9 +48,11 @@ import org.slf4j.LoggerFactory;
 /**
  * <P>
  * This class is designed to be used by the service poller framework to test the
- * availability of the DNS service on remote interfaces. The class implements
- * the ServiceMonitor interface that allows it to be used along with other
- * plug-ins by the service poller framework.
+ * availability of the SMB service on remote interfaces. Poll the specified address
+ * for response to NetBIOS name queries.
+ * 
+ * The class implements the ServiceMonitor interface that allows it to be used along
+ * with other plug-ins by the service poller framework.
  * </P>
  *
  * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog </A>
@@ -62,37 +64,6 @@ import org.slf4j.LoggerFactory;
 final public class SmbMonitor extends AbstractServiceMonitor {
     
     public static final Logger LOG = LoggerFactory.getLogger(SmbMonitor.class);
-    
-    /**
-     * Default retries.
-     */
-    /*
-     * TODO: Use it or loose it.
-     * Commented out because it is not currently used in this monitor
-     */
-    //private static final int DEFAULT_RETRY = 0;
-
-    /**
-     * Default timeout. Specifies how long (in milliseconds) to block waiting
-     * for data from the monitored interface.
-     */
-    /*
-     * TODO: Use it or loose it.
-     * Commented out because it is not currently used in this monitor
-     */
-    //private static final int DEFAULT_TIMEOUT = 5000;
-
-    /**
-     * {@inheritDoc}
-     *
-     * <P>
-     * Poll the specified address for response to NetBIOS name queries.
-     * </P>
-     *
-     * <P>
-     * During the poll ...
-     * </P>
-     */
     
     /**
      * Do a node-status request before checking name?
@@ -109,14 +80,6 @@ final public class SmbMonitor extends AbstractServiceMonitor {
         //
         if (iface.getType() != NetworkInterface.TYPE_INET)
             throw new NetworkInterfaceNotSupportedException("Unsupported interface type, only TYPE_INET currently supported");
-
-        /*
-         * TODO: Use it or loose it.
-         * Commented out because it is not currently used in this monitor
-         */
-        // get parameters
-        //int retry = ParameterMap.getKeyedInteger(parameters, "retry", DEFAULT_RETRY);
-        //int timeout = ParameterMap.getKeyedInteger(parameters, "timeout", DEFAULT_TIMEOUT);
 
         // Extract the address
         //

@@ -86,7 +86,7 @@ public class XMPPNotificationManager {
 
 	private final int xmppPort;
 
-	private final HashMap<String, MultiUserChat> rooms = new HashMap<String, MultiUserChat>();
+	private final Map<String, MultiUserChat> rooms = new HashMap<String, MultiUserChat>();
 
 	private static XMPPNotificationManager instance = null;
 

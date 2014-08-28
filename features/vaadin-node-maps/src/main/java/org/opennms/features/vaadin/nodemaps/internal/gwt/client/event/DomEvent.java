@@ -38,7 +38,7 @@ import com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.ui.Widget;
 
-public class DomEvent {
+public abstract class DomEvent {
 
     public static void stopEventPropagation(final Widget widget) {
         for (final String event : new String[] { "keydown", "keyup", "keypress", "input", "cut", "paste", "click", "dblclick", "mousedown", "mouseup", "touchstart", "touchend", "scrollstart", "scrollstop" }) {

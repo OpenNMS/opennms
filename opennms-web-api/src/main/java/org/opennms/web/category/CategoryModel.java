@@ -87,7 +87,7 @@ public class CategoryModel extends Object {
     }
 
     /** A mapping of category names to category instances. */
-    private HashMap<String, Category> m_categoryMap = new HashMap<String, Category>();
+    private Map<String, Category> m_categoryMap = new HashMap<String, Category>();
 
     /** A reference to the CategoryFactory to get to category definitions. */
     private CatFactory m_factory = null;

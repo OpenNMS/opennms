@@ -98,7 +98,7 @@ final class TcpServer implements Runnable {
      * This list is periodically cleaned by the main server thread.
      * </p>
      */
-    private LinkedList<TcpStreamHandler> m_receivers;
+    private List<TcpStreamHandler> m_receivers;
 
     /**
      * The thread which is executing the server context

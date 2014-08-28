@@ -30,6 +30,7 @@ package org.opennms.systemreport.opennms;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Map;
 import java.util.Properties;
 import java.util.TreeMap;
 
@@ -84,7 +85,7 @@ public class OpenNMSReportPlugin extends AbstractSystemReportPlugin implements I
     }
 
     @Override
-    public TreeMap<String, Resource> getEntries() {
+    public Map<String, Resource> getEntries() {
         final TreeMap<String,Resource> map = new TreeMap<String,Resource>();
         final InputStream is = this.getClass().getResourceAsStream("/version.properties");
         if (is != null) {
