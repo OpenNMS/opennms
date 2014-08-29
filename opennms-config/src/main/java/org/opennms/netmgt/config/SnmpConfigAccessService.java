@@ -1,13 +1,13 @@
 package org.opennms.netmgt.config;
 
-import java.io.IOException;
 import java.net.InetAddress;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.TimeUnit;
 
 import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
@@ -17,24 +17,32 @@ public class SnmpConfigAccessService {
     @Autowired
     private SnmpPeerFactory m_snmpPeerFactory;
 
-    private final ExecutorService m_executor = Executors.newSingleThreadExecutor(new ThreadFactory() {
+    private boolean m_dirty = false;
+    private final ScheduledExecutorService m_executor = Executors.newSingleThreadScheduledExecutor(new ThreadFactory() {
         @Override
         public Thread newThread(final Runnable r) {
             return new Thread(r, "SnmpConfig-Accessor-Thread");
         }
     });
 
+    private final class SaveCallable implements Callable<Void> {
+        @Override
+        public Void call() throws Exception {
+            if (m_dirty) {
+                LogUtils.debugf(this, "SnmpPeerFactory has been updated. Persisting to disk.");
+                SnmpPeerFactory.getInstance().saveCurrent();
+                m_dirty = false;
+            }
+            return null;
+        }
+    }
+
     public SnmpConfigAccessService() {
+        m_executor.schedule(new SaveCallable(), 1, TimeUnit.SECONDS);
     }
 
     public void flushAll() {
-        submitAndWait(new Callable<Void>() {
-            @Override
-            public Void call() throws Exception {
-                SnmpPeerFactory.getInstance().saveCurrent();
-                return null;
-            }
-        });
+        submitAndWait(new SaveCallable());
     }
 
     public SnmpAgentConfig getAgentConfig(final InetAddress addr) {
@@ -50,6 +58,7 @@ public class SnmpConfigAccessService {
         submitWriteOp(new Runnable() {
             @Override public void run() {
                 SnmpPeerFactory.getInstance().define(eventInfo);
+                m_dirty = true;
             }
         });
     }
