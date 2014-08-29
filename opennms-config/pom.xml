@@ -100,6 +100,10 @@
       <artifactId>opennms-util</artifactId>
     </dependency>
     <dependency>
+      <groupId>com.googlecode.concurrent-locks</groupId>
+      <artifactId>concurrent-locks</artifactId>
+    </dependency>
+    <dependency>
       <groupId>jakarta-regexp</groupId>
       <artifactId>jakarta-regexp</artifactId>
     </dependency>

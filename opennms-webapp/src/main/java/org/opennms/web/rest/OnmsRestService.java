@@ -34,7 +34,6 @@ import java.lang.reflect.Method;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
@@ -58,6 +57,8 @@ import org.opennms.web.rest.support.InetAddressTypeEditor;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
 
+import com.googlecode.concurentlocks.ReadWriteUpdateLock;
+import com.googlecode.concurentlocks.ReentrantReadWriteUpdateLock;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
 
 /**
@@ -68,8 +69,8 @@ import com.sun.jersey.core.util.MultivaluedMapImpl;
  * @since 1.8.1
  */
 public class OnmsRestService {
-    private final ReentrantReadWriteLock m_globalLock = new ReentrantReadWriteLock();
-    private final Lock m_readLock = m_globalLock.readLock();
+    private final ReadWriteUpdateLock m_globalLock = new ReentrantReadWriteUpdateLock();
+    private final Lock m_readLock = m_globalLock.updateLock();
     private final Lock m_writeLock = m_globalLock.writeLock();
 
 	protected static final int DEFAULT_LIMIT = 10;
@@ -88,24 +89,15 @@ public class OnmsRestService {
 	}
 	
 	protected void readUnlock() {
-	    if (m_globalLock.getReadHoldCount() > 0) {
-	        m_readLock.unlock();
-	    }
+	    m_readLock.unlock();
 	}
 
 	protected void writeLock() {
-	    if (m_globalLock.getWriteHoldCount() == 0) {
-	        while (m_globalLock.getReadHoldCount() > 0) {
-	            m_readLock.unlock();
-	        }
-	        m_writeLock.lock();
-	    }
+	    m_writeLock.lock();
 	}
 
 	protected void writeUnlock() {
-	    if (m_globalLock.getWriteHoldCount() > 0) {
-	        m_writeLock.unlock();
-	    }
+	    m_writeLock.unlock();
 	}
 
 	protected void applyQueryFilters(final MultivaluedMap<String,String> p, final CriteriaBuilder builder) {

@@ -1,4 +1,4 @@
-package org.opennms.web.rest;
+package org.opennms.netmgt.config;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -10,8 +10,6 @@ import java.util.concurrent.Future;
 import java.util.concurrent.ThreadFactory;
 
 import org.opennms.core.utils.LogUtils;
-import org.opennms.netmgt.config.SnmpEventInfo;
-import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -30,27 +28,19 @@ public class SnmpConfigAccessService {
     }
 
     public void flushAll() {
-        try {
-            m_executor.submit(new Runnable() {
-                @Override public void run() {
-                    try {
-                        SnmpPeerFactory.getInstance().saveCurrent();
-                    } catch (final IOException e) {
-                        LogUtils.debugf(this, e, "Failed to save SNMP configuration.");
-                    }
-                }
-            }).get();
-        } catch (final InterruptedException e) {
-            LogUtils.warnf(this, e, "Interrupted while flushing.  Passing interrupt up to caller.");
-        } catch (final ExecutionException e) {
-            LogUtils.errorf(this, e, "An error occurred while waiting for SnmpPeerFactory operations to complete.");
-        }
+        submitAndWait(new Callable<Void>() {
+            @Override
+            public Void call() throws Exception {
+                SnmpPeerFactory.getInstance().saveCurrent();
+                return null;
+            }
+        });
     }
 
     public SnmpAgentConfig getAgentConfig(final InetAddress addr) {
+        flushAll();
         return submitAndWait(new Callable<SnmpAgentConfig>() {
             @Override public SnmpAgentConfig call() throws Exception {
-                flushAll();
                 return SnmpPeerFactory.getInstance().getAgentConfig(addr);
             }
         });
