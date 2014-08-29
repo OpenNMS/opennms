@@ -11,9 +11,10 @@ import java.net.MalformedURLException;
 import java.rmi.RemoteException;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-public class VmwareCimQuery {
-    public static HashMap<Integer, String> m_healthStates;
+public abstract class VmwareCimQuery {
+    public static Map<Integer, String> m_healthStates;
 
     static {
         m_healthStates = new HashMap<Integer, String>();

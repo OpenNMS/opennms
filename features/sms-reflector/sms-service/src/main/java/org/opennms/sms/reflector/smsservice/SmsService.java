@@ -29,8 +29,8 @@
 package org.opennms.sms.reflector.smsservice;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import org.smslib.AGateway;
 import org.smslib.GatewayException;
@@ -506,7 +506,7 @@ public interface SmsService {
 	 * @param groupName a {@link java.lang.String} object.
 	 * @return a {@link java.util.ArrayList} object.
 	 */
-	ArrayList<String> expandGroup(String groupName);
+	List<String> expandGroup(String groupName);
 	/**
 	 * <p>addToGroup</p>
 	 *

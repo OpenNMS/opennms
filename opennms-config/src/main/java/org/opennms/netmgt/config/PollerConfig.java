@@ -410,8 +410,17 @@ public interface PollerConfig {
      */
     Collection<ServiceMonitorLocator> getServiceMonitorLocators(DistributionContext context);
 
+    /**
+     * <p>getReadLock</p>
+     * 
+     * @return a Lock
+     */
     Lock getReadLock();
 
+    /**
+     * <p>getWriteLock</p>
+     * 
+     * @return a Lock
+     */
     Lock getWriteLock();
-
 }

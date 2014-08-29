@@ -30,6 +30,7 @@ package org.opennms.netmgt.provision;
 
 import java.net.InetAddress;
 import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import org.opennms.core.utils.InetAddressUtils;
@@ -56,7 +57,7 @@ public abstract class BasePolicy<T> {
 
 
     private Match m_match = Match.ANY_PARAMETER;
-    private final LinkedHashMap<String, String> m_criteria = new LinkedHashMap<String, String>();;
+    private final Map<String, String> m_criteria = new LinkedHashMap<String, String>();;
 
 
     /**
@@ -155,7 +156,7 @@ public abstract class BasePolicy<T> {
      *
      * @return the criteria
      */
-    protected LinkedHashMap<String, String> getCriteria() {
+    protected Map<String, String> getCriteria() {
         return m_criteria;
     }
 

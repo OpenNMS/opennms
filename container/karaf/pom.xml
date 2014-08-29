@@ -7,7 +7,7 @@
     <parent>
         <groupId>org.opennms</groupId>
         <artifactId>container</artifactId>
-        <version>1.13.4-SNAPSHOT</version>
+        <version>1.13.5-SNAPSHOT</version>
     </parent>
 
     <groupId>org.opennms.container</groupId>
@@ -16,6 +16,13 @@
     <name>OpenNMS OSGi Container - Embedded Karaf</name>
 
     <dependencies>
+        <dependency>
+            <groupId>org.opennms.container</groupId>
+            <artifactId>standalone</artifactId>
+            <version>${project.version}</version>
+            <type>tar.gz</type>
+            <scope>provided</scope>
+        </dependency>
         <dependency>
             <groupId>org.opennms.container</groupId>
             <artifactId>branding</artifactId>
@@ -43,13 +50,6 @@
                 <artifactId>commons-logging</artifactId>
               </exclusion>
             </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.opennms.container</groupId>
-            <artifactId>standalone</artifactId>
-            <version>${project.version}</version>
-            <type>tar.gz</type>
-            <scope>provided</scope>
         </dependency>
     </dependencies>
 

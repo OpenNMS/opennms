@@ -35,6 +35,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.opennms.core.logging.Logging;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.poller.PollStatus;
@@ -57,7 +58,7 @@ public class PollableSnmpInterface implements ReadyRunnable {
 
     private volatile Schedule m_schedule;
 
-    private HashMap<Integer,OnmsSnmpInterface> m_snmpinterfaces;
+    private Map<Integer,OnmsSnmpInterface> m_snmpinterfaces;
     
     private PollableSnmpInterfaceConfig m_snmppollableconfig;
 
@@ -283,29 +284,35 @@ public class PollableSnmpInterface implements ReadyRunnable {
      * <p>run</p>
      */
     @Override
-    public void run() {        
-        if (getParent().polling()) {
-            LOG.info("run: polling SNMP interfaces on package/interface {}/{} on primary address: {}", getParent().getPackageName(), getName(), getParent().getIpaddress());
-            if (m_snmpinterfaces == null || m_snmpinterfaces.isEmpty()) {
-                LOG.debug("No Interface found. Doing nothing");
-            } else {
-                LOG.debug("{} Interfaces found. Getting Statutes....", m_snmpinterfaces.size());
-            	SnmpPollInterfaceMonitor pollMonitor = new SnmpPollInterfaceMonitor();
-        		int maxiface = getMaxInterfacePerPdu();
-        		if (maxiface == 0) maxiface=m_snmpinterfaces.size();
-			LOG.debug("Max Interface Per Pdu is: {}", maxiface);
-        		List<SnmpMinimalPollInterface> mifaces = getSnmpMinimalPollInterface();
-        		int start =0;
-        		while (start + maxiface< m_snmpinterfaces.size()) {
-            		doPoll(pollMonitor,mifaces.subList(start, start+maxiface));
-            		start += maxiface;
-        		}
-        		doPoll(pollMonitor,mifaces.subList(start, m_snmpinterfaces.size()));
-            }
-            
-        }  else {
-            LOG.info("not polling: {}", getParent().getIpaddress());
-        } // End if polling
+    public void run() {
+        final Map<String,String> mdc = Logging.getCopyOfContextMap();
+        try {
+            Logging.putPrefix("snmp-poller");
+            if (getParent().polling()) {
+                LOG.info("run: polling SNMP interfaces on package/interface {}/{} on primary address: {}", getParent().getPackageName(), getName(), getParent().getIpaddress());
+                if (m_snmpinterfaces == null || m_snmpinterfaces.isEmpty()) {
+                    LOG.debug("No Interface found. Doing nothing");
+                } else {
+                    LOG.debug("{} Interfaces found. Getting Statutes....", m_snmpinterfaces.size());
+                    SnmpPollInterfaceMonitor pollMonitor = new SnmpPollInterfaceMonitor();
+                    int maxiface = getMaxInterfacePerPdu();
+                    if (maxiface == 0) maxiface=m_snmpinterfaces.size();
+                    LOG.debug("Max Interface Per Pdu is: {}", maxiface);
+                    List<SnmpMinimalPollInterface> mifaces = getSnmpMinimalPollInterface();
+                    int start =0;
+                    while (start + maxiface< m_snmpinterfaces.size()) {
+                        doPoll(pollMonitor,mifaces.subList(start, start+maxiface));
+                        start += maxiface;
+                    }
+                    doPoll(pollMonitor,mifaces.subList(start, m_snmpinterfaces.size()));
+                }
+
+            }  else {
+                LOG.info("not polling: {}", getParent().getIpaddress());
+            } // End if polling
+        } finally {
+            Logging.setContextMap(mdc);
+        }
     } //end Run method
         
     private void doPoll(SnmpPollInterfaceMonitor pollMonitor, List<SnmpMinimalPollInterface> mifaces) {

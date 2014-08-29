@@ -29,8 +29,8 @@
 package org.opennms.api.reporting;
 
 import java.io.OutputStream;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.opennms.api.reporting.parameter.ReportParameters;
 
@@ -54,7 +54,7 @@ public interface ReportService {
      * @return true if the reportParms supplied match those in the report
      *         definition.
      */
-    public abstract boolean validate(HashMap<String, Object> reportParms,
+    public abstract boolean validate(Map<String, Object> reportParms,
             String reportId);
 
     /**
@@ -67,7 +67,7 @@ public interface ReportService {
      * @return a {@link java.lang.String} object.
      * @throws org.opennms.api.reporting.ReportException if any.
      */
-    public abstract String run(HashMap<String, Object> reportParms,
+    public abstract String run(Map<String, Object> reportParms,
             String reportId) throws ReportException;
 
     /**
@@ -109,7 +109,7 @@ public interface ReportService {
      * @param reportParms a {@link java.util.HashMap} object.
      * @throws org.opennms.api.reporting.ReportException if any.
      */
-    public abstract void runAndRender(HashMap<String, Object> reportParms,
+    public abstract void runAndRender(Map<String, Object> reportParms,
             String ReportId, ReportFormat format, OutputStream outputStream)
             throws ReportException;
 

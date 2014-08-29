@@ -44,7 +44,7 @@ import org.slf4j.LoggerFactory;
  * @author ranger
  * @version $Id: $
  */
-public class AsteriskConfig {
+public abstract class AsteriskConfig {
     private static final Logger LOG = LoggerFactory.getLogger(AsteriskConfig.class);
 
     /**

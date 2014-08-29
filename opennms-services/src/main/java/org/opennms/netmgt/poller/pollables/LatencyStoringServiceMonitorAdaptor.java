@@ -124,7 +124,7 @@ public class LatencyStoringServiceMonitorAdaptor implements ServiceMonitor {
         return status;
     }
 
-    private void storeResponseTime(MonitoredService svc, LinkedHashMap<String, Number> entries, Map<String,Object> parameters) {
+    private void storeResponseTime(MonitoredService svc, Map<String, Number> entries, Map<String,Object> parameters) {
         String rrdPath     = ParameterMap.getKeyedString(parameters, "rrd-repository", null);
         String dsName      = ParameterMap.getKeyedString(parameters, "ds-name", DEFAULT_BASENAME);
         String rrdBaseName = ParameterMap.getKeyedString(parameters, "rrd-base-name", dsName);
@@ -149,7 +149,7 @@ public class LatencyStoringServiceMonitorAdaptor implements ServiceMonitor {
         updateRRD(rrdPath, svc.getAddress(), rrdBaseName, entries);
     }
 
-    private void applyThresholds(String rrdPath, MonitoredService service, String dsName, LinkedHashMap<String, Number> entries) {
+    private void applyThresholds(String rrdPath, MonitoredService service, String dsName, Map<String, Number> entries) {
         try {
             if (m_thresholdingSet == null) {
                 RrdRepository repository = new RrdRepository();
@@ -210,7 +210,7 @@ public class LatencyStoringServiceMonitorAdaptor implements ServiceMonitor {
      *            the entries for the rrd, containing a Map of dsNames to values
      * @param rrdBaseName a {@link java.lang.String} object.
      */
-    public void updateRRD(String repository, InetAddress addr, String rrdBaseName, LinkedHashMap<String, Number> entries) {
+    public void updateRRD(String repository, InetAddress addr, String rrdBaseName, Map<String, Number> entries) {
         try {
             // Create RRD if it doesn't already exist
             List<RrdDataSource> dsList = new ArrayList<RrdDataSource>(entries.size());

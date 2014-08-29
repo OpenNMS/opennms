@@ -258,17 +258,6 @@ public class DefaultRemoteRepositoryConfigDao implements
     }
 
     /**
-     * <p>getRemoteRepositoryConfig</p>
-     * <p/>
-     * Get remote repository configuration
-     *
-     * @return a {@link org.opennms.features.reporting.model.remoterepository.RemoteRepositoryConfig} object
-     */
-    private RemoteRepositoryConfig getRemoteRepositoryConfig() {
-        return m_remoteRepositoryConfig;
-    }
-
-    /**
      * <p>setJasperReportsVersion</p>
      * <p/>
      * Set version for jasper report

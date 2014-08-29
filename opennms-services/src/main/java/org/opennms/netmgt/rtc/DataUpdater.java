@@ -31,7 +31,9 @@ package org.opennms.netmgt.rtc;
 import java.net.InetAddress;
 import java.text.ParseException;
 import java.util.List;
+import java.util.Map;
 
+import org.opennms.core.logging.Logging;
 import org.opennms.core.utils.InetAddressUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -493,11 +495,14 @@ final class DataUpdater implements Runnable {
      */
     @Override
     public void run() {
+        final Map<String,String> mdc = Logging.getCopyOfContextMap();
 
         try {
+            Logging.putPrefix("rtc");
             processEvent();
         } catch (Throwable t) {
             LOG.warn("Unexpected exception processing event", t);
+            Logging.setContextMap(mdc);
         }
     }
 }

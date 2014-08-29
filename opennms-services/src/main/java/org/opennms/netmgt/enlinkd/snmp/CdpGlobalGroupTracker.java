@@ -62,7 +62,7 @@ public final class CdpGlobalGroupTracker extends AggregateTracker
 	
 	public final static NamedSnmpVar[] ms_elemList = new NamedSnmpVar[] {
 		
-		new NamedSnmpVar(NamedSnmpVar.SNMPOCTETSTRING,CDP_GLOBAL_DEVICEID,".1.3.6.1.4.1.9.9.23.1.3.1"),
+		new NamedSnmpVar(NamedSnmpVar.SNMPOCTETSTRING,CDP_GLOBAL_RUN,".1.3.6.1.4.1.9.9.23.1.3.1"),
 		/**
 		 * <P>The MAC address used by this bridge when it must
 		 * be referred to in a unique fashion. It is

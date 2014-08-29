@@ -3,13 +3,13 @@
   <parent>
     <artifactId>opennms</artifactId>
     <groupId>org.opennms</groupId>
-    <version>1.13.4-SNAPSHOT</version>
+    <version>1.13.5-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>smoke-test</artifactId>
   <name>OpenNMS Smoke Test</name>
   <properties>
-    <seleniumVersion>2.41.0</seleniumVersion>
+    <seleniumVersion>2.42.2</seleniumVersion>
   </properties>
   <dependencies>
     <dependency>
@@ -57,7 +57,6 @@
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpcore</artifactId>
-      <version>4.2.4</version><!--$NO-MVN-MAN-VER$-->
     </dependency>
     <dependency>
       <groupId>net.sourceforge.jwebunit</groupId>
@@ -77,7 +76,6 @@
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-exec</artifactId>
-      <version>1.2</version><!--$NO-MVN-MAN-VER$-->
       <scope>test</scope>
     </dependency>
 <!--

@@ -41,10 +41,11 @@ import java.util.TreeMap;
 import javax.management.MBeanServer;
 import javax.management.MBeanServerFactory;
 
+import org.opennms.core.logging.Logging;
+import org.opennms.netmgt.config.ServiceConfigFactory;
 import org.opennms.netmgt.config.service.types.InvokeAtType;
 import org.opennms.netmgt.icmp.Pinger;
 import org.opennms.netmgt.icmp.PingerFactory;
-import org.opennms.core.logging.Logging;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -107,7 +108,7 @@ public class Manager implements ManagerMBean {
         invoker.setReverse(true);
         invoker.setFailFast(false);
         
-        List<InvokerService> services = InvokerService.createServiceList(Invoker.getDefaultServiceConfigFactory().getServices());
+        List<InvokerService> services = InvokerService.createServiceList(new ServiceConfigFactory().getServices());
         invoker.setServices(services);
         invoker.getObjectInstances();
         invoker.invokeMethods();
@@ -138,7 +139,7 @@ public class Manager implements ManagerMBean {
         invoker.setAtType(InvokeAtType.STATUS);
         invoker.setFailFast(false);
 
-        final List<InvokerService> services = InvokerService.createServiceList(Invoker.getDefaultServiceConfigFactory().getServices());
+        final List<InvokerService> services = InvokerService.createServiceList(new ServiceConfigFactory().getServices());
         invoker.setServices(services);
         invoker.getObjectInstances();
         final List<InvokerResult> results = invoker.invokeMethods();

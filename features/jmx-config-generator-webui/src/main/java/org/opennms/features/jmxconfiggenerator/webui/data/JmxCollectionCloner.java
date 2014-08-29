@@ -37,7 +37,7 @@ import org.opennms.xmlns.xsd.config.jmx_datacollection.*;
  * 
  * @author Markus von Rüden
  */
-public class JmxCollectionCloner {
+public abstract class JmxCollectionCloner {
 
 	/**
 	 * Clones a whole JmxCollectionConfig. Makes a deep copy!

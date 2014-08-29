@@ -33,12 +33,13 @@ import java.io.InputStreamReader;
 
 import org.apache.commons.io.IOUtils;
 import org.opennms.core.xml.JaxbUtils;
+import org.opennms.netmgt.config.api.OpennmsServerConfig;
 import org.opennms.netmgt.config.server.LocalServer;
 
 /**
  * <p>OpennmsServerConfigManager class.</p>
  */
-public class OpennmsServerConfigManager {
+public class OpennmsServerConfigManager implements OpennmsServerConfig {
     /**
      * The config class loaded from the config file
      */

@@ -26,37 +26,17 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.archive;
+package org.opennms.netmgt.dao.api;
+
+import org.opennms.netmgt.model.OnmsPathOutage;
 
 /**
- * <P>
- * The ArchiverException is thrown by the database archvier. The message in the
- * exception should provide the reason
- * </P>
+ * <p>PathOutageDao interface</p>
+ * 
+ * @author <a href="ryan@mail1.opennms.com"> Ryan Lambeth </a>
  *
- * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Nataraj </A>
- * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
- * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Nataraj </A>
- * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
- * @version $Id: $
  */
-public class ArchiverException extends Exception {
+public interface PathOutageDao extends OnmsDao<OnmsPathOutage, Integer> {
 
-    private static final long serialVersionUID = -1724554468082066017L;
-
-    /**
-     * <p>Constructor for ArchiverException.</p>
-     */
-    public ArchiverException() {
-        super();
-    }
-
-    /**
-     * <p>Constructor for ArchiverException.</p>
-     *
-     * @param s a {@link java.lang.String} object.
-     */
-    public ArchiverException(String s) {
-        super(s);
-    }
+	
 }
