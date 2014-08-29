@@ -240,7 +240,7 @@ public class FactoryBasedSnmpConfigDao implements SnmpConfigDao, InitializingBea
     }
     
     private SnmpConfig getSnmpConfig() {
-        return SnmpPeerFactory.getSnmpConfig();
+        return SnmpPeerFactory.getInstance().getSnmpConfig();
     }
 
     private void saveCurrent() {

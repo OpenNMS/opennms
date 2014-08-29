@@ -399,7 +399,7 @@ public class SnmpEventInfoTest {
 
         SnmpPeerFactory.setInstance(new SnmpPeerFactory(new StringResource(snmpConfigXml)));
         
-        assertXmlEquals(snmpConfigXml, SnmpPeerFactory.marshallConfig());
+        assertXmlEquals(snmpConfigXml, SnmpPeerFactory.getInstance().getSnmpConfigAsString());
         
         SnmpEventInfo info = new SnmpEventInfo();
         info.setReadCommunityString("abc");
@@ -407,7 +407,7 @@ public class SnmpEventInfoTest {
         
         SnmpPeerFactory.getInstance().define(info);
         
-        String actualConfig = SnmpPeerFactory.marshallConfig();
+        String actualConfig = SnmpPeerFactory.getInstance().getSnmpConfigAsString();
         assertXmlEquals(expectedConfig, actualConfig);
 
     }
@@ -438,7 +438,7 @@ public class SnmpEventInfoTest {
 
         SnmpPeerFactory.setInstance(new SnmpPeerFactory(new StringResource(snmpConfigXml)));
         
-        assertXmlEquals(snmpConfigXml, SnmpPeerFactory.marshallConfig());
+        assertXmlEquals(snmpConfigXml, SnmpPeerFactory.getInstance().getSnmpConfigAsString());
         
         SnmpEventInfo info = new SnmpEventInfo();
         info.setReadCommunityString("abc");
@@ -446,7 +446,7 @@ public class SnmpEventInfoTest {
         
         SnmpPeerFactory.getInstance().define(info);
         
-        String actualConfig = SnmpPeerFactory.marshallConfig();
+        String actualConfig = SnmpPeerFactory.getInstance().getSnmpConfigAsString();
         assertXmlEquals(expectedConfig, actualConfig);
         
     }
@@ -506,7 +506,7 @@ public class SnmpEventInfoTest {
 
         SnmpPeerFactory.setInstance(new SnmpPeerFactory(new StringResource(snmpConfigXml)));
         
-        assertXmlEquals(snmpConfigXml, SnmpPeerFactory.marshallConfig());
+        assertXmlEquals(snmpConfigXml, SnmpPeerFactory.getInstance().getSnmpConfigAsString());
         
         SnmpEventInfo info = new SnmpEventInfo();
         info.setVersion("v2c");
@@ -514,7 +514,7 @@ public class SnmpEventInfoTest {
         
         SnmpPeerFactory.getInstance().define(info);
         
-        String actualConfig = SnmpPeerFactory.marshallConfig();
+        String actualConfig = SnmpPeerFactory.getInstance().getSnmpConfigAsString();
         assertXmlEquals(expectedConfig, actualConfig);
         
     }
@@ -549,7 +549,7 @@ public class SnmpEventInfoTest {
 
         SnmpPeerFactory.setInstance(new SnmpPeerFactory(new StringResource(snmpConfigXml)));
         
-        assertXmlEquals(snmpConfigXml, SnmpPeerFactory.marshallConfig());
+        assertXmlEquals(snmpConfigXml, SnmpPeerFactory.getInstance().getSnmpConfigAsString());
         
         SnmpEventInfo info = new SnmpEventInfo();
         info.setVersion("v2c");
@@ -557,7 +557,7 @@ public class SnmpEventInfoTest {
         
         SnmpPeerFactory.getInstance().define(info);
         
-        String actualConfig = SnmpPeerFactory.marshallConfig();
+        String actualConfig = SnmpPeerFactory.getInstance().getSnmpConfigAsString();
         assertXmlEquals(expectedConfig, actualConfig);
         
     }
@@ -587,7 +587,7 @@ public class SnmpEventInfoTest {
 
         SnmpPeerFactory.setInstance(new SnmpPeerFactory(new StringResource(snmpConfigXml)));
         
-        assertXmlEquals(snmpConfigXml, SnmpPeerFactory.marshallConfig());
+        assertXmlEquals(snmpConfigXml, SnmpPeerFactory.getInstance().getSnmpConfigAsString());
         
         SnmpEventInfo info = new SnmpEventInfo();
         info.setVersion("v2c");
@@ -595,7 +595,7 @@ public class SnmpEventInfoTest {
         
         SnmpPeerFactory.getInstance().define(info);
 
-        String actualConfig = SnmpPeerFactory.marshallConfig();
+        String actualConfig = SnmpPeerFactory.getInstance().getSnmpConfigAsString();
         assertXmlEquals(expectedConfig, actualConfig);
         
     }
@@ -626,7 +626,7 @@ public class SnmpEventInfoTest {
 
         SnmpPeerFactory.setInstance(new SnmpPeerFactory(new StringResource(snmpConfigXml)));
         
-        assertXmlEquals(snmpConfigXml, SnmpPeerFactory.marshallConfig());
+        assertXmlEquals(snmpConfigXml, SnmpPeerFactory.getInstance().getSnmpConfigAsString());
         
         SnmpEventInfo info = new SnmpEventInfo();
         info.setVersion("v2c");
@@ -634,7 +634,7 @@ public class SnmpEventInfoTest {
         
         SnmpPeerFactory.getInstance().define(info);
 
-        String actualConfig = SnmpPeerFactory.marshallConfig();
+        String actualConfig = SnmpPeerFactory.getInstance().getSnmpConfigAsString();
         assertXmlEquals(expectedConfig, actualConfig);
         
     }
@@ -665,7 +665,7 @@ public class SnmpEventInfoTest {
 
         SnmpPeerFactory.setInstance(new SnmpPeerFactory(new StringResource(snmpConfigXml)));
         
-        assertXmlEquals(snmpConfigXml, SnmpPeerFactory.marshallConfig());
+        assertXmlEquals(snmpConfigXml, SnmpPeerFactory.getInstance().getSnmpConfigAsString());
         
         SnmpEventInfo info = new SnmpEventInfo();
         info.setVersion("v2c");
@@ -673,7 +673,7 @@ public class SnmpEventInfoTest {
         
         SnmpPeerFactory.getInstance().define(info);
 
-        String actualConfig = SnmpPeerFactory.marshallConfig();
+        String actualConfig = SnmpPeerFactory.getInstance().getSnmpConfigAsString();
         assertXmlEquals(expectedConfig, actualConfig);
         
     }
@@ -699,7 +699,7 @@ public class SnmpEventInfoTest {
 
         SnmpPeerFactory.setInstance(new SnmpPeerFactory(new StringResource(snmpConfigXml)));
         
-        assertXmlEquals(snmpConfigXml, SnmpPeerFactory.marshallConfig());
+        assertXmlEquals(snmpConfigXml, SnmpPeerFactory.getInstance().getSnmpConfigAsString());
         
         SnmpEventInfo info = new SnmpEventInfo();
         info.setVersion("v2c");
@@ -707,7 +707,7 @@ public class SnmpEventInfoTest {
         
         SnmpPeerFactory.getInstance().define(info);
 
-        String actualConfig = SnmpPeerFactory.marshallConfig();
+        String actualConfig = SnmpPeerFactory.getInstance().getSnmpConfigAsString();
         assertXmlEquals(expectedConfig, actualConfig);
         
 }
@@ -742,7 +742,7 @@ public class SnmpEventInfoTest {
         
         SnmpPeerFactory.setInstance(new SnmpPeerFactory(new StringResource(snmpConfigXml)));
         
-        assertXmlEquals(snmpConfigXml, SnmpPeerFactory.marshallConfig());
+        assertXmlEquals(snmpConfigXml, SnmpPeerFactory.getInstance().getSnmpConfigAsString());
 
 
         SnmpEventInfo info = new SnmpEventInfo();
@@ -755,7 +755,7 @@ public class SnmpEventInfoTest {
 //        String config = SnmpPeerFactory.marshallConfig();
 //        System.err.println(config);
         
-        String actualConfig = SnmpPeerFactory.marshallConfig();
+        String actualConfig = SnmpPeerFactory.getInstance().getSnmpConfigAsString();
         assertXmlEquals(expectedConfig, actualConfig);
         
     }
@@ -789,7 +789,7 @@ public class SnmpEventInfoTest {
 
         SnmpPeerFactory.setInstance(new SnmpPeerFactory(new StringResource(snmpConfigXml)));
         
-        assertXmlEquals(snmpConfigXml, SnmpPeerFactory.marshallConfig());
+        assertXmlEquals(snmpConfigXml, SnmpPeerFactory.getInstance().getSnmpConfigAsString());
 
 
         SnmpEventInfo info = new SnmpEventInfo();
@@ -801,7 +801,7 @@ public class SnmpEventInfoTest {
 //        String config = SnmpPeerFactory.marshallConfig();
 //        System.err.println(config);
         
-        String actualConfig = SnmpPeerFactory.marshallConfig();
+        String actualConfig = SnmpPeerFactory.getInstance().getSnmpConfigAsString();
         assertXmlEquals(expectedConfig, actualConfig);
         
     }
@@ -830,7 +830,7 @@ public class SnmpEventInfoTest {
 
         SnmpPeerFactory.setInstance(new SnmpPeerFactory(new StringResource(snmpConfigXml)));
         
-        assertXmlEquals(snmpConfigXml, SnmpPeerFactory.marshallConfig());
+        assertXmlEquals(snmpConfigXml, SnmpPeerFactory.getInstance().getSnmpConfigAsString());
 
 
         SnmpEventInfo info = new SnmpEventInfo();
@@ -842,7 +842,7 @@ public class SnmpEventInfoTest {
 //        String config = SnmpPeerFactory.marshallConfig();
 //        System.err.println(config);
         
-        String actualConfig = SnmpPeerFactory.marshallConfig();
+        String actualConfig = SnmpPeerFactory.getInstance().getSnmpConfigAsString();
         assertXmlEquals(expectedConfig, actualConfig);
         
     }
@@ -870,7 +870,7 @@ public class SnmpEventInfoTest {
 
         SnmpPeerFactory.setInstance(new SnmpPeerFactory(new StringResource(snmpConfigXml)));
         
-        assertXmlEquals(snmpConfigXml, SnmpPeerFactory.marshallConfig());
+        assertXmlEquals(snmpConfigXml, SnmpPeerFactory.getInstance().getSnmpConfigAsString());
 
 
         SnmpEventInfo info = new SnmpEventInfo();
@@ -882,7 +882,7 @@ public class SnmpEventInfoTest {
 //        String config = SnmpPeerFactory.marshallConfig();
 //        System.err.println(config);
         
-        String actualConfig = SnmpPeerFactory.marshallConfig();
+        String actualConfig = SnmpPeerFactory.getInstance().getSnmpConfigAsString();
         assertXmlEquals(expectedConfig, actualConfig);
         
     }
@@ -917,7 +917,7 @@ public class SnmpEventInfoTest {
 
         SnmpPeerFactory.setInstance(new SnmpPeerFactory(new StringResource(snmpConfigXml)));
         
-        assertXmlEquals(snmpConfigXml, SnmpPeerFactory.marshallConfig());
+        assertXmlEquals(snmpConfigXml, SnmpPeerFactory.getInstance().getSnmpConfigAsString());
 
 
         SnmpEventInfo info = new SnmpEventInfo();
@@ -929,7 +929,7 @@ public class SnmpEventInfoTest {
 //        String config = SnmpPeerFactory.marshallConfig();
 //        System.err.println(config);
         
-        String actualConfig = SnmpPeerFactory.marshallConfig();
+        String actualConfig = SnmpPeerFactory.getInstance().getSnmpConfigAsString();
         assertXmlEquals(expectedConfig, actualConfig);
         
     }
@@ -964,7 +964,7 @@ public class SnmpEventInfoTest {
 
         SnmpPeerFactory.setInstance(new SnmpPeerFactory(new StringResource(snmpConfigXml)));
         
-        assertXmlEquals(snmpConfigXml, SnmpPeerFactory.marshallConfig());
+        assertXmlEquals(snmpConfigXml, SnmpPeerFactory.getInstance().getSnmpConfigAsString());
 
 
         SnmpEventInfo info = new SnmpEventInfo();
@@ -977,7 +977,7 @@ public class SnmpEventInfoTest {
 //        String config = SnmpPeerFactory.marshallConfig();
 //        System.err.println(config);
         
-        String actualConfig = SnmpPeerFactory.marshallConfig();
+        String actualConfig = SnmpPeerFactory.getInstance().getSnmpConfigAsString();
         assertXmlEquals(expectedConfig, actualConfig);
 
     }
@@ -1006,7 +1006,7 @@ public class SnmpEventInfoTest {
 
         SnmpPeerFactory.setInstance(new SnmpPeerFactory(new StringResource(snmpConfigXml)));
         
-        assertXmlEquals(snmpConfigXml, SnmpPeerFactory.marshallConfig());
+        assertXmlEquals(snmpConfigXml, SnmpPeerFactory.getInstance().getSnmpConfigAsString());
 
 
         SnmpEventInfo info = new SnmpEventInfo();
@@ -1014,7 +1014,7 @@ public class SnmpEventInfoTest {
 
         SnmpPeerFactory.getInstance().define(info);
         
-        String actualConfig = SnmpPeerFactory.marshallConfig();
+        String actualConfig = SnmpPeerFactory.getInstance().getSnmpConfigAsString();
         assertXmlEquals(expectedConfig, actualConfig);
 
     }
@@ -1079,7 +1079,7 @@ public class SnmpEventInfoTest {
 
         SnmpPeerFactory.setInstance(new SnmpPeerFactory(new StringResource(snmpConfigXml)));
         
-        assertXmlEquals(snmpConfigXml, SnmpPeerFactory.marshallConfig());
+        assertXmlEquals(snmpConfigXml, SnmpPeerFactory.getInstance().getSnmpConfigAsString());
 
 
         SnmpEventInfo info = new SnmpEventInfo();
@@ -1091,7 +1091,7 @@ public class SnmpEventInfoTest {
 //        String config = SnmpPeerFactory.marshallConfig();
 //        System.err.println(config);
         
-        String actualConfig = SnmpPeerFactory.marshallConfig();
+        String actualConfig = SnmpPeerFactory.getInstance().getSnmpConfigAsString();
         assertXmlEquals(expectedConfig, actualConfig);
 
     }
@@ -1127,7 +1127,7 @@ public class SnmpEventInfoTest {
 
         SnmpPeerFactory.setInstance(new SnmpPeerFactory(new StringResource(snmpConfigXml)));
         
-        assertXmlEquals(snmpConfigXml, SnmpPeerFactory.marshallConfig());
+        assertXmlEquals(snmpConfigXml, SnmpPeerFactory.getInstance().getSnmpConfigAsString());
 
 
         SnmpEventInfo info = new SnmpEventInfo();
@@ -1137,7 +1137,7 @@ public class SnmpEventInfoTest {
 
         SnmpPeerFactory.getInstance().define(info);
         
-        String actualConfig = SnmpPeerFactory.marshallConfig();
+        String actualConfig = SnmpPeerFactory.getInstance().getSnmpConfigAsString();
         assertXmlEquals(expectedConfig, actualConfig);
     }
 
@@ -1163,7 +1163,7 @@ public class SnmpEventInfoTest {
 
         SnmpPeerFactory.setInstance(new SnmpPeerFactory(new StringResource(snmpConfigXml)));
         
-        assertXmlEquals(snmpConfigXml, SnmpPeerFactory.marshallConfig());
+        assertXmlEquals(snmpConfigXml, SnmpPeerFactory.getInstance().getSnmpConfigAsString());
 
 
         SnmpEventInfo info = new SnmpEventInfo();
@@ -1173,7 +1173,7 @@ public class SnmpEventInfoTest {
 
         SnmpPeerFactory.getInstance().define(info);
 
-        String actualConfig = SnmpPeerFactory.marshallConfig();
+        String actualConfig = SnmpPeerFactory.getInstance().getSnmpConfigAsString();
         assertXmlEquals(expectedConfig, actualConfig);
     }
     
@@ -1218,7 +1218,7 @@ public class SnmpEventInfoTest {
         
         SnmpPeerFactory.setInstance(new SnmpPeerFactory(new StringResource(snmpConfigXml)));
         
-        assertXmlEquals(snmpConfigXml, SnmpPeerFactory.marshallConfig());
+        assertXmlEquals(snmpConfigXml, SnmpPeerFactory.getInstance().getSnmpConfigAsString());
 
 
         SnmpEventInfo info = new SnmpEventInfo();
@@ -1228,7 +1228,7 @@ public class SnmpEventInfoTest {
 
         SnmpPeerFactory.getInstance().define(info);
         
-        String actualConfig = SnmpPeerFactory.marshallConfig();
+        String actualConfig = SnmpPeerFactory.getInstance().getSnmpConfigAsString();
         assertXmlEquals(expectedConfig, actualConfig);
 
     }
@@ -1263,7 +1263,7 @@ public class SnmpEventInfoTest {
 
         SnmpPeerFactory.setInstance(new SnmpPeerFactory(new StringResource(snmpConfigXml)));
         
-        assertXmlEquals(snmpConfigXml, SnmpPeerFactory.marshallConfig());
+        assertXmlEquals(snmpConfigXml, SnmpPeerFactory.getInstance().getSnmpConfigAsString());
 
 
         SnmpEventInfo info = new SnmpEventInfo();
@@ -1273,7 +1273,7 @@ public class SnmpEventInfoTest {
 
         SnmpPeerFactory.getInstance().define(info);
         
-        String actualConfig = SnmpPeerFactory.marshallConfig();
+        String actualConfig = SnmpPeerFactory.getInstance().getSnmpConfigAsString();
         assertXmlEquals(expectedConfig, actualConfig);
     }
 
@@ -1306,7 +1306,7 @@ public class SnmpEventInfoTest {
 
         SnmpPeerFactory.setInstance(new SnmpPeerFactory(new StringResource(snmpConfigXml)));
         
-        assertXmlEquals(snmpConfigXml, SnmpPeerFactory.marshallConfig());
+        assertXmlEquals(snmpConfigXml, SnmpPeerFactory.getInstance().getSnmpConfigAsString());
 
         
         SnmpEventInfo info = new SnmpEventInfo();
@@ -1315,7 +1315,7 @@ public class SnmpEventInfoTest {
         
         SnmpPeerFactory.getInstance().define(info);
 
-        String actualConfig = SnmpPeerFactory.marshallConfig();
+        String actualConfig = SnmpPeerFactory.getInstance().getSnmpConfigAsString();
         assertXmlEquals(expectedConfig, actualConfig);
 
 
@@ -1336,7 +1336,7 @@ public class SnmpEventInfoTest {
 		"<snmp-config port=\"161\" retry=\"3\" timeout=\"800\" read-community=\"public\" version=\"v2c\" xmlns=\"http://xmlns.opennms.org/xsd/config/snmp\"/>\n";
     	
     	  SnmpPeerFactory.setInstance(new SnmpPeerFactory(new StringResource(snmpConfigXml)));
-          assertXmlEquals(snmpConfigXml, SnmpPeerFactory.marshallConfig());
+          assertXmlEquals(snmpConfigXml, SnmpPeerFactory.getInstance().getSnmpConfigAsString());
 
           SnmpEventInfo info = new SnmpEventInfo();
           info.setVersion("v2c");
@@ -1345,7 +1345,7 @@ public class SnmpEventInfoTest {
           
           SnmpPeerFactory.getInstance().define(info);
           
-          String actualConfig = SnmpPeerFactory.marshallConfig();
+          String actualConfig = SnmpPeerFactory.getInstance().getSnmpConfigAsString();
           assertXmlEquals(expectedConfig, actualConfig);
     }
     
@@ -1370,7 +1370,7 @@ public class SnmpEventInfoTest {
     	
 
         SnmpPeerFactory.setInstance(new SnmpPeerFactory(new StringResource(snmpConfigXml)));
-        assertXmlEquals(snmpConfigXml, SnmpPeerFactory.marshallConfig());
+        assertXmlEquals(snmpConfigXml, SnmpPeerFactory.getInstance().getSnmpConfigAsString());
 
         SnmpEventInfo info = new SnmpEventInfo();
         info.setVersion("v2c");
@@ -1380,7 +1380,7 @@ public class SnmpEventInfoTest {
         
         SnmpPeerFactory.getInstance().define(info);
         
-        String actualConfig = SnmpPeerFactory.marshallConfig();
+        String actualConfig = SnmpPeerFactory.getInstance().getSnmpConfigAsString();
         assertXmlEquals(expectedConfig, actualConfig);
     }
     
@@ -1403,7 +1403,7 @@ public class SnmpEventInfoTest {
     	
 
         SnmpPeerFactory.setInstance(new SnmpPeerFactory(new StringResource(snmpConfigXml)));
-        assertXmlEquals(snmpConfigXml, SnmpPeerFactory.marshallConfig());
+        assertXmlEquals(snmpConfigXml, SnmpPeerFactory.getInstance().getSnmpConfigAsString());
 
         SnmpEventInfo info = new SnmpEventInfo();
         info.setProxyHost("127.0.0.1");
@@ -1411,7 +1411,7 @@ public class SnmpEventInfoTest {
         
         SnmpPeerFactory.getInstance().define(info);
         
-        String actualConfig = SnmpPeerFactory.marshallConfig();
+        String actualConfig = SnmpPeerFactory.getInstance().getSnmpConfigAsString();
         assertXmlEquals(expectedConfig, actualConfig);
     }
     

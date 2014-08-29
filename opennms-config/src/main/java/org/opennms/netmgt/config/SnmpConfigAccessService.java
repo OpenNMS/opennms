@@ -1,4 +1,4 @@
-package org.opennms.web.rest;
+package org.opennms.netmgt.config;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -34,27 +34,19 @@ public class SnmpConfigAccessService {
     }
 
     public void flushAll() {
-        try {
-            m_executor.submit(new Runnable() {
-                @Override public void run() {
-                    try {
-                        SnmpPeerFactory.getInstance().saveCurrent();
-                    } catch (final IOException e) {
-                        LOG.debug("Failed to save SNMP configuration.", e);
-                    }
-                }
-            }).get();
-        } catch (final InterruptedException e) {
-            LOG.warn("Interrupted while flushing.  Passing interrupt up to caller.", e);
-        } catch (final ExecutionException e) {
-            LOG.error("An error occurred while waiting for SnmpPeerFactory operations to complete.", e);
-        }
+        submitAndWait(new Callable<Void>() {
+            @Override
+            public Void call() throws Exception {
+                SnmpPeerFactory.getInstance().saveCurrent();
+                return null;
+            }
+        });
     }
 
     public SnmpAgentConfig getAgentConfig(final InetAddress addr) {
+        flushAll();
         return submitAndWait(new Callable<SnmpAgentConfig>() {
             @Override public SnmpAgentConfig call() throws Exception {
-                flushAll();
                 return SnmpPeerFactory.getInstance().getAgentConfig(addr);
             }
         });
