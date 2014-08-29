@@ -43,12 +43,11 @@ import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-import org.opennms.core.logging.Logging;
 import org.opennms.core.concurrent.LogPreservingThreadFactory;
+import org.opennms.core.logging.Logging;
 import org.opennms.netmgt.events.api.EventHandler;
 import org.opennms.netmgt.events.api.EventIpcBroadcaster;
 import org.opennms.netmgt.events.api.EventIpcManager;
-import org.opennms.netmgt.events.api.EventIpcManagerProxy;
 import org.opennms.netmgt.events.api.EventListener;
 import org.opennms.netmgt.events.api.EventProxyException;
 import org.opennms.netmgt.xml.event.Event;
@@ -120,8 +119,6 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
     private Integer m_handlerPoolSize;
     
     private Integer m_handlerQueueLength;
-
-    private EventIpcManagerProxy m_eventIpcManagerProxy;
 
     /**
      * A thread dedicated to each listener. The events meant for each listener
@@ -521,11 +518,6 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
             }
             
         });
-
-        // If the proxy is set, make this class its delegate.
-        if (m_eventIpcManagerProxy != null) {
-            m_eventIpcManagerProxy.setDelegate(this);
-        }
     }
 
     /**
@@ -583,23 +575,5 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
     public void setHandlerQueueLength(int size) {
         Assert.state(m_eventHandlerPool == null, "handlerQueueLength property cannot be set after afterPropertiesSet() is called");
         m_handlerQueueLength = size;
-    }
-
-    /**
-     * <p>getEventIpcManagerProxy</p>
-     *
-     * @return a {@link org.opennms.netmgt.events.api.EventIpcManagerProxy} object.
-     */
-    public EventIpcManagerProxy getEventIpcManagerProxy() {
-        return m_eventIpcManagerProxy;
-    }
-
-    /**
-     * <p>setEventIpcManagerProxy</p>
-     *
-     * @param eventIpcManagerProxy a {@link org.opennms.netmgt.events.api.EventIpcManagerProxy} object.
-     */
-    public void setEventIpcManagerProxy(EventIpcManagerProxy eventIpcManagerProxy) {
-        m_eventIpcManagerProxy = eventIpcManagerProxy;
     }
 }

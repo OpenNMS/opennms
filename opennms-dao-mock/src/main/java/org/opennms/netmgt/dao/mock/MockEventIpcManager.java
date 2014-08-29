@@ -49,7 +49,6 @@ import org.opennms.netmgt.dao.api.EventExpander;
 import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.events.api.EventIpcBroadcaster;
 import org.opennms.netmgt.events.api.EventIpcManager;
-import org.opennms.netmgt.events.api.EventIpcManagerProxy;
 import org.opennms.netmgt.events.api.EventListener;
 import org.opennms.netmgt.events.api.EventProxy;
 import org.opennms.netmgt.events.api.EventProxyException;
@@ -59,11 +58,9 @@ import org.opennms.netmgt.xml.event.Log;
 import org.opennms.netmgt.xml.eventconf.Events;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.dao.DataAccessException;
-import org.springframework.util.Assert;
 
-public class MockEventIpcManager implements EventForwarder, EventProxy, EventIpcManager, EventIpcBroadcaster, InitializingBean {
+public class MockEventIpcManager implements EventForwarder, EventProxy, EventIpcManager, EventIpcBroadcaster {
     private static final Logger LOG = LoggerFactory.getLogger(MockEventIpcManager.class);
 
     static class ListenerKeeper {
@@ -191,8 +188,6 @@ public class MockEventIpcManager implements EventForwarder, EventProxy, EventIpc
     private boolean m_synchronous = true;
     
     private ScheduledExecutorService m_scheduler = null;
-
-    private EventIpcManagerProxy m_proxy;
 
 	private EventExpander m_expander = null;
 
@@ -361,16 +356,6 @@ public class MockEventIpcManager implements EventForwarder, EventProxy, EventIpc
     public void reset() {
         m_listeners = new ArrayList<ListenerKeeper>();
         m_anticipator.reset();
-    }
-
-    public void setEventIpcManagerProxy(final EventIpcManagerProxy proxy) {
-        m_proxy = proxy;
-    }
-
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        Assert.notNull(m_proxy, "expected to have proxy set");
-        m_proxy.setDelegate(this);
     }
 
     @Override

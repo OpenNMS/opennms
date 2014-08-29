@@ -99,7 +99,7 @@
          <value>META-INF/opennms/applicationContext-eventDaemon.xml</value>
        </list>
      </constructor-arg>
-     <constructor-arg ref="daemonContext" />
+     <constructor-arg ref="daoContext" />
    </bean>
         
     <bean id="trapDaemonContext" class="org.springframework.context.support.ClassPathXmlApplicationContext">
