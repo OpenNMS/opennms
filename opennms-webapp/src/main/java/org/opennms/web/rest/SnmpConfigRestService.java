@@ -44,6 +44,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.config.SnmpConfigAccessService;
 import org.opennms.netmgt.config.SnmpEventInfo;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.web.snmpinfo.SnmpInfo;
