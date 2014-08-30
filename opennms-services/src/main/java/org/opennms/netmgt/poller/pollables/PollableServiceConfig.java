@@ -29,7 +29,11 @@
 package org.opennms.netmgt.poller.pollables;
 
 import java.util.Map;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentSkipListMap;
+import java.util.concurrent.FutureTask;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import org.opennms.netmgt.config.PollOutagesConfig;
 import org.opennms.netmgt.config.PollerConfig;
@@ -53,12 +57,12 @@ import org.slf4j.LoggerFactory;
 public class PollableServiceConfig implements PollConfig, ScheduleInterval {
     private static final Logger LOG = LoggerFactory.getLogger(PollableServiceConfig.class);
 
-    private PollerConfig m_pollerConfig;
-    private PollOutagesConfig m_pollOutagesConfig;
-    private PollableService m_service;
+    private final PollerConfig m_pollerConfig;
+    private final PollOutagesConfig m_pollOutagesConfig;
+    private final PollableService m_service;
     private Map<String,Object> m_parameters = null;
     private Package m_pkg;
-    private Timer m_timer;
+    private final Timer m_timer;
     private Service m_configService;
     private ServiceMonitor m_serviceMonitor;
 
@@ -105,15 +109,34 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
      */
     @Override
     public PollStatus poll() {
-        String packageName = null;
+        String packageName;
         synchronized(this) {
             packageName = m_pkg.getName();
         }
+        FutureTask<PollStatus> getPollStatusTask;
+
+        long timeout = m_configService.getInterval();
+
         try {
-            ServiceMonitor monitor = getServiceMonitor();
-            LOG.debug("Polling {} using pkg {}", packageName, m_service);
-            PollStatus result = monitor.poll(m_service, getParameters());
-            LOG.debug("Finish polling {} using pkg {} result = {}", result, m_service, packageName);
+            PollStatus result = PollStatus.unknown("Service " + m_service + " has not yet been polled");
+            try {
+                final String t_packageName = packageName;
+                getPollStatusTask = new FutureTask<>(new Callable<PollStatus>() {
+                    @Override
+                    public PollStatus call() throws Exception {
+                        ServiceMonitor monitor = getServiceMonitor();
+                        LOG.debug("Polling {} using pkg {} - monitor: {}", m_service, t_packageName, monitor);
+                        PollStatus status = monitor.poll(m_service, getParameters());
+                        LOG.debug("Finish polling {} using pkg {} result = {}", m_service, t_packageName, status);
+                        return status;
+                    }
+                });
+                new Thread(getPollStatusTask, "PollerTask/pkg=" + t_packageName + "/" + m_service + "/timeout=" + timeout).start();
+                result = getPollStatusTask.get(timeout, TimeUnit.MILLISECONDS);
+            } catch (TimeoutException e) {
+                LOG.debug("Timed out polling pkg {} service {}", packageName, m_service);
+                return PollStatus.down("Unexpected timeout while polling " + m_service);
+            }
             return result;
         } catch (Throwable e) {
             LOG.error("Unexpected exception while polling {}. Marking service as DOWN", m_service, e);
@@ -255,8 +278,8 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
             if (m_pollOutagesConfig.isTimeInOutage(m_timer.getCurrentTime(), outageName)) {
                 // Does the outage apply to this interface?
 
-                if (m_pollOutagesConfig.isNodeIdInOutage(nodeId, outageName) || 
-                        (m_pollOutagesConfig.isInterfaceInOutage(m_service.getIpAddr(), outageName)) || 
+                if (m_pollOutagesConfig.isNodeIdInOutage(nodeId, outageName) ||
+                        (m_pollOutagesConfig.isInterfaceInOutage(m_service.getIpAddr(), outageName)) ||
                         (m_pollOutagesConfig.isInterfaceInOutage("match-any", outageName))) {
                     LOG.debug("scheduledOutage: configured outage '{}' applies, {} will not be polled.", outageName, m_configService);
                     return true;
