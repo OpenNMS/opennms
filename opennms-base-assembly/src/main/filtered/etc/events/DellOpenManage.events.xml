@@ -4525,4 +4525,5 @@
 		<decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
 	</varbindsdecode>
 </event>
+</events>
 <!-- End of mib2events auto-generated data for MIB: MIB-Dell-10892 -->
