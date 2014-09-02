@@ -31,10 +31,12 @@ package org.opennms.netmgt.poller.pollables;
 import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentSkipListMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.FutureTask;
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-
 import org.opennms.netmgt.config.PollOutagesConfig;
 import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.config.poller.Downtime;
@@ -102,6 +104,39 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
 
     }
 
+    private synchronized String getPollTaskName() {
+        return "PollerTask/pkg=" + m_pkg.getName() + "/" + m_service + "/timeout=" + m_configService.getInterval();
+    }
+
+    private class PollerTaskThreadFactory implements ThreadFactory {
+        @Override
+        public Thread newThread(final Runnable r) {
+            synchronized (PollableServiceConfig.this) {
+                return new Thread(r, getPollTaskName());
+            }
+        }
+    }
+
+    private class PollerTaskCallable implements Callable<PollStatus> {
+
+        private final String m_packageName;
+        private final String m_svcName;
+
+        PollerTaskCallable(final String packageName, final String svcName) {
+            m_packageName = packageName;
+            m_svcName = svcName;
+        }
+
+        @Override
+        public PollStatus call() throws Exception {
+            ServiceMonitor monitor = getServiceMonitor();
+            LOG.debug("Polling {} using pkg {} - monitor: {}", m_svcName, m_packageName, monitor);
+            PollStatus status = monitor.poll(m_service, getParameters());
+            LOG.debug("Finish polling {} using pkg {} result = {}", m_svcName, m_packageName, status);
+            return status;
+        }
+    }
+
     /**
      * <p>poll</p>
      *
@@ -115,23 +150,14 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
         }
         FutureTask<PollStatus> getPollStatusTask;
 
-        long timeout = m_configService.getInterval();
+        final long timeout = m_configService.getInterval();
+        ExecutorService executor = Executors.newSingleThreadExecutor(new PollerTaskThreadFactory());
 
         try {
             PollStatus result = PollStatus.unknown("Service " + m_service + " has not yet been polled");
             try {
-                final String t_packageName = packageName;
-                getPollStatusTask = new FutureTask<>(new Callable<PollStatus>() {
-                    @Override
-                    public PollStatus call() throws Exception {
-                        ServiceMonitor monitor = getServiceMonitor();
-                        LOG.debug("Polling {} using pkg {} - monitor: {}", m_service, t_packageName, monitor);
-                        PollStatus status = monitor.poll(m_service, getParameters());
-                        LOG.debug("Finish polling {} using pkg {} result = {}", m_service, t_packageName, status);
-                        return status;
-                    }
-                });
-                new Thread(getPollStatusTask, "PollerTask/pkg=" + t_packageName + "/" + m_service + "/timeout=" + timeout).start();
+                getPollStatusTask = new FutureTask<>(new PollerTaskCallable(packageName, m_service.toString()));
+                executor.submit(getPollStatusTask);
                 result = getPollStatusTask.get(timeout, TimeUnit.MILLISECONDS);
             } catch (TimeoutException e) {
                 LOG.debug("Timed out polling pkg {} service {}", packageName, m_service);
@@ -141,6 +167,8 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
         } catch (Throwable e) {
             LOG.error("Unexpected exception while polling {}. Marking service as DOWN", m_service, e);
             return PollStatus.down("Unexpected exception while polling "+m_service+". "+e);
+        } finally {
+            executor.shutdownNow();
         }
     }
 
