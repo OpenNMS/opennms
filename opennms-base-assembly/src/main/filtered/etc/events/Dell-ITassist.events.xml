@@ -15,7 +15,7 @@
 			  <mevalue>1000</mevalue>
 		  </maskelement>
 	  </mask>
-	  <uei>uei.opennms.org/mib2events/itaAlertSystemUp</uei>
+	  <uei>uei.opennms.org/vendor/Dell/traps/itaAlertSystemUp</uei>
 	  <event-label>MIB-Dell-10900 defined trap event: itaAlertSystemUp</event-label>
 	  <descr>
 		  &lt;p&gt;System up message from IT Assistant. Sent when IT Assistant detects a node has come online.&lt;/p&gt;&lt;table&gt;
@@ -50,7 +50,7 @@
 			  <mevalue>1001</mevalue>
 		  </maskelement>
 	  </mask>
-	  <uei>uei.opennms.org/mib2events/itaAlertSystemDown</uei>
+	  <uei>uei.opennms.org/vendor/Dell/traps/itaAlertSystemDown</uei>
 	  <event-label>MIB-Dell-10900 defined trap event: itaAlertSystemDown</event-label>
 	  <descr>
 		  &lt;p&gt;System down message from IT Assistant. Sent when IT Assistant detects a node has gone offline.&lt;/p&gt;&lt;table&gt;
@@ -85,7 +85,7 @@
 			  <mevalue>2000</mevalue>
 		  </maskelement>
 	  </mask>
-	  <uei>uei.opennms.org/mib2events/itaAlertForwardedAlert</uei>
+	  <uei>uei.opennms.org/vendor/Dell/traps/itaAlertForwardedAlert</uei>
 	  <event-label>MIB-Dell-10900 defined trap event: itaAlertForwardedAlert</event-label>
 	  <descr>
 		  &lt;p&gt;Forwarded alert from IT Assistant. The event may have originated from an SNMP trap, DMI indication, or CIM indication.&lt;/p&gt;&lt;table&gt;
@@ -125,7 +125,7 @@
 			  <mevalue>3001</mevalue>
 		  </maskelement>
 	  </mask>
-	  <uei>uei.opennms.org/mib2events/itaAlertSystemMonitoringCriticalAlert</uei>
+	  <uei>uei.opennms.org/vendor/Dell/traps/itaAlertSystemMonitoringCriticalAlert</uei>
 	  <event-label>MIB-Dell-10900 defined trap event: itaAlertSystemMonitoringCriticalAlert</event-label>
 	  <descr>
 		  &lt;p&gt;System monitoring alert from IT Assistant. Sent when a node's system monitoring counters has exceeded user defined critical threshold.&lt;/p&gt;&lt;table&gt;
@@ -170,7 +170,7 @@
 			  <mevalue>3002</mevalue>
 		  </maskelement>
 	  </mask>
-	  <uei>uei.opennms.org/mib2events/itaAlertSystemMonitoringWarningAlert</uei>
+	  <uei>uei.opennms.org/vendor/Dell/traps/itaAlertSystemMonitoringWarningAlert</uei>
 	  <event-label>MIB-Dell-10900 defined trap event: itaAlertSystemMonitoringWarningAlert</event-label>
 	  <descr>
 		  &lt;p&gt;System monitoring alert from IT Assistant. Sent when a node's system monitoring counters has exceeded user defined warning threshold.&lt;/p&gt;&lt;table&gt;
@@ -215,7 +215,7 @@
 			  <mevalue>3003</mevalue>
 		  </maskelement>
 	  </mask>
-	  <uei>uei.opennms.org/mib2events/itaAlertCPUMonitoringCriticalAlert</uei>
+	  <uei>uei.opennms.org/vendor/Dell/traps/itaAlertCPUMonitoringCriticalAlert</uei>
 	  <event-label>MIB-Dell-10900 defined trap event: itaAlertCPUMonitoringCriticalAlert</event-label>
 	  <descr>
 		  &lt;p&gt;CPU monitoring alert from IT Assistant. Sent when a node's CPU utilization has exceeded user defined critical threshold.&lt;/p&gt;&lt;table&gt;
@@ -260,7 +260,7 @@
 			  <mevalue>3004</mevalue>
 		  </maskelement>
 	  </mask>
-	  <uei>uei.opennms.org/mib2events/itaAlertCPUMonitoringWarningAlert</uei>
+	  <uei>uei.opennms.org/vendor/Dell/traps/itaAlertCPUMonitoringWarningAlert</uei>
 	  <event-label>MIB-Dell-10900 defined trap event: itaAlertCPUMonitoringWarningAlert</event-label>
 	  <descr>
 		  &lt;p&gt;CPU monitoring alert from IT Assistant. Sent when a node's CPU utilization has exceeded user defined warning threshold.&lt;/p&gt;&lt;table&gt;
@@ -305,7 +305,7 @@
 			  <mevalue>3005</mevalue>
 		  </maskelement>
 	  </mask>
-	  <uei>uei.opennms.org/mib2events/itaAlertMemoryMonitoringCriticalAlert</uei>
+	  <uei>uei.opennms.org/vendor/Dell/traps/itaAlertMemoryMonitoringCriticalAlert</uei>
 	  <event-label>MIB-Dell-10900 defined trap event: itaAlertMemoryMonitoringCriticalAlert</event-label>
 	  <descr>
 		  &lt;p&gt;Memory monitoring alert from IT Assistant. Sent when a node's memory utilization has exceeded user defined critical threshold.&lt;/p&gt;&lt;table&gt;
@@ -350,7 +350,7 @@
 			  <mevalue>3006</mevalue>
 		  </maskelement>
 	  </mask>
-	  <uei>uei.opennms.org/mib2events/itaAlertMemoryMonitoringWarningAlert</uei>
+	  <uei>uei.opennms.org/vendor/Dell/traps/itaAlertMemoryMonitoringWarningAlert</uei>
 	  <event-label>MIB-Dell-10900 defined trap event: itaAlertMemoryMonitoringWarningAlert</event-label>
 	  <descr>
 		  &lt;p&gt;Memory monitoring alert from IT Assistant. Sent when a node's memory utilization has exceeded user defined warning threshold.&lt;/p&gt;&lt;table&gt;
@@ -395,7 +395,7 @@
 			  <mevalue>3007</mevalue>
 		  </maskelement>
 	  </mask>
-	  <uei>uei.opennms.org/mib2events/itaAlertNetworkMonitoringCriticalAlert</uei>
+	  <uei>uei.opennms.org/vendor/Dell/traps/itaAlertNetworkMonitoringCriticalAlert</uei>
 	  <event-label>MIB-Dell-10900 defined trap event: itaAlertNetworkMonitoringCriticalAlert</event-label>
 	  <descr>
 		  &lt;p&gt;Network monitoring alert from IT Assistant. Sent when a node's NIC utilization has exceeded user defined critical threshold.&lt;/p&gt;&lt;table&gt;
@@ -440,7 +440,7 @@
 			  <mevalue>3008</mevalue>
 		  </maskelement>
 	  </mask>
-	  <uei>uei.opennms.org/mib2events/itaAlertNetworkMonitoringWarningAlert</uei>
+	  <uei>uei.opennms.org/vendor/Dell/traps/itaAlertNetworkMonitoringWarningAlert</uei>
 	  <event-label>MIB-Dell-10900 defined trap event: itaAlertNetworkMonitoringWarningAlert</event-label>
 	  <descr>
 		  &lt;p&gt;Network monitoring alert from IT Assistant. Sent when a node's NIC utilization has exceeded user defined warning threshold.&lt;/p&gt;&lt;table&gt;
@@ -485,7 +485,7 @@
 			  <mevalue>3009</mevalue>
 		  </maskelement>
 	  </mask>
-	  <uei>uei.opennms.org/mib2events/itaAlertPhysicalDiskMonitoringCriticalAlert</uei>
+	  <uei>uei.opennms.org/vendor/Dell/traps/itaAlertPhysicalDiskMonitoringCriticalAlert</uei>
 	  <event-label>MIB-Dell-10900 defined trap event: itaAlertPhysicalDiskMonitoringCriticalAlert</event-label>
 	  <descr>
 		  &lt;p&gt;Physical disk monitoring alert from IT Assistant. Sent when a node's physical disk utilization has exceeded user defined critical threshold.&lt;/p&gt;&lt;table&gt;
@@ -530,7 +530,7 @@
 			  <mevalue>3010</mevalue>
 		  </maskelement>
 	  </mask>
-	  <uei>uei.opennms.org/mib2events/itaAlertPhysicalDiskMonitoringWarningAlert</uei>
+	  <uei>uei.opennms.org/vendor/Dell/traps/itaAlertPhysicalDiskMonitoringWarningAlert</uei>
 	  <event-label>MIB-Dell-10900 defined trap event: itaAlertPhysicalDiskMonitoringWarningAlert</event-label>
 	  <descr>
 		  &lt;p&gt;Physical disk monitoring alert from IT Assistant. Sent when a node's Physical disk utilization has exceeded user defined warning threshold.&lt;/p&gt;&lt;table&gt;
@@ -575,7 +575,7 @@
 			  <mevalue>3011</mevalue>
 		  </maskelement>
 	  </mask>
-	  <uei>uei.opennms.org/mib2events/itaAlertLogicalDiskMonitoringCriticalAlert</uei>
+	  <uei>uei.opennms.org/vendor/Dell/traps/itaAlertLogicalDiskMonitoringCriticalAlert</uei>
 	  <event-label>MIB-Dell-10900 defined trap event: itaAlertLogicalDiskMonitoringCriticalAlert</event-label>
 	  <descr>
 		  &lt;p&gt;Logical disk monitoring alert from IT Assistant. Sent when a node's logical disk utilization has exceeded user defined critical threshold.&lt;/p&gt;&lt;table&gt;
@@ -620,7 +620,7 @@
 			  <mevalue>3012</mevalue>
 		  </maskelement>
 	  </mask>
-	  <uei>uei.opennms.org/mib2events/itaAlertLogicalDiskMonitoringWarningAlert</uei>
+	  <uei>uei.opennms.org/vendor/Dell/traps/itaAlertLogicalDiskMonitoringWarningAlert</uei>
 	  <event-label>MIB-Dell-10900 defined trap event: itaAlertLogicalDiskMonitoringWarningAlert</event-label>
 	  <descr>
 		  &lt;p&gt;Logical disk monitoring alert from IT Assistant. Sent when a node's Logical disk utilization has exceeded user defined warning threshold.&lt;/p&gt;&lt;table&gt;
@@ -665,7 +665,7 @@
 			  <mevalue>3015</mevalue>
 		  </maskelement>
 	  </mask>
-	  <uei>uei.opennms.org/mib2events/itaPowerManagementCriticalAlert</uei>
+	  <uei>uei.opennms.org/vendor/Dell/traps/itaPowerManagementCriticalAlert</uei>
 	  <event-label>MIB-Dell-10900 defined trap event: itaPowerManagementCriticalAlert</event-label>
 	  <descr>
 		  &lt;p&gt;Power Management alert from IT Assistant. Sent when a node's power consumption has exceeded user defined critical threshold.&lt;/p&gt;&lt;table&gt;
@@ -710,7 +710,7 @@
 			  <mevalue>3016</mevalue>
 		  </maskelement>
 	  </mask>
-	  <uei>uei.opennms.org/mib2events/itaPowerManagementWarningAlert</uei>
+	  <uei>uei.opennms.org/vendor/Dell/traps/itaPowerManagementWarningAlert</uei>
 	  <event-label>MIB-Dell-10900 defined trap event: itaPowerManagementWarningAlert</event-label>
 	  <descr>
 		  &lt;p&gt;Power Management alert from IT Assistant. Sent when a node's power consumption has exceeded user defined warning threshold.&lt;/p&gt;&lt;table&gt;
@@ -755,7 +755,7 @@
 			  <mevalue>3017</mevalue>
 		  </maskelement>
 	  </mask>
-	  <uei>uei.opennms.org/mib2events/itaPowerManagementGroupWarningAlert</uei>
+	  <uei>uei.opennms.org/vendor/Dell/traps/itaPowerManagementGroupWarningAlert</uei>
 	  <event-label>MIB-Dell-10900 defined trap event: itaPowerManagementGroupWarningAlert</event-label>
 	  <descr>
 		  &lt;p&gt;Power Management alert from IT Assistant. Sent when aggregate power consumption has exceeded user defined warning threshold.&lt;/p&gt;&lt;table&gt;
@@ -805,7 +805,7 @@
 			  <mevalue>3018</mevalue>
 		  </maskelement>
 	  </mask>
-	  <uei>uei.opennms.org/mib2events/itaPowerManagementGroupCriticalAlert</uei>
+	  <uei>uei.opennms.org/vendor/Dell/traps/itaPowerManagementGroupCriticalAlert</uei>
 	  <event-label>MIB-Dell-10900 defined trap event: itaPowerManagementGroupCriticalAlert</event-label>
 	  <descr>
 		  &lt;p&gt;Power Management alert from IT Assistant. Sent when aggregate power consumption has exceeded user defined critical threshold.&lt;/p&gt;&lt;table&gt;
