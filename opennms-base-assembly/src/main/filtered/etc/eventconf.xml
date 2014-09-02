@@ -2045,6 +2045,7 @@
   <event-file>events/Dell.events.xml</event-file>
   <event-file>events/DellArrayManager.events.xml</event-file>
   <event-file>events/Dell-DRAC2.events.xml</event-file>
+  <event-file>events/Dell-ITassist.events.xml</event-file>
   <event-file>events/DellOpenManage.events.xml</event-file>
   <event-file>events/DellRacHost.events.xml</event-file>
   <event-file>events/DellStorageManagement.events.xml</event-file>
