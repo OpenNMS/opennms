@@ -191,7 +191,7 @@ public class NCSRestServiceTest extends AbstractSpringJerseyRestTestCase {
 
 	@Override
 	protected void afterServletStart() throws Exception {
-		m_eventIpcManager = getWebAppContext().getBean(MockEventIpcManager.class);
+		m_eventIpcManager = getWebAppContext().getBean("eventProxy", MockEventIpcManager.class);
 		m_eventAnticipator = m_eventIpcManager.getEventAnticipator();
 		final NCSComponentService service = getWebAppContext().getBean(NCSComponentService.class);
 		service.setEventProxy(m_eventIpcManager);

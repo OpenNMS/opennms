@@ -71,10 +71,19 @@
   <bean id="ipInterfaceDao" class="org.opennms.netmgt.dao.hibernate.IpInterfaceDaoHibernate">
     <property name="sessionFactory" ref="sessionFactory"/>
   </bean>
-  
+
   <bean name="eventProxy" class="org.opennms.netmgt.dao.mock.MockEventIpcManager">
     <qualifier value="mock" />
-    <property name="eventIpcManagerProxy" ref="eventIpcManager" />
   </bean>
-  
+
+  <onmsgi:service ref="eventProxy">
+    <onmsgi:interfaces>
+      <value>org.opennms.netmgt.events.api.EventForwarder</value>
+      <value>org.opennms.netmgt.events.api.EventIpcBroadcaster</value>
+      <value>org.opennms.netmgt.events.api.EventIpcManager</value>
+      <value>org.opennms.netmgt.events.api.EventProxy</value>
+      <value>org.opennms.netmgt.events.api.EventSubscriptionService</value>
+    </onmsgi:interfaces>
+  </onmsgi:service>
+
 </beans>
