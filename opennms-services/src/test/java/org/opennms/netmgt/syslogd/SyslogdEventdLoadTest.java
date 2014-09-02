@@ -109,7 +109,7 @@ public class SyslogdEventdLoadTest implements InitializingBean {
     private static final UeiList UEI_LIST = new UeiList();
 
     @Autowired
-    @Qualifier(value="eventIpcManager")
+    @Qualifier(value="eventIpcManagerImpl")
     private EventIpcManager m_eventIpcManager;
 
     @Autowired
