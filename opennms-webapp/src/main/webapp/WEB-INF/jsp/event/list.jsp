@@ -48,6 +48,7 @@
 <%@page import="java.util.List"%>
 <%@page import="org.opennms.web.api.Util" %>
 <%@page import="org.opennms.web.tags.FavoriteTag" %>
+<%@page import="org.opennms.core.utils.WebSecurityUtils"%>
 
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
@@ -435,7 +436,7 @@
         </tr>
        
         <tr valign="top" class="<%= events[i].getSeverity().getLabel() %>">
-          <td colspan="5"><%=events[i].getLogMessage()%></td>
+          <td colspan="5"><%=WebSecurityUtils.sanitizeString(events[i].getLogMessage(), true)%></td>
         </tr>
        
       <% } /*end for*/%>

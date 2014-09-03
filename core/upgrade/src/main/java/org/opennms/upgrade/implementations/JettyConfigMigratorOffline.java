@@ -48,14 +48,14 @@ import org.opennms.upgrade.api.OnmsUpgradeException;
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a> 
  */
-public class JettyConfigMigratotOffline extends AbstractOnmsUpgrade {
+public class JettyConfigMigratorOffline extends AbstractOnmsUpgrade {
 
     /**
      * Instantiates a new Jetty configuration migrator offline.
      *
      * @throws OnmsUpgradeException the OpenNMS upgrade exception
      */
-    public JettyConfigMigratotOffline() throws OnmsUpgradeException {
+    public JettyConfigMigratorOffline() throws OnmsUpgradeException {
         super();
     }
 
