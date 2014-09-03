@@ -43,7 +43,7 @@ $VERBOSE       = undef;
 	/Library/Java/Home
 	/opt
 );
-unshift(@JAVA_SEARCH_DIRS, File::Spec->catdir($ENV{'HOME'}, 'ci', 'java');
+unshift(@JAVA_SEARCH_DIRS, File::Spec->catdir($ENV{'HOME'}, 'ci', 'java'));
 
 eval {
 	setpriority(0, 0, 10);
