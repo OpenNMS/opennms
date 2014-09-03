@@ -147,12 +147,14 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
     }
 
     public static synchronized void init() throws IOException {
-        final File cfgFile = getFile();
-        LOG.debug("init: config file path: {}", cfgFile.getPath());
-        final FileSystemResource resource = new FileSystemResource(cfgFile);
+        if (!m_loaded) {
+            final File cfgFile = getFile();
+            LOG.debug("init: config file path: {}", cfgFile.getPath());
+            final FileSystemResource resource = new FileSystemResource(cfgFile);
 
-        m_singleton = new SnmpPeerFactory(resource);
-        m_loaded = true;
+            m_singleton = new SnmpPeerFactory(resource);
+            m_loaded = true;
+        }
     }
 
     /**
