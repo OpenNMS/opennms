@@ -1,13 +1,13 @@
-package org.opennms.web.rest;
+package org.opennms.netmgt.config;
 
-import java.io.IOException;
 import java.net.InetAddress;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.TimeUnit;
 
 import org.opennms.netmgt.config.SnmpEventInfo;
 import org.opennms.netmgt.config.SnmpPeerFactory;
@@ -23,38 +23,38 @@ public class SnmpConfigAccessService {
     @Autowired
     private SnmpPeerFactory m_snmpPeerFactory;
 
-    private final ExecutorService m_executor = Executors.newSingleThreadExecutor(new ThreadFactory() {
+    private boolean m_dirty = false;
+    private final ScheduledExecutorService m_executor = Executors.newSingleThreadScheduledExecutor(new ThreadFactory() {
         @Override
         public Thread newThread(final Runnable r) {
             return new Thread(r, "SnmpConfig-Accessor-Thread");
         }
     });
 
-    public SnmpConfigAccessService() {
-    }
-
-    public void flushAll() {
-        try {
-            m_executor.submit(new Runnable() {
-                @Override public void run() {
-                    try {
-                        SnmpPeerFactory.getInstance().saveCurrent();
-                    } catch (final IOException e) {
-                        LOG.debug("Failed to save SNMP configuration.", e);
-                    }
-                }
-            }).get();
-        } catch (final InterruptedException e) {
-            LOG.warn("Interrupted while flushing.  Passing interrupt up to caller.", e);
-        } catch (final ExecutionException e) {
-            LOG.error("An error occurred while waiting for SnmpPeerFactory operations to complete.", e);
+    private final class SaveCallable implements Callable<Void> {
+        @Override
+        public Void call() throws Exception {
+            if (m_dirty) {
+                LOG.debug("SnmpPeerFactory has been updated. Persisting to disk.");
+                SnmpPeerFactory.getInstance().saveCurrent();
+                m_dirty = false;
+            }
+            return null;
         }
     }
 
+    public SnmpConfigAccessService() {
+        m_executor.schedule(new SaveCallable(), 1, TimeUnit.SECONDS);
+    }
+
+    public void flushAll() {
+        submitAndWait(new SaveCallable());
+    }
+
     public SnmpAgentConfig getAgentConfig(final InetAddress addr) {
+        flushAll();
         return submitAndWait(new Callable<SnmpAgentConfig>() {
             @Override public SnmpAgentConfig call() throws Exception {
-                flushAll();
                 return SnmpPeerFactory.getInstance().getAgentConfig(addr);
             }
         });
@@ -64,6 +64,7 @@ public class SnmpConfigAccessService {
         submitWriteOp(new Runnable() {
             @Override public void run() {
                 SnmpPeerFactory.getInstance().define(eventInfo);
+                m_dirty = true;
             }
         });
     }
