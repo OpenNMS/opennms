@@ -47,6 +47,7 @@ $LOGLEVEL      = 'debug' unless (defined $LOGLEVEL);
 	/opt
 	/opt/ci/java
 );
+unshift(@JAVA_SEARCH_DIRS, File::Spec->catdir($ENV{'HOME'}, 'ci', 'java');
 
 push(@JAVA_SEARCH_DIRS, File::Spec->catdir($ENV{'HOME'}, 'ci', 'java'));
 
