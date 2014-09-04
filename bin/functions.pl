@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 use Config;
-use Cwd;
+use Cwd qw(abs_path getcwd);
 use File::Basename;
 use File::Find;
 use File::Path qw(rmtree);
@@ -26,17 +26,19 @@ use vars qw(
 	$OOSNMP_TRUSTSTORE
 	$PATHSEP
 	$PREFIX
+	$SKIP_OPENJDK
 	$TESTS
 	$VERBOSE
 	@ARGS
 );
+@ARGS          = ();
 $BUILD_PROFILE = "default";
 $HELP          = undef;
 $JAVA_HOME     = undef;
-$PATHSEP       = $Config{'path_sep'};
-$VERBOSE       = undef;
 $LOGLEVEL      = 'debug' unless (defined $LOGLEVEL);
-@ARGS          = ();
+$PATHSEP       = $Config{'path_sep'};
+$SKIP_OPENJDK  = $ENV{'SKIP_OPENJDK'};
+$VERBOSE       = undef;
 
 @JAVA_SEARCH_DIRS = qw(
 	/usr/lib/jvm
@@ -310,7 +312,14 @@ sub find_java_home {
 
 		for my $java (@javas) {
 			if (-x $java and ! -d $java) {
+				$java = abs_path($java);
 				my ($shortversion, $version, $build, $java_home) = get_version_from_java($java);
+
+				if ($SKIP_OPENJDK) {
+					next if ($java  =~ /openjdk/i);
+					next if ($build =~ /openjdk/i);
+				}
+
 				next if (exists $versions->{$shortversion}->{$version}->{$build});
 
 				$versions->{$shortversion}->{$version}->{$build} = $java_home;
