@@ -1,1383 +1,2221 @@
 <events xmlns="http://xmlns.opennms.org/xsd/eventconf">
-<!-- Start of auto generated data from MIB: MIB-Dell-10892 -->
-    <event>
-        <mask>
-            <maskelement>
-                <mename>id</mename>
-                <mevalue>.1.3.6.1.4.1.674.10892.2</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>generic</mename>
-                <mevalue>6</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>specific</mename>
-                <mevalue>1001</mevalue>
-            </maskelement>
-        </mask>
-        <uei>uei.opennms.org/vendor/Dell/traps/alertDrscTestTrapEvent</uei>
-        <event-label>DELL-RAC-MIB defined trap event: alertDrscTestTrapEvent</event-label>
-        <descr>
-&lt;p&gt;The RAC generated a test trap event in response to a user request.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
-
-	drsAlertSystem&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
-
-	drsAlertTableIndexOID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
-
-	drsAlertMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
-
-	drsAlertCurrentStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
-		other(1)
-		unknown(2)
-		ok(3)
-		nonCritical(4)
-		critical(5)
-		nonRecoverable(6)
-	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
-
-	drsAlertPreviousStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
-		other(1)
-		unknown(2)
-		ok(3)
-		nonCritical(4)
-		critical(5)
-		nonRecoverable(6)
-	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
-
-	drsAlertData&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-        <logmsg dest="logndisplay">&lt;p&gt;
-			alertDrscTestTrapEvent trap received 
-			drsAlertSystem=%parm[#1]% 
-			drsAlertTableIndexOID=%parm[#2]% 
-			drsAlertMessage=%parm[#3]% 
-			drsAlertCurrentStatus=%parm[#4]% 
-			drsAlertPreviousStatus=%parm[#5]% 
-			drsAlertData=%parm[#6]%&lt;/p&gt;
-		</logmsg>
-        <severity>Normal</severity>
-    </event>
-    <event>
-        <mask>
-            <maskelement>
-                <mename>id</mename>
-                <mevalue>.1.3.6.1.4.1.674.10892.2</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>generic</mename>
-                <mevalue>6</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>specific</mename>
-                <mevalue>1002</mevalue>
-            </maskelement>
-        </mask>
-        <uei>uei.opennms.org/vendor/Dell/traps/alertDrscAuthError</uei>
-        <event-label>DELL-RAC-MIB defined trap event: alertDrscAuthError</event-label>
-        <descr>
-&lt;p&gt;The RAC Authentication Failures during a time period have Exceeded a Threshold.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
-
-	drsAlertSystem&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
-
-	drsAlertTableIndexOID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
-
-	drsAlertMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
-
-	drsAlertCurrentStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
-		other(1)
-		unknown(2)
-		ok(3)
-		nonCritical(4)
-		critical(5)
-		nonRecoverable(6)
-	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
-
-	drsAlertPreviousStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
-		other(1)
-		unknown(2)
-		ok(3)
-		nonCritical(4)
-		critical(5)
-		nonRecoverable(6)
-	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
-
-	drsAlertData&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-        <logmsg dest="logndisplay">&lt;p&gt;
-			alertDrscAuthError trap received 
-			drsAlertSystem=%parm[#1]% 
-			drsAlertTableIndexOID=%parm[#2]% 
-			drsAlertMessage=%parm[#3]% 
-			drsAlertCurrentStatus=%parm[#4]% 
-			drsAlertPreviousStatus=%parm[#5]% 
-			drsAlertData=%parm[#6]%&lt;/p&gt;
-		</logmsg>
-        <severity>Minor</severity>
-    </event>
-    <event>
-        <mask>
-            <maskelement>
-                <mename>id</mename>
-                <mevalue>.1.3.6.1.4.1.674.10892.2</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>generic</mename>
-                <mevalue>6</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>specific</mename>
-                <mevalue>1003</mevalue>
-            </maskelement>
-        </mask>
-        <uei>uei.opennms.org/vendor/Dell/traps/alertDrscLostESM</uei>
-        <event-label>DELL-RAC-MIB defined trap event: alertDrscLostESM</event-label>
-        <descr>
-&lt;p&gt;The RAC cannot communicate with the baseboard management controller (ESM).&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
-
-	drsAlertSystem&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
-
-	drsAlertTableIndexOID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
-
-	drsAlertMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
-
-	drsAlertCurrentStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
-		other(1)
-		unknown(2)
-		ok(3)
-		nonCritical(4)
-		critical(5)
-		nonRecoverable(6)
-	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
-
-	drsAlertPreviousStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
-		other(1)
-		unknown(2)
-		ok(3)
-		nonCritical(4)
-		critical(5)
-		nonRecoverable(6)
-	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
-
-	drsAlertData&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-        <logmsg dest="logndisplay">&lt;p&gt;
-			alertDrscLostESM trap received 
-			drsAlertSystem=%parm[#1]% 
-			drsAlertTableIndexOID=%parm[#2]% 
-			drsAlertMessage=%parm[#3]% 
-			drsAlertCurrentStatus=%parm[#4]% 
-			drsAlertPreviousStatus=%parm[#5]% 
-			drsAlertData=%parm[#6]%&lt;/p&gt;
-		</logmsg>
-        <severity>Minor</severity>
-    </event>
-    <event>
-        <mask>
-            <maskelement>
-                <mename>id</mename>
-                <mevalue>.1.3.6.1.4.1.674.10892.2</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>generic</mename>
-                <mevalue>6</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>specific</mename>
-                <mevalue>1004</mevalue>
-            </maskelement>
-        </mask>
-        <uei>uei.opennms.org/vendor/Dell/traps/alertDrscFoundESM</uei>
-        <event-label>DELL-RAC-MIB defined trap event: alertDrscFoundESM</event-label>
-        <descr>
-&lt;p&gt;The RAC is communicating normally with the baseboard management controller (ESM).&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
-
-	drsAlertSystem&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
-
-	drsAlertTableIndexOID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
-
-	drsAlertMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
-
-	drsAlertCurrentStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
-		other(1)
-		unknown(2)
-		ok(3)
-		nonCritical(4)
-		critical(5)
-		nonRecoverable(6)
-	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
-
-	drsAlertPreviousStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
-		other(1)
-		unknown(2)
-		ok(3)
-		nonCritical(4)
-		critical(5)
-		nonRecoverable(6)
-	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
-
-	drsAlertData&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-        <logmsg dest="logndisplay">&lt;p&gt;
-			alertDrscFoundESM trap received 
-			drsAlertSystem=%parm[#1]% 
-			drsAlertTableIndexOID=%parm[#2]% 
-			drsAlertMessage=%parm[#3]% 
-			drsAlertCurrentStatus=%parm[#4]% 
-			drsAlertPreviousStatus=%parm[#5]% 
-			drsAlertData=%parm[#6]%&lt;/p&gt;
-		</logmsg>
-        <severity>Normal</severity>
-    </event>
-    <event>
-        <mask>
-            <maskelement>
-                <mename>id</mename>
-                <mevalue>.1.3.6.1.4.1.674.10892.2</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>generic</mename>
-                <mevalue>6</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>specific</mename>
-                <mevalue>1005</mevalue>
-            </maskelement>
-        </mask>
-        <uei>uei.opennms.org/vendor/Dell/traps/alertDrscPowerOff</uei>
-        <event-label>DELL-RAC-MIB defined trap event: alertDrscPowerOff</event-label>
-        <descr>
-&lt;p&gt;The RAC has detected a System power state change to powered-off.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
-
-	drsAlertSystem&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
-
-	drsAlertTableIndexOID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
-
-	drsAlertMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
-
-	drsAlertCurrentStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
-		other(1)
-		unknown(2)
-		ok(3)
-		nonCritical(4)
-		critical(5)
-		nonRecoverable(6)
-	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
-
-	drsAlertPreviousStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
-		other(1)
-		unknown(2)
-		ok(3)
-		nonCritical(4)
-		critical(5)
-		nonRecoverable(6)
-	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
-
-	drsAlertData&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-        <logmsg dest="logndisplay">&lt;p&gt;
-			alertDrscPowerOff trap received 
-			drsAlertSystem=%parm[#1]% 
-			drsAlertTableIndexOID=%parm[#2]% 
-			drsAlertMessage=%parm[#3]% 
-			drsAlertCurrentStatus=%parm[#4]% 
-			drsAlertPreviousStatus=%parm[#5]% 
-			drsAlertData=%parm[#6]%&lt;/p&gt;
-		</logmsg>
-        <severity>Major</severity>
-    </event>
-    <event>
-        <mask>
-            <maskelement>
-                <mename>id</mename>
-                <mevalue>.1.3.6.1.4.1.674.10892.2</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>generic</mename>
-                <mevalue>6</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>specific</mename>
-                <mevalue>1006</mevalue>
-            </maskelement>
-        </mask>
-        <uei>uei.opennms.org/vendor/Dell/traps/alertDrscPowerOn</uei>
-        <event-label>DELL-RAC-MIB defined trap event: alertDrscPowerOn</event-label>
-        <descr>
-&lt;p&gt;The RAC has detected a system power state change to powered-on.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
-
-	drsAlertSystem&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
-
-	drsAlertTableIndexOID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
-
-	drsAlertMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
-
-	drsAlertCurrentStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
-		other(1)
-		unknown(2)
-		ok(3)
-		nonCritical(4)
-		critical(5)
-		nonRecoverable(6)
-	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
-
-	drsAlertPreviousStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
-		other(1)
-		unknown(2)
-		ok(3)
-		nonCritical(4)
-		critical(5)
-		nonRecoverable(6)
-	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
-
-	drsAlertData&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-        <logmsg dest="logndisplay">&lt;p&gt;
-			alertDrscPowerOn trap received 
-			drsAlertSystem=%parm[#1]% 
-			drsAlertTableIndexOID=%parm[#2]% 
-			drsAlertMessage=%parm[#3]% 
-			drsAlertCurrentStatus=%parm[#4]% 
-			drsAlertPreviousStatus=%parm[#5]% 
-			drsAlertData=%parm[#6]%&lt;/p&gt;
-		</logmsg>
-        <severity>Normal</severity>
-    </event>
-    <event>
-        <mask>
-            <maskelement>
-                <mename>id</mename>
-                <mevalue>.1.3.6.1.4.1.674.10892.2</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>generic</mename>
-                <mevalue>6</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>specific</mename>
-                <mevalue>1007</mevalue>
-            </maskelement>
-        </mask>
-        <uei>uei.opennms.org/vendor/Dell/traps/alertDrscWatchdogExpired</uei>
-        <event-label>DELL-RAC-MIB defined trap event: alertDrscWatchdogExpired</event-label>
-        <descr>
-&lt;p&gt;The RAC has detected that the system watchdog has expired indicating a system hang.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
-
-	drsAlertSystem&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
-
-	drsAlertTableIndexOID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
-
-	drsAlertMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
-
-	drsAlertCurrentStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
-		other(1)
-		unknown(2)
-		ok(3)
-		nonCritical(4)
-		critical(5)
-		nonRecoverable(6)
-	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
-
-	drsAlertPreviousStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
-		other(1)
-		unknown(2)
-		ok(3)
-		nonCritical(4)
-		critical(5)
-		nonRecoverable(6)
-	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
-
-	drsAlertData&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-        <logmsg dest="logndisplay">&lt;p&gt;
-			alertDrscWatchdogExpired trap received 
-			drsAlertSystem=%parm[#1]% 
-			drsAlertTableIndexOID=%parm[#2]% 
-			drsAlertMessage=%parm[#3]% 
-			drsAlertCurrentStatus=%parm[#4]% 
-			drsAlertPreviousStatus=%parm[#5]% 
-			drsAlertData=%parm[#6]%&lt;/p&gt;
-		</logmsg>
-        <severity>Major</severity>
-    </event>
-    <event>
-        <mask>
-            <maskelement>
-                <mename>id</mename>
-                <mevalue>.1.3.6.1.4.1.674.10892.2</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>generic</mename>
-                <mevalue>6</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>specific</mename>
-                <mevalue>1008</mevalue>
-            </maskelement>
-        </mask>
-        <uei>uei.opennms.org/vendor/Dell/traps/alertDrscBattLow</uei>
-        <event-label>DELL-RAC-MIB defined trap event: alertDrscBattLow</event-label>
-        <descr>
-&lt;p&gt;The RAC Battery charge is below 25% indicating that the battery may only be able to power the DRSC for 8-10 minutes.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
-
-	drsAlertSystem&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
-
-	drsAlertTableIndexOID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
-
-	drsAlertMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
-
-	drsAlertCurrentStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
-		other(1)
-		unknown(2)
-		ok(3)
-		nonCritical(4)
-		critical(5)
-		nonRecoverable(6)
-	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
-
-	drsAlertPreviousStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
-		other(1)
-		unknown(2)
-		ok(3)
-		nonCritical(4)
-		critical(5)
-		nonRecoverable(6)
-	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
-
-	drsAlertData&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-        <logmsg dest="logndisplay">&lt;p&gt;
-			alertDrscBattLow trap received 
-			drsAlertSystem=%parm[#1]% 
-			drsAlertTableIndexOID=%parm[#2]% 
-			drsAlertMessage=%parm[#3]% 
-			drsAlertCurrentStatus=%parm[#4]% 
-			drsAlertPreviousStatus=%parm[#5]% 
-			drsAlertData=%parm[#6]%&lt;/p&gt;
-		</logmsg>
-        <severity>Minor</severity>
-    </event>
-    <event>
-        <mask>
-            <maskelement>
-                <mename>id</mename>
-                <mevalue>.1.3.6.1.4.1.674.10892.2</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>generic</mename>
-                <mevalue>6</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>specific</mename>
-                <mevalue>1009</mevalue>
-            </maskelement>
-        </mask>
-        <uei>uei.opennms.org/vendor/Dell/traps/alertDrscTempNormal</uei>
-        <event-label>DELL-RAC-MIB defined trap event: alertDrscTempNormal</event-label>
-        <descr>
-&lt;p&gt;The RAC Temperature probe has retured to a normal value.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
-
-	drsAlertSystem&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
-
-	drsAlertTableIndexOID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
-
-	drsAlertMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
-
-	drsAlertCurrentStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
-		other(1)
-		unknown(2)
-		ok(3)
-		nonCritical(4)
-		critical(5)
-		nonRecoverable(6)
-	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
-
-	drsAlertPreviousStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
-		other(1)
-		unknown(2)
-		ok(3)
-		nonCritical(4)
-		critical(5)
-		nonRecoverable(6)
-	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
-
-	drsAlertData&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-        <logmsg dest="logndisplay">&lt;p&gt;
-			alertDrscTempNormal trap received 
-			drsAlertSystem=%parm[#1]% 
-			drsAlertTableIndexOID=%parm[#2]% 
-			drsAlertMessage=%parm[#3]% 
-			drsAlertCurrentStatus=%parm[#4]% 
-			drsAlertPreviousStatus=%parm[#5]% 
-			drsAlertData=%parm[#6]%&lt;/p&gt;
-		</logmsg>
-        <severity>Normal</severity>
-    </event>
-    <event>
-        <mask>
-            <maskelement>
-                <mename>id</mename>
-                <mevalue>.1.3.6.1.4.1.674.10892.2</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>generic</mename>
-                <mevalue>6</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>specific</mename>
-                <mevalue>1010</mevalue>
-            </maskelement>
-        </mask>
-        <uei>uei.opennms.org/vendor/Dell/traps/alertDrscTempWarning</uei>
-        <event-label>DELL-RAC-MIB defined trap event: alertDrscTempWarning</event-label>
-        <descr>
-&lt;p&gt;The RAC Temperature probe has detected a Warning value.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
-
-	drsAlertSystem&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
-
-	drsAlertTableIndexOID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
-
-	drsAlertMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
-
-	drsAlertCurrentStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
-		other(1)
-		unknown(2)
-		ok(3)
-		nonCritical(4)
-		critical(5)
-		nonRecoverable(6)
-	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
-
-	drsAlertPreviousStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
-		other(1)
-		unknown(2)
-		ok(3)
-		nonCritical(4)
-		critical(5)
-		nonRecoverable(6)
-	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
-
-	drsAlertData&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-        <logmsg dest="logndisplay">&lt;p&gt;
-			alertDrscTempWarning trap received 
-			drsAlertSystem=%parm[#1]% 
-			drsAlertTableIndexOID=%parm[#2]% 
-			drsAlertMessage=%parm[#3]% 
-			drsAlertCurrentStatus=%parm[#4]% 
-			drsAlertPreviousStatus=%parm[#5]% 
-			drsAlertData=%parm[#6]%&lt;/p&gt;
-		</logmsg>
-        <severity>Minor</severity>
-    </event>
-    <event>
-        <mask>
-            <maskelement>
-                <mename>id</mename>
-                <mevalue>.1.3.6.1.4.1.674.10892.2</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>generic</mename>
-                <mevalue>6</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>specific</mename>
-                <mevalue>1011</mevalue>
-            </maskelement>
-        </mask>
-        <uei>uei.opennms.org/vendor/Dell/traps/alertDrscTempCritical</uei>
-        <event-label>DELL-RAC-MIB defined trap event: alertDrscTempCritical</event-label>
-        <descr>
-&lt;p&gt;The RAC Temperature probe has detected a failure (or critical) value.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
-
-	drsAlertSystem&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
-
-	drsAlertTableIndexOID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
-
-	drsAlertMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
-
-	drsAlertCurrentStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
-		other(1)
-		unknown(2)
-		ok(3)
-		nonCritical(4)
-		critical(5)
-		nonRecoverable(6)
-	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
-
-	drsAlertPreviousStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
-		other(1)
-		unknown(2)
-		ok(3)
-		nonCritical(4)
-		critical(5)
-		nonRecoverable(6)
-	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
-
-	drsAlertData&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-        <logmsg dest="logndisplay">&lt;p&gt;
-			alertDrscTempCritical trap received 
-			drsAlertSystem=%parm[#1]% 
-			drsAlertTableIndexOID=%parm[#2]% 
-			drsAlertMessage=%parm[#3]% 
-			drsAlertCurrentStatus=%parm[#4]% 
-			drsAlertPreviousStatus=%parm[#5]% 
-			drsAlertData=%parm[#6]%&lt;/p&gt;
-		</logmsg>
-        <severity>Major</severity>
-    </event>
-    <event>
-        <mask>
-            <maskelement>
-                <mename>id</mename>
-                <mevalue>.1.3.6.1.4.1.674.10892.2</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>generic</mename>
-                <mevalue>6</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>specific</mename>
-                <mevalue>1012</mevalue>
-            </maskelement>
-        </mask>
-        <uei>uei.opennms.org/vendor/Dell/traps/alertDrscVoltNormal</uei>
-        <event-label>DELL-RAC-MIB defined trap event: alertDrscVoltNormal</event-label>
-        <descr>
-&lt;p&gt;The RAC voltage has returned to a normal value.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
-
-	drsAlertSystem&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
-
-	drsAlertTableIndexOID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
-
-	drsAlertMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
-
-	drsAlertCurrentStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
-		other(1)
-		unknown(2)
-		ok(3)
-		nonCritical(4)
-		critical(5)
-		nonRecoverable(6)
-	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
-
-	drsAlertPreviousStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
-		other(1)
-		unknown(2)
-		ok(3)
-		nonCritical(4)
-		critical(5)
-		nonRecoverable(6)
-	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
-
-	drsAlertData&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-        <logmsg dest="logndisplay">&lt;p&gt;
-			alertDrscVoltNormal trap received 
-			drsAlertSystem=%parm[#1]% 
-			drsAlertTableIndexOID=%parm[#2]% 
-			drsAlertMessage=%parm[#3]% 
-			drsAlertCurrentStatus=%parm[#4]% 
-			drsAlertPreviousStatus=%parm[#5]% 
-			drsAlertData=%parm[#6]%&lt;/p&gt;
-		</logmsg>
-        <severity>Normal</severity>
-    </event>
-    <event>
-        <mask>
-            <maskelement>
-                <mename>id</mename>
-                <mevalue>.1.3.6.1.4.1.674.10892.2</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>generic</mename>
-                <mevalue>6</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>specific</mename>
-                <mevalue>1013</mevalue>
-            </maskelement>
-        </mask>
-        <uei>uei.opennms.org/vendor/Dell/traps/alertDrscVoltWarning</uei>
-        <event-label>DELL-RAC-MIB defined trap event: alertDrscVoltWarning</event-label>
-        <descr>
-&lt;p&gt;The RAC voltage probe has detected a warning value.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
-
-	drsAlertSystem&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
-
-	drsAlertTableIndexOID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
-
-	drsAlertMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
-
-	drsAlertCurrentStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
-		other(1)
-		unknown(2)
-		ok(3)
-		nonCritical(4)
-		critical(5)
-		nonRecoverable(6)
-	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
-
-	drsAlertPreviousStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
-		other(1)
-		unknown(2)
-		ok(3)
-		nonCritical(4)
-		critical(5)
-		nonRecoverable(6)
-	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
-
-	drsAlertData&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-        <logmsg dest="logndisplay">&lt;p&gt;
-			alertDrscVoltWarning trap received 
-			drsAlertSystem=%parm[#1]% 
-			drsAlertTableIndexOID=%parm[#2]% 
-			drsAlertMessage=%parm[#3]% 
-			drsAlertCurrentStatus=%parm[#4]% 
-			drsAlertPreviousStatus=%parm[#5]% 
-			drsAlertData=%parm[#6]%&lt;/p&gt;
-		</logmsg>
-        <severity>Minor</severity>
-    </event>
-    <event>
-        <mask>
-            <maskelement>
-                <mename>id</mename>
-                <mevalue>.1.3.6.1.4.1.674.10892.2</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>generic</mename>
-                <mevalue>6</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>specific</mename>
-                <mevalue>1014</mevalue>
-            </maskelement>
-        </mask>
-        <uei>uei.opennms.org/vendor/Dell/traps/alertDrscVoltCritical</uei>
-        <event-label>DELL-RAC-MIB defined trap event: alertDrscVoltCritical</event-label>
-        <descr>
-&lt;p&gt;The RAC voltage probe has detected a failure (or critical) value.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
-
-	drsAlertSystem&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
-
-	drsAlertTableIndexOID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
-
-	drsAlertMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
-
-	drsAlertCurrentStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
-		other(1)
-		unknown(2)
-		ok(3)
-		nonCritical(4)
-		critical(5)
-		nonRecoverable(6)
-	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
-
-	drsAlertPreviousStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
-		other(1)
-		unknown(2)
-		ok(3)
-		nonCritical(4)
-		critical(5)
-		nonRecoverable(6)
-	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
-
-	drsAlertData&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-        <logmsg dest="logndisplay">&lt;p&gt;
-			alertDrscVoltCritical trap received 
-			drsAlertSystem=%parm[#1]% 
-			drsAlertTableIndexOID=%parm[#2]% 
-			drsAlertMessage=%parm[#3]% 
-			drsAlertCurrentStatus=%parm[#4]% 
-			drsAlertPreviousStatus=%parm[#5]% 
-			drsAlertData=%parm[#6]%&lt;/p&gt;
-		</logmsg>
-        <severity>Major</severity>
-    </event>
-    <event>
-        <mask>
-            <maskelement>
-                <mename>id</mename>
-                <mevalue>.1.3.6.1.4.1.674.10892.2</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>generic</mename>
-                <mevalue>6</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>specific</mename>
-                <mevalue>1015</mevalue>
-            </maskelement>
-        </mask>
-        <uei>uei.opennms.org/vendor/Dell/traps/alertDrscSELWarning</uei>
-        <event-label>DELL-RAC-MIB defined trap event: alertDrscSELWarning</event-label>
-        <descr>
-&lt;p&gt;The RAC has detected a new event in the System Event Log with Severity: Warning.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
-
-	drsAlertSystem&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
-
-	drsAlertTableIndexOID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
-
-	drsAlertMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
-
-	drsAlertCurrentStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
-		other(1)
-		unknown(2)
-		ok(3)
-		nonCritical(4)
-		critical(5)
-		nonRecoverable(6)
-	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
-
-	drsAlertPreviousStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
-		other(1)
-		unknown(2)
-		ok(3)
-		nonCritical(4)
-		critical(5)
-		nonRecoverable(6)
-	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
-
-	drsAlertData&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-        <logmsg dest="logndisplay">&lt;p&gt;
-			alertDrscSELWarning trap received 
-			drsAlertSystem=%parm[#1]% 
-			drsAlertTableIndexOID=%parm[#2]% 
-			drsAlertMessage=%parm[#3]% 
-			drsAlertCurrentStatus=%parm[#4]% 
-			drsAlertPreviousStatus=%parm[#5]% 
-			drsAlertData=%parm[#6]%&lt;/p&gt;
-		</logmsg>
-        <severity>Major</severity>
-    </event>
-    <event>
-        <mask>
-            <maskelement>
-                <mename>id</mename>
-                <mevalue>.1.3.6.1.4.1.674.10892.2</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>generic</mename>
-                <mevalue>6</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>specific</mename>
-                <mevalue>1016</mevalue>
-            </maskelement>
-        </mask>
-        <uei>uei.opennms.org/vendor/Dell/traps/alertDrscSELCritical</uei>
-        <event-label>DELL-RAC-MIB defined trap event: alertDrscSELCritical</event-label>
-        <descr>
-&lt;p&gt;The RAC has detected a new event in the System Event Log with Severity: Critical.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
-
-	drsAlertSystem&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
-
-	drsAlertTableIndexOID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
-
-	drsAlertMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
-
-	drsAlertCurrentStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
-		other(1)
-		unknown(2)
-		ok(3)
-		nonCritical(4)
-		critical(5)
-		nonRecoverable(6)
-	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
-
-	drsAlertPreviousStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
-		other(1)
-		unknown(2)
-		ok(3)
-		nonCritical(4)
-		critical(5)
-		nonRecoverable(6)
-	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
-
-	drsAlertData&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-        <logmsg dest="logndisplay">&lt;p&gt;
-			alertDrscSELCritical trap received 
-			drsAlertSystem=%parm[#1]% 
-			drsAlertTableIndexOID=%parm[#2]% 
-			drsAlertMessage=%parm[#3]% 
-			drsAlertCurrentStatus=%parm[#4]% 
-			drsAlertPreviousStatus=%parm[#5]% 
-			drsAlertData=%parm[#6]%&lt;/p&gt;
-		</logmsg>
-        <severity>Major</severity>
-    </event>
-    <event>
-        <mask>
-            <maskelement>
-                <mename>id</mename>
-                <mevalue>.1.3.6.1.4.1.674.10892.2</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>generic</mename>
-                <mevalue>6</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>specific</mename>
-                <mevalue>1017</mevalue>
-            </maskelement>
-        </mask>
-        <uei>uei.opennms.org/vendor/Dell/traps/alertDrscSEL80percentFull</uei>
-        <event-label>DELL-RAC-MIB defined trap event: alertDrscSEL80percentFull</event-label>
-        <descr>
-&lt;p&gt;The RAC has detected that the System Event Log is 80% full.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
-
-	drsAlertSystem&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
-
-	drsAlertTableIndexOID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
-
-	drsAlertMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
-
-	drsAlertCurrentStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
-		other(1)
-		unknown(2)
-		ok(3)
-		nonCritical(4)
-		critical(5)
-		nonRecoverable(6)
-	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
-
-	drsAlertPreviousStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
-		other(1)
-		unknown(2)
-		ok(3)
-		nonCritical(4)
-		critical(5)
-		nonRecoverable(6)
-	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
-
-	drsAlertData&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-        <logmsg dest="logndisplay">&lt;p&gt;
-			alertDrscSEL80percentFull trap received 
-			drsAlertSystem=%parm[#1]% 
-			drsAlertTableIndexOID=%parm[#2]% 
-			drsAlertMessage=%parm[#3]% 
-			drsAlertCurrentStatus=%parm[#4]% 
-			drsAlertPreviousStatus=%parm[#5]% 
-			drsAlertData=%parm[#6]%&lt;/p&gt;
-		</logmsg>
-        <severity>Major</severity>
-    </event>
-    <event>
-        <mask>
-            <maskelement>
-                <mename>id</mename>
-                <mevalue>.1.3.6.1.4.1.674.10892.2</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>generic</mename>
-                <mevalue>6</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>specific</mename>
-                <mevalue>1018</mevalue>
-            </maskelement>
-        </mask>
-        <uei>uei.opennms.org/vendor/Dell/traps/alertDrscSEL90percentFull</uei>
-        <event-label>DELL-RAC-MIB defined trap event: alertDrscSEL90percentFull</event-label>
-        <descr>
-&lt;p&gt;The RAC has detected that the System Event Log is 90% full.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
-
-	drsAlertSystem&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
-
-	drsAlertTableIndexOID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
-
-	drsAlertMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
-
-	drsAlertCurrentStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
-		other(1)
-		unknown(2)
-		ok(3)
-		nonCritical(4)
-		critical(5)
-		nonRecoverable(6)
-	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
-
-	drsAlertPreviousStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
-		other(1)
-		unknown(2)
-		ok(3)
-		nonCritical(4)
-		critical(5)
-		nonRecoverable(6)
-	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
-
-	drsAlertData&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-        <logmsg dest="logndisplay">&lt;p&gt;
-			alertDrscSEL90percentFull trap received 
-			drsAlertSystem=%parm[#1]% 
-			drsAlertTableIndexOID=%parm[#2]% 
-			drsAlertMessage=%parm[#3]% 
-			drsAlertCurrentStatus=%parm[#4]% 
-			drsAlertPreviousStatus=%parm[#5]% 
-			drsAlertData=%parm[#6]%&lt;/p&gt;
-		</logmsg>
-        <severity>Major</severity>
-    </event>
-    <event>
-        <mask>
-            <maskelement>
-                <mename>id</mename>
-                <mevalue>.1.3.6.1.4.1.674.10892.2</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>generic</mename>
-                <mevalue>6</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>specific</mename>
-                <mevalue>1019</mevalue>
-            </maskelement>
-        </mask>
-        <uei>uei.opennms.org/vendor/Dell/traps/alertDrscSEL100percentFull</uei>
-        <event-label>DELL-RAC-MIB defined trap event: alertDrscSEL100percentFull</event-label>
-        <descr>
-&lt;p&gt;The RAC has detected that the System Event Log is 100% full.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
-
-	drsAlertSystem&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
-
-	drsAlertTableIndexOID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
-
-	drsAlertMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
-
-	drsAlertCurrentStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
-		other(1)
-		unknown(2)
-		ok(3)
-		nonCritical(4)
-		critical(5)
-		nonRecoverable(6)
-	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
-
-	drsAlertPreviousStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
-		other(1)
-		unknown(2)
-		ok(3)
-		nonCritical(4)
-		critical(5)
-		nonRecoverable(6)
-	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
-
-	drsAlertData&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-        <logmsg dest="logndisplay">&lt;p&gt;
-			alertDrscSEL100percentFull trap received 
-			drsAlertSystem=%parm[#1]% 
-			drsAlertTableIndexOID=%parm[#2]% 
-			drsAlertMessage=%parm[#3]% 
-			drsAlertCurrentStatus=%parm[#4]% 
-			drsAlertPreviousStatus=%parm[#5]% 
-			drsAlertData=%parm[#6]%&lt;/p&gt;
-		</logmsg>
-        <severity>Major</severity>
-    </event>
-    <event>
-        <mask>
-            <maskelement>
-                <mename>id</mename>
-                <mevalue>.1.3.6.1.4.1.674.10892.2</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>generic</mename>
-                <mevalue>6</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>specific</mename>
-                <mevalue>1020</mevalue>
-            </maskelement>
-        </mask>
-        <uei>uei.opennms.org/vendor/Dell/traps/alertDrscSELNormal</uei>
-        <event-label>DELL-RAC-MIB defined trap event: alertDrscSELNormal</event-label>
-        <descr>
-&lt;p&gt;The RAC has detected a new event in the System Event Log with Severity: Normal.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
-
-	drsAlertSystem&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
-
-	drsAlertTableIndexOID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
-
-	drsAlertMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
-
-	drsAlertCurrentStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
-		other(1)
-		unknown(2)
-		ok(3)
-		nonCritical(4)
-		critical(5)
-		nonRecoverable(6)
-	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
-
-	drsAlertPreviousStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
-		other(1)
-		unknown(2)
-		ok(3)
-		nonCritical(4)
-		critical(5)
-		nonRecoverable(6)
-	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
-
-	drsAlertData&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-        <logmsg dest="logndisplay">&lt;p&gt;
-			alertDrscSELNormal trap received 
-			drsAlertSystem=%parm[#1]% 
-			drsAlertTableIndexOID=%parm[#2]% 
-			drsAlertMessage=%parm[#3]% 
-			drsAlertCurrentStatus=%parm[#4]% 
-			drsAlertPreviousStatus=%parm[#5]% 
-			drsAlertData=%parm[#6]%&lt;/p&gt;
-		</logmsg>
-        <severity>Normal</severity>
-    </event>
+<!-- Start of mib2events auto-generated data for MIB: DELL-RAC-MIB -->
+  <event>
+      <mask>
+	  <maskelement>
+	      <mename>id</mename>
+	      <mevalue>.1.3.6.1.4.1.674.10892.2</mevalue>
+	  </maskelement>
+	  <maskelement>
+	      <mename>generic</mename>
+	      <mevalue>6</mevalue>
+	  </maskelement>
+	  <maskelement>
+	      <mename>specific</mename>
+	      <mevalue>2000</mevalue>
+	  </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Dell/traps/alertCMCTestTrap</uei>
+      <event-label>DELL-RAC-MIB defined trap event: alertCMCTestTrap</event-label>
+      <descr>
+	  &lt;p&gt;The CMC has generated a test trap&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+      </descr>
+      <logmsg dest="logndisplay">&lt;p&gt;
+	  alertCMCTestTrap trap received&lt;/p&gt;
+      </logmsg>
+      <severity>Normal</severity>
+  </event>
+  <event>
+      <mask>
+	  <maskelement>
+	      <mename>id</mename>
+	      <mevalue>.1.3.6.1.4.1.674.10892.2</mevalue>
+	  </maskelement>
+	  <maskelement>
+	      <mename>generic</mename>
+	      <mevalue>6</mevalue>
+	  </maskelement>
+	  <maskelement>
+	      <mename>specific</mename>
+	      <mevalue>2002</mevalue>
+	  </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Dell/traps/alertCMCNormalTrap</uei>
+      <event-label>DELL-RAC-MIB defined trap event: alertCMCNormalTrap</event-label>
+      <descr>
+	  &lt;p&gt;The CMC reported a return-to-normal or informational event.&lt;/p&gt;&lt;table&gt;
+	  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	  drsProductChassisName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	  %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	  drsProductChassisLocation&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	  %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	  drsGlobalCurrStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	  %parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+	  other(1)
+	  unknown(2)
+	  ok(3)
+	  nonCritical(4)
+	  critical(5)
+	  nonRecoverable(6)
+	  &lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	  drsCASubSystem&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	  %parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	  drsCASSCurrStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	  %parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+	  other(1)
+	  unknown(2)
+	  ok(3)
+	  nonCritical(4)
+	  critical(5)
+	  nonRecoverable(6)
+	  &lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	  drsCASSPrevStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	  %parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+	  other(1)
+	  unknown(2)
+	  ok(3)
+	  nonCritical(4)
+	  critical(5)
+	  nonRecoverable(6)
+	  &lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	  drsCASSChangeTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	  %parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	  drsCAMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	  %parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+      </descr>
+      <logmsg dest="logndisplay">&lt;p&gt;
+	  alertCMCNormalTrap trap received
+	  drsProductChassisName=%parm[#1]%
+	  drsProductChassisLocation=%parm[#2]%
+	  drsGlobalCurrStatus=%parm[#3]%
+	  drsCASubSystem=%parm[#4]%
+	  drsCASSCurrStatus=%parm[#5]%
+	  drsCASSPrevStatus=%parm[#6]%
+	  drsCASSChangeTime=%parm[#7]%
+	  drsCAMessage=%parm[#8]%&lt;/p&gt;
+      </logmsg>
+      <severity>Normal</severity>
+      <varbindsdecode>
+	  <parmid>parm[#3]</parmid>
+	  <decode varbinddecodedstring="other" varbindvalue="1"/>
+	  <decode varbinddecodedstring="unknown" varbindvalue="2"/>
+	  <decode varbinddecodedstring="ok" varbindvalue="3"/>
+	  <decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+	  <decode varbinddecodedstring="critical" varbindvalue="5"/>
+	  <decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+      </varbindsdecode>
+      <varbindsdecode>
+	  <parmid>parm[#5]</parmid>
+	  <decode varbinddecodedstring="other" varbindvalue="1"/>
+	  <decode varbinddecodedstring="unknown" varbindvalue="2"/>
+	  <decode varbinddecodedstring="ok" varbindvalue="3"/>
+	  <decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+	  <decode varbinddecodedstring="critical" varbindvalue="5"/>
+	  <decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+      </varbindsdecode>
+      <varbindsdecode>
+	  <parmid>parm[#6]</parmid>
+	  <decode varbinddecodedstring="other" varbindvalue="1"/>
+	  <decode varbinddecodedstring="unknown" varbindvalue="2"/>
+	  <decode varbinddecodedstring="ok" varbindvalue="3"/>
+	  <decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+	  <decode varbinddecodedstring="critical" varbindvalue="5"/>
+	  <decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+      </varbindsdecode>
+  </event>
+  <event>
+      <mask>
+	  <maskelement>
+	      <mename>id</mename>
+	      <mevalue>.1.3.6.1.4.1.674.10892.2</mevalue>
+	  </maskelement>
+	  <maskelement>
+	      <mename>generic</mename>
+	      <mevalue>6</mevalue>
+	  </maskelement>
+	  <maskelement>
+	      <mename>specific</mename>
+	      <mevalue>2003</mevalue>
+	  </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Dell/traps/alertCMCWarningTrap</uei>
+      <event-label>DELL-RAC-MIB defined trap event: alertCMCWarningTrap</event-label>
+      <descr>
+	  &lt;p&gt;The CMC reported a warning event.&lt;/p&gt;&lt;table&gt;
+	  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	  drsProductChassisName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	  %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	  drsProductChassisLocation&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	  %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	  drsGlobalCurrStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	  %parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+	  other(1)
+	  unknown(2)
+	  ok(3)
+	  nonCritical(4)
+	  critical(5)
+	  nonRecoverable(6)
+	  &lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	  drsCASubSystem&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	  %parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	  drsCASSCurrStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	  %parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+	  other(1)
+	  unknown(2)
+	  ok(3)
+	  nonCritical(4)
+	  critical(5)
+	  nonRecoverable(6)
+	  &lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	  drsCASSPrevStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	  %parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+	  other(1)
+	  unknown(2)
+	  ok(3)
+	  nonCritical(4)
+	  critical(5)
+	  nonRecoverable(6)
+	  &lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	  drsCASSChangeTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	  %parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	  drsCAMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	  %parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+      </descr>
+      <logmsg dest="logndisplay">&lt;p&gt;
+	  alertCMCWarningTrap trap received
+	  drsProductChassisName=%parm[#1]%
+	  drsProductChassisLocation=%parm[#2]%
+	  drsGlobalCurrStatus=%parm[#3]%
+	  drsCASubSystem=%parm[#4]%
+	  drsCASSCurrStatus=%parm[#5]%
+	  drsCASSPrevStatus=%parm[#6]%
+	  drsCASSChangeTime=%parm[#7]%
+	  drsCAMessage=%parm[#8]%&lt;/p&gt;
+      </logmsg>
+      <severity>Minor</severity>
+      <varbindsdecode>
+	  <parmid>parm[#3]</parmid>
+	  <decode varbinddecodedstring="other" varbindvalue="1"/>
+	  <decode varbinddecodedstring="unknown" varbindvalue="2"/>
+	  <decode varbinddecodedstring="ok" varbindvalue="3"/>
+	  <decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+	  <decode varbinddecodedstring="critical" varbindvalue="5"/>
+	  <decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+      </varbindsdecode>
+      <varbindsdecode>
+	  <parmid>parm[#5]</parmid>
+	  <decode varbinddecodedstring="other" varbindvalue="1"/>
+	  <decode varbinddecodedstring="unknown" varbindvalue="2"/>
+	  <decode varbinddecodedstring="ok" varbindvalue="3"/>
+	  <decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+	  <decode varbinddecodedstring="critical" varbindvalue="5"/>
+	  <decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+      </varbindsdecode>
+      <varbindsdecode>
+	  <parmid>parm[#6]</parmid>
+	  <decode varbinddecodedstring="other" varbindvalue="1"/>
+	  <decode varbinddecodedstring="unknown" varbindvalue="2"/>
+	  <decode varbinddecodedstring="ok" varbindvalue="3"/>
+	  <decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+	  <decode varbinddecodedstring="critical" varbindvalue="5"/>
+	  <decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+      </varbindsdecode>
+  </event>
+  <event>
+      <mask>
+	  <maskelement>
+	      <mename>id</mename>
+	      <mevalue>.1.3.6.1.4.1.674.10892.2</mevalue>
+	  </maskelement>
+	  <maskelement>
+	      <mename>generic</mename>
+	      <mevalue>6</mevalue>
+	  </maskelement>
+	  <maskelement>
+	      <mename>specific</mename>
+	      <mevalue>2004</mevalue>
+	  </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Dell/traps/alertCMCCriticalTrap</uei>
+      <event-label>DELL-RAC-MIB defined trap event: alertCMCCriticalTrap</event-label>
+      <descr>
+	  &lt;p&gt;The CMC reported a critical event.&lt;/p&gt;&lt;table&gt;
+	  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	  drsProductChassisName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	  %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	  drsProductChassisLocation&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	  %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	  drsGlobalCurrStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	  %parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+	  other(1)
+	  unknown(2)
+	  ok(3)
+	  nonCritical(4)
+	  critical(5)
+	  nonRecoverable(6)
+	  &lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	  drsCASubSystem&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	  %parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	  drsCASSCurrStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	  %parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+	  other(1)
+	  unknown(2)
+	  ok(3)
+	  nonCritical(4)
+	  critical(5)
+	  nonRecoverable(6)
+	  &lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	  drsCASSPrevStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	  %parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+	  other(1)
+	  unknown(2)
+	  ok(3)
+	  nonCritical(4)
+	  critical(5)
+	  nonRecoverable(6)
+	  &lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	  drsCASSChangeTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	  %parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	  drsCAMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	  %parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+      </descr>
+      <logmsg dest="logndisplay">&lt;p&gt;
+	  alertCMCCriticalTrap trap received
+	  drsProductChassisName=%parm[#1]%
+	  drsProductChassisLocation=%parm[#2]%
+	  drsGlobalCurrStatus=%parm[#3]%
+	  drsCASubSystem=%parm[#4]%
+	  drsCASSCurrStatus=%parm[#5]%
+	  drsCASSPrevStatus=%parm[#6]%
+	  drsCASSChangeTime=%parm[#7]%
+	  drsCAMessage=%parm[#8]%&lt;/p&gt;
+      </logmsg>
+      <severity>Major</severity>
+      <varbindsdecode>
+	  <parmid>parm[#3]</parmid>
+	  <decode varbinddecodedstring="other" varbindvalue="1"/>
+	  <decode varbinddecodedstring="unknown" varbindvalue="2"/>
+	  <decode varbinddecodedstring="ok" varbindvalue="3"/>
+	  <decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+	  <decode varbinddecodedstring="critical" varbindvalue="5"/>
+	  <decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+      </varbindsdecode>
+      <varbindsdecode>
+	  <parmid>parm[#5]</parmid>
+	  <decode varbinddecodedstring="other" varbindvalue="1"/>
+	  <decode varbinddecodedstring="unknown" varbindvalue="2"/>
+	  <decode varbinddecodedstring="ok" varbindvalue="3"/>
+	  <decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+	  <decode varbinddecodedstring="critical" varbindvalue="5"/>
+	  <decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+      </varbindsdecode>
+      <varbindsdecode>
+	  <parmid>parm[#6]</parmid>
+	  <decode varbinddecodedstring="other" varbindvalue="1"/>
+	  <decode varbinddecodedstring="unknown" varbindvalue="2"/>
+	  <decode varbinddecodedstring="ok" varbindvalue="3"/>
+	  <decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+	  <decode varbinddecodedstring="critical" varbindvalue="5"/>
+	  <decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+      </varbindsdecode>
+  </event>
+  <event>
+      <mask>
+	  <maskelement>
+	      <mename>id</mename>
+	      <mevalue>.1.3.6.1.4.1.674.10892.2</mevalue>
+	  </maskelement>
+	  <maskelement>
+	      <mename>generic</mename>
+	      <mevalue>6</mevalue>
+	  </maskelement>
+	  <maskelement>
+	      <mename>specific</mename>
+	      <mevalue>2005</mevalue>
+	  </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Dell/traps/alertCMCNonRecoverableTrap</uei>
+      <event-label>DELL-RAC-MIB defined trap event: alertCMCNonRecoverableTrap</event-label>
+      <descr>
+	  &lt;p&gt;The CMC reported a catastrophic event.&lt;/p&gt;&lt;table&gt;
+	  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	  drsProductChassisName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	  %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	  drsProductChassisLocation&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	  %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	  drsGlobalCurrStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	  %parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+	  other(1)
+	  unknown(2)
+	  ok(3)
+	  nonCritical(4)
+	  critical(5)
+	  nonRecoverable(6)
+	  &lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	  drsCASubSystem&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	  %parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	  drsCASSCurrStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	  %parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+	  other(1)
+	  unknown(2)
+	  ok(3)
+	  nonCritical(4)
+	  critical(5)
+	  nonRecoverable(6)
+	  &lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	  drsCASSPrevStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	  %parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+	  other(1)
+	  unknown(2)
+	  ok(3)
+	  nonCritical(4)
+	  critical(5)
+	  nonRecoverable(6)
+	  &lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	  drsCASSChangeTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	  %parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	  drsCAMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	  %parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+      </descr>
+      <logmsg dest="logndisplay">&lt;p&gt;
+	  alertCMCNonRecoverableTrap trap received
+	  drsProductChassisName=%parm[#1]%
+	  drsProductChassisLocation=%parm[#2]%
+	  drsGlobalCurrStatus=%parm[#3]%
+	  drsCASubSystem=%parm[#4]%
+	  drsCASSCurrStatus=%parm[#5]%
+	  drsCASSPrevStatus=%parm[#6]%
+	  drsCASSChangeTime=%parm[#7]%
+	  drsCAMessage=%parm[#8]%&lt;/p&gt;
+      </logmsg>
+      <severity>Indeterminate</severity>
+      <varbindsdecode>
+	  <parmid>parm[#3]</parmid>
+	  <decode varbinddecodedstring="other" varbindvalue="1"/>
+	  <decode varbinddecodedstring="unknown" varbindvalue="2"/>
+	  <decode varbinddecodedstring="ok" varbindvalue="3"/>
+	  <decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+	  <decode varbinddecodedstring="critical" varbindvalue="5"/>
+	  <decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+      </varbindsdecode>
+      <varbindsdecode>
+	  <parmid>parm[#5]</parmid>
+	  <decode varbinddecodedstring="other" varbindvalue="1"/>
+	  <decode varbinddecodedstring="unknown" varbindvalue="2"/>
+	  <decode varbinddecodedstring="ok" varbindvalue="3"/>
+	  <decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+	  <decode varbinddecodedstring="critical" varbindvalue="5"/>
+	  <decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+      </varbindsdecode>
+      <varbindsdecode>
+	  <parmid>parm[#6]</parmid>
+	  <decode varbinddecodedstring="other" varbindvalue="1"/>
+	  <decode varbinddecodedstring="unknown" varbindvalue="2"/>
+	  <decode varbinddecodedstring="ok" varbindvalue="3"/>
+	  <decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+	  <decode varbinddecodedstring="critical" varbindvalue="5"/>
+	  <decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+      </varbindsdecode>
+  </event>
+  <event>
+      <mask>
+	  <maskelement>
+	      <mename>id</mename>
+	      <mevalue>.1.3.6.1.4.1.674.10892.2</mevalue>
+	  </maskelement>
+	  <maskelement>
+	      <mename>generic</mename>
+	      <mevalue>6</mevalue>
+	  </maskelement>
+	  <maskelement>
+	      <mename>specific</mename>
+	      <mevalue>1001</mevalue>
+	  </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Dell/traps/alertDrscTestTrapEvent</uei>
+      <event-label>DELL-RAC-MIB defined trap event: alertDrscTestTrapEvent</event-label>
+      <descr>
+	  &lt;p&gt;The RAC generated a test trap event in response to a user request.&lt;/p&gt;&lt;table&gt;
+	  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	  drsAlertSystem&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	  %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	  drsAlertTableIndexOID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	  %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	  drsAlertMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	  %parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	  drsAlertCurrentStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	  %parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+	  other(1)
+	  unknown(2)
+	  ok(3)
+	  nonCritical(4)
+	  critical(5)
+	  nonRecoverable(6)
+	  &lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	  drsAlertPreviousStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	  %parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+	  other(1)
+	  unknown(2)
+	  ok(3)
+	  nonCritical(4)
+	  critical(5)
+	  nonRecoverable(6)
+	  &lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	  drsAlertData&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	  %parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+      </descr>
+      <logmsg dest="logndisplay">&lt;p&gt;
+	  alertDrscTestTrapEvent trap received
+	  drsAlertSystem=%parm[#1]%
+	  drsAlertTableIndexOID=%parm[#2]%
+	  drsAlertMessage=%parm[#3]%
+	  drsAlertCurrentStatus=%parm[#4]%
+	  drsAlertPreviousStatus=%parm[#5]%
+	  drsAlertData=%parm[#6]%&lt;/p&gt;
+      </logmsg>
+      <severity>Normal</severity>
+      <varbindsdecode>
+	  <parmid>parm[#4]</parmid>
+	  <decode varbinddecodedstring="other" varbindvalue="1"/>
+	  <decode varbinddecodedstring="unknown" varbindvalue="2"/>
+	  <decode varbinddecodedstring="ok" varbindvalue="3"/>
+	  <decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+	  <decode varbinddecodedstring="critical" varbindvalue="5"/>
+	  <decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+      </varbindsdecode>
+      <varbindsdecode>
+	  <parmid>parm[#5]</parmid>
+	  <decode varbinddecodedstring="other" varbindvalue="1"/>
+	  <decode varbinddecodedstring="unknown" varbindvalue="2"/>
+	  <decode varbinddecodedstring="ok" varbindvalue="3"/>
+	  <decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+	  <decode varbinddecodedstring="critical" varbindvalue="5"/>
+	  <decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+      </varbindsdecode>
+  </event>
+  <event>
+      <mask>
+	  <maskelement>
+	      <mename>id</mename>
+	      <mevalue>.1.3.6.1.4.1.674.10892.2</mevalue>
+	  </maskelement>
+	  <maskelement>
+	      <mename>generic</mename>
+	      <mevalue>6</mevalue>
+	  </maskelement>
+	  <maskelement>
+	      <mename>specific</mename>
+	      <mevalue>1002</mevalue>
+	  </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Dell/traps/alertDrscAuthError</uei>
+      <event-label>DELL-RAC-MIB defined trap event: alertDrscAuthError</event-label>
+      <descr>
+	  &lt;p&gt;The RAC Authentication Failures during a time period have Exceeded a Threshold.&lt;/p&gt;&lt;table&gt;
+	  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	  drsAlertSystem&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	  %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	  drsAlertTableIndexOID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	  %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	  drsAlertMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	  %parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	  drsAlertCurrentStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	  %parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+	  other(1)
+	  unknown(2)
+	  ok(3)
+	  nonCritical(4)
+	  critical(5)
+	  nonRecoverable(6)
+	  &lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	  drsAlertPreviousStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	  %parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+	  other(1)
+	  unknown(2)
+	  ok(3)
+	  nonCritical(4)
+	  critical(5)
+	  nonRecoverable(6)
+	  &lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	  drsAlertData&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	  %parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+      </descr>
+      <logmsg dest="logndisplay">&lt;p&gt;
+	  alertDrscAuthError trap received
+	  drsAlertSystem=%parm[#1]%
+	  drsAlertTableIndexOID=%parm[#2]%
+	  drsAlertMessage=%parm[#3]%
+	  drsAlertCurrentStatus=%parm[#4]%
+	  drsAlertPreviousStatus=%parm[#5]%
+	  drsAlertData=%parm[#6]%&lt;/p&gt;
+      </logmsg>
+      <severity>Minor</severity>
+      <varbindsdecode>
+	  <parmid>parm[#4]</parmid>
+	  <decode varbinddecodedstring="other" varbindvalue="1"/>
+	  <decode varbinddecodedstring="unknown" varbindvalue="2"/>
+	  <decode varbinddecodedstring="ok" varbindvalue="3"/>
+	  <decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+	  <decode varbinddecodedstring="critical" varbindvalue="5"/>
+	  <decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+      </varbindsdecode>
+      <varbindsdecode>
+	  <parmid>parm[#5]</parmid>
+	  <decode varbinddecodedstring="other" varbindvalue="1"/>
+	  <decode varbinddecodedstring="unknown" varbindvalue="2"/>
+	  <decode varbinddecodedstring="ok" varbindvalue="3"/>
+	  <decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+	  <decode varbinddecodedstring="critical" varbindvalue="5"/>
+	  <decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+      </varbindsdecode>
+  </event>
+  <event>
+      <mask>
+	  <maskelement>
+	      <mename>id</mename>
+	      <mevalue>.1.3.6.1.4.1.674.10892.2</mevalue>
+	  </maskelement>
+	  <maskelement>
+	      <mename>generic</mename>
+	      <mevalue>6</mevalue>
+	  </maskelement>
+	  <maskelement>
+	      <mename>specific</mename>
+	      <mevalue>1003</mevalue>
+	  </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Dell/traps/alertDrscLostESM</uei>
+      <event-label>DELL-RAC-MIB defined trap event: alertDrscLostESM</event-label>
+      <descr>
+	  &lt;p&gt;The RAC cannot communicate with the baseboard management controller (ESM).&lt;/p&gt;&lt;table&gt;
+	  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	  drsAlertSystem&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	  %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	  drsAlertTableIndexOID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	  %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	  drsAlertMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	  %parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	  drsAlertCurrentStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	  %parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+	  other(1)
+	  unknown(2)
+	  ok(3)
+	  nonCritical(4)
+	  critical(5)
+	  nonRecoverable(6)
+	  &lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	  drsAlertPreviousStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	  %parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+	  other(1)
+	  unknown(2)
+	  ok(3)
+	  nonCritical(4)
+	  critical(5)
+	  nonRecoverable(6)
+	  &lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	  drsAlertData&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	  %parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+      </descr>
+      <logmsg dest="logndisplay">&lt;p&gt;
+	  alertDrscLostESM trap received
+	  drsAlertSystem=%parm[#1]%
+	  drsAlertTableIndexOID=%parm[#2]%
+	  drsAlertMessage=%parm[#3]%
+	  drsAlertCurrentStatus=%parm[#4]%
+	  drsAlertPreviousStatus=%parm[#5]%
+	  drsAlertData=%parm[#6]%&lt;/p&gt;
+      </logmsg>
+      <severity>Minor</severity>
+      <varbindsdecode>
+	  <parmid>parm[#4]</parmid>
+	  <decode varbinddecodedstring="other" varbindvalue="1"/>
+	  <decode varbinddecodedstring="unknown" varbindvalue="2"/>
+	  <decode varbinddecodedstring="ok" varbindvalue="3"/>
+	  <decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+	  <decode varbinddecodedstring="critical" varbindvalue="5"/>
+	  <decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+      </varbindsdecode>
+      <varbindsdecode>
+	  <parmid>parm[#5]</parmid>
+	  <decode varbinddecodedstring="other" varbindvalue="1"/>
+	  <decode varbinddecodedstring="unknown" varbindvalue="2"/>
+	  <decode varbinddecodedstring="ok" varbindvalue="3"/>
+	  <decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+	  <decode varbinddecodedstring="critical" varbindvalue="5"/>
+	  <decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+      </varbindsdecode>
+  </event>
+  <event>
+      <mask>
+	  <maskelement>
+	      <mename>id</mename>
+	      <mevalue>.1.3.6.1.4.1.674.10892.2</mevalue>
+	  </maskelement>
+	  <maskelement>
+	      <mename>generic</mename>
+	      <mevalue>6</mevalue>
+	  </maskelement>
+	  <maskelement>
+	      <mename>specific</mename>
+	      <mevalue>1004</mevalue>
+	  </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Dell/traps/alertDrscFoundESM</uei>
+      <event-label>DELL-RAC-MIB defined trap event: alertDrscFoundESM</event-label>
+      <descr>
+	  &lt;p&gt;The RAC is communicating normally with the baseboard management controller (ESM).&lt;/p&gt;&lt;table&gt;
+	  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	  drsAlertSystem&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	  %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	  drsAlertTableIndexOID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	  %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	  drsAlertMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	  %parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	  drsAlertCurrentStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	  %parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+	  other(1)
+	  unknown(2)
+	  ok(3)
+	  nonCritical(4)
+	  critical(5)
+	  nonRecoverable(6)
+	  &lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	  drsAlertPreviousStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	  %parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+	  other(1)
+	  unknown(2)
+	  ok(3)
+	  nonCritical(4)
+	  critical(5)
+	  nonRecoverable(6)
+	  &lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	  drsAlertData&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	  %parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+      </descr>
+      <logmsg dest="logndisplay">&lt;p&gt;
+	  alertDrscFoundESM trap received
+	  drsAlertSystem=%parm[#1]%
+	  drsAlertTableIndexOID=%parm[#2]%
+	  drsAlertMessage=%parm[#3]%
+	  drsAlertCurrentStatus=%parm[#4]%
+	  drsAlertPreviousStatus=%parm[#5]%
+	  drsAlertData=%parm[#6]%&lt;/p&gt;
+      </logmsg>
+      <severity>Normal</severity>
+      <varbindsdecode>
+	  <parmid>parm[#4]</parmid>
+	  <decode varbinddecodedstring="other" varbindvalue="1"/>
+	  <decode varbinddecodedstring="unknown" varbindvalue="2"/>
+	  <decode varbinddecodedstring="ok" varbindvalue="3"/>
+	  <decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+	  <decode varbinddecodedstring="critical" varbindvalue="5"/>
+	  <decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+      </varbindsdecode>
+      <varbindsdecode>
+	  <parmid>parm[#5]</parmid>
+	  <decode varbinddecodedstring="other" varbindvalue="1"/>
+	  <decode varbinddecodedstring="unknown" varbindvalue="2"/>
+	  <decode varbinddecodedstring="ok" varbindvalue="3"/>
+	  <decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+	  <decode varbinddecodedstring="critical" varbindvalue="5"/>
+	  <decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+      </varbindsdecode>
+  </event>
+  <event>
+      <mask>
+	  <maskelement>
+	      <mename>id</mename>
+	      <mevalue>.1.3.6.1.4.1.674.10892.2</mevalue>
+	  </maskelement>
+	  <maskelement>
+	      <mename>generic</mename>
+	      <mevalue>6</mevalue>
+	  </maskelement>
+	  <maskelement>
+	      <mename>specific</mename>
+	      <mevalue>1005</mevalue>
+	  </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Dell/traps/alertDrscPowerOff</uei>
+      <event-label>DELL-RAC-MIB defined trap event: alertDrscPowerOff</event-label>
+      <descr>
+	  &lt;p&gt;The RAC has detected a System power state change to powered-off.&lt;/p&gt;&lt;table&gt;
+	  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	  drsAlertSystem&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	  %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	  drsAlertTableIndexOID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	  %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	  drsAlertMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	  %parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	  drsAlertCurrentStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	  %parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+	  other(1)
+	  unknown(2)
+	  ok(3)
+	  nonCritical(4)
+	  critical(5)
+	  nonRecoverable(6)
+	  &lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	  drsAlertPreviousStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	  %parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+	  other(1)
+	  unknown(2)
+	  ok(3)
+	  nonCritical(4)
+	  critical(5)
+	  nonRecoverable(6)
+	  &lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	  drsAlertData&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	  %parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+      </descr>
+      <logmsg dest="logndisplay">&lt;p&gt;
+	  alertDrscPowerOff trap received
+	  drsAlertSystem=%parm[#1]%
+	  drsAlertTableIndexOID=%parm[#2]%
+	  drsAlertMessage=%parm[#3]%
+	  drsAlertCurrentStatus=%parm[#4]%
+	  drsAlertPreviousStatus=%parm[#5]%
+	  drsAlertData=%parm[#6]%&lt;/p&gt;
+      </logmsg>
+      <severity>Major</severity>
+      <varbindsdecode>
+	  <parmid>parm[#4]</parmid>
+	  <decode varbinddecodedstring="other" varbindvalue="1"/>
+	  <decode varbinddecodedstring="unknown" varbindvalue="2"/>
+	  <decode varbinddecodedstring="ok" varbindvalue="3"/>
+	  <decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+	  <decode varbinddecodedstring="critical" varbindvalue="5"/>
+	  <decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+      </varbindsdecode>
+      <varbindsdecode>
+	  <parmid>parm[#5]</parmid>
+	  <decode varbinddecodedstring="other" varbindvalue="1"/>
+	  <decode varbinddecodedstring="unknown" varbindvalue="2"/>
+	  <decode varbinddecodedstring="ok" varbindvalue="3"/>
+	  <decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+	  <decode varbinddecodedstring="critical" varbindvalue="5"/>
+	  <decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+      </varbindsdecode>
+  </event>
+  <event>
+      <mask>
+	  <maskelement>
+	      <mename>id</mename>
+	      <mevalue>.1.3.6.1.4.1.674.10892.2</mevalue>
+	  </maskelement>
+	  <maskelement>
+	      <mename>generic</mename>
+	      <mevalue>6</mevalue>
+	  </maskelement>
+	  <maskelement>
+	      <mename>specific</mename>
+	      <mevalue>1006</mevalue>
+	  </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Dell/traps/alertDrscPowerOn</uei>
+      <event-label>DELL-RAC-MIB defined trap event: alertDrscPowerOn</event-label>
+      <descr>
+	  &lt;p&gt;The RAC has detected a system power state change to powered-on.&lt;/p&gt;&lt;table&gt;
+	  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	  drsAlertSystem&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	  %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	  drsAlertTableIndexOID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	  %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	  drsAlertMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	  %parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	  drsAlertCurrentStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	  %parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+	  other(1)
+	  unknown(2)
+	  ok(3)
+	  nonCritical(4)
+	  critical(5)
+	  nonRecoverable(6)
+	  &lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	  drsAlertPreviousStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	  %parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+	  other(1)
+	  unknown(2)
+	  ok(3)
+	  nonCritical(4)
+	  critical(5)
+	  nonRecoverable(6)
+	  &lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	  drsAlertData&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	  %parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+      </descr>
+      <logmsg dest="logndisplay">&lt;p&gt;
+	  alertDrscPowerOn trap received
+	  drsAlertSystem=%parm[#1]%
+	  drsAlertTableIndexOID=%parm[#2]%
+	  drsAlertMessage=%parm[#3]%
+	  drsAlertCurrentStatus=%parm[#4]%
+	  drsAlertPreviousStatus=%parm[#5]%
+	  drsAlertData=%parm[#6]%&lt;/p&gt;
+      </logmsg>
+      <severity>Normal</severity>
+      <varbindsdecode>
+	  <parmid>parm[#4]</parmid>
+	  <decode varbinddecodedstring="other" varbindvalue="1"/>
+	  <decode varbinddecodedstring="unknown" varbindvalue="2"/>
+	  <decode varbinddecodedstring="ok" varbindvalue="3"/>
+	  <decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+	  <decode varbinddecodedstring="critical" varbindvalue="5"/>
+	  <decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+      </varbindsdecode>
+      <varbindsdecode>
+	  <parmid>parm[#5]</parmid>
+	  <decode varbinddecodedstring="other" varbindvalue="1"/>
+	  <decode varbinddecodedstring="unknown" varbindvalue="2"/>
+	  <decode varbinddecodedstring="ok" varbindvalue="3"/>
+	  <decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+	  <decode varbinddecodedstring="critical" varbindvalue="5"/>
+	  <decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+      </varbindsdecode>
+  </event>
+  <event>
+      <mask>
+	  <maskelement>
+	      <mename>id</mename>
+	      <mevalue>.1.3.6.1.4.1.674.10892.2</mevalue>
+	  </maskelement>
+	  <maskelement>
+	      <mename>generic</mename>
+	      <mevalue>6</mevalue>
+	  </maskelement>
+	  <maskelement>
+	      <mename>specific</mename>
+	      <mevalue>1007</mevalue>
+	  </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Dell/traps/alertDrscWatchdogExpired</uei>
+      <event-label>DELL-RAC-MIB defined trap event: alertDrscWatchdogExpired</event-label>
+      <descr>
+	  &lt;p&gt;The RAC has detected that the system watchdog has expired indicating a system hang.&lt;/p&gt;&lt;table&gt;
+	  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	  drsAlertSystem&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	  %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	  drsAlertTableIndexOID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	  %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	  drsAlertMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	  %parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	  drsAlertCurrentStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	  %parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+	  other(1)
+	  unknown(2)
+	  ok(3)
+	  nonCritical(4)
+	  critical(5)
+	  nonRecoverable(6)
+	  &lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	  drsAlertPreviousStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	  %parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+	  other(1)
+	  unknown(2)
+	  ok(3)
+	  nonCritical(4)
+	  critical(5)
+	  nonRecoverable(6)
+	  &lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	  drsAlertData&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	  %parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+      </descr>
+      <logmsg dest="logndisplay">&lt;p&gt;
+	  alertDrscWatchdogExpired trap received
+	  drsAlertSystem=%parm[#1]%
+	  drsAlertTableIndexOID=%parm[#2]%
+	  drsAlertMessage=%parm[#3]%
+	  drsAlertCurrentStatus=%parm[#4]%
+	  drsAlertPreviousStatus=%parm[#5]%
+	  drsAlertData=%parm[#6]%&lt;/p&gt;
+      </logmsg>
+      <severity>Major</severity>
+      <varbindsdecode>
+	  <parmid>parm[#4]</parmid>
+	  <decode varbinddecodedstring="other" varbindvalue="1"/>
+	  <decode varbinddecodedstring="unknown" varbindvalue="2"/>
+	  <decode varbinddecodedstring="ok" varbindvalue="3"/>
+	  <decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+	  <decode varbinddecodedstring="critical" varbindvalue="5"/>
+	  <decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+      </varbindsdecode>
+      <varbindsdecode>
+	  <parmid>parm[#5]</parmid>
+	  <decode varbinddecodedstring="other" varbindvalue="1"/>
+	  <decode varbinddecodedstring="unknown" varbindvalue="2"/>
+	  <decode varbinddecodedstring="ok" varbindvalue="3"/>
+	  <decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+	  <decode varbinddecodedstring="critical" varbindvalue="5"/>
+	  <decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+      </varbindsdecode>
+  </event>
+  <event>
+      <mask>
+	  <maskelement>
+	      <mename>id</mename>
+	      <mevalue>.1.3.6.1.4.1.674.10892.2</mevalue>
+	  </maskelement>
+	  <maskelement>
+	      <mename>generic</mename>
+	      <mevalue>6</mevalue>
+	  </maskelement>
+	  <maskelement>
+	      <mename>specific</mename>
+	      <mevalue>1008</mevalue>
+	  </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Dell/traps/alertDrscBattLow</uei>
+      <event-label>DELL-RAC-MIB defined trap event: alertDrscBattLow</event-label>
+      <descr>
+	  &lt;p&gt;The RAC Battery charge is below 25% indicating that the battery may only be able to power the DRSC for 8-10 minutes.&lt;/p&gt;&lt;table&gt;
+	  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	  drsAlertSystem&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	  %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	  drsAlertTableIndexOID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	  %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	  drsAlertMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	  %parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	  drsAlertCurrentStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	  %parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+	  other(1)
+	  unknown(2)
+	  ok(3)
+	  nonCritical(4)
+	  critical(5)
+	  nonRecoverable(6)
+	  &lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	  drsAlertPreviousStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	  %parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+	  other(1)
+	  unknown(2)
+	  ok(3)
+	  nonCritical(4)
+	  critical(5)
+	  nonRecoverable(6)
+	  &lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	  drsAlertData&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	  %parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+      </descr>
+      <logmsg dest="logndisplay">&lt;p&gt;
+	  alertDrscBattLow trap received
+	  drsAlertSystem=%parm[#1]%
+	  drsAlertTableIndexOID=%parm[#2]%
+	  drsAlertMessage=%parm[#3]%
+	  drsAlertCurrentStatus=%parm[#4]%
+	  drsAlertPreviousStatus=%parm[#5]%
+	  drsAlertData=%parm[#6]%&lt;/p&gt;
+      </logmsg>
+      <severity>Minor</severity>
+      <varbindsdecode>
+	  <parmid>parm[#4]</parmid>
+	  <decode varbinddecodedstring="other" varbindvalue="1"/>
+	  <decode varbinddecodedstring="unknown" varbindvalue="2"/>
+	  <decode varbinddecodedstring="ok" varbindvalue="3"/>
+	  <decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+	  <decode varbinddecodedstring="critical" varbindvalue="5"/>
+	  <decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+      </varbindsdecode>
+      <varbindsdecode>
+	  <parmid>parm[#5]</parmid>
+	  <decode varbinddecodedstring="other" varbindvalue="1"/>
+	  <decode varbinddecodedstring="unknown" varbindvalue="2"/>
+	  <decode varbinddecodedstring="ok" varbindvalue="3"/>
+	  <decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+	  <decode varbinddecodedstring="critical" varbindvalue="5"/>
+	  <decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+      </varbindsdecode>
+  </event>
+  <event>
+      <mask>
+	  <maskelement>
+	      <mename>id</mename>
+	      <mevalue>.1.3.6.1.4.1.674.10892.2</mevalue>
+	  </maskelement>
+	  <maskelement>
+	      <mename>generic</mename>
+	      <mevalue>6</mevalue>
+	  </maskelement>
+	  <maskelement>
+	      <mename>specific</mename>
+	      <mevalue>1009</mevalue>
+	  </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Dell/traps/alertDrscTempNormal</uei>
+      <event-label>DELL-RAC-MIB defined trap event: alertDrscTempNormal</event-label>
+      <descr>
+	  &lt;p&gt;The RAC Temperature probe has retured to a normal value.&lt;/p&gt;&lt;table&gt;
+	  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	  drsAlertSystem&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	  %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	  drsAlertTableIndexOID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	  %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	  drsAlertMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	  %parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	  drsAlertCurrentStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	  %parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+	  other(1)
+	  unknown(2)
+	  ok(3)
+	  nonCritical(4)
+	  critical(5)
+	  nonRecoverable(6)
+	  &lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	  drsAlertPreviousStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	  %parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+	  other(1)
+	  unknown(2)
+	  ok(3)
+	  nonCritical(4)
+	  critical(5)
+	  nonRecoverable(6)
+	  &lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	  drsAlertData&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	  %parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+      </descr>
+      <logmsg dest="logndisplay">&lt;p&gt;
+	  alertDrscTempNormal trap received
+	  drsAlertSystem=%parm[#1]%
+	  drsAlertTableIndexOID=%parm[#2]%
+	  drsAlertMessage=%parm[#3]%
+	  drsAlertCurrentStatus=%parm[#4]%
+	  drsAlertPreviousStatus=%parm[#5]%
+	  drsAlertData=%parm[#6]%&lt;/p&gt;
+      </logmsg>
+      <severity>Normal</severity>
+      <varbindsdecode>
+	  <parmid>parm[#4]</parmid>
+	  <decode varbinddecodedstring="other" varbindvalue="1"/>
+	  <decode varbinddecodedstring="unknown" varbindvalue="2"/>
+	  <decode varbinddecodedstring="ok" varbindvalue="3"/>
+	  <decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+	  <decode varbinddecodedstring="critical" varbindvalue="5"/>
+	  <decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+      </varbindsdecode>
+      <varbindsdecode>
+	  <parmid>parm[#5]</parmid>
+	  <decode varbinddecodedstring="other" varbindvalue="1"/>
+	  <decode varbinddecodedstring="unknown" varbindvalue="2"/>
+	  <decode varbinddecodedstring="ok" varbindvalue="3"/>
+	  <decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+	  <decode varbinddecodedstring="critical" varbindvalue="5"/>
+	  <decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+      </varbindsdecode>
+  </event>
+  <event>
+      <mask>
+	  <maskelement>
+	      <mename>id</mename>
+	      <mevalue>.1.3.6.1.4.1.674.10892.2</mevalue>
+	  </maskelement>
+	  <maskelement>
+	      <mename>generic</mename>
+	      <mevalue>6</mevalue>
+	  </maskelement>
+	  <maskelement>
+	      <mename>specific</mename>
+	      <mevalue>1010</mevalue>
+	  </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Dell/traps/alertDrscTempWarning</uei>
+      <event-label>DELL-RAC-MIB defined trap event: alertDrscTempWarning</event-label>
+      <descr>
+	  &lt;p&gt;The RAC Temperature probe has detected a Warning value.&lt;/p&gt;&lt;table&gt;
+	  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	  drsAlertSystem&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	  %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	  drsAlertTableIndexOID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	  %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	  drsAlertMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	  %parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	  drsAlertCurrentStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	  %parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+	  other(1)
+	  unknown(2)
+	  ok(3)
+	  nonCritical(4)
+	  critical(5)
+	  nonRecoverable(6)
+	  &lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	  drsAlertPreviousStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	  %parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+	  other(1)
+	  unknown(2)
+	  ok(3)
+	  nonCritical(4)
+	  critical(5)
+	  nonRecoverable(6)
+	  &lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	  drsAlertData&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	  %parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+      </descr>
+      <logmsg dest="logndisplay">&lt;p&gt;
+	  alertDrscTempWarning trap received
+	  drsAlertSystem=%parm[#1]%
+	  drsAlertTableIndexOID=%parm[#2]%
+	  drsAlertMessage=%parm[#3]%
+	  drsAlertCurrentStatus=%parm[#4]%
+	  drsAlertPreviousStatus=%parm[#5]%
+	  drsAlertData=%parm[#6]%&lt;/p&gt;
+      </logmsg>
+      <severity>Minor</severity>
+      <varbindsdecode>
+	  <parmid>parm[#4]</parmid>
+	  <decode varbinddecodedstring="other" varbindvalue="1"/>
+	  <decode varbinddecodedstring="unknown" varbindvalue="2"/>
+	  <decode varbinddecodedstring="ok" varbindvalue="3"/>
+	  <decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+	  <decode varbinddecodedstring="critical" varbindvalue="5"/>
+	  <decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+      </varbindsdecode>
+      <varbindsdecode>
+	  <parmid>parm[#5]</parmid>
+	  <decode varbinddecodedstring="other" varbindvalue="1"/>
+	  <decode varbinddecodedstring="unknown" varbindvalue="2"/>
+	  <decode varbinddecodedstring="ok" varbindvalue="3"/>
+	  <decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+	  <decode varbinddecodedstring="critical" varbindvalue="5"/>
+	  <decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+      </varbindsdecode>
+  </event>
+  <event>
+      <mask>
+	  <maskelement>
+	      <mename>id</mename>
+	      <mevalue>.1.3.6.1.4.1.674.10892.2</mevalue>
+	  </maskelement>
+	  <maskelement>
+	      <mename>generic</mename>
+	      <mevalue>6</mevalue>
+	  </maskelement>
+	  <maskelement>
+	      <mename>specific</mename>
+	      <mevalue>1011</mevalue>
+	  </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Dell/traps/alertDrscTempCritical</uei>
+      <event-label>DELL-RAC-MIB defined trap event: alertDrscTempCritical</event-label>
+      <descr>
+	  &lt;p&gt;The RAC Temperature probe has detected a failure (or critical) value.&lt;/p&gt;&lt;table&gt;
+	  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	  drsAlertSystem&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	  %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	  drsAlertTableIndexOID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	  %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	  drsAlertMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	  %parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	  drsAlertCurrentStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	  %parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+	  other(1)
+	  unknown(2)
+	  ok(3)
+	  nonCritical(4)
+	  critical(5)
+	  nonRecoverable(6)
+	  &lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	  drsAlertPreviousStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	  %parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+	  other(1)
+	  unknown(2)
+	  ok(3)
+	  nonCritical(4)
+	  critical(5)
+	  nonRecoverable(6)
+	  &lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	  drsAlertData&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	  %parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+      </descr>
+      <logmsg dest="logndisplay">&lt;p&gt;
+	  alertDrscTempCritical trap received
+	  drsAlertSystem=%parm[#1]%
+	  drsAlertTableIndexOID=%parm[#2]%
+	  drsAlertMessage=%parm[#3]%
+	  drsAlertCurrentStatus=%parm[#4]%
+	  drsAlertPreviousStatus=%parm[#5]%
+	  drsAlertData=%parm[#6]%&lt;/p&gt;
+      </logmsg>
+      <severity>Major</severity>
+      <varbindsdecode>
+	  <parmid>parm[#4]</parmid>
+	  <decode varbinddecodedstring="other" varbindvalue="1"/>
+	  <decode varbinddecodedstring="unknown" varbindvalue="2"/>
+	  <decode varbinddecodedstring="ok" varbindvalue="3"/>
+	  <decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+	  <decode varbinddecodedstring="critical" varbindvalue="5"/>
+	  <decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+      </varbindsdecode>
+      <varbindsdecode>
+	  <parmid>parm[#5]</parmid>
+	  <decode varbinddecodedstring="other" varbindvalue="1"/>
+	  <decode varbinddecodedstring="unknown" varbindvalue="2"/>
+	  <decode varbinddecodedstring="ok" varbindvalue="3"/>
+	  <decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+	  <decode varbinddecodedstring="critical" varbindvalue="5"/>
+	  <decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+      </varbindsdecode>
+  </event>
+  <event>
+      <mask>
+	  <maskelement>
+	      <mename>id</mename>
+	      <mevalue>.1.3.6.1.4.1.674.10892.2</mevalue>
+	  </maskelement>
+	  <maskelement>
+	      <mename>generic</mename>
+	      <mevalue>6</mevalue>
+	  </maskelement>
+	  <maskelement>
+	      <mename>specific</mename>
+	      <mevalue>1012</mevalue>
+	  </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Dell/traps/alertDrscVoltNormal</uei>
+      <event-label>DELL-RAC-MIB defined trap event: alertDrscVoltNormal</event-label>
+      <descr>
+	  &lt;p&gt;The RAC voltage has returned to a normal value.&lt;/p&gt;&lt;table&gt;
+	  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	  drsAlertSystem&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	  %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	  drsAlertTableIndexOID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	  %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	  drsAlertMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	  %parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	  drsAlertCurrentStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	  %parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+	  other(1)
+	  unknown(2)
+	  ok(3)
+	  nonCritical(4)
+	  critical(5)
+	  nonRecoverable(6)
+	  &lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	  drsAlertPreviousStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	  %parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+	  other(1)
+	  unknown(2)
+	  ok(3)
+	  nonCritical(4)
+	  critical(5)
+	  nonRecoverable(6)
+	  &lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	  drsAlertData&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	  %parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+      </descr>
+      <logmsg dest="logndisplay">&lt;p&gt;
+	  alertDrscVoltNormal trap received
+	  drsAlertSystem=%parm[#1]%
+	  drsAlertTableIndexOID=%parm[#2]%
+	  drsAlertMessage=%parm[#3]%
+	  drsAlertCurrentStatus=%parm[#4]%
+	  drsAlertPreviousStatus=%parm[#5]%
+	  drsAlertData=%parm[#6]%&lt;/p&gt;
+      </logmsg>
+      <severity>Normal</severity>
+      <varbindsdecode>
+	  <parmid>parm[#4]</parmid>
+	  <decode varbinddecodedstring="other" varbindvalue="1"/>
+	  <decode varbinddecodedstring="unknown" varbindvalue="2"/>
+	  <decode varbinddecodedstring="ok" varbindvalue="3"/>
+	  <decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+	  <decode varbinddecodedstring="critical" varbindvalue="5"/>
+	  <decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+      </varbindsdecode>
+      <varbindsdecode>
+	  <parmid>parm[#5]</parmid>
+	  <decode varbinddecodedstring="other" varbindvalue="1"/>
+	  <decode varbinddecodedstring="unknown" varbindvalue="2"/>
+	  <decode varbinddecodedstring="ok" varbindvalue="3"/>
+	  <decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+	  <decode varbinddecodedstring="critical" varbindvalue="5"/>
+	  <decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+      </varbindsdecode>
+  </event>
+  <event>
+      <mask>
+	  <maskelement>
+	      <mename>id</mename>
+	      <mevalue>.1.3.6.1.4.1.674.10892.2</mevalue>
+	  </maskelement>
+	  <maskelement>
+	      <mename>generic</mename>
+	      <mevalue>6</mevalue>
+	  </maskelement>
+	  <maskelement>
+	      <mename>specific</mename>
+	      <mevalue>1013</mevalue>
+	  </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Dell/traps/alertDrscVoltWarning</uei>
+      <event-label>DELL-RAC-MIB defined trap event: alertDrscVoltWarning</event-label>
+      <descr>
+	  &lt;p&gt;The RAC voltage probe has detected a warning value.&lt;/p&gt;&lt;table&gt;
+	  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	  drsAlertSystem&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	  %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	  drsAlertTableIndexOID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	  %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	  drsAlertMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	  %parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	  drsAlertCurrentStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	  %parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+	  other(1)
+	  unknown(2)
+	  ok(3)
+	  nonCritical(4)
+	  critical(5)
+	  nonRecoverable(6)
+	  &lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	  drsAlertPreviousStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	  %parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+	  other(1)
+	  unknown(2)
+	  ok(3)
+	  nonCritical(4)
+	  critical(5)
+	  nonRecoverable(6)
+	  &lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	  drsAlertData&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	  %parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+      </descr>
+      <logmsg dest="logndisplay">&lt;p&gt;
+	  alertDrscVoltWarning trap received
+	  drsAlertSystem=%parm[#1]%
+	  drsAlertTableIndexOID=%parm[#2]%
+	  drsAlertMessage=%parm[#3]%
+	  drsAlertCurrentStatus=%parm[#4]%
+	  drsAlertPreviousStatus=%parm[#5]%
+	  drsAlertData=%parm[#6]%&lt;/p&gt;
+      </logmsg>
+      <severity>Minor</severity>
+      <varbindsdecode>
+	  <parmid>parm[#4]</parmid>
+	  <decode varbinddecodedstring="other" varbindvalue="1"/>
+	  <decode varbinddecodedstring="unknown" varbindvalue="2"/>
+	  <decode varbinddecodedstring="ok" varbindvalue="3"/>
+	  <decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+	  <decode varbinddecodedstring="critical" varbindvalue="5"/>
+	  <decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+      </varbindsdecode>
+      <varbindsdecode>
+	  <parmid>parm[#5]</parmid>
+	  <decode varbinddecodedstring="other" varbindvalue="1"/>
+	  <decode varbinddecodedstring="unknown" varbindvalue="2"/>
+	  <decode varbinddecodedstring="ok" varbindvalue="3"/>
+	  <decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+	  <decode varbinddecodedstring="critical" varbindvalue="5"/>
+	  <decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+      </varbindsdecode>
+  </event>
+  <event>
+      <mask>
+	  <maskelement>
+	      <mename>id</mename>
+	      <mevalue>.1.3.6.1.4.1.674.10892.2</mevalue>
+	  </maskelement>
+	  <maskelement>
+	      <mename>generic</mename>
+	      <mevalue>6</mevalue>
+	  </maskelement>
+	  <maskelement>
+	      <mename>specific</mename>
+	      <mevalue>1014</mevalue>
+	  </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Dell/traps/alertDrscVoltCritical</uei>
+      <event-label>DELL-RAC-MIB defined trap event: alertDrscVoltCritical</event-label>
+      <descr>
+	  &lt;p&gt;The RAC voltage probe has detected a failure (or critical) value.&lt;/p&gt;&lt;table&gt;
+	  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	  drsAlertSystem&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	  %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	  drsAlertTableIndexOID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	  %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	  drsAlertMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	  %parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	  drsAlertCurrentStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	  %parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+	  other(1)
+	  unknown(2)
+	  ok(3)
+	  nonCritical(4)
+	  critical(5)
+	  nonRecoverable(6)
+	  &lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	  drsAlertPreviousStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	  %parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+	  other(1)
+	  unknown(2)
+	  ok(3)
+	  nonCritical(4)
+	  critical(5)
+	  nonRecoverable(6)
+	  &lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	  drsAlertData&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	  %parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+      </descr>
+      <logmsg dest="logndisplay">&lt;p&gt;
+	  alertDrscVoltCritical trap received
+	  drsAlertSystem=%parm[#1]%
+	  drsAlertTableIndexOID=%parm[#2]%
+	  drsAlertMessage=%parm[#3]%
+	  drsAlertCurrentStatus=%parm[#4]%
+	  drsAlertPreviousStatus=%parm[#5]%
+	  drsAlertData=%parm[#6]%&lt;/p&gt;
+      </logmsg>
+      <severity>Major</severity>
+      <varbindsdecode>
+	  <parmid>parm[#4]</parmid>
+	  <decode varbinddecodedstring="other" varbindvalue="1"/>
+	  <decode varbinddecodedstring="unknown" varbindvalue="2"/>
+	  <decode varbinddecodedstring="ok" varbindvalue="3"/>
+	  <decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+	  <decode varbinddecodedstring="critical" varbindvalue="5"/>
+	  <decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+      </varbindsdecode>
+      <varbindsdecode>
+	  <parmid>parm[#5]</parmid>
+	  <decode varbinddecodedstring="other" varbindvalue="1"/>
+	  <decode varbinddecodedstring="unknown" varbindvalue="2"/>
+	  <decode varbinddecodedstring="ok" varbindvalue="3"/>
+	  <decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+	  <decode varbinddecodedstring="critical" varbindvalue="5"/>
+	  <decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+      </varbindsdecode>
+  </event>
+  <event>
+      <mask>
+	  <maskelement>
+	      <mename>id</mename>
+	      <mevalue>.1.3.6.1.4.1.674.10892.2</mevalue>
+	  </maskelement>
+	  <maskelement>
+	      <mename>generic</mename>
+	      <mevalue>6</mevalue>
+	  </maskelement>
+	  <maskelement>
+	      <mename>specific</mename>
+	      <mevalue>1015</mevalue>
+	  </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Dell/traps/alertDrscSELWarning</uei>
+      <event-label>DELL-RAC-MIB defined trap event: alertDrscSELWarning</event-label>
+      <descr>
+	  &lt;p&gt;The RAC has detected a new event in the System Event Log with Severity: Warning.&lt;/p&gt;&lt;table&gt;
+	  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	  drsAlertSystem&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	  %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	  drsAlertTableIndexOID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	  %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	  drsAlertMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	  %parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	  drsAlertCurrentStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	  %parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+	  other(1)
+	  unknown(2)
+	  ok(3)
+	  nonCritical(4)
+	  critical(5)
+	  nonRecoverable(6)
+	  &lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	  drsAlertPreviousStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	  %parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+	  other(1)
+	  unknown(2)
+	  ok(3)
+	  nonCritical(4)
+	  critical(5)
+	  nonRecoverable(6)
+	  &lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	  drsAlertData&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	  %parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+      </descr>
+      <logmsg dest="logndisplay">&lt;p&gt;
+	  alertDrscSELWarning trap received
+	  drsAlertSystem=%parm[#1]%
+	  drsAlertTableIndexOID=%parm[#2]%
+	  drsAlertMessage=%parm[#3]%
+	  drsAlertCurrentStatus=%parm[#4]%
+	  drsAlertPreviousStatus=%parm[#5]%
+	  drsAlertData=%parm[#6]%&lt;/p&gt;
+      </logmsg>
+      <severity>Major</severity>
+      <varbindsdecode>
+	  <parmid>parm[#4]</parmid>
+	  <decode varbinddecodedstring="other" varbindvalue="1"/>
+	  <decode varbinddecodedstring="unknown" varbindvalue="2"/>
+	  <decode varbinddecodedstring="ok" varbindvalue="3"/>
+	  <decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+	  <decode varbinddecodedstring="critical" varbindvalue="5"/>
+	  <decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+      </varbindsdecode>
+      <varbindsdecode>
+	  <parmid>parm[#5]</parmid>
+	  <decode varbinddecodedstring="other" varbindvalue="1"/>
+	  <decode varbinddecodedstring="unknown" varbindvalue="2"/>
+	  <decode varbinddecodedstring="ok" varbindvalue="3"/>
+	  <decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+	  <decode varbinddecodedstring="critical" varbindvalue="5"/>
+	  <decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+      </varbindsdecode>
+  </event>
+  <event>
+      <mask>
+	  <maskelement>
+	      <mename>id</mename>
+	      <mevalue>.1.3.6.1.4.1.674.10892.2</mevalue>
+	  </maskelement>
+	  <maskelement>
+	      <mename>generic</mename>
+	      <mevalue>6</mevalue>
+	  </maskelement>
+	  <maskelement>
+	      <mename>specific</mename>
+	      <mevalue>1016</mevalue>
+	  </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Dell/traps/alertDrscSELCritical</uei>
+      <event-label>DELL-RAC-MIB defined trap event: alertDrscSELCritical</event-label>
+      <descr>
+	  &lt;p&gt;The RAC has detected a new event in the System Event Log with Severity: Critical.&lt;/p&gt;&lt;table&gt;
+	  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	  drsAlertSystem&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	  %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	  drsAlertTableIndexOID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	  %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	  drsAlertMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	  %parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	  drsAlertCurrentStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	  %parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+	  other(1)
+	  unknown(2)
+	  ok(3)
+	  nonCritical(4)
+	  critical(5)
+	  nonRecoverable(6)
+	  &lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	  drsAlertPreviousStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	  %parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+	  other(1)
+	  unknown(2)
+	  ok(3)
+	  nonCritical(4)
+	  critical(5)
+	  nonRecoverable(6)
+	  &lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	  drsAlertData&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	  %parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+      </descr>
+      <logmsg dest="logndisplay">&lt;p&gt;
+	  alertDrscSELCritical trap received
+	  drsAlertSystem=%parm[#1]%
+	  drsAlertTableIndexOID=%parm[#2]%
+	  drsAlertMessage=%parm[#3]%
+	  drsAlertCurrentStatus=%parm[#4]%
+	  drsAlertPreviousStatus=%parm[#5]%
+	  drsAlertData=%parm[#6]%&lt;/p&gt;
+      </logmsg>
+      <severity>Major</severity>
+      <varbindsdecode>
+	  <parmid>parm[#4]</parmid>
+	  <decode varbinddecodedstring="other" varbindvalue="1"/>
+	  <decode varbinddecodedstring="unknown" varbindvalue="2"/>
+	  <decode varbinddecodedstring="ok" varbindvalue="3"/>
+	  <decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+	  <decode varbinddecodedstring="critical" varbindvalue="5"/>
+	  <decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+      </varbindsdecode>
+      <varbindsdecode>
+	  <parmid>parm[#5]</parmid>
+	  <decode varbinddecodedstring="other" varbindvalue="1"/>
+	  <decode varbinddecodedstring="unknown" varbindvalue="2"/>
+	  <decode varbinddecodedstring="ok" varbindvalue="3"/>
+	  <decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+	  <decode varbinddecodedstring="critical" varbindvalue="5"/>
+	  <decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+      </varbindsdecode>
+  </event>
+  <event>
+      <mask>
+	  <maskelement>
+	      <mename>id</mename>
+	      <mevalue>.1.3.6.1.4.1.674.10892.2</mevalue>
+	  </maskelement>
+	  <maskelement>
+	      <mename>generic</mename>
+	      <mevalue>6</mevalue>
+	  </maskelement>
+	  <maskelement>
+	      <mename>specific</mename>
+	      <mevalue>1017</mevalue>
+	  </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Dell/traps/alertDrscSEL80percentFull</uei>
+      <event-label>DELL-RAC-MIB defined trap event: alertDrscSEL80percentFull</event-label>
+      <descr>
+	  &lt;p&gt;The RAC has detected that the System Event Log is 80% full.&lt;/p&gt;&lt;table&gt;
+	  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	  drsAlertSystem&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	  %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	  drsAlertTableIndexOID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	  %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	  drsAlertMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	  %parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	  drsAlertCurrentStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	  %parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+	  other(1)
+	  unknown(2)
+	  ok(3)
+	  nonCritical(4)
+	  critical(5)
+	  nonRecoverable(6)
+	  &lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	  drsAlertPreviousStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	  %parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+	  other(1)
+	  unknown(2)
+	  ok(3)
+	  nonCritical(4)
+	  critical(5)
+	  nonRecoverable(6)
+	  &lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	  drsAlertData&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	  %parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+      </descr>
+      <logmsg dest="logndisplay">&lt;p&gt;
+	  alertDrscSEL80percentFull trap received
+	  drsAlertSystem=%parm[#1]%
+	  drsAlertTableIndexOID=%parm[#2]%
+	  drsAlertMessage=%parm[#3]%
+	  drsAlertCurrentStatus=%parm[#4]%
+	  drsAlertPreviousStatus=%parm[#5]%
+	  drsAlertData=%parm[#6]%&lt;/p&gt;
+      </logmsg>
+      <severity>Major</severity>
+      <varbindsdecode>
+	  <parmid>parm[#4]</parmid>
+	  <decode varbinddecodedstring="other" varbindvalue="1"/>
+	  <decode varbinddecodedstring="unknown" varbindvalue="2"/>
+	  <decode varbinddecodedstring="ok" varbindvalue="3"/>
+	  <decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+	  <decode varbinddecodedstring="critical" varbindvalue="5"/>
+	  <decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+      </varbindsdecode>
+      <varbindsdecode>
+	  <parmid>parm[#5]</parmid>
+	  <decode varbinddecodedstring="other" varbindvalue="1"/>
+	  <decode varbinddecodedstring="unknown" varbindvalue="2"/>
+	  <decode varbinddecodedstring="ok" varbindvalue="3"/>
+	  <decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+	  <decode varbinddecodedstring="critical" varbindvalue="5"/>
+	  <decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+      </varbindsdecode>
+  </event>
+  <event>
+      <mask>
+	  <maskelement>
+	      <mename>id</mename>
+	      <mevalue>.1.3.6.1.4.1.674.10892.2</mevalue>
+	  </maskelement>
+	  <maskelement>
+	      <mename>generic</mename>
+	      <mevalue>6</mevalue>
+	  </maskelement>
+	  <maskelement>
+	      <mename>specific</mename>
+	      <mevalue>1018</mevalue>
+	  </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Dell/traps/alertDrscSEL90percentFull</uei>
+      <event-label>DELL-RAC-MIB defined trap event: alertDrscSEL90percentFull</event-label>
+      <descr>
+	  &lt;p&gt;The RAC has detected that the System Event Log is 90% full.&lt;/p&gt;&lt;table&gt;
+	  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	  drsAlertSystem&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	  %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	  drsAlertTableIndexOID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	  %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	  drsAlertMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	  %parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	  drsAlertCurrentStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	  %parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+	  other(1)
+	  unknown(2)
+	  ok(3)
+	  nonCritical(4)
+	  critical(5)
+	  nonRecoverable(6)
+	  &lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	  drsAlertPreviousStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	  %parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+	  other(1)
+	  unknown(2)
+	  ok(3)
+	  nonCritical(4)
+	  critical(5)
+	  nonRecoverable(6)
+	  &lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	  drsAlertData&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	  %parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+      </descr>
+      <logmsg dest="logndisplay">&lt;p&gt;
+	  alertDrscSEL90percentFull trap received
+	  drsAlertSystem=%parm[#1]%
+	  drsAlertTableIndexOID=%parm[#2]%
+	  drsAlertMessage=%parm[#3]%
+	  drsAlertCurrentStatus=%parm[#4]%
+	  drsAlertPreviousStatus=%parm[#5]%
+	  drsAlertData=%parm[#6]%&lt;/p&gt;
+      </logmsg>
+      <severity>Major</severity>
+      <varbindsdecode>
+	  <parmid>parm[#4]</parmid>
+	  <decode varbinddecodedstring="other" varbindvalue="1"/>
+	  <decode varbinddecodedstring="unknown" varbindvalue="2"/>
+	  <decode varbinddecodedstring="ok" varbindvalue="3"/>
+	  <decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+	  <decode varbinddecodedstring="critical" varbindvalue="5"/>
+	  <decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+      </varbindsdecode>
+      <varbindsdecode>
+	  <parmid>parm[#5]</parmid>
+	  <decode varbinddecodedstring="other" varbindvalue="1"/>
+	  <decode varbinddecodedstring="unknown" varbindvalue="2"/>
+	  <decode varbinddecodedstring="ok" varbindvalue="3"/>
+	  <decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+	  <decode varbinddecodedstring="critical" varbindvalue="5"/>
+	  <decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+      </varbindsdecode>
+  </event>
+  <event>
+      <mask>
+	  <maskelement>
+	      <mename>id</mename>
+	      <mevalue>.1.3.6.1.4.1.674.10892.2</mevalue>
+	  </maskelement>
+	  <maskelement>
+	      <mename>generic</mename>
+	      <mevalue>6</mevalue>
+	  </maskelement>
+	  <maskelement>
+	      <mename>specific</mename>
+	      <mevalue>1019</mevalue>
+	  </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Dell/traps/alertDrscSEL100percentFull</uei>
+      <event-label>DELL-RAC-MIB defined trap event: alertDrscSEL100percentFull</event-label>
+      <descr>
+	  &lt;p&gt;The RAC has detected that the System Event Log is 100% full.&lt;/p&gt;&lt;table&gt;
+	  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	  drsAlertSystem&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	  %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	  drsAlertTableIndexOID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	  %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	  drsAlertMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	  %parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	  drsAlertCurrentStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	  %parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+	  other(1)
+	  unknown(2)
+	  ok(3)
+	  nonCritical(4)
+	  critical(5)
+	  nonRecoverable(6)
+	  &lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	  drsAlertPreviousStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	  %parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+	  other(1)
+	  unknown(2)
+	  ok(3)
+	  nonCritical(4)
+	  critical(5)
+	  nonRecoverable(6)
+	  &lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	  drsAlertData&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	  %parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+      </descr>
+      <logmsg dest="logndisplay">&lt;p&gt;
+	  alertDrscSEL100percentFull trap received
+	  drsAlertSystem=%parm[#1]%
+	  drsAlertTableIndexOID=%parm[#2]%
+	  drsAlertMessage=%parm[#3]%
+	  drsAlertCurrentStatus=%parm[#4]%
+	  drsAlertPreviousStatus=%parm[#5]%
+	  drsAlertData=%parm[#6]%&lt;/p&gt;
+      </logmsg>
+      <severity>Major</severity>
+      <varbindsdecode>
+	  <parmid>parm[#4]</parmid>
+	  <decode varbinddecodedstring="other" varbindvalue="1"/>
+	  <decode varbinddecodedstring="unknown" varbindvalue="2"/>
+	  <decode varbinddecodedstring="ok" varbindvalue="3"/>
+	  <decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+	  <decode varbinddecodedstring="critical" varbindvalue="5"/>
+	  <decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+      </varbindsdecode>
+      <varbindsdecode>
+	  <parmid>parm[#5]</parmid>
+	  <decode varbinddecodedstring="other" varbindvalue="1"/>
+	  <decode varbinddecodedstring="unknown" varbindvalue="2"/>
+	  <decode varbinddecodedstring="ok" varbindvalue="3"/>
+	  <decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+	  <decode varbinddecodedstring="critical" varbindvalue="5"/>
+	  <decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+      </varbindsdecode>
+  </event>
+  <event>
+      <mask>
+	  <maskelement>
+	      <mename>id</mename>
+	      <mevalue>.1.3.6.1.4.1.674.10892.2</mevalue>
+	  </maskelement>
+	  <maskelement>
+	      <mename>generic</mename>
+	      <mevalue>6</mevalue>
+	  </maskelement>
+	  <maskelement>
+	      <mename>specific</mename>
+	      <mevalue>1020</mevalue>
+	  </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Dell/traps/alertDrscSELNormal</uei>
+      <event-label>DELL-RAC-MIB defined trap event: alertDrscSELNormal</event-label>
+      <descr>
+	  &lt;p&gt;The RAC has detected a new event in the System Event Log with Severity: Normal.&lt;/p&gt;&lt;table&gt;
+	  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	  drsAlertSystem&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	  %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	  drsAlertTableIndexOID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	  %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	  drsAlertMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	  %parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	  drsAlertCurrentStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	  %parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+	  other(1)
+	  unknown(2)
+	  ok(3)
+	  nonCritical(4)
+	  critical(5)
+	  nonRecoverable(6)
+	  &lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	  drsAlertPreviousStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	  %parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+	  other(1)
+	  unknown(2)
+	  ok(3)
+	  nonCritical(4)
+	  critical(5)
+	  nonRecoverable(6)
+	  &lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	  drsAlertData&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	  %parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+      </descr>
+      <logmsg dest="logndisplay">&lt;p&gt;
+	  alertDrscSELNormal trap received
+	  drsAlertSystem=%parm[#1]%
+	  drsAlertTableIndexOID=%parm[#2]%
+	  drsAlertMessage=%parm[#3]%
+	  drsAlertCurrentStatus=%parm[#4]%
+	  drsAlertPreviousStatus=%parm[#5]%
+	  drsAlertData=%parm[#6]%&lt;/p&gt;
+      </logmsg>
+      <severity>Normal</severity>
+      <varbindsdecode>
+	  <parmid>parm[#4]</parmid>
+	  <decode varbinddecodedstring="other" varbindvalue="1"/>
+	  <decode varbinddecodedstring="unknown" varbindvalue="2"/>
+	  <decode varbinddecodedstring="ok" varbindvalue="3"/>
+	  <decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+	  <decode varbinddecodedstring="critical" varbindvalue="5"/>
+	  <decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+      </varbindsdecode>
+      <varbindsdecode>
+	  <parmid>parm[#5]</parmid>
+	  <decode varbinddecodedstring="other" varbindvalue="1"/>
+	  <decode varbinddecodedstring="unknown" varbindvalue="2"/>
+	  <decode varbinddecodedstring="ok" varbindvalue="3"/>
+	  <decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+	  <decode varbinddecodedstring="critical" varbindvalue="5"/>
+	  <decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+      </varbindsdecode>
+  </event>
 </events>
+<!-- End of mib2events auto-generated data for MIB: DELL-RAC-MIB -->
