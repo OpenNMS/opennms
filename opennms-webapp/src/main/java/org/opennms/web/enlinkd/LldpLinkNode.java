@@ -1,4 +1,4 @@
-package org.opennms.web.lldp;
+package org.opennms.web.enlinkd;
 
 public class LldpLinkNode {
 
