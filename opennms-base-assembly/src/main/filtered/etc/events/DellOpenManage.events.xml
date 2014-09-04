@@ -1,5 +1,5 @@
 <events xmlns="http://xmlns.opennms.org/xsd/eventconf">
-<!-- Start of auto generated data from MIB: MIB-Dell-10892 -->
+<!-- Start of mib2events auto-generated data for MIB: MIB-Dell-10892 -->
 <event>
 	<mask>
 		<maskelement>
@@ -18,51 +18,74 @@
 	<uei>uei.opennms.org/vendor/Dell/traps/alertSystemUp</uei>
 	<event-label>MIB-Dell-10892 defined trap event: alertSystemUp</event-label>
 	<descr>
-&lt;p&gt;Server Administrator has completed its initialization.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		&lt;p&gt;Server Administrator has completed its initialization.&lt;/p&gt;&lt;table&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertSystem&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		alertSystem&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertTableIndexOID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		alertTableIndexOID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		alertMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertCurrentStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		alertCurrentStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
 		other(1)
 		unknown(2)
 		ok(3)
 		nonCritical(4)
 		critical(5)
 		nonRecoverable(6)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertPreviousStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		alertPreviousStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
 		other(1)
 		unknown(2)
 		ok(3)
 		nonCritical(4)
 		critical(5)
 		nonRecoverable(6)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertData&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+		alertData&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
-			DellOpenManage Event: Server Administrator has initialized.
-			&lt;/p&gt;
-		</logmsg>
+	<logmsg dest="logndisplay">&lt;p&gt;
+                DellOpenManage Event: Server Administrator has initialized.
+		alertSystem=%parm[#1]%
+		alertTableIndexOID=%parm[#2]%
+		alertMessage=%parm[#3]%
+		alertCurrentStatus=%parm[#4]%
+		alertPreviousStatus=%parm[#5]%
+		alertData=%parm[#6]%&lt;/p&gt;
+	</logmsg>
 	<severity>Normal</severity>
+	<varbindsdecode>
+		<parmid>parm[#4]</parmid>
+		<decode varbinddecodedstring="other" varbindvalue="1"/>
+		<decode varbinddecodedstring="unknown" varbindvalue="2"/>
+		<decode varbinddecodedstring="ok" varbindvalue="3"/>
+		<decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+		<decode varbinddecodedstring="critical" varbindvalue="5"/>
+		<decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+	</varbindsdecode>
+	<varbindsdecode>
+		<parmid>parm[#5]</parmid>
+		<decode varbinddecodedstring="other" varbindvalue="1"/>
+		<decode varbinddecodedstring="unknown" varbindvalue="2"/>
+		<decode varbinddecodedstring="ok" varbindvalue="3"/>
+		<decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+		<decode varbinddecodedstring="critical" varbindvalue="5"/>
+		<decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+	</varbindsdecode>
 </event>
 <event>
 	<mask>
@@ -82,51 +105,422 @@
 	<uei>uei.opennms.org/vendor/Dell/traps/alertThermalShutdown</uei>
 	<event-label>MIB-Dell-10892 defined trap event: alertThermalShutdown</event-label>
 	<descr>
-&lt;p&gt;Thermal shutdown protection has been initiated.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		&lt;p&gt;Thermal shutdown protection has been initiated.&lt;/p&gt;&lt;table&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertSystem&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		alertSystem&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertTableIndexOID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		alertTableIndexOID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		alertMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertCurrentStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		alertCurrentStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
 		other(1)
 		unknown(2)
 		ok(3)
 		nonCritical(4)
 		critical(5)
 		nonRecoverable(6)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertPreviousStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		alertPreviousStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
 		other(1)
 		unknown(2)
 		ok(3)
 		nonCritical(4)
 		critical(5)
 		nonRecoverable(6)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertData&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+		alertData&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
-			DellOpenManage Event: Thermal Shutdown
-			&lt;/p&gt;
-		</logmsg>
+	<logmsg dest="logndisplay">&lt;p&gt;
+                DellOpenManage Event: Thermal Shutdown
+		alertSystem=%parm[#1]%
+		alertTableIndexOID=%parm[#2]%
+		alertMessage=%parm[#3]%
+		alertCurrentStatus=%parm[#4]%
+		alertPreviousStatus=%parm[#5]%
+		alertData=%parm[#6]%&lt;/p&gt;
+	</logmsg>
 	<severity>Critical</severity>
+	<varbindsdecode>
+		<parmid>parm[#4]</parmid>
+		<decode varbinddecodedstring="other" varbindvalue="1"/>
+		<decode varbinddecodedstring="unknown" varbindvalue="2"/>
+		<decode varbinddecodedstring="ok" varbindvalue="3"/>
+		<decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+		<decode varbinddecodedstring="critical" varbindvalue="5"/>
+		<decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+	</varbindsdecode>
+	<varbindsdecode>
+		<parmid>parm[#5]</parmid>
+		<decode varbinddecodedstring="other" varbindvalue="1"/>
+		<decode varbinddecodedstring="unknown" varbindvalue="2"/>
+		<decode varbinddecodedstring="ok" varbindvalue="3"/>
+		<decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+		<decode varbinddecodedstring="critical" varbindvalue="5"/>
+		<decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+	</varbindsdecode>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.674.10892.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>1006</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Dell/traps/alertAutomaticSystemRecovery</uei>
+	<event-label>MIB-Dell-10892 defined trap event: alertAutomaticSystemRecovery</event-label>
+	<descr>
+		&lt;p&gt;Automatic system recovery (ASR) was performed.&lt;/p&gt;&lt;table&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		alertSystem&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		alertTableIndexOID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		alertMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		alertCurrentStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		unknown(2)
+		ok(3)
+		nonCritical(4)
+		critical(5)
+		nonRecoverable(6)
+		&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		alertPreviousStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		unknown(2)
+		ok(3)
+		nonCritical(4)
+		critical(5)
+		nonRecoverable(6)
+		&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		alertData&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+	<logmsg dest="logndisplay">&lt;p&gt;
+		DellOpenManage Event: Automatic system recovery (ASR) was performed
+		alertSystem=%parm[#1]%
+		alertTableIndexOID=%parm[#2]%
+		alertMessage=%parm[#3]%
+		alertCurrentStatus=%parm[#4]%
+		alertPreviousStatus=%parm[#5]%
+		alertData=%parm[#6]%&lt;/p&gt;
+	</logmsg>
+	<severity>Minor</severity>
+	<varbindsdecode>
+		<parmid>parm[#4]</parmid>
+		<decode varbinddecodedstring="other" varbindvalue="1"/>
+		<decode varbinddecodedstring="unknown" varbindvalue="2"/>
+		<decode varbinddecodedstring="ok" varbindvalue="3"/>
+		<decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+		<decode varbinddecodedstring="critical" varbindvalue="5"/>
+		<decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+	</varbindsdecode>
+	<varbindsdecode>
+		<parmid>parm[#5]</parmid>
+		<decode varbinddecodedstring="other" varbindvalue="1"/>
+		<decode varbinddecodedstring="unknown" varbindvalue="2"/>
+		<decode varbinddecodedstring="ok" varbindvalue="3"/>
+		<decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+		<decode varbinddecodedstring="critical" varbindvalue="5"/>
+		<decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+	</varbindsdecode>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.674.10892.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>1007</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Dell/traps/alertUserHostSystemReset</uei>
+	<event-label>MIB-Dell-10892 defined trap event: alertUserHostSystemReset</event-label>
+	<descr>
+		&lt;p&gt;User has initiated host system reset.&lt;/p&gt;&lt;table&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		alertSystem&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		alertTableIndexOID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		alertMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		alertCurrentStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		unknown(2)
+		ok(3)
+		nonCritical(4)
+		critical(5)
+		nonRecoverable(6)
+		&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		alertPreviousStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		unknown(2)
+		ok(3)
+		nonCritical(4)
+		critical(5)
+		nonRecoverable(6)
+		&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		alertData&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+	<logmsg dest="logndisplay">&lt;p&gt;
+		DellOpenManage Event: User has initiated host system reset
+		alertSystem=%parm[#1]%
+		alertTableIndexOID=%parm[#2]%
+		alertMessage=%parm[#3]%
+		alertCurrentStatus=%parm[#4]%
+		alertPreviousStatus=%parm[#5]%
+		alertData=%parm[#6]%&lt;/p&gt;
+	</logmsg>
+	<severity>Warning</severity>
+	<varbindsdecode>
+		<parmid>parm[#4]</parmid>
+		<decode varbinddecodedstring="other" varbindvalue="1"/>
+		<decode varbinddecodedstring="unknown" varbindvalue="2"/>
+		<decode varbinddecodedstring="ok" varbindvalue="3"/>
+		<decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+		<decode varbinddecodedstring="critical" varbindvalue="5"/>
+		<decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+	</varbindsdecode>
+	<varbindsdecode>
+		<parmid>parm[#5]</parmid>
+		<decode varbinddecodedstring="other" varbindvalue="1"/>
+		<decode varbinddecodedstring="unknown" varbindvalue="2"/>
+		<decode varbinddecodedstring="ok" varbindvalue="3"/>
+		<decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+		<decode varbinddecodedstring="critical" varbindvalue="5"/>
+		<decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+	</varbindsdecode>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.674.10892.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>1013</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Dell/traps/alertSystemPeakPowerNewPeak</uei>
+	<event-label>MIB-Dell-10892 defined trap event: alertSystemPeakPowerNewPeak</event-label>
+	<descr>
+		&lt;p&gt;System peak power sensor has detected a new peak value.&lt;/p&gt;&lt;table&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		alertSystem&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		alertTableIndexOID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		alertMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		alertCurrentStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		unknown(2)
+		ok(3)
+		nonCritical(4)
+		critical(5)
+		nonRecoverable(6)
+		&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		alertPreviousStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		unknown(2)
+		ok(3)
+		nonCritical(4)
+		critical(5)
+		nonRecoverable(6)
+		&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		alertData&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+	<logmsg dest="logndisplay">&lt;p&gt;
+		DellOpenManage Event: New power peak detected
+		alertSystem=%parm[#1]%
+		alertTableIndexOID=%parm[#2]%
+		alertMessage=%parm[#3]%
+		alertCurrentStatus=%parm[#4]%
+		alertPreviousStatus=%parm[#5]%
+		alertData=%parm[#6]%&lt;/p&gt;
+	</logmsg>
+	<severity>Minor</severity>
+	<varbindsdecode>
+		<parmid>parm[#4]</parmid>
+		<decode varbinddecodedstring="other" varbindvalue="1"/>
+		<decode varbinddecodedstring="unknown" varbindvalue="2"/>
+		<decode varbinddecodedstring="ok" varbindvalue="3"/>
+		<decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+		<decode varbinddecodedstring="critical" varbindvalue="5"/>
+		<decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+	</varbindsdecode>
+	<varbindsdecode>
+		<parmid>parm[#5]</parmid>
+		<decode varbinddecodedstring="other" varbindvalue="1"/>
+		<decode varbinddecodedstring="unknown" varbindvalue="2"/>
+		<decode varbinddecodedstring="ok" varbindvalue="3"/>
+		<decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+		<decode varbinddecodedstring="critical" varbindvalue="5"/>
+		<decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+	</varbindsdecode>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.674.10892.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>1014</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Dell/traps/alertSystemSoftwareEvent</uei>
+	<event-label>MIB-Dell-10892 defined trap event: alertSystemSoftwareEvent</event-label>
+	<descr>
+		&lt;p&gt;System software event has occurred.&lt;/p&gt;&lt;table&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		alertSystem&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		alertTableIndexOID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		alertMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		alertCurrentStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		unknown(2)
+		ok(3)
+		nonCritical(4)
+		critical(5)
+		nonRecoverable(6)
+		&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		alertPreviousStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		unknown(2)
+		ok(3)
+		nonCritical(4)
+		critical(5)
+		nonRecoverable(6)
+		&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		alertData&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+	<logmsg dest="logndisplay">&lt;p&gt;
+		DellOpenManage Event: System software event occured
+		alertSystem=%parm[#1]%
+		alertTableIndexOID=%parm[#2]%
+		alertMessage=%parm[#3]%
+		alertCurrentStatus=%parm[#4]%
+		alertPreviousStatus=%parm[#5]%
+		alertData=%parm[#6]%&lt;/p&gt;
+	</logmsg>
+	<severity>Indeterminate</severity>
+	<varbindsdecode>
+		<parmid>parm[#4]</parmid>
+		<decode varbinddecodedstring="other" varbindvalue="1"/>
+		<decode varbinddecodedstring="unknown" varbindvalue="2"/>
+		<decode varbinddecodedstring="ok" varbindvalue="3"/>
+		<decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+		<decode varbinddecodedstring="critical" varbindvalue="5"/>
+		<decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+	</varbindsdecode>
+	<varbindsdecode>
+		<parmid>parm[#5]</parmid>
+		<decode varbinddecodedstring="other" varbindvalue="1"/>
+		<decode varbinddecodedstring="unknown" varbindvalue="2"/>
+		<decode varbinddecodedstring="ok" varbindvalue="3"/>
+		<decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+		<decode varbinddecodedstring="critical" varbindvalue="5"/>
+		<decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+	</varbindsdecode>
 </event>
 <event>
 	<mask>
@@ -146,51 +540,74 @@
 	<uei>uei.opennms.org/vendor/Dell/traps/alertTemperatureProbeNormal</uei>
 	<event-label>MIB-Dell-10892 defined trap event: alertTemperatureProbeNormal</event-label>
 	<descr>
-&lt;p&gt;Temperature probe has returned to a normal value.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		&lt;p&gt;Temperature probe has returned to a normal value.&lt;/p&gt;&lt;table&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertSystem&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		alertSystem&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertTableIndexOID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		alertTableIndexOID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		alertMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertCurrentStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		alertCurrentStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
 		other(1)
 		unknown(2)
 		ok(3)
 		nonCritical(4)
 		critical(5)
 		nonRecoverable(6)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertPreviousStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		alertPreviousStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
 		other(1)
 		unknown(2)
 		ok(3)
 		nonCritical(4)
 		critical(5)
 		nonRecoverable(6)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertData&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+		alertData&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
-			DellOpenManage Event: Temperature Now Normal.
-			&lt;/p&gt;
-		</logmsg>
+	<logmsg dest="logndisplay">&lt;p&gt;
+		DellOpenManage Event: Temperature Now Normal.
+		alertSystem=%parm[#1]%
+		alertTableIndexOID=%parm[#2]%
+		alertMessage=%parm[#3]%
+		alertCurrentStatus=%parm[#4]%
+		alertPreviousStatus=%parm[#5]%
+		alertData=%parm[#6]%&lt;/p&gt;
+	</logmsg>
 	<severity>Cleared</severity>
+	<varbindsdecode>
+		<parmid>parm[#4]</parmid>
+		<decode varbinddecodedstring="other" varbindvalue="1"/>
+		<decode varbinddecodedstring="unknown" varbindvalue="2"/>
+		<decode varbinddecodedstring="ok" varbindvalue="3"/>
+		<decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+		<decode varbinddecodedstring="critical" varbindvalue="5"/>
+		<decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+	</varbindsdecode>
+	<varbindsdecode>
+		<parmid>parm[#5]</parmid>
+		<decode varbinddecodedstring="other" varbindvalue="1"/>
+		<decode varbinddecodedstring="unknown" varbindvalue="2"/>
+		<decode varbinddecodedstring="ok" varbindvalue="3"/>
+		<decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+		<decode varbinddecodedstring="critical" varbindvalue="5"/>
+		<decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+	</varbindsdecode>
 </event>
 <event>
 	<mask>
@@ -210,51 +627,74 @@
 	<uei>uei.opennms.org/vendor/Dell/traps/alertTemperatureProbeWarning</uei>
 	<event-label>MIB-Dell-10892 defined trap event: alertTemperatureProbeWarning</event-label>
 	<descr>
-&lt;p&gt;Temperature probe has detected a warning value.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		&lt;p&gt;Temperature probe has detected a warning value.&lt;/p&gt;&lt;table&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertSystem&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		alertSystem&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertTableIndexOID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		alertTableIndexOID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		alertMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertCurrentStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		alertCurrentStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
 		other(1)
 		unknown(2)
 		ok(3)
 		nonCritical(4)
 		critical(5)
 		nonRecoverable(6)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertPreviousStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		alertPreviousStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
 		other(1)
 		unknown(2)
 		ok(3)
 		nonCritical(4)
 		critical(5)
 		nonRecoverable(6)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertData&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+		alertData&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
-			DellOpenManage Event: High Temperature threshold reached.
-			&lt;/p&gt;
-		</logmsg>
+	<logmsg dest="logndisplay">&lt;p&gt;
+		DellOpenManage Event: High Temperature threshold reached.
+		alertSystem=%parm[#1]%
+		alertTableIndexOID=%parm[#2]%
+		alertMessage=%parm[#3]%
+		alertCurrentStatus=%parm[#4]%
+		alertPreviousStatus=%parm[#5]%
+		alertData=%parm[#6]%&lt;/p&gt;
+	</logmsg>
 	<severity>Major</severity>
+	<varbindsdecode>
+		<parmid>parm[#4]</parmid>
+		<decode varbinddecodedstring="other" varbindvalue="1"/>
+		<decode varbinddecodedstring="unknown" varbindvalue="2"/>
+		<decode varbinddecodedstring="ok" varbindvalue="3"/>
+		<decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+		<decode varbinddecodedstring="critical" varbindvalue="5"/>
+		<decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+	</varbindsdecode>
+	<varbindsdecode>
+		<parmid>parm[#5]</parmid>
+		<decode varbinddecodedstring="other" varbindvalue="1"/>
+		<decode varbinddecodedstring="unknown" varbindvalue="2"/>
+		<decode varbinddecodedstring="ok" varbindvalue="3"/>
+		<decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+		<decode varbinddecodedstring="critical" varbindvalue="5"/>
+		<decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+	</varbindsdecode>
 </event>
 <event>
 	<mask>
@@ -274,51 +714,74 @@
 	<uei>uei.opennms.org/vendor/Dell/traps/alertTemperatureProbeFailure</uei>
 	<event-label>MIB-Dell-10892 defined trap event: alertTemperatureProbeFailure</event-label>
 	<descr>
-&lt;p&gt;Temperature probe has detected a failure value.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		&lt;p&gt;Temperature probe has detected a failure value.&lt;/p&gt;&lt;table&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertSystem&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		alertSystem&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertTableIndexOID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		alertTableIndexOID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		alertMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertCurrentStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		alertCurrentStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
 		other(1)
 		unknown(2)
 		ok(3)
 		nonCritical(4)
 		critical(5)
 		nonRecoverable(6)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertPreviousStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		alertPreviousStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
 		other(1)
 		unknown(2)
 		ok(3)
 		nonCritical(4)
 		critical(5)
 		nonRecoverable(6)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertData&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+		alertData&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
-			DellOpenManage Event: Temperature Probe Failure.
-			&lt;/p&gt;
-		</logmsg>
+	<logmsg dest="logndisplay">&lt;p&gt;
+		DellOpenManage Event: Temperature Probe Failure.
+		alertSystem=%parm[#1]%
+		alertTableIndexOID=%parm[#2]%
+		alertMessage=%parm[#3]%
+		alertCurrentStatus=%parm[#4]%
+		alertPreviousStatus=%parm[#5]%
+		alertData=%parm[#6]%&lt;/p&gt;
+	</logmsg>
 	<severity>Minor</severity>
+	<varbindsdecode>
+		<parmid>parm[#4]</parmid>
+		<decode varbinddecodedstring="other" varbindvalue="1"/>
+		<decode varbinddecodedstring="unknown" varbindvalue="2"/>
+		<decode varbinddecodedstring="ok" varbindvalue="3"/>
+		<decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+		<decode varbinddecodedstring="critical" varbindvalue="5"/>
+		<decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+	</varbindsdecode>
+	<varbindsdecode>
+		<parmid>parm[#5]</parmid>
+		<decode varbinddecodedstring="other" varbindvalue="1"/>
+		<decode varbinddecodedstring="unknown" varbindvalue="2"/>
+		<decode varbinddecodedstring="ok" varbindvalue="3"/>
+		<decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+		<decode varbinddecodedstring="critical" varbindvalue="5"/>
+		<decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+	</varbindsdecode>
 </event>
 <event>
 	<mask>
@@ -338,51 +801,74 @@
 	<uei>uei.opennms.org/vendor/Dell/traps/alertTemperatureProbeNonRecoverable</uei>
 	<event-label>MIB-Dell-10892 defined trap event: alertTemperatureProbeNonRecoverable</event-label>
 	<descr>
-&lt;p&gt;Temperature probe has detected a non-recoverable value.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		&lt;p&gt;Temperature probe has detected a non-recoverable value.&lt;/p&gt;&lt;table&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertSystem&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		alertSystem&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertTableIndexOID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		alertTableIndexOID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		alertMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertCurrentStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		alertCurrentStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
 		other(1)
 		unknown(2)
 		ok(3)
 		nonCritical(4)
 		critical(5)
 		nonRecoverable(6)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertPreviousStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		alertPreviousStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
 		other(1)
 		unknown(2)
 		ok(3)
 		nonCritical(4)
 		critical(5)
 		nonRecoverable(6)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertData&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+		alertData&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
-			DellOpenManage Event: Temperature Probe Error: non-recoverable value.	
-			&lt;/p&gt;
-		</logmsg>
+	<logmsg dest="logndisplay">&lt;p&gt;
+		DellOpenManage Event: Temperature Probe Error: non-recoverable value.
+		alertSystem=%parm[#1]%
+		alertTableIndexOID=%parm[#2]%
+		alertMessage=%parm[#3]%
+		alertCurrentStatus=%parm[#4]%
+		alertPreviousStatus=%parm[#5]%
+		alertData=%parm[#6]%&lt;/p&gt;
+	</logmsg>
 	<severity>Minor</severity>
+	<varbindsdecode>
+		<parmid>parm[#4]</parmid>
+		<decode varbinddecodedstring="other" varbindvalue="1"/>
+		<decode varbinddecodedstring="unknown" varbindvalue="2"/>
+		<decode varbinddecodedstring="ok" varbindvalue="3"/>
+		<decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+		<decode varbinddecodedstring="critical" varbindvalue="5"/>
+		<decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+	</varbindsdecode>
+	<varbindsdecode>
+		<parmid>parm[#5]</parmid>
+		<decode varbinddecodedstring="other" varbindvalue="1"/>
+		<decode varbinddecodedstring="unknown" varbindvalue="2"/>
+		<decode varbinddecodedstring="ok" varbindvalue="3"/>
+		<decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+		<decode varbinddecodedstring="critical" varbindvalue="5"/>
+		<decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+	</varbindsdecode>
 </event>
 <event>
 	<mask>
@@ -402,51 +888,74 @@
 	<uei>uei.opennms.org/vendor/Dell/traps/alertCoolingDeviceNormal</uei>
 	<event-label>MIB-Dell-10892 defined trap event: alertCoolingDeviceNormal</event-label>
 	<descr>
-&lt;p&gt;Cooling device sensor has returned to a normal value.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		&lt;p&gt;Cooling device sensor has returned to a normal value.&lt;/p&gt;&lt;table&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertSystem&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		alertSystem&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertTableIndexOID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		alertTableIndexOID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		alertMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertCurrentStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		alertCurrentStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
 		other(1)
 		unknown(2)
 		ok(3)
 		nonCritical(4)
 		critical(5)
 		nonRecoverable(6)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertPreviousStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		alertPreviousStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
 		other(1)
 		unknown(2)
 		ok(3)
 		nonCritical(4)
 		critical(5)
 		nonRecoverable(6)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertData&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+		alertData&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
-			DellOpenManage Event: Cooling Device Sensor Now Normal.
-			&lt;/p&gt;
-		</logmsg>
+	<logmsg dest="logndisplay">&lt;p&gt;
+		DellOpenManage Event: Cooling Device Sensor Now Normal.
+		alertSystem=%parm[#1]%
+		alertTableIndexOID=%parm[#2]%
+		alertMessage=%parm[#3]%
+		alertCurrentStatus=%parm[#4]%
+		alertPreviousStatus=%parm[#5]%
+		alertData=%parm[#6]%&lt;/p&gt;
+	</logmsg>
 	<severity>Cleared</severity>
+	<varbindsdecode>
+		<parmid>parm[#4]</parmid>
+		<decode varbinddecodedstring="other" varbindvalue="1"/>
+		<decode varbinddecodedstring="unknown" varbindvalue="2"/>
+		<decode varbinddecodedstring="ok" varbindvalue="3"/>
+		<decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+		<decode varbinddecodedstring="critical" varbindvalue="5"/>
+		<decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+	</varbindsdecode>
+	<varbindsdecode>
+		<parmid>parm[#5]</parmid>
+		<decode varbinddecodedstring="other" varbindvalue="1"/>
+		<decode varbinddecodedstring="unknown" varbindvalue="2"/>
+		<decode varbinddecodedstring="ok" varbindvalue="3"/>
+		<decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+		<decode varbinddecodedstring="critical" varbindvalue="5"/>
+		<decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+	</varbindsdecode>
 </event>
 <event>
 	<mask>
@@ -466,51 +975,74 @@
 	<uei>uei.opennms.org/vendor/Dell/traps/alertCoolingDeviceWarning</uei>
 	<event-label>MIB-Dell-10892 defined trap event: alertCoolingDeviceWarning</event-label>
 	<descr>
-&lt;p&gt;Cooling device sensor has detected a warning value.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		&lt;p&gt;Cooling device sensor has detected a warning value.&lt;/p&gt;&lt;table&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertSystem&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		alertSystem&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertTableIndexOID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		alertTableIndexOID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		alertMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertCurrentStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		alertCurrentStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
 		other(1)
 		unknown(2)
 		ok(3)
 		nonCritical(4)
 		critical(5)
 		nonRecoverable(6)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertPreviousStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		alertPreviousStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
 		other(1)
 		unknown(2)
 		ok(3)
 		nonCritical(4)
 		critical(5)
 		nonRecoverable(6)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertData&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+		alertData&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
-			DellOpenManage Event: Cooling Device Warning Alert
-			&lt;/p&gt;
-		</logmsg>
+	<logmsg dest="logndisplay">&lt;p&gt;
+		DellOpenManage Event: Cooling Device Warning Alert
+		alertSystem=%parm[#1]%
+		alertTableIndexOID=%parm[#2]%
+		alertMessage=%parm[#3]%
+		alertCurrentStatus=%parm[#4]%
+		alertPreviousStatus=%parm[#5]%
+		alertData=%parm[#6]%&lt;/p&gt;
+	</logmsg>
 	<severity>Minor</severity>
+	<varbindsdecode>
+		<parmid>parm[#4]</parmid>
+		<decode varbinddecodedstring="other" varbindvalue="1"/>
+		<decode varbinddecodedstring="unknown" varbindvalue="2"/>
+		<decode varbinddecodedstring="ok" varbindvalue="3"/>
+		<decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+		<decode varbinddecodedstring="critical" varbindvalue="5"/>
+		<decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+	</varbindsdecode>
+	<varbindsdecode>
+		<parmid>parm[#5]</parmid>
+		<decode varbinddecodedstring="other" varbindvalue="1"/>
+		<decode varbinddecodedstring="unknown" varbindvalue="2"/>
+		<decode varbinddecodedstring="ok" varbindvalue="3"/>
+		<decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+		<decode varbinddecodedstring="critical" varbindvalue="5"/>
+		<decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+	</varbindsdecode>
 </event>
 <event>
 	<mask>
@@ -530,51 +1062,74 @@
 	<uei>uei.opennms.org/vendor/Dell/traps/alertCoolingDeviceFailure</uei>
 	<event-label>MIB-Dell-10892 defined trap event: alertCoolingDeviceFailure</event-label>
 	<descr>
-&lt;p&gt;Cooling device sensor has detected a failure value.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		&lt;p&gt;Cooling device sensor has detected a failure value.&lt;/p&gt;&lt;table&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertSystem&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		alertSystem&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertTableIndexOID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		alertTableIndexOID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		alertMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertCurrentStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		alertCurrentStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
 		other(1)
 		unknown(2)
 		ok(3)
 		nonCritical(4)
 		critical(5)
 		nonRecoverable(6)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertPreviousStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		alertPreviousStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
 		other(1)
 		unknown(2)
 		ok(3)
 		nonCritical(4)
 		critical(5)
 		nonRecoverable(6)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertData&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+		alertData&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
-			DellOpenManage Event: Cooling Device Error: Failure value.
-			&lt;/p&gt;
-		</logmsg>
+	<logmsg dest="logndisplay">&lt;p&gt;
+		DellOpenManage Event: Cooling Device Error: Failure value.
+		alertSystem=%parm[#1]%
+		alertTableIndexOID=%parm[#2]%
+		alertMessage=%parm[#3]%
+		alertCurrentStatus=%parm[#4]%
+		alertPreviousStatus=%parm[#5]%
+		alertData=%parm[#6]%&lt;/p&gt;
+	</logmsg>
 	<severity>Minor</severity>
+	<varbindsdecode>
+		<parmid>parm[#4]</parmid>
+		<decode varbinddecodedstring="other" varbindvalue="1"/>
+		<decode varbinddecodedstring="unknown" varbindvalue="2"/>
+		<decode varbinddecodedstring="ok" varbindvalue="3"/>
+		<decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+		<decode varbinddecodedstring="critical" varbindvalue="5"/>
+		<decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+	</varbindsdecode>
+	<varbindsdecode>
+		<parmid>parm[#5]</parmid>
+		<decode varbinddecodedstring="other" varbindvalue="1"/>
+		<decode varbinddecodedstring="unknown" varbindvalue="2"/>
+		<decode varbinddecodedstring="ok" varbindvalue="3"/>
+		<decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+		<decode varbinddecodedstring="critical" varbindvalue="5"/>
+		<decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+	</varbindsdecode>
 </event>
 <event>
 	<mask>
@@ -594,51 +1149,74 @@
 	<uei>uei.opennms.org/vendor/Dell/traps/alertCoolingDeviceNonRecoverable</uei>
 	<event-label>MIB-Dell-10892 defined trap event: alertCoolingDeviceNonRecoverable</event-label>
 	<descr>
-&lt;p&gt;Cooling device sensor has detected a non-recoverable value.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		&lt;p&gt;Cooling device sensor has detected a non-recoverable value.&lt;/p&gt;&lt;table&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertSystem&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		alertSystem&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertTableIndexOID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		alertTableIndexOID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		alertMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertCurrentStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		alertCurrentStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
 		other(1)
 		unknown(2)
 		ok(3)
 		nonCritical(4)
 		critical(5)
 		nonRecoverable(6)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertPreviousStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		alertPreviousStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
 		other(1)
 		unknown(2)
 		ok(3)
 		nonCritical(4)
 		critical(5)
 		nonRecoverable(6)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertData&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+		alertData&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
-			DellOpenManage Event: Cooling Device Error: non-recoverable value.
-			&lt;/p&gt;
-		</logmsg>
+	<logmsg dest="logndisplay">&lt;p&gt;
+		DellOpenManage Event: Cooling Device Error: non-recoverable value.
+		alertSystem=%parm[#1]%
+		alertTableIndexOID=%parm[#2]%
+		alertMessage=%parm[#3]%
+		alertCurrentStatus=%parm[#4]%
+		alertPreviousStatus=%parm[#5]%
+		alertData=%parm[#6]%&lt;/p&gt;
+	</logmsg>
 	<severity>Warning</severity>
+	<varbindsdecode>
+		<parmid>parm[#4]</parmid>
+		<decode varbinddecodedstring="other" varbindvalue="1"/>
+		<decode varbinddecodedstring="unknown" varbindvalue="2"/>
+		<decode varbinddecodedstring="ok" varbindvalue="3"/>
+		<decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+		<decode varbinddecodedstring="critical" varbindvalue="5"/>
+		<decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+	</varbindsdecode>
+	<varbindsdecode>
+		<parmid>parm[#5]</parmid>
+		<decode varbinddecodedstring="other" varbindvalue="1"/>
+		<decode varbinddecodedstring="unknown" varbindvalue="2"/>
+		<decode varbinddecodedstring="ok" varbindvalue="3"/>
+		<decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+		<decode varbinddecodedstring="critical" varbindvalue="5"/>
+		<decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+	</varbindsdecode>
 </event>
 <event>
 	<mask>
@@ -658,51 +1236,74 @@
 	<uei>uei.opennms.org/vendor/Dell/traps/alertVoltageProbeNormal</uei>
 	<event-label>MIB-Dell-10892 defined trap event: alertVoltageProbeNormal</event-label>
 	<descr>
-&lt;p&gt;Voltage probe has returned to a normal value.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		&lt;p&gt;Voltage probe has returned to a normal value.&lt;/p&gt;&lt;table&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertSystem&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		alertSystem&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertTableIndexOID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		alertTableIndexOID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		alertMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertCurrentStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		alertCurrentStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
 		other(1)
 		unknown(2)
 		ok(3)
 		nonCritical(4)
 		critical(5)
 		nonRecoverable(6)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertPreviousStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		alertPreviousStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
 		other(1)
 		unknown(2)
 		ok(3)
 		nonCritical(4)
 		critical(5)
 		nonRecoverable(6)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertData&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+		alertData&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
-			DellOpenManage Event: Voltage Now Normal
-			&lt;/p&gt;
-		</logmsg>
+	<logmsg dest="logndisplay">&lt;p&gt;
+		DellOpenManage Event: Voltage Now Normal
+		alertSystem=%parm[#1]%
+		alertTableIndexOID=%parm[#2]%
+		alertMessage=%parm[#3]%
+		alertCurrentStatus=%parm[#4]%
+		alertPreviousStatus=%parm[#5]%
+		alertData=%parm[#6]%&lt;/p&gt;
+	</logmsg>
 	<severity>Cleared</severity>
+	<varbindsdecode>
+		<parmid>parm[#4]</parmid>
+		<decode varbinddecodedstring="other" varbindvalue="1"/>
+		<decode varbinddecodedstring="unknown" varbindvalue="2"/>
+		<decode varbinddecodedstring="ok" varbindvalue="3"/>
+		<decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+		<decode varbinddecodedstring="critical" varbindvalue="5"/>
+		<decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+	</varbindsdecode>
+	<varbindsdecode>
+		<parmid>parm[#5]</parmid>
+		<decode varbinddecodedstring="other" varbindvalue="1"/>
+		<decode varbinddecodedstring="unknown" varbindvalue="2"/>
+		<decode varbinddecodedstring="ok" varbindvalue="3"/>
+		<decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+		<decode varbinddecodedstring="critical" varbindvalue="5"/>
+		<decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+	</varbindsdecode>
 </event>
 <event>
 	<mask>
@@ -722,51 +1323,74 @@
 	<uei>uei.opennms.org/vendor/Dell/traps/alertVoltageProbeWarning</uei>
 	<event-label>MIB-Dell-10892 defined trap event: alertVoltageProbeWarning</event-label>
 	<descr>
-&lt;p&gt;Voltage probe has detected a warning value.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		&lt;p&gt;Voltage probe has detected a warning value.&lt;/p&gt;&lt;table&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertSystem&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		alertSystem&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertTableIndexOID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		alertTableIndexOID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		alertMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertCurrentStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		alertCurrentStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
 		other(1)
 		unknown(2)
 		ok(3)
 		nonCritical(4)
 		critical(5)
 		nonRecoverable(6)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertPreviousStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		alertPreviousStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
 		other(1)
 		unknown(2)
 		ok(3)
 		nonCritical(4)
 		critical(5)
 		nonRecoverable(6)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertData&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+		alertData&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
-			DellOpenManage Event: Voltage Level Warning
-			&lt;/p&gt;
-		</logmsg>
+	<logmsg dest="logndisplay">&lt;p&gt;
+		DellOpenManage Event: Voltage Level Warning
+		alertSystem=%parm[#1]%
+		alertTableIndexOID=%parm[#2]%
+		alertMessage=%parm[#3]%
+		alertCurrentStatus=%parm[#4]%
+		alertPreviousStatus=%parm[#5]%
+		alertData=%parm[#6]%&lt;/p&gt;
+	</logmsg>
 	<severity>Warning</severity>
+	<varbindsdecode>
+		<parmid>parm[#4]</parmid>
+		<decode varbinddecodedstring="other" varbindvalue="1"/>
+		<decode varbinddecodedstring="unknown" varbindvalue="2"/>
+		<decode varbinddecodedstring="ok" varbindvalue="3"/>
+		<decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+		<decode varbinddecodedstring="critical" varbindvalue="5"/>
+		<decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+	</varbindsdecode>
+	<varbindsdecode>
+		<parmid>parm[#5]</parmid>
+		<decode varbinddecodedstring="other" varbindvalue="1"/>
+		<decode varbinddecodedstring="unknown" varbindvalue="2"/>
+		<decode varbinddecodedstring="ok" varbindvalue="3"/>
+		<decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+		<decode varbinddecodedstring="critical" varbindvalue="5"/>
+		<decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+	</varbindsdecode>
 </event>
 <event>
 	<mask>
@@ -786,51 +1410,74 @@
 	<uei>uei.opennms.org/vendor/Dell/traps/alertVoltageProbeFailure</uei>
 	<event-label>MIB-Dell-10892 defined trap event: alertVoltageProbeFailure</event-label>
 	<descr>
-&lt;p&gt;Voltage probe has detected a failure value.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		&lt;p&gt;Voltage probe has detected a failure value.&lt;/p&gt;&lt;table&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertSystem&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		alertSystem&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertTableIndexOID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		alertTableIndexOID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		alertMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertCurrentStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		alertCurrentStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
 		other(1)
 		unknown(2)
 		ok(3)
 		nonCritical(4)
 		critical(5)
 		nonRecoverable(6)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertPreviousStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		alertPreviousStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
 		other(1)
 		unknown(2)
 		ok(3)
 		nonCritical(4)
 		critical(5)
 		nonRecoverable(6)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertData&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+		alertData&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
-			DellOpenManage Event: Voltage Failure
-			&lt;/p&gt;
-		</logmsg>
+	<logmsg dest="logndisplay">&lt;p&gt;
+		DellOpenManage Event: Voltage Failured
+		alertSystem=%parm[#1]%
+		alertTableIndexOID=%parm[#2]%
+		alertMessage=%parm[#3]%
+		alertCurrentStatus=%parm[#4]%
+		alertPreviousStatus=%parm[#5]%
+		alertData=%parm[#6]%&lt;/p&gt;
+	</logmsg>
 	<severity>Major</severity>
+	<varbindsdecode>
+		<parmid>parm[#4]</parmid>
+		<decode varbinddecodedstring="other" varbindvalue="1"/>
+		<decode varbinddecodedstring="unknown" varbindvalue="2"/>
+		<decode varbinddecodedstring="ok" varbindvalue="3"/>
+		<decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+		<decode varbinddecodedstring="critical" varbindvalue="5"/>
+		<decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+	</varbindsdecode>
+	<varbindsdecode>
+		<parmid>parm[#5]</parmid>
+		<decode varbinddecodedstring="other" varbindvalue="1"/>
+		<decode varbinddecodedstring="unknown" varbindvalue="2"/>
+		<decode varbinddecodedstring="ok" varbindvalue="3"/>
+		<decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+		<decode varbinddecodedstring="critical" varbindvalue="5"/>
+		<decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+	</varbindsdecode>
 </event>
 <event>
 	<mask>
@@ -850,51 +1497,74 @@
 	<uei>uei.opennms.org/vendor/Dell/traps/alertVoltageProbeNonRecoverable</uei>
 	<event-label>MIB-Dell-10892 defined trap event: alertVoltageProbeNonRecoverable</event-label>
 	<descr>
-&lt;p&gt;Voltage probe has detected a non-recoverable value.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		&lt;p&gt;Voltage probe has detected a non-recoverable value.&lt;/p&gt;&lt;table&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertSystem&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		alertSystem&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertTableIndexOID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		alertTableIndexOID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		alertMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertCurrentStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		alertCurrentStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
 		other(1)
 		unknown(2)
 		ok(3)
 		nonCritical(4)
 		critical(5)
 		nonRecoverable(6)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertPreviousStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		alertPreviousStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
 		other(1)
 		unknown(2)
 		ok(3)
 		nonCritical(4)
 		critical(5)
 		nonRecoverable(6)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertData&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+		alertData&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
-			DellOpenManage Event: Voltage Probe Error: non-recoverable value
-			&lt;/p&gt;
-		</logmsg>
+	<logmsg dest="logndisplay">&lt;p&gt;
+		DellOpenManage Event: Voltage Probe Error: non-recoverable value
+		alertSystem=%parm[#1]%
+		alertTableIndexOID=%parm[#2]%
+		alertMessage=%parm[#3]%
+		alertCurrentStatus=%parm[#4]%
+		alertPreviousStatus=%parm[#5]%
+		alertData=%parm[#6]%&lt;/p&gt;
+	</logmsg>
 	<severity>Warning</severity>
+	<varbindsdecode>
+		<parmid>parm[#4]</parmid>
+		<decode varbinddecodedstring="other" varbindvalue="1"/>
+		<decode varbinddecodedstring="unknown" varbindvalue="2"/>
+		<decode varbinddecodedstring="ok" varbindvalue="3"/>
+		<decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+		<decode varbinddecodedstring="critical" varbindvalue="5"/>
+		<decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+	</varbindsdecode>
+	<varbindsdecode>
+		<parmid>parm[#5]</parmid>
+		<decode varbinddecodedstring="other" varbindvalue="1"/>
+		<decode varbinddecodedstring="unknown" varbindvalue="2"/>
+		<decode varbinddecodedstring="ok" varbindvalue="3"/>
+		<decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+		<decode varbinddecodedstring="critical" varbindvalue="5"/>
+		<decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+	</varbindsdecode>
 </event>
 <event>
 	<mask>
@@ -914,51 +1584,74 @@
 	<uei>uei.opennms.org/vendor/Dell/traps/alertAmperageProbeNormal</uei>
 	<event-label>MIB-Dell-10892 defined trap event: alertAmperageProbeNormal</event-label>
 	<descr>
-&lt;p&gt;Amperage probe has returned to a normal value.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		&lt;p&gt;Amperage probe has returned to a normal value.&lt;/p&gt;&lt;table&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertSystem&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		alertSystem&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertTableIndexOID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		alertTableIndexOID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		alertMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertCurrentStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		alertCurrentStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
 		other(1)
 		unknown(2)
 		ok(3)
 		nonCritical(4)
 		critical(5)
 		nonRecoverable(6)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertPreviousStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		alertPreviousStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
 		other(1)
 		unknown(2)
 		ok(3)
 		nonCritical(4)
 		critical(5)
 		nonRecoverable(6)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertData&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+		alertData&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
-			DellOpenManage Event: Amperage Now Normal.
-			&lt;/p&gt;
-		</logmsg>
+	<logmsg dest="logndisplay">&lt;p&gt;
+		DellOpenManage Event: Amperage Now Normal.
+		alertSystem=%parm[#1]%
+		alertTableIndexOID=%parm[#2]%
+		alertMessage=%parm[#3]%
+		alertCurrentStatus=%parm[#4]%
+		alertPreviousStatus=%parm[#5]%
+		alertData=%parm[#6]%&lt;/p&gt;
+	</logmsg>
 	<severity>Cleared</severity>
+	<varbindsdecode>
+		<parmid>parm[#4]</parmid>
+		<decode varbinddecodedstring="other" varbindvalue="1"/>
+		<decode varbinddecodedstring="unknown" varbindvalue="2"/>
+		<decode varbinddecodedstring="ok" varbindvalue="3"/>
+		<decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+		<decode varbinddecodedstring="critical" varbindvalue="5"/>
+		<decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+	</varbindsdecode>
+	<varbindsdecode>
+		<parmid>parm[#5]</parmid>
+		<decode varbinddecodedstring="other" varbindvalue="1"/>
+		<decode varbinddecodedstring="unknown" varbindvalue="2"/>
+		<decode varbinddecodedstring="ok" varbindvalue="3"/>
+		<decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+		<decode varbinddecodedstring="critical" varbindvalue="5"/>
+		<decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+	</varbindsdecode>
 </event>
 <event>
 	<mask>
@@ -978,51 +1671,74 @@
 	<uei>uei.opennms.org/vendor/Dell/traps/alertAmperageProbeWarning</uei>
 	<event-label>MIB-Dell-10892 defined trap event: alertAmperageProbeWarning</event-label>
 	<descr>
-&lt;p&gt;Amperage probe has detected a warning value.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		&lt;p&gt;Amperage probe has detected a warning value.&lt;/p&gt;&lt;table&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertSystem&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		alertSystem&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertTableIndexOID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		alertTableIndexOID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		alertMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertCurrentStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		alertCurrentStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
 		other(1)
 		unknown(2)
 		ok(3)
 		nonCritical(4)
 		critical(5)
 		nonRecoverable(6)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertPreviousStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		alertPreviousStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
 		other(1)
 		unknown(2)
 		ok(3)
 		nonCritical(4)
 		critical(5)
 		nonRecoverable(6)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertData&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+		alertData&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
-			DellOpenManage Event: Amperage at Warning Level
-			&lt;/p&gt;
-		</logmsg>
+	<logmsg dest="logndisplay">&lt;p&gt;
+		DellOpenManage Event: Amperage at Warning Level
+		alertSystem=%parm[#1]%
+		alertTableIndexOID=%parm[#2]%
+		alertMessage=%parm[#3]%
+		alertCurrentStatus=%parm[#4]%
+		alertPreviousStatus=%parm[#5]%
+		alertData=%parm[#6]%&lt;/p&gt;
+	</logmsg>
 	<severity>Minor</severity>
+	<varbindsdecode>
+		<parmid>parm[#4]</parmid>
+		<decode varbinddecodedstring="other" varbindvalue="1"/>
+		<decode varbinddecodedstring="unknown" varbindvalue="2"/>
+		<decode varbinddecodedstring="ok" varbindvalue="3"/>
+		<decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+		<decode varbinddecodedstring="critical" varbindvalue="5"/>
+		<decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+	</varbindsdecode>
+	<varbindsdecode>
+		<parmid>parm[#5]</parmid>
+		<decode varbinddecodedstring="other" varbindvalue="1"/>
+		<decode varbinddecodedstring="unknown" varbindvalue="2"/>
+		<decode varbinddecodedstring="ok" varbindvalue="3"/>
+		<decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+		<decode varbinddecodedstring="critical" varbindvalue="5"/>
+		<decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+	</varbindsdecode>
 </event>
 <event>
 	<mask>
@@ -1042,51 +1758,74 @@
 	<uei>uei.opennms.org/vendor/Dell/traps/alertAmperageProbeFailure</uei>
 	<event-label>MIB-Dell-10892 defined trap event: alertAmperageProbeFailure</event-label>
 	<descr>
-&lt;p&gt;Amperage probe has detected a failure value.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		&lt;p&gt;Amperage probe has detected a failure value.&lt;/p&gt;&lt;table&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertSystem&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		alertSystem&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertTableIndexOID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		alertTableIndexOID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		alertMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertCurrentStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		alertCurrentStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
 		other(1)
 		unknown(2)
 		ok(3)
 		nonCritical(4)
 		critical(5)
 		nonRecoverable(6)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertPreviousStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		alertPreviousStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
 		other(1)
 		unknown(2)
 		ok(3)
 		nonCritical(4)
 		critical(5)
 		nonRecoverable(6)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertData&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+		alertData&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
-			DellOpenManage Event: Amperage at Failure Value.
-			&lt;/p&gt;
-		</logmsg>
+	<logmsg dest="logndisplay">&lt;p&gt;
+		DellOpenManage Event: Amperage at Failure Value.
+		alertSystem=%parm[#1]%
+		alertTableIndexOID=%parm[#2]%
+		alertMessage=%parm[#3]%
+		alertCurrentStatus=%parm[#4]%
+		alertPreviousStatus=%parm[#5]%
+		alertData=%parm[#6]%&lt;/p&gt;
+	</logmsg>
 	<severity>Major</severity>
+	<varbindsdecode>
+		<parmid>parm[#4]</parmid>
+		<decode varbinddecodedstring="other" varbindvalue="1"/>
+		<decode varbinddecodedstring="unknown" varbindvalue="2"/>
+		<decode varbinddecodedstring="ok" varbindvalue="3"/>
+		<decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+		<decode varbinddecodedstring="critical" varbindvalue="5"/>
+		<decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+	</varbindsdecode>
+	<varbindsdecode>
+		<parmid>parm[#5]</parmid>
+		<decode varbinddecodedstring="other" varbindvalue="1"/>
+		<decode varbinddecodedstring="unknown" varbindvalue="2"/>
+		<decode varbinddecodedstring="ok" varbindvalue="3"/>
+		<decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+		<decode varbinddecodedstring="critical" varbindvalue="5"/>
+		<decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+	</varbindsdecode>
 </event>
 <event>
 	<mask>
@@ -1106,51 +1845,74 @@
 	<uei>uei.opennms.org/vendor/Dell/traps/alertAmperageProbeNonRecoverable</uei>
 	<event-label>MIB-Dell-10892 defined trap event: alertAmperageProbeNonRecoverable</event-label>
 	<descr>
-&lt;p&gt;Amperage probe has detected a non-recoverable value.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		&lt;p&gt;Amperage probe has detected a non-recoverable value.&lt;/p&gt;&lt;table&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertSystem&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		alertSystem&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertTableIndexOID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		alertTableIndexOID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		alertMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertCurrentStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		alertCurrentStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
 		other(1)
 		unknown(2)
 		ok(3)
 		nonCritical(4)
 		critical(5)
 		nonRecoverable(6)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertPreviousStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		alertPreviousStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
 		other(1)
 		unknown(2)
 		ok(3)
 		nonCritical(4)
 		critical(5)
 		nonRecoverable(6)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertData&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+		alertData&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
-			DellOpenManage Event: Amperage Probe Failre: non-recoverable value
-			&lt;/p&gt;
-		</logmsg>
+	<logmsg dest="logndisplay">&lt;p&gt;
+		DellOpenManage Event: Amperage Probe Failure: non-recoverable value
+		alertSystem=%parm[#1]%
+		alertTableIndexOID=%parm[#2]%
+		alertMessage=%parm[#3]%
+		alertCurrentStatus=%parm[#4]%
+		alertPreviousStatus=%parm[#5]%
+		alertData=%parm[#6]%&lt;/p&gt;
+	</logmsg>
 	<severity>Warning</severity>
+	<varbindsdecode>
+		<parmid>parm[#4]</parmid>
+		<decode varbinddecodedstring="other" varbindvalue="1"/>
+		<decode varbinddecodedstring="unknown" varbindvalue="2"/>
+		<decode varbinddecodedstring="ok" varbindvalue="3"/>
+		<decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+		<decode varbinddecodedstring="critical" varbindvalue="5"/>
+		<decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+	</varbindsdecode>
+	<varbindsdecode>
+		<parmid>parm[#5]</parmid>
+		<decode varbinddecodedstring="other" varbindvalue="1"/>
+		<decode varbinddecodedstring="unknown" varbindvalue="2"/>
+		<decode varbinddecodedstring="ok" varbindvalue="3"/>
+		<decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+		<decode varbinddecodedstring="critical" varbindvalue="5"/>
+		<decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+	</varbindsdecode>
 </event>
 <event>
 	<mask>
@@ -1170,51 +1932,74 @@
 	<uei>uei.opennms.org/vendor/Dell/traps/alertChassisIntrusionNormal</uei>
 	<event-label>MIB-Dell-10892 defined trap event: alertChassisIntrusionNormal</event-label>
 	<descr>
-&lt;p&gt;Chassis intrusion has returned to normal.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		&lt;p&gt;Chassis intrusion has returned to normal.&lt;/p&gt;&lt;table&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertSystem&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		alertSystem&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertTableIndexOID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		alertTableIndexOID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		alertMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertCurrentStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		alertCurrentStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
 		other(1)
 		unknown(2)
 		ok(3)
 		nonCritical(4)
 		critical(5)
 		nonRecoverable(6)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertPreviousStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		alertPreviousStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
 		other(1)
 		unknown(2)
 		ok(3)
 		nonCritical(4)
 		critical(5)
 		nonRecoverable(6)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertData&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+		alertData&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
-			DellOpenManage Event: Chassis Intrusion Alert now cleared.
-			&lt;/p&gt;
-		</logmsg>
+	<logmsg dest="logndisplay">&lt;p&gt;
+		DellOpenManage Event: Chassis Intrusion Alert now cleared.
+		alertSystem=%parm[#1]%
+		alertTableIndexOID=%parm[#2]%
+		alertMessage=%parm[#3]%
+		alertCurrentStatus=%parm[#4]%
+		alertPreviousStatus=%parm[#5]%
+		alertData=%parm[#6]%&lt;/p&gt;
+	</logmsg>
 	<severity>Cleared</severity>
+	<varbindsdecode>
+		<parmid>parm[#4]</parmid>
+		<decode varbinddecodedstring="other" varbindvalue="1"/>
+		<decode varbinddecodedstring="unknown" varbindvalue="2"/>
+		<decode varbinddecodedstring="ok" varbindvalue="3"/>
+		<decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+		<decode varbinddecodedstring="critical" varbindvalue="5"/>
+		<decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+	</varbindsdecode>
+	<varbindsdecode>
+		<parmid>parm[#5]</parmid>
+		<decode varbinddecodedstring="other" varbindvalue="1"/>
+		<decode varbinddecodedstring="unknown" varbindvalue="2"/>
+		<decode varbinddecodedstring="ok" varbindvalue="3"/>
+		<decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+		<decode varbinddecodedstring="critical" varbindvalue="5"/>
+		<decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+	</varbindsdecode>
 </event>
 <event>
 	<mask>
@@ -1234,51 +2019,74 @@
 	<uei>uei.opennms.org/vendor/Dell/traps/alertChassisIntrusionDetected</uei>
 	<event-label>MIB-Dell-10892 defined trap event: alertChassisIntrusionDetected</event-label>
 	<descr>
-&lt;p&gt;Chassis intrusion has been detected.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		&lt;p&gt;Chassis intrusion has been detected.&lt;/p&gt;&lt;table&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertSystem&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		alertSystem&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertTableIndexOID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		alertTableIndexOID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		alertMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertCurrentStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		alertCurrentStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
 		other(1)
 		unknown(2)
 		ok(3)
 		nonCritical(4)
 		critical(5)
 		nonRecoverable(6)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertPreviousStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		alertPreviousStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
 		other(1)
 		unknown(2)
 		ok(3)
 		nonCritical(4)
 		critical(5)
 		nonRecoverable(6)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertData&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+		alertData&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
-			DellOpenManage Event: Chassis Intrusion detected.
-			&lt;/p&gt;
-		</logmsg>
+	<logmsg dest="logndisplay">&lt;p&gt;
+		DellOpenManage Event: Chassis Intrusion detected.
+		alertSystem=%parm[#1]%
+		alertTableIndexOID=%parm[#2]%
+		alertMessage=%parm[#3]%
+		alertCurrentStatus=%parm[#4]%
+		alertPreviousStatus=%parm[#5]%
+		alertData=%parm[#6]%&lt;/p&gt;
+	</logmsg>
 	<severity>Major</severity>
+	<varbindsdecode>
+		<parmid>parm[#4]</parmid>
+		<decode varbinddecodedstring="other" varbindvalue="1"/>
+		<decode varbinddecodedstring="unknown" varbindvalue="2"/>
+		<decode varbinddecodedstring="ok" varbindvalue="3"/>
+		<decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+		<decode varbinddecodedstring="critical" varbindvalue="5"/>
+		<decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+	</varbindsdecode>
+	<varbindsdecode>
+		<parmid>parm[#5]</parmid>
+		<decode varbinddecodedstring="other" varbindvalue="1"/>
+		<decode varbinddecodedstring="unknown" varbindvalue="2"/>
+		<decode varbinddecodedstring="ok" varbindvalue="3"/>
+		<decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+		<decode varbinddecodedstring="critical" varbindvalue="5"/>
+		<decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+	</varbindsdecode>
 </event>
 <event>
 	<mask>
@@ -1298,51 +2106,74 @@
 	<uei>uei.opennms.org/vendor/Dell/traps/alertRedundancyNormal</uei>
 	<event-label>MIB-Dell-10892 defined trap event: alertRedundancyNormal</event-label>
 	<descr>
-&lt;p&gt;Redundancy has returned to normal.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		&lt;p&gt;Redundancy has returned to normal.&lt;/p&gt;&lt;table&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertSystem&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		alertSystem&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertTableIndexOID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		alertTableIndexOID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		alertMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertCurrentStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		alertCurrentStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
 		other(1)
 		unknown(2)
 		ok(3)
 		nonCritical(4)
 		critical(5)
 		nonRecoverable(6)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertPreviousStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		alertPreviousStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
 		other(1)
 		unknown(2)
 		ok(3)
 		nonCritical(4)
 		critical(5)
 		nonRecoverable(6)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertData&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+		alertData&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
-			DellOpenManage Event: Redundancy has returned to normal.
-			&lt;/p&gt;
-		</logmsg>
+	<logmsg dest="logndisplay">&lt;p&gt;
+		DellOpenManage Event: Redundancy has returned to normal.
+		alertSystem=%parm[#1]%
+		alertTableIndexOID=%parm[#2]%
+		alertMessage=%parm[#3]%
+		alertCurrentStatus=%parm[#4]%
+		alertPreviousStatus=%parm[#5]%
+		alertData=%parm[#6]%&lt;/p&gt;
+	</logmsg>
 	<severity>Cleared</severity>
+	<varbindsdecode>
+		<parmid>parm[#4]</parmid>
+		<decode varbinddecodedstring="other" varbindvalue="1"/>
+		<decode varbinddecodedstring="unknown" varbindvalue="2"/>
+		<decode varbinddecodedstring="ok" varbindvalue="3"/>
+		<decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+		<decode varbinddecodedstring="critical" varbindvalue="5"/>
+		<decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+	</varbindsdecode>
+	<varbindsdecode>
+		<parmid>parm[#5]</parmid>
+		<decode varbinddecodedstring="other" varbindvalue="1"/>
+		<decode varbinddecodedstring="unknown" varbindvalue="2"/>
+		<decode varbinddecodedstring="ok" varbindvalue="3"/>
+		<decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+		<decode varbinddecodedstring="critical" varbindvalue="5"/>
+		<decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+	</varbindsdecode>
 </event>
 <event>
 	<mask>
@@ -1362,51 +2193,74 @@
 	<uei>uei.opennms.org/vendor/Dell/traps/alertRedundancyDegraded</uei>
 	<event-label>MIB-Dell-10892 defined trap event: alertRedundancyDegraded</event-label>
 	<descr>
-&lt;p&gt;Redundancy has been degraded.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		&lt;p&gt;Redundancy has been degraded.&lt;/p&gt;&lt;table&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertSystem&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		alertSystem&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertTableIndexOID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		alertTableIndexOID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		alertMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertCurrentStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		alertCurrentStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
 		other(1)
 		unknown(2)
 		ok(3)
 		nonCritical(4)
 		critical(5)
 		nonRecoverable(6)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertPreviousStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		alertPreviousStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
 		other(1)
 		unknown(2)
 		ok(3)
 		nonCritical(4)
 		critical(5)
 		nonRecoverable(6)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertData&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+		alertData&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
-			DellOpenManage Event: Redundancy degraded
-			&lt;/p&gt;
-		</logmsg>
+	<logmsg dest="logndisplay">&lt;p&gt;
+		DellOpenManage Event: Redundancy degraded
+		alertSystem=%parm[#1]%
+		alertTableIndexOID=%parm[#2]%
+		alertMessage=%parm[#3]%
+		alertCurrentStatus=%parm[#4]%
+		alertPreviousStatus=%parm[#5]%
+		alertData=%parm[#6]%&lt;/p&gt;
+	</logmsg>
 	<severity>Minor</severity>
+	<varbindsdecode>
+		<parmid>parm[#4]</parmid>
+		<decode varbinddecodedstring="other" varbindvalue="1"/>
+		<decode varbinddecodedstring="unknown" varbindvalue="2"/>
+		<decode varbinddecodedstring="ok" varbindvalue="3"/>
+		<decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+		<decode varbinddecodedstring="critical" varbindvalue="5"/>
+		<decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+	</varbindsdecode>
+	<varbindsdecode>
+		<parmid>parm[#5]</parmid>
+		<decode varbinddecodedstring="other" varbindvalue="1"/>
+		<decode varbinddecodedstring="unknown" varbindvalue="2"/>
+		<decode varbinddecodedstring="ok" varbindvalue="3"/>
+		<decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+		<decode varbinddecodedstring="critical" varbindvalue="5"/>
+		<decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+	</varbindsdecode>
 </event>
 <event>
 	<mask>
@@ -1426,51 +2280,74 @@
 	<uei>uei.opennms.org/vendor/Dell/traps/alertRedundancyLost</uei>
 	<event-label>MIB-Dell-10892 defined trap event: alertRedundancyLost</event-label>
 	<descr>
-&lt;p&gt;Redundancy has been lost.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		&lt;p&gt;Redundancy has been lost.&lt;/p&gt;&lt;table&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertSystem&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		alertSystem&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertTableIndexOID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		alertTableIndexOID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		alertMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertCurrentStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		alertCurrentStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
 		other(1)
 		unknown(2)
 		ok(3)
 		nonCritical(4)
 		critical(5)
 		nonRecoverable(6)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertPreviousStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		alertPreviousStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
 		other(1)
 		unknown(2)
 		ok(3)
 		nonCritical(4)
 		critical(5)
 		nonRecoverable(6)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertData&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+		alertData&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
-			DellOpenManage Event: Redundancy Lost
-			&lt;/p&gt;
-		</logmsg>
+	<logmsg dest="logndisplay">&lt;p&gt;
+		DellOpenManage Event: Redundancy Lost
+		alertSystem=%parm[#1]%
+		alertTableIndexOID=%parm[#2]%
+		alertMessage=%parm[#3]%
+		alertCurrentStatus=%parm[#4]%
+		alertPreviousStatus=%parm[#5]%
+		alertData=%parm[#6]%&lt;/p&gt;
+	</logmsg>
 	<severity>Major</severity>
+	<varbindsdecode>
+		<parmid>parm[#4]</parmid>
+		<decode varbinddecodedstring="other" varbindvalue="1"/>
+		<decode varbinddecodedstring="unknown" varbindvalue="2"/>
+		<decode varbinddecodedstring="ok" varbindvalue="3"/>
+		<decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+		<decode varbinddecodedstring="critical" varbindvalue="5"/>
+		<decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+	</varbindsdecode>
+	<varbindsdecode>
+		<parmid>parm[#5]</parmid>
+		<decode varbinddecodedstring="other" varbindvalue="1"/>
+		<decode varbinddecodedstring="unknown" varbindvalue="2"/>
+		<decode varbinddecodedstring="ok" varbindvalue="3"/>
+		<decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+		<decode varbinddecodedstring="critical" varbindvalue="5"/>
+		<decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+	</varbindsdecode>
 </event>
 <event>
 	<mask>
@@ -1490,51 +2367,161 @@
 	<uei>uei.opennms.org/vendor/Dell/traps/alertPowerSupplyNormal</uei>
 	<event-label>MIB-Dell-10892 defined trap event: alertPowerSupplyNormal</event-label>
 	<descr>
-&lt;p&gt;Power supply has returned to normal.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		&lt;p&gt;Power supply has returned to normal.&lt;/p&gt;&lt;table&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertSystem&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		alertSystem&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertTableIndexOID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		alertTableIndexOID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		alertMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertCurrentStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		alertCurrentStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
 		other(1)
 		unknown(2)
 		ok(3)
 		nonCritical(4)
 		critical(5)
 		nonRecoverable(6)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertPreviousStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		alertPreviousStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
 		other(1)
 		unknown(2)
 		ok(3)
 		nonCritical(4)
 		critical(5)
 		nonRecoverable(6)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertData&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+		alertData&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
-			DellOpenManage Event: Power Supply now Normal
-			&lt;/p&gt;
-		</logmsg>
+	<logmsg dest="logndisplay">&lt;p&gt;
+		DellOpenManage Event: Power Supply now Normal
+		alertSystem=%parm[#1]%
+		alertTableIndexOID=%parm[#2]%
+		alertMessage=%parm[#3]%
+		alertCurrentStatus=%parm[#4]%
+		alertPreviousStatus=%parm[#5]%
+		alertData=%parm[#6]%&lt;/p&gt;
+	</logmsg>
 	<severity>Cleared</severity>
+	<varbindsdecode>
+		<parmid>parm[#4]</parmid>
+		<decode varbinddecodedstring="other" varbindvalue="1"/>
+		<decode varbinddecodedstring="unknown" varbindvalue="2"/>
+		<decode varbinddecodedstring="ok" varbindvalue="3"/>
+		<decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+		<decode varbinddecodedstring="critical" varbindvalue="5"/>
+		<decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+	</varbindsdecode>
+	<varbindsdecode>
+		<parmid>parm[#5]</parmid>
+		<decode varbinddecodedstring="other" varbindvalue="1"/>
+		<decode varbinddecodedstring="unknown" varbindvalue="2"/>
+		<decode varbinddecodedstring="ok" varbindvalue="3"/>
+		<decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+		<decode varbinddecodedstring="critical" varbindvalue="5"/>
+		<decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+	</varbindsdecode>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.674.10892.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>1353</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Dell/traps/alertPowerSupplyWarning</uei>
+	<event-label>MIB-Dell-10892 defined trap event: alertPowerSupplyWarning</event-label>
+	<descr>
+		&lt;p&gt;Power supply has detected a warning.&lt;/p&gt;&lt;table&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		alertSystem&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		alertTableIndexOID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		alertMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		alertCurrentStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		unknown(2)
+		ok(3)
+		nonCritical(4)
+		critical(5)
+		nonRecoverable(6)
+		&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		alertPreviousStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		unknown(2)
+		ok(3)
+		nonCritical(4)
+		critical(5)
+		nonRecoverable(6)
+		&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		alertData&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+	<logmsg dest="logndisplay">&lt;p&gt;
+		DellOpenManage Event: Power Supply Warning
+		alertSystem=%parm[#1]%
+		alertTableIndexOID=%parm[#2]%
+		alertMessage=%parm[#3]%
+		alertCurrentStatus=%parm[#4]%
+		alertPreviousStatus=%parm[#5]%
+		alertData=%parm[#6]%&lt;/p&gt;
+	</logmsg>
+	<severity>Minor</severity>
+	<varbindsdecode>
+		<parmid>parm[#4]</parmid>
+		<decode varbinddecodedstring="other" varbindvalue="1"/>
+		<decode varbinddecodedstring="unknown" varbindvalue="2"/>
+		<decode varbinddecodedstring="ok" varbindvalue="3"/>
+		<decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+		<decode varbinddecodedstring="critical" varbindvalue="5"/>
+		<decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+	</varbindsdecode>
+	<varbindsdecode>
+		<parmid>parm[#5]</parmid>
+		<decode varbinddecodedstring="other" varbindvalue="1"/>
+		<decode varbinddecodedstring="unknown" varbindvalue="2"/>
+		<decode varbinddecodedstring="ok" varbindvalue="3"/>
+		<decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+		<decode varbinddecodedstring="critical" varbindvalue="5"/>
+		<decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+	</varbindsdecode>
 </event>
 <event>
 	<mask>
@@ -1554,51 +2541,74 @@
 	<uei>uei.opennms.org/vendor/Dell/traps/alertPowerSupplyFailure</uei>
 	<event-label>MIB-Dell-10892 defined trap event: alertPowerSupplyFailure</event-label>
 	<descr>
-&lt;p&gt;Power supply has failed.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		&lt;p&gt;Power supply has detected a failure.&lt;/p&gt;&lt;table&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertSystem&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		alertSystem&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertTableIndexOID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		alertTableIndexOID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		alertMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertCurrentStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		alertCurrentStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
 		other(1)
 		unknown(2)
 		ok(3)
 		nonCritical(4)
 		critical(5)
 		nonRecoverable(6)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertPreviousStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		alertPreviousStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
 		other(1)
 		unknown(2)
 		ok(3)
 		nonCritical(4)
 		critical(5)
 		nonRecoverable(6)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertData&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+		alertData&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
-			DellOpenManage Event: Power Supply Failure
-			&lt;/p&gt;
-		</logmsg>
+	<logmsg dest="logndisplay">&lt;p&gt;
+		DellOpenManage Event: Power Supply Failure
+		alertSystem=%parm[#1]%
+		alertTableIndexOID=%parm[#2]%
+		alertMessage=%parm[#3]%
+		alertCurrentStatus=%parm[#4]%
+		alertPreviousStatus=%parm[#5]%
+		alertData=%parm[#6]%&lt;/p&gt;
+	</logmsg>
 	<severity>Major</severity>
+	<varbindsdecode>
+		<parmid>parm[#4]</parmid>
+		<decode varbinddecodedstring="other" varbindvalue="1"/>
+		<decode varbinddecodedstring="unknown" varbindvalue="2"/>
+		<decode varbinddecodedstring="ok" varbindvalue="3"/>
+		<decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+		<decode varbinddecodedstring="critical" varbindvalue="5"/>
+		<decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+	</varbindsdecode>
+	<varbindsdecode>
+		<parmid>parm[#5]</parmid>
+		<decode varbinddecodedstring="other" varbindvalue="1"/>
+		<decode varbinddecodedstring="unknown" varbindvalue="2"/>
+		<decode varbinddecodedstring="ok" varbindvalue="3"/>
+		<decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+		<decode varbinddecodedstring="critical" varbindvalue="5"/>
+		<decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+	</varbindsdecode>
 </event>
 <event>
 	<mask>
@@ -1618,51 +2628,74 @@
 	<uei>uei.opennms.org/vendor/Dell/traps/alertMemoryDeviceWarning</uei>
 	<event-label>MIB-Dell-10892 defined trap event: alertMemoryDeviceWarning</event-label>
 	<descr>
-&lt;p&gt;Memory device status is non-critical.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		&lt;p&gt;Memory device status is noncritical.&lt;/p&gt;&lt;table&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertSystem&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		alertSystem&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertTableIndexOID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		alertTableIndexOID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		alertMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertCurrentStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		alertCurrentStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
 		other(1)
 		unknown(2)
 		ok(3)
 		nonCritical(4)
 		critical(5)
 		nonRecoverable(6)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertPreviousStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		alertPreviousStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
 		other(1)
 		unknown(2)
 		ok(3)
 		nonCritical(4)
 		critical(5)
 		nonRecoverable(6)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertData&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+		alertData&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
-			DellOpenManage Event: Memory Device Warning
-			&lt;/p&gt;
-		</logmsg>
+	<logmsg dest="logndisplay">&lt;p&gt;
+		DellOpenManage Event: Memory Device Warning
+		alertSystem=%parm[#1]%
+		alertTableIndexOID=%parm[#2]%
+		alertMessage=%parm[#3]%
+		alertCurrentStatus=%parm[#4]%
+		alertPreviousStatus=%parm[#5]%
+		alertData=%parm[#6]%&lt;/p&gt;
+	</logmsg>
 	<severity>Warning</severity>
+	<varbindsdecode>
+		<parmid>parm[#4]</parmid>
+		<decode varbinddecodedstring="other" varbindvalue="1"/>
+		<decode varbinddecodedstring="unknown" varbindvalue="2"/>
+		<decode varbinddecodedstring="ok" varbindvalue="3"/>
+		<decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+		<decode varbinddecodedstring="critical" varbindvalue="5"/>
+		<decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+	</varbindsdecode>
+	<varbindsdecode>
+		<parmid>parm[#5]</parmid>
+		<decode varbinddecodedstring="other" varbindvalue="1"/>
+		<decode varbinddecodedstring="unknown" varbindvalue="2"/>
+		<decode varbinddecodedstring="ok" varbindvalue="3"/>
+		<decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+		<decode varbinddecodedstring="critical" varbindvalue="5"/>
+		<decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+	</varbindsdecode>
 </event>
 <event>
 	<mask>
@@ -1682,51 +2715,74 @@
 	<uei>uei.opennms.org/vendor/Dell/traps/alertMemoryDeviceFailure</uei>
 	<event-label>MIB-Dell-10892 defined trap event: alertMemoryDeviceFailure</event-label>
 	<descr>
-&lt;p&gt;Memory device status is critical.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		&lt;p&gt;Memory device status is critical.&lt;/p&gt;&lt;table&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertSystem&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		alertSystem&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertTableIndexOID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		alertTableIndexOID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		alertMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertCurrentStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		alertCurrentStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
 		other(1)
 		unknown(2)
 		ok(3)
 		nonCritical(4)
 		critical(5)
 		nonRecoverable(6)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertPreviousStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		alertPreviousStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
 		other(1)
 		unknown(2)
 		ok(3)
 		nonCritical(4)
 		critical(5)
 		nonRecoverable(6)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertData&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+		alertData&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
-			DellOpenManage Event: Memory Device Failure
-			&lt;/p&gt;
-		</logmsg>
+	<logmsg dest="logndisplay">&lt;p&gt;
+		DellOpenManage Event: Memory Device Failure
+		alertSystem=%parm[#1]%
+		alertTableIndexOID=%parm[#2]%
+		alertMessage=%parm[#3]%
+		alertCurrentStatus=%parm[#4]%
+		alertPreviousStatus=%parm[#5]%
+		alertData=%parm[#6]%&lt;/p&gt;
+	</logmsg>
 	<severity>Major</severity>
+	<varbindsdecode>
+		<parmid>parm[#4]</parmid>
+		<decode varbinddecodedstring="other" varbindvalue="1"/>
+		<decode varbinddecodedstring="unknown" varbindvalue="2"/>
+		<decode varbinddecodedstring="ok" varbindvalue="3"/>
+		<decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+		<decode varbinddecodedstring="critical" varbindvalue="5"/>
+		<decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+	</varbindsdecode>
+	<varbindsdecode>
+		<parmid>parm[#5]</parmid>
+		<decode varbinddecodedstring="other" varbindvalue="1"/>
+		<decode varbinddecodedstring="unknown" varbindvalue="2"/>
+		<decode varbinddecodedstring="ok" varbindvalue="3"/>
+		<decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+		<decode varbinddecodedstring="critical" varbindvalue="5"/>
+		<decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+	</varbindsdecode>
 </event>
 <event>
 	<mask>
@@ -1746,51 +2802,74 @@
 	<uei>uei.opennms.org/vendor/Dell/traps/alertMemoryDeviceNonRecoverable</uei>
 	<event-label>MIB-Dell-10892 defined trap event: alertMemoryDeviceNonRecoverable</event-label>
 	<descr>
-&lt;p&gt;Memory device status is non-recoverable.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		&lt;p&gt;Memory device status is non-recoverable.&lt;/p&gt;&lt;table&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertSystem&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		alertSystem&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertTableIndexOID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		alertTableIndexOID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		alertMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertCurrentStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		alertCurrentStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
 		other(1)
 		unknown(2)
 		ok(3)
 		nonCritical(4)
 		critical(5)
 		nonRecoverable(6)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertPreviousStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		alertPreviousStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
 		other(1)
 		unknown(2)
 		ok(3)
 		nonCritical(4)
 		critical(5)
 		nonRecoverable(6)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertData&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+		alertData&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
-			DellOpenManage Event: Memory Device Status is non-recoverable
-			&lt;/p&gt;
-		</logmsg>
-	<severity>Indeterminate</severity>
+	<logmsg dest="logndisplay">&lt;p&gt;
+		DellOpenManage Event: Memory Device Status is non-recoverable
+		alertSystem=%parm[#1]%
+		alertTableIndexOID=%parm[#2]%
+		alertMessage=%parm[#3]%
+		alertCurrentStatus=%parm[#4]%
+		alertPreviousStatus=%parm[#5]%
+		alertData=%parm[#6]%&lt;/p&gt;
+	</logmsg>
+	<severity>Warning</severity>
+	<varbindsdecode>
+		<parmid>parm[#4]</parmid>
+		<decode varbinddecodedstring="other" varbindvalue="1"/>
+		<decode varbinddecodedstring="unknown" varbindvalue="2"/>
+		<decode varbinddecodedstring="ok" varbindvalue="3"/>
+		<decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+		<decode varbinddecodedstring="critical" varbindvalue="5"/>
+		<decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+	</varbindsdecode>
+	<varbindsdecode>
+		<parmid>parm[#5]</parmid>
+		<decode varbinddecodedstring="other" varbindvalue="1"/>
+		<decode varbinddecodedstring="unknown" varbindvalue="2"/>
+		<decode varbinddecodedstring="ok" varbindvalue="3"/>
+		<decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+		<decode varbinddecodedstring="critical" varbindvalue="5"/>
+		<decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+	</varbindsdecode>
 </event>
 <event>
 	<mask>
@@ -1810,51 +2889,74 @@
 	<uei>uei.opennms.org/vendor/Dell/traps/alertFanEnclosureInsertion</uei>
 	<event-label>MIB-Dell-10892 defined trap event: alertFanEnclosureInsertion</event-label>
 	<descr>
-&lt;p&gt;Fan enclosure has been inserted into system.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		&lt;p&gt;Fan enclosure has been inserted into system.&lt;/p&gt;&lt;table&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertSystem&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		alertSystem&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertTableIndexOID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		alertTableIndexOID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		alertMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertCurrentStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		alertCurrentStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
 		other(1)
 		unknown(2)
 		ok(3)
 		nonCritical(4)
 		critical(5)
 		nonRecoverable(6)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertPreviousStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		alertPreviousStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
 		other(1)
 		unknown(2)
 		ok(3)
 		nonCritical(4)
 		critical(5)
 		nonRecoverable(6)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertData&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+		alertData&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
-			DellOpenManage Event: Fan Enclosure insertion.
-			&lt;/p&gt;
-		</logmsg>
+	<logmsg dest="logndisplay">&lt;p&gt;
+		DellOpenManage Event: Fan Enclosure insertion.
+		alertSystem=%parm[#1]%
+		alertTableIndexOID=%parm[#2]%
+		alertMessage=%parm[#3]%
+		alertCurrentStatus=%parm[#4]%
+		alertPreviousStatus=%parm[#5]%
+		alertData=%parm[#6]%&lt;/p&gt;
+	</logmsg>
 	<severity>Normal</severity>
+	<varbindsdecode>
+		<parmid>parm[#4]</parmid>
+		<decode varbinddecodedstring="other" varbindvalue="1"/>
+		<decode varbinddecodedstring="unknown" varbindvalue="2"/>
+		<decode varbinddecodedstring="ok" varbindvalue="3"/>
+		<decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+		<decode varbinddecodedstring="critical" varbindvalue="5"/>
+		<decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+	</varbindsdecode>
+	<varbindsdecode>
+		<parmid>parm[#5]</parmid>
+		<decode varbinddecodedstring="other" varbindvalue="1"/>
+		<decode varbinddecodedstring="unknown" varbindvalue="2"/>
+		<decode varbinddecodedstring="ok" varbindvalue="3"/>
+		<decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+		<decode varbinddecodedstring="critical" varbindvalue="5"/>
+		<decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+	</varbindsdecode>
 </event>
 <event>
 	<mask>
@@ -1874,51 +2976,74 @@
 	<uei>uei.opennms.org/vendor/Dell/traps/alertFanEnclosureRemoval</uei>
 	<event-label>MIB-Dell-10892 defined trap event: alertFanEnclosureRemoval</event-label>
 	<descr>
-&lt;p&gt;Fan enclosure has been removed from system.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		&lt;p&gt;Fan enclosure has been removed from system.&lt;/p&gt;&lt;table&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertSystem&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		alertSystem&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertTableIndexOID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		alertTableIndexOID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		alertMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertCurrentStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		alertCurrentStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
 		other(1)
 		unknown(2)
 		ok(3)
 		nonCritical(4)
 		critical(5)
 		nonRecoverable(6)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertPreviousStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		alertPreviousStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
 		other(1)
 		unknown(2)
 		ok(3)
 		nonCritical(4)
 		critical(5)
 		nonRecoverable(6)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertData&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+		alertData&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
-			DellOpenManage Event: Fan Enclosure Removal
-			&lt;/p&gt;
-		</logmsg>
+	<logmsg dest="logndisplay">&lt;p&gt;
+		DellOpenManage Event: Fan Enclosure Removal
+		alertSystem=%parm[#1]%
+		alertTableIndexOID=%parm[#2]%
+		alertMessage=%parm[#3]%
+		alertCurrentStatus=%parm[#4]%
+		alertPreviousStatus=%parm[#5]%
+		alertData=%parm[#6]%&lt;/p&gt;
+	</logmsg>
 	<severity>Warning</severity>
+	<varbindsdecode>
+		<parmid>parm[#4]</parmid>
+		<decode varbinddecodedstring="other" varbindvalue="1"/>
+		<decode varbinddecodedstring="unknown" varbindvalue="2"/>
+		<decode varbinddecodedstring="ok" varbindvalue="3"/>
+		<decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+		<decode varbinddecodedstring="critical" varbindvalue="5"/>
+		<decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+	</varbindsdecode>
+	<varbindsdecode>
+		<parmid>parm[#5]</parmid>
+		<decode varbinddecodedstring="other" varbindvalue="1"/>
+		<decode varbinddecodedstring="unknown" varbindvalue="2"/>
+		<decode varbinddecodedstring="ok" varbindvalue="3"/>
+		<decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+		<decode varbinddecodedstring="critical" varbindvalue="5"/>
+		<decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+	</varbindsdecode>
 </event>
 <event>
 	<mask>
@@ -1938,51 +3063,74 @@
 	<uei>uei.opennms.org/vendor/Dell/traps/alertFanEnclosureExtendedRemoval</uei>
 	<event-label>MIB-Dell-10892 defined trap event: alertFanEnclosureExtendedRemoval</event-label>
 	<descr>
-&lt;p&gt;Fan enclosure has been removed from system for an extended amount of time.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		&lt;p&gt;Fan enclosure has been removed from system for an extended amount of time.&lt;/p&gt;&lt;table&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertSystem&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		alertSystem&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertTableIndexOID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		alertTableIndexOID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		alertMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertCurrentStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		alertCurrentStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
 		other(1)
 		unknown(2)
 		ok(3)
 		nonCritical(4)
 		critical(5)
 		nonRecoverable(6)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertPreviousStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		alertPreviousStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
 		other(1)
 		unknown(2)
 		ok(3)
 		nonCritical(4)
 		critical(5)
 		nonRecoverable(6)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertData&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+		alertData&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
-			DellOpenManage Event: Extended Fan Enclosure Removal
-			&lt;/p&gt;
-		</logmsg>
+	<logmsg dest="logndisplay">&lt;p&gt;
+		DellOpenManage Event: Extended Fan Enclosure Removal
+		alertSystem=%parm[#1]%
+		alertTableIndexOID=%parm[#2]%
+		alertMessage=%parm[#3]%
+		alertCurrentStatus=%parm[#4]%
+		alertPreviousStatus=%parm[#5]%
+		alertData=%parm[#6]%&lt;/p&gt;
+	</logmsg>
 	<severity>Minor</severity>
+	<varbindsdecode>
+		<parmid>parm[#4]</parmid>
+		<decode varbinddecodedstring="other" varbindvalue="1"/>
+		<decode varbinddecodedstring="unknown" varbindvalue="2"/>
+		<decode varbinddecodedstring="ok" varbindvalue="3"/>
+		<decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+		<decode varbinddecodedstring="critical" varbindvalue="5"/>
+		<decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+	</varbindsdecode>
+	<varbindsdecode>
+		<parmid>parm[#5]</parmid>
+		<decode varbinddecodedstring="other" varbindvalue="1"/>
+		<decode varbinddecodedstring="unknown" varbindvalue="2"/>
+		<decode varbinddecodedstring="ok" varbindvalue="3"/>
+		<decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+		<decode varbinddecodedstring="critical" varbindvalue="5"/>
+		<decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+	</varbindsdecode>
 </event>
 <event>
 	<mask>
@@ -2002,52 +3150,75 @@
 	<uei>uei.opennms.org/vendor/Dell/traps/alertACPowerCordNoPowerNonRedundant</uei>
 	<event-label>MIB-Dell-10892 defined trap event: alertACPowerCordNoPowerNonRedundant</event-label>
 	<descr>
-&lt;p&gt;AC power cord does not have power, and the reduncancy mode
-for its AC power switch has been set to non-redundant.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		&lt;p&gt;AC power cord does not have power, and the reduncancy mode
+		for its AC power switch has been set to non-redundant.&lt;/p&gt;&lt;table&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertSystem&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		alertSystem&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertTableIndexOID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		alertTableIndexOID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		alertMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertCurrentStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		alertCurrentStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
 		other(1)
 		unknown(2)
 		ok(3)
 		nonCritical(4)
 		critical(5)
 		nonRecoverable(6)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertPreviousStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		alertPreviousStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
 		other(1)
 		unknown(2)
 		ok(3)
 		nonCritical(4)
 		critical(5)
 		nonRecoverable(6)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertData&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+		alertData&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
-			DellOpenManage Event: AC Power Failure - non-redundant
-			&lt;/p&gt;
-		</logmsg>
+	<logmsg dest="logndisplay">&lt;p&gt;
+		DellOpenManage Event: AC Power Failure - non-redundant
+		alertSystem=%parm[#1]%
+		alertTableIndexOID=%parm[#2]%
+		alertMessage=%parm[#3]%
+		alertCurrentStatus=%parm[#4]%
+		alertPreviousStatus=%parm[#5]%
+		alertData=%parm[#6]%&lt;/p&gt;
+	</logmsg>
 	<severity>Major</severity>
+	<varbindsdecode>
+		<parmid>parm[#4]</parmid>
+		<decode varbinddecodedstring="other" varbindvalue="1"/>
+		<decode varbinddecodedstring="unknown" varbindvalue="2"/>
+		<decode varbinddecodedstring="ok" varbindvalue="3"/>
+		<decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+		<decode varbinddecodedstring="critical" varbindvalue="5"/>
+		<decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+	</varbindsdecode>
+	<varbindsdecode>
+		<parmid>parm[#5]</parmid>
+		<decode varbinddecodedstring="other" varbindvalue="1"/>
+		<decode varbinddecodedstring="unknown" varbindvalue="2"/>
+		<decode varbinddecodedstring="ok" varbindvalue="3"/>
+		<decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+		<decode varbinddecodedstring="critical" varbindvalue="5"/>
+		<decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+	</varbindsdecode>
 </event>
 <event>
 	<mask>
@@ -2067,51 +3238,74 @@ for its AC power switch has been set to non-redundant.&lt;/p&gt;&lt;table&gt;
 	<uei>uei.opennms.org/vendor/Dell/traps/alertACPowerCordNormal</uei>
 	<event-label>MIB-Dell-10892 defined trap event: alertACPowerCordNormal</event-label>
 	<descr>
-&lt;p&gt;AC power cord has regained power.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		&lt;p&gt;AC power cord has regained power.&lt;/p&gt;&lt;table&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertSystem&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		alertSystem&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertTableIndexOID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		alertTableIndexOID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		alertMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertCurrentStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		alertCurrentStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
 		other(1)
 		unknown(2)
 		ok(3)
 		nonCritical(4)
 		critical(5)
 		nonRecoverable(6)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertPreviousStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		alertPreviousStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
 		other(1)
 		unknown(2)
 		ok(3)
 		nonCritical(4)
 		critical(5)
 		nonRecoverable(6)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertData&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+		alertData&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
-			DellOpenManage Event: AC Power Normal
-			&lt;/p&gt;
-		</logmsg>
+	<logmsg dest="logndisplay">&lt;p&gt;
+		DellOpenManage Event: AC Power Normal
+		alertSystem=%parm[#1]%
+		alertTableIndexOID=%parm[#2]%
+		alertMessage=%parm[#3]%
+		alertCurrentStatus=%parm[#4]%
+		alertPreviousStatus=%parm[#5]%
+		alertData=%parm[#6]%&lt;/p&gt;
+	</logmsg>
 	<severity>Cleared</severity>
+	<varbindsdecode>
+		<parmid>parm[#4]</parmid>
+		<decode varbinddecodedstring="other" varbindvalue="1"/>
+		<decode varbinddecodedstring="unknown" varbindvalue="2"/>
+		<decode varbinddecodedstring="ok" varbindvalue="3"/>
+		<decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+		<decode varbinddecodedstring="critical" varbindvalue="5"/>
+		<decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+	</varbindsdecode>
+	<varbindsdecode>
+		<parmid>parm[#5]</parmid>
+		<decode varbinddecodedstring="other" varbindvalue="1"/>
+		<decode varbinddecodedstring="unknown" varbindvalue="2"/>
+		<decode varbinddecodedstring="ok" varbindvalue="3"/>
+		<decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+		<decode varbinddecodedstring="critical" varbindvalue="5"/>
+		<decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+	</varbindsdecode>
 </event>
 <event>
 	<mask>
@@ -2131,51 +3325,74 @@ for its AC power switch has been set to non-redundant.&lt;/p&gt;&lt;table&gt;
 	<uei>uei.opennms.org/vendor/Dell/traps/alertACPowerCordFailure</uei>
 	<event-label>MIB-Dell-10892 defined trap event: alertACPowerCordFailure</event-label>
 	<descr>
-&lt;p&gt;AC power cord has lost power.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		&lt;p&gt;AC power cord has lost power.&lt;/p&gt;&lt;table&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertSystem&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		alertSystem&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertTableIndexOID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		alertTableIndexOID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		alertMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertCurrentStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		alertCurrentStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
 		other(1)
 		unknown(2)
 		ok(3)
 		nonCritical(4)
 		critical(5)
 		nonRecoverable(6)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertPreviousStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		alertPreviousStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
 		other(1)
 		unknown(2)
 		ok(3)
 		nonCritical(4)
 		critical(5)
 		nonRecoverable(6)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertData&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+		alertData&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
-			DellOpenManage Event: AC Power Failure
-			&lt;/p&gt;
-		</logmsg>
+	<logmsg dest="logndisplay">&lt;p&gt;
+		DellOpenManage Event: AC Power Failure
+		alertSystem=%parm[#1]%
+		alertTableIndexOID=%parm[#2]%
+		alertMessage=%parm[#3]%
+		alertCurrentStatus=%parm[#4]%
+		alertPreviousStatus=%parm[#5]%
+		alertData=%parm[#6]%&lt;/p&gt;
+	</logmsg>
 	<severity>Major</severity>
+	<varbindsdecode>
+		<parmid>parm[#4]</parmid>
+		<decode varbinddecodedstring="other" varbindvalue="1"/>
+		<decode varbinddecodedstring="unknown" varbindvalue="2"/>
+		<decode varbinddecodedstring="ok" varbindvalue="3"/>
+		<decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+		<decode varbinddecodedstring="critical" varbindvalue="5"/>
+		<decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+	</varbindsdecode>
+	<varbindsdecode>
+		<parmid>parm[#5]</parmid>
+		<decode varbinddecodedstring="other" varbindvalue="1"/>
+		<decode varbinddecodedstring="unknown" varbindvalue="2"/>
+		<decode varbinddecodedstring="ok" varbindvalue="3"/>
+		<decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+		<decode varbinddecodedstring="critical" varbindvalue="5"/>
+		<decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+	</varbindsdecode>
 </event>
 <event>
 	<mask>
@@ -2195,51 +3412,74 @@ for its AC power switch has been set to non-redundant.&lt;/p&gt;&lt;table&gt;
 	<uei>uei.opennms.org/vendor/Dell/traps/alertLogNormal</uei>
 	<event-label>MIB-Dell-10892 defined trap event: alertLogNormal</event-label>
 	<descr>
-&lt;p&gt;Log size is no longer near or at capacity.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		&lt;p&gt;Log size is no longer near or at capacity.&lt;/p&gt;&lt;table&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertSystem&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		alertSystem&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertTableIndexOID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		alertTableIndexOID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		alertMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertCurrentStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		alertCurrentStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
 		other(1)
 		unknown(2)
 		ok(3)
 		nonCritical(4)
 		critical(5)
 		nonRecoverable(6)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertPreviousStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		alertPreviousStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
 		other(1)
 		unknown(2)
 		ok(3)
 		nonCritical(4)
 		critical(5)
 		nonRecoverable(6)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertData&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+		alertData&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
-			DellOpenManage Event: Log Size Now Normal
-			&lt;/p&gt;
-		</logmsg>
+	<logmsg dest="logndisplay">&lt;p&gt;
+		DellOpenManage Event: Log Size Now Normal
+		alertSystem=%parm[#1]%
+		alertTableIndexOID=%parm[#2]%
+		alertMessage=%parm[#3]%
+		alertCurrentStatus=%parm[#4]%
+		alertPreviousStatus=%parm[#5]%
+		alertData=%parm[#6]%&lt;/p&gt;
+	</logmsg>
 	<severity>Cleared</severity>
+	<varbindsdecode>
+		<parmid>parm[#4]</parmid>
+		<decode varbinddecodedstring="other" varbindvalue="1"/>
+		<decode varbinddecodedstring="unknown" varbindvalue="2"/>
+		<decode varbinddecodedstring="ok" varbindvalue="3"/>
+		<decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+		<decode varbinddecodedstring="critical" varbindvalue="5"/>
+		<decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+	</varbindsdecode>
+	<varbindsdecode>
+		<parmid>parm[#5]</parmid>
+		<decode varbinddecodedstring="other" varbindvalue="1"/>
+		<decode varbinddecodedstring="unknown" varbindvalue="2"/>
+		<decode varbinddecodedstring="ok" varbindvalue="3"/>
+		<decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+		<decode varbinddecodedstring="critical" varbindvalue="5"/>
+		<decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+	</varbindsdecode>
 </event>
 <event>
 	<mask>
@@ -2259,51 +3499,1031 @@ for its AC power switch has been set to non-redundant.&lt;/p&gt;&lt;table&gt;
 	<uei>uei.opennms.org/vendor/Dell/traps/alertLogWarning</uei>
 	<event-label>MIB-Dell-10892 defined trap event: alertLogWarning</event-label>
 	<descr>
-&lt;p&gt;Log size is near or at capacity.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		&lt;p&gt;Log size is near capacity.&lt;/p&gt;&lt;table&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertSystem&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		alertSystem&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertTableIndexOID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		alertTableIndexOID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		alertMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertCurrentStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		alertCurrentStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
 		other(1)
 		unknown(2)
 		ok(3)
 		nonCritical(4)
 		critical(5)
 		nonRecoverable(6)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertPreviousStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		alertPreviousStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
 		other(1)
 		unknown(2)
 		ok(3)
 		nonCritical(4)
 		critical(5)
 		nonRecoverable(6)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-	alertData&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+		alertData&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
-			DellOpenManage Event: Log Size Nearly Full
-			&lt;/p&gt;
-		</logmsg>
+	<logmsg dest="logndisplay">&lt;p&gt;
+		DellOpenManage Event: Log Size Nearly Full
+		alertSystem=%parm[#1]%
+		alertTableIndexOID=%parm[#2]%
+		alertMessage=%parm[#3]%
+		alertCurrentStatus=%parm[#4]%
+		alertPreviousStatus=%parm[#5]%
+		alertData=%parm[#6]%&lt;/p&gt;
+	</logmsg>
 	<severity>Minor</severity>
+	<varbindsdecode>
+		<parmid>parm[#4]</parmid>
+		<decode varbinddecodedstring="other" varbindvalue="1"/>
+		<decode varbinddecodedstring="unknown" varbindvalue="2"/>
+		<decode varbinddecodedstring="ok" varbindvalue="3"/>
+		<decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+		<decode varbinddecodedstring="critical" varbindvalue="5"/>
+		<decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+	</varbindsdecode>
+	<varbindsdecode>
+		<parmid>parm[#5]</parmid>
+		<decode varbinddecodedstring="other" varbindvalue="1"/>
+		<decode varbinddecodedstring="unknown" varbindvalue="2"/>
+		<decode varbinddecodedstring="ok" varbindvalue="3"/>
+		<decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+		<decode varbinddecodedstring="critical" varbindvalue="5"/>
+		<decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+	</varbindsdecode>
 </event>
-<!-- End of auto generated data from MIB: MIB-Dell-10892 -->
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.674.10892.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>1554</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Dell/traps/alertLogFull</uei>
+	<event-label>MIB-Dell-10892 defined trap event: alertLogFull</event-label>
+	<descr>
+		&lt;p&gt;Log size is at capacity.&lt;/p&gt;&lt;table&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		alertSystem&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		alertTableIndexOID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		alertMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		alertCurrentStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		unknown(2)
+		ok(3)
+		nonCritical(4)
+		critical(5)
+		nonRecoverable(6)
+		&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		alertPreviousStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		unknown(2)
+		ok(3)
+		nonCritical(4)
+		critical(5)
+		nonRecoverable(6)
+		&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		alertData&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+	<logmsg dest="logndisplay">&lt;p&gt;
+		DellOpenManage Event: Log Size Full
+		alertSystem=%parm[#1]%
+		alertTableIndexOID=%parm[#2]%
+		alertMessage=%parm[#3]%
+		alertCurrentStatus=%parm[#4]%
+		alertPreviousStatus=%parm[#5]%
+		alertData=%parm[#6]%&lt;/p&gt;
+	</logmsg>
+	<severity>Minor</severity>
+	<varbindsdecode>
+		<parmid>parm[#4]</parmid>
+		<decode varbinddecodedstring="other" varbindvalue="1"/>
+		<decode varbinddecodedstring="unknown" varbindvalue="2"/>
+		<decode varbinddecodedstring="ok" varbindvalue="3"/>
+		<decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+		<decode varbinddecodedstring="critical" varbindvalue="5"/>
+		<decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+	</varbindsdecode>
+	<varbindsdecode>
+		<parmid>parm[#5]</parmid>
+		<decode varbinddecodedstring="other" varbindvalue="1"/>
+		<decode varbinddecodedstring="unknown" varbindvalue="2"/>
+		<decode varbinddecodedstring="ok" varbindvalue="3"/>
+		<decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+		<decode varbinddecodedstring="critical" varbindvalue="5"/>
+		<decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+	</varbindsdecode>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.674.10892.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>1602</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Dell/traps/alertProcessorDeviceStatusNormal</uei>
+	<event-label>MIB-Dell-10892 defined trap event: alertProcessorDeviceStatusNormal</event-label>
+	<descr>
+		&lt;p&gt;Processor device status has returned to normal.&lt;/p&gt;&lt;table&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		alertSystem&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		alertTableIndexOID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		alertMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		alertCurrentStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		unknown(2)
+		ok(3)
+		nonCritical(4)
+		critical(5)
+		nonRecoverable(6)
+		&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		alertPreviousStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		unknown(2)
+		ok(3)
+		nonCritical(4)
+		critical(5)
+		nonRecoverable(6)
+		&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		alertData&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+	<logmsg dest="logndisplay">&lt;p&gt;
+		DellOpenManage Event: Processor device status has returned to normal
+		alertSystem=%parm[#1]%
+		alertTableIndexOID=%parm[#2]%
+		alertMessage=%parm[#3]%
+		alertCurrentStatus=%parm[#4]%
+		alertPreviousStatus=%parm[#5]%
+		alertData=%parm[#6]%&lt;/p&gt;
+	</logmsg>
+	<severity>Cleared</severity>
+	<varbindsdecode>
+		<parmid>parm[#4]</parmid>
+		<decode varbinddecodedstring="other" varbindvalue="1"/>
+		<decode varbinddecodedstring="unknown" varbindvalue="2"/>
+		<decode varbinddecodedstring="ok" varbindvalue="3"/>
+		<decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+		<decode varbinddecodedstring="critical" varbindvalue="5"/>
+		<decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+	</varbindsdecode>
+	<varbindsdecode>
+		<parmid>parm[#5]</parmid>
+		<decode varbinddecodedstring="other" varbindvalue="1"/>
+		<decode varbinddecodedstring="unknown" varbindvalue="2"/>
+		<decode varbinddecodedstring="ok" varbindvalue="3"/>
+		<decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+		<decode varbinddecodedstring="critical" varbindvalue="5"/>
+		<decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+	</varbindsdecode>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.674.10892.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>1603</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Dell/traps/alertProcessorDeviceStatusWarning</uei>
+	<event-label>MIB-Dell-10892 defined trap event: alertProcessorDeviceStatusWarning</event-label>
+	<descr>
+		&lt;p&gt;Processor device status has detected a warning.&lt;/p&gt;&lt;table&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		alertSystem&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		alertTableIndexOID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		alertMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		alertCurrentStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		unknown(2)
+		ok(3)
+		nonCritical(4)
+		critical(5)
+		nonRecoverable(6)
+		&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		alertPreviousStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		unknown(2)
+		ok(3)
+		nonCritical(4)
+		critical(5)
+		nonRecoverable(6)
+		&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		alertData&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+	<logmsg dest="logndisplay">&lt;p&gt;
+		DellOpenManage Event: Processor device status has detected a warning
+		alertSystem=%parm[#1]%
+		alertTableIndexOID=%parm[#2]%
+		alertMessage=%parm[#3]%
+		alertCurrentStatus=%parm[#4]%
+		alertPreviousStatus=%parm[#5]%
+		alertData=%parm[#6]%&lt;/p&gt;
+	</logmsg>
+	<severity>Minor</severity>
+	<varbindsdecode>
+		<parmid>parm[#4]</parmid>
+		<decode varbinddecodedstring="other" varbindvalue="1"/>
+		<decode varbinddecodedstring="unknown" varbindvalue="2"/>
+		<decode varbinddecodedstring="ok" varbindvalue="3"/>
+		<decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+		<decode varbinddecodedstring="critical" varbindvalue="5"/>
+		<decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+	</varbindsdecode>
+	<varbindsdecode>
+		<parmid>parm[#5]</parmid>
+		<decode varbinddecodedstring="other" varbindvalue="1"/>
+		<decode varbinddecodedstring="unknown" varbindvalue="2"/>
+		<decode varbinddecodedstring="ok" varbindvalue="3"/>
+		<decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+		<decode varbinddecodedstring="critical" varbindvalue="5"/>
+		<decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+	</varbindsdecode>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.674.10892.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>1604</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Dell/traps/alertProcessorDeviceStatusFailure</uei>
+	<event-label>MIB-Dell-10892 defined trap event: alertProcessorDeviceStatusFailure</event-label>
+	<descr>
+		&lt;p&gt;Processor device status has detected a failure.&lt;/p&gt;&lt;table&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		alertSystem&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		alertTableIndexOID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		alertMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		alertCurrentStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		unknown(2)
+		ok(3)
+		nonCritical(4)
+		critical(5)
+		nonRecoverable(6)
+		&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		alertPreviousStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		unknown(2)
+		ok(3)
+		nonCritical(4)
+		critical(5)
+		nonRecoverable(6)
+		&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		alertData&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+	<logmsg dest="logndisplay">&lt;p&gt;
+		DellOpenManage Event: Processor device status has detected a failure
+		alertSystem=%parm[#1]%
+		alertTableIndexOID=%parm[#2]%
+		alertMessage=%parm[#3]%
+		alertCurrentStatus=%parm[#4]%
+		alertPreviousStatus=%parm[#5]%
+		alertData=%parm[#6]%&lt;/p&gt;
+	</logmsg>
+	<severity>Major</severity>
+	<varbindsdecode>
+		<parmid>parm[#4]</parmid>
+		<decode varbinddecodedstring="other" varbindvalue="1"/>
+		<decode varbinddecodedstring="unknown" varbindvalue="2"/>
+		<decode varbinddecodedstring="ok" varbindvalue="3"/>
+		<decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+		<decode varbinddecodedstring="critical" varbindvalue="5"/>
+		<decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+	</varbindsdecode>
+	<varbindsdecode>
+		<parmid>parm[#5]</parmid>
+		<decode varbinddecodedstring="other" varbindvalue="1"/>
+		<decode varbinddecodedstring="unknown" varbindvalue="2"/>
+		<decode varbinddecodedstring="ok" varbindvalue="3"/>
+		<decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+		<decode varbinddecodedstring="critical" varbindvalue="5"/>
+		<decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+	</varbindsdecode>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.674.10892.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>1651</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Dell/traps/alertDeviceAdd</uei>
+	<event-label>MIB-Dell-10892 defined trap event: alertDeviceAdd</event-label>
+	<descr>
+		&lt;p&gt;Device added to system.&lt;/p&gt;&lt;table&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		alertSystem&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		alertTableIndexOID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		alertMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		alertCurrentStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		unknown(2)
+		ok(3)
+		nonCritical(4)
+		critical(5)
+		nonRecoverable(6)
+		&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		alertPreviousStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		unknown(2)
+		ok(3)
+		nonCritical(4)
+		critical(5)
+		nonRecoverable(6)
+		&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		alertData&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+	<logmsg dest="logndisplay">&lt;p&gt;
+		DellOpenManage Event: ;Device added to system
+		alertSystem=%parm[#1]%
+		alertTableIndexOID=%parm[#2]%
+		alertMessage=%parm[#3]%
+		alertCurrentStatus=%parm[#4]%
+		alertPreviousStatus=%parm[#5]%
+		alertData=%parm[#6]%&lt;/p&gt;
+	</logmsg>
+	<severity>Normal</severity>
+	<varbindsdecode>
+		<parmid>parm[#4]</parmid>
+		<decode varbinddecodedstring="other" varbindvalue="1"/>
+		<decode varbinddecodedstring="unknown" varbindvalue="2"/>
+		<decode varbinddecodedstring="ok" varbindvalue="3"/>
+		<decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+		<decode varbinddecodedstring="critical" varbindvalue="5"/>
+		<decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+	</varbindsdecode>
+	<varbindsdecode>
+		<parmid>parm[#5]</parmid>
+		<decode varbinddecodedstring="other" varbindvalue="1"/>
+		<decode varbinddecodedstring="unknown" varbindvalue="2"/>
+		<decode varbinddecodedstring="ok" varbindvalue="3"/>
+		<decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+		<decode varbinddecodedstring="critical" varbindvalue="5"/>
+		<decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+	</varbindsdecode>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.674.10892.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>1652</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Dell/traps/alertDeviceRemove</uei>
+	<event-label>MIB-Dell-10892 defined trap event: alertDeviceRemove</event-label>
+	<descr>
+		&lt;p&gt;Device removed from system.&lt;/p&gt;&lt;table&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		alertSystem&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		alertTableIndexOID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		alertMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		alertCurrentStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		unknown(2)
+		ok(3)
+		nonCritical(4)
+		critical(5)
+		nonRecoverable(6)
+		&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		alertPreviousStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		unknown(2)
+		ok(3)
+		nonCritical(4)
+		critical(5)
+		nonRecoverable(6)
+		&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		alertData&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+	<logmsg dest="logndisplay">&lt;p&gt;
+		DellOpenManage Event: Device removed from system
+		alertSystem=%parm[#1]%
+		alertTableIndexOID=%parm[#2]%
+		alertMessage=%parm[#3]%
+		alertCurrentStatus=%parm[#4]%
+		alertPreviousStatus=%parm[#5]%
+		alertData=%parm[#6]%&lt;/p&gt;
+	</logmsg>
+	<severity>Warning</severity>
+	<varbindsdecode>
+		<parmid>parm[#4]</parmid>
+		<decode varbinddecodedstring="other" varbindvalue="1"/>
+		<decode varbinddecodedstring="unknown" varbindvalue="2"/>
+		<decode varbinddecodedstring="ok" varbindvalue="3"/>
+		<decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+		<decode varbinddecodedstring="critical" varbindvalue="5"/>
+		<decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+	</varbindsdecode>
+	<varbindsdecode>
+		<parmid>parm[#5]</parmid>
+		<decode varbinddecodedstring="other" varbindvalue="1"/>
+		<decode varbinddecodedstring="unknown" varbindvalue="2"/>
+		<decode varbinddecodedstring="ok" varbindvalue="3"/>
+		<decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+		<decode varbinddecodedstring="critical" varbindvalue="5"/>
+		<decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+	</varbindsdecode>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.674.10892.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>1653</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Dell/traps/alertDeviceConfigError</uei>
+	<event-label>MIB-Dell-10892 defined trap event: alertDeviceConfigError</event-label>
+	<descr>
+		&lt;p&gt;Device configuration error detected.&lt;/p&gt;&lt;table&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		alertSystem&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		alertTableIndexOID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		alertMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		alertCurrentStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		unknown(2)
+		ok(3)
+		nonCritical(4)
+		critical(5)
+		nonRecoverable(6)
+		&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		alertPreviousStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		unknown(2)
+		ok(3)
+		nonCritical(4)
+		critical(5)
+		nonRecoverable(6)
+		&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		alertData&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+	<logmsg dest="logndisplay">&lt;p&gt;
+		DellOpenManage Event: Device configuration error detected
+		alertSystem=%parm[#1]%
+		alertTableIndexOID=%parm[#2]%
+		alertMessage=%parm[#3]%
+		alertCurrentStatus=%parm[#4]%
+		alertPreviousStatus=%parm[#5]%
+		alertData=%parm[#6]%&lt;/p&gt;
+	</logmsg>
+	<severity>Warning</severity>
+	<varbindsdecode>
+		<parmid>parm[#4]</parmid>
+		<decode varbinddecodedstring="other" varbindvalue="1"/>
+		<decode varbinddecodedstring="unknown" varbindvalue="2"/>
+		<decode varbinddecodedstring="ok" varbindvalue="3"/>
+		<decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+		<decode varbinddecodedstring="critical" varbindvalue="5"/>
+		<decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+	</varbindsdecode>
+	<varbindsdecode>
+		<parmid>parm[#5]</parmid>
+		<decode varbinddecodedstring="other" varbindvalue="1"/>
+		<decode varbinddecodedstring="unknown" varbindvalue="2"/>
+		<decode varbinddecodedstring="ok" varbindvalue="3"/>
+		<decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+		<decode varbinddecodedstring="critical" varbindvalue="5"/>
+		<decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+	</varbindsdecode>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.674.10892.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>1702</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Dell/traps/alertBatteryNormal</uei>
+	<event-label>MIB-Dell-10892 defined trap event: alertBatteryNormal</event-label>
+	<descr>
+		&lt;p&gt;Battery has returned to normal.&lt;/p&gt;&lt;table&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		alertSystem&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		alertTableIndexOID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		alertMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		alertCurrentStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		unknown(2)
+		ok(3)
+		nonCritical(4)
+		critical(5)
+		nonRecoverable(6)
+		&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		alertPreviousStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		unknown(2)
+		ok(3)
+		nonCritical(4)
+		critical(5)
+		nonRecoverable(6)
+		&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		alertData&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+	<logmsg dest="logndisplay">&lt;p&gt;
+		DellOpenManage Event: Battery status is now normal.
+		alertSystem=%parm[#1]%
+		alertTableIndexOID=%parm[#2]%
+		alertMessage=%parm[#3]%
+		alertCurrentStatus=%parm[#4]%
+		alertPreviousStatus=%parm[#5]%
+		alertData=%parm[#6]%&lt;/p&gt;
+	</logmsg>
+	<severity>Cleared</severity>
+	<varbindsdecode>
+		<parmid>parm[#4]</parmid>
+		<decode varbinddecodedstring="other" varbindvalue="1"/>
+		<decode varbinddecodedstring="unknown" varbindvalue="2"/>
+		<decode varbinddecodedstring="ok" varbindvalue="3"/>
+		<decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+		<decode varbinddecodedstring="critical" varbindvalue="5"/>
+		<decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+	</varbindsdecode>
+	<varbindsdecode>
+		<parmid>parm[#5]</parmid>
+		<decode varbinddecodedstring="other" varbindvalue="1"/>
+		<decode varbinddecodedstring="unknown" varbindvalue="2"/>
+		<decode varbinddecodedstring="ok" varbindvalue="3"/>
+		<decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+		<decode varbinddecodedstring="critical" varbindvalue="5"/>
+		<decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+	</varbindsdecode>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.674.10892.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>1703</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Dell/traps/alertBatteryWarning</uei>
+	<event-label>MIB-Dell-10892 defined trap event: alertBatteryWarning</event-label>
+	<descr>
+		&lt;p&gt;Battery has detected a warning.&lt;/p&gt;&lt;table&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		alertSystem&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		alertTableIndexOID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		alertMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		alertCurrentStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		unknown(2)
+		ok(3)
+		nonCritical(4)
+		critical(5)
+		nonRecoverable(6)
+		&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		alertPreviousStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		unknown(2)
+		ok(3)
+		nonCritical(4)
+		critical(5)
+		nonRecoverable(6)
+		&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		alertData&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+	<logmsg dest="logndisplay">&lt;p&gt;
+		DellOpenManage Event: Battery status warning
+		alertSystem=%parm[#1]%
+		alertTableIndexOID=%parm[#2]%
+		alertMessage=%parm[#3]%
+		alertCurrentStatus=%parm[#4]%
+		alertPreviousStatus=%parm[#5]%
+		alertData=%parm[#6]%&lt;/p&gt;
+	</logmsg>
+	<severity>Minor</severity>
+	<varbindsdecode>
+		<parmid>parm[#4]</parmid>
+		<decode varbinddecodedstring="other" varbindvalue="1"/>
+		<decode varbinddecodedstring="unknown" varbindvalue="2"/>
+		<decode varbinddecodedstring="ok" varbindvalue="3"/>
+		<decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+		<decode varbinddecodedstring="critical" varbindvalue="5"/>
+		<decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+	</varbindsdecode>
+	<varbindsdecode>
+		<parmid>parm[#5]</parmid>
+		<decode varbinddecodedstring="other" varbindvalue="1"/>
+		<decode varbinddecodedstring="unknown" varbindvalue="2"/>
+		<decode varbinddecodedstring="ok" varbindvalue="3"/>
+		<decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+		<decode varbinddecodedstring="critical" varbindvalue="5"/>
+		<decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+	</varbindsdecode>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.674.10892.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>1704</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Dell/traps/alertBatteryFailure</uei>
+	<event-label>MIB-Dell-10892 defined trap event: alertBatteryFailure</event-label>
+	<descr>
+		&lt;p&gt;Battery has detected a failure.&lt;/p&gt;&lt;table&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		alertSystem&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		alertTableIndexOID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		alertMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		alertCurrentStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		unknown(2)
+		ok(3)
+		nonCritical(4)
+		critical(5)
+		nonRecoverable(6)
+		&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		alertPreviousStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		unknown(2)
+		ok(3)
+		nonCritical(4)
+		critical(5)
+		nonRecoverable(6)
+		&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		alertData&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+	<logmsg dest="logndisplay">&lt;p&gt;
+		DellOpenManage Event: Battery failure
+		alertSystem=%parm[#1]%
+		alertTableIndexOID=%parm[#2]%
+		alertMessage=%parm[#3]%
+		alertCurrentStatus=%parm[#4]%
+		alertPreviousStatus=%parm[#5]%
+		alertData=%parm[#6]%&lt;/p&gt;
+	</logmsg>
+	<severity>Warning</severity>
+	<varbindsdecode>
+		<parmid>parm[#4]</parmid>
+		<decode varbinddecodedstring="other" varbindvalue="1"/>
+		<decode varbinddecodedstring="unknown" varbindvalue="2"/>
+		<decode varbinddecodedstring="ok" varbindvalue="3"/>
+		<decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+		<decode varbinddecodedstring="critical" varbindvalue="5"/>
+		<decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+	</varbindsdecode>
+	<varbindsdecode>
+		<parmid>parm[#5]</parmid>
+		<decode varbinddecodedstring="other" varbindvalue="1"/>
+		<decode varbinddecodedstring="unknown" varbindvalue="2"/>
+		<decode varbinddecodedstring="ok" varbindvalue="3"/>
+		<decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+		<decode varbinddecodedstring="critical" varbindvalue="5"/>
+		<decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+	</varbindsdecode>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.674.10892.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>1754</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Dell/traps/alertSDCardDeviceFailure</uei>
+	<event-label>MIB-Dell-10892 defined trap event: alertSDCardDeviceFailure</event-label>
+	<descr>
+		&lt;p&gt;SD card device has detected a failure.&lt;/p&gt;&lt;table&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		alertSystem&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		alertTableIndexOID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		alertMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		alertCurrentStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		unknown(2)
+		ok(3)
+		nonCritical(4)
+		critical(5)
+		nonRecoverable(6)
+		&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		alertPreviousStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		unknown(2)
+		ok(3)
+		nonCritical(4)
+		critical(5)
+		nonRecoverable(6)
+		&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		alertData&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+	<logmsg dest="logndisplay">&lt;p&gt;
+		DellOpenManage Event: SD Card failure
+		alertSystem=%parm[#1]%
+		alertTableIndexOID=%parm[#2]%
+		alertMessage=%parm[#3]%
+		alertCurrentStatus=%parm[#4]%
+		alertPreviousStatus=%parm[#5]%
+		alertData=%parm[#6]%&lt;/p&gt;
+	</logmsg>
+	<severity>Minor</severity>
+	<varbindsdecode>
+		<parmid>parm[#4]</parmid>
+		<decode varbinddecodedstring="other" varbindvalue="1"/>
+		<decode varbinddecodedstring="unknown" varbindvalue="2"/>
+		<decode varbinddecodedstring="ok" varbindvalue="3"/>
+		<decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+		<decode varbinddecodedstring="critical" varbindvalue="5"/>
+		<decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+	</varbindsdecode>
+	<varbindsdecode>
+		<parmid>parm[#5]</parmid>
+		<decode varbinddecodedstring="other" varbindvalue="1"/>
+		<decode varbinddecodedstring="unknown" varbindvalue="2"/>
+		<decode varbinddecodedstring="ok" varbindvalue="3"/>
+		<decode varbinddecodedstring="nonCritical" varbindvalue="4"/>
+		<decode varbinddecodedstring="critical" varbindvalue="5"/>
+		<decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
+	</varbindsdecode>
+</event>
 </events>
+<!-- End of mib2events auto-generated data for MIB: MIB-Dell-10892 -->
