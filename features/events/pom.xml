@@ -12,8 +12,6 @@
   <name>OpenNMS :: Features :: Events</name>
   <modules>
     <module>api</module>
-    <!--
     <module>daemon</module>
-    -->
   </modules>
 </project>
