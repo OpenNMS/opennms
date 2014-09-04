@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 use Config;
-use Cwd;
+use Cwd qw(abs_path getcwd);
 use File::Basename;
 use File::Find;
 use File::Path qw(rmtree);
@@ -24,6 +24,7 @@ use vars qw(
 	$MAVEN_OPTS
 	$PATHSEP
 	$PREFIX
+	$SKIP_OPENJDK
 	$TESTS
 	$VERBOSE
 	@ARGS
@@ -33,6 +34,7 @@ $HELP          = undef;
 $JAVA_HOME     = undef;
 $PATHSEP       = $Config{'path_sep'};
 $VERBOSE       = undef;
+$SKIP_OPENJDK  = $ENV{'SKIP_OPENJDK'};
 @ARGS          = ();
 
 @JAVA_SEARCH_DIRS = qw(
@@ -286,7 +288,14 @@ sub find_java_home {
 
 		for my $java (@javas) {
 			if (-x $java and ! -d $java) {
+				$java = abs_path($java);
 				my ($shortversion, $version, $build, $java_home) = get_version_from_java($java);
+
+				if ($SKIP_OPENJDK) {
+					next if ($java  =~ /openjdk/i);
+					next if ($build =~ /openjdk/i);
+				}
+
 				next if (exists $versions->{$shortversion}->{$version}->{$build});
 
 				$versions->{$shortversion}->{$version}->{$build} = $java_home;
