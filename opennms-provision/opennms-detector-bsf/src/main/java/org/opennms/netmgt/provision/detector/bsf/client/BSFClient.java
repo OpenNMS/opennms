@@ -66,7 +66,7 @@ public class BSFClient implements Client<BSFRequest, BSFResponse> {
     private String[] m_fileExtensions = {};
     private String m_runType = "eval";
 
-    private HashMap<String,String> m_results;
+    private Map<String,String> m_results = new HashMap<String,String>();
 
     /**
      * <p>close</p>
@@ -101,7 +101,7 @@ public class BSFClient implements Client<BSFRequest, BSFResponse> {
                 // bsfManager.declareBean("node_id",svc.getNodeId(),int.class );
                 // bsfManager.declareBean("node_label", svc.getNodeLabel(), String.class);
                 bsfManager.declareBean("svc_name", m_serviceName, String.class);
-                bsfManager.declareBean("results", m_results, HashMap.class);
+                bsfManager.declareBean("results", m_results, Map.class);
                 bsfManager.declareBean("port", port, Integer.class);
                 bsfManager.declareBean("timeout", timeout, Integer.class);
 

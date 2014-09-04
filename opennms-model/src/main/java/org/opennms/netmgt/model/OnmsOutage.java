@@ -371,6 +371,7 @@ public class OnmsOutage implements Serializable {
             .append("outageId", m_id)
             .append("ifLostService", m_ifLostService)
             .append("ifRegainedService", m_ifRegainedService)
+            .append("ifRegainedServiceEvent", m_serviceRegainedEvent)
             .append("service", m_monitoredService)
             .append("suppressedBy", m_suppressedBy)
             .append("suppressTime", m_suppressTime)

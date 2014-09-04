@@ -92,7 +92,7 @@ public class AlarmRestService extends AlarmRestServiceBase {
     final String alarmId) {
         readLock();
         try {
-            return m_alarmDao.get(new Integer(alarmId));
+            return m_alarmDao.get(Integer.valueOf(alarmId));
         } finally {
             readUnlock();
         }

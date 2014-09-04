@@ -18,7 +18,7 @@
       <attribute name="scanThreads" type="positiveInteger" use="optional" default="10" />
       <attribute name="rescanThreads" type="positiveInteger" use="optional" default="10" />
       <attribute name="writeThreads" type="positiveInteger" use="optional" default="8" />
-      <attribute name="requistion-dir" type="string" use="optional" default="$install.dir}/etc/imports" />
+      <attribute name="requistion-dir" type="string" use="optional" default="${install.dir}/etc/imports" />
       <attribute name="foreign-source-dir" type="string" use="optional" default="${install.dir}/etc/foreign-sources" />
     </complexType>
   </element>

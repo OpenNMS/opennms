@@ -43,5 +43,9 @@ public class MockTrapdIpMgr extends JdbcTrapdIpMgr {
     @Override
     public synchronized void dataSourceSync() {
         // Don't do anything... don't want to have to mess with the DB here
-    }  
+    }
+
+    public synchronized void clearKnownIpsMap() {
+        m_knownips.clear();
+    }
 }

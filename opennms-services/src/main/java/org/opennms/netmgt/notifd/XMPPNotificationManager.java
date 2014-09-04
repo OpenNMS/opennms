@@ -86,7 +86,7 @@ public class XMPPNotificationManager {
 
 	private final int xmppPort;
 
-	private final HashMap<String, MultiUserChat> rooms = new HashMap<String, MultiUserChat>();
+	private final Map<String, MultiUserChat> rooms = new HashMap<String, MultiUserChat>();
 
 	private static XMPPNotificationManager instance = null;
 
@@ -125,7 +125,7 @@ public class XMPPNotificationManager {
 	 */
 	protected XMPPNotificationManager() {
 
-		Map mdc = Logging.getCopyOfContextMap();
+		Map<String,String> mdc = Logging.getCopyOfContextMap();
                 try {
                     mdc.put(Logging.PREFIX_KEY, LOG4J_CATEGORY);
 

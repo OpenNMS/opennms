@@ -58,8 +58,7 @@ public class ServiceConfigurationPublicConstructorTest extends PublicConstructor
 	@Override
 	protected List<Class<? extends Object>> getClasses() throws MarshalException, ValidationException, IOException, ClassNotFoundException {
 		List<Class<? extends Object>> retval = new ArrayList<Class<? extends Object>>();
-		ServiceConfigFactory.init();
-		Service[] services = ServiceConfigFactory.getInstance().getServices();
+		Service[] services = new ServiceConfigFactory().getServices();
 		for (Service service : services) {
 			retval.add(Class.forName(service.getClassName()));
 		}

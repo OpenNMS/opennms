@@ -114,4 +114,26 @@ public final class EventProcessor {
         if (event.getService().equals("SNMP"))
         	m_linkd.wakeUpNodeCollection(event.getNodeid().intValue());
     }
+    
+    /**
+     * <p>handleNodeUpdated</p>
+     * A re-import has occurred, attempt a rescan now.
+     *
+     * @param e a {@link org.opennms.netmgt.xml.event.Event} object.
+     */
+    @EventHandler(uei = EventConstants.NODE_UPDATED_EVENT_UEI)
+    public void handleNodeUpdated(Event e) {
+    	m_linkd.rescheduleNodeCollection(new Long(e.getNodeid()).intValue());
+    }
+    /**
+     * <p>handleForceRescan</p>
+     *
+     * @param e a {@link org.opennms.netmgt.xml.event.Event} object.
+     */
+    @EventHandler(uei = EventConstants.FORCE_RESCAN_EVENT_UEI)
+    public void handleForceRescan(Event e) {
+    	m_linkd.rescheduleNodeCollection(new Long(e.getNodeid()).intValue());
+    }
+    
+
 } // end class

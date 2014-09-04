@@ -28,7 +28,6 @@ import org.opennms.netmgt.config.accesspointmonitor.AccessPointMonitorConfig;
 import org.opennms.netmgt.config.ackd.AckdConfiguration;
 import org.opennms.netmgt.config.actiond.ActiondConfiguration;
 import org.opennms.netmgt.config.ami.AmiConfig;
-import org.opennms.netmgt.config.archiver.events.EventsArchiverConfiguration;
 import org.opennms.netmgt.config.capsd.CapsdConfiguration;
 import org.opennms.netmgt.config.categories.Catinfo;
 import org.opennms.netmgt.config.charts.ChartConfiguration;
@@ -180,7 +179,6 @@ public class WillItUnmarshalTest {
         addFile(Source.CONFIG, "discovery-configuration.xml", DiscoveryConfiguration.class, Impl.CASTOR);
         addFile(Source.EXAMPLE, "discovery-configuration.xml", DiscoveryConfiguration.class, Impl.CASTOR);
         addFile(Source.CONFIG, "eventconf.xml", Events.class, Impl.CASTOR);
-        addFile(Source.CONFIG, "events-archiver-configuration.xml", EventsArchiverConfiguration.class, Impl.CASTOR);
         addFile(Source.CONFIG, "groups.xml", Groupinfo.class, Impl.CASTOR);
         addFile(Source.EXAMPLE, "groups.xml", Groupinfo.class, Impl.CASTOR);
         addFile(Source.CONFIG, "http-datacollection-config.xml", HttpDatacollectionConfig.class, Impl.CASTOR);

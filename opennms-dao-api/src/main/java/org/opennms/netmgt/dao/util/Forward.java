@@ -40,7 +40,7 @@ import org.opennms.netmgt.model.events.Constants;
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  * @version $Id: $
  */
-public class Forward {
+public abstract class Forward {
     /**
      * Format each forward entry
      *

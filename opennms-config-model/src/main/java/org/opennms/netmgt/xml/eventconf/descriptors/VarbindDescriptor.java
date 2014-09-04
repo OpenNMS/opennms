@@ -149,7 +149,7 @@ public class VarbindDescriptor extends org.exolab.castor.xml.util.XMLClassDescri
             {
                 Varbind target = (Varbind) object;
                 if (!target.hasVbnumber()) { return null; }
-                return new java.lang.Integer(target.getVbnumber());
+                return java.lang.Integer.valueOf(target.getVbnumber());
             }
             @Override
             public void setValue( java.lang.Object object, java.lang.Object value) 

@@ -58,7 +58,7 @@ import com.vaadin.ui.VerticalLayout;
  * 
  * @author Markus von Rüden
  */
-public class UIHelper {
+public abstract class UIHelper {
 
 	private static final Logger LOG = LoggerFactory.getLogger(UIHelper.class);
 

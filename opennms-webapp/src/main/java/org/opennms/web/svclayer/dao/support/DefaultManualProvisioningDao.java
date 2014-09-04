@@ -40,6 +40,8 @@ import java.util.regex.Pattern;
 import org.opennms.core.xml.CastorUtils;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
 import org.opennms.web.svclayer.dao.ManualProvisioningDao;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.dao.NonTransientDataAccessResourceException;
 import org.springframework.dao.OptimisticLockingFailureException;
@@ -54,6 +56,8 @@ import org.springframework.util.Assert;
  * @since 1.8.1
  */
 public class DefaultManualProvisioningDao implements ManualProvisioningDao {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(DefaultManualProvisioningDao.class);
     
     private static final Pattern XML_FILE_PATTERN = Pattern.compile("^(.*)\\.xml$");
     private File m_importFileDir;
@@ -176,7 +180,9 @@ public class DefaultManualProvisioningDao implements ManualProvisioningDao {
     /** {@inheritDoc} */
     @Override
     public void delete(final String groupName) {
-        getImportFile(groupName).delete();
+        if(!getImportFile(groupName).delete()) {
+        	LOG.warn("Could not delete file: {}", getImportFile(groupName).getPath());
+        }
     }
 
 }

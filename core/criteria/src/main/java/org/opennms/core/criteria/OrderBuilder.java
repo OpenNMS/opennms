@@ -31,6 +31,7 @@ package org.opennms.core.criteria;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashSet;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,7 +41,7 @@ public final class OrderBuilder {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(OrderBuilder.class);
 	
-    private final LinkedHashSet<Order> m_orders = new LinkedHashSet<Order>();
+    private final Set<Order> m_orders = new LinkedHashSet<Order>();
 
     private String m_lastAttribute = null;
 

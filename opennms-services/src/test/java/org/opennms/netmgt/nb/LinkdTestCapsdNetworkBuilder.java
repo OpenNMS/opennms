@@ -118,7 +118,70 @@ public class LinkdTestCapsdNetworkBuilder extends TestNetworkBuilder implements 
         
         m_capsd.stop();
     }
-    
+
+    @Test
+    @Ignore
+    @JUnitSnmpAgents(value={
+            @JUnitSnmpAgent(host = CISCO_C870_IP, port = 161, resource = CISCO_C870_SNMP_RESOURCE),
+    })
+    @Transactional
+    public final void testCapsdA() throws MarshalException, ValidationException, IOException {
+        m_capsd.init();
+        m_capsd.start();
+        m_capsd.scanSuspectInterface(CISCO_C870_IP);
+
+        printNode(CISCO_C870_IP,CISCO_C870_ROOT);
+        
+        m_capsd.stop();
+    }
+
+    @Test
+    @Ignore
+    @JUnitSnmpAgents(value={
+            @JUnitSnmpAgent(host = FROH_IP, port = 161, resource = FROH_SNMP_RESOURCE),
+    })
+    @Transactional
+    public final void testCapsdB() throws MarshalException, ValidationException, IOException {
+        m_capsd.init();
+        m_capsd.start();
+        m_capsd.scanSuspectInterface(FROH_IP);
+
+        printNode(FROH_IP,FROH_ROOT);
+        
+        m_capsd.stop();
+    }
+
+    @Test
+    @Ignore
+    @JUnitSnmpAgents(value={
+            @JUnitSnmpAgent(host = OEDIPUS_IP, port = 161, resource = OEDIPUS_SNMP_RESOURCE),
+    })
+    @Transactional
+    public final void testCapsdC() throws MarshalException, ValidationException, IOException {
+        m_capsd.init();
+        m_capsd.start();
+        m_capsd.scanSuspectInterface(OEDIPUS_IP);
+
+        printNode(OEDIPUS_IP,OEDIPUS_ROOT);
+        
+        m_capsd.stop();
+    }
+
+    @Test
+    @JUnitSnmpAgents(value={
+            @JUnitSnmpAgent(host = SIEGFRIE_IP, port = 161, resource = SIEGFRIE_SNMP_RESOURCE),
+    })
+    @Transactional
+    public final void testCapsdD() throws MarshalException, ValidationException, IOException {
+        m_capsd.init();
+        m_capsd.start();
+        m_capsd.scanSuspectInterface(SIEGFRIE_IP);
+
+        printNode(SIEGFRIE_IP,SIEGFRIE_ROOT);
+        
+        m_capsd.stop();
+    }
+
     protected final void printNode(String ipAddr, String prefix) {
 
         List<OnmsIpInterface> ips = m_ipInterfaceDao.findByIpAddress(ipAddr);

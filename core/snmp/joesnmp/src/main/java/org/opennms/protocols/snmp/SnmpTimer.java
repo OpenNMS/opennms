@@ -30,6 +30,7 @@ package org.opennms.protocols.snmp;
 
 import java.util.ConcurrentModificationException;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.ListIterator;
 import java.util.NoSuchElementException;
 
@@ -45,7 +46,7 @@ class SnmpTimer extends Object {
     /**
      * The list of runnable objects (stored as TimeoutElement)
      */
-    private LinkedList<TimeoutElement> m_list;
+    private List<TimeoutElement> m_list = new LinkedList<TimeoutElement>();
 
     /**
      * The thread doing the scheduling

@@ -4,14 +4,14 @@
   <parent>
     <groupId>org.opennms.features.topology</groupId>
     <artifactId>features</artifactId>
-    <version>1.13.4-SNAPSHOT</version>
+    <version>1.13.5-SNAPSHOT</version>
   </parent>
 
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.osgi.features.topology</groupId>
   <artifactId>opennms-topology-runtime-ncs</artifactId>
 
-  <name>OpenNMS Features :: Topology :: Runtime (NCS)</name>
+  <name>OpenNMS :: Features :: Topology :: Runtime (NCS)</name>
 
   <description>NCS-based runtime and plugins for the OpenNMS topology web app.</description>
 
@@ -27,6 +27,9 @@
             <repository>mvn:${project.groupId}/opennms-topology-runtime-base/${project.version}/xml/features</repository>
           </repositories>
           <features>
+            <feature>camel-blueprint</feature>
+            <feature>camel-core</feature>
+            <feature>camel-http</feature>
             <feature>opennms-topology-runtime-base</feature>
           </features>
         </configuration>
@@ -45,79 +48,18 @@
     </dependency>
 
     <dependency>
-      <groupId>org.opennms.features.topology.plugins</groupId>
-      <artifactId>ncs</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.core</groupId>
-      <artifactId>org.opennms.core.camel</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.camel</groupId>
-      <artifactId>camel-core</artifactId>
-      <version>${camelVersion}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>javax.xml.bind</groupId>
-          <artifactId>jaxb-api</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>com.sun.xml.bind</groupId>
-          <artifactId>jaxb-impl</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.camel</groupId>
-      <artifactId>camel-blueprint</artifactId>
-      <version>${camelVersion}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>javax.xml.bind</groupId>
-          <artifactId>jaxb-api</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>com.sun.xml.bind</groupId>
-          <artifactId>jaxb-impl</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.camel</groupId>
-      <artifactId>camel-http</artifactId>
-      <version>${camelVersion}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>commons-logging</groupId>
-          <artifactId>commons-logging</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>javax.xml.bind</groupId>
-          <artifactId>jaxb-api</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>com.sun.xml.bind</groupId>
-          <artifactId>jaxb-impl</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>jaxb-dependencies</artifactId>
       <type>pom</type>
     </dependency>
     <dependency>
-      <groupId>org.apache.servicemix.bundles</groupId>
-      <artifactId>org.apache.servicemix.bundles.commons-httpclient</artifactId>
-      <version>3.1_7</version>
-      <exclusions>
-        <exclusion>
-          <groupId>commons-logging</groupId>
-          <artifactId>commons-logging</artifactId>
-        </exclusion>
-      </exclusions>
+      <groupId>org.opennms.core</groupId>
+      <artifactId>org.opennms.core.camel</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.topology.plugins</groupId>
+      <artifactId>ncs</artifactId>
+      <version>${project.version}</version>
     </dependency>
   </dependencies>
 

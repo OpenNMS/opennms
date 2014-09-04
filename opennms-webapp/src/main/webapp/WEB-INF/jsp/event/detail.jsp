@@ -42,6 +42,7 @@
 <%@page import="org.opennms.web.servlet.XssRequestWrapper"%>
 <%@page import="org.opennms.web.event.Event"%>
 <%@page import="org.opennms.web.event.AcknowledgeType"%>
+<%@page import="org.opennms.core.utils.WebSecurityUtils"%>
 
 <%
 
@@ -201,7 +202,7 @@
           <th>Log&nbsp;Message</th>
         </tr>
         <tr class="<%= event.getSeverity().getLabel() %>">
-          <td><%=event.getLogMessage()%></td>
+          <td><%=WebSecurityUtils.sanitizeString(event.getLogMessage(), true)%></td>
         </tr>
       </table>
 
@@ -210,7 +211,7 @@
           <th>Description</th>
         </tr>
         <tr class="<%= event.getSeverity().getLabel() %>">
-          <td><%=event.getDescription()%></td>
+          <td><%=WebSecurityUtils.sanitizeString(event.getDescription(), true)%></td>
         </tr>
       </table>
       

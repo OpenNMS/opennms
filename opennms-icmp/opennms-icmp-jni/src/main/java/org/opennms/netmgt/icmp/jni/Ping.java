@@ -39,7 +39,7 @@ import org.opennms.protocols.icmp.IcmpSocket;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class Ping {
+public abstract class Ping {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(Ping.class);
 

@@ -5,12 +5,11 @@ import java.util.concurrent.Callable;
 
 import org.slf4j.MDC;
 
-@SuppressWarnings("rawtypes")
-public class Logging {
+public abstract class Logging {
     public static final String PREFIX_KEY = "prefix";
 
     public static <T> T withPrefix(final String prefix, final Callable<T> callable) throws Exception {
-        final Map mdc = Logging.getCopyOfContextMap();
+        final Map<String, String> mdc = Logging.getCopyOfContextMap();
         try {
             Logging.putPrefix(prefix);
             return callable.call();
@@ -20,11 +19,11 @@ public class Logging {
 
     }
 
-    public static Map getCopyOfContextMap() {
+    public static Map<String, String> getCopyOfContextMap() {
         return MDC.getCopyOfContextMap();
     }
 
-    public static void setContextMap(final Map mdc) {
+    public static void setContextMap(final Map<String, String> mdc) {
         if (mdc == null) {
             MDC.clear();
         } else {
@@ -33,13 +32,29 @@ public class Logging {
     }
 
     public static void withPrefix(final String prefix, final Runnable runnable) {
-        final Map mdc = Logging.getCopyOfContextMap();
+        final Map<String, String> mdc = Logging.getCopyOfContextMap();
         try {
             Logging.putPrefix(prefix);
             runnable.run();
         } finally {
             Logging.setContextMap(mdc);
         }
+    }
+
+    public static Runnable preserve(final Runnable runnable) {
+        final Map<String, String> parentMdc = Logging.getCopyOfContextMap();
+        return new Runnable() {
+            @Override
+            public void run() {
+                final Map<String, String> localMdc = Logging.getCopyOfContextMap();
+                try {
+                    Logging.setContextMap(parentMdc);
+                    runnable.run();
+                } finally {
+                    Logging.setContextMap(localMdc);
+                }
+            }
+        };
     }
 
     public static void putPrefix(final String name) {

@@ -1,6 +1,41 @@
 [releasenotes-1.12]
 === Release 1.12
 
+
+[releasenotes-changelog-1.12.9]
+==== Release 1.12.9
+Release 1.12.9 is the 10th in the stable 1.12 series of OpenNMS. It contains a number of important
+fixes including handling jetty.xml upgrades better, and a fix for a bug in the rescanExisting flag when
+provisioning. See What's New in OpenNMS 1.12 for a general list of changes in the 1.12 series.
+
+The codename for 1.12.9 is _Bruce Springsteen_
+
+===== Bug
+
+* HRULE not working in JRobin graphs (Issue http://issues.opennms.org/browse/NMS-2793[NMS-2793])
+* incorrectly translated trap contents (Issue http://issues.opennms.org/browse/NMS-5281[NMS-5281])
+* Can't monitor JBoss EAP 6.1.0 or later with the JMXMonitor/JMXCollector because they don't
+support jmx-remoting protocol (Issue http://issues.opennms.org/browse/NMS-6589[NMS-6589])
+* New jetty.xml configuration lacks default keystore passwords (Issue http://issues.opennms.org/browse/NMS-6601[NMS-6601])
+* Pollerd stops working if a service is down and the downtime model is not correct. (Issue http://issues.opennms.org/browse/NMS-6603[NMS-6603])
+* Problem with disable-ssl-verification in XML_Collector (Issue http://issues.opennms.org/browse/NMS-6611[NMS-6611])
+* No Longer Able to Control Graph Report Order (Issue http://issues.opennms.org/browse/NMS-6621[NMS-6621])
+* If Jetty HTTP is enabled in opennms.properties, the WebUI doesn't work with SSL (Issue http://issues.opennms.org/browse/NMS-6629[NMS-6629])
+* Can't download generated reports, a NPE is thrown by the WebUI (Issue http://issues.opennms.org/browse/NMS-6632[NMS-6632])
+* Having hundreds of scheduled outage hurts the performance of the OpenNMS server (Issue http://issues.opennms.org/browse/NMS-6748[NMS-6748])
+* High CPU usage due to DataCollectionConfigDao.getConfiguredResourceTypes() while Collectd
+starts (Issue http://issues.opennms.org/browse/NMS-6757[NMS-6757])
+* The rescanExisting flag in Provisiond is not working as expected (Issue http://issues.opennms.org/browse/NMS-6759[NMS-6759])
+
+===== Enhancements
+
+* Monitoring Asterisk SIP Clients (Issue http://issues.opennms.org/browse/NMS-5767[NMS-5767])
+* Remove link to Surveillance Category Editor from nodepage for requisitioned nodes (Issue http://issues.opennms.org/browse/NMS-6372[NMS-6372])
+* Asset page should not be in edit mode for requisitioned nodes (Issue http://issues.opennms.org/browse/NMS-6373[NMS-6373])
+* If the HostResourceSwRunMonitor fails because of a timeout, the reason does not reflect it. (Issue http://issues.opennms.org/browse/NMS-6626[NMS-6626])
+
+
+
 [releasenotes-changelog-1.12.8]
 ==== Release 1.12.8
 Release 1.12.8 is the 9th in the stable 1.12 series of OpenNMS.
@@ -12,6 +47,7 @@ The codename for 1.12.8 is _John Petrucci_
 ===== Bug
 
 * Security: downloadReport allow download and view any file in filesystem (Issue http://issues.opennms.org/browse/NMS-6580[NMS-6580])
+
 
 [releasenotes-changelog-1.12.7]
 ==== Release 1.12.7

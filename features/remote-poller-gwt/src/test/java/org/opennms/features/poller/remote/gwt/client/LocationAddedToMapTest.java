@@ -99,7 +99,7 @@ public class LocationAddedToMapTest {
 
         @Override
         public void updateLocationList(
-                ArrayList<LocationInfo> locationsForLocationPanel) {
+                List<LocationInfo> locationsForLocationPanel) {
             // TODO Auto-generated method stub
 
         }
@@ -112,13 +112,13 @@ public class LocationAddedToMapTest {
 
         @Override
         public void updateApplicationList(
-                ArrayList<ApplicationInfo> applications) {
+                List<ApplicationInfo> applications) {
             // TODO Auto-generated method stub
 
         }
 
         @Override
-        public void updateApplicationNames(TreeSet<String> allApplicationNames) {
+        public void updateApplicationNames(Set<String> allApplicationNames) {
             // TODO Auto-generated method stub
 
         }

@@ -424,7 +424,7 @@ public final class EventExpander implements org.opennms.netmgt.dao.api.EventExpa
      * Expand parms in the event logmsg
      */
     private void expandParms(Logmsg logmsg, Event event, Map<String, Map<String, String>> decode) {
-        String strRet = org.opennms.netmgt.eventd.EventUtil.expandParms(logmsg.getContent(), event, decode);
+        String strRet = AbstractEventUtil.getInstance().expandParms(logmsg.getContent(), event, decode);
         if (strRet != null) {
             logmsg.setContent(strRet);
         }
@@ -437,7 +437,7 @@ public final class EventExpander implements org.opennms.netmgt.dao.api.EventExpa
         boolean expanded = false;
 
         for (Autoaction action : autoactions) {
-            String strRet = EventUtil.expandParms(action.getContent(), event);
+            String strRet = AbstractEventUtil.getInstance().expandParms(action.getContent(), event);
             if (strRet != null) {
                 action.setContent(strRet);
                 expanded = true;
@@ -456,7 +456,7 @@ public final class EventExpander implements org.opennms.netmgt.dao.api.EventExpa
         boolean expanded = false;
 
         for (Operaction action : operactions) {
-            String strRet = EventUtil.expandParms(action.getContent(), event);
+            String strRet = AbstractEventUtil.getInstance().expandParms(action.getContent(), event);
             if (strRet != null) {
                 action.setContent(strRet);
                 expanded = true;
@@ -472,7 +472,7 @@ public final class EventExpander implements org.opennms.netmgt.dao.api.EventExpa
      * Expand parms in the event tticket
      */
     private void expandParms(Tticket tticket, Event event) {
-        String strRet = EventUtil.expandParms(tticket.getContent(), event);
+        String strRet = AbstractEventUtil.getInstance().expandParms(tticket.getContent(), event);
         if (strRet != null) {
             tticket.setContent(strRet);
         }
@@ -495,7 +495,7 @@ public final class EventExpander implements org.opennms.netmgt.dao.api.EventExpa
 
         // description
         if (event.getDescr() != null) {
-            strRet = org.opennms.netmgt.eventd.EventUtil.expandParms(event.getDescr(), event,decode);
+            strRet = AbstractEventUtil.getInstance().expandParms(event.getDescr(), event,decode);
             if (strRet != null) {
                 event.setDescr(strRet);
                 strRet = null;
@@ -509,7 +509,7 @@ public final class EventExpander implements org.opennms.netmgt.dao.api.EventExpa
 
         // operinstr
         if (event.getOperinstruct() != null) {
-            strRet = EventUtil.expandParms(event.getOperinstruct(), event);
+            strRet = AbstractEventUtil.getInstance().expandParms(event.getOperinstruct(), event);
             if (strRet != null) {
                 event.setOperinstruct(strRet);
                 strRet = null;
@@ -533,12 +533,12 @@ public final class EventExpander implements org.opennms.netmgt.dao.api.EventExpa
         
         // reductionKey
         if (event.getAlarmData() != null) {
-            strRet = EventUtil.expandParms(event.getAlarmData().getReductionKey(), event);
+            strRet = AbstractEventUtil.getInstance().expandParms(event.getAlarmData().getReductionKey(), event);
             if (strRet != null) {
                 event.getAlarmData().setReductionKey(strRet);
             }
             strRet = null;
-            strRet = EventUtil.expandParms(event.getAlarmData().getClearKey(), event);
+            strRet = AbstractEventUtil.getInstance().expandParms(event.getAlarmData().getClearKey(), event);
             if (strRet != null) {
             	event.getAlarmData().setClearKey(strRet);
             }

@@ -38,7 +38,7 @@ import org.hibernate.type.StringType;
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  * @version $Id: $
  */
-public class OnmsRestrictions {
+public abstract class OnmsRestrictions {
     private static final StringType STRING_TYPE = new StringType();
     
     /**

@@ -71,4 +71,9 @@ public interface CollectdMBean extends BaseOnmsMBean {
      * @return The ratio of completed to scheduled collection tasks since collector startup
      */
     public double getTaskCompletionRatio();
+    
+    /**
+     * @return The number of collectable services currently seen by Collectd
+     */
+    public long getCollectableServiceCount();
 }

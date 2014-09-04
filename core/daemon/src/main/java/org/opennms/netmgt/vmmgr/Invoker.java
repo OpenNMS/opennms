@@ -30,7 +30,6 @@ package org.opennms.netmgt.vmmgr;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.UndeclaredThrowableException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -42,7 +41,6 @@ import javax.management.ObjectInstance;
 import javax.management.ObjectName;
 
 import org.opennms.core.logging.Logging;
-import org.opennms.netmgt.config.ServiceConfigFactory;
 import org.opennms.netmgt.config.service.Argument;
 import org.opennms.netmgt.config.service.Invoke;
 import org.opennms.netmgt.config.service.Service;
@@ -96,20 +94,6 @@ public class Invoker {
     }
     
     /**
-     * <p>getDefaultServiceConfigFactory</p>
-     *
-     * @return a {@link org.opennms.netmgt.config.ServiceConfigFactory} object.
-     */
-    public static ServiceConfigFactory getDefaultServiceConfigFactory() {
-        try {
-            ServiceConfigFactory.init();
-            return ServiceConfigFactory.getInstance();
-        } catch (Throwable t) {
-            throw new UndeclaredThrowableException(t);
-        }
-    }
-    
-    /**
      * <p>instantiateClasses</p>
      */
     public void instantiateClasses() {
@@ -130,7 +114,7 @@ public class Invoker {
                 // Get a new instance of the class
                 LOG.debug("create new instance of {}", service.getClassName());
                 
-                Map<?,?> mdc = Logging.getCopyOfContextMap();
+                Map<String,String> mdc = Logging.getCopyOfContextMap();
                 Object bean;
                 try {
                     bean = clazz.newInstance();
@@ -289,7 +273,7 @@ public class Invoker {
 
         Object object;
         try {
-        	Map<?,?> mdc = Logging.getCopyOfContextMap();
+        	Map<String,String> mdc = Logging.getCopyOfContextMap();
             try {
                 object = getServer().invoke(mbean.getObjectName(), invoke.getMethod(), parms, sig);
             } finally {
@@ -310,7 +294,7 @@ public class Invoker {
         Constructor<?> construct = attribClass.getConstructor(new Class[] { String.class });
 
         Object value;
-        Map<?,?> mdc = Logging.getCopyOfContextMap();
+        Map<String,String> mdc = Logging.getCopyOfContextMap();
         try {
             value = construct.newInstance(new Object[] { attrib.getValue().getContent() });
         } finally {
@@ -324,7 +308,7 @@ public class Invoker {
         Class<?> argClass = Class.forName(arg.getType());
         Constructor<?> construct = argClass.getConstructor(new Class[] { String.class });
 
-        Map mdc = Logging.getCopyOfContextMap();
+        Map<String,String> mdc = Logging.getCopyOfContextMap();
         try {
             return construct.newInstance(new Object[] { arg.getContent() });
         } finally {

@@ -33,6 +33,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Result of a {@link CollectionJob}. List of metricId/values pairs with minimal redundancy (timestamp, nodeId, service
@@ -43,7 +44,7 @@ import java.util.List;
 */
 public class LightweightMeasurementSet implements MeasurementSet {
     private static final long serialVersionUID = 1166779403641774595L;
-    private HashMap<String, ArrayList<String>> m_values = new HashMap<String, ArrayList<String>>();
+    private Map<String, ArrayList<String>> m_values = new HashMap<String, ArrayList<String>>();
     private int m_nodeId;
     private String m_interface, m_service;
     private Date m_timestamp = new Date();

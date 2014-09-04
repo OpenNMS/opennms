@@ -34,8 +34,10 @@ public class EdgeAlarmStatusSummary {
     private final String m_targetId;
     private final String m_sourceId;
     private String m_eventUEI;
+    private final String m_id;
 
-    public EdgeAlarmStatusSummary(int sourceId, int targetId, String eventUEI){
+    public EdgeAlarmStatusSummary(int sourceId, int targetId, String eventUEI) {
+        m_id = Math.min(sourceId, targetId) + "|" + Math.max(sourceId, targetId);
         m_sourceId = String.valueOf(sourceId);
         m_targetId = String.valueOf(targetId);
         m_eventUEI = eventUEI;
@@ -53,8 +55,8 @@ public class EdgeAlarmStatusSummary {
         return m_targetId;
     }
 
-    public String getLldpLinkId() {
-        return getSourceId() + "|" + getTargetId();
+    public String getId() {
+        return m_id;
     }
 
     public String getEventUEI() { return m_eventUEI == null ? "unknown" : m_eventUEI; }

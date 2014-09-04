@@ -64,7 +64,7 @@ import org.opennms.netmgt.utils.TcpEventProxy;
 public abstract class Util extends Object {
 
     private static final String[] EMPTY_STRING_ARRAY = new String[0];
-	private static final HashMap<String, Object> EMPTY_HASH_MAP = new HashMap<String,Object>();
+	private static final Map<String, Object> EMPTY_HASH_MAP = new HashMap<String,Object>();
 
 	/**
      * Return a string that represents the fully qualified URL for our servlet

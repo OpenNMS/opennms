@@ -30,6 +30,7 @@ package org.opennms.protocols.snmp;
 
 import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This class provides a set of utilities that may be used by other package
@@ -54,7 +55,7 @@ class SnmpUtil extends Object {
      * The array of dynamically registred SnmpSyntax objects
      * 
      */
-    static ArrayList<SnmpSyntax> m_syntaxArray = null;
+    static List<SnmpSyntax> m_syntaxArray = null;
 
     //
     // when the class is "created" and initiazlied

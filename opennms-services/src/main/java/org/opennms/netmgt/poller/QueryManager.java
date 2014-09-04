@@ -41,8 +41,6 @@ public interface QueryManager {
 
     /**
      * <p>getNodeLabel</p>
-     * 
-     * @deprecated Use the NodeDao to fetch values like this.
      *
      * @param nodeId a int.
      * @throws java.sql.SQLException if any.
@@ -85,8 +83,6 @@ public interface QueryManager {
     void reparentOutages(String ipAddr, int oldNodeId, int newNodeId);
 
     /**
-     * @deprecated Use the DAOs to fetch services by primary key instead.
-     * 
      * @param nodeId
      * @return
      */

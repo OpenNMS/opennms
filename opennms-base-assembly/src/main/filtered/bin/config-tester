@@ -5,5 +5,6 @@ app_class=org.opennms.netmgt.config.tester.ConfigTester
 
 exec $opennms_home/bin/runjava -r -- \
     -Dopennms.manager.class=$app_class \
+    -Dopennms.home="$opennms_home" \
     -jar $opennms_home/lib/opennms_bootstrap.jar \
      "$@"

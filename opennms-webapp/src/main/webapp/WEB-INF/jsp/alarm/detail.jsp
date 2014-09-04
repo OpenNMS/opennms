@@ -35,6 +35,7 @@
         import="java.util.List,
         org.opennms.core.resource.Vault,
         org.opennms.core.utils.InetAddressUtils,
+        org.opennms.core.utils.WebSecurityUtils,
         org.opennms.web.controller.alarm.*,
         org.opennms.web.alarm.*,
         org.opennms.web.servlet.XssRequestWrapper,
@@ -208,7 +209,7 @@
         <th>Log&nbsp;Message</th>
     </tr>
     <tr class="<%=alarm.getSeverity().getLabel()%>">
-        <td><%=alarm.getLogMsg()%></td>
+        <td><%=WebSecurityUtils.sanitizeString(alarm.getLogMsg(), true)%></td>
     </tr>
 </table>
 
@@ -234,7 +235,7 @@
         <th>Description</th>
     </tr>
     <tr class="<%=alarm.getSeverity().getLabel()%>">
-        <td><%=alarm.getDescription()%></td>
+        <td><%=WebSecurityUtils.sanitizeString(alarm.getDescription(), true)%></td>
     </tr>
 </table>
 

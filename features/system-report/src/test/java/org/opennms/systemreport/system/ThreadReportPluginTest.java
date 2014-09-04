@@ -31,6 +31,7 @@ package org.opennms.systemreport.system;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
+import java.util.Map;
 import java.util.TreeMap;
 
 import javax.annotation.Resource;
@@ -51,7 +52,7 @@ public class ThreadReportPluginTest extends ReportPluginTestCase {
     @Test
     public void testThreadReportPlugin() throws IOException {
         assertTrue(listContains(ThreadReportPlugin.class));
-        final TreeMap<String, org.springframework.core.io.Resource> entries = m_threadReportPlugin.getEntries();
+        final Map<String, org.springframework.core.io.Resource> entries = m_threadReportPlugin.getEntries();
         final org.springframework.core.io.Resource resource = entries.get("ThreadDump.txt");
         final String contents = IOUtils.toString(resource.getInputStream());
         assertTrue(contents.contains("at sun.management.ThreadImpl.dumpAllThreads"));

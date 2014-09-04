@@ -34,6 +34,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.Enumeration;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.sql.DataSource;
@@ -45,6 +46,11 @@ import org.opennms.netmgt.config.PollOutagesConfig;
 import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
+import org.opennms.netmgt.dao.api.MonitoredServiceDao;
+import org.opennms.netmgt.model.OnmsEvent;
+import org.opennms.netmgt.model.OnmsIpInterface;
+import org.opennms.netmgt.model.OnmsMonitoredService;
+import org.opennms.netmgt.model.OnmsOutage;
 import org.opennms.netmgt.model.events.EventIpcManager;
 import org.opennms.netmgt.poller.pollables.DbPollEvent;
 import org.opennms.netmgt.poller.pollables.PollEvent;
@@ -60,6 +66,9 @@ import org.opennms.netmgt.scheduler.Scheduler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
+import org.springframework.transaction.support.TransactionTemplate;
 
 /**
  * <p>Poller class.</p>
@@ -88,13 +97,47 @@ public class Poller extends AbstractServiceDaemon {
 
     private PollOutagesConfig m_pollOutagesConfig;
 
-    @Autowired
     private EventIpcManager m_eventMgr;
 
     @Autowired
     private DataSource m_dataSource;
+    
+    @Autowired
+    private MonitoredServiceDao m_monitoredServiceDao;
+    
+    @Autowired
+    private TransactionTemplate m_transactionTemplate;
+    
+    
+
+    public void setMonitoredServiceDao(MonitoredServiceDao monitoredServiceDao) {
+		this.m_monitoredServiceDao = monitoredServiceDao;
+	}
+
+
+	public void setTransactionTemplate(TransactionTemplate transactionTemplate) {
+		m_transactionTemplate = transactionTemplate;
+	}
+	
+	/**
+     * <p>setEventIpcManager</p>
+     *
+     * @param eventIpcManager a {@link org.opennms.netmgt.model.events.EventIpcManager} object.
+     */
+    public void setEventIpcManager(EventIpcManager eventIpcManager) {
+        m_eventMgr = eventIpcManager;
+    }
 
     /**
+     * <p>getEventIpcManager</p>
+     *
+     * @return a {@link org.opennms.netmgt.model.events.EventIpcManager} object.
+     */
+    public EventIpcManager getEventIpcManager() {
+        return m_eventMgr;
+    }
+
+	/**
      * <p>Constructor for Poller.</p>
      */
     public Poller() {
@@ -118,15 +161,6 @@ public class Poller extends AbstractServiceDaemon {
      */
     public EventIpcManager getEventManager() {
         return m_eventMgr;
-    }
-
-    /**
-     * <p>setEventManager</p>
-     *
-     * @param eventMgr a {@link org.opennms.netmgt.model.events.EventIpcManager} object.
-     */
-    void setEventManager(EventIpcManager eventMgr) {
-        m_eventMgr = eventMgr;
     }
 
     /**
@@ -408,13 +442,32 @@ public class Poller extends AbstractServiceDaemon {
             final Runnable r = new Runnable() {
                 @Override
                 public void run() {
-					final int matchCount = scheduleMatchingServices("ifServices.nodeId = "+nodeId+" AND ifServices.ipAddr = '"+normalizedAddress+"' AND service.serviceName = '"+svcName+"'");
-                    if (matchCount > 0) {
+                	m_transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+						
+						@Override
+						protected void doInTransactionWithoutResult(TransactionStatus arg0) {
+					final OnmsMonitoredService service = m_monitoredServiceDao.get(nodeId, InetAddressUtils.addr(ipAddr), svcName);
+					final OnmsIpInterface iface = service.getIpInterface();
+					final Set<OnmsOutage> outages = service.getCurrentOutages();
+					final OnmsOutage outage = (outages == null || outages.size() < 1 ? null : outages.iterator().next());
+					final OnmsEvent event = (outage == null ? null : outage.getServiceLostEvent());
+					if (scheduleService(
+							service.getNodeId(), 
+							iface.getNode().getLabel(), 
+							iface.getIpAddressAsString(), 
+							service.getServiceName(), 
+                            "A".equals(service.getStatus()), 
+                            event == null ? null : event.getId(), 
+                            outage == null ? null : outage.getIfLostService(), 
+                            event == null ? null : event.getEventUei()
+                    )) {
                         svcNode.recalculateStatus();
                         svcNode.processStatusChange(new Date());
                     } else {
                         LOG.warn("Attempt to schedule service {}/{}/{} found no active service", nodeId, normalizedAddress, svcName);
                     }
+						}
+					});
                 }
             };
             node.withTreeLock(r);

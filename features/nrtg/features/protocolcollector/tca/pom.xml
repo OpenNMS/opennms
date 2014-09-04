@@ -3,14 +3,14 @@
   <parent>
     <groupId>org.opennms.osgi.features.nrtg</groupId>
     <artifactId>osgi-nrtg-protocolcollector</artifactId>
-    <version>1.13.4-SNAPSHOT</version>
+    <version>1.13.5-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.osgi.features.nrtg.protocolcollector</groupId>
   <artifactId>osgi-nrtg-protocolcollector-tca</artifactId>
-  <name>OpenNMS Features NRTG Features ProtocolCollector TCA Feature</name>
+  <name>OpenNMS :: Features :: NRTG :: TCA Protocol Collector</name>
   <description>
-    Plugin for the NRTCollector OSGI Satellit to collect data from tca agents
+    Plugin for the NRTCollector OSGI Satellite to collect data from TCA agents.
   </description>
   <packaging>pom</packaging>
   <build>

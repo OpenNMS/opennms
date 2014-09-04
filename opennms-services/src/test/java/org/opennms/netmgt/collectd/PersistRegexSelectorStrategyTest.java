@@ -49,6 +49,7 @@ import org.opennms.netmgt.config.datacollection.Parameter;
 import org.opennms.netmgt.config.datacollection.PersistenceSelectorStrategy;
 import org.opennms.netmgt.config.datacollection.StorageStrategy;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
+import org.opennms.netmgt.dao.mock.MockDataCollectionConfigDao;
 import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsIpInterface;
@@ -106,7 +107,7 @@ public class PersistRegexSelectorStrategyTest {
 
         PlatformTransactionManager ptm = new MockPlatformTransactionManager();
         SnmpCollectionAgent agent = DefaultCollectionAgent.create(1, ipInterfaceDao, ptm);
-        OnmsSnmpCollection snmpCollection = new OnmsSnmpCollection(agent, serviceParams);
+        OnmsSnmpCollection snmpCollection = new OnmsSnmpCollection(agent, serviceParams, new MockDataCollectionConfigDao());
 
         org.opennms.netmgt.config.datacollection.ResourceType rt = new org.opennms.netmgt.config.datacollection.ResourceType();
         rt.setName("myResourceType");

@@ -129,7 +129,7 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
      * @param ifIndex a int.
      */
     public OnmsSnmpInterface(OnmsNode node, int ifIndex) {
-        this(node, new Integer(ifIndex));
+        this(node, Integer.valueOf(ifIndex));
     }
 
     /**

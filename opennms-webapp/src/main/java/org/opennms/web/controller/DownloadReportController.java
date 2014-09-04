@@ -68,17 +68,17 @@ public class DownloadReportController extends AbstractController {
             HttpServletResponse response) throws Exception {
                 
         String fileName = request.getParameter("fileName");
-        final File requestedFile = new File(fileName);
 
         m_reportdConfigurationDao = BeanUtils.getBean("reportdContext", "reportdConfigDao", ReportdConfigurationDao.class);
         final File storageDirectory = new File(m_reportdConfigurationDao.getStorageDirectory());
         
-        if (!requestedFile.getParentFile().getCanonicalFile().equals(storageDirectory.getCanonicalFile())) {
-            LOG.warn("User attempted to retrieve file {} but was restricted to {}", requestedFile, storageDirectory);
-            throw new IllegalArgumentException("Cannot retrieve reports from outside Reportd storage directory");
-        }
-        
         if (fileName != null) {
+            final File requestedFile = new File(fileName);
+            if (!requestedFile.getParentFile().getCanonicalFile().equals(storageDirectory.getCanonicalFile())) {
+                LOG.warn("User attempted to retrieve file {} but was restricted to {}", requestedFile, storageDirectory);
+                throw new IllegalArgumentException("Cannot retrieve reports from outside Reportd storage directory");
+            }
+
             if (fileName.toLowerCase().endsWith(".pdf")) {
                 response.setContentType("application/pdf;charset=UTF-8");
 
