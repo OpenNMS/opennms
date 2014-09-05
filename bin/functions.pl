@@ -147,8 +147,8 @@ if ((defined $JAVA_HOME and -d $JAVA_HOME) or (exists $ENV{'JAVA_HOME'} and -d $
 	my $minimumversion = get_minimum_java();
 
 	if ($shortversion < $minimumversion) {
-		warning("You specified a Java home of $JAVA_HOME, but it does not meet minimum java version $minimumversion!  Will try detecting instead.");
-		undef $JAVA_HOME;
+		warning("You specified a Java home of $JAVA_HOME, but it does not meet minimum java version $minimumversion!  Will attempt to search for one instead.");
+		$JAVA_HOME = undef;
 		delete $ENV{'JAVA_HOME'};
 	}
 }
@@ -340,7 +340,13 @@ sub find_java_home {
 			for my $build (sort keys %{$versions->{$majorversion}->{$version}}) {
 				my $java_home = $versions->{$majorversion}->{$version}->{$build};
 				#print STDERR "    ", $build, ": ", $java_home, "\n";
-				if ($build =~ /^\d/) {
+				if ($build =~ /^(\d+)/) {
+					my $buildnumber = $1 || 0;
+					if ($majorversion eq "1.7" and $buildnumber >= 65 and defined $highest_valid) {
+						# if we've already found an older Java 7, skip build 65 and higher because of bytecode verification issues
+						next;
+					}
+
 					$highest_valid = $java_home;
 				} elsif (defined $highest_valid) {
 					last JDK_SEARCH;
