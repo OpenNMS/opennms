@@ -44,6 +44,7 @@ import org.opennms.core.test.db.MockDatabase;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.DefaultEventConfDao;
 import org.opennms.netmgt.config.SnmpPeerFactory;
+import org.opennms.netmgt.dao.mock.JdbcEventdServiceManager;
 import org.opennms.netmgt.eventd.AbstractEventUtil;
 import org.opennms.netmgt.eventd.BroadcastEventProcessor;
 import org.opennms.netmgt.eventd.DefaultEventHandlerImpl;

@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.mock;
+package org.opennms.netmgt.dao.mock;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;

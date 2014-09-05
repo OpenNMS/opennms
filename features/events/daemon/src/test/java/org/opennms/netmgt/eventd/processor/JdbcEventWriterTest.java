@@ -31,8 +31,8 @@ package org.opennms.netmgt.eventd.processor;
 import java.sql.SQLException;
 
 import org.opennms.core.test.db.PopulatedTemporaryDatabaseTestCase;
+import org.opennms.netmgt.dao.mock.JdbcEventdServiceManager;
 import org.opennms.netmgt.events.api.EventConstants;
-import org.opennms.netmgt.mock.JdbcEventdServiceManager;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpValue;
