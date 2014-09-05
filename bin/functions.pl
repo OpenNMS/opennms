@@ -317,6 +317,11 @@ sub find_java_home {
 				my $java_home = $versions->{$majorversion}->{$version}->{$build};
 				#print STDERR "    ", $build, ": ", $java_home, "\n";
 				if ($build =~ /^\d/) {
+					if ($majorversion eq "1.7" and $build >= 65 and defined $highest_valid) {
+						# if we've already found an older Java 7, skip build 65 and higher because of bytecode verification issues
+						next;
+					}
+
 					$highest_valid = $java_home;
 				} elsif (defined $highest_valid) {
 					last JDK_SEARCH;
