@@ -40,10 +40,7 @@ import org.opennms.features.topology.api.Layout;
 import org.opennms.features.topology.api.MapViewManager;
 import org.opennms.features.topology.api.SelectionManager;
 import org.opennms.features.topology.api.support.SavedHistory;
-import org.opennms.features.topology.api.topo.AbstractVertex;
-import org.opennms.features.topology.api.topo.Edge;
-import org.opennms.features.topology.api.topo.Vertex;
-import org.opennms.features.topology.api.topo.VertexRef;
+import org.opennms.features.topology.api.topo.*;
 import org.opennms.features.topology.app.internal.DefaultLayout;
 import org.opennms.features.topology.app.internal.jung.CircleLayoutAlgorithm;
 import org.opennms.features.topology.app.internal.operations.*;
@@ -248,6 +245,11 @@ public class BundleContextHistoryManagerTest  {
         		.expect(graphContainerMock.getSelectionManager())
         		.andReturn(selectionManagerMock)
         		.anyTimes();
+
+        EasyMock
+                .expect(graphContainerMock.getCriteria())
+                .andReturn(new Criteria[0])
+                .anyTimes();
     }
 
     private void setBehaviour(BundleContext bundleContextMock) {
