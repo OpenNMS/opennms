@@ -166,6 +166,7 @@ $(document).ready(function() {
 
         List excludeList = getExcludeList();
 	TreeMap<String, String> sortedMap = new TreeMap<String, String>();
+	List<Event> disappearingList = new ArrayList<Event>();
 
         Iterator i = events.iterator();
 
@@ -181,8 +182,11 @@ $(document).ready(function() {
             String trimmedUei = stripUei(uei);
             //System.out.println(trimmedUei);
             
-            if (!excludeList.contains(trimmedUei)) {
+            if (!excludeList.contains(trimmedUei) && !isDisappearingEvent(e)) {
 		sortedMap.put(label,uei);
+            }
+            if (isDisappearingEvent(e)) {
+                disappearingList.add(e);
             }
 	}
 	i=sortedMap.keySet().iterator();
@@ -195,6 +199,18 @@ $(document).ready(function() {
 			buffer.append("<option value=" + uei + ">" + label + "</option>");
 		}
         }
+	
+	if (!disappearingList.isEmpty()) {
+	    buffer.append("<optgroup label=\"Events not eligible for notifications\" disabled=\"true\">");
+	    for (Event e : disappearingList) {
+	        String selected = " ";
+	        if (e.getUei().equals(notice.getUei())) {
+	            selected = " selected ";
+	        }
+	        buffer.append("<option" + selected + "value=\"" + e.getUei() + "\">" + e.getEventLabel() + "</option>");
+	    }
+	    buffer.append("</optgroup>");
+	}
         
         return buffer.toString();
     }
@@ -226,5 +242,15 @@ $(document).ready(function() {
         }
         
         return excludes;
+     }
+     
+     public boolean isDisappearingEvent(Event e) {
+         if ("donotpersist".equalsIgnoreCase(e.getLogmsg().getDest())) {
+             return true;
+         }
+         if (e.getAlarmData() != null && e.getAlarmData().getAutoClean() == true) {
+             return true;
+         }
+         return false;
      }
 %>
