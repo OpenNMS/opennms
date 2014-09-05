@@ -13,5 +13,6 @@
   <modules>
     <module>api</module>
     <module>daemon</module>
+    <module>traps</module>
   </modules>
 </project>
