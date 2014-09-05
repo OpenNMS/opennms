@@ -125,7 +125,9 @@ if ((defined $JAVA_HOME and -d $JAVA_HOME) or (exists $ENV{'JAVA_HOME'} and -d $
 	my $minimumversion = get_minimum_java();
 
 	if ($shortversion < $minimumversion) {
-		die "You specified a Java home of $JAVA_HOME, but it does not meet minimum java version $minimumversion!\n";
+		warning("You specified a Java home of $JAVA_HOME, but it does not meet minimum java version $minimumversion!  Will attempt to search for one instead.");
+		$JAVA_HOME = undef;
+		delete $ENV{'JAVA_HOME'};
 	}
 }
 
