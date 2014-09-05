@@ -316,8 +316,9 @@ sub find_java_home {
 			for my $build (sort keys %{$versions->{$majorversion}->{$version}}) {
 				my $java_home = $versions->{$majorversion}->{$version}->{$build};
 				#print STDERR "    ", $build, ": ", $java_home, "\n";
-				if ($build =~ /^\d/) {
-					if ($majorversion eq "1.7" and $build >= 65 and defined $highest_valid) {
+				if ($build =~ /^(\d+)/) {
+					my $buildnumber = $1 || 0;
+					if ($majorversion eq "1.7" and $buildnumber >= 65 and defined $highest_valid) {
 						# if we've already found an older Java 7, skip build 65 and higher because of bytecode verification issues
 						next;
 					}
