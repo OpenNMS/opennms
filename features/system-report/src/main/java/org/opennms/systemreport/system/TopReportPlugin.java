@@ -31,7 +31,6 @@ package org.opennms.systemreport.system;
 import java.io.File;
 import java.util.TreeMap;
 
-import org.apache.commons.exec.CommandLine;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.systemreport.AbstractSystemReportPlugin;
 import org.springframework.core.io.FileSystemResource;
@@ -52,19 +51,22 @@ public class TopReportPlugin extends AbstractSystemReportPlugin {
 
     public TreeMap<String, Resource> getEntries() {
         final TreeMap<String,Resource> map = new TreeMap<String,Resource>();
-
-        final String top = findBinary("top");
+        final String top = getResourceLocator().findBinary("top");
 
         String topOutput = null;
 
         if (top != null) {
-            topOutput = slurpOutput(CommandLine.parse(top + " -h"), true);
+            topOutput = getResourceLocator().slurpOutput(top + " -h", true);
             LogUtils.debugf(this, "top -h output: %s", topOutput);
 
             if (topOutput.contains("-b") && topOutput.contains("-n")) {
-                topOutput = slurpOutput(CommandLine.parse(top + " -n 1 -b"), false);
+                final String topcmd = top + " -n 1 -b";
+                LogUtils.debugf(this, "calling: %s", topcmd);
+                topOutput = getResourceLocator().slurpOutput(topcmd, false);
             } else if (topOutput.contains("-l")) {
-                topOutput = slurpOutput(CommandLine.parse(top + " -l 1"), false);
+                final String topcmd = top + " -l 1";
+                LogUtils.debugf(this, "calling: %s", topcmd);
+                topOutput = getResourceLocator().slurpOutput(topcmd, false);
             } else {
                 topOutput = null;
             }

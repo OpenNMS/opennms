@@ -70,13 +70,24 @@ import org.opennms.core.utils.LogUtils;
 import org.opennms.systemreport.system.PsParser;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
+import org.opennms.systemreport.SystemReportResourceLocator;
 
 public abstract class AbstractSystemReportPlugin implements SystemReportPlugin {
     protected static final long MAX_PROCESS_WAIT = 10000; // milliseconds
     private MBeanServerConnection m_connection = null;
 
+    protected ResourceLocator m_resourceLocator = new SystemReportResourceLocator(MAX_PROCESS_WAIT);
+
     public int getPriority() {
         return 99;
+    }
+
+    protected ResourceLocator getResourceLocator() {
+        return m_resourceLocator;
+    }
+    
+    protected void setResourceLocator(final ResourceLocator resourceLocator) {
+        m_resourceLocator = resourceLocator;
     }
 
     public TreeMap<String, Resource> getEntries() {
@@ -175,75 +186,6 @@ public abstract class AbstractSystemReportPlugin implements SystemReportPlugin {
         return new ByteArrayResource(text.getBytes());
     }
     
-    protected String findBinary(final String name) {
-        List<String> pathEntries = new ArrayList<String>();
-        final String path = System.getenv().get("PATH");
-        if (path != null) {
-            for (final String p : path.split(File.pathSeparator)) {
-                pathEntries.add(p);
-            }
-            // make sure sbin is in the path, too, just in case
-            pathEntries.add("/sbin");
-            pathEntries.add("/usr/sbin");
-            pathEntries.add("/usr/local/sbin");
-        }
-
-        for (final String dir : pathEntries) {
-            File file = new File(dir, name);
-            if (file.exists()) {
-                return file.getPath();
-            }
-            file = new File(dir, name + ".exe");
-            if (file.exists()) {
-                return file.getPath();
-            }
-        }
-
-        return null;
-    }
-
-    protected String slurpOutput(CommandLine command, boolean ignoreExitCode) {
-        LogUtils.debugf(this, "running: %s", command.toString());
-    
-        final Map<String,String> environment = new HashMap<String,String>(System.getenv());
-        environment.put("COLUMNS", "2000");
-        DataInputStream input = null;
-        PipedInputStream pis = null;
-        OutputSuckingParser parser = null;
-        String topOutput = null;
-        final DefaultExecutor executor = new DefaultExecutor();
-    
-        final PipedOutputStream output = new PipedOutputStream();
-        PumpStreamHandler streamHandler = new PumpStreamHandler(output, output);
-        executor.setWatchdog(new ExecuteWatchdog(MAX_PROCESS_WAIT));
-        executor.setStreamHandler(streamHandler);
-    
-        try {
-            LogUtils.tracef(this, "executing '%s'", command.toString());
-            pis = new PipedInputStream(output);
-            input = new DataInputStream(pis);
-            parser = new OutputSuckingParser(input);
-            parser.start();
-            int exitValue = executor.execute(command, environment);
-            IOUtils.closeQuietly(output);
-            parser.join(MAX_PROCESS_WAIT);
-            if (!ignoreExitCode && exitValue != 0) {
-                LogUtils.debugf(this, "error running '%s': exit value was %d", command.toString(), exitValue);
-            } else {
-                topOutput = parser.getOutput();
-            }
-            LogUtils.tracef(this, "finished '%s'", command.toString());
-        } catch (final Exception e) {
-            LogUtils.debugf(this, e, "Failed to run '%s'", command.toString());
-        } finally {
-            IOUtils.closeQuietly(output);
-            IOUtils.closeQuietly(input);
-            IOUtils.closeQuietly(pis);
-        }
-        
-        return topOutput;
-    }
-
     protected File createTemporaryFileFromString(final String text) {
         File tempFile = null;
         FileWriter fw = null;
@@ -265,7 +207,7 @@ public abstract class AbstractSystemReportPlugin implements SystemReportPlugin {
         LogUtils.debugf(this, "getOpenNMSProcesses()");
         final Set<Integer> processes = new HashSet<Integer>();
     
-        final String jps = findBinary("jps");
+        final String jps = getResourceLocator().findBinary("jps");
         
         LogUtils.debugf(this, "jps = %s", jps);
     
@@ -306,7 +248,7 @@ public abstract class AbstractSystemReportPlugin implements SystemReportPlugin {
         }
     
         LogUtils.tracef(this, "looking for ps");
-        final String ps = findBinary("ps");
+        final String ps = getResourceLocator().findBinary("ps");
         if (ps != null) {
             
             // try Linux/Mac style

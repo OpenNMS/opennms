@@ -120,7 +120,7 @@ public class ThreadReportPlugin extends AbstractSystemReportPlugin {
     }
 
     private void triggerThreadDump() {
-        String kill = findBinary("kill");
+        String kill = getResourceLocator().findBinary("kill");
         
         if (kill != null) {
             for (final Integer pid : getOpenNMSProcesses()) {
