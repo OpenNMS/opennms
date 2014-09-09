@@ -29,5 +29,6 @@
 package org.opennms.core.test.dns;
 
 public interface Stoppable extends Runnable {
+    public void await() throws InterruptedException;
     public void stop();
 }
