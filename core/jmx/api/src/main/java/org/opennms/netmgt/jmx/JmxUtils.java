@@ -33,7 +33,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.config.collectd.jmx.Mbean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -76,7 +75,7 @@ public final class JmxUtils {
         if (serviceName != null && !serviceName.isEmpty()) {
             return serviceName.toLowerCase();
         }
-        final String port = map.get(ServiceParameters.ParameterName.PORT.toString());
+        final String port = map.get(ParameterName.PORT.toString());
         Objects.requireNonNull(port, "Map must contain a value for key 'port'.");
         return map.get(port);
     }
@@ -90,7 +89,7 @@ public final class JmxUtils {
     }
 
     public static String getGroupName(final Map<String, String> map, final Mbean mbean) {
-        final boolean useMbeanForRrds = Boolean.valueOf(map.get(ServiceParameters.ParameterName.USE_MBEAN_NAME_FOR_RRDS.toString()));
+        final boolean useMbeanForRrds = Boolean.valueOf(map.get(ParameterName.USE_MBEAN_NAME_FOR_RRDS.toString()));
         final String groupName = useMbeanForRrds ? mbean.getName() : mbean.getObjectname();
         return groupName;
     }
