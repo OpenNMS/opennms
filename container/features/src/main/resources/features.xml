@@ -102,6 +102,15 @@
       <bundle>mvn:org.opennms/opennms-util/${project.version}</bundle>
     </feature>
 
+    <feature name="opennms-core-daemon" description="OpenNMS :: Core :: Daemon" version="${project.version}">
+      <feature>opennms-core</feature>
+      <feature>opennms-config</feature>
+      <feature>opennms-icmp-api</feature>
+      <feature>opennms-model</feature>
+
+      <bundle>mvn:org.opennms.core/org.opennms.core.daemon/${project.version}</bundle>
+    </feature>
+
     <feature name="opennms-core-db" description="OpenNMS :: Core :: Database" version="${project.version}">
       <feature>atomikos</feature>
       <feature>postgresql</feature>
@@ -187,7 +196,10 @@
       <feature>opennms-poller-api</feature>
       <feature>opennms-snmp</feature>
 
+      <bundle dependency="true">wrap:mvn:com.googlecode.concurrent-locks/concurrent-locks/1.0.0</bundle>
       <bundle dependency="true">wrap:mvn:org.jasypt/jasypt/1.9.0</bundle>
+      <bundle dependency="true">wrap:mvn:mx4j/mx4j-tools/3.0.1</bundle>
+
       <bundle>mvn:org.opennms/opennms-config/${project.version}</bundle>
     </feature>
 
@@ -197,6 +209,39 @@
       <feature>opennms-config-api</feature>
 
       <bundle>mvn:org.opennms/opennms-dao-api/${project.version}</bundle>
+    </feature>
+
+    <feature name="opennms-events-api" description="OpenNMS :: Events API" version="${project.version}">
+      <feature version="[3.2,3.3)">spring</feature>
+
+      <feature>castor</feature>
+      <feature>jaxb</feature>
+
+      <feature>opennms-core</feature>
+
+      <bundle>mvn:org.opennms.features.events/org.opennms.features.events.api/${project.version}</bundle>
+    </feature>
+
+    <feature name="opennms-events-daemon" description="OpenNMS :: Events :: Daemon" version="${project.version}">
+      <feature>opennms-core-daemon</feature>
+      <feature>opennms-dao-api</feature>
+      <feature>opennms-events-api</feature>
+
+      <bundle>mvn:org.opennms.features.events/org.opennms.features.events.daemon/${project.version}</bundle>
+    </feature>
+
+    <feature name="opennms-events-traps" description="OpenNMS :: Events :: Trap Daemon" version="${project.version}">
+      <feature>opennms-core-daemon</feature>
+      <feature>opennms-events-api</feature>
+
+      <bundle>mvn:org.opennms.features.events/org.opennms.features.events.traps/${project.version}</bundle>
+    </feature>
+
+    <feature name="opennms-icmp-api" description="OpenNMS :: ICMP API" version="${project.version}">
+      <feature>opennms-core</feature>
+
+	 <bundle dependency="true">mvn:org.opennms.lib/org.opennms.lib.tracker/0.6</bundle>
+      <bundle>mvn:org.opennms/opennms-icmp-api/${project.version}</bundle>
     </feature>
 
     <feature name="opennms-poller-api" description="OpenNMS :: Poller API" version="${project.version}">
