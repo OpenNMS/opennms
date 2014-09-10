@@ -176,7 +176,7 @@ public class SnmpAgentConfig extends SnmpConfiguration implements Serializable {
             buff.append(", SecurityName: " + getSecurityName());
             buff.append(", AuthPassPhrase: " + getAuthPassPhrase());
             buff.append(", AuthProtocol: " + getAuthProtocol());
-            buff.append(", PrivPassprhase: " + getPrivPassPhrase());
+            buff.append(", PrivPassphrase: " + getPrivPassPhrase());
             buff.append(", PrivProtocol: " + getPrivProtocol());
             buff.append(", EngineId: " + getEngineId());
             buff.append(", ContextEngineId: " + getContextEngineId());

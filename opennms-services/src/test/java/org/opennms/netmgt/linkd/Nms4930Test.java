@@ -61,10 +61,6 @@ public class Nms4930Test extends LinkdTestBuilder {
      * The main fact is that this devices have only the Bridge MIb walk
      * dlink_DES has STP disabled
      * dlink_DGS has STP enabled but root is itself
-     * no way to find links....
-     * Also there is no At interface information
-     * c2007db90010 --> 10.1.1.2  ---nothing in the bridge forwarding table...
-     * no way to get links...
      * 
      */
     @Test
