@@ -46,6 +46,7 @@ import java.util.Map;
 import org.apache.commons.io.IOUtils;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.db.DataSourceFactory;
@@ -96,6 +97,7 @@ import org.springframework.test.context.ContextConfiguration;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase(dirtiesContext=false,tempDbClass=MockDatabase.class)
+@Ignore
 public class VacuumdTest implements TemporaryDatabaseAware<MockDatabase>, InitializingBean {
     private static final long TEAR_DOWN_WAIT_MILLIS = 1000;
 
