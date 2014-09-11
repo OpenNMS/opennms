@@ -33,6 +33,7 @@
   <!--
   <onmsgi:reference id="eventdConfig" interface="org.opennms.netmgt.config.api.EventdConfig"/>
   <onmsgi:reference id="eventConfDao" interface="org.opennms.netmgt.config.api.EventConfDao"/>
+  <onmsgi:reference id="eventdServiceManager" interface="org.opennms.netmgt.dao.api.EventdServiceManager"/>
   -->
 
   <bean id="eventExpander" class="org.opennms.netmgt.eventd.EventExpander">
@@ -70,12 +71,6 @@
 
   <bean id="eventIpcManagerHandlerPoolSize" factory-bean="eventdConfigManager" factory-method="getReceivers"/>
   <bean id="eventIpcManagerHandlerQueueLength" factory-bean="eventdConfigManager" factory-method="getQueueLength"/>
-
-  <bean id="eventdServiceManager" class="org.opennms.netmgt.dao.hibernate.EventdServiceManagerHibernate">
-    <property name="serviceTypeDao">
-      <onmsgi:reference interface="org.opennms.netmgt.dao.api.ServiceTypeDao"/>
-    </property>
-  </bean>
 
   <bean id="eventdEventHandler" class="org.opennms.netmgt.eventd.DefaultEventHandlerImpl">
     <property name="eventProcessors">

@@ -231,6 +231,12 @@
 
   <onmsgi:service interface="org.opennms.netmgt.dao.api.EventDao" ref="eventDao" />
 
+  <bean id="eventdServiceManager" class="org.opennms.netmgt.dao.hibernate.EventdServiceManagerHibernate">
+    <property name="serviceTypeDao" ref="serviceTypeDao"/>
+  </bean>
+
+  <onmsgi:service interface="org.opennms.netmgt.dao.api.EventdServiceManager" ref="eventdServiceManager" />
+
   <bean id="ipInterfaceDao" class="org.opennms.netmgt.dao.hibernate.IpInterfaceDaoHibernate">
     <property name="sessionFactory" ref="sessionFactory" />
   </bean>
