@@ -3,10 +3,6 @@
 	xsi:schemaLocation="http://www.springframework.org/schema/beans
         http://www.springframework.org/schema/beans/spring-beans-3.0.xsd" default-lazy-init="true">
 
-  <!--
-    Figure out how to move these applicationContext-*.xml files into this project since it is
-    strange to have a context dependency on the opennms-services JAR from inside this project.
-  -->
   <bean id="daemonContext" class="org.springframework.context.support.ClassPathXmlApplicationContext">
     <constructor-arg>
       <list>
@@ -14,6 +10,6 @@
         <value>META-INF/opennms/applicationContext-pinger.xml</value>
       </list>
     </constructor-arg>
-    <constructor-arg ref="daoContext" />
+    <constructor-arg ref="commonContext" />
   </bean>
 </beans>

@@ -21,6 +21,11 @@
             <Bundle-RequiredExecutionEnvironment>JavaSE-1.7</Bundle-RequiredExecutionEnvironment>
             <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
             <Bundle-Version>${project.version}</Bundle-Version>
+            <!-- Launch the Spring context when this bundle is loaded in OSGi -->
+            <Spring-Context>
+              META-INF/opennms/applicationContext-eventDaemon.xml,
+              META-INF/opennms/applicationContext-eventDaemon-osgi.xml
+            </Spring-Context>
           </instructions>
         </configuration>
       </plugin>
@@ -68,6 +73,11 @@
     <dependency>
       <groupId>org.opennms.core.test-api</groupId>
       <artifactId>org.opennms.core.test-api.services</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-icmp-jna</artifactId>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
