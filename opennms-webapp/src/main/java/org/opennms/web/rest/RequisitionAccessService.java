@@ -51,6 +51,7 @@ public class RequisitionAccessService {
     private ForeignSourceRepository m_deployedForeignSourceRepository;
 
     @Autowired
+    @Qualifier("eventProxy")
     private EventProxy m_eventProxy;
 
     private final ExecutorService m_executor = Executors.newSingleThreadExecutor(new ThreadFactory() {
