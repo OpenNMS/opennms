@@ -228,6 +228,8 @@
     </feature>
 
     <feature name="opennms-events-daemon" description="OpenNMS :: Events :: Daemon" version="${project.version}">
+      <feature>spring-dm</feature>
+
       <feature>opennms-core-daemon</feature>
       <feature>opennms-dao-api</feature>
       <feature>opennms-events-api</feature>
