@@ -71,6 +71,7 @@ public class SmtpDetectorTest implements ApplicationContextAware {
         m_server.startServer();
         
         m_detector = getDetector(SmtpDetector.class);
+        m_detector.setTimeout(500);
         m_detector.init();
         m_detector.setPort(m_server.getLocalPort());
     }

@@ -60,7 +60,7 @@ public class ImapDetectorTest implements ApplicationContextAware {
         
         m_detector = getDetector(ImapDetector.class);
         m_detector.setServiceName("Imap");
-        m_detector.setTimeout(1000);
+        m_detector.setTimeout(500);
         m_detector.init();
     }
     
