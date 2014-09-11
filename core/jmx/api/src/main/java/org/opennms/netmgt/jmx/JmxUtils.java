@@ -77,7 +77,7 @@ public final class JmxUtils {
         }
         final String port = map.get(ParameterName.PORT.toString());
         Objects.requireNonNull(port, "Map must contain a value for key 'port'.");
-        return map.get(port);
+        return port;
     }
 
     public static String trimAttributeName(String input) {
