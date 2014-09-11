@@ -26,13 +26,13 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.jmx.connection.connectors;
+package org.opennms.netmgt.jmx.impl.connection.connectors;
 
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.jmx.connection.JmxServerConnectionException;
 import org.opennms.netmgt.jmx.connection.JmxServerConnectionWrapper;
 import org.opennms.netmgt.jmx.connection.JmxServerConnector;
-import org.opennms.netmgt.jmx.connection.connectors.IsolatingClassLoader.InvalidContextClassLoaderException;
+import org.opennms.netmgt.jmx.impl.connection.connectors.IsolatingClassLoader.InvalidContextClassLoaderException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

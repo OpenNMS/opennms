@@ -29,7 +29,7 @@
 package org.opennms.netmgt.jmx.connection;
 
 
-import org.opennms.netmgt.jmx.connection.connectors.DefaultConnectionManager;
+import org.opennms.netmgt.jmx.impl.connection.connectors.DefaultConnectionManager;
 import org.junit.Assert;
 import org.junit.Test;
 import java.lang.reflect.Field;

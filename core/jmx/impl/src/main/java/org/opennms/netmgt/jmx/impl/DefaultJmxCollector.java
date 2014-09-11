@@ -26,21 +26,17 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.jmx;
+package org.opennms.netmgt.jmx.impl;
 
-import org.opennms.netmgt.config.collectd.jmx.Attrib;
-import org.opennms.netmgt.config.collectd.jmx.CompAttrib;
-import org.opennms.netmgt.config.collectd.jmx.CompMember;
-import org.opennms.netmgt.config.collectd.jmx.JmxCollection;
-import org.opennms.netmgt.config.collectd.jmx.Mbean;
-import org.opennms.netmgt.jmx.connection.JmxConnectionManager;
-import org.opennms.netmgt.jmx.connection.JmxServerConnectionException;
-import org.opennms.netmgt.jmx.connection.JmxServerConnectionWrapper;
-import org.opennms.netmgt.jmx.connection.connectors.DefaultConnectionManager;
-import org.opennms.netmgt.jmx.samples.JmxAttributeSample;
-import org.opennms.netmgt.jmx.samples.JmxCompositeSample;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import java.util.StringTokenizer;
 
 import javax.management.Attribute;
 import javax.management.AttributeList;
@@ -51,15 +47,23 @@ import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
 import javax.management.ReflectionException;
 import javax.management.openmbean.CompositeData;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-import java.util.StringTokenizer;
+
+import org.opennms.netmgt.config.collectd.jmx.Attrib;
+import org.opennms.netmgt.config.collectd.jmx.CompAttrib;
+import org.opennms.netmgt.config.collectd.jmx.CompMember;
+import org.opennms.netmgt.config.collectd.jmx.JmxCollection;
+import org.opennms.netmgt.config.collectd.jmx.Mbean;
+import org.opennms.netmgt.jmx.JmxCollector;
+import org.opennms.netmgt.jmx.JmxCollectorConfig;
+import org.opennms.netmgt.jmx.JmxSampleProcessor;
+import org.opennms.netmgt.jmx.connection.JmxConnectionManager;
+import org.opennms.netmgt.jmx.connection.JmxServerConnectionException;
+import org.opennms.netmgt.jmx.connection.JmxServerConnectionWrapper;
+import org.opennms.netmgt.jmx.impl.connection.connectors.DefaultConnectionManager;
+import org.opennms.netmgt.jmx.samples.JmxAttributeSample;
+import org.opennms.netmgt.jmx.samples.JmxCompositeSample;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A implementation of the JmxCollector.

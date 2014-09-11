@@ -32,7 +32,7 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.capsd.AbstractPlugin;
 import org.opennms.netmgt.jmx.JmxUtils;
 import org.opennms.netmgt.jmx.connection.JmxServerConnectionWrapper;
-import org.opennms.netmgt.jmx.connection.connectors.DefaultConnectionManager;
+import org.opennms.netmgt.jmx.impl.connection.connectors.DefaultConnectionManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

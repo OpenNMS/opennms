@@ -26,8 +26,8 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.jmx.connection.connectors;
+package org.opennms.netmgt.jmx.impl.connection.connectors;
 
-class Jsr160MBeanServerConnector extends DefaultJmxConnector {
-
+class MX4JMBeanServerConnector extends DefaultJmxConnector {
+	
 }

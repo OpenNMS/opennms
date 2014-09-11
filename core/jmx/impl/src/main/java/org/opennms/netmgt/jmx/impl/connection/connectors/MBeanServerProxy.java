@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.jmx.connection.connectors;
+package org.opennms.netmgt.jmx.impl.connection.connectors;
 
 import javax.management.MBeanServer;
 import java.lang.reflect.InvocationHandler;

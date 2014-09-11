@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.jmx.connection.connectors;
+package org.opennms.netmgt.jmx.impl.connection.connectors;
 
 import org.opennms.netmgt.jmx.connection.JmxServerConnectionWrapper;
 
@@ -35,7 +35,7 @@ import javax.management.MBeanServerConnection;
 
 /**
  * The JBossConnectionWrapper manages the connection to a JBoss server.  The
- * {@link org.opennms.netmgt.jmx.connection.connectors.JBossMBeanServerConnector}
+ * {@link JBossMBeanServerConnector}
  * creates the connection to the server and closes the connection, so the {@link #close()} method doesn't
  * need to do anything.
  */

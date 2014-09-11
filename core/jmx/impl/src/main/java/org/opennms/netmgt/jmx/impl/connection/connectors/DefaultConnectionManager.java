@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.jmx.connection.connectors;
+package org.opennms.netmgt.jmx.impl.connection.connectors;
 
 import org.opennms.netmgt.jmx.connection.JmxConnectionManager;
 import org.opennms.netmgt.jmx.connection.JmxConnectors;

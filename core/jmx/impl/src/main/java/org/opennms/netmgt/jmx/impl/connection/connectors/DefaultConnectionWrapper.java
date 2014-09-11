@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,14 +26,41 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.jmx.connection.connectors;
+package org.opennms.netmgt.jmx.impl.connection.connectors;
+
+
+import org.opennms.netmgt.jmx.connection.JmxServerConnectionWrapper;
 
 import javax.management.MBeanServerConnection;
 import javax.management.remote.JMXConnector;
+import java.io.IOException;
+import java.util.Objects;
 
-class Jsr160ConnectionWrapper extends DefaultConnectionWrapper {
-    
-    public Jsr160ConnectionWrapper(JMXConnector connector, MBeanServerConnection connection) {
-        super(connector, connection);
+class DefaultConnectionWrapper implements JmxServerConnectionWrapper {
+
+    private JMXConnector connector;
+    private MBeanServerConnection connection;
+
+    protected DefaultConnectionWrapper(JMXConnector connector, MBeanServerConnection connection) {
+        this.connector = Objects.requireNonNull(connector, "connector must not be null");
+        this.connection = Objects.requireNonNull(connection, "connection must not be null");
     }
+
+    @Override
+    public MBeanServerConnection getMBeanServerConnection() {
+        return connection;
+    }
+
+    @Override
+    public void close() {
+        if (connector != null) {
+            try {
+                connector.close();
+            } catch (IOException e) {
+
+            }
+        }
+        connection = null;
+    }
+
 }
