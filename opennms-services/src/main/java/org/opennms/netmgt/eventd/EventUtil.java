@@ -30,6 +30,7 @@ package org.opennms.netmgt.eventd;
 
 import java.sql.SQLException;
 import java.util.Map;
+
 import org.opennms.netmgt.xml.event.Event;
 
 /**
@@ -41,6 +42,7 @@ import org.opennms.netmgt.xml.event.Event;
  * @author <A HREF="mailto:weave@oculan.com">Brain Weaver </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
+
 public interface EventUtil {
 
 	/**
@@ -82,6 +84,8 @@ public interface EventUtil {
      */
     String getAssetFieldValue(String parm, long nodeId);
 
+	String getHardwareFieldValue(String parm, long nodeId);
+
 	String expandParms(String string, Event event);
 	
 	String expandParms(String inp, Event event, Map<String, Map<String, String>> decode);
@@ -90,6 +94,6 @@ public interface EventUtil {
 
 	void expandMapValues(Map<String, String> parmMap, Event event);
 
-	String getValueOfParm(String tagUei, Event m_svcLostEvent);	
+	String getValueOfParm(String tagUei, Event m_svcLostEvent);
 
 }

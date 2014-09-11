@@ -89,7 +89,7 @@ public class AssetRecordResource extends OnmsRestService {
         try {
             OnmsNode node = m_nodeDao.get(nodeCriteria);
             if (node == null) {
-                throw getException(Status.BAD_REQUEST, "getCategories: Can't find node " + nodeCriteria);
+                throw getException(Status.BAD_REQUEST, "getAssetRecord: Can't find node " + nodeCriteria);
             }
             return getAssetRecord(node);
         } finally {
