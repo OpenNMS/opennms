@@ -68,4 +68,9 @@ public class EventUtilDaoImpl extends AbstractEventUtil {
     public String getAssetFieldValue(String parm, long nodeId) {
         return assetRecordDao.findByNodeId((int)nodeId).getNode().getLabel();
     }
+
+    @Override
+    public String getHardwareFieldValue(String parm, long nodeId) {
+	return "Unknown-Not-Implemented-Yet"; // FIXME
+    }
 }

@@ -260,6 +260,8 @@ public abstract class JaxbUtils {
 
         LOG.trace("namespace filter for class {}: {}", clazz, filter);
         final XMLReader xmlReader = XMLReaderFactory.createXMLReader();
+        xmlReader.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+
         filter.setParent(xmlReader);
         return filter;
     }
