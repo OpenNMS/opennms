@@ -44,6 +44,7 @@ public class LinkStatusToggleOperation extends AbstractCheckedOperation {
     private EdgeStatusProvider m_llpdStatusProvider;
     private EdgeStatusProvider m_ospfLinkStatusProvider;
     private EdgeStatusProvider m_isisLinkStatusProvider;
+    private EdgeStatusProvider m_bridgeLinkStatusProvider;
     private List<EdgeStatusProvider> m_providers;
     //TODO: add functionality to check bundle context when bundle is deregistered
     //private BundleContext m_bundleContext;
@@ -53,6 +54,7 @@ public class LinkStatusToggleOperation extends AbstractCheckedOperation {
         m_providers.add(m_llpdStatusProvider);
         m_providers.add(m_ospfLinkStatusProvider);
         m_providers.add(m_isisLinkStatusProvider);
+        m_providers.add(m_bridgeLinkStatusProvider);
     }
 
     @Override
@@ -125,5 +127,9 @@ public class LinkStatusToggleOperation extends AbstractCheckedOperation {
 
     public void setIsisLinkStatusProvider(EdgeStatusProvider isisLinkStatusProvider) {
         m_isisLinkStatusProvider = isisLinkStatusProvider;
+    }
+
+    public void setBridgeLinkStatusProvider(EdgeStatusProvider bridgeLinkStatusProvider) {
+        m_bridgeLinkStatusProvider = bridgeLinkStatusProvider;
     }
 }

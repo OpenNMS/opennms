@@ -56,7 +56,7 @@ public class BridgeBridgeLinkDaoHibernate extends AbstractDaoHibernate<BridgeBri
 
 	@Override
 	public List<BridgeBridgeLink> findByDesignatedNodeId(Integer id) {
-		return find("from BridgeBridgeLink rec where rec.designatednode.id = ?", id);
+		return find("from BridgeBridgeLink rec where rec.designatedNode.id = ?", id);
 	}
 
 	@Override

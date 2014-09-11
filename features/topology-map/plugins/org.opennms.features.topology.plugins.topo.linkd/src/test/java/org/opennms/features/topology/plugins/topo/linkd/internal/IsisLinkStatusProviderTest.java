@@ -86,7 +86,7 @@ public class IsisLinkStatusProviderTest {
     }
 
     @Test
-    public void testGetLldpLinkStatus() {
+    public void testGetIsisLinkStatus() {
 
         EasyMock.expect(
                 m_alarmDao.findMatching(EasyMock.anyObject(org.opennms.core.criteria.Criteria.class))).andReturn(createAlarm());
@@ -105,7 +105,7 @@ public class IsisLinkStatusProviderTest {
     }
 
     @Test
-    public void testGetLldpLinkStatusDown(){
+    public void testGetIsisLinkStatusDown(){
         EasyMock.expect(
                 m_alarmDao.findMatching(EasyMock.anyObject(org.opennms.core.criteria.Criteria.class))).andReturn(createDownAlarm());
         EasyMock.expect(m_isIsLinkDao.findMatching(EasyMock.<org.opennms.core.criteria.Criteria>anyObject())).andReturn(createIsIsLinks());
@@ -119,16 +119,6 @@ public class IsisLinkStatusProviderTest {
         assertEquals(edges.get(0), new ArrayList<EdgeRef>(statusMap.keySet()).get(0));
         Status status = statusMap.get(edges.get(0));
         assertEquals("down", status.computeStatus());
-    }
-
-    private List<EdgeAlarmStatusSummary> createDownLldpStatusSummary() {
-        EdgeAlarmStatusSummary summary = new EdgeAlarmStatusSummary(1,2, EventConstants.TOPOLOGY_LINK_DOWN_EVENT_UEI);
-        return Arrays.asList(summary);
-    }
-
-    private List<EdgeAlarmStatusSummary> createLldpLinkStatusSummary() {
-        EdgeAlarmStatusSummary summary = new EdgeAlarmStatusSummary(1,2, EventConstants.TOPOLOGY_LINK_UP_EVENT_UEI);
-        return Arrays.asList(summary);
     }
 
     private List<EdgeRef> createEdges() {

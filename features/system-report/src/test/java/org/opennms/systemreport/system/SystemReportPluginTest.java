@@ -31,28 +31,22 @@ package org.opennms.systemreport.system;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Map;
-import java.util.TreeMap;
-
-import javax.annotation.Resource;
 
 import org.junit.Test;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.systemreport.SystemReportPlugin;
+import org.springframework.core.io.ByteArrayResource;
 
-public class JavaReportPluginTest extends ReportPluginTestCase {
-    @Resource(name="javaReportPlugin")
-    private SystemReportPlugin m_javaReportPlugin;
+public class SystemReportPluginTest {
+    private SystemReportPlugin m_javaReportPlugin = new JavaReportPlugin();
+    private SystemReportPlugin m_osReportPlugin = new OSReportPlugin();
 
-    @Resource(name="osReportPlugin")
-    private SystemReportPlugin m_osReportPlugin;
-
-    public JavaReportPluginTest() {
+    public SystemReportPluginTest() {
         MockLogAppender.setupLogging(false, "ERROR");
     }
 
     @Test
     public void testJavaReportPlugin() {
-        assertTrue(listContains(JavaReportPlugin.class));
         final Map<String, org.springframework.core.io.Resource> entries = m_javaReportPlugin.getEntries();
         final float classVer = Float.valueOf(getResourceText(entries.get("Class Version")));
         assertTrue(classVer >= 49.0);
@@ -60,10 +54,16 @@ public class JavaReportPluginTest extends ReportPluginTestCase {
 
     @Test
     public void testOSPlugin() {
-        assertTrue(listContains(OSReportPlugin.class));
         final Map<String, org.springframework.core.io.Resource> entries = m_osReportPlugin.getEntries();
         assertTrue(entries.containsKey("Architecture"));
         assertTrue(entries.containsKey("Name"));
         assertTrue(entries.containsKey("Distribution"));
+    }
+    
+    private String getResourceText(final org.springframework.core.io.Resource r) {
+        if (r instanceof ByteArrayResource) {
+            return new String(((ByteArrayResource) r).getByteArray());
+        }
+        return "Not a string resource.";
     }
 }

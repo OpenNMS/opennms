@@ -147,6 +147,7 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
                 <map>
                     <entry key="default" value="test" />
                     <entry key="group" value="cloud"/>
+                    <entry key="cloud" value="cloud"/>
                     
                     <!--  TODO: move these into VMWare ToPr -->
                     <entry key="NETWORK_ICON" value="vmware-network"/>
