@@ -202,6 +202,7 @@ public abstract class JaxbUtils {
 		}
 
 		final XMLReader xmlReader = XMLReaderFactory.createXMLReader();
+		xmlReader.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
 		filter.setParent(xmlReader);
 		return filter;
 	}
