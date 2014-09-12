@@ -170,7 +170,6 @@ install: build
 	
 	# XML
 	install -d -m 755 debian/opennms-plugin-protocol-xml/var/lib/opennms/etc-pristine/xml-datacollection
-	install -d -m 755 debian/opennms-plugin-protocol-xml/var/lib/opennms/etc-pristine/examples/3gpp-juniper/{datacollection,xml-datacollection,snmp-graph.properties.d}
 	mv debian/temp/lib/org.opennms.protocols.xml-*.jar                                         debian/opennms-plugin-protocol-xml/usr/share/java/opennms/
 	mv debian/temp/etc/xml-datacollection-config.xml                                           debian/opennms-plugin-protocol-xml/etc/opennms/
 	mv debian/temp/etc/examples/3gpp-juniper/xml-datacollection-config.xml                     debian/opennms-plugin-protocol-xml/etc/opennms/examples/3gpp-juniper/
@@ -179,10 +178,6 @@ install: build
 	mv debian/temp/etc/examples/3gpp-juniper/snmp-graph.properties.d/3gpp*                     debian/opennms-plugin-protocol-xml/etc/opennms/examples/3gpp-juniper/snmp-graph.properties.d/
 	mv debian/temp/contrib/xml-collector/3gpp*                                                 debian/opennms-plugin-protocol-xml/usr/share/opennms/contrib/
 	mv debian/opennms-common/var/lib/opennms/etc-pristine/xml-datacollection-config.xml        debian/opennms-plugin-protocol-xml/var/lib/opennms/etc-pristine/
-	mv debian/opennms-common/var/lib/opennms/etc-pristine/examples/3gpp-juniper/xml-datacollection-config.xml        debian/opennms-plugin-protocol-xml/var/lib/opennms/etc-pristine/examples/3gpp-juniper/
-	mv debian/opennms-common/var/lib/opennms/etc-pristine/examples/3gpp-juniper/datacollection/3gpp*                 debian/opennms-plugin-protocol-xml/var/lib/opennms/etc-pristine/datacollection/examples/3gpp-juniper/
-	mv debian/opennms-common/var/lib/opennms/etc-pristine/examples/3gpp-juniper/xml-datacollection/3gpp*             debian/opennms-plugin-protocol-xml/var/lib/opennms/etc-pristine/xml-datacollection/examples/3gpp-juniper/
-	mv debian/opennms-common/var/lib/opennms/etc-pristine/examples/3gpp-juniper/snmp-graph.properties.d/3gpp*        debian/opennms-plugin-protocol-xml/var/lib/opennms/etc-pristine/snmp-graph.properties.d/examples/3gpp-juniper/
 	
 	# VTD-XML
 	install -d -m 755 debian/opennms-plugin-collector-vtdxml-handler/usr/share/java/opennms
