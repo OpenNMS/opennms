@@ -115,8 +115,9 @@ public class SnmpObjId implements Comparable<SnmpObjId> {
         while (tokenizer.hasMoreTokens()) {
             try {
                 String tok = tokenizer.nextToken();
-                ids[index] = Integer.parseInt(tok);
-                if (ids[index] < 0)
+                long value = Long.parseLong(tok);
+                ids[index] = (int)value;
+                if (value < 0)
                     throw new IllegalArgumentException("String "+oid+" could not be converted to a SnmpObjId. It has a negative for subId "+index);
                 index++;
             } catch(NumberFormatException e) {

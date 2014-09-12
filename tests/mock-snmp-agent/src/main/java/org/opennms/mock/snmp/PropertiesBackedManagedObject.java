@@ -320,6 +320,13 @@ public class PropertiesBackedManagedObject implements ManagedObject, MockSnmpMOL
 	 */
 	private Variable getVariableFromValueString(String oidStr, String valStr) {
 	    Variable newVar;
+	    
+	    if (valStr.startsWith("Wrong Type")) {
+	        String newVal = valStr.replaceFirst("Wrong Type \\(should be .*\\): ", "");
+	        s_log.error("Bad Mib walk has value: '"+ valStr + "' using '"+newVal+"'");
+	        valStr = newVal;
+	    }
+
 	
 	    if ("\"\"".equals(valStr)) {
 	        newVar = new Null();
