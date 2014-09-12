@@ -139,7 +139,11 @@ public class SnmpObjId implements Comparable<SnmpObjId> {
 
     @Override
     public int hashCode() {
-        return 0;
+        int h = 31;
+        for(int i = 0; i < m_ids.length; i++) {
+            h = h + 37*m_ids[i];
+        }
+        return h;
     }
 
     @Override
@@ -149,7 +153,13 @@ public class SnmpObjId implements Comparable<SnmpObjId> {
             if (i > 0 || addPrefixDotInToString()) {
                 buf.append('.');  
             }
-            buf.append(m_ids[i]);
+            if (m_ids[i] < 0) {
+                // represents an unsigned int
+                long subid = 0xffffffffL & ((long)m_ids[i]);
+                buf.append(subid);
+            } else {
+                buf.append(m_ids[i]);
+            }
         }
         return buf.toString();
     }
