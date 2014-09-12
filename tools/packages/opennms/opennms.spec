@@ -841,13 +841,15 @@ rm -rf $RPM_BUILD_ROOT
 %files plugin-protocol-xml
 %defattr(664 root root 775)
 %config(noreplace) %{instprefix}/etc/xml-*.xml
-%config(noreplace) %{instprefix}/etc/*datacollection*/3gpp*
-%config(noreplace) %{instprefix}/etc/snmp-graph.properties.d/3gpp*
+%config(noreplace) %{instprefix}/etc/examples/3gpp-juniper/xml-*.xml
+%config(noreplace) %{instprefix}/etc/examples/3gpp-juniper/*datacollection*/3gpp*
+%config(noreplace) %{instprefix}/etc/examples/3gpp-juniper/snmp-graph.properties.d/3gpp*
 %{instprefix}/lib/org.opennms.protocols.xml-*.jar
-%attr(755,root,root) %{instprefix}/contrib/xml-collector/*.pl
+%attr(755,root,root) %{instprefix}/contrib/xml-collector/3gpp*
 %{sharedir}/etc-pristine/xml-*.xml
-%{sharedir}/etc-pristine/*datacollection*/3gpp*
-%{sharedir}/etc-pristine/snmp-graph.properties.d/3gpp*
+%{sharedir}/etc-pristine/examples/3gpp-juniper/xml-*.xml
+%{sharedir}/etc-pristine/examples/3gpp-juniper/*datacollection*/3gpp*
+%{sharedir}/etc-pristine/examples/3gpp-juniper/snmp-graph.properties.d/3gpp*
 
 %files plugin-protocol-xmp
 %defattr(664 root root 775)
