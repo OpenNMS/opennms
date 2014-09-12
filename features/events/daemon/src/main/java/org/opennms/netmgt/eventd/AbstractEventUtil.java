@@ -970,7 +970,7 @@ public abstract class AbstractEventUtil implements EventUtil {
 	 * @throws SQLException
 	 *             if database error encountered
 	 */
-	public abstract String getNodeLabel(long nodeId) throws SQLException;
+	protected abstract String getNodeLabel(long nodeId) throws SQLException;
 
 	/**
 	 * Retrieve ifAlias from the snmpinterface table of the database given a particular
@@ -986,7 +986,7 @@ public abstract class AbstractEventUtil implements EventUtil {
 	 * @throws SQLException
 	 *             if database error encountered
 	 */
-	public abstract String getIfAlias(long nodeId, String ipaddr) throws SQLException;
+	protected abstract String getIfAlias(long nodeId, String ipaddr) throws SQLException;
 
 	/**
 	 * Helper method.
@@ -995,5 +995,5 @@ public abstract class AbstractEventUtil implements EventUtil {
 	 * @param event
 	 * @return The value of an asset field based on the nodeid of the event 
 	 */
-	public abstract String getAssetFieldValue(String parm, long nodeId);
+	protected abstract String getAssetFieldValue(String parm, long nodeId);
 }

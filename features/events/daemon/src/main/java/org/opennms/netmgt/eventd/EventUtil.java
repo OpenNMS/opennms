@@ -43,45 +43,6 @@ import org.opennms.netmgt.xml.event.Event;
  */
 public interface EventUtil {
 
-	/**
-	 * Retrieve nodeLabel from the node table of the database given a particular
-	 * nodeId.
-	 * 
-	 * @param nodeId
-	 *            Node identifier
-	 * 
-	 * @return nodeLabel Retreived nodeLabel
-	 * 
-	 * @throws SQLException
-	 *             if database error encountered
-	 */
-	String getNodeLabel(long nodeId) throws SQLException;
-
-	/**
-	 * Retrieve ifAlias from the snmpinterface table of the database given a particular
-	 * nodeId and ipAddr.
-	 *
-	 * @param nodeId
-	 *            Node identifier
-	 * @param ipAddr
-	 *            Interface IP address
-	 *
-	 * @return ifAlias Retreived ifAlias
-	 *
-	 * @throws SQLException
-	 *             if database error encountered
-	 */
-	String getIfAlias(long nodeId, String ipaddr) throws SQLException;
-
-    /**
-     * Helper method.
-     * 
-     * @param parm
-     * @param event
-     * @return The value of an asset field based on the nodeid of the event 
-     */
-    String getAssetFieldValue(String parm, long nodeId);
-
 	String expandParms(String string, Event event);
 	
 	String expandParms(String inp, Event event, Map<String, Map<String, String>> decode);

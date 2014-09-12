@@ -57,12 +57,12 @@ public class EventUtilDaoImpl extends AbstractEventUtil {
 	private IpInterfaceDao ipInterfaceDao;
 	
     @Override
-    public String getNodeLabel(long nodeId) throws SQLException {
+    protected String getNodeLabel(long nodeId) throws SQLException {
         return nodeDao.getLabelForId(Integer.valueOf((int)nodeId));
     }
 
     @Override
-    public String getIfAlias(long nodeId, String ipaddr) throws SQLException {
+    protected String getIfAlias(long nodeId, String ipaddr) throws SQLException {
         OnmsIpInterface iface = ipInterfaceDao.findByNodeIdAndIpAddress((int)nodeId, ipaddr);
         if (iface != null && iface.getSnmpInterface() != null) {
             return iface.getSnmpInterface().getIfAlias();
@@ -72,7 +72,7 @@ public class EventUtilDaoImpl extends AbstractEventUtil {
     }
 
     @Override
-    public String getAssetFieldValue(String parm, long nodeId) {
+    protected String getAssetFieldValue(String parm, long nodeId) {
         OnmsAssetRecord asset = assetRecordDao.findByNodeId((int)nodeId);
         if (asset != null && asset.getNode() != null) {
             return asset.getNode().getLabel();

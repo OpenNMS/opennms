@@ -69,7 +69,7 @@ public final class EventUtilJdbcImpl extends AbstractEventUtil {
 	 * @throws SQLException
 	 *             if database error encountered
 	 */
-	public String getNodeLabel(long nodeId) throws SQLException {
+    protected String getNodeLabel(long nodeId) throws SQLException {
 
 		String nodeLabel = null;
 		java.sql.Connection dbConn = null;
@@ -127,7 +127,7 @@ public final class EventUtilJdbcImpl extends AbstractEventUtil {
 	 * @throws SQLException
 	 *             if database error encountered
 	 */
-	public String getIfAlias(long nodeId, String ipaddr) throws SQLException {
+    protected String getIfAlias(long nodeId, String ipaddr) throws SQLException {
 		
 		String ifAlias = null;
 		java.sql.Connection dbConn = null;
@@ -174,7 +174,7 @@ public final class EventUtilJdbcImpl extends AbstractEventUtil {
      * @param event
      * @return The value of an asset field based on the nodeid of the event 
      */
-    public String getAssetFieldValue(String parm, long nodeId) {
+    protected String getAssetFieldValue(String parm, long nodeId) {
         String retParmVal = null;
         int end = parm.lastIndexOf(ASSET_END_SUFFIX);
         // The "asset[" start of this parameter is 6 characters long
