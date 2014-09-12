@@ -153,15 +153,14 @@ public class SnmpObjId implements Comparable<SnmpObjId> {
             if (i > 0 || addPrefixDotInToString()) {
                 buf.append('.');  
             }
-            if (m_ids[i] < 0) {
-                // represents an unsigned int
-                long subid = 0xffffffffL & ((long)m_ids[i]);
-                buf.append(subid);
-            } else {
-                buf.append(m_ids[i]);
-            }
+            // we use toLong to account for unsigned ints > Integer.MAX_INT
+            buf.append(toLong(m_ids[i]));
         }
         return buf.toString();
+    }
+
+    private long toLong(int subid) {
+        return subid >= 0 ? subid : 0xffffffffL & ((long)subid);
     }
 
     protected boolean addPrefixDotInToString() {
@@ -177,16 +176,18 @@ public class SnmpObjId implements Comparable<SnmpObjId> {
         // which is the entire length of one or both oids
         int minLen = Math.min(length(), other.length());
         for(int i = 0; i < minLen; i++) {
-            int diff = m_ids[i] - other.m_ids[i];
+            long diff = toLong(m_ids[i]) - toLong(other.m_ids[i]);
             // the first one that is not equal indicates which is bigger
-            if (diff != 0)
-                return diff;
+            if (diff != 0) {
+                return diff > 0 ? 1 : -1;
+            }
         }
         
         // if they get to hear then both are identifical for their common length
         // so which ever is longer is then greater
         return length() - other.length();
     }
+    
 
     public SnmpObjId append(String inst) {
         return append(convertStringToInts(inst));

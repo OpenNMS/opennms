@@ -80,7 +80,11 @@ public class SnmpObjIdTest extends TestCase {
         String oidStr2 = ".1.3.5." + subid2 + ".9";
         SnmpObjId oid2 = SnmpObjId.get(oidStr2);
         
+        SnmpObjId oid3 = SnmpObjId.get(".1.3.5.7.9");
+        
         assertTrue(oid.compareTo(oid2) < 0);
+        
+        assertTrue(oid3.compareTo(oid) < 0);
 
     }
 
