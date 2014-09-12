@@ -133,7 +133,7 @@ public class LinkdNms10205aOspfTest extends LinkdNms10205aNetworkBuilder impleme
             @JUnitSnmpAgent(host=J6350_42_IP, port=161, resource="classpath:linkd/nms10205/"+"J6350-42_"+J6350_42_IP+".txt"),
             @JUnitSnmpAgent(host=SRX_100_IP, port=161, resource="classpath:linkd/nms10205/"+"SRX-100_"+SRX_100_IP+".txt"),
             @JUnitSnmpAgent(host=SSG550_IP, port=161, resource="classpath:linkd/nms10205/"+SSG550_NAME+"_"+SSG550_IP+".txt")
-    })
+    }, forceMockStrategy=true)
     public void testNetwork10205Links() throws Exception {
         m_nodeDao.save(getMumbai());
         m_nodeDao.save(getChennai());
