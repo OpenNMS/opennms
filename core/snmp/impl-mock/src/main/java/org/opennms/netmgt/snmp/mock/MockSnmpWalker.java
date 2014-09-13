@@ -110,7 +110,7 @@ public class MockSnmpWalker extends SnmpWalker {
         m_snmpVersion = snmpVersion;
         m_container = container;
         m_executor = Executors.newSingleThreadExecutor(
-            new LogPreservingThreadFactory(getClass().getSimpleName(), 1, false)
+            new LogPreservingThreadFactory(getClass().getSimpleName(), 1)
         );
     }
 
