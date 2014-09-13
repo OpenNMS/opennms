@@ -116,7 +116,7 @@ class SyslogReceiver implements Runnable {
             100L,
             TimeUnit.MILLISECONDS,
             new LinkedBlockingQueue<Runnable>(),
-            new LogPreservingThreadFactory(getClass().getSimpleName(), Integer.MAX_VALUE, false)
+            new LogPreservingThreadFactory(getClass().getSimpleName(), Integer.MAX_VALUE)
         ));
 
         m_executors.add(new ThreadPoolExecutor(
@@ -125,7 +125,7 @@ class SyslogReceiver implements Runnable {
             100L,
             TimeUnit.MILLISECONDS,
             new LinkedBlockingQueue<Runnable>(),
-            new LogPreservingThreadFactory(getClass().getSimpleName(), Integer.MAX_VALUE, false)
+            new LogPreservingThreadFactory(getClass().getSimpleName(), Integer.MAX_VALUE)
         ));
 }
 

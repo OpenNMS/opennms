@@ -71,7 +71,7 @@ public class MobileMsgSequenceBuilderTest {
         m_session = new MobileSequenceSession(m_tracker);
         
         m_coordinator = new DefaultTaskCoordinator("MobileMsgSequenceBuilderTest", Executors.newSingleThreadExecutor(
-            new LogPreservingThreadFactory("MobileMsgSequenceBuilderTest", 1, false)
+            new LogPreservingThreadFactory("MobileMsgSequenceBuilderTest", 1)
         ));
 
         System.err.println("=== STARTING TEST ===");

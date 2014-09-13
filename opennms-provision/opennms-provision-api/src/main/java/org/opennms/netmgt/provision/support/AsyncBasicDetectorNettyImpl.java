@@ -48,6 +48,7 @@ import org.jboss.netty.channel.ChannelPipelineFactory;
 import org.jboss.netty.channel.Channels;
 import org.jboss.netty.channel.socket.nio.NioClientSocketChannelFactory;
 import org.jboss.netty.handler.ssl.SslHandler;
+import org.opennms.core.concurrent.LogPreservingThreadFactory;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.provision.DetectFuture;
 import org.opennms.netmgt.provision.support.DetectFutureNettyImpl.ServiceDetectionFailedException;
@@ -68,14 +69,12 @@ public abstract class AsyncBasicDetectorNettyImpl<Request, Response> extends Asy
     
     private static final ChannelFactory m_factory = new NioClientSocketChannelFactory(
         Executors.newFixedThreadPool(
-          Runtime.getRuntime().availableProcessors()
-          // TODO: Should be uncommented when merging to master
-          //new LogPreservingThreadFactory(getClass().getSimpleName() + ".boss", Integer.MAX_VALUE, false)
+          Runtime.getRuntime().availableProcessors(),
+          new LogPreservingThreadFactory("AsyncBasicDetectorNettyImpl.boss", Integer.MAX_VALUE)
         ),
         Executors.newFixedThreadPool(
-          Runtime.getRuntime().availableProcessors()
-          // TODO: Should be uncommented when merging to master
-          //new LogPreservingThreadFactory(getClass().getSimpleName() + ".worker", Integer.MAX_VALUE, false)
+          Runtime.getRuntime().availableProcessors(),
+          new LogPreservingThreadFactory("AsyncBasicDetectorNettyImpl.worker", Integer.MAX_VALUE)
         )
     ); 
 

@@ -221,8 +221,6 @@ public class DataCollectionConfigParser {
             Thread thread = new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    final Map<String,String> mdc = Logging.getCopyOfContextMap();
-                    Logging.putPrefix("collectd");
                     try {
                         LOG.debug("parseExternalResources: parsing {}", file);
                         DatacollectionGroup group = JaxbUtils.unmarshal(DatacollectionGroup.class, new FileSystemResource(file));
@@ -234,7 +232,6 @@ public class DataCollectionConfigParser {
                         throwException("Can't parse XML file " + file + "; nested exception: " + e.getMessage(), e);
                     } finally {
                         latch.countDown();
-                        Logging.setContextMap(mdc);
                     }
                 }
             }, "DataCollectionConfigParser-Thread-" + i++);
