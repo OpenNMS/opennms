@@ -76,10 +76,6 @@ import java.util.*;
 
 @SuppressWarnings("serial")
 @Theme("topo_default")
-@JavaScript({
-	"CFInstall.min.js",
-	"chromeFrameCheck.js"
-})
 @PreserveOnRefresh
 public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpdateListener, ContextMenuHandler, WidgetUpdateListener, WidgetContext, UriFragmentChangedListener, GraphContainer.ChangeListener, MapViewManagerListener, VertexUpdateListener, SelectionListener, VerticesUpdateManager.VerticesUpdateListener {
 
