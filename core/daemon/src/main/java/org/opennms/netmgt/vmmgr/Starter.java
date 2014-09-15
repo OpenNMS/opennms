@@ -257,7 +257,15 @@ public class Starter {
                         "An error occurred while attempting to start the \"" +
                                 name + "\" service (class " + className + ").  "
                                 + "Shutting down and exiting.";
-                LOG.error(message, result.getThrowable());
+
+                // DON'T LOG THE EXCEPTION HERE WITH LOG4J2
+                // There is a bug in log4j2 where it is trying to classload classes out of the exception traces and
+                // it fails to load the sun.reflect.misc.Trampoline class used by JMX for reflection.
+                //
+                // @see http://issues.opennms.org/browse/NMS-6784
+                //
+                //LOG.error(message, result.getThrowable());
+
                 System.err.println(message);
                 result.getThrowable().printStackTrace();
 
