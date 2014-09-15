@@ -43,7 +43,6 @@ import java.util.Objects;
 
 @XmlRootElement(name="attrib")
 @XmlAccessorType(XmlAccessType.FIELD)
-// TODO mvr remove fishy methods
 @SuppressWarnings("all")
 public class Attrib implements java.io.Serializable {
 

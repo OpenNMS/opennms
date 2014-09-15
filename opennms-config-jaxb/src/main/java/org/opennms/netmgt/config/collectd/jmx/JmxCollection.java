@@ -42,7 +42,6 @@ import java.util.Objects;
 @XmlRootElement(name="jmx-collection")
 @XmlAccessorType(XmlAccessType.FIELD)
 @SuppressWarnings("all")
-// TODO mvr remove fishy methods
 public class JmxCollection implements java.io.Serializable {
 
     @XmlAttribute(name="name", required=true)
