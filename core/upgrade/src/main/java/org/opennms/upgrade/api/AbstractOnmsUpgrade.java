@@ -32,11 +32,8 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.sql.SQLFeatureNotSupportedException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -49,6 +46,7 @@ import javax.sql.DataSource;
 
 import org.apache.commons.io.IOUtils;
 import org.opennms.core.db.DataSourceFactory;
+import org.opennms.core.db.install.SimpleDataSource;
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.xml.CastorUtils;
 import org.opennms.netmgt.config.opennmsDataSources.DataSourceConfiguration;
@@ -78,6 +76,7 @@ public abstract class AbstractOnmsUpgrade implements OnmsUpgrade {
     /** The OpenNMS version. */
     private String onmsVersion;
 
+    /** The Data Source. */
     private DataSource dataSource;
 
     /**
@@ -278,28 +277,13 @@ public abstract class AbstractOnmsUpgrade implements OnmsUpgrade {
             }
             for (JdbcDataSource jds : dsc.getJdbcDataSourceCollection()) {
                 if (jds.getName().equals("opennms")) {
-                    log("Connecting to %s\n", jds.getUrl());
-                    final String url = jds.getUrl();
-                    final String user = jds.getUserName();
-                    final String pwd = jds.getPassword();
-                    DataSourceFactory.setInstance(new DataSource() {
-                        public PrintWriter getLogWriter() throws SQLException { return null; }
-                        public int getLoginTimeout() throws SQLException { return 0; }
-                        public void setLogWriter(PrintWriter pw) throws SQLException {}
-                        public void setLoginTimeout(int tm) throws SQLException {}
-                        public boolean isWrapperFor(Class<?> arg0) throws SQLException { return false; }
-                        public <T> T unwrap(Class<T> arg0) throws SQLException { return null; }
-                        public Connection getConnection(String arg0, String arg1) throws SQLException { return null; }
-                        public Connection getConnection() throws SQLException {
-                            return DriverManager.getConnection(url,user,pwd);
-                        }
-                        public java.util.logging.Logger getParentLogger() throws SQLFeatureNotSupportedException {
-                            return null;
-                        }
-                    });
+                    dataSource = new SimpleDataSource(jds);
+                    DataSourceFactory.setInstance(dataSource);
                 }
             }
-            dataSource = DataSourceFactory.getInstance();
+            if (dataSource == null) {
+                throw new OnmsUpgradeException("Can't find theOpenNMS Database settings.");
+            }
         } catch (Exception e) {
             throw new OnmsUpgradeException("Can't connect to OpenNMS Database because " + e.getMessage(), e);
         }
