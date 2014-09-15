@@ -285,9 +285,6 @@ public class PollableSnmpInterface implements ReadyRunnable {
      */
     @Override
     public void run() {
-        final Map<String,String> mdc = Logging.getCopyOfContextMap();
-        try {
-            Logging.putPrefix("snmp-poller");
             if (getParent().polling()) {
                 LOG.info("run: polling SNMP interfaces on package/interface {}/{} on primary address: {}", getParent().getPackageName(), getName(), getParent().getIpaddress());
                 if (m_snmpinterfaces == null || m_snmpinterfaces.isEmpty()) {
@@ -310,9 +307,6 @@ public class PollableSnmpInterface implements ReadyRunnable {
             }  else {
                 LOG.info("not polling: {}", getParent().getIpaddress());
             } // End if polling
-        } finally {
-            Logging.setContextMap(mdc);
-        }
     } //end Run method
         
     private void doPoll(SnmpPollInterfaceMonitor pollMonitor, List<SnmpMinimalPollInterface> mifaces) {

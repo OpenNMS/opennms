@@ -496,7 +496,7 @@ public final class RTCManager extends AbstractServiceDaemon {
 
         m_updaterPool = Executors.newFixedThreadPool(
             rFactory.getUpdaters(),
-            new LogPreservingThreadFactory(getClass().getSimpleName(), rFactory.getUpdaters(), false)
+            new LogPreservingThreadFactory(getClass().getSimpleName(), rFactory.getUpdaters())
         );
 
         if (log().isDebugEnabled())
