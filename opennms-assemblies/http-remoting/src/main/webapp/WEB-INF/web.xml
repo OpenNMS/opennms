@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<web-app id="opennms-remoting" version="2.4"
-                 xmlns="http://java.sun.com/xml/ns/j2ee"
-                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                 xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
+<web-app id="opennms-remoting" version="2.5"
+  xmlns="http://java.sun.com/xml/ns/j2ee"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://java.sun.com/xml/ns/javaee  http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+>
 
   <display-name>opennms-remoting</display-name>
 
@@ -19,6 +20,7 @@
         /WEB-INF/applicationContext-common.xml
         /WEB-INF/applicationContext-spring-security.xml
         /WEB-INF/applicationContext-svclayer.xml
+        /WEB-INF/applicationContext-serviceRegistryRemoting.xml
     </param-value>
   </context-param>
 
@@ -42,7 +44,7 @@
 
   <!-- servlet for HTTP remoting -->
   <servlet>
-    <servlet-name>pollerBackEnd</servlet-name>
+    <servlet-name>httpRemotingServlet</servlet-name>
     <servlet-class>org.springframework.web.context.support.HttpRequestHandlerServlet</servlet-class>
     <load-on-startup>1</load-on-startup>
   </servlet>
@@ -54,8 +56,10 @@
   </servlet>
 
   <servlet-mapping>
-    <servlet-name>pollerBackEnd</servlet-name>
+    <servlet-name>httpRemotingServlet</servlet-name>
+    <!-- Expose the servlet on all remoting URIs -->
     <url-pattern>/pollerBackEnd</url-pattern>
+    <url-pattern>/serviceRegistry</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
     <servlet-name>JnlpDownloadServlet</servlet-name>
