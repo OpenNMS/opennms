@@ -76,7 +76,6 @@ public final class JmxUtils {
             return serviceName.toLowerCase();
         }
         final String port = map.get(ParameterName.PORT.toString());
-        Objects.requireNonNull(port, "Map must contain a value for key 'port'.");
         return port;
     }
 

@@ -271,7 +271,7 @@ public class JMXCollectorTest {
         dataSourceMap.put(mBeansObjectName + "|LastGcInfo", new JMXDataSource());
 
         jmxNodeInfo.setDsMap(dataSourceMap);
-        CollectionSet collectionSet = jmxCollector.collect(collectionAgent, null, null);
+        CollectionSet collectionSet = jmxCollector.collect(collectionAgent, null, new HashMap<String, Object>());
         assertEquals("Collection of one Jvm default value failed", 1, collectionSet.getStatus());
     }
 
@@ -285,7 +285,7 @@ public class JMXCollectorTest {
         collectionAgent.setAttribute("collectionName", collectionName);
 
         //start collection
-        final CollectionSet collectionSet = jmxCollector.collect(collectionAgent, null, null);
+        final CollectionSet collectionSet = jmxCollector.collect(collectionAgent, null, new HashMap<String, Object>());
         final SingleResourceCollectionSet jmxCollectionSet = (SingleResourceCollectionSet) collectionSet;
         final JMXCollectionResource jmxCollectionResource = (JMXCollectionResource)jmxCollectionSet.getCollectionResource();
 

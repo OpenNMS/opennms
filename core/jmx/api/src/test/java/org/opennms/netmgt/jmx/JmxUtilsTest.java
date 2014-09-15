@@ -99,12 +99,8 @@ public class JmxUtilsTest {
 
         }
 
-        try {
-            JmxUtils.getCollectionDirectory(new HashMap<String, String>(), null, null);
-            Assert.fail("NullPointerException should have been thrown.");
-        } catch (NullPointerException npe) {
-
-        }
+        String collectionDir5 = JmxUtils.getCollectionDirectory(new HashMap<String, String>(), null, null);
+        Assert.assertEquals(null, collectionDir5);
     }
 
     @Test
