@@ -57,6 +57,7 @@ public class NCSEdgeProvider implements EdgeProvider {
 		private final String m_serviceName;
         private final String m_sourceElementName;
         private final String m_targetElementName;
+        private String m_status = "";
 		
 		public NCSEdge(String serviceId, String serviceName, String sourceElementName, String targetElementName, NCSVertex source, NCSVertex target) {
 			super("ncs", serviceId + "::" + source.getId() + ":::" + target.getId(), source, target);
@@ -73,6 +74,13 @@ public class NCSEdgeProvider implements EdgeProvider {
 			toolTip.append(HTML_TOOLTIP_TAG_OPEN);
 			toolTip.append("Service: " + m_serviceName);
 			toolTip.append(HTML_TOOLTIP_TAG_END);
+
+            if (m_status != null) {
+                toolTip.append(HTML_TOOLTIP_TAG_OPEN);
+                toolTip.append("Status: " + m_status);
+                toolTip.append(HTML_TOOLTIP_TAG_END);
+                m_status = null;
+            }
 
 			toolTip.append(HTML_TOOLTIP_TAG_OPEN);
 			toolTip.append("Source: " + getSource().getVertex().getLabel());
@@ -96,6 +104,10 @@ public class NCSEdgeProvider implements EdgeProvider {
 
         public String getSourceElementName() {
             return m_sourceElementName;
+        }
+
+        public void setStatus(String status) {
+            m_status = status;
         }
 
 	}

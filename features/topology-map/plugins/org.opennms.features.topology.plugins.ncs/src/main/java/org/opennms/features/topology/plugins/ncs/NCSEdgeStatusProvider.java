@@ -89,9 +89,11 @@ public class NCSEdgeStatusProvider implements EdgeStatusProvider{
         Map<EdgeRef, Status> statusMap = new HashMap<EdgeRef, Status>();
         for (EdgeRef edge : ncsEdges) {
             NCSEdgeProvider.NCSEdge e = (NCSEdgeProvider.NCSEdge) edge;
+            e.setStatus("up");
             statusMap.put(edge, new NCSLinkStatus("up"));
             if (alarms.contains(e.getSourceElementName()) || alarms.contains(e.getTargetElementName())) {
                 statusMap.put(edge, new NCSLinkStatus("down"));
+                e.setStatus("down");
             }
         }
 
