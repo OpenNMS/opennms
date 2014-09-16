@@ -55,11 +55,15 @@ public class NCSEdgeProvider implements EdgeProvider {
 
 	public static class NCSEdge extends AbstractEdge {
 		private final String m_serviceName;
+        private final String m_sourceElementName;
+        private final String m_targetElementName;
 		
-		public NCSEdge(String serviceId, String serviceName, NCSVertex source, NCSVertex target) {
+		public NCSEdge(String serviceId, String serviceName, String sourceElementName, String targetElementName, NCSVertex source, NCSVertex target) {
 			super("ncs", serviceId + "::" + source.getId() + ":::" + target.getId(), source, target);
 			m_serviceName = serviceName;
-			setStyleName("ncs edge");
+            m_sourceElementName = sourceElementName;
+            m_targetElementName = targetElementName;
+            setStyleName("ncs edge");
 		}
 
 		@Override
@@ -85,6 +89,14 @@ public class NCSEdgeProvider implements EdgeProvider {
 		public Item getItem() {
 			return new BeanItem<NCSEdge>(this);
 		}
+
+        public String getTargetElementName() {
+            return m_targetElementName;
+        }
+
+        public String getSourceElementName() {
+            return m_sourceElementName;
+        }
 
 	}
 
@@ -180,8 +192,12 @@ public class NCSEdgeProvider implements EdgeProvider {
 										targetLabel = targetNode.getLabel();
 									}
 								}
-
-								retval.add(new NCSEdge(subs[i].getForeignId(), service.getName(), new NCSVertex(String.valueOf(sourceNode.getId()), sourceLabel), new NCSVertex(String.valueOf(targetNode.getId()), targetLabel)));
+                                String sourceElementName = subs[i].getForeignSource() + "::" + subs[i].getForeignId();
+                                String targetElementName = subs[j].getForeignSource() + "::" + subs[j].getForeignId();
+								retval.add(new NCSEdge(subs[i].getForeignId(), service.getName(),
+                                        sourceElementName, targetElementName,
+                                        new NCSVertex(String.valueOf(sourceNode.getId()), sourceLabel),
+                                        new NCSVertex(String.valueOf(targetNode.getId()), targetLabel)));
 							}
 						}
 					}
