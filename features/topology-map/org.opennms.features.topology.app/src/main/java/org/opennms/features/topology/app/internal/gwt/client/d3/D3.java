@@ -443,6 +443,7 @@ public class D3 extends JavaScriptObject {
 
     public final native void injectSVGDef(String file) /*-{
          $wnd.d3.xml(file, function(svg){
+            if (!svg) return;
 
             var newSVG = $wnd.document.importNode(svg.documentElement, true);
             var defsTag = $wnd.document.getElementsByTagName("defs")[0];
