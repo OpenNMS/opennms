@@ -104,44 +104,62 @@ public class ForwardingEventListener implements EventListener {
 		// interested
 		List<String> ueiList = new ArrayList<String>();
 
-		// nodeGainedService
-		ueiList.add(EventConstants.NODE_GAINED_SERVICE_EVENT_UEI);
-
-		// primarySnmpInterfaceChanged
-		ueiList.add(EventConstants.PRIMARY_SNMP_INTERFACE_CHANGED_EVENT_UEI);
-
-		// reinitializePrimarySnmpInterface
-		ueiList.add(EventConstants.REINITIALIZE_PRIMARY_SNMP_INTERFACE_EVENT_UEI);
-
-		// interfaceReparented
-		ueiList.add(EventConstants.INTERFACE_REPARENTED_EVENT_UEI);
-
-		// nodeDeleted
-		ueiList.add(EventConstants.NODE_DELETED_EVENT_UEI);
-
-		// duplicateNodeDeleted
+		//node status events
 		ueiList.add(EventConstants.DUP_NODE_DELETED_EVENT_UEI);
-
-		// interfaceDeleted
-		ueiList.add(EventConstants.INTERFACE_DELETED_EVENT_UEI);
-
-		// serviceDeleted
-		ueiList.add(EventConstants.SERVICE_DELETED_EVENT_UEI);
-
-		// outageConfigurationChanged
-		ueiList.add(EventConstants.SCHEDOUTAGES_CHANGED_EVENT_UEI);
-
-		// configureSNMP
-		ueiList.add(EventConstants.CONFIGURE_SNMP_EVENT_UEI);
-
-		// thresholds configuration change
-		ueiList.add(EventConstants.THRESHOLDCONFIG_CHANGED_EVENT_UEI);
-
-		// daemon configuration change
-		ueiList.add(EventConstants.RELOAD_DAEMON_CONFIG_UEI);
-
-		// node category membership changes
+		ueiList.add(EventConstants.NODE_ADDED_EVENT_UEI);
 		ueiList.add(EventConstants.NODE_CATEGORY_MEMBERSHIP_CHANGED_EVENT_UEI);
+		ueiList.add(EventConstants.NODE_DOWN_EVENT_UEI);
+		ueiList.add(EventConstants.NODE_DELETED_EVENT_UEI);
+		ueiList.add(EventConstants.NODE_GAINED_INTERFACE_EVENT_UEI);
+		ueiList.add(EventConstants.NODE_GAINED_SERVICE_EVENT_UEI);
+		ueiList.add(EventConstants.NODE_INFO_CHANGED_EVENT_UEI);
+		ueiList.add(EventConstants.NODE_LABEL_CHANGED_EVENT_UEI);
+		ueiList.add(EventConstants.NODE_LABEL_SOURCE_CHANGED_EVENT_UEI);
+		ueiList.add(EventConstants.NODE_LOST_SERVICE_EVENT_UEI);
+		ueiList.add(EventConstants.NODE_REGAINED_SERVICE_EVENT_UEI);
+		ueiList.add(EventConstants.NODE_UP_EVENT_UEI);
+		ueiList.add(EventConstants.NODE_UPDATED_EVENT_UEI);
+		
+		//interface status events
+		ueiList.add(EventConstants.INTERFACE_DELETED_EVENT_UEI);
+		ueiList.add(EventConstants.INTERFACE_DOWN_EVENT_UEI);
+		ueiList.add(EventConstants.INTERFACE_REPARENTED_EVENT_UEI);
+		ueiList.add(EventConstants.INTERFACE_UP_EVENT_UEI);
+		
+		//component provisioning events
+		ueiList.add(EventConstants.COMPONENT_ADDED_UEI);
+		ueiList.add(EventConstants.COMPONENT_DELETED_UEI);
+		ueiList.add(EventConstants.COMPONENT_UPDATED_UEI);
+		
+		//threshold status events
+		ueiList.add(EventConstants.HIGH_THRESHOLD_EVENT_UEI);
+		ueiList.add(EventConstants.HIGH_THRESHOLD_REARM_EVENT_UEI);
+		ueiList.add(EventConstants.LOW_THRESHOLD_EVENT_UEI);
+		ueiList.add(EventConstants.LOW_THRESHOLD_REARM_EVENT_UEI);
+
+		ueiList.add(EventConstants.PATH_OUTAGE_EVENT_UEI);
+		
+		ueiList.add(EventConstants.PRIMARY_SNMP_INTERFACE_CHANGED_EVENT_UEI);
+		
+		ueiList.add(EventConstants.SERVICE_DELETED_EVENT_UEI);
+		ueiList.add(EventConstants.SERVICE_RESPONSIVE_EVENT_UEI);
+		ueiList.add(EventConstants.SERVICE_STATUS_UNKNOWN);
+		ueiList.add(EventConstants.SERVICE_UNMANAGED_EVENT_UEI);
+		ueiList.add(EventConstants.SERVICE_UNRESPONSIVE_EVENT_UEI);
+		
+		ueiList.add(EventConstants.SNMP_INTERFACE_ADMIN_DOWN_EVENT_UEI);
+		ueiList.add(EventConstants.SNMP_INTERFACE_ADMIN_UP_EVENT_UEI);
+		ueiList.add(EventConstants.SNMP_INTERFACE_OPER_DOWN_EVENT_UEI);
+		ueiList.add(EventConstants.SNMP_INTERFACE_OPER_UP_EVENT_UEI);
+		
+		ueiList.add(EventConstants.TOPOLOGY_LINK_DOWN_EVENT_UEI);
+		ueiList.add(EventConstants.TOPOLOGY_LINK_UP_EVENT_UEI);
+		
+		ueiList.add(EventConstants.UPDATE_SERVER_EVENT_UEI);
+		
+		ueiList.add(EventConstants.UPDATE_SERVICE_EVENT_UEI);
+		
+		ueiList.add(EventConstants.XMLRPC_NOTIFICATION_EVENT_UEI);
 
 		getEventIpcManager().addEventListener(this, ueiList);
 	}
@@ -158,6 +176,7 @@ public class ForwardingEventListener implements EventListener {
 	@Override
 	public void onEvent(final Event event) {
 		// Send the event to the event forwarder
+		LOG.debug("Forwarding Event %s", event.getUei());
 		eventForwarder.sendNow(event);
 	}
 

@@ -39,7 +39,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.capsd.EventUtils;
-import org.opennms.netmgt.capsd.InsufficientInformationException;
 import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.dao.api.DemandPollDao;
 import org.opennms.netmgt.model.events.EventIpcManager;
@@ -659,15 +658,6 @@ final class PollerEventProcessor implements EventListener {
            LOG.debug(" Re-adding the following to the list: {}:{}", row[0],row[1]);
            getPoller().scheduleService(nodeId.intValue(),nodeLabel,row[0],row[1]);
        }
-    }
-
-    @SuppressWarnings("unused")
-    private void demandPollServiceHandler(Event e) throws InsufficientInformationException {
-    	EventUtils.checkNodeId(e);
-    	EventUtils.checkInterface(e);
-    	EventUtils.checkService(e);
-    	EventUtils.requireParm(e, EventConstants.PARM_DEMAND_POLL_ID);
-    	m_demandPollDao.get(EventUtils.getIntParm(e, EventConstants.PARM_DEMAND_POLL_ID, -1));
     }
 
     private void scheduledOutagesChangeHandler() {

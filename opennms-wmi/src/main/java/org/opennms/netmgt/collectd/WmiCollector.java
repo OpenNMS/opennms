@@ -83,9 +83,9 @@ public class WmiCollector implements ServiceCollector {
 
     // Don't make this static because each service will have its own
     // copy and the key won't require the service name as part of the key.
-    private final HashMap<Integer, WmiAgentState> m_scheduledNodes = new HashMap<Integer, WmiAgentState>();
-    private HashMap<String, AttributeGroupType> m_groupTypeList = new HashMap<String, AttributeGroupType>();
-    private HashMap<String, WmiCollectionAttributeType> m_attribTypeList = new HashMap<String, WmiCollectionAttributeType>();
+    private final Map<Integer, WmiAgentState> m_scheduledNodes = new HashMap<Integer, WmiAgentState>();
+    private Map<String, AttributeGroupType> m_groupTypeList = new HashMap<String, AttributeGroupType>();
+    private Map<String, WmiCollectionAttributeType> m_attribTypeList = new HashMap<String, WmiCollectionAttributeType>();
 
     /** {@inheritDoc} */
     @Override
@@ -106,6 +106,7 @@ public class WmiCollector implements ServiceCollector {
         // Create a new collection set.
         final WmiCollectionSet collectionSet = new WmiCollectionSet();
         collectionSet.setCollectionTimestamp(new Date());
+        final WmiSingleInstanceCollectionResource nodeResource = new WmiSingleInstanceCollectionResource(agent);
 
         // Iterate through the WMI collection groups.
         for (final Wpm wpm : collection.getWpms().getWpm()) {
@@ -152,7 +153,7 @@ public class WmiCollector implements ServiceCollector {
                                 }
                                 resource = new WmiMultiInstanceCollectionResource(agent,instance,wpm.getResourceType());
                             } else {
-                                resource = new WmiSingleInstanceCollectionResource(agent);
+                                resource = nodeResource;
                             }
 
 
@@ -308,7 +309,7 @@ public class WmiCollector implements ServiceCollector {
     @Override
     public void initialize(final CollectionAgent agent, final Map<String, Object> parameters) {
         LOG.debug("initialize: Initializing WMI collection for agent: {}", agent);
-        final Integer scheduledNodeKey = new Integer(agent.getNodeId());
+        final Integer scheduledNodeKey = Integer.valueOf(agent.getNodeId());
         WmiAgentState nodeState = m_scheduledNodes.get(scheduledNodeKey);
 
         if (nodeState != null) {

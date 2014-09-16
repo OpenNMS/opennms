@@ -46,7 +46,7 @@ import org.apache.commons.cli.PosixParser;
  * @author <a href="mailto:matt.raykowski@gmail.com">Matt Raykowski</a>
  * @author <a href="http://www.opennms.org">OpenNMS</a>
  */
-public class CheckNsc {
+public abstract class CheckNsc {
 
     /**
      * <p>main</p>

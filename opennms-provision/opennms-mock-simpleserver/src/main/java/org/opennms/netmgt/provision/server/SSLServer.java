@@ -51,7 +51,7 @@ import org.slf4j.LoggerFactory;
  * @author ranger
  * @version $Id: $
  */
-public class SSLServer extends SimpleServer{
+public class SSLServer extends SimpleServer {
     
     private static final Logger LOG = LoggerFactory.getLogger(SSLServer.class);
     
@@ -114,14 +114,15 @@ public class SSLServer extends SimpleServer{
      * @throws java.lang.Exception if any.
      */
     @Override
-    protected Runnable getRunnable() throws Exception {
-        return new Runnable(){
+    protected SimpleServerRunnable getRunnable() throws IOException {
+        return new SimpleServerRunnable() {
             
             @Override
-            public void run(){
-                try{
+            public void run() {
+                try {
                     OutputStream out = null;
                     BufferedReader in = null;
+                    ready();
                     try {
                         getServerSocket().setSoTimeout(getTimeout());
                         setSocket(getServerSocket().accept());
@@ -140,9 +141,10 @@ public class SSLServer extends SimpleServer{
                         IOUtils.closeQuietly(out);
                         getSocket().close();
                     }
-                }catch(Throwable e){
+                } catch(Throwable e) {
                     throw new UndeclaredThrowableException(e);
                 } finally {
+                    finished();
                     try {
                         stopServer();
                     } catch (final IOException e) {

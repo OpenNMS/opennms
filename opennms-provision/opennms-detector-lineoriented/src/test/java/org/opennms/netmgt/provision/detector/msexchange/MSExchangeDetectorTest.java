@@ -63,6 +63,7 @@ public class MSExchangeDetectorTest implements InitializingBean {
     @Override
     public void afterPropertiesSet() throws Exception {
         BeanUtils.assertAutowiring(this);
+        m_detector.setTimeout(500);
     }
 
     @Before

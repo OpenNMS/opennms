@@ -37,7 +37,7 @@ import org.opennms.netmgt.xml.event.Autoaction;
  *
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Nataraj </A>
  */
-public class AutoAction {
+public abstract class AutoAction {
     /**
      * Format each autoaction entry
      *

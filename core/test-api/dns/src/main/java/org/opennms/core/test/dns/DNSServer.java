@@ -102,7 +102,8 @@ public class DNSServer {
         private final InetAddress m_addr;
         private ServerSocket m_socket;
         private volatile boolean m_stopped = false;
-        private CountDownLatch m_latch = new CountDownLatch(1);
+        private CountDownLatch m_startingLatch = new CountDownLatch(1);
+        private CountDownLatch m_runningLatch = new CountDownLatch(1);
 
         private TCPListener(final int port, final InetAddress addr) {
             m_port = port;
@@ -110,10 +111,16 @@ public class DNSServer {
         }
 
         @Override
+        public void await() throws InterruptedException {
+            m_startingLatch.await();
+        }
+
+        @Override
         public void run() {
             try {
                 m_socket = new ServerSocket(m_port, 128, m_addr);
                 m_socket.setSoTimeout(DEFAULT_SOCKET_TIMEOUT);
+                m_startingLatch.countDown();
                 while (!m_stopped) {
                     try {
                         final Socket s = m_socket.accept();
@@ -174,7 +181,7 @@ public class DNSServer {
                 } catch (final IOException e) {
                     LOG.debug("error while closing socket", e);
                 }
-                m_latch.countDown();
+                m_runningLatch.countDown();
             }
         }
 
@@ -182,7 +189,7 @@ public class DNSServer {
         public void stop() {
             m_stopped = true;
             try {
-                m_latch.await();
+                m_runningLatch.await();
             } catch (final InterruptedException e) {
                 LOG.warn("interrupted while stopping TCP listener", e);
                 Thread.currentThread().interrupt();
@@ -194,11 +201,17 @@ public class DNSServer {
         private final int m_port;
         private final InetAddress m_addr;
         private volatile boolean m_stopped = false;
-        private CountDownLatch m_latch = new CountDownLatch(1);
+        private CountDownLatch m_startingLatch = new CountDownLatch(1);
+        private CountDownLatch m_runningLatch = new CountDownLatch(1);
 
         private UDPListener(int port, InetAddress addr) {
             m_port = port;
             m_addr = addr;
+        }
+
+        @Override
+        public void await() throws InterruptedException {
+            m_startingLatch.await();
         }
 
         @Override
@@ -211,6 +224,7 @@ public class DNSServer {
                 byte[] in = new byte[udpLength];
                 final DatagramPacket indp = new DatagramPacket(in, in.length);
                 DatagramPacket outdp = null;
+                m_startingLatch.countDown();
                 while (!m_stopped) {
                     indp.setLength(in.length);
                     try {
@@ -248,7 +262,7 @@ public class DNSServer {
                         LOG.debug("error while closing socket", e);
                     }
                 }
-                m_latch.countDown();
+                m_runningLatch.countDown();
             }
         }
 
@@ -256,7 +270,7 @@ public class DNSServer {
         public void stop() {
             m_stopped = true;
             try {
-                m_latch.await();
+                m_runningLatch.await();
             } catch (final InterruptedException e) {
                 LOG.warn("interrupted while waiting for server to stop", e);
                 Thread.currentThread().interrupt();
@@ -291,17 +305,24 @@ public class DNSServer {
 
         for (final InetAddress addr : m_addresses) {
             for (final Integer port : m_ports) {
-                final UDPListener udpListener = new UDPListener(port, addr);
-                final Thread udpThread = new Thread(udpListener);
-                udpThread.start();
-                m_activeListeners.add(udpListener);
+                try {
+                    final UDPListener udpListener = new UDPListener(port, addr);
+                    final Thread udpThread = new Thread(udpListener);
+                    udpThread.start();
+                    m_activeListeners.add(udpListener);
 
-                final TCPListener tcpListener = new TCPListener(port, addr);
-                final Thread tcpThread = new Thread(tcpListener);
-                tcpThread.start();
-                m_activeListeners.add(tcpListener);
+                    final TCPListener tcpListener = new TCPListener(port, addr);
+                    final Thread tcpThread = new Thread(tcpListener);
+                    tcpThread.start();
+                    m_activeListeners.add(tcpListener);
 
-                LOG.info("listening on {}", addrport(addr, port));
+                    udpListener.await();
+                    tcpListener.await();
+
+                    LOG.info("listening on {}", addrport(addr, port));
+                } catch (final Exception e) {
+                    throw new RuntimeException("Failed to start DNS server on " + InetAddressUtils.str(addr) + "/" + port, e);
+                }
             }
         }
         LOG.debug("finished starting up");

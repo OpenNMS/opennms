@@ -33,6 +33,7 @@ import java.sql.SQLException;
 
 import junit.framework.TestCase;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.Querier;
 import org.opennms.netmgt.mock.MockEventUtil;
 import org.opennms.netmgt.mock.MockInterface;
@@ -70,6 +71,7 @@ public class MockDatabaseTest extends TestCase {
         // set the initial status to N as a test
         m_network.addService("HTTP").setMgmtStatus(SvcMgmtStatus.NOT_POLLED);
         m_network.addInterface("192.168.1.2");
+        m_network.addPathOutage(1, InetAddressUtils.addr("192.168.1.1"), "ICMP");
         
         m_db = new MockDatabase();
         m_db.populate(m_network);

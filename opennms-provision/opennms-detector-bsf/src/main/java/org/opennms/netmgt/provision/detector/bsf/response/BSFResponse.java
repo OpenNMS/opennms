@@ -28,7 +28,7 @@
 
 package org.opennms.netmgt.provision.detector.bsf.response;
 
-import java.util.HashMap;
+import java.util.Map;
 
 /**
  * <p>BSFResponse class.</p>
@@ -38,9 +38,9 @@ import java.util.HashMap;
  */
 public class BSFResponse {
 
-    private HashMap<String, String> m_results;
+    private Map<String, String> m_results;
 
-    public BSFResponse(HashMap<String, String> results) {
+    public BSFResponse(Map<String, String> results) {
         m_results = results;
     }
 

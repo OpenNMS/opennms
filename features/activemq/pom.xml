@@ -19,9 +19,7 @@
   <modules>
     <module>broker</module>
     <module>event-forwarder</module>
-    <!--
     <module>event-receiver</module>
-    -->
   </modules>
 
 </project>

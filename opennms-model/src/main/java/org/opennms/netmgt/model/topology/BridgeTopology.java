@@ -189,7 +189,7 @@ public class BridgeTopology {
 			this.designatebridgePort = designatedbridgePort;
 			for (String mac : bridgeport.getMacs()) {
 				if (designatedbridgePort.getMacs().contains(mac))
-					macs.add(mac);
+				   macs.add(mac);
 			}
 		}
 
@@ -245,7 +245,7 @@ public class BridgeTopology {
 
 	public void addTopology(Integer nodeid, Map<Integer, Set<String>> bridgeTopologyTable, Set<Integer> targets) {
 		LOG.info("addTopology: -----------------------------------------------------");
-		LOG.info("addTopology: adding bridge topology for node {}", nodeid);
+		LOG.info("addTopology: adding bridge topology for node {} with targets {}", nodeid, targets);
 		for (final Entry<Integer, Set<String>> curEntry : bridgeTopologyTable
 				.entrySet()) {
 			LOG.info(
@@ -481,7 +481,7 @@ public class BridgeTopology {
 					topologyLinkCandidate.getTargets(), topologyLinkCandidate
 							.getRole());
 			LOG.info(
-					"parseBFTEntry: cycle end: node {} port {} macs {} targets {} role {}: node {} port {} macs {} targets {} role {}",
+					"parseBFTEntry: cycle end: node {} port {} macs {} targets {} role {}",
 					linkcandidate.getBridgeTopologyPort()
 							.getNodeid(), linkcandidate.getBridgeTopologyPort()
 							.getBridgePort(), linkcandidate.getMacs(),

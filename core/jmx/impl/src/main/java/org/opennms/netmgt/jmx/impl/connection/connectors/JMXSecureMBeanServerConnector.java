@@ -28,12 +28,12 @@
 
 package org.opennms.netmgt.jmx.impl.connection.connectors;
 
-import org.opennms.core.utils.ParameterMap;
-import org.opennms.netmgt.jmx.connection.JmxServerConnectionException;
-import org.opennms.netmgt.jmx.connection.JmxServerConnectionWrapper;
-import org.opennms.netmgt.jmx.connection.JmxServerConnector;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.net.MalformedURLException;
+import java.security.KeyStore;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.management.MBeanServerConnection;
 import javax.management.remote.JMXConnector;
@@ -45,15 +45,16 @@ import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.X509TrustManager;
-import java.net.MalformedURLException;
-import java.security.KeyStore;
-import java.security.cert.CertificateException;
-import java.security.cert.X509Certificate;
-import java.util.HashMap;
-import java.util.Map;
+
+import org.opennms.core.utils.ParameterMap;
+import org.opennms.netmgt.jmx.connection.JmxServerConnectionException;
+import org.opennms.netmgt.jmx.connection.JmxServerConnectionWrapper;
+import org.opennms.netmgt.jmx.connection.JmxServerConnector;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 class JMXSecureMBeanServerConnector implements JmxServerConnector {
-	
+
 	private static final Logger LOG = LoggerFactory.getLogger(JMXSecureMBeanServerConnector.class);
 
     @Override

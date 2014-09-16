@@ -67,6 +67,7 @@ public class CitrixDetectorTest implements ApplicationContextAware {
         MockLogAppender.setupLogging();
 
         m_detector = getDetector(CitrixDetector.class);
+        m_detector.setTimeout(500);
         
         m_server = getServer();
         m_server.init();
@@ -85,7 +86,7 @@ public class CitrixDetectorTest implements ApplicationContextAware {
     
     @Test(timeout=90000)
     public void testMyDetector() throws Exception {
-        m_detector.setPort(20000);
+        m_detector.setPort(65535);
         m_detector.setIdleTime(10000);
         m_detector.init();
         
@@ -98,7 +99,7 @@ public class CitrixDetectorTest implements ApplicationContextAware {
     
     @Test(timeout=90000)
     public void testDetectorFailWrongPort() throws Exception {
-        m_detector.setPort(20000);
+        m_detector.setPort(65535);
         m_detector.setIdleTime(10000);
         m_detector.init();
         

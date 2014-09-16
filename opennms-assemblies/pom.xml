@@ -9,6 +9,18 @@
   <artifactId>org.opennms.assemblies</artifactId>
   <packaging>pom</packaging>
   <name>OpenNMS Assemblies</name>
+
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-deploy-plugin</artifactId>
+        <configuration>
+          <skip>true</skip>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
   <modules>
     <module>http-remoting</module>
     <module>jmx-config-generator-onejar</module>

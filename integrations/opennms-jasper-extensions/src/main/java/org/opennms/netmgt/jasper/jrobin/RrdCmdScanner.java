@@ -36,7 +36,7 @@ import java.util.List;
 import org.jrobin.core.RrdException;
 
 class RrdCmdScanner {
-    private LinkedList<String> words = new LinkedList<String>();
+    private List<String> words = new LinkedList<String>();
     private StringBuffer buff;
 
     RrdCmdScanner(String command) throws RrdException {

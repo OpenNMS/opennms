@@ -84,7 +84,7 @@ public class BSFNotificationStrategy implements NotificationStrategy {
 
             // Declare some beans that can be used inside the script                    
             HashMap<String,String> results = new HashMap<String,String>();
-            bsfManager.declareBean("results", results, HashMap.class);
+            bsfManager.declareBean("results", results, Map.class);
             declareBeans(bsfManager);
 
             if(engine != null && lang != null && extensions != null && extensions.length > 0 ){

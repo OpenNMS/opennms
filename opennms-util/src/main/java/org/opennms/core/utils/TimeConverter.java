@@ -36,7 +36,7 @@ package org.opennms.core.utils;
  *
  * @author <A HREF="mike@opennms.org">Mike </A>
  */
-public class TimeConverter {
+public abstract class TimeConverter {
     /**
      * <P>
      * Converts the passed time string to a time value that is measured in

@@ -114,7 +114,7 @@ import org.slf4j.LoggerFactory;
 
         try {
             // clear out the known nodes
-            SyslogdIPMgr.dataSourceSync();
+            SyslogdIPMgrJDBCImpl.getInstance().dataSourceSync();
         } catch (SQLException e) {
             LOG.error("Failed to load known IP address list", e);
             throw new UndeclaredThrowableException(e);

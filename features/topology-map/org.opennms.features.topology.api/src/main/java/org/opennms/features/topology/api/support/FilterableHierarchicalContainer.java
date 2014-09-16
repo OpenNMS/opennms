@@ -35,8 +35,8 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
-
 
 import com.vaadin.data.Container;
 import com.vaadin.data.Container.ItemSetChangeListener;
@@ -50,12 +50,12 @@ public class FilterableHierarchicalContainer extends HierarchicalContainer imple
 
     HierarchicalBeanContainer<?,?> m_container;
     List<Object> m_filteredItems;
-    private LinkedList<Object> m_filteredRoots = null;
-    private HashMap<Object, LinkedList<Object>> m_filteredChildren = null;
-    private HashMap<Object, Object> m_filteredParent = null;
+    private List<Object> m_filteredRoots = null;
+    private Map<Object, LinkedList<Object>> m_filteredChildren = null;
+    private Map<Object, Object> m_filteredParent = null;
     private boolean m_includeParentsWhenFiltering = true;
     private Set<Object> m_filterOverride = null;
-    private final HashMap<Object, Object> m_parent = new HashMap<Object, Object>();
+    private final Map<Object, Object> m_parent = new HashMap<Object, Object>();
     
    public FilterableHierarchicalContainer(HierarchicalBeanContainer<?,?> container) {
         super();
@@ -278,7 +278,7 @@ public class FilterableHierarchicalContainer extends HierarchicalContainer imple
         }
     }
     
-    private void addFilteredChildrenRecursively(Object parentItemId, HashSet<Object> includedItems) {
+    private void addFilteredChildrenRecursively(Object parentItemId, Set<Object> includedItems) {
         Collection<?> childList = m_container.getChildren(parentItemId);
         if (childList == null) {
             return;
@@ -305,7 +305,7 @@ public class FilterableHierarchicalContainer extends HierarchicalContainer imple
 
     }
     
-    private boolean filterIncludingParents(Object itemId, HashSet<Object> includedItems) {
+    private boolean filterIncludingParents(Object itemId, Set<Object> includedItems) {
         boolean toBeIncluded = passesFilters(itemId);
 
         Collection<?> childList = m_container.getChildren(itemId);

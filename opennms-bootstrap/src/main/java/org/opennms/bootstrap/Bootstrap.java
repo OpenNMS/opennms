@@ -40,6 +40,7 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Arrays;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.StringTokenizer;
@@ -47,7 +48,7 @@ import java.util.StringTokenizer;
 /**
  * Bootstrap application for starting OpenNMS.
  */
-public class Bootstrap {
+public abstract class Bootstrap {
     protected static final String BOOT_PROPERTIES_NAME = "bootstrap.properties";
     protected static final String RRD_PROPERTIES_NAME = "rrd-configuration.properties";
     protected static final String LIBRARY_PROPERTIES_NAME = "libraries.properties";
@@ -138,7 +139,7 @@ public class Bootstrap {
      * @returns A new ClassLoader with the specified search list
      * @return a {@link java.lang.ClassLoader} object.
      */
-    public static ClassLoader newClassLoader(LinkedList<URL> urls) {
+    public static ClassLoader newClassLoader(List<URL> urls) {
         URL[] urlsArray = urls.toArray(new URL[0]);
 
         return URLClassLoader.newInstance(urlsArray);
@@ -156,7 +157,7 @@ public class Bootstrap {
      *            LinkedList to append found JARs onto
      * @throws java.net.MalformedURLException if any.
      */
-    public static void loadClasses(File dir, boolean recursive, LinkedList<URL> urls) throws MalformedURLException {
+    public static void loadClasses(File dir, boolean recursive, List<URL> urls) throws MalformedURLException {
         // Add the directory
         urls.add(dir.toURI().toURL());
 

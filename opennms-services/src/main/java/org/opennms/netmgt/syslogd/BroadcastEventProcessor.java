@@ -93,19 +93,19 @@ final class BroadcastEventProcessor implements EventListener {
         if (eventUei.equals(EventConstants.NODE_GAINED_INTERFACE_EVENT_UEI)) {
             // add to known nodes
             if (Long.toString(event.getNodeid()) != null && event.getInterface() != null) {
-                SyslogdIPMgr.setNodeId(event.getInterface(), event.getNodeid());
+                SyslogdIPMgrDaoImpl.getInstance().setNodeId(event.getInterface(), event.getNodeid());
             }
             LOG.debug("Added {} to known node list", event.getInterface());
         } else if (eventUei.equals(EventConstants.INTERFACE_DELETED_EVENT_UEI)) {
             // remove from known nodes
             if (event.getInterface() != null) {
-                SyslogdIPMgr.removeNodeId(event.getInterface());
+                SyslogdIPMgrDaoImpl.getInstance().removeNodeId(event.getInterface());
             }
             LOG.debug("Removed {} from known node list", event.getInterface());
         } else if (eventUei.equals(EventConstants.INTERFACE_REPARENTED_EVENT_UEI)) {
             // add to known nodes
             if (Long.toString(event.getNodeid()) != null && event.getInterface() != null) {
-                SyslogdIPMgr.setNodeId(event.getInterface(), event.getNodeid());
+                SyslogdIPMgrDaoImpl.getInstance().setNodeId(event.getInterface(), event.getNodeid());
             }
             LOG.debug("Reparented {} to known node list", event.getInterface());
         }

@@ -35,7 +35,7 @@ import org.apache.commons.beanutils.BeanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class SDOMapper {
+public abstract class SDOMapper {
 	
 	private static Logger logger = LoggerFactory.getLogger("OpenNMS.Report." + SDOMapper.class.getName());
 	

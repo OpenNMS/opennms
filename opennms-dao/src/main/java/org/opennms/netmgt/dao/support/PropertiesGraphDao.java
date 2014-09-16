@@ -80,7 +80,7 @@ public class PropertiesGraphDao implements GraphDao, InitializingBean {
     private Map<String, FileReloadContainer<PrefabGraphTypeDao>> m_types =
         new HashMap<String, FileReloadContainer<PrefabGraphTypeDao>>();
 
-    private HashMap<String, FileReloadContainer<AdhocGraphType>> m_adhocTypes =
+    private Map<String, FileReloadContainer<AdhocGraphType>> m_adhocTypes =
         new HashMap<String, FileReloadContainer<AdhocGraphType>>();
 
     private PrefabGraphTypeCallback m_prefabCallback =

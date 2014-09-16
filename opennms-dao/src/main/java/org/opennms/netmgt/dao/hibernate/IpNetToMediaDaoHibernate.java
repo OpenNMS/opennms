@@ -61,6 +61,16 @@ public class IpNetToMediaDaoHibernate extends AbstractDaoHibernate<IpNetToMedia,
 		}
 	}
 
+	@Override
+	public List<IpNetToMedia> findByPhysAddress(String physAddress) {
+		return find("from IpNetToMedia rec where rec.physAddress = ?",  physAddress);
+	}
+
+	@Override
+	public List<IpNetToMedia> findByNetAddress(InetAddress netAddress) {
+		return find("from IpNetToMedia rec where rec.netAddress = ? ", netAddress);
+	}
+
 
 
 }

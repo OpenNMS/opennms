@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import org.slf4j.Logger;
@@ -66,14 +67,14 @@ public class EventConfData extends Object {
     /**
      * The map keyed with 'EventKey's
      */
-    private LinkedHashMap<EventKey, org.opennms.netmgt.xml.eventconf.Event> m_eventMap;
+    private Map<EventKey, org.opennms.netmgt.xml.eventconf.Event> m_eventMap;
 
     /**
      * The map of UEI to 'EventKey's list - used mainly to find matches for the
      * OpenNMS internal events faster(in cases where there are multiple masks
      * for the same UEI)
      */
-    private LinkedHashMap<String, List<EventKey>> m_ueiToKeyListMap;
+    private Map<String, List<EventKey>> m_ueiToKeyListMap;
 
     /**
      * Check whether the event matches the passed key

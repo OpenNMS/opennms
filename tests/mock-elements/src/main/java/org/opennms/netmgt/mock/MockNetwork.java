@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.mock;
 
+import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -35,7 +36,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
-
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.xml.event.Event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -103,6 +104,10 @@ public class MockNetwork extends MockContainer<MockContainer<?,?>,MockElement> {
 
     private int m_nextServiceId = 1;
 
+    private MockPathOutage m_currentOutage;
+
+	private MockService m_currentService;
+
     /**
      * <p>Constructor for MockNetwork.</p>
      */
@@ -128,6 +133,7 @@ public class MockNetwork extends MockContainer<MockContainer<?,?>,MockElement> {
     public void setCriticalService(String svcName) {
         m_criticalService = svcName;
     }
+    
     
     /**
      * <p>getIfAlias</p>
@@ -184,6 +190,13 @@ public class MockNetwork extends MockContainer<MockContainer<?,?>,MockElement> {
         return m_currentNode;
     }
 
+    public MockPathOutage addPathOutage(int nodeid, InetAddress ipAddr, String svcName) {
+    	//m_currentOutage = (MockPathOutage) addMember(new MockPathOutage(this,nodeid, ipAddr, svcName));
+    	m_currentOutage = (MockPathOutage) m_currentNode.addMember(new MockPathOutage(this, m_currentService));
+    	return m_currentOutage;
+    	
+    }
+
     // model 
     /**
      * <p>addService</p>
@@ -195,7 +208,8 @@ public class MockNetwork extends MockContainer<MockContainer<?,?>,MockElement> {
      */
     public MockService addService(int nodeId, String ipAddr, String svcName) {
         int serviceId = getServiceId(svcName);
-        return getInterface(nodeId, ipAddr).addService(svcName, serviceId);
+        m_currentService =  getInterface(nodeId, ipAddr).addService(svcName, serviceId);
+        return m_currentService;
     }
 
     // model
@@ -207,7 +221,8 @@ public class MockNetwork extends MockContainer<MockContainer<?,?>,MockElement> {
      */
     public MockService addService(String svcName) {
         int serviceId = getServiceId(svcName);
-        return m_currentInterface.addService(svcName, serviceId);
+        m_currentService = m_currentInterface.addService(svcName, serviceId);
+        return m_currentService;
 
     }
 
@@ -268,7 +283,7 @@ public class MockNetwork extends MockContainer<MockContainer<?,?>,MockElement> {
      * @return a {@link org.opennms.netmgt.mock.MockNode} object.
      */
     public MockNode getNode(int i) {
-        return (MockNode) getMember(new Integer(i));
+        return (MockNode) getMember(Integer.valueOf(i));
     }
 
     // model
@@ -332,7 +347,7 @@ public class MockNetwork extends MockContainer<MockContainer<?,?>,MockElement> {
             serviceId = m_nameToIdMap.get(svcName).intValue();
         } else {
             serviceId = m_nextServiceId++;
-            Integer serviceIdObj = new Integer(serviceId);
+            Integer serviceIdObj = Integer.valueOf(serviceId);
             m_nameToIdMap.put(svcName, serviceIdObj);
             m_idToNameMap.put(serviceIdObj, svcName);
         }
@@ -406,6 +421,7 @@ public class MockNetwork extends MockContainer<MockContainer<?,?>,MockElement> {
         super.visit(v);
         v.visitNetwork(this);
         visitMembers(v);
+        
     }
     
     /**
@@ -488,6 +504,7 @@ public class MockNetwork extends MockContainer<MockContainer<?,?>,MockElement> {
         addInterface("192.168.1.1");
         setIfAlias("dot1 interface alias");
         addService("ICMP");
+        addPathOutage(1, InetAddressUtils.addr("192.168.1.1"), "ICMP");
         addService("SMTP");
         addInterface("192.168.1.2");
         setIfAlias("dot2 interface alias");
@@ -505,6 +522,7 @@ public class MockNetwork extends MockContainer<MockContainer<?,?>,MockElement> {
         addInterface("192.168.1.5");
         addService("SMTP");
         addService("HTTP");
+        //addOutage(1, InetAddressUtils.addr("192.168.1.1"), "ICMP");
     }
 
 }
