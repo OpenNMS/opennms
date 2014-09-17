@@ -67,8 +67,8 @@ branch as a sort of mini-`develop`.  Critical bug fixes should be done in the
 Where to Put Your Code
 ----------------------
 
-Critical Bug Fixes: `1.12` (merged to `rc/stable/1.14.0`)
-1.14 Blocker Bug Fixes: `rc/stable/1.14.0` (merged to `develop`)
-Anything Else: `feature/XXXX` or `jira/XXXX` branch, then merge --no-ff to `develop` when complete
+* Critical Bug Fixes: `1.12` (merged to `rc/stable/1.14.0`)
+* 1.14 Blocker Bug Fixes: `rc/stable/1.14.0` (merged to `develop`)
+* Anything Else: `feature/XXXX` or `jira/XXXX` branch, then merge --no-ff to `develop` when complete
 
 [GitFlow]: http://nvie.com/posts/a-successful-git-branching-model/ "GitFlow"
