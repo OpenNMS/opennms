@@ -53,6 +53,7 @@ import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.api.RequisitionedCategoryAssociationDao;
 import org.opennms.netmgt.dao.api.ServiceTypeDao;
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
 import org.opennms.netmgt.dao.support.CreateIfNecessaryTemplate;
@@ -70,11 +71,11 @@ import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.PathElement;
 import org.opennms.netmgt.model.PrimaryType;
+import org.opennms.netmgt.model.RequisitionedCategoryAssociation;
 import org.opennms.netmgt.model.events.AddEventVisitor;
 import org.opennms.netmgt.model.events.DeleteEventVisitor;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventForwarder;
-import org.opennms.netmgt.model.events.UpdateEventVisitor;
 import org.opennms.netmgt.provision.IpInterfacePolicy;
 import org.opennms.netmgt.provision.NodePolicy;
 import org.opennms.netmgt.provision.ServiceDetector;
@@ -86,6 +87,7 @@ import org.opennms.netmgt.provision.persist.RequisitionFileUtils;
 import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
 import org.opennms.netmgt.provision.persist.foreignsource.PluginConfig;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
+import org.opennms.netmgt.provision.persist.requisition.RequisitionCategory;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionInterface;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionInterfaceCollection;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionNode;
@@ -149,6 +151,9 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
     @Autowired
     private CategoryDao m_categoryDao;
     
+    @Autowired
+    private RequisitionedCategoryAssociationDao m_categoryAssociationDao;
+
     @Autowired
     @Qualifier("transactionAware")
     private EventForwarder m_eventForwarder;
@@ -219,14 +224,19 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
 
     	final OnmsNode dbNode = m_nodeDao.getHierarchy(node.getId());
 
+    	// on an update, leave categories alone, let the NodeScan handle applying requisitioned categories
+    	node.setCategories(dbNode.getCategories());
+    	/*
         final Set<OnmsCategory> existingCategories = dbNode.getCategories();
         final Set<OnmsCategory> newCategories = node.getCategories();
+        */
 
         dbNode.mergeNode(node, m_eventForwarder, false);
 
         m_nodeDao.update(dbNode);
         m_nodeDao.flush();
 
+        /*
         final EntityVisitor eventAccumlator = new UpdateEventVisitor(m_eventForwarder, rescanExisting);
 
         node.visit(eventAccumlator);
@@ -242,6 +252,7 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
             bldr.addParam(EventConstants.PARM_NODE_LABEL, dbNode.getLabel());
             m_eventForwarder.sendNow(bldr.getEvent());
         }
+        */
     }
 
     /** {@inheritDoc} */
@@ -629,7 +640,7 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
     public OnmsNode getRequisitionedNode(final String foreignSource, final String foreignId) throws ForeignSourceRepositoryException {
     	final OnmsNodeRequisition nodeReq = m_foreignSourceRepository.getNodeRequisition(foreignSource, foreignId);
         if (nodeReq == null) {
-			LOG.warn("nodeReq for node {}:{} cannot be null!", foreignSource, foreignId);
+            LOG.warn("nodeReq for node {}:{} cannot be null!", foreignSource, foreignId);
             return null;
         }
         final OnmsNode node = nodeReq.constructOnmsNodeFromRequisition();
@@ -923,8 +934,48 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
                 return getDbNode(node);
             }
 
+            private void handleCategoryChanges(final OnmsNode dbNode) {
+                final OnmsNodeRequisition req = m_foreignSourceRepository.getNodeRequisition(dbNode.getForeignSource(), dbNode.getForeignId());
+                final List<String> categories = new ArrayList<>();
+                for (final RequisitionCategory cat : req.getNode().getCategories()) {
+                    categories.add(cat.getName());
+                }
+                for (final String cat : node.getRequisitionedCategories()) {
+                    categories.add(cat);
+                }
+
+                LOG.debug("Node {}/{}/{} has the following requisitioned categories: {}", dbNode.getId(), dbNode.getForeignSource(), dbNode.getForeignId(), categories);
+                final List<RequisitionedCategoryAssociation> reqCats = new ArrayList<>(m_categoryAssociationDao.findByNodeId(dbNode.getId()));
+                for (final Iterator<RequisitionedCategoryAssociation> reqIter = reqCats.iterator(); reqIter.hasNext(); ) {
+                    final RequisitionedCategoryAssociation reqCat = reqIter.next();
+                    final String categoryName = reqCat.getCategory().getName();
+                    if (categories.contains(categoryName)) {
+                        // we've already stored this category before, remove it from the list of "new" categories
+                        categories.remove(categoryName);
+                    } else {
+                        // we previously stored this category, but now it shouldn't be there anymore
+                        // remove it from the category association
+                        LOG.debug("Node {}/{}/{} no longer has the category: {}", dbNode.getId(), dbNode.getForeignSource(), dbNode.getForeignId(), categoryName);
+                        dbNode.removeCategory(reqCat.getCategory());
+                        node.removeCategory(reqCat.getCategory());
+                        reqIter.remove();
+                        m_categoryAssociationDao.delete(reqCat);
+                    }
+                }
+                
+                // the remainder of requisitioned categories get added
+                for (final String cat : categories) {
+                    final OnmsCategory onmsCat = createCategoryIfNecessary(cat);
+                    final RequisitionedCategoryAssociation r = new RequisitionedCategoryAssociation(dbNode, onmsCat);
+                    node.addCategory(onmsCat);
+                    dbNode.addCategory(onmsCat);
+                    m_categoryAssociationDao.saveOrUpdate(r);
+                }
+            }
+
             @Override
-            protected OnmsNode doUpdate(OnmsNode dbNode) {
+            protected OnmsNode doUpdate(final OnmsNode dbNode) {
+                handleCategoryChanges(dbNode);
                 dbNode.mergeNodeAttributes(node, m_eventForwarder);
                 return saveOrUpdate(dbNode);
             }

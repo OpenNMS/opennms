@@ -1310,7 +1310,7 @@ public class ProvisionerTest extends ProvisioningTestCase implements Initializin
 
         // Apply the policy
         nodeCopy = policy.apply(nodeCopy);
-        assertTrue(nodeCopy.hasCategory(TEST_CATEGORY));
+        assertTrue(nodeCopy.getRequisitionedCategories().contains(TEST_CATEGORY));
 
         final EventBuilder eb = new EventBuilder(EventConstants.NODE_LABEL_CHANGED_EVENT_UEI, "OnmsNode.mergeNodeAttributes");
         eb.setNodeid(node.getId());
@@ -1369,8 +1369,10 @@ public class ProvisionerTest extends ProvisioningTestCase implements Initializin
         network.addService("ICMP");
         anticpateCreationEvents(node);
         m_eventAnticipator.anticipateEvent(getNodeCategoryEvent(nextNodeId, "test"));
-        m_eventAnticipator.anticipateEvent(new EventBuilder(EventConstants.NODE_UPDATED_EVENT_UEI, "Test").setNodeid(nextNodeId).getEvent());
-        m_eventAnticipator.anticipateEvent(getNodeCategoryEvent(nextNodeId, "test"));
+        
+        // we should not get new update events on a re-import now, that happens during the scan phase
+        //m_eventAnticipator.anticipateEvent(new EventBuilder(EventConstants.NODE_UPDATED_EVENT_UEI, "Test").setNodeid(nextNodeId).getEvent());
+        //m_eventAnticipator.anticipateEvent(getNodeCategoryEvent(nextNodeId, "test"));
         importFromResource("classpath:/requisition_with_node_categories.xml", true);
         importFromResource("classpath:/requisition_with_node_categories_changed.xml", true);
 

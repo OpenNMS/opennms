@@ -189,15 +189,17 @@ public class OnmsNode extends OnmsEntity implements Serializable, Comparable<Onm
     private Set<OnmsSnmpInterface> m_snmpInterfaces = new LinkedHashSet<OnmsSnmpInterface>();
 
     /** persistent field */
-    private Set<OnmsArpInterface> m_arpInterfaces = new LinkedHashSet<OnmsArpInterface>();
+    private Set<OnmsArpInterface> m_arpInterfaces = new LinkedHashSet<>();
 
     /** persistent field */
-    private Set<LldpLink> m_lldpLinks = new LinkedHashSet<LldpLink>();
+    private Set<LldpLink> m_lldpLinks = new LinkedHashSet<>();
 
     /** persistent field */
-    private Set<OnmsArpInterface> m_arpInterfacesBySource = new LinkedHashSet<OnmsArpInterface>();
+    private Set<OnmsArpInterface> m_arpInterfacesBySource = new LinkedHashSet<>();
 
-    private Set<OnmsCategory> m_categories = new LinkedHashSet<OnmsCategory>();
+    private Set<OnmsCategory> m_categories = new LinkedHashSet<>();
+
+    private Set<String> m_requisitionedCategories = new LinkedHashSet<>();
 
     private PathElement m_pathElement;
 
@@ -1059,6 +1061,24 @@ public class OnmsNode extends OnmsEntity implements Serializable, Comparable<Onm
             }
         }
         return false;
+    }
+
+    @Transient
+    @XmlTransient
+    public Set<String> getRequisitionedCategories() {
+        return m_requisitionedCategories;
+    }
+
+    public void setRequisitionedCategories(final Set<String> categories) {
+        m_requisitionedCategories = new LinkedHashSet<>(categories);
+    }
+
+    public void addRequisitionedCategory(final String category) {
+        m_requisitionedCategories.add(category);
+    }
+
+    public void removeRequisitionedCategory(final String category) {
+        m_requisitionedCategories.remove(category);
     }
 
     /**

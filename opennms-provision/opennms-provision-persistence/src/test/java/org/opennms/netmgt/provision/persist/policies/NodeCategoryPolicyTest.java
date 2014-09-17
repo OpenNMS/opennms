@@ -38,7 +38,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.test.MockLogAppender;
-import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsNode;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.transaction.annotation.Transactional;
@@ -71,7 +70,7 @@ public class NodeCategoryPolicyTest implements InitializingBean {
         p.setCategory("PolicyTest");
 
         List<OnmsNode> matchedNodes = matchPolicy(p, "1");
-        assertTrue(matchedNodes.get(0).getCategories().contains(new OnmsCategory("PolicyTest")));
+        assertTrue(matchedNodes.get(0).getRequisitionedCategories().contains("PolicyTest"));
     }
 
     @Test
@@ -87,13 +86,13 @@ public class NodeCategoryPolicyTest implements InitializingBean {
 
     private List<OnmsNode> matchPolicy(NodeCategorySettingPolicy p, String matchingId) {
         OnmsNode o;
-        List<OnmsNode> populatedNodes = new ArrayList<OnmsNode>();
-        List<OnmsNode> matchedNodes = new ArrayList<OnmsNode>();
+        final List<OnmsNode> populatedNodes = new ArrayList<OnmsNode>();
+        final List<OnmsNode> matchedNodes = new ArrayList<OnmsNode>();
 
-        for (OnmsNode node : m_nodes) {
+        for (final OnmsNode node : m_nodes) {
             System.err.println(node);
             o = p.apply(node);
-            if (o != null && o.getCategories().contains(new OnmsCategory(p.getCategory()))) {
+            if (o != null && o.getRequisitionedCategories().contains(p.getCategory())) {
                 matchedNodes.add(o);
             }
             if (node.getNodeId().equals(matchingId)) {
