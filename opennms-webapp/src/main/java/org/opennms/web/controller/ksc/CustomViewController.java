@@ -407,7 +407,7 @@ public class CustomViewController extends AbstractController implements Initiali
         Assert.state(m_defaultGraphsPerLine != 0, "property defaultGraphsPerLine must be set");
         
         m_executor = Executors.newSingleThreadExecutor(
-            new LogPreservingThreadFactory(getClass().getSimpleName(), 1, false)
+            new LogPreservingThreadFactory(getClass().getSimpleName(), 1)
         );
     }
 

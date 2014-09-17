@@ -323,7 +323,7 @@ public class HttpMonitor extends AbstractServiceMonitor {
         private final String m_nodeLabel;
         private boolean m_headerFinished = false;
         
-        HttpMonitorClient(final String nodeLabel, final NetworkInterface<InetAddress> iface, final TreeMap<String, Object>parameters) {
+        HttpMonitorClient(final String nodeLabel, final NetworkInterface<InetAddress> iface, final Map<String, Object>parameters) {
             m_nodeLabel = nodeLabel;
             m_iface = iface;
             m_parameters = parameters;

@@ -36,7 +36,7 @@ import java.util.Date;
  * @author <a href="mailto:ranger@opennms.org">Benjamin Reed</a>
  * @version $Id: $
  */
-public class FuzzyDateFormatter {
+public abstract class FuzzyDateFormatter {
     /** Constant <code>MILLISECONDS_PER_SECOND=1000.0</code> */
     private static final double MILLISECONDS_PER_SECOND = 1000.0;
     /** Constant <code>MILLISECONDS_PER_DAY=86400000.0</code> */

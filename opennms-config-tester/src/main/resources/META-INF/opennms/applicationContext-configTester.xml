@@ -198,11 +198,9 @@ org.opennms.netmgt.filter.FilterParseException: SQL Exception occurred getting I
     <property name="configResource" value="file:${opennms.home}/etc/eventconf.xml"/>
   </bean>
   
-  <bean id="eventdConfigFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-    <property name="staticMethod"><value>org.opennms.netmgt.config.EventdConfigFactory.init</value></property>
-  </bean>
 
-  <bean id="eventdConfigFactory" class="org.opennms.netmgt.config.EventdConfigFactory" depends-on="eventdConfigFactory-init" factory-method="getInstance"/>
+
+  <bean id="eventdConfigFactory" class="org.opennms.netmgt.config.EventdConfigManager"/>
   
   <bean id="excludeUeisProperties" class="org.opennms.netmgt.config.tester.support.ExcludeUeisProperties"/>
   
@@ -464,11 +462,7 @@ org.opennms.netmgt.filter.FilterParseException: SQL Exception occurred getting I
 
   <bean id="scriptdConfigFactory" class="org.opennms.netmgt.config.ScriptdConfigFactory" depends-on="scriptdConfigFactory-init" factory-method="getInstance"/>
 
-  <bean id="serviceConfigFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-    <property name="staticMethod"><value>org.opennms.netmgt.config.ServiceConfigFactory.init</value></property>
-  </bean>
-
-  <bean id="serviceConfigFactory" class="org.opennms.netmgt.config.ServiceConfigFactory" depends-on="serviceConfigFactory-init" factory-method="getInstance"/>
+  <bean id="serviceConfigFactory" class="org.opennms.netmgt.config.ServiceConfigFactory" />
 
   <bean id="siteStatusViewConfigDao" class="org.opennms.netmgt.dao.castor.DefaultSiteStatusViewConfigDao"/>
   

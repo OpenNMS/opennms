@@ -106,12 +106,6 @@ public class JUnitDNSServerExecutionListener extends OpenNMSAbstractTestExecutio
 
         LOG.debug("starting DNS server");
         m_server.start();
-        try {
-            Thread.sleep(50);
-        } catch (final InterruptedException e) {
-            LOG.debug("interrupted while waiting for server to come up", e);
-            Thread.currentThread().interrupt();
-        }
     }
 
     /** {@inheritDoc} */

@@ -29,6 +29,7 @@
 package org.opennms.netmgt.dao.api;
 
 import java.net.InetAddress;
+import java.util.List;
 
 import org.opennms.netmgt.model.OspfElement;
 
@@ -41,5 +42,7 @@ public interface OspfElementDao extends OnmsDao<OspfElement, Integer> {
     public OspfElement findByNodeId(Integer id);
 
     public OspfElement findByRouterId(InetAddress routerId);
+
+    public List<OspfElement> findAllByRouterId(InetAddress routerId);
 
 }

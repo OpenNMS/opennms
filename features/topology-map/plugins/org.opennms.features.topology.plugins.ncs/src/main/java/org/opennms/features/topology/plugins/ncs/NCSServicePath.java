@@ -20,7 +20,7 @@ public class NCSServicePath {
     private NCSComponentRepository m_dao;
     private NodeDao m_nodeDao;
     private String m_nodeForeignSource;
-    private LinkedList<NCSVertex> m_vertices = new LinkedList<NCSVertex>();
+    private List<NCSVertex> m_vertices = new LinkedList<NCSVertex>();
     private String m_serviceForeignSource;
     private String m_deviceAForeignID;
     private String m_deviceZForeignID;

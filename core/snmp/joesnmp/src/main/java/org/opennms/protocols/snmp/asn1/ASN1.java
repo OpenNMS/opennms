@@ -34,7 +34,7 @@ package org.opennms.protocols.snmp.asn1;
  * 
  * @author <a href="mailto:weave@oculan.com">Brian Weaver</a>
  */
-public class ASN1 {
+public abstract class ASN1 {
     /**
      * Basic data type representing TRUE or FALSE.
      */

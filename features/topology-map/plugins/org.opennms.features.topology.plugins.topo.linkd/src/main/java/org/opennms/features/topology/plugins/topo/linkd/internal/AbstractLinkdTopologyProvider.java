@@ -212,15 +212,6 @@ public abstract class AbstractLinkdTopologyProvider extends AbstractTopologyProv
 
     }
 
-    private static String getIfStatusString(int ifStatusNum) {
-          if (ifStatusNum < OPER_ADMIN_STATUS.length) {
-              return OPER_ADMIN_STATUS[ifStatusNum];
-          } else {
-              return "Unknown (" + ifStatusNum + ")";
-          }
-      }
-
-
     public String getConfigurationFile() {
         return m_configurationFile;
     }
@@ -444,7 +435,7 @@ public abstract class AbstractLinkdTopologyProvider extends AbstractTopologyProv
         VertexHopGraphProvider.VertexHopCriteria criterion = null;
 
         if (node != null) {
-            final Vertex defaultVertex = getVertex(TOPOLOGY_NAMESPACE_LINKD, node.getNodeId());
+            final Vertex defaultVertex = getVertex(node);
             if (defaultVertex != null) {
                 VertexHopGraphProvider.FocusNodeHopCriteria hopCriteria = new VertexHopGraphProvider.FocusNodeHopCriteria();
                 hopCriteria.add(defaultVertex);

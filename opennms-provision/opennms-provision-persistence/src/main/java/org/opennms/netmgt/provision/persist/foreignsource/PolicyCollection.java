@@ -46,7 +46,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement(name="policies")
 public class PolicyCollection implements List<PluginConfig> {
-    LinkedList<PluginConfig> m_list = null;
+    List<PluginConfig> m_list = null;
 
 	/**
 	 * <p>Constructor for PolicyCollection.</p>

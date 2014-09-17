@@ -21,7 +21,10 @@
             <unpackOptions>
                 <excludes>
                     <exclude>**/*.txt</exclude>
-                    <exclude>bin/*</exclude>
+                    <exclude>bin/admin</exclude>
+                    <exclude>bin/opennms</exclude>
+                    <exclude>bin/start</exclude>
+                    <exclude>bin/stop</exclude>
                     <exclude>demos/*</exclude>
 
                     <!-- Get rid of the old Karaf features XML -->

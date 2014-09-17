@@ -39,4 +39,6 @@ import java.lang.annotation.Target;
 @Target({ElementType.METHOD,ElementType.TYPE})
 public @interface JUnitSnmpAgents {
     JUnitSnmpAgent[] value() default {};
+
+    boolean forceMockStrategy() default false;
 }

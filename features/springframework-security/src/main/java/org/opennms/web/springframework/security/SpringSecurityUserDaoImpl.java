@@ -261,7 +261,7 @@ public class SpringSecurityUserDaoImpl implements SpringSecurityUserDao, Initial
         m_roles = roles;
     }
 
-    private Collection<? extends GrantedAuthority> getAuthorityListFromRoleList(LinkedList<String> roleList, Map<String, Boolean> roleAddDefaultMap) {
+    private Collection<? extends GrantedAuthority> getAuthorityListFromRoleList(List<String> roleList, Map<String, Boolean> roleAddDefaultMap) {
         boolean addToDefaultGroup = false;
         
         for (String role : roleList) {

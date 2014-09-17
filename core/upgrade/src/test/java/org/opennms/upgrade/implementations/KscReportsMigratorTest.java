@@ -78,6 +78,8 @@ public class KscReportsMigratorTest {
     @Test
     public void testUpgrade() throws Exception {
         KscReportsMigrator obj = new KscReportsMigrator() {
+            protected void initializeDatasource() throws OnmsUpgradeException {
+            }
             protected List<SnmpInterface> getInterfacesToMerge() throws OnmsUpgradeException {
                 List<SnmpInterface> interfaces = new ArrayList<SnmpInterface>();
                 interfaces.add(new SnmpInterface(1, null, null, "eth0", "eth0", "005056c00008", false));

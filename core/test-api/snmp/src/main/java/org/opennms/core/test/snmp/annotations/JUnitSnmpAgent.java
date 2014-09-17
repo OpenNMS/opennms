@@ -53,4 +53,6 @@ public @interface JUnitSnmpAgent {
      * {@link ProxySnmpAgentConfigFactory}
      */
     int port() default 9161;
+
+    boolean forceMockStrategy() default false;
 }

@@ -66,8 +66,9 @@ public class GroupForm extends CustomComponent {
      * Instantiates a new group form.
      *
      * @param resourceTypes the resource types
+     * @param mibGroupEditable true, if the MIB group can be modified
      */
-    public GroupForm(final List<String> resourceTypes) {
+    public GroupForm(final List<String> resourceTypes, boolean mibGroupEditable) {
         setCaption("MIB Group Detail");
         groupLayout.setMargin(true);
 
@@ -83,7 +84,7 @@ public class GroupForm extends CustomComponent {
         ifType.setNewItemsAllowed(true);
         groupLayout.addComponent(ifType);
 
-        mibObjs = new MibObjField(resourceTypes);
+        mibObjs = new MibObjField(resourceTypes, mibGroupEditable);
         mibObjs.setCaption("MIB Objects");
         mibObjs.setRequired(true);
         mibObjs.setImmediate(true);

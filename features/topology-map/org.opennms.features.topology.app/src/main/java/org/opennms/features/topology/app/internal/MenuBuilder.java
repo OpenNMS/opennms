@@ -44,7 +44,7 @@ import java.util.Set;
 public abstract class MenuBuilder<T, K>{
 
     private static final String TOP_LEVEL_ADDITIONS = "Additions";
-	protected LinkedHashMap<String, Object> m_menuBar = new LinkedHashMap<String, Object>();
+	protected Map<String, Object> m_menuBar = new LinkedHashMap<String, Object>();
 	private List<String> m_menuOrder = new ArrayList<String>();
 	private Map<String, List<String>> m_submenuOrderMap = new HashMap<String, List<String>>();
 
@@ -82,7 +82,7 @@ public abstract class MenuBuilder<T, K>{
 	    }
 	}
 
-	private void add(LinkedList<String> menuPath, T command) {
+	private void add(List<String> menuPath, T command) {
 	    add(menuPath, command, m_menuBar);
 	}
 

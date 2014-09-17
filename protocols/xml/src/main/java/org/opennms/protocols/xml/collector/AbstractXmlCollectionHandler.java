@@ -111,7 +111,10 @@ public abstract class AbstractXmlCollectionHandler implements XmlCollectionHandl
     private RrdRepository m_rrdRepository;
 
     /** The XML resource type Map. */
-    private HashMap<String, XmlResourceType> m_resourceTypeList = new HashMap<String, XmlResourceType>();
+    private Map<String, XmlResourceType> m_resourceTypeList = new HashMap<String, XmlResourceType>();
+
+    /** The Node Level Resource. */
+    private XmlSingleInstanceCollectionResource m_nodeResource;
 
     /* (non-Javadoc)
      * @see org.opennms.protocols.xml.collector.XmlCollectionHandler#setServiceName(java.lang.String)
@@ -295,7 +298,10 @@ public abstract class AbstractXmlCollectionHandler implements XmlCollectionHandl
     protected XmlCollectionResource getCollectionResource(CollectionAgent agent, String instance, String resourceType, Date timestamp) {
         XmlCollectionResource resource = null;
         if (resourceType.equalsIgnoreCase("node")) {
-            resource = new XmlSingleInstanceCollectionResource(agent);
+            if (m_nodeResource == null) {
+                m_nodeResource = new XmlSingleInstanceCollectionResource(agent);
+            }
+            resource = m_nodeResource;
         } else {
             XmlResourceType type = getXmlResourceType(agent, resourceType);
             resource = new XmlMultiInstanceCollectionResource(agent, instance, type);

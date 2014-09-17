@@ -58,6 +58,7 @@ import org.opennms.core.utils.FilteringIterator;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.IteratorIterator;
 import org.opennms.core.xml.CastorUtils;
+import org.opennms.netmgt.config.api.DiscoveryConfigurationFactory;
 import org.opennms.netmgt.config.discovery.DiscoveryConfiguration;
 import org.opennms.netmgt.config.discovery.ExcludeRange;
 import org.opennms.netmgt.config.discovery.IncludeRange;
@@ -79,7 +80,7 @@ import org.springframework.core.io.FileSystemResource;
  *
  * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
  */
-public class DiscoveryConfigFactory {
+public class DiscoveryConfigFactory implements DiscoveryConfigurationFactory {
     private static final Logger LOG = LoggerFactory.getLogger(DiscoveryConfigFactory.class);
     private final ReadWriteLock m_globalLock = new ReentrantReadWriteLock();
     private final Lock m_readLock = m_globalLock.readLock();

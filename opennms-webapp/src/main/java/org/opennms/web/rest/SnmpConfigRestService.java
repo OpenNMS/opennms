@@ -30,6 +30,7 @@ package org.opennms.web.rest;
 
 import java.net.InetAddress;
 
+import javax.annotation.PreDestroy;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
@@ -43,8 +44,8 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.config.SnmpConfigAccessService;
 import org.opennms.netmgt.config.SnmpEventInfo;
-import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.web.snmpinfo.SnmpInfo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -110,8 +111,15 @@ public class SnmpConfigRestService extends OnmsRestService {
     UriInfo m_uriInfo;
 
     @Autowired
-    private SnmpPeerFactory m_snmpPeerFactory;
-    
+    private SnmpConfigAccessService m_accessService;
+
+    @PreDestroy
+    protected void tearDown() {
+        if (m_accessService != null) {
+            m_accessService.flushAll();
+        }
+    }
+
     /**
      * <p>getSnmpInfo</p>
      *
@@ -127,8 +135,8 @@ public class SnmpConfigRestService extends OnmsRestService {
             final InetAddress addr = InetAddressUtils.addr(ipAddr);
             if (addr == null) {
                 throw new WebApplicationException(Response.serverError().build());
-            }            
-    		SnmpAgentConfig config = m_snmpPeerFactory.getAgentConfig(addr);
+            }
+            final SnmpAgentConfig config = m_accessService.getAgentConfig(addr);
             return new SnmpInfo(config);
         } finally {
             readUnlock();
@@ -148,9 +156,15 @@ public class SnmpConfigRestService extends OnmsRestService {
     public Response setSnmpInfo(@PathParam("ipAddr") final String ipAddress, final SnmpInfo snmpInfo) {
         writeLock();
         try {
-            final SnmpEventInfo eventInfo = snmpInfo.createEventInfo(ipAddress);
-            m_snmpPeerFactory.define(eventInfo);
-            SnmpPeerFactory.saveCurrent(); //TODO: this shouldn't be a static call
+            final SnmpEventInfo eventInfo;
+            if (ipAddress.contains("-")) {
+                final String[] addrs = SnmpConfigRestService.getAddresses(ipAddress);
+                eventInfo = snmpInfo.createEventInfo(addrs[0], addrs[1]);
+            } else {
+                eventInfo = snmpInfo.createEventInfo(ipAddress);
+            }
+
+            m_accessService.define(eventInfo);
             return Response.seeOther(getRedirectUri(m_uriInfo)).build();
         } catch (final Throwable e) {
             return Response.serverError().build();
@@ -175,9 +189,14 @@ public class SnmpConfigRestService extends OnmsRestService {
         try {
             final SnmpInfo info = new SnmpInfo();
             setProperties(params, info);
-            final SnmpEventInfo eventInfo = info.createEventInfo(ipAddress);
-            m_snmpPeerFactory.define(eventInfo);
-            SnmpPeerFactory.saveCurrent();
+            final SnmpEventInfo eventInfo;
+            if (ipAddress.contains("-")) {
+                final String[] addrs = SnmpConfigRestService.getAddresses(ipAddress);
+                eventInfo = info.createEventInfo(addrs[0], addrs[1]);
+            } else {
+                eventInfo = info.createEventInfo(ipAddress);
+            }
+            m_accessService.define(eventInfo);
             return Response.seeOther(getRedirectUri(m_uriInfo)).build();
         } catch (final Throwable e) {
             return Response.serverError().build();
@@ -186,4 +205,11 @@ public class SnmpConfigRestService extends OnmsRestService {
         }
     }
 
+    protected static String[] getAddresses(final String input) {
+        if (input == null || input.trim().isEmpty()) {
+            return new String[] { null, null };
+        } else {
+            return input.trim().split("-", 2);
+        }
+    }
 }

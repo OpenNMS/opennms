@@ -38,7 +38,7 @@ import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONParser;
 import com.google.gwt.json.client.JSONValue;
 
-public class NodeRestResponseMapper {
+public abstract class NodeRestResponseMapper {
     public static List<IpInterface> createIpInterfaceData(String jsonString){
         final List<IpInterface> ipIfaceList = new ArrayList<IpInterface>();
         final JSONValue value = JSONParser.parseStrict(jsonString);

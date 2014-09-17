@@ -50,7 +50,7 @@ import org.drools.compiler.PackageBuilder;
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @version $Id: $
  */
-public class CorrelationExample {
+public abstract class CorrelationExample {
 
     /**
      * <p>main</p>

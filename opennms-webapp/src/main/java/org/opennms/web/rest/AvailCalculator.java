@@ -172,10 +172,10 @@ public class AvailCalculator {
             
             calc.onStatusChange(statusChange);
         }
-        public double getAvailability(int i) {
+        public double getAvailability(int index) {
             double sum = 0.0;
-            for(Map.Entry<OnmsLocationMonitor, UptimeCalculator> entry : m_uptimeCalculators.entrySet()) {
-                sum += entry.getValue().getUptimePercentage(i);
+            for(final Map.Entry<OnmsLocationMonitor, UptimeCalculator> entry : m_uptimeCalculators.entrySet()) {
+                sum += entry.getValue().getUptimePercentage(index);
             }
             return (m_uptimeCalculators.size() == 0 ? 1.0 : sum / m_uptimeCalculators.size());
         }
@@ -234,11 +234,10 @@ public class AvailCalculator {
     }
     
     
-    public double getAvailabilityFor(Collection<OnmsMonitoredService> svcs, int i) {
-        
+    public double getAvailabilityFor(final Collection<OnmsMonitoredService> svcs, final int index) {
         double sum = 0.0;
-        for(OnmsMonitoredService svc : svcs) {
-            sum += getServiceAvailCalculator(svc).getAvailability(i);
+        for(final OnmsMonitoredService svc : svcs) {
+            sum += getServiceAvailCalculator(svc).getAvailability(index);
         }
         
         return svcs.size() == 0 ? 1.0 : sum / svcs.size();

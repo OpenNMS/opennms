@@ -29,6 +29,7 @@
 package org.opennms.features.poller.remote.gwt.client;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.opennms.features.poller.remote.gwt.client.events.LocationPanelSelectEvent;
 import org.opennms.features.poller.remote.gwt.client.location.LocationInfo;
@@ -50,7 +51,7 @@ import com.google.gwt.user.client.ui.Widget;
  */
 public class PageableLocationList extends PageableList {
     
-    private ArrayList<? extends LocationInfo> m_locations;
+    private List<? extends LocationInfo> m_locations;
 
     private class LocationInfoDisplay extends Widget{
         
@@ -113,17 +114,17 @@ public class PageableLocationList extends PageableList {
      *
      * @param locations a {@link java.util.ArrayList} object.
      */
-    public void updateList(final ArrayList<? extends LocationInfo> locations) {
+    public void updateList(final List<? extends LocationInfo> locations) {
         setLocations(locations);
         setCurrentPageIndex(getCurrentPageIndex());
         //refresh();
     }
 
-    private ArrayList<? extends LocationInfo> getLocations() {
+    private List<? extends LocationInfo> getLocations() {
         return m_locations;
     }
 
-    private void setLocations(final ArrayList<? extends LocationInfo> locations) {
+    private void setLocations(final List<? extends LocationInfo> locations) {
         m_locations = locations;
     }
 

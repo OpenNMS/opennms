@@ -28,6 +28,7 @@
 
 package org.opennms.systemreport.opennms;
 
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
@@ -65,7 +66,7 @@ public class TopEventReportPlugin extends AbstractSystemReportPlugin implements 
     }
 
     @Override
-    public TreeMap<String, Resource> getEntries() {
+    public Map<String, Resource> getEntries() {
         final TreeMap<String,Resource> map = new TreeMap<String,Resource>();
 
         if (m_eventCountDao != null) {

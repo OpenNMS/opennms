@@ -34,6 +34,7 @@ import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -68,17 +69,17 @@ public class JmxDatacollectionConfiggenerator {
 
     private static ObjectFactory xmlObjectFactory = new ObjectFactory();
 
-    private static ArrayList<String> standardVmBeans = new ArrayList<String>();
+    private static List<String> standardVmBeans = new ArrayList<String>();
 
-    private static ArrayList<String> ignores = new ArrayList<String>();
+    private static List<String> ignores = new ArrayList<String>();
 
-    private static ArrayList<String> numbers = new ArrayList<String>();
+    private static List<String> numbers = new ArrayList<String>();
 
-    private static ArrayList<String> rras = new ArrayList<String>();
+    private static List<String> rras = new ArrayList<String>();
 
-    private static HashMap<String, Integer> aliasMap = new HashMap<String, Integer>();
+    private static Map<String, Integer> aliasMap = new HashMap<String, Integer>();
 
-    private static ArrayList<String> aliasList = new ArrayList<String>();
+    private static List<String> aliasList = new ArrayList<String>();
 
     private static Rrd rrd = new Rrd();
     private static NameCutter nameCutter = new NameCutter();

@@ -285,4 +285,5 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.sprin
     <constructor-arg name="localReportRepository" ref="legacyLocalReportRepository"/>
   </bean>
   <bean id="foreignSourceAndRequistionAccessService" class="org.opennms.web.rest.RequisitionAccessService"></bean>
+  <bean id="snmpConfigAccessService" class="org.opennms.netmgt.config.SnmpConfigAccessService" />
 </beans>

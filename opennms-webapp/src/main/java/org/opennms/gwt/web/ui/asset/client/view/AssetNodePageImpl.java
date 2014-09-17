@@ -29,6 +29,7 @@
 package org.opennms.gwt.web.ui.asset.client.view;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.opennms.gwt.web.ui.asset.client.AssetPageConstants;
 import org.opennms.gwt.web.ui.asset.client.presenter.AssetPagePresenter;
@@ -265,7 +266,7 @@ public class AssetNodePageImpl extends Composite implements AssetPagePresenter.D
     @UiField
     Label lastModified;
 
-    private ArrayList<FieldSet> fieldSetList = new ArrayList<FieldSet>();
+    private List<FieldSet> fieldSetList = new ArrayList<FieldSet>();
 
     public AssetNodePageImpl() {
         initWidget(uiBinder.createAndBindUi(this));
