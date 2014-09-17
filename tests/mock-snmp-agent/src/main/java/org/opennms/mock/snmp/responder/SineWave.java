@@ -6,6 +6,7 @@ import org.snmp4j.smi.Integer32;
 import org.snmp4j.smi.Variable;
 
 public class SineWave implements DynamicVariable {
+        @Override
 	public Variable getVariableForOID(String oidStr) {
 		String[] oids = oidStr.split("\\.");
 		Integer instance = Integer.parseInt(oids[oids.length-1]);

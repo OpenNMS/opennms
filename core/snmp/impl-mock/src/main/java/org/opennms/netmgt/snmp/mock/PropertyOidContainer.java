@@ -64,7 +64,7 @@ public class PropertyOidContainer {
             try {
                 m_tree.put(SnmpObjId.get(key), factory.parseMibValue(value));
             } catch (final NumberFormatException nfe) {
-                LogUtils.debugf(this, "Unable to store '%s = %s', skipping. (%s)", key, value, nfe.getLocalizedMessage());
+            	LogUtils.debugf(this, "Unable to store '%s = %s', skipping. (%s)", key, value, nfe.getLocalizedMessage());
             }
         }
     }

@@ -28,10 +28,14 @@
 
 package org.opennms.netmgt.snmp.mock;
 
+import static org.opennms.core.utils.InetAddressUtils.addr;
+import static org.opennms.core.utils.InetAddressUtils.str;
+
 import java.math.BigInteger;
 import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.Arrays;
 
-import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.snmp.AbstractSnmpValue;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpValue;
@@ -42,6 +46,7 @@ public class MockSnmpValue extends AbstractSnmpValue {
 			super(type, value);
 		}
 
+                @Override
 		public boolean isNull() {
             return true;
         }
@@ -53,6 +58,7 @@ public class MockSnmpValue extends AbstractSnmpValue {
             super(SnmpValue.SNMP_OCTET_STRING, value);
         }
 
+        @Override
         public boolean isDisplayable() {
             return false;
         }
@@ -64,13 +70,15 @@ public class MockSnmpValue extends AbstractSnmpValue {
 
     	public OctetStringSnmpValue(final byte[] bytes) {
     		super(SnmpValue.SNMP_OCTET_STRING, new String(bytes));
-    		m_bytes = bytes;
+    		m_bytes = Arrays.copyOf(bytes, bytes.length);
     	}
 
+                @Override
         public byte[] getBytes() {
         	return m_bytes;
         }
         
+                @Override
         public String toString() {
             final byte[] data = getBytes();
             
@@ -81,6 +89,7 @@ public class MockSnmpValue extends AbstractSnmpValue {
             return new String(results);
         }
 
+                @Override
         public String toHexString() {
         	final byte[] data = getBytes();
             final StringBuffer b = new StringBuffer();
@@ -92,6 +101,7 @@ public class MockSnmpValue extends AbstractSnmpValue {
             return b.toString();
         }
         
+                @Override
         public boolean isDisplayable() {
             return allBytesDisplayable(getBytes());
         }
@@ -101,29 +111,40 @@ public class MockSnmpValue extends AbstractSnmpValue {
     public static class IpAddressSnmpValue extends MockSnmpValue {
     	
     	public IpAddressSnmpValue(InetAddress addr) {
-    		this(InetAddressUtils.str(addr));
+    		this(str(addr));
     	}
     	
     	public IpAddressSnmpValue(byte[] bytes) {
-    		this(InetAddressUtils.toIpAddrString(bytes));
+    		this(addrStr(bytes));
+    	}
+    	
+    	public static String addrStr(byte[] bytes) {
+    		try {
+				return str(InetAddress.getByAddress(bytes));
+			} catch (UnknownHostException e) {
+				throw new RuntimeException(e);
+			}
     	}
 
         public IpAddressSnmpValue(String value) {
             super(SnmpValue.SNMP_IPADDRESS, value);
         }
 
+            @Override
         public InetAddress toInetAddress() {
             try {
-                return InetAddressUtils.addr(toString());
+                return addr(toString());
             } catch (Exception e) {
                 return super.toInetAddress();
             }
         }
         
+            @Override
         public byte[] getBytes() {
             return toInetAddress().getAddress();
         }
         
+            @Override
         public boolean isDisplayable() {
             return true;
         }
@@ -136,18 +157,22 @@ public class MockSnmpValue extends AbstractSnmpValue {
             super(type, value);
         }
         
+        @Override
         public boolean isNumeric() {
             return true;
         }
         
+        @Override
         public int toInt() {
             return Integer.parseInt(getNumberString());
         }
         
+        @Override
         public long toLong() {
             return Long.parseLong(getNumberString());
         }
         
+        @Override
         public BigInteger toBigInteger() {
             return new BigInteger(getNumberString());
         }
@@ -156,10 +181,12 @@ public class MockSnmpValue extends AbstractSnmpValue {
             return toString();
         }
         
+        @Override
         public byte[] getBytes() {
             return toBigInteger().toByteArray();
         }
 
+        @Override
         public boolean isDisplayable() {
             return true;
         }
@@ -257,16 +284,19 @@ public class MockSnmpValue extends AbstractSnmpValue {
         	this("(" + centiSeconds + ")");
         }
 
+        @Override
         public String getNumberString() {
             String str = getValue();
             int end = str.indexOf(')');
             return (end < 0 ? str : str.substring(1, end));
         }
         
+        @Override
         public String toString() {
         	return String.valueOf(toLong());
         }
         
+        @Override
         public String toDisplayString() {
         	return toString();
         	/*
@@ -300,6 +330,7 @@ public class MockSnmpValue extends AbstractSnmpValue {
             super(SnmpValue.SNMP_OCTET_STRING, value);
         }
         
+        @Override
         public int toInt() {
             try {
                 return Integer.parseInt(toString());
@@ -309,6 +340,7 @@ public class MockSnmpValue extends AbstractSnmpValue {
             
         }
 
+        @Override
         public boolean isDisplayable() {
             return true;
         }
@@ -340,10 +372,12 @@ public class MockSnmpValue extends AbstractSnmpValue {
             super(SnmpValue.SNMP_OBJECT_IDENTIFIER, value);
         }
 
+            @Override
         public SnmpObjId toSnmpObjId() {
             return SnmpObjId.get(toString());
         }
 
+            @Override
         public boolean isDisplayable() {
             return true;
         }
@@ -363,20 +397,25 @@ public class MockSnmpValue extends AbstractSnmpValue {
         m_value = value;
     }
 
+        @Override
     public boolean isEndOfMib() {
         return getType() == SnmpValue.SNMP_END_OF_MIB;
     }
     
+        @Override
     public int getType() {
         return m_type;
     }
     
+        @Override
     public String toDisplayString() { return toString(); }
     
+        @Override
     public String toString() { return m_value; }
     
     public String getValue() { return m_value; }
 
+        @Override
     public boolean equals(Object obj) {
         if (obj instanceof MockSnmpValue ) {
             MockSnmpValue val = (MockSnmpValue)obj;
@@ -385,15 +424,18 @@ public class MockSnmpValue extends AbstractSnmpValue {
         return false;
     }
 
+        @Override
     public int hashCode() {
         if (m_value == null) return 0;
         return m_value.hashCode();
     }
 
+        @Override
     public boolean isNumeric() {
         return false;
     }
     
+        @Override
     public boolean isError() {
         switch (getType()) {
         case SnmpValue.SNMP_NO_SUCH_INSTANCE:
@@ -405,38 +447,47 @@ public class MockSnmpValue extends AbstractSnmpValue {
         
     }
 
+        @Override
     public int toInt() {
         throw new IllegalArgumentException("Unable to convert "+this+" to an int");
     }
 
+        @Override
     public InetAddress toInetAddress() {
         throw new IllegalArgumentException("Unable to convert "+this+" to an InetAddress");
     }
 
+        @Override
     public long toLong() {
         throw new IllegalArgumentException("Unable to convert "+this+" to a long");
     }
 
+        @Override
     public String toHexString() {
         throw new IllegalArgumentException("Unable to convert "+this+" to a hex string");
     }
 
+        @Override
     public BigInteger toBigInteger() {
         throw new IllegalArgumentException("Unable to convert "+this+" to a hex string");
     }
 
+        @Override
     public SnmpObjId toSnmpObjId() {
         throw new IllegalArgumentException("Unable to convert "+this+" to an SNMP object ID");
     }
 
+        @Override
     public byte[] getBytes() {
         return toString().getBytes();
     }
 
+        @Override
     public boolean isDisplayable() {
         return false;
     }
 
+        @Override
     public boolean isNull() {
         return false;
     }

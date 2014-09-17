@@ -44,7 +44,6 @@ import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.netmgt.snmp.SnmpWalker;
 
 public class MockSnmpWalker extends SnmpWalker {
-
 	private static class MockPduBuilder extends WalkerPduBuilder {
         private List<SnmpObjId> m_oids = new ArrayList<SnmpObjId>();
 
@@ -120,7 +119,7 @@ public class MockSnmpWalker extends SnmpWalker {
     protected void sendNextPdu(final WalkerPduBuilder pduBuilder) throws IOException {
         final MockPduBuilder builder = (MockPduBuilder)pduBuilder;
         final List<SnmpObjId> oids = builder.getOids();
-        LogUtils.debugf(this, "'Sending' tracker PDU of size " + oids.size());
+        LogUtils.debugf(this, "'Sending' tracker PDU of size %d", oids.size());
 
         m_executor.submit(new ResponseHandler(oids));
     }
@@ -162,7 +161,7 @@ public class MockSnmpWalker extends SnmpWalker {
     }
 
     @Override
-    protected void close() throws IOException {
+    public void close() throws IOException {
         m_executor.shutdown();
     }
 
@@ -201,8 +200,8 @@ public class MockSnmpWalker extends SnmpWalker {
 	            int index = 1; // snmp index start at 1
 	            for (final SnmpObjId oid : m_oids) {
 	            	SnmpObjId nextOid = m_container.findNextOidForOid(oid);
-	            	if (nextOid == null) { 
-		            	LogUtils.debugf(this, "No OID following %s", oid);
+	            	if (nextOid == null) {
+	            		LogUtils.debugf(this, "No OID following %s", oid);
 	            		if (m_snmpVersion == SnmpAgentConfig.VERSION1) {
 	            			if (errorStatus == 0) { // for V1 only record the index of the first failing varbind
 	            				errorStatus = CollectionTracker.NO_SUCH_NAME_ERR;

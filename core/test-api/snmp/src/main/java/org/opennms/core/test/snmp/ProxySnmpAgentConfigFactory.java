@@ -38,25 +38,24 @@ import java.net.InetAddress;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.LogUtils;
-import org.opennms.netmgt.config.SnmpAgentConfigProxyMapper;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.snmp.SnmpAgentAddress;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.springframework.core.io.InputStreamResource;
 
 public class ProxySnmpAgentConfigFactory extends SnmpPeerFactory {
-
     public ProxySnmpAgentConfigFactory(final InputStream config) throws MarshalException, ValidationException, FileNotFoundException, IOException {
         super(new InputStreamResource(config));
     }
 
+    @Override
     public SnmpAgentConfig getAgentConfig(final InetAddress address) {
     	final SnmpAgentConfigProxyMapper mapper = SnmpAgentConfigProxyMapper.getInstance();
     	final SnmpAgentAddress agentAddress = mapper.getAddress(address);
     	
     	final String addressString = str(address);
 		if (agentAddress == null) {
-    		LogUtils.debugf(this, "No agent address mapping found for %s!  Try adding a @JUnitSnmpAgent(host=\"%s\", resource=\"...\" entry...", addressString, addressString);
+			LogUtils.debugf(this, "No agent address mapping found for %s!  Try adding a @JUnitSnmpAgent(host=\"%s\", resource=\"...\" entry...", addressString, addressString);
     		return super.getAgentConfig(address);
     		// throw new IllegalArgumentException("No agent address mapping found for " + addressString);
     	}
@@ -64,7 +63,7 @@ public class ProxySnmpAgentConfigFactory extends SnmpPeerFactory {
 		final SnmpAgentConfig config = new SnmpAgentConfig(agentAddress.getAddress());
         config.setProxyFor(address);
         config.setPort(agentAddress.getPort());
-        
+
         LogUtils.debugf(this, "proxying %s -> %s", addressString, agentAddress);
         return config;
     }
