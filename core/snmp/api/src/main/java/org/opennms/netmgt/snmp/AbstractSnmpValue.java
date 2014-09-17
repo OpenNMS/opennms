@@ -46,7 +46,7 @@ public abstract class AbstractSnmpValue implements SnmpValue {
     public static boolean allBytesUTF_8(final byte[] bytes) {
         int i = 0;
         // Check for BOM
-        if (bytes.length >= 3 && (bytes[0] & 0xFF) == 0xEF && (bytes[1] & 0xFF) == 0xBB & (bytes[2] & 0xFF) == 0xBF) {
+        if (bytes.length >= 3 && (bytes[0] & 0xFF) == 0xEF && (bytes[1] & 0xFF) == 0xBB && (bytes[2] & 0xFF) == 0xBF) {
             i = 3;
         }
         

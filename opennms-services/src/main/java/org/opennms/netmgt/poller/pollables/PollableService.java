@@ -398,8 +398,6 @@ public class PollableService extends PollableElement implements ReadyRunnable, M
     }
 
     private PollStatus doRun(int timeout) {
-        final Map<String,String> mdc = Logging.getCopyOfContextMap();
-        Logging.putPrefix("poller");
         long startDate = System.currentTimeMillis();
         LOG.debug("Start Scheduled Poll of service {}", this);
         PollStatus status;
@@ -419,7 +417,6 @@ public class PollableService extends PollableElement implements ReadyRunnable, M
             status = getStatus();
         }
         LOG.debug("Finish Scheduled Poll of service {}, started at {}", this, new Date(startDate));
-        Logging.setContextMap(mdc);
         return status;
     }
 

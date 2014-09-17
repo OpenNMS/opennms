@@ -67,7 +67,7 @@ public class TaskTest {
     @Before
     public void setUp() {
         m_executor = Executors.newFixedThreadPool(50,
-            new LogPreservingThreadFactory(getClass().getSimpleName(), 50, false)
+            new LogPreservingThreadFactory(getClass().getSimpleName(), 50)
         );
         m_coordinator = new DefaultTaskCoordinator("TaskTest", m_executor);
     }
