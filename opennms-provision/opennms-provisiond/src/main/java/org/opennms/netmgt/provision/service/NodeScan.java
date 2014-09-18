@@ -29,10 +29,6 @@
 package org.opennms.netmgt.provision.service;
 
 import static org.opennms.core.utils.InetAddressUtils.addr;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-
 
 import java.net.InetAddress;
 import java.util.Date;
@@ -65,14 +61,10 @@ import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpWalker;
 import org.opennms.netmgt.snmp.TableTracker;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
 
-/**
- * <p>NodeScan class.</p>
- *
- * @author ranger
- * @version $Id: $
- */
 // FIXME inner non static class with backreference, bad design, keeps objects alive
 public class NodeScan implements RunInBatch {
     private static final Logger LOG = LoggerFactory.getLogger(NodeScan.class);
@@ -886,10 +878,11 @@ public class NodeScan implements RunInBatch {
      */
     public void scanCompleted(final BatchTask currentPhase) {
         if (!isAborted()) {
-        	final EventBuilder bldr = new EventBuilder(EventConstants.PROVISION_SCAN_COMPLETE_UEI, "Provisiond");
+            final EventBuilder bldr = new EventBuilder(EventConstants.PROVISION_SCAN_COMPLETE_UEI, "Provisiond");
             bldr.setNodeid(getNodeId());
             bldr.addParam(EventConstants.PARM_FOREIGN_SOURCE, getForeignSource());
             bldr.addParam(EventConstants.PARM_FOREIGN_ID, getForeignId());
+            bldr.addParam("scanClass", getClass().getSimpleName());
             getEventForwarder().sendNow(bldr.getEvent());
         }
         

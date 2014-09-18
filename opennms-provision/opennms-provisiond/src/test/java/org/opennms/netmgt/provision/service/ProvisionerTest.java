@@ -103,13 +103,6 @@ import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
 import org.opennms.netmgt.provision.persist.foreignsource.PluginConfig;
 import org.opennms.netmgt.provision.persist.policies.NodeCategorySettingPolicy;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
-import org.opennms.netmgt.provision.service.ImportScheduler;
-import org.opennms.netmgt.provision.service.ModelImportException;
-import org.opennms.netmgt.provision.service.NodeScan;
-import org.opennms.netmgt.provision.service.NodeScanSchedule;
-import org.opennms.netmgt.provision.service.ProvisionService;
-import org.opennms.netmgt.provision.service.Provisioner;
-import org.opennms.netmgt.provision.service.ProvisioningTestCase;
 import org.opennms.netmgt.snmp.SnmpAgentAddress;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.test.JUnitConfigurationEnvironment;
@@ -1433,22 +1426,34 @@ public class ProvisionerTest extends ProvisioningTestCase implements Initializin
         // we should not get new update events on a re-import now, that happens during the scan phase
         //m_eventAnticipator.anticipateEvent(new EventBuilder(EventConstants.NODE_UPDATED_EVENT_UEI, "Test").setNodeid(nextNodeId).getEvent());
         //m_eventAnticipator.anticipateEvent(getNodeCategoryEvent(nextNodeId, "test"));
-        importFromResource("classpath:/provisioner-testRequisitionedCategoriesNoPolicies-before.xml", true);
+        importFromResource("classpath:/provisioner-testCategories-oneCategory.xml", true);
 
         m_eventAnticipator.verifyAnticipated();
         assertEquals(0, m_eventAnticipator.unanticipatedEvents().size());
         m_eventAnticipator.reset();
 
-        System.err.println(m_nodeDao.findAll());
         m_eventAnticipator.anticipateEvent(nodeScanCompleted(nextNodeId));
-        final NodeScan scan = m_provisioner.createNodeScan(nextNodeId, "empty", "test");
+        m_eventAnticipator.setDiscardUnanticipated(true);
+        final NodeScan scan = m_provisioner.createNodeScan(nextNodeId, "empty", "1");
         runScan(scan);
 
-        for (final Event e : m_eventAnticipator.unanticipatedEvents()) {
-            System.err.println(e);
-        }
-
         m_eventAnticipator.verifyAnticipated();
+        m_eventAnticipator.reset();
+
+        OnmsNode n = getNodeDao().get(nextNodeId);
+        assertEquals(1, n.getCategories().size());
+        assertEquals("TotallyMadeUpCategoryName", n.getCategories().iterator().next().getName());
+
+        // import again, should be the same
+        importFromResource("classpath:/provisioner-testCategories-oneCategory.xml", true);
+        n = getNodeDao().get(nextNodeId);
+        assertEquals(1, n.getCategories().size());
+        assertEquals("TotallyMadeUpCategoryName", n.getCategories().iterator().next().getName());
+
+        runScan(scan);
+        n = getNodeDao().get(nextNodeId);
+        assertEquals(1, n.getCategories().size());
+        assertEquals("TotallyMadeUpCategoryName", n.getCategories().iterator().next().getName());
     }
 
     private Event nodeScanCompleted(final int nodeId) {

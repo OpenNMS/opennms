@@ -916,6 +916,7 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
     	final Requisition r = m_foreignSourceRepository.importResourceRequisition(resource);
         r.updateLastImported();
         m_foreignSourceRepository.save(r);
+        m_foreignSourceRepository.flush();
         return r;
     }
 
