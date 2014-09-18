@@ -81,6 +81,13 @@ Where to Put Your Code
 * 1.14 Blocker Bug Fixes: `rc/stable/1.14.0` (merged to `develop`)
 * Anything Else: `feature/XXXX` or `jira/XXXX` branch, then merge --no-ff to `develop` when complete
 
+Submitting Code (for Non-Committers)
+====================================
+
+If you don't have commit access to OpenNMS and wish to submit a patch, the best way to do so is through GitHub's pull request mechanism.
+
+If you haven't done so already, fork the OpenNMS repository and create a branch based on the OpenNMS `develop` branch.  Then make your changes and submit a pull request back to the OpenNMS `develop` branch.  We'll review the code, and if you already have filled out an [OCA], merge it.
+
 OpenNMS Packages (RPM & Debian)
 ===============================
 
@@ -121,3 +128,4 @@ When it is time to make a `1.15.0` release, we will branch `develop` to a new `r
 
 
 [GitFlow]: http://nvie.com/posts/a-successful-git-branching-model/ "GitFlow"
+[OCA]: http://www.opennms.org/wiki/OCA "OpenNMS Contributor Agreement"
