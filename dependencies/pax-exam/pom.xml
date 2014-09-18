@@ -80,6 +80,12 @@
       <groupId>org.apache.karaf.tooling.exam</groupId>
       <artifactId>org.apache.karaf.tooling.exam.container</artifactId>
       <version>${karafVersion}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>asm</groupId>
+          <artifactId>asm</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <!-- replace asm/asm from pax-exam-junit4 -->
     <dependency>
