@@ -82,16 +82,16 @@
 				<g:HTMLPanel styleName="disclosureBodyPanel">
 					<onms_fs:FieldSetSuggestBox ui:field="sDisplayCat"
 						name="{con.displayCat}" value="" helpText="{con.displayCatHelp}"
-						maxLength="64" />
+						maxLength="0" />
 					<onms_fs:FieldSetSuggestBox ui:field="sNotificationCat"
 						name="{con.notificationCat}" value="" helpText="{con.notificationCatHelp}"
-						maxLength="64" />
+						maxLength="0" />
 					<onms_fs:FieldSetSuggestBox ui:field="sPollerCat"
 						name="{con.pollerCat}" value="" helpText="{con.pollerCatHelp}"
-						maxLength="64" />
+						maxLength="0" />
 					<onms_fs:FieldSetSuggestBox ui:field="sThresholdCat"
 						name="{con.thresholdCat}" value="" helpText="{con.thresholdCatHelp}"
-						maxLength="64" />
+						maxLength="0" />
 				</g:HTMLPanel>
 			</onms:DisclosurePanelCookie>
 
