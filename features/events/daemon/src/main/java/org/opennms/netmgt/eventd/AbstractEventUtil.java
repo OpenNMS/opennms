@@ -297,12 +297,12 @@ public abstract class AbstractEventUtil implements EventUtil {
 	 * The string that starts the expansion for a hardware field - used to lookup values
 	 * of hardware attributes by their index|name 
 	 */
-	static final String HARDWARE_BEGIN = "hardware[";
+	protected static final String HARDWARE_BEGIN = "hardware[";
 
 	/**
 	 * The string that ends the expansion of a hardware
 	 */
-	static final String HARDWARE_END_SUFFIX = "]";
+	protected static final String HARDWARE_END_SUFFIX = "]";
 
 	private static EventUtil m_instance = null; 
 
