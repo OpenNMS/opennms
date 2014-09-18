@@ -45,38 +45,39 @@
 </jsp:include>
 
 <h3>Report Delivery Options</h3>
-  
-<form:form commandName="deliveryOptions" cssClass="stdform">
+<div class="boxWrapper">
+    <form:form commandName="deliveryOptions" cssClass="stdform">
 
-	<p><form:label path="instanceId" cssClass="label">
-		name to identify this report
-	</form:label>
-	<form:input path="instanceId"/>
-	<p><span class="label">
-		email report
-	</span>
-	<form:checkbox path="sendMail"/></p>
-	<p><form:label path="format" cssClass="label">
-		format
-	</form:label>
-	<form:select path="format"> 
-		<form:options items="${formats}"/>
-	</form:select></p>
-	<p><form:label path="mailTo" cssClass="label">
-		recipient
-	</form:label>
-    <form:input path="mailTo"/></p>
-    <p><form:label path="persist" cssClass="label" >
-		save a copy of this report
-	</form:label>
-    <form:checkbox path="persist"/></p>
-    
-    <span class="indent">
-	    <input type="submit" id="proceed" name="_eventId_proceed" value="Proceed"/>&#160;
-		<input type="submit" name="_eventId_revise" value="Revise"/>&#160;
-		<input type="submit" name="_eventId_cancel" value="Cancel"/>&#160;
-	</span>
-	
-</form:form>
+        <p><form:label path="instanceId" cssClass="label">
+            name to identify this report
+        </form:label>
+        <form:input path="instanceId"/>
+        <p><span class="label">
+            email report
+        </span>
+        <form:checkbox path="sendMail"/></p>
+        <p><form:label path="format" cssClass="label">
+            format
+        </form:label>
+        <form:select path="format">
+            <form:options items="${formats}"/>
+        </form:select></p>
+        <p><form:label path="mailTo" cssClass="label">
+            recipient
+        </form:label>
+        <form:input path="mailTo"/></p>
+        <p><form:label path="persist" cssClass="label" >
+            save a copy of this report
+        </form:label>
+        <form:checkbox path="persist"/></p>
+
+        <span class="indent">
+            <input type="submit" id="proceed" name="_eventId_proceed" value="Proceed"/>&#160;
+            <input type="submit" name="_eventId_revise" value="Revise"/>&#160;
+            <input type="submit" name="_eventId_cancel" value="Cancel"/>&#160;
+        </span>
+
+    </form:form>
+</div>
   
 <jsp:include page="/includes/footer.jsp" flush="false" />

@@ -45,22 +45,23 @@
 </jsp:include>
 
 <h3>Cron Expression</h3>
-  <p>We use Quartz Scheduler, for information on cron syntax used in Quartz Scheduler there is a great tutorial <a href="http://www.quartz-scheduler.org/docs/tutorials/crontrigger.html" target="_blank">here</a></p>
-<form:form commandName="triggerDetails" cssClass="stdform">
-	
-	<p>
+<div class="boxWrapper">
+    <p>We use Quartz Scheduler, for information on cron syntax used in Quartz Scheduler there is a great tutorial <a href="http://www.quartz-scheduler.org/docs/tutorials/crontrigger.html" target="_blank">here</a></p>
+    <form:form commandName="triggerDetails" cssClass="stdform">
+
+    <p>
 		<form:label path="cronExpression" cssClass="label">
 			<c:out value="cron expression"/>
 		</form:label>
 		<form:input path="cronExpression"/>
-	</p>	   
 
-	<span class="indent">
-		<input type="submit" id="proceed" name="_eventId_proceed" value="Proceed" />&#160;
-		<input type="submit" name="_eventId_revise" value="Revise"/>&#160;
-		<input type="submit" name="_eventId_cancel" value="Cancel"/>&#160;
-	</span>
-		
-</form:form>
+    </p>
+    <span class="indent">
+        <input type="submit" id="proceed" name="_eventId_proceed" value="Proceed" />&#160;
+        <input type="submit" name="_eventId_revise" value="Revise"/>&#160;
+        <input type="submit" name="_eventId_cancel" value="Cancel"/>&#160;
+    </span>
+    </form:form>
+</div>
   
 <jsp:include page="/includes/footer.jsp" flush="false" />
