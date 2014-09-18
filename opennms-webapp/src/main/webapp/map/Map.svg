@@ -43,6 +43,7 @@
 var startingup=true;
 var useMenu = false;
 var updateUrl = true;
+var iglobal=0;
 
 top.resizeSVG = resizeSVG;
 
@@ -334,7 +335,10 @@ function load(evt){
 	document.getElementById('TopInfoText').setAttributeNS(null,"font-family",textFamily);
 	document.getElementById('TopInfoText').setAttributeNS(null, "font-size",titleFontSize);
 
-	postMapRequestAll( "MapStartUp."+suffix, "GET", null, handleInit, "text/xml", null, true );
+        if(iglobal==0) {
+	   postMapRequestAll( "MapStartUp."+suffix, "GET", null, handleInit, "text/xml", null, true );
+        }
+        iglobal++;
 }
 
 ]]></script>
