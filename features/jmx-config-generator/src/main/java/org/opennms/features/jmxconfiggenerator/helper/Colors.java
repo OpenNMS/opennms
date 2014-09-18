@@ -35,7 +35,7 @@ import java.util.List;
  *
  * @author Markus Neumann <markus@opennms.com>
  */
-public class Colors {
+public abstract class Colors {
 
     private static List<String> tangoColors = new ArrayList<String>();
     private static int colorIndex = 0;

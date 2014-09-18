@@ -29,18 +29,14 @@
 package org.opennms.features.topology.plugins.topo.linkd.internal;
 
 import org.easymock.EasyMock;
-import org.easymock.internal.matchers.Any;
 import org.junit.Before;
 import org.junit.Test;
-import org.opennms.core.criteria.restrictions.InRestriction;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.features.topology.api.topo.*;
 import org.opennms.features.topology.api.topo.Criteria;
-import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.OspfLinkDao;
 import org.opennms.netmgt.model.*;
-import org.opennms.netmgt.model.topology.EdgeAlarmStatusSummary;
 
 import java.util.*;
 
@@ -49,41 +45,48 @@ import static org.junit.Assert.assertEquals;
 public class OspfLinkStatusProviderTest {
 
     private AlarmDao m_alarmDao;
-    private OspfLinkDao m_lldpLinkDao;
+    private OspfLinkDao m_ospfLinkDao;
     private OspfLinkStatusProvider m_statusProvider;
     private EdgeProvider m_edgeProvider;
     private OnmsNode m_node1;
     private OnmsNode m_node2;
+    private OnmsNode m_nodeChennai;
+    private OnmsNode m_nodeDehli;
 
     @Before
     public void setUp() {
         m_node1 = new OnmsNode();
         m_node1.setId(1);
-        m_node1.setLldpElement(new LldpElement(m_node1, "node1ChassisId", "node1SysName", LldpElement.LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_LOCAL));
 
         m_node2 = new OnmsNode();
         m_node2.setId(2);
-        m_node2.setLldpElement(new LldpElement(m_node2, "node2ChassisId", "node2SysName", LldpElement.LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_LOCAL));
+
+        m_nodeChennai = new OnmsNode();
+        m_nodeChennai.setId(14);
+
+        m_nodeDehli = new OnmsNode();
+        m_nodeDehli.setId(10);
+
 
         m_alarmDao = EasyMock.createMock(AlarmDao.class);
-        m_lldpLinkDao = EasyMock.createMock(OspfLinkDao.class);
+        m_ospfLinkDao = EasyMock.createMock(OspfLinkDao.class);
 
         m_statusProvider = new OspfLinkStatusProvider();
         m_statusProvider.setAlarmDao(m_alarmDao);
-        m_statusProvider.setOspfLinkDao(m_lldpLinkDao);
+        m_statusProvider.setOspfLinkDao(m_ospfLinkDao);
 
         m_edgeProvider = EasyMock.createMock(EdgeProvider.class);
 
     }
 
     @Test
-    public void testGetLldpLinkStatus() {
+    public void testGetOspfLinkStatus() {
 
         EasyMock.expect(
-                m_alarmDao.findMatching(EasyMock.anyObject(org.opennms.core.criteria.Criteria.class))).andReturn(createAlarm());
-        EasyMock.expect(m_lldpLinkDao.findMatching(EasyMock.<org.opennms.core.criteria.Criteria>anyObject())).andReturn(createOspfLinks());
+                m_alarmDao.findMatching(EasyMock.anyObject(org.opennms.core.criteria.Criteria.class))).andReturn(createEmptyAlarmList());
+        EasyMock.expect(m_ospfLinkDao.findMatching(EasyMock.<org.opennms.core.criteria.Criteria>anyObject())).andReturn(createOspfLinks());
 
-        EasyMock.replay(m_alarmDao, m_lldpLinkDao);
+        EasyMock.replay(m_alarmDao, m_ospfLinkDao);
 
         List<EdgeRef> edges = createEdges();
         Map<EdgeRef, Status> statusMap = m_statusProvider.getStatusForEdges(m_edgeProvider, edges, new Criteria[0]);
@@ -96,12 +99,12 @@ public class OspfLinkStatusProviderTest {
     }
 
     @Test
-    public void testGetLldpLinkStatusDown(){
+    public void testGetOspfLinkStatusDown(){
         EasyMock.expect(
                 m_alarmDao.findMatching(EasyMock.anyObject(org.opennms.core.criteria.Criteria.class))).andReturn(createDownAlarm());
-        EasyMock.expect(m_lldpLinkDao.findMatching(EasyMock.<org.opennms.core.criteria.Criteria>anyObject())).andReturn(createOspfLinks());
+        EasyMock.expect(m_ospfLinkDao.findMatching(EasyMock.<org.opennms.core.criteria.Criteria>anyObject())).andReturn(createOspfLinks());
 
-        EasyMock.replay(m_alarmDao, m_lldpLinkDao);
+        EasyMock.replay(m_alarmDao, m_ospfLinkDao);
 
         List<EdgeRef> edges = createEdges();
         Map<EdgeRef, Status> statusMap = m_statusProvider.getStatusForEdges(m_edgeProvider, edges, new Criteria[0]);
@@ -112,14 +115,21 @@ public class OspfLinkStatusProviderTest {
         assertEquals("down", status.computeStatus());
     }
 
-    private List<EdgeAlarmStatusSummary> createDownLldpStatusSummary() {
-        EdgeAlarmStatusSummary summary = new EdgeAlarmStatusSummary(1,2, EventConstants.TOPOLOGY_LINK_DOWN_EVENT_UEI);
-        return Arrays.asList(summary);
-    }
+    @Test
+    public void testSPC944OspfLinkStatus(){
+        EasyMock.expect(
+                m_alarmDao.findMatching(EasyMock.anyObject(org.opennms.core.criteria.Criteria.class))).andReturn(createEmptyAlarmList());
+        EasyMock.expect(m_ospfLinkDao.findMatching(EasyMock.<org.opennms.core.criteria.Criteria>anyObject())).andReturn(createChennaiDehliLinks());
 
-    private List<EdgeAlarmStatusSummary> createLldpLinkStatusSummary() {
-        EdgeAlarmStatusSummary summary = new EdgeAlarmStatusSummary(1,2, EventConstants.TOPOLOGY_LINK_UP_EVENT_UEI);
-        return Arrays.asList(summary);
+        EasyMock.replay(m_alarmDao, m_ospfLinkDao);
+
+        List<EdgeRef> edges = createChennaiToDehli();
+        Map<EdgeRef, Status> statusMap = m_statusProvider.getStatusForEdges(m_edgeProvider, edges, new Criteria[0]);
+
+        assertEquals(1, statusMap.size());
+        assertEquals(edges.get(0), new ArrayList<EdgeRef>(statusMap.keySet()).get(0));
+        Status status = statusMap.get(edges.get(0));
+        assertEquals("up", status.computeStatus());
     }
 
     private List<EdgeRef> createEdges() {
@@ -131,6 +141,27 @@ public class OspfLinkStatusProviderTest {
     }
 
 
+    private List<EdgeRef> createChennaiToDehli() {
+        Vertex sourceVertex = new AbstractVertex("nodes", "14", "CHENNAI");
+        Vertex targetVertex = new AbstractVertex("nodes", "10", "DEHLI");
+        EdgeRef edge = new AbstractEdge(EnhancedLinkdTopologyProvider.OSPF_EDGE_NAMESPACE, "7|8", sourceVertex, targetVertex);
+        return Arrays.asList(edge);
+    }
+
+    private List<OspfLink> createChennaiDehliLinks(){
+        List<OspfLink> links = new ArrayList<OspfLink>();
+
+        OspfLink link = createOspfLink(m_nodeChennai, "10.205.56.21", "255.255.0.0", 0, 13, "192.168.8.1", "10.205.56.8", 0);
+        link.setId(7);
+        links.add(link);
+
+        OspfLink link2 = createOspfLink(m_nodeDehli, "10.205.56.8", "255.255.0.0", 0, 13, "192.168.6.1", "10.205.56.21", 0);
+        link2.setId(8);
+        links.add(link2);
+
+        return links;
+    }
+
     private List<OspfLink> createOspfLinks() {
         List<OspfLink> links = new ArrayList<OspfLink>();
 
@@ -138,14 +169,14 @@ public class OspfLinkStatusProviderTest {
         link.setId(1);
         links.add(link);
 
-        OspfLink link2 = createOspfLink(m_node2, "192.168.100.245", "255.255.255.252", 0, 10101, "192.168.100.250", "192.168.100.246", 0);
+        OspfLink link2 = createOspfLink(m_node2, "192.168.100.245", "255.255.255.252", 0, 10100, "192.168.100.250", "192.168.100.246", 0);
         link2.setId(2);
         links.add(link2);
 
         return links;
     }
 
-    private List<OnmsAlarm> createAlarm() {
+    private List<OnmsAlarm> createEmptyAlarmList() {
         return Collections.EMPTY_LIST;
     }
 

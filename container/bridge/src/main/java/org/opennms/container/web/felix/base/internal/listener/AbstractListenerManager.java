@@ -20,7 +20,7 @@ package org.opennms.container.web.felix.base.internal.listener;
 
 import java.util.ArrayList;
 import java.util.Iterator;
-
+import java.util.List;
 
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
@@ -28,7 +28,7 @@ import org.osgi.util.tracker.ServiceTracker;
 
 public class AbstractListenerManager<T> extends ServiceTracker<T, T> {
 
-    private ArrayList<T> allContextListeners;
+    private List<T> allContextListeners = new ArrayList<T>();
 
     private final Object lock;
 
@@ -40,7 +40,7 @@ public class AbstractListenerManager<T> extends ServiceTracker<T, T> {
 
     protected final Iterator<T> getContextListeners()
     {
-        ArrayList<T> result = allContextListeners;
+        List<T> result = allContextListeners;
         if (result == null)
         {
             synchronized (lock)

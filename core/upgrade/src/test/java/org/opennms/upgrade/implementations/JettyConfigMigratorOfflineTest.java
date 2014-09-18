@@ -93,7 +93,7 @@ public class JettyConfigMigratorOfflineTest {
         properties.load(new FileInputStream(propertiesFile));
         properties.setProperty("org.opennms.netmgt.jetty.https-port", "9999");
         properties.store(new FileWriter(propertiesFile), "Updated!");
-        JettyConfigMigratotOffline migrator = new JettyConfigMigratotOffline();
+        JettyConfigMigratorOffline migrator = new JettyConfigMigratorOffline();
         migrator.execute();
         verify(true, false);
     }
@@ -110,7 +110,7 @@ public class JettyConfigMigratorOfflineTest {
         properties.load(new FileInputStream(propertiesFile));
         properties.setProperty("org.opennms.netmgt.jetty.ajp-port", "9999");
         properties.store(new FileWriter(propertiesFile), "Updated!");
-        JettyConfigMigratotOffline migrator = new JettyConfigMigratotOffline();
+        JettyConfigMigratorOffline migrator = new JettyConfigMigratorOffline();
         migrator.execute();
         verify(false, true);        
     }
@@ -128,7 +128,7 @@ public class JettyConfigMigratorOfflineTest {
         properties.setProperty("org.opennms.netmgt.jetty.https-port", "9999");
         properties.setProperty("org.opennms.netmgt.jetty.ajp-port", "9999");
         properties.store(new FileWriter(propertiesFile), "Updated!");
-        JettyConfigMigratotOffline migrator = new JettyConfigMigratotOffline();
+        JettyConfigMigratorOffline migrator = new JettyConfigMigratorOffline();
         migrator.execute();
         verify(true, true);        
     }
@@ -140,7 +140,7 @@ public class JettyConfigMigratorOfflineTest {
      */
     @Test
     public void testNone() throws Exception {
-        JettyConfigMigratotOffline migrator = new JettyConfigMigratotOffline();
+        JettyConfigMigratorOffline migrator = new JettyConfigMigratorOffline();
         migrator.execute();
         Assert.assertFalse(new File("target/home/etc/jetty.xml").exists());
     }

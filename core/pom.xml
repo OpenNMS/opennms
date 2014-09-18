@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>opennms</artifactId>
-    <version>1.13.4-PJSM-SNAPSHOT</version>
+    <version>1.13.5-PJSM-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>org.opennms.core</artifactId>
@@ -33,6 +33,7 @@
     <module>db-install</module>
     <module>doc</module>
     <module>icmp-jna</module>
+    <module>jmx</module>
     <module>lib</module>
     <module>logging-api</module>
     <module>runtime</module>

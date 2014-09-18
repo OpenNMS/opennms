@@ -50,20 +50,22 @@ public class UpdateEventVisitor extends AbstractEntityVisitor {
     
     private static final String m_eventSource = "Provisiond";
     private EventForwarder m_eventForwarder;
+    private boolean m_rescanExisting;
 
     /**
      * <p>Constructor for UpdateEventVisitor.</p>
      *
      * @param eventForwarder a {@link org.opennms.netmgt.model.events.EventForwarder} object.
      */
-    public UpdateEventVisitor(EventForwarder eventForwarder) {
+    public UpdateEventVisitor(EventForwarder eventForwarder, boolean rescanExisting) {
         m_eventForwarder = eventForwarder;
+        m_rescanExisting = rescanExisting;
     }
     
     /** {@inheritDoc} */
     @Override
     public void visitNode(OnmsNode node) {
-        LOG.info("Sending nodeAdded Event for {}\n", node);
+        LOG.info("Sending nodeUpdated Event for {}\n", node);
         m_eventForwarder.sendNow(createNodeUpdatedEvent(node));
     }
 
@@ -86,22 +88,6 @@ public class UpdateEventVisitor extends AbstractEntityVisitor {
     }
 
     private Event createNodeUpdatedEvent(OnmsNode node) {
-        return EventUtils.createNodeUpdatedEvent(m_eventSource, node.getId(), node.getLabel(), node.getLabelSource());
+        return EventUtils.createNodeUpdatedEvent(m_eventSource, node.getId(), node.getLabel(), node.getLabelSource(), m_rescanExisting);
     }
-
-    @SuppressWarnings("unused")
-    private Event createIpInterfaceUpdatedEvent(OnmsIpInterface iface) {
-        return null;
-    }
-    
-    @SuppressWarnings("unused")
-    private Event createSnmpInterfaceUpdatedEvent(OnmsSnmpInterface iface) {
-        return null;
-    }
-
-    @SuppressWarnings("unused")
-    private Event createMonitoredServiceUpdatedEvent(OnmsMonitoredService monSvc) {
-        return null;
-    }
-
 }

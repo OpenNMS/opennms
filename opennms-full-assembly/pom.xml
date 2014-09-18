@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>opennms</artifactId>
-    <version>1.13.4-PJSM-SNAPSHOT</version>
+    <version>1.13.5-PJSM-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
   <groupId>org.opennms</groupId>
@@ -345,6 +345,10 @@
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-snmp-asset-provisioning-adapter</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-snmp-hardware-inventory-provisioning-adapter</artifactId>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>

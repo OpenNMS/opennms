@@ -3,7 +3,7 @@ package org.opennms.netmgt.snmp;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
-public class InetAddrUtils {
+public abstract class InetAddrUtils {
 
 	public static String str(InetAddress address) {
 		return address == null ? null : address.getHostAddress();

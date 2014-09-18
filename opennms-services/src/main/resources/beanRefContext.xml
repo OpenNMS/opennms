@@ -3,22 +3,13 @@
 	xsi:schemaLocation="http://www.springframework.org/schema/beans
         http://www.springframework.org/schema/beans/spring-beans-3.0.xsd" default-lazy-init="true">
         
-   <bean id="commonContext" class="org.springframework.context.support.ClassPathXmlApplicationContext">
-     <constructor-arg>
-       <list>
-         <value>META-INF/opennms/applicationContext-commonConfigs.xml</value>
-       </list>
-     </constructor-arg>
-     <constructor-arg ref="daemonContext" />
-   </bean>
-   
    <bean id="collectdContext" class="org.springframework.context.support.ClassPathXmlApplicationContext">
      <constructor-arg>
        <list>
          <value>META-INF/opennms/applicationContext-collectd.xml</value>
        </list>
      </constructor-arg>
-     <constructor-arg ref="commonContext" />
+     <constructor-arg ref="daemonContext" />
    </bean>
    
    <bean id="capsdContext" class="org.springframework.context.support.ClassPathXmlApplicationContext">
@@ -27,7 +18,7 @@
          <value>META-INF/opennms/applicationContext-capsd.xml</value>
        </list>
      </constructor-arg>
-     <constructor-arg ref="commonContext" />
+     <constructor-arg ref="daemonContext" />
    </bean>
    
    <bean id="pollerdContext" class="org.springframework.context.support.ClassPathXmlApplicationContext">
@@ -36,7 +27,7 @@
          <value>META-INF/opennms/applicationContext-pollerd.xml</value>
        </list>
      </constructor-arg>
-     <constructor-arg ref="commonContext" />
+     <constructor-arg ref="daemonContext" />
    </bean>
    
    <bean id="provisionerContext" class="org.springframework.context.support.ClassPathXmlApplicationContext">
@@ -45,7 +36,7 @@
          <value>META-INF/opennms/applicationContext-provisioner.xml</value>
        </list>
      </constructor-arg>
-     <constructor-arg ref="commonContext" />
+     <constructor-arg ref="daemonContext" />
    </bean>
    
    <bean id="snmpinterfacepollerdContext" class="org.springframework.context.support.ClassPathXmlApplicationContext">
@@ -54,7 +45,7 @@
          <value>META-INF/opennms/applicationContext-snmpinterfacepollerd.xml</value>
        </list>
      </constructor-arg>
-     <constructor-arg ref="commonContext" />
+     <constructor-arg ref="daemonContext" />
    </bean>
 
     <bean id="statisticsDaemonContext" class="org.springframework.context.support.ClassPathXmlApplicationContext">
@@ -90,7 +81,7 @@
          <value>META-INF/opennms/applicationContext-linkd.xml</value>
        </list>
      </constructor-arg>
-     <constructor-arg ref="commonContext" />
+     <constructor-arg ref="daemonContext" />
    </bean>
         
    <bean id="enhancedLinkdContext" class="org.springframework.context.support.ClassPathXmlApplicationContext">
@@ -99,7 +90,7 @@
          <value>META-INF/opennms/applicationContext-enhancedLinkd.xml</value>
        </list>
      </constructor-arg>
-     <constructor-arg ref="commonContext" />
+     <constructor-arg ref="daemonContext" />
    </bean>
         
     <bean id="eventDaemonContext" class="org.springframework.context.support.ClassPathXmlApplicationContext">
@@ -108,7 +99,7 @@
          <value>META-INF/opennms/applicationContext-eventDaemon.xml</value>
        </list>
      </constructor-arg>
-     <constructor-arg ref="commonContext" />
+     <constructor-arg ref="daemonContext" />
    </bean>
         
     <bean id="trapDaemonContext" class="org.springframework.context.support.ClassPathXmlApplicationContext">
@@ -117,7 +108,7 @@
          <value>META-INF/opennms/applicationContext-trapDaemon.xml</value>
        </list>
      </constructor-arg>
-     <constructor-arg ref="commonContext" />
+     <constructor-arg ref="daemonContext" />
    </bean>
    
    <bean id="tl1DaemonContext" class="org.springframework.context.support.ClassPathXmlApplicationContext">
@@ -126,7 +117,7 @@
          <value>META-INF/opennms/applicationContext-tl1Daemon.xml</value>
        </list>
      </constructor-arg>
-     <constructor-arg ref="commonContext" />
+     <constructor-arg ref="daemonContext" />
    </bean>
     
    <bean id="discoveryContext" class="org.springframework.context.support.ClassPathXmlApplicationContext">
@@ -135,6 +126,6 @@
          <value>META-INF/opennms/applicationContext-discovery.xml</value>
        </list>
      </constructor-arg>
-     <constructor-arg ref="commonContext" />
+     <constructor-arg ref="daemonContext" />
    </bean> 
 </beans>

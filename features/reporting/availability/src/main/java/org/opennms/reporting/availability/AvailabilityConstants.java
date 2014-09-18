@@ -34,7 +34,7 @@ package org.opennms.reporting.availability;
  *
  * @author <A HREF="mailto:jacinta@oculan.com">Jacinta Remedios </A>
  */
-public class AvailabilityConstants {
+public abstract class AvailabilityConstants {
     /**
      * The sql statement that is used to get node information for an IP address.
      */

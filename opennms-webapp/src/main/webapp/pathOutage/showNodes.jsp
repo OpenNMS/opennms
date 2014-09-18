@@ -34,7 +34,7 @@
 			java.util.List,
 			org.opennms.core.db.DataSourceFactory,
 			org.opennms.core.utils.DBUtils,
-			org.opennms.netmgt.poller.PathOutageFactory
+			org.opennms.netmgt.poller.PathOutageManagerJdbcImpl
 " %>
 
 <jsp:include page="/includes/header.jsp" flush="false">
@@ -47,8 +47,8 @@
 <% 
       String critIp = request.getParameter("critIp");
       String critSvc = request.getParameter("critSvc");
-      String[] pthData = PathOutageFactory.getCriticalPathData(critIp, critSvc);
-      List<String> nodeList = PathOutageFactory.getNodesInPath(critIp, critSvc); %>
+      String[] pthData = PathOutageManagerJdbcImpl.getInstance().getCriticalPathData(critIp, critSvc);
+      List<String> nodeList = PathOutageManagerJdbcImpl.getInstance().getNodesInPath(critIp, critSvc); %>
   
       <h3>Path Outage Node List</h3>
       <table>
@@ -68,10 +68,10 @@
           </tr>
 
 <%        final Connection conn = DataSourceFactory.getInstance().getConnection();
-          final DBUtils d = new DBUtils(PathOutageFactory.class, conn);
+          final DBUtils d = new DBUtils(PathOutageManagerJdbcImpl.class, conn);
           try {
               for (String nodeid : nodeList) {
-                  String labelColor[] = PathOutageFactory.getLabelAndStatus(nodeid, conn); %>
+                  String labelColor[] = PathOutageManagerJdbcImpl.getInstance().getLabelAndStatus(nodeid, conn); %>
                   <tr class="CellStatus">
                   <td><a href="element/node.jsp?node=<%= nodeid %>"><%= labelColor[0] %></a></td>
                   <td class="<%= labelColor[1] %>"><%= labelColor[2] %></td>

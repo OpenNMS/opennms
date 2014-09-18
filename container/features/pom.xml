@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>container</artifactId>
-    <version>1.13.4-PJSM-SNAPSHOT</version>
+    <version>1.13.5-PJSM-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.karaf</groupId>
@@ -24,7 +24,7 @@
           <importRepositories>true</importRepositories>
           <!-- 
             Don't import other repositories that are already inside well-organized feature hierarchies
-            outside of OpenNMS (Karaf, ActiveMQ).
+            outside of OpenNMS (Karaf, ActiveMQ, Camel).
           -->
           <importRepositoryExclusions>
             <value>karaf-${karafVersion}</value>
@@ -91,6 +91,8 @@
             <feature>dashlet-topology</feature>
             <feature>dashlet-url</feature>
             <feature>nrtg</feature>
+            <feature>opennms-activemq-event-forwarder</feature>
+            <feature>opennms-activemq-event-receiver</feature>
             <feature>opennms-topology-dev</feature>
             <feature>opennms-topology-runtime-base</feature>
             <feature>opennms-topology-runtime-browsers</feature>

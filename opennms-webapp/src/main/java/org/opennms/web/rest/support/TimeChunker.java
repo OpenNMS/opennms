@@ -85,16 +85,16 @@ public class TimeChunker {
     
     private List<TimeChunk> m_resolutionSegments = new ArrayList<TimeChunk>();
     private Iterator<TimeChunk> m_itr;
-    private int m_resolution;
+    private long m_resolution;
     
-    public TimeChunker(int resolution, Date startDate, Date endDate) {
+    public TimeChunker(long resolution, Date startDate, Date endDate) {
         m_startDate = startDate;
         m_endDate = endDate;
         m_resolution = resolution;
         createTimeSegments(m_resolutionSegments, resolution, startDate.getTime(), (endDate.getTime() - startDate.getTime()));
     }
     
-    private void createTimeSegments(List<TimeChunk> resolutionSegments, int resolution, long startTime, long timeInMilliseconds) {
+    private void createTimeSegments(List<TimeChunk> resolutionSegments, long resolution, long startTime, long timeInMilliseconds) {
         for(long i = 0; i < timeInMilliseconds; i+=resolution) {
             Date startDate = new Date(startTime + i);
             Date endDate = new Date(startTime + i + resolution);
@@ -120,8 +120,8 @@ public class TimeChunker {
         return index >= m_resolutionSegments.size() ? null : m_resolutionSegments.get(index);
     }
     
-    public int getIndexContaining(Date timestamp) {
-        return (int)(timestamp.getTime() - m_startDate.getTime()) / m_resolution;
+    public long getIndexContaining(Date timestamp) {
+        return (long)(timestamp.getTime() - m_startDate.getTime()) / m_resolution;
     }
     
     

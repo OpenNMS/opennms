@@ -41,6 +41,9 @@ import java.util.TreeMap;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Caches properties files in order to improve performance.
  *
@@ -48,6 +51,8 @@ import java.util.concurrent.locks.ReentrantLock;
  * @version $Id: $
  */
 public class PropertiesCache {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(PropertiesCache.class);
 
     public static final String CHECK_LAST_MODIFY_STRING = "org.opennms.utils.propertiesCache.enableCheckFileModified";
 
@@ -89,7 +94,11 @@ public class PropertiesCache {
         }
         
         private void write() throws IOException {
-            m_file.getParentFile().mkdirs();
+            if(!m_file.getParentFile().mkdirs()) {
+            	if(!m_file.getParentFile().exists()) {
+            		LOG.warn("Could not make directory: {}", m_file.getParentFile().getPath());
+            	}
+            }
             OutputStream out = null;
             try {
                 out = new FileOutputStream(m_file);

@@ -33,7 +33,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 
-public class Main {
+public abstract class Main {
 
     /**
      * <p>main</p>

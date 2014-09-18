@@ -38,7 +38,7 @@ import org.opennms.netmgt.collection.api.CollectionSetVisitor;
 import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.collection.api.TimeKeeper;
 import org.opennms.netmgt.rrd.RrdRepository;
-import org.opennms.netmgt.utils.NodeLabel;
+import org.opennms.netmgt.utils.NodeLabelJDBCImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -98,7 +98,7 @@ public class AliasedResource extends SnmpCollectionResource {
             return Integer.toString(getIfInfo().getNodeId());
         } else if ("nodelabel".equalsIgnoreCase(m_domain)) {
             try {
-                return NodeLabel.retrieveLabel(getIfInfo().getNodeId()).getLabel();
+                return NodeLabelJDBCImpl.getInstance().retrieveLabel(getIfInfo().getNodeId()).getLabel();
             } 
             catch (Throwable e) {
                 return "nodeid-" + Integer.toString(getIfInfo().getNodeId());

@@ -55,8 +55,8 @@ public class IpInterface extends JavaScriptObject {
         return this.isDown === null? null : ('' + this.isDown);
     }-*/;
     
-    public final native String getMonitoredServiceCount()/*-{
-        return '0';
+    public final native int getMonitoredServiceCount()/*-{
+        return $wnd.parseInt(this.monitoredServiceCount);
     }-*/;
 
     public final native String getIfIndex() /*-{

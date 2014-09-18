@@ -201,6 +201,8 @@ Requires(pre):	opennms-plugin-provisioning-rancid
 Requires:	opennms-plugin-provisioning-rancid
 Requires(pre):	opennms-plugin-provisioning-snmp-asset
 Requires:	opennms-plugin-provisioning-snmp-asset
+Requires(pre):	opennms-plugin-provisioning-snmp-hardware-inventory
+Requires:	opennms-plugin-provisioning-snmp-hardware-inventory
 Requires(pre):	opennms-plugin-ticketer-centric
 Requires:	opennms-plugin-ticketer-centric
 Requires(pre):	opennms-plugin-ticketer-jira
@@ -295,6 +297,20 @@ Requires:	opennms-core = %{version}-%{release}
 %description plugin-provisioning-snmp-asset
 The SNMP asset provisioning adapter responds to provisioning events by updating asset
 fields with data fetched from SNMP GET requests.
+
+%{extrainfo}
+%{extrainfo2}
+
+
+%package plugin-provisioning-snmp-hardware-inventory
+Summary:	SNMP Hardware Inventory Provisioning Adapter for OpenNMS
+Group:		Applications/System
+Requires(pre):	opennms-core = %{version}-%{release}
+Requires:	opennms-core = %{version}-%{release}
+
+%description plugin-provisioning-snmp-hardware-inventory
+The SNMP Hardware Inventory provisioning adapter responds to provisioning events by updating 
+hardware fields with data fetched from the ENTITY-MIB and vendor extensions of this MIB.
 
 %{extrainfo}
 %{extrainfo2}
@@ -520,7 +536,7 @@ tar zxvf $RPM_BUILD_DIR/%{name}-%{version}-%{release}/target$RPM_BUILD_ROOT.tar.
 
 echo "=== UNTAR BUILD COMPLETED ==="
 
-### XXX is this needed?  (Most of) the current scripts don't use OPENNMS_HOME.
+### Set this so users can refer to $OPENNMS_HOME easily.
 ### /etc/profile.d
 
 mkdir -p $RPM_BUILD_ROOT%{profiledir}
@@ -564,6 +580,9 @@ rm -rf $RPM_BUILD_ROOT%{instprefix}/contrib/remote-poller
 
 rm -rf $RPM_BUILD_ROOT%{instprefix}/lib/*.tar.gz
 
+install -d -m 755 $RPM_BUILD_ROOT%{_libdir}/systemd/system
+install -m 655 $RPM_BUILD_ROOT%{instprefix}/etc/opennms.service $RPM_BUILD_ROOT%{_libdir}/systemd/system/
+
 cd $RPM_BUILD_ROOT
 
 # core package files
@@ -584,6 +603,7 @@ find $RPM_BUILD_ROOT%{instprefix}/etc ! -type d | \
 	grep -v 'otrs.properties' | \
 	grep -v '/rt.properties' | \
 	grep -v 'snmp-asset-adapter-configuration.xml' | \
+	grep -v 'snmp-hardware-inventory-adapter-configuration.xml' | \
 	grep -v 'xml-datacollection-config.xml' | \
 	grep -v 'xmp-config.xml' | \
 	grep -v 'xmp-datacollection-config.xml' | \
@@ -608,6 +628,7 @@ find $RPM_BUILD_ROOT%{sharedir}/etc-pristine ! -type d | \
 	grep -v 'otrs.properties' | \
 	grep -v '/rt.properties' | \
 	grep -v 'snmp-asset-adapter-configuration.xml' | \
+	grep -v 'snmp-hardware-inventory-adapter-configuration.xml' | \
 	grep -v 'xml-datacollection-config.xml' | \
 	grep -v 'xmp-config.xml' | \
 	grep -v 'xmp-datacollection-config.xml' | \
@@ -696,6 +717,7 @@ rm -rf $RPM_BUILD_ROOT
 %files core -f %{_tmppath}/files.main
 %defattr(664 root root 775)
 %attr(755,root,root)	%{profiledir}/%{name}.sh
+%attr(755,root,root)	%{_libdir}/systemd/system/opennms.service
 %attr(755,root,root) %{logdir}
 			%{instprefix}/data
 			%{instprefix}/deploy
@@ -765,6 +787,12 @@ rm -rf $RPM_BUILD_ROOT
 %{instprefix}/lib/opennms-snmp-asset-provisioning-adapter*.jar
 %config(noreplace) %{instprefix}/etc/snmp-asset-adapter-configuration.xml
 %{sharedir}/etc-pristine/snmp-asset-adapter-configuration.xml
+
+%files plugin-provisioning-snmp-hardware-inventory
+%defattr(664 root root 775)
+%{instprefix}/lib/opennms-snmp-hardware-inventory-provisioning-adapter*.jar
+%config(noreplace) %{instprefix}/etc/snmp-hardware-inventory-adapter-configuration.xml
+%{sharedir}/etc-pristine/snmp-hardware-inventory-adapter-configuration.xml
 
 %files plugin-protocol-cifs
 %defattr(664 root root 775)

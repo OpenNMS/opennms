@@ -44,7 +44,7 @@ import org.springframework.core.io.FileSystemResource;
  *
  * @author <a href="mailto:weave@oculan.com">Weave </a>
  */
-public final class DataCollectionConfigFactory {
+public abstract class DataCollectionConfigFactory {
 	
     /**
      * The singleton instance of this factory

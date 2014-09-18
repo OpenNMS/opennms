@@ -50,7 +50,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
-public class Sftp3gppUtils {
+public abstract class Sftp3gppUtils {
 
     /** The Constant LOG. */
     private static final Logger LOG = LoggerFactory.getLogger(Sftp3gppUtils.class);

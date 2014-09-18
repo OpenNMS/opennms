@@ -26,7 +26,7 @@ import org.springframework.util.Assert;
 public class MockLocationMonitorDao extends AbstractMockDao<OnmsLocationMonitor, Integer> implements LocationMonitorDao {
     private AtomicInteger m_id = new AtomicInteger(0);
     private Map<String,OnmsMonitoringLocationDefinition> m_locationDefinitions = new HashMap<String,OnmsMonitoringLocationDefinition>();
-    private LinkedHashSet<OnmsLocationSpecificStatus> m_statuses = new LinkedHashSet<OnmsLocationSpecificStatus>();
+    private Set<OnmsLocationSpecificStatus> m_statuses = new LinkedHashSet<OnmsLocationSpecificStatus>();
 
     @Override
     protected void generateId(final OnmsLocationMonitor mon) {

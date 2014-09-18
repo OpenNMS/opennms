@@ -15,19 +15,28 @@
             <directory>target/dependencies/apache-karaf-${karafVersion}</directory>
             <outputDirectory>/</outputDirectory>
             <excludes>
+
+                <!-- Exclude demos -->
                 <exclude>**/demos/**</exclude>
-                <exclude>bin/**</exclude>
-                <exclude>etc/custom.properties</exclude>
-                <exclude>etc/system.properties</exclude>
-                <exclude>etc/users.properties</exclude>
-                <exclude>etc/org.apache.karaf.features.cfg</exclude>
-                <exclude>etc/org.ops4j.pax.logging.cfg</exclude>
+
+                <!-- Exclude unnecessary documentations -->
                 <exclude>LICENSE</exclude>
                 <exclude>NOTICE</exclude>
                 <exclude>README</exclude>
                 <exclude>RELEASE-NOTES</exclude>
                 <exclude>karaf-manual*.html</exclude>
                 <exclude>karaf-manual*.pdf</exclude>
+
+                <!-- Exclude bin so that we can set permissions correctly below -->
+                <exclude>bin/**</exclude>
+
+                <!-- Exclude etc files that we are providing replacements for -->
+                <exclude>etc/custom.properties</exclude>
+                <exclude>etc/startup.properties</exclude>
+                <exclude>etc/system.properties</exclude>
+                <exclude>etc/users.properties</exclude>
+                <exclude>etc/org.apache.karaf.features.cfg</exclude>
+
             </excludes>
         </fileSet>
 
@@ -37,6 +46,7 @@
             <outputDirectory>/</outputDirectory>
             <includes>
                 <include>bin/admin</include>
+                <include>bin/client</include>
                 <include>bin/start</include>
                 <include>bin/stop</include>
             </includes>
@@ -51,6 +61,7 @@
             <fileMode>0644</fileMode>
             <directoryMode>0755</directoryMode>
         </fileSet>
+
         <fileSet>
             <directory>target/classes/etc</directory>
             <outputDirectory>/etc/</outputDirectory>
@@ -70,7 +81,7 @@
         <file>
             <source>${basedir}/target/dependencies/apache-karaf-${karafVersion}/bin/karaf</source>
             <outputDirectory>/bin/</outputDirectory>
-            <destName>opennms</destName>
+            <destName>karaf</destName>
             <fileMode>0755</fileMode>
             <lineEnding>unix</lineEnding>
         </file>

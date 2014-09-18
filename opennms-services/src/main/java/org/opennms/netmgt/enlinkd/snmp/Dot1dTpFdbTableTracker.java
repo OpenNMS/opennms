@@ -123,7 +123,7 @@ public class Dot1dTpFdbTableTracker extends TableTracker {
 	    DOT1D_TP_FDB_STATUS
 	};
 
-	public class Dot1dTpFdbRow extends SnmpRowResult {
+	public static class Dot1dTpFdbRow extends SnmpRowResult {
 		public Dot1dTpFdbRow(int columnCount, SnmpInstId instance) {
 			super(columnCount, instance);
 		}

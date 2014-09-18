@@ -21,11 +21,20 @@
             <unpackOptions>
                 <excludes>
                     <exclude>**/*.txt</exclude>
-                    <exclude>bin/*</exclude>
-                    <exclude>demos/**</exclude>
+                    <exclude>bin/admin</exclude>
+                    <exclude>bin/opennms</exclude>
+                    <exclude>bin/start</exclude>
+                    <exclude>bin/stop</exclude>
+                    <exclude>demos/*</exclude>
+
+                    <!-- Get rid of the old Karaf features XML -->
                     <exclude>**/org.opennms.container.standalone*-features.xml</exclude>
+
+                    <!-- Get rid of any files that we replace with files from this project -->
                     <exclude>**/custom.properties</exclude>
                     <exclude>**/org.apache.karaf.features.cfg</exclude>
+                    <exclude>**/org.apache.karaf.shell.cfg</exclude>
+                    <exclude>**/org.ops4j.pax.logging.cfg</exclude>
                 </excludes>
             </unpackOptions>
         </dependencySet>
