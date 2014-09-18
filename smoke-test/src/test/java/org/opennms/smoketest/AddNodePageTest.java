@@ -28,6 +28,7 @@
 
 package org.opennms.smoketest;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
@@ -37,22 +38,27 @@ import org.junit.runners.MethodSorters;
 public class AddNodePageTest extends OpenNMSSeleniumTestCase {
     @Before
     public void setUp() throws Exception {
+        deleteTestRequisition();
         super.setUp();
-        clickAndWait("link=Add Node");
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        deleteTestRequisition();
+        super.tearDown();
     }
 
     @Test
-    public void a_setupProvisioningGroup() throws Exception {
+    public void testAddNodePage() throws Exception {
         selenium.open("/opennms/admin/node/add.htm");
         clickAndWait("link=Admin");
         clickAndWait("link=Manage Provisioning Requisitions");
         selenium.type("css=form[name=takeAction] > input[name=groupName]", "test");
         clickAndWait("css=input[type=submit]");
         clickAndWait("//input[@value='Synchronize']");
-    }
 
-    @Test
-    public void b_testAddNodePage() throws Exception {
+        goToMainPage();
+        clickAndWait("link=Add Node");
 
         waitForText("Category:");
         assertEquals("Provision", selenium.getValue("css=input[type=submit]"));

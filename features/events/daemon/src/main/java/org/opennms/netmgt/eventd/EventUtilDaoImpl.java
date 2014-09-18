@@ -80,4 +80,9 @@ public class EventUtilDaoImpl extends AbstractEventUtil {
             return null;
         }
     }
+
+    @Override
+    public String getHardwareFieldValue(String parm, long nodeId) {
+	return "Unknown-Not-Implemented-Yet"; // FIXME
+    }
 }

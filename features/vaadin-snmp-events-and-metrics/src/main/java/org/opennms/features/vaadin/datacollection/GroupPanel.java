@@ -74,8 +74,9 @@ public class GroupPanel extends Panel {
      * @param dataCollectionConfigDao the OpenNMS Data Collection Configuration DAO
      * @param source the OpenNMS Data Collection Group object
      * @param logger the logger object
+     * @param mibGroupEditable true, if the MIB group can be modified
      */
-    public GroupPanel(final DataCollectionConfigDao dataCollectionConfigDao, final DatacollectionGroup source, final Logger logger) {
+    public GroupPanel(final DataCollectionConfigDao dataCollectionConfigDao, final DatacollectionGroup source, final Logger logger, boolean mibGroupEditable) {
 
         if (dataCollectionConfigDao == null) {
             throw new RuntimeException("dataCollectionConfigDao cannot be null.");
@@ -98,7 +99,7 @@ public class GroupPanel extends Panel {
 
         groupTable = new GroupTable(source.getGroups());
 
-        final GroupForm groupForm = new GroupForm(resourceTypes);
+        final GroupForm groupForm = new GroupForm(resourceTypes, mibGroupEditable);
         groupForm.setVisible(false);
 
         final EditorToolbar bottomToolbar = new EditorToolbar() {

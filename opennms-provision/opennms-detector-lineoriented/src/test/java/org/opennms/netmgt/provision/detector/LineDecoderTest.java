@@ -95,7 +95,7 @@ public class LineDecoderTest {
     public static class TestDetector extends AsyncLineOrientedDetectorMinaImpl {
 
         public TestDetector() {
-            super("POP3", 110, 5000, 1);
+            super("POP3", 110, 500, 1);
            
         }
 
@@ -165,7 +165,7 @@ public class LineDecoderTest {
     @Test
     public void testDetectorFailWrongPort() throws Exception{
         
-        m_detector = createDetector(9000);
+        m_detector = createDetector(65535);
         
         assertFalse( doCheck( m_detector.isServiceDetected( m_server.getInetAddress())));
     }
@@ -173,7 +173,6 @@ public class LineDecoderTest {
     private static TestDetector createDetector(int port) {
         TestDetector detector = new TestDetector();
         detector.setServiceName("TEST");
-        detector.setTimeout(1000);
         detector.setPort(port);
         detector.init();
         return detector;

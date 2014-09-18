@@ -33,7 +33,7 @@ import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.sql.Connection;
-import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -42,7 +42,11 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
+import javax.sql.DataSource;
+
 import org.apache.commons.io.IOUtils;
+import org.opennms.core.db.DataSourceFactory;
+import org.opennms.core.db.install.SimpleDataSource;
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.xml.CastorUtils;
 import org.opennms.netmgt.config.opennmsDataSources.DataSourceConfiguration;
@@ -57,8 +61,8 @@ import org.slf4j.LoggerFactory;
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a> 
  */
 public abstract class AbstractOnmsUpgrade implements OnmsUpgrade {
-	
-	private static final Logger LOG = LoggerFactory.getLogger(AbstractOnmsUpgrade.class);
+
+    private static final Logger LOG = LoggerFactory.getLogger(AbstractOnmsUpgrade.class);
 
     /** The Constant ZIP_EXT. */
     public static final String ZIP_EXT = ".zip";
@@ -71,6 +75,9 @@ public abstract class AbstractOnmsUpgrade implements OnmsUpgrade {
 
     /** The OpenNMS version. */
     private String onmsVersion;
+
+    /** The Data Source. */
+    private DataSource dataSource;
 
     /**
      * Instantiates a new abstract OpenNMS upgrade.
@@ -241,6 +248,23 @@ public abstract class AbstractOnmsUpgrade implements OnmsUpgrade {
      * @throws OnmsUpgradeException the OpenNMS upgrade exception
      */
     protected Connection getDbConnection() throws OnmsUpgradeException {
+        initializeDatasource();
+        try {
+            return dataSource.getConnection();
+        } catch (SQLException e) {
+            throw new OnmsUpgradeException("Can't obtain a connection to OpenNMS Database because " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Initializes the data source.
+     *
+     * @throws OnmsUpgradeException the OpenNMS upgrade exception
+     */
+    protected void initializeDatasource() throws OnmsUpgradeException {
+        if (dataSource != null) {
+            return;
+        }
         try {
             final File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.OPENNMS_DATASOURCE_CONFIG_FILE_NAME);
             DataSourceConfiguration dsc = null;
@@ -250,17 +274,19 @@ public abstract class AbstractOnmsUpgrade implements OnmsUpgrade {
                 dsc = CastorUtils.unmarshal(DataSourceConfiguration.class, fileInputStream);
             } finally {
                 IOUtils.closeQuietly(fileInputStream);
-            } 
-            for (JdbcDataSource ds : dsc.getJdbcDataSourceCollection()) {
-                if (ds.getName().equals("opennms")) {
-                    log("Connecting to %s\n", ds.getUrl());
-                    return DriverManager.getConnection(ds.getUrl(), ds.getUserName(), ds.getPassword());
+            }
+            for (JdbcDataSource jds : dsc.getJdbcDataSourceCollection()) {
+                if (jds.getName().equals("opennms")) {
+                    dataSource = new SimpleDataSource(jds);
+                    DataSourceFactory.setInstance(dataSource);
                 }
+            }
+            if (dataSource == null) {
+                throw new OnmsUpgradeException("Can't find theOpenNMS Database settings.");
             }
         } catch (Exception e) {
             throw new OnmsUpgradeException("Can't connect to OpenNMS Database because " + e.getMessage(), e);
         }
-        throw new OnmsUpgradeException("Databaseconnection cannot be null");
     }
 
     /**
@@ -349,11 +375,11 @@ public abstract class AbstractOnmsUpgrade implements OnmsUpgrade {
      */
     protected void unzipFile(File zipFile, File outputFolder) throws OnmsUpgradeException {
         try {
-        	if (!outputFolder.exists()) {
-        		if (!outputFolder.mkdirs()) {
-            		LOG.warn("Could not make directory: {}", outputFolder.getPath());
-            	}
-        	}
+            if (!outputFolder.exists()) {
+                if (!outputFolder.mkdirs()) {
+                    LOG.warn("Could not make directory: {}", outputFolder.getPath());
+                }
+            }
             FileInputStream fis;
             byte[] buffer = new byte[1024];
             fis = new FileInputStream(zipFile);

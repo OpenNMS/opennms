@@ -347,6 +347,7 @@ public class MibCompilerPanel extends Panel {
         } else {
             List<String> dependencies = mibParser.getMissingDependencies();
             if (dependencies.isEmpty()) {
+                // FIXME Is this the best way to add a custom CSS ?
                 String preStyle = "white-space: pre-wrap; white-space: -moz-pre-wrap; white-space: -pre-wrap; white-space: -o-pre-wrap; word-wrap: break-word;";
                 logger.error("Problem found when compiling the MIB: <pre style=\"" + preStyle + "\">" + mibParser.getFormattedErrors() + "</pre>");
             } else {

@@ -153,7 +153,7 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
                     // is used for all events that this listener handles. Therefore, if Notifd
                     // registers for an event then all logs for handling that event will end up
                     // inside notifd.log.
-                    new LogPreservingThreadFactory(m_listener.getName(), 1, true),
+                    new LogPreservingThreadFactory(m_listener.getName(), 1),
                     new RejectedExecutionHandler() {
                         @Override
                         public void rejectedExecution(Runnable r, ThreadPoolExecutor executor) {
@@ -513,7 +513,7 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
                     0L,
                     TimeUnit.MILLISECONDS,
                     m_handlerQueueLength == null ? new LinkedBlockingQueue<Runnable>() : new LinkedBlockingQueue<Runnable>(m_handlerQueueLength),
-                    new LogPreservingThreadFactory(EventIpcManagerDefaultImpl.class.getSimpleName(), m_handlerPoolSize, true)
+                    new LogPreservingThreadFactory(EventIpcManagerDefaultImpl.class.getSimpleName(), m_handlerPoolSize)
                 );
             }
             

@@ -43,6 +43,7 @@ import java.net.InetAddress;
 import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.regex.Matcher;
@@ -59,6 +60,7 @@ import org.opennms.bootstrap.Bootstrap;
 import org.opennms.core.db.DataSourceConfigurationFactory;
 import org.opennms.core.db.install.InstallerDb;
 import org.opennms.core.db.install.SimpleDataSource;
+import org.opennms.core.logging.Logging;
 import org.opennms.core.schema.ExistingResourceAccessor;
 import org.opennms.core.schema.Migration;
 import org.opennms.core.schema.Migrator;
@@ -960,7 +962,10 @@ public class Installer {
      * @throws java.lang.Exception if any.
      */
     public static void main(String[] argv) throws Exception {
+        final Map<String,String> mdc = Logging.getCopyOfContextMap();
+        Logging.putPrefix("install");
         new Installer().install(argv);
+        Logging.setContextMap(mdc);
     }
 
     /**

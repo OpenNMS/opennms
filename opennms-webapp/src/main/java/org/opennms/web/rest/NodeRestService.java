@@ -283,6 +283,15 @@ public class NodeRestService extends OnmsRestService {
         return m_context.getResource(AssetRecordResource.class);
     }
 
+    /**
+     * <p>getHardwareInventoryResource</p>
+     *
+     * @return a {@link org.opennms.web.rest.HardwareInventoryResource} object.
+     */
+    @Path("{nodeCriteria}/hardwareInventory")
+    public HardwareInventoryResource getHardwareInventoryResource() {
+        return m_context.getResource(HardwareInventoryResource.class);
+    }
 
     @GET
     @Path("/{nodeCriteria}/categories")

@@ -30,6 +30,7 @@ package org.opennms.netmgt.poller.monitors;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.opennms.core.utils.InetAddressUtils.addr;
 
@@ -54,6 +55,7 @@ import org.opennms.test.JUnitConfigurationEnvironment;
 import org.opennms.test.mock.MockUtil;
 import org.springframework.test.context.ContextConfiguration;
 import org.xbill.DNS.Lookup;
+import org.xbill.DNS.Options;
 import org.xbill.DNS.Record;
 import org.xbill.DNS.SimpleResolver;
 import org.xbill.DNS.TextParseException;
@@ -76,6 +78,14 @@ public class DnsMonitorTest {
     @Before
     public void setup() throws Exception {
         MockLogAppender.setupLogging(true);
+        // Enable verbose for dnsjava so cached answers are more clear
+        // The cache query shows up as:
+        // lookup example.com. A  ;; or another record type like AAAA
+        // unknown  ;; this is the response for an empty cache.  Anything else is using the cache
+        //
+        // Note: The DNSMonitor sends messages directly and does not use the Lookup class
+        // so it doesn't interact with the cache
+        Options.set("verbose", "true");
     }
     
     @Test
@@ -204,6 +214,9 @@ public class DnsMonitorTest {
     @Test
     public void testDnsJavaResponse() throws IOException {
         final Lookup l = new Lookup("example.com");
+        // make sure we use a temporary cache so don't get results from a previously cached query
+        // from another test
+        l.setCache(null);
         final SimpleResolver resolver = new SimpleResolver("127.0.0.1");
         resolver.setPort(9153);
         l.setResolver(resolver);
@@ -219,6 +232,9 @@ public class DnsMonitorTest {
     @Test
     public void testDnsJavaQuadARecord() throws IOException {
         final Lookup l = new Lookup("ipv6.example.com", Type.AAAA);
+        // make sure we use a temporary cache so don't get results from a previously cached query
+        // from another test
+        l.setCache(null);
         final SimpleResolver resolver = new SimpleResolver("::1");
         resolver.setPort(9153);
         l.setResolver(resolver);
@@ -234,6 +250,9 @@ public class DnsMonitorTest {
     @Test
     public void testDnsJavaWithDnsServer() throws TextParseException, UnknownHostException {
         final Lookup l = new Lookup("example.com", Type.AAAA);
+        // make sure we use a temporary cache so don't get results from a previously cached query
+        // from another test
+        l.setCache(null);
         final SimpleResolver resolver = new SimpleResolver("::1");
         resolver.setPort(9153);
         l.setResolver(resolver);
@@ -256,22 +275,19 @@ public class DnsMonitorTest {
     @JUnitDNSServer(port=9153, zones={})
     public void testNoAnswer() throws Exception {
         final Lookup l = new Lookup("example.com", Type.AAAA);
+        // make sure we use a temporary cache so don't get results from a previously cached query
+        // from another test
+        l.setCache(null);
+        
         final SimpleResolver resolver = new SimpleResolver("::1");
         resolver.setPort(9153);
         l.setResolver(resolver);
         l.run();
         
+        // and NXRRSET record should be sent meaning that the server has no records for 
+        // example.com at all.  This results in a null answers.  This is result 4 I think
         System.out.println("result: " + l.getResult());
         final Record[] answers = l.getAnswers();
-        assertNotNull(answers);
-        assertEquals(answers.length, 1);
-        
-        final Record record = answers[0];
-        System.err.println(record.getTTL());
-        
-        if(l.getResult() == Lookup.SUCCESSFUL) {
-            System.out.println(l.getAnswers()[0].rdataToString());
-        }
-        assertTrue(l.getResult() == Lookup.SUCCESSFUL);
+        assertNull(answers);
     }
 }

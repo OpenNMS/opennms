@@ -193,7 +193,7 @@ public class DataCollectionGroupAdminPanel extends VerticalLayout {
      * @param dcGroup the data collection group object
      */
     private void addDataCollectionGroupPanel(final DataCollectionConfigDao dataCollectionDao, final File file, final DatacollectionGroup dcGroup) {
-        DataCollectionGroupPanel panel = new DataCollectionGroupPanel(dataCollectionDao, dcGroup, new SimpleLogger()) {
+        DataCollectionGroupPanel panel = new DataCollectionGroupPanel(dataCollectionDao, dcGroup, new SimpleLogger(), file) {
             @Override
             public void cancel() {
                 this.setVisible(false);
@@ -209,7 +209,7 @@ public class DataCollectionGroupAdminPanel extends VerticalLayout {
                 Notification.show("Data collection group file " + file.getName() + " cannot be saved" + msg, Notification.Type.ERROR_MESSAGE);
             }
         };
-        panel.setCaption("Data Collection from " + file.getName());
+        panel.setCaption("Data Collection Group from " + file.getName());
         removeDataCollectionGroupPanel();
         addComponent(panel);
     }

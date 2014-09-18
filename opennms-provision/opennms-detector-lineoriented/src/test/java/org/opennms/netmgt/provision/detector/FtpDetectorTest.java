@@ -56,6 +56,7 @@ public class FtpDetectorTest {
     public void setUp() throws Exception {
         MockLogAppender.setupLogging();
 
+        m_detector.setTimeout(500);
         m_detector.init();
        
         m_server = new SimpleServer() {
@@ -104,7 +105,7 @@ public class FtpDetectorTest {
     public void testFailureClosedPort() throws Exception {
         
         m_server.setBanner("WRONG BANNER");
-        m_detector.setPort(1000); //m_server.getLocalPort()
+        m_detector.setPort(65535);
         m_detector.setIdleTime(10000);
         
         DetectFuture df = m_detector.isServiceDetected(m_server.getInetAddress());

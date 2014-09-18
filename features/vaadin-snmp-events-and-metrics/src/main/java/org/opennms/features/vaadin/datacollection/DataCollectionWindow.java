@@ -47,6 +47,7 @@ import com.vaadin.ui.Window;
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a> 
  */
+//FIXME: When a different group is selected and the current one is being edited, warn about discard the changes or save them before continue
 @SuppressWarnings("serial")
 public class DataCollectionWindow extends Window {
 
@@ -69,7 +70,7 @@ public class DataCollectionWindow extends Window {
         setResizable(false);
         addStyleName("dialog");
         setSizeFull();
-        setContent(new DataCollectionGroupPanel(dataCollectionConfigDao, dcGroup, logger) {
+        setContent(new DataCollectionGroupPanel(dataCollectionConfigDao, dcGroup, logger, null) {
             @Override
             public void cancel() {
                 close();

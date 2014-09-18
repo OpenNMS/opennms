@@ -114,7 +114,7 @@ public class DefaultTaskCoordinator implements InitializingBean {
         // Create a new actor and add it to the queue
         new RunnableActor(name+"-TaskScheduler", m_queue);
         addExecutor(SyncTask.ADMIN_EXECUTOR, Executors.newSingleThreadExecutor(
-            new LogPreservingThreadFactory(SyncTask.ADMIN_EXECUTOR, 1, false)
+            new LogPreservingThreadFactory(SyncTask.ADMIN_EXECUTOR, 1)
         ));
     }
     

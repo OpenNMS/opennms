@@ -131,7 +131,7 @@ public class MobileMsgAsyncTest {
         m_tracker.start();
         
         m_coordinator = new DefaultTaskCoordinator("MobileMsgAsyncTest", Executors.newSingleThreadExecutor(
-            new LogPreservingThreadFactory("MobileMsgAsyncTest", 1, false)
+            new LogPreservingThreadFactory("MobileMsgAsyncTest", 1)
         ));
 
         System.err.println("=== STARTING TEST ===");

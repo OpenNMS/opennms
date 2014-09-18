@@ -309,7 +309,7 @@ public class MockEventIpcManager implements EventForwarder, EventProxy, EventIpc
     ScheduledExecutorService getScheduler() {
         if (m_scheduler == null) {
             m_scheduler = Executors.newSingleThreadScheduledExecutor(
-                new LogPreservingThreadFactory(getClass().getSimpleName(), 1, false)
+                new LogPreservingThreadFactory(getClass().getSimpleName(), 1)
             );
         }
         return m_scheduler;
