@@ -28,13 +28,12 @@
 
 package org.opennms.netmgt.capsd.plugins;
 
+import org.opennms.core.utils.ParameterMap;
+import org.opennms.netmgt.jmx.connection.JmxConnectors;
+
 import java.net.InetAddress;
 import java.util.HashMap;
 import java.util.Map;
-
-import org.opennms.core.utils.ParameterMap;
-import org.opennms.protocols.jmx.connectors.ConnectionWrapper;
-import org.opennms.protocols.jmx.connectors.JMXSecureConnectionFactory;
 
 /**
  * <p>JMXSecurePlugin class.</p>
@@ -45,12 +44,10 @@ import org.opennms.protocols.jmx.connectors.JMXSecureConnectionFactory;
 public class JMXSecurePlugin extends JMXPlugin
 {
 
-	/** {@inheritDoc} */
-        @Override
-	public ConnectionWrapper getMBeanServerConnection(Map<String,Object> parameterMap, InetAddress address)
-	{
-		return JMXSecureConnectionFactory.getMBeanServerConnection(parameterMap, address);
-	}
+    @Override
+    protected String getConnectionName() {
+        return JmxConnectors.JMX_SECURE;
+    }
 
 	/** {@inheritDoc} */
         @Override

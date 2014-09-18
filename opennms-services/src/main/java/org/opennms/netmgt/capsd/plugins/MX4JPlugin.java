@@ -28,13 +28,12 @@
 
 package org.opennms.netmgt.capsd.plugins;
 
+import org.opennms.core.utils.ParameterMap;
+import org.opennms.netmgt.jmx.connection.JmxConnectors;
+
 import java.net.InetAddress;
 import java.util.HashMap;
 import java.util.Map;
-
-import org.opennms.core.utils.ParameterMap;
-import org.opennms.protocols.jmx.connectors.ConnectionWrapper;
-import org.opennms.protocols.jmx.connectors.Jsr160ConnectionFactory;
 
 /*
 * This class enables the monitoring of MX4J enabled services.  Since there will potentially be several 
@@ -52,17 +51,6 @@ import org.opennms.protocols.jmx.connectors.Jsr160ConnectionFactory;
  */
 public class MX4JPlugin extends JMXPlugin {
   
-  /* The factory handles the creation of the connection and returns a CollectionWrapper which is used
-   * in the JXMPlugin base class to determine whether this capability exists.  
-   * 
-   * @see org.opennms.netmgt.capsd.JMXPlugin#getMBeanServer(java.util.Map, java.net.InetAddress)
-   */
-  /** {@inheritDoc} */
-  @Override
-  public ConnectionWrapper getMBeanServerConnection(Map<String, Object> parameterMap, InetAddress address) {
-      return Jsr160ConnectionFactory.getMBeanServerConnection(parameterMap, address);
-  }
-  
   /* The protocol name is used to...
    * @see org.opennms.netmgt.capsd.Plugin#getProtocolName()
    */
@@ -71,6 +59,11 @@ public class MX4JPlugin extends JMXPlugin {
   public String getProtocolName(Map<String, Object> map) {
       return ParameterMap.getKeyedString(map, "friendlyname", "mx4j");
   }
+
+    @Override
+    protected String getConnectionName() {
+        return JmxConnectors.MX4J;
+    }
   
   /* 
    * @see org.opennms.netmgt.capsd.Plugin#isProtocolSupported(java.net.InetAddress)

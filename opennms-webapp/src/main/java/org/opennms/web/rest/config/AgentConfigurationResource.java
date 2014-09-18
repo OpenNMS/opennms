@@ -19,6 +19,8 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
+import com.sun.jersey.api.core.ResourceContext;
+import com.sun.jersey.spi.resource.PerRequest;
 import org.opennms.core.config.api.ConfigurationResource;
 import org.opennms.core.config.api.ConfigurationResourceException;
 import org.opennms.core.criteria.CriteriaBuilder;
@@ -27,6 +29,7 @@ import org.opennms.netmgt.config.agents.AgentResponseCollection;
 import org.opennms.netmgt.config.api.SnmpAgentConfigFactory;
 import org.opennms.netmgt.config.collectd.CollectdConfiguration;
 import org.opennms.netmgt.config.collectd.Filter;
+import org.opennms.netmgt.config.collectd.Parameter;
 import org.opennms.netmgt.config.collectd.Service;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.filter.FilterDao;
@@ -41,9 +44,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
-
-import com.sun.jersey.api.core.ResourceContext;
-import com.sun.jersey.spi.resource.PerRequest;
 
 @Component
 @PerRequest
@@ -203,6 +203,11 @@ public class AgentConfigurationResource implements InitializingBean {
                 node = iface.getNode();
             }
             final Map<String,String> parameters = new TreeMap<String,String>();
+
+            // all service parameters from collectd configuration to parameters map
+            for (Parameter eachParameter : pack.getService(serviceName).getParameters()) {
+                parameters.put(eachParameter.getKey(), eachParameter.getValue());
+            }
 
             int port = defaultPort;
             if ("SNMP".equals(serviceName)) {

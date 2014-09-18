@@ -28,9 +28,6 @@
 
 package org.opennms.netmgt.dao.api;
 
-import java.io.IOException;
-import java.net.InetAddress;
-
 import org.opennms.core.xml.MarshallingExceptionTranslator;
 import org.opennms.netmgt.config.SnmpEventInfo;
 import org.opennms.netmgt.config.SnmpPeerFactory;
@@ -39,13 +36,15 @@ import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpConfiguration;
 import org.springframework.beans.factory.InitializingBean;
 
+import java.io.IOException;
+import java.net.InetAddress;
+
 /**
  * DefaultSnmpConfigDao
  *
  * @author brozow
  * @version $Id: $
  */
-// TODO MVR what should we do here?
 public class FactoryBasedSnmpConfigDao implements SnmpConfigDao, InitializingBean {
     
     private static final MarshallingExceptionTranslator TRANSLATOR = new MarshallingExceptionTranslator();

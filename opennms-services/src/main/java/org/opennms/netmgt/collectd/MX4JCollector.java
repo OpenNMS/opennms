@@ -28,44 +28,25 @@
 
 package org.opennms.netmgt.collectd;
 
-import java.net.InetAddress;
-import java.util.Map;
+import org.opennms.netmgt.jmx.connection.JmxConnectors;
 
-import org.opennms.protocols.jmx.connectors.ConnectionWrapper;
-import org.opennms.protocols.jmx.connectors.MX4JConnectionFactory;
-
-/*
-* The MX4JCollector class manages the querying and storage of data into RRD files.  The list of 
-* MBeans to be queried is read from the jmx-datacollection-config.xml file using the "mx4j" service name.
-* The super class, JMXCollector, performs all the work. 
-* 
-* @author <A HREF="mailto:mike@opennms.org">Mike Jamison </A>
-* @author <A HREF="http://www.opennms.org/">OpenNMS </A>
-*/
 /**
- * <p>MX4JCollector class.</p>
+ * The MX4JCollector class manages the querying and storage of data into RRD files.  The list of
+ * MBeans to be queried is read from the jmx-datacollection-config.xml file using the "mx4j" service name.
+ * The super class, JMXCollector, performs all the work.
  *
- * @author ranger
- * @version $Id: $
+ * @author <A HREF="mailto:mike@opennms.org">Mike Jamison </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
 public class MX4JCollector extends JMXCollector {
 
-  /**
-   * <p>Constructor for MX4JCollector.</p>
-   */
-  public MX4JCollector() {
-      super();
-      setServiceName("mx4j");
-      setUseFriendlyName(true);
-  }
+    public MX4JCollector() {
+        super();
+        setServiceName("mx4j");
+    }
 
-  /* Return a ConnectionWrapper object using the factory.
-   * 
-   * @see org.opennms.netmgt.collectd.JMXCollector#getMBeanServerConnection(java.util.Map, java.net.InetAddress)
-   */
-  /** {@inheritDoc} */
-  @Override
-  public ConnectionWrapper getMBeanServerConnection(Map<String, Object> parameterMap, InetAddress address) {
-      return MX4JConnectionFactory.getMBeanServerConnection(parameterMap, address);
-  }
+    @Override
+    protected String getConnectionName() {
+        return JmxConnectors.MX4J;
+    }
 }

@@ -432,7 +432,21 @@
   <bean id="jasperReportConfigDao" class="org.opennms.netmgt.dao.castor.DefaultJasperReportConfigDao">
     <property name="configResource" ref="jasperReportConfigResourceLocation" />
   </bean>
-  
+
+  <bean id="jmxDataCollectionConfigResourceLocation" class="java.lang.String">
+    <constructor-arg value="file:${opennms.home}/etc/jmx-datacollection-config.xml" />
+  </bean>
+
+  <bean id="jmxDataCollectionConfigDao" class="org.opennms.netmgt.config.JMXDataCollectionConfigDao">
+    <property name="configResource" ref="jmxDataCollectionConfigResourceLocation" />
+  </bean>
+
+  <bean id="databaseSchemaConfigFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+    <property name="staticMethod"><value>org.opennms.netmgt.config.DatabaseSchemaConfigFactory.init</value></property>
+  </bean>
+
+  <bean id="databaseSchemaConfigFactory" class="org.opennms.netmgt.config.DatabaseSchemaConfigFactory" depends-on="databaseSchemaConfigFactory-init" factory-method="getInstance"/>
+
   <onmsgi:service interface="org.opennms.netmgt.dao.api.JasperReportConfigDao" ref="jasperReportConfigDao" />
 
   <bean id="filterDaoFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
