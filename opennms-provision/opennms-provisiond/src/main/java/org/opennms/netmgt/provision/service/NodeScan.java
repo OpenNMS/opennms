@@ -784,11 +784,11 @@ public class NodeScan implements RunInBatch {
         }
 
         public String getForeignSource() {
-            return getNode().getForeignSource();
+            return getNode() == null? null : getNode().getForeignSource();
         }
 
         public String getForeignId() {
-            return getNode().getForeignId();
+            return getNode() == null? null : getNode().getForeignId();
         }
         
         public ProvisionService getProvisionService() {

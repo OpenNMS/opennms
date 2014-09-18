@@ -69,11 +69,11 @@ public class CoreImportActivities {
     public RequisitionImport loadSpecFile(final Resource resource) {
         final RequisitionImport ri = new RequisitionImport();
 
-        info("Loading requisition from resource %s", resource);
+        LOG.info("Loading requisition from resource {}", resource);
         try {
             final Requisition specFile = m_provisionService.loadRequisition(resource);
             ri.setRequisition(specFile);
-            debug("Finished loading requisition.");
+            LOG.debug("Finished loading requisition.");
         } catch (final Throwable t) {
             ri.abort(t);
         }
@@ -84,13 +84,13 @@ public class CoreImportActivities {
     @Activity( lifecycle = "import", phase = "audit", schedulingHint="import" )
     public ImportOperationsManager auditNodes(final RequisitionImport ri, final Boolean rescanExisting) {
         if (ri.isAborted()) {
-            info("The import has been aborted, skipping audit phase import.");
+            LOG.info("The import has been aborted, skipping audit phase import.");
             return null;
         }
         
         final Requisition specFile = ri.getRequisition();
 
-        info("Auditing nodes for requisition %s", specFile);
+        LOG.info("Auditing nodes for requisition {}", specFile);
 
         // @ipv6
         m_provisionService.createDistPollerIfNecessary("localhost", "127.0.0.1");
@@ -103,7 +103,7 @@ public class CoreImportActivities {
         opsMgr.setForeignSource(foreignSource);
         opsMgr.auditNodes(specFile);
 
-        debug("Finished auditing nodes.");
+        LOG.debug("Finished auditing nodes.");
         
         return opsMgr;
     }
@@ -111,18 +111,18 @@ public class CoreImportActivities {
     @Activity( lifecycle = "import", phase = "scan", schedulingHint="import" )
     public void scanNodes(final Phase currentPhase, final ImportOperationsManager opsMgr, final RequisitionImport ri) {
         if (ri.isAborted()) {
-            info("The import has been aborted, skipping scan phase import.");
+            LOG.info("The import has been aborted, skipping scan phase import.");
             return;
         }
 
-        info("Scheduling nodes for phase %s", currentPhase);
+        LOG.info("Scheduling nodes for phase {}", currentPhase);
         
         final Collection<ImportOperation> operations = opsMgr.getOperations();
         
         for(final ImportOperation op : operations) {
             final LifeCycleInstance nodeScan = currentPhase.createNestedLifeCycle("nodeImport");
 
-            debug("Created lifecycle %s for operation %s", nodeScan, op);
+            LOG.debug("Created lifecycle {} for operation {}", nodeScan, op);
             
             nodeScan.setAttribute("operation", op);
             nodeScan.setAttribute("requisitionImport", ri);
@@ -136,41 +136,41 @@ public class CoreImportActivities {
     @Activity( lifecycle = "nodeImport", phase = "scan", schedulingHint="import" )
     public void scanNode(final ImportOperation operation, final RequisitionImport ri, final Boolean rescanExisting) {
         if (ri.isAborted()) {
-            info("The import has been aborted, skipping scan phase nodeImport.");
+            LOG.info("The import has been aborted, skipping scan phase nodeImport.");
             return;
         }
 
         if (rescanExisting == null || rescanExisting) {
-            info("Running scan phase of %s", operation);
+            LOG.info("Running scan phase of {}", operation);
             operation.scan();
     
-            info("Finished Running scan phase of %s", operation);
+            LOG.info("Finished Running scan phase of {}", operation);
         } else {
-            info("Skipping scan phase of %s, because the %s parameter was set during import.", operation, EventConstants.PARM_IMPORT_RESCAN_EXISTING);
+            LOG.info("Skipping scan phase of {}, because the {} parameter was set during import.", operation, EventConstants.PARM_IMPORT_RESCAN_EXISTING);
         }
     }
     
     @Activity( lifecycle = "nodeImport", phase = "persist" , schedulingHint = "import" )
     public void persistNode(final ImportOperation operation, final RequisitionImport ri) {
         if (ri.isAborted()) {
-            info("The import has been aborted, skipping persist phase.");
+            LOG.info("The import has been aborted, skipping persist phase.");
             return;
         }
 
-        info("Running persist phase of %s", operation);
+        LOG.info("Running persist phase of {}", operation);
         operation.persist();
-        info("Finished Running persist phase of %s", operation);
+        LOG.info("Finished Running persist phase of {}", operation);
 
     }
     
     @Activity( lifecycle = "import", phase = "relate" , schedulingHint = "import" )
     public void relateNodes(final BatchTask currentPhase, final RequisitionImport ri) {
         if (ri.isAborted()) {
-            info("The import has been aborted, skipping relate phase.");
+            LOG.info("The import has been aborted, skipping relate phase.");
             return;
         }
 
-        info("Running relate phase");
+        LOG.info("Running relate phase");
         
         final Requisition requisition = ri.getRequisition();
         RequisitionVisitor visitor = new AbstractRequisitionVisitor() {
@@ -214,17 +214,5 @@ public class CoreImportActivities {
                 return "set parent for node "+nodeReq.getNodeLabel();
             }
         }; 
-    }
-
-    protected void info(String format, Object... args) {
-    	LOG.info(format, args);
-    }
-
-    protected void debug(String format, Object... args) {
-        LOG.debug(format, args);
-    }
-
-    protected void warn(String format, Object... args) {
-        LOG.warn(format, args);
     }
 }

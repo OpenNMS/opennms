@@ -1419,6 +1419,45 @@ public class ProvisionerTest extends ProvisioningTestCase implements Initializin
         assertEquals(Float.valueOf(-79.162261f).doubleValue(), geolocation.getLongitude().doubleValue(), 0.1d);
     }
 
+    @Test(timeout=300000)
+    public void testRequisitionedCategoriesNoPolicies() throws Exception {
+        final int nextNodeId = m_nodeDao.getNextNodeId();
+
+        final MockNetwork network = new MockNetwork();
+        final MockNode node = network.addNode(nextNodeId, "test");
+        network.addInterface("172.16.1.1");
+        network.addService("ICMP");
+        anticpateCreationEvents(node);
+        m_eventAnticipator.anticipateEvent(getNodeCategoryEvent(nextNodeId, "test"));
+
+        // we should not get new update events on a re-import now, that happens during the scan phase
+        //m_eventAnticipator.anticipateEvent(new EventBuilder(EventConstants.NODE_UPDATED_EVENT_UEI, "Test").setNodeid(nextNodeId).getEvent());
+        //m_eventAnticipator.anticipateEvent(getNodeCategoryEvent(nextNodeId, "test"));
+        importFromResource("classpath:/provisioner-testRequisitionedCategoriesNoPolicies-before.xml", true);
+
+        m_eventAnticipator.verifyAnticipated();
+        assertEquals(0, m_eventAnticipator.unanticipatedEvents().size());
+        m_eventAnticipator.reset();
+
+        System.err.println(m_nodeDao.findAll());
+        m_eventAnticipator.anticipateEvent(nodeScanCompleted(nextNodeId));
+        final NodeScan scan = m_provisioner.createNodeScan(nextNodeId, "empty", "test");
+        runScan(scan);
+
+        for (final Event e : m_eventAnticipator.unanticipatedEvents()) {
+            System.err.println(e);
+        }
+
+        m_eventAnticipator.verifyAnticipated();
+    }
+
+    private Event nodeScanCompleted(final int nodeId) {
+        final EventBuilder eb = new EventBuilder(EventConstants.PROVISION_SCAN_COMPLETE_UEI, "Test");
+        eb.setNodeid(nodeId);
+        final Event event = eb.getEvent();
+        return event;
+    }
+
     private static Event nodeDeleted(int nodeid) {
         EventBuilder bldr = new EventBuilder(EventConstants.NODE_DELETED_EVENT_UEI, "Test");
         bldr.setNodeid(nodeid);

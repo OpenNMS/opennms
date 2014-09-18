@@ -1090,6 +1090,8 @@ public class OnmsNode extends OnmsEntity implements Serializable, Comparable<Onm
     public String toString() {
         ToStringCreator retval = new ToStringCreator(this);
         retval.append("id", m_id);
+        retval.append("foreignSource", m_foreignSource);
+        retval.append("foreignId", m_foreignId);
         retval.append("labelSource", m_labelSource == null ? null : m_labelSource.toString());
         retval.append("label", m_label);
         retval.append("parent.id", getParent() == null ? null : getParent().getId());
