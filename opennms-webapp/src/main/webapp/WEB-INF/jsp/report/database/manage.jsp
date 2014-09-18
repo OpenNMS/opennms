@@ -29,6 +29,7 @@
 
 --%>
 
+<%@ page import="org.opennms.web.api.Authentication" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
@@ -92,7 +93,10 @@
 				</tr>
 			</c:forEach>
 		</table>
-		<input type="submit" value="delete checked reports"/>
+        <% if (!request.isUserInRole(Authentication.ROLE_READONLY)) { %>
+            <input type="submit" value="delete checked reports"/>
+        <% } %>
+
 	</form:form>
 	</c:otherwise>
 </c:choose>
