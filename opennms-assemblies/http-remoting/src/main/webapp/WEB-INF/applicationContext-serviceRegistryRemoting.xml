@@ -9,10 +9,7 @@
 
   <!-- This bean exposes all interfaces registered in the OpenNMS SOA ServiceRegistry over Spring HTTP remoting -->
   <bean id="serviceRegistryExporter" class="org.opennms.core.spring.web.ServiceRegistryHttpInvokerServiceExporter">
-    <!-- This property shouldn't be necessary... -->
-    <property name="service" ref="serviceRegistry" />
     <property name="serviceRegistry" ref="serviceRegistry" />
-    <property name="serviceInterface" value="org.opennms.core.soa.ServiceRegistry" />
   </bean>
 
 </beans>

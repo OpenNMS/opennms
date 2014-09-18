@@ -53,12 +53,17 @@ import org.springframework.web.util.NestedServletException;
 public class ServiceRegistryHttpInvokerServiceExporter extends HttpInvokerServiceExporter {
 	
 	private ServiceRegistry serviceRegistry;
+	
+	public ServiceRegistryHttpInvokerServiceExporter() {
+		super.setServiceInterface(ServiceRegistry.class);
+	}
 
 	public ServiceRegistry getServiceRegistry() {
 		return serviceRegistry;
 	}
 
 	public void setServiceRegistry(ServiceRegistry serviceRegistry) {
+		super.setService(serviceRegistry);
 		this.serviceRegistry = serviceRegistry;
 	}
 
