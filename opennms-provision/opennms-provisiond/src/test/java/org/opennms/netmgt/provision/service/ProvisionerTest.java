@@ -1367,7 +1367,7 @@ public class ProvisionerTest extends ProvisioningTestCase implements Initializin
         network.addService("ICMP");
         anticpateCreationEvents(node);
         m_eventAnticipator.anticipateEvent(getNodeCategoryEvent(nextNodeId, "test"));
-        
+
         // we should not get new update events on a re-import now, that happens during the scan phase
         //m_eventAnticipator.anticipateEvent(new EventBuilder(EventConstants.NODE_UPDATED_EVENT_UEI, "Test").setNodeid(nextNodeId).getEvent());
         //m_eventAnticipator.anticipateEvent(getNodeCategoryEvent(nextNodeId, "test"));
@@ -1507,7 +1507,7 @@ public class ProvisionerTest extends ProvisioningTestCase implements Initializin
         OnmsCategory cat = new OnmsCategory("ThisIsAlsoMadeUp");
         m_categoryDao.save(cat);
         m_categoryDao.flush();
-        
+
         n.addCategory(m_categoryDao.findByName("ThisIsAlsoMadeUp"));
         getNodeDao().save(n);
 
@@ -1560,7 +1560,7 @@ public class ProvisionerTest extends ProvisioningTestCase implements Initializin
         OnmsCategory cat = new OnmsCategory("ThisIsAlsoMadeUp");
         m_categoryDao.save(cat);
         m_categoryDao.flush();
-        
+
         n.addCategory(m_categoryDao.findByName("ThisIsAlsoMadeUp"));
         getNodeDao().save(n);
 
