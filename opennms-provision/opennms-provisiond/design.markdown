@@ -99,7 +99,9 @@ In the case of a new node (insert), SaveOrUpdateOperation.foundCategory() will a
 requisitioned category to the node before persisting.
 
 In the case of an existing node (update), SaveOrUpdateOperation.foundCategory() will be a no-op,
-and the node's list of categories will remain unchanged until the scan phase.
+and the node's list of categories will remain unchanged until the scan phase.  Note that between
+this time and the time that the Scan Phase finishes, updated nodes will contain any
+interface/etc. changes made by the requisition, but they will *not* contain category changes.
 
 Scan Phase
 ----------

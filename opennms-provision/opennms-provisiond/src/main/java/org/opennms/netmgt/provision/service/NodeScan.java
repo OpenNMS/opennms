@@ -680,7 +680,7 @@ public class NodeScan implements RunInBatch {
                     node = policy.apply(node);
                 }
             }
-            
+
             if (node == null) {
             	abort("Aborted scan of node due to configured policy");
             } else {
@@ -882,7 +882,6 @@ public class NodeScan implements RunInBatch {
             bldr.setNodeid(getNodeId());
             bldr.addParam(EventConstants.PARM_FOREIGN_SOURCE, getForeignSource());
             bldr.addParam(EventConstants.PARM_FOREIGN_ID, getForeignId());
-            bldr.addParam("scanClass", getClass().getSimpleName());
             getEventForwarder().sendNow(bldr.getEvent());
         }
         
