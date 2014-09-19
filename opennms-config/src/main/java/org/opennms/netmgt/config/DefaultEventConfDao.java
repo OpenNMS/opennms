@@ -73,6 +73,9 @@ public class DefaultEventConfDao implements EventConfDao, InitializingBean {
 
         @Override
         public int compare(final Event e1, final Event e2) {
+            if (e1.getEventLabel() == e2.getEventLabel()) return 0;
+            if (e1.getEventLabel() == null) return -1;
+            if (e2.getEventLabel() == null) return 1;
             return e1.getEventLabel().compareToIgnoreCase(e2.getEventLabel());
         }
     }
