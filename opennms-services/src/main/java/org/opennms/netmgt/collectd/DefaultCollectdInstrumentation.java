@@ -139,7 +139,7 @@ public class DefaultCollectdInstrumentation implements CollectionInstrumentation
     private void log(final String msg, final Object... args) {
         Logging.withPrefix("instrumentation", new Runnable() {
             @Override public void run() {
-                LOG.debug(msg, args);
+                LOG.info(msg, args);
             }
         });
         
