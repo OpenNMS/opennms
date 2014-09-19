@@ -673,7 +673,8 @@ public class NodeScan implements RunInBatch {
            
         private void applyNodePolicies(final BatchTask phase) {
         	final List<NodePolicy> nodePolicies = getProvisionService().getNodePoliciesForForeignSource(getForeignSource() == null ? "default" : getForeignSource());
-            
+                LOG.debug("NodeScan.applyNodePolicies: {}", nodePolicies);
+
         	OnmsNode node = getNode();
         	for(final NodePolicy policy : nodePolicies) {
                 if (node != null) {
