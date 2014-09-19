@@ -248,7 +248,7 @@ public class LinkdSnmpTest extends TestNetworkBuilder implements InitializingBea
             @JUnitSnmpAgent(host = FROH_IP, port = 161, resource = "classpath:linkd/nms0001/" + FROH_NAME + "-"+FROH_IP + "-walk.txt"),
             @JUnitSnmpAgent(host = OEDIPUS_IP, port = 161, resource = "classpath:linkd/nms0001/" + OEDIPUS_NAME + "-"+OEDIPUS_IP + "-walk.txt"),
             @JUnitSnmpAgent(host = SIEGFRIE_IP, port = 161, resource = "classpath:linkd/nms0001/" + SIEGFRIE_NAME + "-"+SIEGFRIE_IP + "-walk.txt")
-    })
+    }, forceMockStrategy=true)
     public void testIsisCircTableCollection() throws Exception {
 
         String name = "isisCircTable";
