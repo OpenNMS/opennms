@@ -42,7 +42,7 @@ public class ServiceCollectorTest {
         String serviceID = "1/1.1.1.1/SVC";
         ServiceCollector svcCollector = new ServiceCollector(serviceID);
         
-        LogMessage startMessage = BaseLogMessage.create("2010-05-26 12:12:18,027 DEBUG [CollectdScheduler-50 Pool-fiber11] Collectd: collector.collect:" +
+        LogMessage startMessage = BaseLogMessage.create("2010-05-26 12:12:18,027 INFO [CollectdScheduler-50 Pool-fiber11] collector.collect:" +
         		" begin:example1/24/216.216.217.254/SNMP");
         svcCollector.addMessage(startMessage);
         
@@ -105,9 +105,9 @@ public class ServiceCollectorTest {
         assertEquals(0, svcCollector.getErrorCollectionCount());
         assertEquals(0, svcCollector.getCollectionCount());
         
-        LogMessage startOneDayApartCollectionMessage = BaseLogMessage.create("2010-05-26 12:12:18,027 DEBUG [CollectdScheduler-50 Pool-fiber11] Collectd: collector.collect: " +
+        LogMessage startOneDayApartCollectionMessage = BaseLogMessage.create("2010-05-26 12:12:18,027 INFO [CollectdScheduler-50 Pool-fiber11] collector.collect: " +
         "begin:example1/24/216.216.217.254/SNMP");
-        LogMessage endOneDayApartCollectionMessage = BaseLogMessage.create("2010-05-27 12:12:18,027 DEBUG [CollectdScheduler-50 Pool-fiber11] Collectd: collector.collect" +
+        LogMessage endOneDayApartCollectionMessage = BaseLogMessage.create("2010-05-27 12:12:18,027 INFO [CollectdScheduler-50 Pool-fiber11] collector.collect" +
         ": end:example1/24/216.216.217.254/SNMP");
         
         svcCollector.addMessage(startOneDayApartCollectionMessage);
@@ -122,11 +122,11 @@ public class ServiceCollectorTest {
         
         ServiceCollector svcCollector = setupServiceCollector();
         
-        LogMessage startOneDayApartErrorCollectionMessage = BaseLogMessage.create("2010-05-26 12:12:18,027 DEBUG [CollectdScheduler-50 Pool-fiber11] Collectd: collector.collect: " +
+        LogMessage startOneDayApartErrorCollectionMessage = BaseLogMessage.create("2010-05-26 12:12:18,027 INFO [CollectdScheduler-50 Pool-fiber11] collector.collect: " +
         "begin:example1/24/216.216.217.254/SNMP");
-        LogMessage oneDayApartErrorMessage = BaseLogMessage.create("2010-05-27 12:00:00,884 DEBUG [CollectdScheduler-200 Pool-fiber86] Collectd: collector.collect: error:" +
+        LogMessage oneDayApartErrorMessage = BaseLogMessage.create("2010-05-27 12:00:00,884 INFO [CollectdScheduler-200 Pool-fiber86] collector.collect: error:" +
                         " example1/24/216.216.217.254/SNMP: org.opennms.netmgt.collectd.CollectionWarning: collect: collection failed for 172.30.248.86");
-        LogMessage endOneDayApartErrorCollectionMessage = BaseLogMessage.create("2010-05-27 12:12:18,027 DEBUG [CollectdScheduler-50 Pool-fiber11] Collectd: collector.collect" +
+        LogMessage endOneDayApartErrorCollectionMessage = BaseLogMessage.create("2010-05-27 12:12:18,027 INFO [CollectdScheduler-50 Pool-fiber11] collector.collect" +
         ": end:example1/24/216.216.217.254/SNMP"); 
         
         svcCollector.addMessage(startOneDayApartErrorCollectionMessage);
@@ -141,9 +141,9 @@ public class ServiceCollectorTest {
         
         ServiceCollector svcCollector = setupServiceCollector();
         
-        LogMessage startOneDayApartPersistMessage = BaseLogMessage.create("2010-05-26 12:12:18,027 DEBUG [CollectdScheduler-200 Pool-fiber81] Collectd: " +
+        LogMessage startOneDayApartPersistMessage = BaseLogMessage.create("2010-05-26 12:12:18,027 INFO [CollectdScheduler-200 Pool-fiber81] " +
         "collector.collect: persistDataQueueing: begin: example1/24/216.216.217.254/SNMP");
-        LogMessage endOneDayApartPersistMessage = BaseLogMessage.create("2010-05-27 12:12:18,027 DEBUG [CollectdScheduler-200 Pool-fiber22] Collectd: " +
+        LogMessage endOneDayApartPersistMessage = BaseLogMessage.create("2010-05-27 12:12:18,027 INFO [CollectdScheduler-200 Pool-fiber22] " +
         "collector.collect: persistDataQueueing: end: example1/24/216.216.217.254/SNMP");
         
         svcCollector.addMessage(startOneDayApartPersistMessage);
@@ -171,9 +171,9 @@ public class ServiceCollectorTest {
     
     public void setupCollectionMessages(ServiceCollector svcCollector){
    
-        LogMessage startNormalCollectionMessage = BaseLogMessage.create("2010-05-26 12:12:18,027 DEBUG [CollectdScheduler-50 Pool-fiber11] Collectd: collector.collect: " +
+        LogMessage startNormalCollectionMessage = BaseLogMessage.create("2010-05-26 12:12:18,027 INFO [CollectdScheduler-50 Pool-fiber11] collector.collect: " +
         "begin:example1/24/216.216.217.254/SNMP");
-        LogMessage endNormalCollectionMessage = BaseLogMessage.create("2010-05-26 12:12:38,027 DEBUG [CollectdScheduler-50 Pool-fiber11] Collectd: collector.collect" +
+        LogMessage endNormalCollectionMessage = BaseLogMessage.create("2010-05-26 12:12:38,027 INFO [CollectdScheduler-50 Pool-fiber11] collector.collect" +
         ": end:example1/24/216.216.217.254/SNMP");
         
         svcCollector.addMessage(startNormalCollectionMessage);
@@ -181,11 +181,11 @@ public class ServiceCollectorTest {
     }    
     public void setupErrorMessages(ServiceCollector svcCollector){
 
-        LogMessage startErrorCollectionMessage = BaseLogMessage.create("2010-05-26 12:12:18,027 DEBUG [CollectdScheduler-50 Pool-fiber11] Collectd: collector.collect: " +
+        LogMessage startErrorCollectionMessage = BaseLogMessage.create("2010-05-26 12:12:18,027 INFO [CollectdScheduler-50 Pool-fiber11] collector.collect: " +
         "begin:example1/24/216.216.217.254/SNMP");
-        LogMessage ErrorMessage = BaseLogMessage.create("2010-05-26 12:56:23,884 DEBUG [CollectdScheduler-200 Pool-fiber86] Collectd: collector.collect: error:" +
+        LogMessage ErrorMessage = BaseLogMessage.create("2010-05-26 12:56:23,884 INFO [CollectdScheduler-200 Pool-fiber86] collector.collect: error:" +
                         " example1/24/216.216.217.254/SNMP: org.opennms.netmgt.collectd.CollectionWarning: collect: collection failed for 172.30.248.86");
-        LogMessage endErrorCollectionMessage = BaseLogMessage.create("2010-05-26 12:12:38,027 DEBUG [CollectdScheduler-50 Pool-fiber11] Collectd: collector.collect" +
+        LogMessage endErrorCollectionMessage = BaseLogMessage.create("2010-05-26 12:12:38,027 INFO [CollectdScheduler-50 Pool-fiber11] collector.collect" +
         ": end:example1/24/216.216.217.254/SNMP");
         
         svcCollector.addMessage(startErrorCollectionMessage);
@@ -194,9 +194,9 @@ public class ServiceCollectorTest {
     }
     public void setupPersistMessages(ServiceCollector svcCollector) {
         
-        LogMessage startPersistMessage = BaseLogMessage.create("2010-05-26 12:12:18,027 DEBUG [CollectdScheduler-200 Pool-fiber81] Collectd: " +
+        LogMessage startPersistMessage = BaseLogMessage.create("2010-05-26 12:12:18,027 INFO [CollectdScheduler-200 Pool-fiber81] " +
         "collector.collect: persistDataQueueing: begin: example1/24/216.216.217.254/SNMP");
-        LogMessage endPersistMessage = BaseLogMessage.create("2010-05-26 12:12:38,027 DEBUG [CollectdScheduler-200 Pool-fiber22] Collectd: " +
+        LogMessage endPersistMessage = BaseLogMessage.create("2010-05-26 12:12:38,027 INFO [CollectdScheduler-200 Pool-fiber22] " +
         "collector.collect: persistDataQueueing: end: example1/24/216.216.217.254/SNMP");
         
         svcCollector.addMessage(startPersistMessage);
