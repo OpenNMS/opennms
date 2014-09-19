@@ -31,6 +31,7 @@ package org.opennms.netmgt.enlinkd;
 
 import java.util.List;
 
+import org.opennms.netmgt.model.BridgeMacLink;
 import org.opennms.netmgt.model.LldpElement;
 import org.opennms.netmgt.model.LldpElement.LldpChassisIdSubType;
 import org.opennms.netmgt.model.LldpLink;
@@ -117,5 +118,32 @@ public abstract class EnLinkdTestHelper {
        	System.err.println("ospf rem router address less ifindex: " + link.getOspfRemAddressLessIndex());
     	System.err.println("");
     }
+	
+	protected static void printBridgeMacLink(BridgeMacLink link) {
+    	System.err.println("----------mac link --------");
+    	System.err.println("Create time: " + link.getBridgeMacLinkCreateTime());
+    	System.err.println("Last Poll time: " + link.getBridgeMacLinkLastPollTime());
+    	System.err.println("----------Source Mac Address--------");
+    	System.err.println("Mac: " + link.getMacAddress());
+    	System.err.println("----------Target Node--------");
+    	System.err.println("Nodeid: " + link.getNode().getId());
+    	System.err.println("----------Target Bridge Port--------");
+    	System.err.println("BridgePort: " + link.getBridgePort());
+    	System.err.println("----------Target IfIndex--------");
+    	System.err.println("IfIndex: " + link.getBridgePortIfIndex());
+    	System.err.println("");
+	}
 
+
+	protected static void printBackboneBridgeMacLink(BridgeMacLink link1, BridgeMacLink link2) {
+    	
+		if (link1.getMacAddress().equals(link2.getMacAddress())) {
+		System.err.println("nodeid: "+link1.getNode().getId()+" port:"
+    	+ link1.getBridgePort() + "-->" +
+				link1.getMacAddress() 
+    	+ "<-- port: " + link2.getBridgePort() + " nodeid: " + link2.getNode().getId());  
+		}
+	}
+
+	
 }

@@ -36,6 +36,7 @@ import java.net.URLConnection;
 import java.net.URLStreamHandler;
 import java.net.URLStreamHandlerFactory;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Convenience factory class to generate URL connections with customized protocol handler.
@@ -53,12 +54,12 @@ public class GenericURLFactory implements URLStreamHandlerFactory {
     /**
      * Map with protocol and URL connections
      */
-    private HashMap<String, String> urlConnections = new HashMap<String, String>();
+    private Map<String, String> urlConnections = new HashMap<String, String>();
 
     /**
      * Map with protocol and URL default ports
      */
-    private HashMap<String, Integer> urlDefaultPorts = new HashMap<String, Integer>();
+    private Map<String, Integer> urlDefaultPorts = new HashMap<String, Integer>();
 
     /**
      * URL factory
@@ -140,7 +141,7 @@ public class GenericURLFactory implements URLStreamHandlerFactory {
      *
      * @return a {@link java.util.HashMap} object
      */
-    public HashMap<String, String> getURLConnections() {
+    public Map<String, String> getURLConnections() {
         return urlConnections;
     }
 

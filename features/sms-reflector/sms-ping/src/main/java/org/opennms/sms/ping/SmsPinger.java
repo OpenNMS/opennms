@@ -112,7 +112,7 @@ import org.slf4j.LoggerFactory;
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @version $Id: $
  */
-public class SmsPinger {
+public abstract class SmsPinger {
     
     private static SmsPingTracker s_pingTracker;
     private static Logger log = LoggerFactory.getLogger(SmsPinger.class);

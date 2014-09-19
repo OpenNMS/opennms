@@ -74,7 +74,7 @@ public class NsclientPacket {
     /**
      * This member is used to convert result codes to strings and vice versa.
      */
-    public static final HashMap<String,Short> STATE_STRINGS = new HashMap<String,Short>();
+    public static final Map<String,Short> STATE_STRINGS = new HashMap<String,Short>();
 
     /**
      * Populates the member used for converting result codes to strings and

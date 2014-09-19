@@ -38,7 +38,6 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.opennms.core.test.MockPlatformTransactionManager;
 import org.opennms.netmgt.collection.api.AttributeGroupType;
 import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.config.MibObject;
@@ -60,7 +59,6 @@ import org.springframework.expression.Expression;
 import org.springframework.expression.ExpressionParser;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
-import org.springframework.transaction.PlatformTransactionManager;
 
 /**
  * Test class for PersistRegexSelectorStrategy

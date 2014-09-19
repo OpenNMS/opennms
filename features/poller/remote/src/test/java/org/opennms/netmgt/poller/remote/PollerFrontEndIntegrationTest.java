@@ -61,8 +61,8 @@ import org.springframework.transaction.annotation.Transactional;
         "classpath:/META-INF/opennms/applicationContext-pollerBackEnd.xml",
         "classpath:/META-INF/opennms/applicationContext-pollerFrontEnd.xml",
         "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
-        //"classpath*:/META-INF/opennms/applicationContext-minimal-conf.xml",
-        "classpath:/org/opennms/netmgt/poller/remote/applicationContext-configOverride.xml"
+        "classpath:/org/opennms/netmgt/poller/remote/applicationContext-configOverride.xml",
+        "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml"
 })
 @JUnitConfigurationEnvironment(systemProperties={
     "opennms.pollerBackend.monitorCheckInterval=500",

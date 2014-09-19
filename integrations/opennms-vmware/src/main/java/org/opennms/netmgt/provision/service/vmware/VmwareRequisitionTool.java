@@ -51,7 +51,7 @@ import org.opennms.netmgt.provision.persist.requisition.Requisition;
  * 
  * @author Alejandro Galue <agalue@opennms.org>
  */
-public class VmwareRequisitionTool {
+public abstract class VmwareRequisitionTool {
 
     public static void main(String[] args) throws Exception {
         final Options options = new Options();

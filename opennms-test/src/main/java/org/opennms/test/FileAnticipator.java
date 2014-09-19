@@ -60,8 +60,10 @@ public class FileAnticipator extends Assert {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(FileAnticipator.class);
 
-    private LinkedList<File> m_expecting = new LinkedList<File>();
-    private LinkedList<File> m_deleteMe = new LinkedList<File>();
+    private static final String JAVA_IO_TMPDIR = "java.io.tmpdir";
+    
+    private List<File> m_expecting = new LinkedList<File>();
+    private List<File> m_deleteMe = new LinkedList<File>();
     private File m_tempDir = null;
     private boolean m_initialized = false;
     

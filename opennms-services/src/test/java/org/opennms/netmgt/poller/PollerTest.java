@@ -47,11 +47,15 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.db.XADataSourceFactory;
 import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.core.test.MockLogAppender;
+import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.MockDatabase;
+import org.opennms.core.test.db.TemporaryDatabaseAware;
+import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.Querier;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.capsd.JdbcCapsdDbSyncer;
@@ -59,10 +63,11 @@ import org.opennms.netmgt.config.CollectdConfigFactory;
 import org.opennms.netmgt.config.DatabaseSchemaConfigFactory;
 import org.opennms.netmgt.config.OpennmsServerConfigFactory;
 import org.opennms.netmgt.config.poller.Package;
+import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.dao.mock.EventAnticipator;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.dao.support.NullRrdStrategy;
-import org.opennms.netmgt.eventd.EventUtil;
+import org.opennms.netmgt.eventd.AbstractEventUtil;
 import org.opennms.netmgt.mock.MockElement;
 import org.opennms.netmgt.mock.MockEventUtil;
 import org.opennms.netmgt.mock.MockInterface;
@@ -82,10 +87,30 @@ import org.opennms.netmgt.poller.pollables.PollableNetwork;
 import org.opennms.netmgt.rrd.RrdUtils;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xmlrpcd.OpenNMSProvisioner;
+import org.opennms.test.JUnitConfigurationEnvironment;
 import org.opennms.test.mock.MockUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.transaction.support.TransactionTemplate;
 
-public class PollerTest {
+@RunWith(OpenNMSJUnit4ClassRunner.class)
+@ContextConfiguration(locations={
+        "classpath:/META-INF/opennms/applicationContext-soa.xml",
+        "classpath:/META-INF/opennms/applicationContext-dao.xml",
+        "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
+        "classpath*:/META-INF/opennms/component-dao.xml",
+        "classpath*:/META-INF/opennms/component-service.xml",
+        "classpath:/META-INF/opennms/applicationContext-daemon.xml",
+        "classpath:/META-INF/opennms/mockEventIpcManager.xml",
+        "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
+
+        // Override the default QueryManager with the DAO version
+        "classpath:/META-INF/opennms/applicationContext-pollerdTest.xml"
+})
+@JUnitConfigurationEnvironment
+@JUnitTemporaryDatabase(tempDbClass=MockDatabase.class,reuseDatabase=false)
+public class PollerTest implements TemporaryDatabaseAware<MockDatabase> {
     private static final String CAPSD_CONFIG = "\n"
             + "<capsd-configuration max-suspect-thread-pool-size=\"2\" max-rescan-thread-pool-size=\"3\"\n"
             + "   delete-propagation-enabled=\"true\">\n"
@@ -102,13 +127,23 @@ public class PollerTest {
 
 	private MockPollerConfig m_pollerConfig;
 
-	private MockEventIpcManager m_eventMgr;
-
 	private boolean m_daemonsStarted = false;
+	
+	@Autowired
+	private MockEventIpcManager m_eventMgr;
 
 	private EventAnticipator m_anticipator;
 
 	private OutageAnticipator m_outageAnticipator;
+	
+	@Autowired
+	private QueryManager m_queryManager;
+	
+	@Autowired
+	private MonitoredServiceDao m_monitoredServiceDao;
+
+	@Autowired
+	private TransactionTemplate m_transactionTemplate;
 
 
 	//private DemandPollDao m_demandPollDao;
@@ -119,7 +154,7 @@ public class PollerTest {
 
 	@Before
 	public void setUp() throws Exception {
-
+		
 		// System.setProperty("mock.logLevel", "DEBUG");
 		// System.setProperty("mock.debug", "true");
 		MockUtil.println("------------ Begin Test  --------------------------");
@@ -154,7 +189,6 @@ public class PollerTest {
 //		m_network.addInterface("fe80:0000:0000:0000:0231:f982:0123:4567");
 //		m_network.addService("SNMP");
 
-		m_db = new MockDatabase();
 		m_db.populate(m_network);
 		DataSourceFactory.setInstance(m_db);
 		XADataSourceFactory.setInstance(m_db);
@@ -186,23 +220,22 @@ public class PollerTest {
 		m_eventMgr.addEventListener(m_outageAnticipator);
 		m_eventMgr.setSynchronous(false);
 		
-		DefaultQueryManager queryManager = new DefaultQueryManager();
-		queryManager.setDataSource(m_db);
-		
 		DefaultPollContext pollContext = new DefaultPollContext();
 		pollContext.setEventManager(m_eventMgr);
 		pollContext.setLocalHostName("localhost");
 		pollContext.setName("Test.DefaultPollContext");
 		pollContext.setPollerConfig(m_pollerConfig);
-		pollContext.setQueryManager(queryManager);
+		pollContext.setQueryManager(m_queryManager);
 		
 		PollableNetwork network = new PollableNetwork(pollContext);
 
 		m_poller = new Poller();
         m_poller.setDataSource(m_db);
-		m_poller.setEventManager(m_eventMgr);
+        m_poller.setMonitoredServiceDao(m_monitoredServiceDao);
+        m_poller.setTransactionTemplate(m_transactionTemplate);
+        m_poller.setEventIpcManager(m_eventMgr);
 		m_poller.setNetwork(network);
-		m_poller.setQueryManager(queryManager);
+		m_poller.setQueryManager(m_queryManager);
 		m_poller.setPollerConfig(m_pollerConfig);
 		m_poller.setPollOutagesConfig(m_pollerConfig);
 
@@ -210,7 +243,7 @@ public class PollerTest {
 		config.setGetNextOutageID(m_db.getNextOutageIdStatement());
 		
 		RrdUtils.setStrategy(new NullRrdStrategy());
-
+		
 		// m_outageMgr = new OutageManager();
 		// m_outageMgr.setEventMgr(m_eventMgr);
 		// m_outageMgr.setOutageMgrConfig(config);
@@ -439,7 +472,7 @@ public class PollerTest {
 		MockService svc = m_network.getService(1, "192.168.1.1", "ICMP");
 		Event e = svc.createDownEvent();
 		String reasonParm = "eventReason";
-		String val = EventUtil.getNamedParmValue("parm[" + reasonParm + "]", e);
+		String val = (String) AbstractEventUtil.getInstance().getNamedParmValue("parm[" + reasonParm + "]", e);
 		assertEquals("Service Not Responding.", val);
 	}
 
@@ -1361,6 +1394,12 @@ public class PollerTest {
 				return null;
 			return Integer.valueOf(m_regainedSvcEvent.getDbid());
 		}
+	}
+
+	@Override
+	public void setTemporaryDatabase(MockDatabase database) {
+		m_db = database;
+		
 	}
 
 	// TODO: test multiple polling packages

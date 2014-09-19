@@ -140,57 +140,64 @@ public class MockSnmpValueFactory implements SnmpValueFactory {
 	
 	private static final Pattern HEX_CHUNK_PATTERN = Pattern.compile("(..)[ :]?");
 
-	SnmpValue parseMibValue(final String mibVal) {
-		if (mibVal.startsWith("OID:")) {
-	    	return getObjectId(SnmpObjId.get(mibVal.substring("OID:".length()).trim()));
+	SnmpValue parseMibValue(String mibVal) {
+	    
+	    if (mibVal.startsWith("Wrong Type")) {
+	        String newVal = mibVal.replaceFirst("Wrong Type \\(should be .*\\): ", "");
+	        LOG.error("Bad Mib walk has value: '{}' using '{}'", mibVal, newVal);
+	        mibVal = newVal;
+	    }
+	    
+	    if (mibVal.startsWith("OID:")) {
+	        return getObjectId(SnmpObjId.get(mibVal.substring("OID:".length()).trim()));
 	    } else if (mibVal.startsWith("Timeticks:")) {
-	    	String timeticks = mibVal.substring("Timeticks:".length()).trim();
-			if (timeticks.contains("(")) {
-				timeticks = timeticks.replaceAll("^.*\\((\\d*?)\\).*$", "$1");
-			}
-			return getTimeTicks(Long.valueOf(timeticks));
-		} else if (mibVal.startsWith("STRING:")) {
-			return getOctetString(mibVal.substring("STRING:".length()).trim().getBytes());
-		} else if (mibVal.startsWith("INTEGER:")) {
-			return getInt32(Integer.valueOf(mibVal.substring("INTEGER:".length()).trim().replaceAll(" *.[Bb]ytes$", "")));
-		} else if (mibVal.startsWith("Gauge32:")) {
-	    	return getGauge32(Long.valueOf(mibVal.substring("Gauge32:".length()).trim()));
-		} else if (mibVal.startsWith("Counter32:")) {
-	    	return getCounter32(Long.valueOf(mibVal.substring("Counter32:".length()).trim()));
-		} else if (mibVal.startsWith("Counter64:")) {
-	    	return getCounter64(BigInteger.valueOf(Long.valueOf(mibVal.substring("Counter64:".length()).trim())));
-		} else if (mibVal.startsWith("IpAddress:")) {
-	    	return getIpAddress(InetAddrUtils.addr(mibVal.substring("IpAddress:".length()).trim()));
-		} else if (mibVal.startsWith("Hex-STRING:")) {
-			final String trimmed = mibVal.substring("Hex-STRING:".length()).trim();
-			final ByteBuffer bb = ByteBuffer.allocate(trimmed.length());
-			if (trimmed.matches("^.*[ :].*$")) {
-				for (final String chunk : trimmed.split("[ :]")) {
-					short s = Short.valueOf(chunk, 16);
-					bb.put((byte)(s & 0xFF));
-				}
-			} else {
-				if (trimmed.length() % 2 != 0) {
-					LOG.warn("Hex-STRING {} does not have ' ' or ':' separators, but it is an uneven number of characters.", trimmed);
-				}
-				final Matcher m = MockSnmpValueFactory.HEX_CHUNK_PATTERN.matcher(trimmed);
-				while (m.find()) {
+	        String timeticks = mibVal.substring("Timeticks:".length()).trim();
+	        if (timeticks.contains("(")) {
+	            timeticks = timeticks.replaceAll("^.*\\((\\d*?)\\).*$", "$1");
+	        }
+	        return getTimeTicks(Long.valueOf(timeticks));
+	    } else if (mibVal.startsWith("STRING:")) {
+	        return getOctetString(mibVal.substring("STRING:".length()).trim().getBytes());
+	    } else if (mibVal.startsWith("INTEGER:")) {
+	        return getInt32(Integer.valueOf(mibVal.substring("INTEGER:".length()).trim().replaceAll(" *.[Bb]ytes$", "")));
+	    } else if (mibVal.startsWith("Gauge32:")) {
+	        return getGauge32(Long.valueOf(mibVal.substring("Gauge32:".length()).trim()));
+	    } else if (mibVal.startsWith("Counter32:")) {
+	        return getCounter32(Long.valueOf(mibVal.substring("Counter32:".length()).trim()));
+	    } else if (mibVal.startsWith("Counter64:")) {
+	        return getCounter64(BigInteger.valueOf(Long.valueOf(mibVal.substring("Counter64:".length()).trim())));
+	    } else if (mibVal.startsWith("IpAddress:")) {
+	        return getIpAddress(InetAddrUtils.addr(mibVal.substring("IpAddress:".length()).trim()));
+	    } else if (mibVal.startsWith("Hex-STRING:")) {
+	        final String trimmed = mibVal.substring("Hex-STRING:".length()).trim();
+	        final ByteBuffer bb = ByteBuffer.allocate(trimmed.length());
+	        if (trimmed.matches("^.*[ :].*$")) {
+	            for (final String chunk : trimmed.split("[ :]")) {
+	                short s = Short.valueOf(chunk, 16);
+	                bb.put((byte)(s & 0xFF));
+	            }
+	        } else {
+	            if (trimmed.length() % 2 != 0) {
+	                LOG.warn("Hex-STRING {} does not have ' ' or ':' separators, but it is an uneven number of characters.", trimmed);
+	            }
+	            final Matcher m = MockSnmpValueFactory.HEX_CHUNK_PATTERN.matcher(trimmed);
+	            while (m.find()) {
 	                short s = Short.valueOf(m.group(1), 16);
 	                bb.put((byte)(s & 0xFF));
-				}
-			}
-			final byte[] parsed = new byte[bb.position()];
-			bb.flip();
-			bb.get(parsed);
-			return getOctetString(parsed);
+	            }
+	        }
+	        final byte[] parsed = new byte[bb.position()];
+	        bb.flip();
+	        bb.get(parsed);
+	        return getOctetString(parsed);
 	    } else if (mibVal.startsWith("Network Address:")) {
-			return getOctetString(mibVal.substring("Network Address:".length()).trim().getBytes());
+	        return getOctetString(mibVal.substring("Network Address:".length()).trim().getBytes());
 	    } else if (mibVal.startsWith("BITS:")) {
 	        return getOctetString(mibVal.substring("BITS:".length()).trim().getBytes());
 	    } else if (mibVal.equals("\"\"")) {
-	    	return getNull();
+	        return getNull();
 	    }
-	
+
 	    throw new IllegalArgumentException("Unknown Snmp Type: "+mibVal);
 	}
 

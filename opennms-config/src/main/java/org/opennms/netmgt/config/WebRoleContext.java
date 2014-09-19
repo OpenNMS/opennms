@@ -36,7 +36,7 @@ package org.opennms.netmgt.config;
  * @version $Id: $
  * @since 1.8.1
  */
-public class WebRoleContext {
+public abstract class WebRoleContext {
     private static WebRoleManagerImpl s_manager = null;
     
     /**

@@ -107,7 +107,7 @@ public class Nms10205aTest extends LinkdTestBuilder {
             @JUnitSnmpAgent(host=J6350_42_IP, port=161, resource=J6350_42_SNMP_RESOURCE),
             @JUnitSnmpAgent(host=SRX_100_IP, port=161, resource=SRX_100_SNMP_RESOURCE),
             @JUnitSnmpAgent(host=SSG550_IP, port=161, resource=SSG550_SNMP_RESOURCE)
-    })
+    }, forceMockStrategy=true)
     public void testNetwork10205Links() throws Exception {
         m_nodeDao.save(builder.getMumbai());
         m_nodeDao.save(builder.getChennai());
@@ -288,7 +288,7 @@ public class Nms10205aTest extends LinkdTestBuilder {
             @JUnitSnmpAgent(host=J6350_42_IP, port=161, resource=J6350_42_SNMP_RESOURCE),
             @JUnitSnmpAgent(host=SRX_100_IP, port=161, resource=SRX_100_SNMP_RESOURCE),
             @JUnitSnmpAgent(host=SSG550_IP, port=161, resource=SSG550_SNMP_RESOURCE)
-    })
+    }, forceMockStrategy=true)
     public void testNetwork10205OspfLinks() throws Exception {
         m_nodeDao.save(builder.getMumbai());
         m_nodeDao.save(builder.getChennai());
@@ -400,7 +400,7 @@ public class Nms10205aTest extends LinkdTestBuilder {
     @JUnitSnmpAgents(value={
             @JUnitSnmpAgent(host=SPACE_EX_SW1_IP, port=161, resource=SPACE_EX_SW1_SNMP_RESOURCE),
             @JUnitSnmpAgent(host=SPACE_EX_SW2_IP, port=161, resource=SPACE_EX_SW2_SNMP_RESOURCE)
-    })
+    }, forceMockStrategy=true)
     public void testNetwork10205BridgeLinks() throws Exception {
         m_nodeDao.save(builder.getSpaceExSw1());
         m_nodeDao.save(builder.getSpaceExSw2());

@@ -63,6 +63,7 @@ public class DominoIIOPDetectorTest implements ApplicationContextAware {
     public void setUp() {
         MockLogAppender.setupLogging();
         m_detector = getDetector(DominoIIOPDetector.class); 
+        m_detector.setTimeout(500);
     }
     
     /*
@@ -81,7 +82,7 @@ public class DominoIIOPDetectorTest implements ApplicationContextAware {
     
     @Test(timeout=90000)
     public void testDetectorFailWrongPort() throws UnknownHostException {
-        m_detector.setPort(10000);
+        m_detector.setPort(65535);
         m_detector.init();
         assertFalse(m_detector.isServiceDetected(InetAddressUtils.addr("127.0.0.1")));
     }

@@ -234,7 +234,7 @@ public class MobileMsgTrackerTest {
         m_session = new Properties();
         
         m_coordinator = new DefaultTaskCoordinator("MobileMsgTrackerTest", Executors.newSingleThreadExecutor(
-            new LogPreservingThreadFactory("MobileMsgTrackerTest", 1, false)
+            new LogPreservingThreadFactory("MobileMsgTrackerTest", 1)
         ));
 
         System.err.println("=== STARTING TEST ===");

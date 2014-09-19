@@ -39,7 +39,7 @@ import java.io.IOException;
 /**
  * This class holds all OpenNMS related config filenames
  */
-public final class ConfigFileConstants {
+public abstract class ConfigFileConstants {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(ConfigFileConstants.class);
 
@@ -132,11 +132,6 @@ public final class ConfigFileConstants {
      * The services config file
      */
     public static final int SERVICE_CONF_FILE_NAME;
-
-    /**
-     * The events archiver config file
-     */
-    public static final int EVENTS_ARCHIVER_CONFIG_FILE_NAME;
 
     /**
      * The opennms collectd config file
@@ -504,7 +499,6 @@ public final class ConfigFileConstants {
         TRAPD_CONFIG_FILE_NAME = 11;
         MANAGER_CONFIG_FILE_NAME = 12;
         SERVICE_CONF_FILE_NAME = 13;
-        EVENTS_ARCHIVER_CONFIG_FILE_NAME = 14;
 
         ADMIN_PITXML_FILE_NAME = 15;
         MAGIC_USERS_CONF_FILE_NAME = 16;
@@ -630,7 +624,6 @@ public final class ConfigFileConstants {
         FILE_ID_TO_NAME[TRAPD_CONFIG_FILE_NAME] = "trapd-configuration.xml";
         FILE_ID_TO_NAME[MANAGER_CONFIG_FILE_NAME] = "manager-configuration.xml";
         FILE_ID_TO_NAME[SERVICE_CONF_FILE_NAME] = "service-configuration.xml";
-        FILE_ID_TO_NAME[EVENTS_ARCHIVER_CONFIG_FILE_NAME] = "events-archiver-configuration.xml";
 
         FILE_ID_TO_NAME[ADMIN_PITXML_FILE_NAME] = "pitXML.xml";
         FILE_ID_TO_NAME[MAGIC_USERS_CONF_FILE_NAME] = "magic-users.properties";

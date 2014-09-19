@@ -18,6 +18,7 @@ package org.opennms.container.web.felix.base.internal.service;
 
 import java.util.Dictionary;
 import java.util.HashSet;
+import java.util.Set;
 
 import javax.servlet.*;
 
@@ -35,8 +36,8 @@ public final class HttpServiceImpl
 {
     private final Bundle bundle;
     private final HandlerRegistry handlerRegistry;
-    private final HashSet<Servlet> localServlets;
-    private final HashSet<Filter> localFilters;
+    private final Set<Servlet> localServlets = new HashSet<Servlet>();
+    private final Set<Filter> localFilters = new HashSet<Filter>();
     private final ServletContextManager contextManager;
 
     public HttpServiceImpl(Bundle bundle, ServletContext context, HandlerRegistry handlerRegistry,
@@ -44,8 +45,6 @@ public final class HttpServiceImpl
     {
         this.bundle = bundle;
         this.handlerRegistry = handlerRegistry;
-        this.localServlets = new HashSet<Servlet>();
-        this.localFilters = new HashSet<Filter>();
         this.contextManager = new ServletContextManager(this.bundle, context, servletAttributeListener,
             sharedContextAttributes);
     }

@@ -39,7 +39,7 @@ import java.util.Set;
  * 
  * @author Markus von Rüden
  */
-public class Reflections {
+public abstract class Reflections {
 
 	/**
 	 * Gets a list of all parent interfaces and classes implemented/inherit by

@@ -82,8 +82,8 @@ import org.springframework.transaction.annotation.Transactional;
     "classpath:META-INF/opennms/applicationContext-soa.xml",
     "classpath:/META-INF/opennms/applicationContext-daemon.xml",
     "classpath:/META-INF/opennms/mockEventIpcManager.xml",
-    "classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml",
     "classpath:META-INF/opennms/applicationContext-commonConfigs.xml",
+    "classpath:META-INF/opennms/applicationContext-proxy-snmp.xml",
     "classpath:META-INF/opennms/applicationContext-accesspointmonitord.xml",
     "classpath:META-INF/opennms/applicationContext-minimal-conf.xml"
 })

@@ -65,7 +65,7 @@ public class WmiAgentState {
 
     private WmiAgentConfig m_agentConfig;
     private String m_address;
-    private HashMap<String, WmiGroupState> m_groupStates = new HashMap<String, WmiGroupState>();
+    private Map<String, WmiGroupState> m_groupStates = new HashMap<String, WmiGroupState>();
 
     /**
      * <p>Constructor for WmiAgentState.</p>

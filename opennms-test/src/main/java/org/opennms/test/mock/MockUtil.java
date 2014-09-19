@@ -34,7 +34,7 @@ package org.opennms.test.mock;
  * @author ranger
  * @version $Id: $
  */
-public class MockUtil {
+public abstract class MockUtil {
 
     /**
      * <p>printEnabled</p>

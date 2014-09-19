@@ -79,6 +79,9 @@ drop table group_user cascade;
 drop table category_user cascade;
 drop table category_group cascade;
 drop table filterfavorites cascade;
+drop table hwentity cascade;
+drop table hwentityattribute cascade;
+drop table hwentityattributetype cascade;
 
 drop sequence catNxtId;
 drop sequence nodeNxtId;
@@ -2419,7 +2422,7 @@ create table bridgeMacLink (
     bridgePortIfIndex   integer,
     bridgePortIfName    varchar(32),
     vlan                integer,
-    macAdreess          varchar(12) not null,
+    macAddress          varchar(12) not null,
     bridgeMacLinkCreateTime     timestamp not null,
     bridgeMacLinkLastPollTime   timestamp not null,
     constraint pk_bridgemaclink_id primary key (id),
@@ -2434,9 +2437,9 @@ create table bridgeBridgeLink (
     bridgePortIfName        varchar(32),
     vlan                    integer,
     designatedNodeid        integer not null,
-    designatedPort          integer,
-    designatedPortIfIndex   integer,
-    designatedPortIfName    varchar(32),
+    designatedBridgePort    integer,
+    designatedBridgePortIfIndex   integer,
+    designatedBridgePortIfName    varchar(32),
     designatedVlan          integer,
     bridgeBridgeLinkCreateTime     timestamp not null,
     bridgeBridgeLinkLastPollTime   timestamp not null,
@@ -2694,4 +2697,58 @@ CREATE TABLE ncs_attributes (
 );
 ALTER TABLE ONLY ncs_attributes ADD CONSTRAINT ncs_attributes_pkey PRIMARY KEY (ncscomponent_id, key);
 ALTER TABLE ONLY ncs_attributes ADD CONSTRAINT fk_ncs_attr_comp_id FOREIGN KEY (ncscomponent_id) REFERENCES ncscomponent(id);
+
+
+--##################################################################
+--# Hardware Inventory Tables
+--##################################################################
+
+create table hwEntity (
+    id                      integer default nextval('opennmsNxtId') not null,
+    parentId                integer,
+    nodeId                  integer,
+    entPhysicalIndex        integer not null,
+    entPhysicalParentRelPos integer,
+    entPhysicalName         varchar(128),
+    entPhysicalDescr        varchar(128),
+    entPhysicalAlias        varchar(128),
+    entPhysicalVendorType   varchar(128),
+    entPhysicalClass        varchar(128),
+    entPhysicalMfgName      varchar(128),
+    entPhysicalModelName    varchar(128),
+    entPhysicalHardwareRev  varchar(128),
+    entPhysicalFirmwareRev  varchar(128),
+    entPhysicalSoftwareRev  varchar(128),
+    entPhysicalSerialNum    varchar(128),
+    entPhysicalAssetID      varchar(128),
+    entPhysicalIsFRU        bool, 
+    entPhysicalMfgDate      timestamp,
+    entPhysicalUris         varchar(256),
+    constraint pk_hwEntity_id primary key (id),
+    constraint fk_hwEntity_parent foreign key (parentId) references hwEntity (id) on delete cascade,
+    constraint fk_hwEntity_node foreign key (nodeId) references node on delete cascade
+);
+create index hwEntity_nodeId_idx on hwEntity(nodeid);
+create index hwEntity_entPhysicalIndex_idx on hwEntity(entPhysicalIndex);
+
+create table hwEntityAttributeType (
+    id          integer default nextval('opennmsNxtId') not null,
+    attribName  varchar(128) not null,
+    attribOid   varchar(128) not null,
+    attribClass varchar(32) not null,
+    constraint  pk_hwEntity_attributeType_id primary key (id)
+);
+create unique index hwEntityAttributeType_unique_name_idx on hwEntityAttributeType(attribName);
+create unique index hwEntityAttributeType_unique_oid_idx on hwEntityAttributeType(attribOid);
+
+create table hwEntityAttribute (
+    id             integer default nextval('opennmsNxtId') not null,
+    hwEntityId     integer not null,
+    hwAttribTypeId integer not null,
+    attribValue    varchar(256) not null,
+    constraint pk_hwEntity_attribute_id primary key (id),
+    constraint fk_hwEntity_hwEntityAttribute foreign key (hwEntityId) references hwEntity (id) on delete cascade,
+    constraint fk_hwEntityAttribute_hwEntityAttributeType foreign key (hwAttribTypeId) references hwEntityAttributeType (id) on delete cascade
+);
+create unique index hwEntityAttribute_unique_idx on hwEntityAttribute(hwEntityId,hwAttribTypeId);
 

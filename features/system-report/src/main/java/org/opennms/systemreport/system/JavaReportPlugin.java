@@ -32,6 +32,7 @@ import java.lang.management.ClassLoadingMXBean;
 import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryMXBean;
 import java.lang.management.RuntimeMXBean;
+import java.util.Map;
 import java.util.TreeMap;
 
 import org.slf4j.Logger;
@@ -58,7 +59,7 @@ public class JavaReportPlugin extends AbstractSystemReportPlugin {
     }
 
     @Override
-    public TreeMap<String, Resource> getEntries() {
+    public Map<String, Resource> getEntries() {
         final TreeMap<String,Resource> map = new TreeMap<String,Resource>();
         map.put("Class Version", getResourceFromProperty("java.class.version"));
         map.put("Compiler", getResourceFromProperty("java.compiler"));

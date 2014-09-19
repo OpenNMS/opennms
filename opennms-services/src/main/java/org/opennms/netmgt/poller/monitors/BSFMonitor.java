@@ -170,8 +170,8 @@ public class BSFMonitor extends AbstractServiceMonitor {
                     bsfManager.declareBean("node_label", svc.getNodeLabel(), String.class);
                     bsfManager.declareBean("svc_name", svc.getSvcName(), String.class);
                     bsfManager.declareBean("bsf_monitor", this, BSFMonitor.class);
-                    bsfManager.declareBean("results", results, HashMap.class);
-                    bsfManager.declareBean("times", times, LinkedHashMap.class);
+                    bsfManager.declareBean("results", results, Map.class);
+                    bsfManager.declareBean("times", times, Map.class);
 
                     for (final Entry<String, Object> entry : map.entrySet()) {
                         bsfManager.declareBean(entry.getKey(),entry.getValue(),String.class);

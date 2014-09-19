@@ -101,7 +101,9 @@ import org.springframework.test.context.ContextConfiguration;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations= {
-        "classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml"
+		"classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
+		"classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml",
+        "classpath:/META-INF/opennms/applicationContext-soa.xml"
 })
 @JUnitConfigurationEnvironment
 public class EnLinkdSnmpTest extends TestNetworkBuilder implements InitializingBean {
@@ -641,7 +643,7 @@ public class EnLinkdSnmpTest extends TestNetworkBuilder implements InitializingB
     	assertEquals("001e58a32fcd", bridge.getBaseBridgeAddress());
     	assertEquals(26, bridge.getBaseNumPorts().intValue());
     	assertEquals(BridgeDot1dBaseType.DOT1DBASETYPE_TRANSPARENT_ONLY,bridge.getBaseType());
-    	assertEquals(BridgeDot1dStpProtocolSpecification.DOT1D_STP_PROTOCOL_SPECIFICATION_IEEE8021D,bridge.getStpProtocolSpecificationType());
+    	assertEquals(BridgeDot1dStpProtocolSpecification.DOT1D_STP_PROTOCOL_SPECIFICATION_IEEE8021D,bridge.getStpProtocolSpecification());
     	assertEquals(32768,bridge.getStpPriority().intValue());
     	assertEquals("0000000000000000",bridge.getStpDesignatedRoot());
     	assertEquals(0, bridge.getStpRootCost().intValue());

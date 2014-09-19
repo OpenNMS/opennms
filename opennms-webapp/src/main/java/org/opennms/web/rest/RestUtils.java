@@ -16,7 +16,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.PropertyAccessorFactory;
 
-public class RestUtils {
+public abstract class RestUtils {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(RestUtils.class);
 

@@ -55,7 +55,7 @@ public class BridgeStpLinkDaoHibernate extends AbstractDaoHibernate<BridgeStpLin
 
 	@Override
 	public BridgeStpLink getByNodeIdBridgePort(Integer id, Integer port) {
-		return findUnique("from BridgeStpLink rec where rec.node.id = ?  and rec.bridgePort = ?", id,port);
+		return findUnique("from BridgeStpLink rec where rec.node.id = ?  and rec.stpPort = ?", id,port);
 	}
 
 	@Override

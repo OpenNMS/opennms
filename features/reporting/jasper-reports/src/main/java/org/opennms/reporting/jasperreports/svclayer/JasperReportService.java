@@ -358,7 +358,7 @@ public class JasperReportService implements ReportService {
      * {@inheritDoc}
      */
     @Override
-    public String run(final HashMap<String, Object> reportParms, final String reportId) throws ReportException {
+    public String run(final Map<String, Object> reportParms, final String reportId) throws ReportException {
         try {
             return Logging.withPrefix(LOG4J_CATEGORY, new Callable<String>() {
                 @Override public String call() throws Exception {
@@ -374,7 +374,7 @@ public class JasperReportService implements ReportService {
                         throw new ReportException("Unable to compile jasperReport " + reportId, e);
                     }
 
-                    final HashMap<String, Object> jrReportParms = buildJRparameters(reportParms, jasperReport.getParameters());
+                    final Map<String, Object> jrReportParms = buildJRparameters(reportParms, jasperReport.getParameters());
 
                     // Find sub reports and provide sub reports as parameter
                     jrReportParms.putAll(buildSubreport(reportId, jasperReport));
@@ -420,9 +420,10 @@ public class JasperReportService implements ReportService {
      * @param mainReport   JasperReport a compiled main report
      * @return a sub report parameter map as {@link java.util.HashMap<String,Object>} object
      */
-    private HashMap<String, Object> buildSubreport(final String mainReportId, final JasperReport mainReport) {
-        String repositoryId = mainReportId.substring(0, mainReportId.indexOf('_'));
-        HashMap<String, Object> subreportMap = new HashMap<String, Object>();
+    private Map<String, Object> buildSubreport(final String mainReportId, final JasperReport mainReport) {
+        int idx = mainReportId.indexOf('_');
+        String repositoryId = idx > -1 ? mainReportId.substring(0, idx) : "local";
+        Map<String, Object> subreportMap = new HashMap<String, Object>();
 
         // Filter parameter for sub reports
         for (JRParameter parameter : mainReport.getParameters()) {
@@ -451,7 +452,7 @@ public class JasperReportService implements ReportService {
      * {@inheritDoc}
      */
     @Override
-    public void runAndRender(final HashMap<String, Object> reportParms, final String reportId, final ReportFormat format, final OutputStream outputStream) throws ReportException {
+    public void runAndRender(final Map<String, Object> reportParms, final String reportId, final ReportFormat format, final OutputStream outputStream) throws ReportException {
         try {
             Logging.withPrefix(LOG4J_CATEGORY, new Callable<Void>() {
                 @Override public Void call() throws Exception {
@@ -464,7 +465,7 @@ public class JasperReportService implements ReportService {
                         throw new ReportException("unable to compile jasperReport", e);
                     }
 
-                    final HashMap<String, Object> jrReportParms = buildJRparameters(reportParms, jasperReport.getParameters());
+                    final Map<String, Object> jrReportParms = buildJRparameters(reportParms, jasperReport.getParameters());
                     jrReportParms.putAll(buildSubreport(reportId, jasperReport));
 
                     if ("jdbc".equalsIgnoreCase(m_globalReportRepository.getEngine(reportId))) {
@@ -523,8 +524,8 @@ public class JasperReportService implements ReportService {
         exporter.exportReport();
     }
 
-    private HashMap<String, Object> buildJRparameters(final HashMap<String, Object> onmsReportParms, final JRParameter[] reportParms) throws ReportException {
-        final HashMap<String, Object> jrReportParms = new HashMap<String, Object>();
+    private Map<String, Object> buildJRparameters(final Map<String, Object> onmsReportParms, final JRParameter[] reportParms) throws ReportException {
+        final Map<String, Object> jrReportParms = new HashMap<String, Object>();
 
         for (final JRParameter reportParm : reportParms) {
             LOG.debug("found report parm {} of class {}", reportParm.getValueClassName(), reportParm.getName());
@@ -589,7 +590,7 @@ public class JasperReportService implements ReportService {
      * {@inheritDoc}
      */
     @Override
-    public boolean validate(final HashMap<String, Object> reportParms, final String reportId) {
+    public boolean validate(final Map<String, Object> reportParms, final String reportId) {
         // returns true until we can take parameters
         return true;
     }

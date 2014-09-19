@@ -638,14 +638,16 @@ public final class DiscoveryLink implements ReadyRunnable {
     }
 
     protected InetAddress getSubnetAddress(OspfNbrInterface ospfinterface) {
-        byte[] ip = ospfinterface.getOspfNbrIpAddr().getAddress();
-        byte[] nm = ospfinterface.getOspfNbrNetMask().getAddress();
-        try {
-            return InetAddress.getByAddress(new byte[] {
-                    (byte) (ip[0] & nm[0]), (byte) (ip[1] & nm[1]),
-                    (byte) (ip[2] & nm[2]), (byte) (ip[3] & nm[3]) });
-        } catch (UnknownHostException e) {
-            e.printStackTrace();
+        if(ospfinterface.getOspfNbrIpAddr() != null && ospfinterface.getOspfNbrNetMask() != null) {
+            byte[] ip = ospfinterface.getOspfNbrIpAddr().getAddress();
+            byte[] nm = ospfinterface.getOspfNbrNetMask().getAddress();
+            try {
+                return InetAddress.getByAddress(new byte[]{
+                        (byte) (ip[0] & nm[0]), (byte) (ip[1] & nm[1]),
+                        (byte) (ip[2] & nm[2]), (byte) (ip[3] & nm[3]) });
+            } catch (UnknownHostException e) {
+                e.printStackTrace();
+            }
         }
         return null;
     }

@@ -266,7 +266,7 @@ public class DatabasePopulator {
         final NetworkBuilder builder = new NetworkBuilder(distPoller);
         
         final OnmsNode node1 = buildNode1(builder);
-        getNodeDao().save(builder.getCurrentNode());
+        getNodeDao().save(node1);
         getNodeDao().flush();
 
         OnmsNode node2 = buildNode2(builder);

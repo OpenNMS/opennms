@@ -93,7 +93,7 @@ final class Executor implements Runnable, PausableFiber {
     /**
      * The configured scripts (no UEI specified).
      */
-    private ArrayList<EventScript> m_eventScripts;
+    private List<EventScript> m_eventScripts;
 
     /**
      * The configured scripts (UEI specified).

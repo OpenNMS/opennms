@@ -94,7 +94,7 @@ public abstract class EditorToolbar extends HorizontalLayout implements ClickLis
         if (source == deleteBtn) {
             ConfirmDialog.show(getUI(),
                                "Are you sure?",
-                               "Do you really want to remove the event definition ?\nThis action cannot be undone.",
+                               "Do you really want to remove the selected definition ?\nThis action cannot be undone.",
                                "Yes",
                                "No",
                                new ConfirmDialog.Listener() {

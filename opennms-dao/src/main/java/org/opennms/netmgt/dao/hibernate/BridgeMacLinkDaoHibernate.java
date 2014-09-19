@@ -28,15 +28,21 @@
 
 package org.opennms.netmgt.dao.hibernate;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.hibernate.SessionFactory;
 import org.opennms.netmgt.dao.api.BridgeMacLinkDao;
 import org.opennms.netmgt.model.BridgeMacLink;
-
+import org.opennms.netmgt.model.topology.BridgeMacTopologyLink;
+import org.springframework.beans.factory.annotation.Autowired;
 
 
 public class BridgeMacLinkDaoHibernate extends AbstractDaoHibernate<BridgeMacLink, Integer> implements BridgeMacLinkDao {
+
+    @Autowired
+    private SessionFactory m_sessionFactory;
 
     /**
      * <p>
@@ -55,14 +61,14 @@ public class BridgeMacLinkDaoHibernate extends AbstractDaoHibernate<BridgeMacLin
 
 
 	@Override
-	public BridgeMacLink getByNodeIdBridgePort(Integer id, Integer port) {
-		return findUnique("from BridgeMacLink rec where rec.node.id = ?  and rec.bridgePort = ?", id,port);
+	public BridgeMacLink getByNodeIdBridgePortMac(Integer id, Integer port, String mac) {
+		return findUnique("from BridgeMacLink rec where rec.node.id = ?  and rec.bridgePort = ? and rec.macAddress = ? ", id,port,mac);
 	}
 
 
 	@Override
 	public List<BridgeMacLink> findByMacAddress(String mac) {
-		return find("from BridgeMacLink red where rec.macAddress = ?", mac);
+		return find("from BridgeMacLink rec where rec.macAddress = ?", mac);
 	}
 
 
@@ -73,6 +79,30 @@ public class BridgeMacLinkDaoHibernate extends AbstractDaoHibernate<BridgeMacLin
 		}
 	}
 
+    @Override
+    public List<BridgeMacTopologyLink> getAllBridgeLinksToIpAddrToNodes(){
+        List<Object[]> links = m_sessionFactory.getCurrentSession().createSQLQuery("select mlink.*," +
+                "ntm.netaddress, " +
+                "ip.ipaddr, " +
+                "ip.nodeid as targetnodeid, " +
+                "node.nodelabel, " +
+                "ntm.sourceIfIndex " +
+                "from bridgemaclink as mlink " +
+                "left join ipnettomedia as ntm " +
+                "on mlink.macaddress = ntm.physaddress " +
+                "left join ipinterface ip on ip.ipaddr = ntm.netaddress " +
+                "left join node on ip.nodeid = node.nodeid " +
+                "order by bridgeport;").list();
+        //where ip.nodeid is not null
 
+        List<BridgeMacTopologyLink> topoLinks = new ArrayList<BridgeMacTopologyLink>();
+        for(Object[] link : links) {
+            topoLinks.add(new BridgeMacTopologyLink((Integer)link[0], (Integer)link[1], (Integer)link[2],
+                    (Integer)link[3], (Integer)link[4], (Integer)link[5], (String)link[6], (String)link[9],
+                    (String)link[10], (Integer)link[11], (String)link[12], (Integer)link[13]));
+        }
+
+        return topoLinks;
+    }
 
 }

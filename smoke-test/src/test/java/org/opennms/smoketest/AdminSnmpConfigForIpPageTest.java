@@ -87,6 +87,11 @@ public class AdminSnmpConfigForIpPageTest extends OpenNMSSeleniumTestCase {
     	gotoPage();
     	selenium.type("name=firstIPAddress",  "1.2.3.4");
     	selenium.select("name=version", "v3");
+    	selenium.select("name=securityLevel", "authNoPriv");
+    	selenium.type("name=authPassPhrase", "authMe!");
+    	selenium.select("name=authProtocol", "MD5");
+    	selenium.type("name=privPassPhrase", "privMe!");
+    	selenium.select("name=privProtocol", "DES");
     	selenium.click("name=saveConfig");
     	waitForPageToLoad();
     	selenium.type("name=ipAddress",  "1.2.3.4");
@@ -106,11 +111,11 @@ public class AdminSnmpConfigForIpPageTest extends OpenNMSSeleniumTestCase {
     	assertEquals("", selenium.getValue("name=readCommunityString"));
     	assertEquals("", selenium.getValue("name=writeCommunityString"));
     	assertEquals("opennmsUser", selenium.getValue("name=securityName"));
-    	assertEquals("1", selenium.getValue("name=securityLevel")); //authNoPriv
-    	assertEquals("", selenium.getValue("name=authPassPhrase"));
-    	assertEquals("", selenium.getValue("name=authProtocol"));
-    	assertEquals("", selenium.getValue("name=privPassPhrase"));
-    	assertEquals("", selenium.getValue("name=privProtocol"));
+    	assertEquals("2", selenium.getValue("name=securityLevel")); //authNoPriv
+    	assertEquals("authMe!", selenium.getValue("name=authPassPhrase"));
+    	assertEquals("MD5", selenium.getValue("name=authProtocol"));
+   	assertEquals("privMe!", selenium.getValue("name=privPassPhrase"));
+    	assertEquals("DES", selenium.getValue("name=privProtocol"));
     	assertEquals("", selenium.getValue("name=engineId"));
     	assertEquals("", selenium.getValue("name=contextEngineId"));
     	assertEquals("", selenium.getValue("name=contextName"));
@@ -326,7 +331,7 @@ public class AdminSnmpConfigForIpPageTest extends OpenNMSSeleniumTestCase {
     	selenium.click("name=saveConfig");
     	waitForPageToLoad();
         assertTrue(selenium.isAlertPresent());
-        assertEquals("You must select either 'send Event' or 'save locally'. It is possible to select both options.", selenium.getAlert());
+        assertEquals("You must select either 'Send Event' or 'Save Locally'. It is possible to select both options.", selenium.getAlert());
     }
     
 }

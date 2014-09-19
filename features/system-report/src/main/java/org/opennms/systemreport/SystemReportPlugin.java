@@ -28,8 +28,7 @@
 
 package org.opennms.systemreport;
 
-import java.util.TreeMap;
-
+import java.util.Map;
 import org.springframework.core.io.Resource;
 
 public interface SystemReportPlugin extends Comparable<SystemReportPlugin> {
@@ -59,5 +58,5 @@ public interface SystemReportPlugin extends Comparable<SystemReportPlugin> {
      * Get a map of key/value pairs of data exposed by the plugin.
      * @return the plugin's data
      */
-    public TreeMap<String,Resource> getEntries();
+    public Map<String,Resource> getEntries();
 }

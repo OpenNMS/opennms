@@ -45,7 +45,7 @@ import org.opennms.netmgt.xml.event.Operaction;
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  * @version $Id: $
  */
-public class OperatorAction {
+public abstract class OperatorAction {
     /**
      * Format each operator action entry
      *

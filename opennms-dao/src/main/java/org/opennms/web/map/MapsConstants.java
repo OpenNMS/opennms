@@ -40,7 +40,7 @@ package org.opennms.web.map;
  * @version $Id: $
  * @since 1.8.1
  */
-public final class MapsConstants {
+public abstract class MapsConstants {
 
     /** Constant <code>LOG4J_CATEGORY="OpenNMS.Map"</code> */
     public static final String LOG4J_CATEGORY = "map";

@@ -38,7 +38,7 @@ import com.vaadin.server.ThemeResource;
  * 
  * @author Markus von Rüden
  */
-public class IconProvider {
+public abstract class IconProvider {
 
 	public static final String PACKAGE_ICON = "crystal_project/folder_blue.png";
 	public static final String MBEANS_ICON = "crystal_project/blockdevice.png";

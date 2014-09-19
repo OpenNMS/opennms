@@ -31,6 +31,7 @@ package org.opennms.nrtg.nrtbroker.local.internal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -82,7 +83,8 @@ public class NrtBrokerLocal implements NrtBroker, NrtBrokerLocalMBean {
         }
 
         private synchronized void doHousekeeping() {
-            for (final String key : m_lastAccess.keySet()) {
+            for (final Iterator<String> it = m_lastAccess.keySet().iterator(); it.hasNext();) {
+                final String key = it.next();
                 final Date lastAccess = m_lastAccess.get(key);
                 final Date now = new Date();
                 if (now.getTime() - lastAccess.getTime() > 120000) {
