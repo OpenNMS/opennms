@@ -87,6 +87,16 @@ public interface ServiceDetector {
     void setTimeout(int timeout);
 
     /**
+     * Get the IPLIKE rule for detecting the service.
+     */
+    String getIpMatch();
+
+    /**
+     * Set the IPLIKE rule for detecting the service.
+     */
+    void setIpMatch(String ipMatch);
+
+    /**
      * The detector should clean up after itself in this method if necessary.
      */
     void dispose();

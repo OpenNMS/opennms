@@ -1,0 +1,167 @@
+<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+    <event>
+        <mask>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>0</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/generic/traps/SNMP_Cold_Start</uei>
+        <event-label>OpenNMS-defined trap event: SNMP_Cold_Start</event-label>
+        <descr>
+            &lt;p&gt;A coldStart trap signifies that the sending protocol entity is reinitializing itself such that the agent's configuration or the protocol
+            entity implementation may be altered.&lt;/p&gt;
+        </descr>
+        <logmsg dest='logndisplay'>Agent Up with Possible Changes (coldStart Trap) enterprise:%id% (%id%) args(%parm[##]%):%parm[all]%</logmsg>
+        <severity>Normal</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>1</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/generic/traps/SNMP_Warm_Start</uei>
+        <event-label>OpenNMS-defined trap event: SNMP_Warm_Start</event-label>
+        <descr>
+            &lt;p&gt;A warmStart trap signifies that the sending protocol entity is reinitializing itself such that neither the agent configuration nor the
+            protocol entity implementation is altered.&lt;/p&gt;
+        </descr>
+        <logmsg dest='logndisplay'>Agent Up with No Changes (warmStart Trap) enterprise:%id% (%id%) args(%parm[##]%):%parm[all]%</logmsg>
+        <severity>Normal</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>2</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/generic/traps/SNMP_Link_Down</uei>
+        <event-label>OpenNMS-defined trap event: SNMP_Link_Down</event-label>
+        <descr>
+            &lt;p&gt;A linkDown trap signifies that the sending protocol entity recognizes a failure in one of the communication link represented in the agent's
+            configuration. The data passed with the event are 1) The name and value of the ifIndex instance for the affected interface. The name of the
+            interface can be retrieved via an snmpget of .1.3.6.1.2.1.2.2.1.2.INST, where INST is the instance returned with the trap.&lt;/p&gt;
+        </descr>
+        <logmsg dest='donotpersist'>Agent Interface Down (linkDown Trap) enterprise:%id% (%id%) on interface %parm[#1]%</logmsg>
+        <severity>Minor</severity>
+        <!-- Removed this alarm in preference to the translated version -->
+        <!-- <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" /> -->
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>3</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/generic/traps/SNMP_Link_Up</uei>
+        <event-label>OpenNMS-defined trap event: SNMP_Link_Up</event-label>
+        <descr>
+            &lt;p&gt;A linkUp trap signifies that the sending protocol entity recognizes that one of the communication links represented in the agent's
+            configuration has come up. The data passed with the event are 1) The name and value of the ifIndex instance for the affected interface. The name of
+            the interface can be retrieved via an snmpget of .1.3.6.1.2.1.2.2.1.2.INST, where INST is the instance returned with the trap.&lt;/p&gt;
+        </descr>
+        <logmsg dest='donotpersist'>Agent Interface Up (linkUp Trap) enterprise:%id% (%id%) on interface %parm[#1]%</logmsg>
+        <severity>Normal</severity>
+        <!-- Removed this alarm in preference to the translated version -->
+        <!-- <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" clear-key="uei.opennms.org/generic/traps/SNMP_Link_Down:%dpname%:%nodeid%:%interface%" /> -->
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>4</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/generic/traps/SNMP_Authen_Failure</uei>
+        <event-label>OpenNMS-defined trap event: SNMP_Authen_Failure</event-label>
+        <descr>
+            &lt;p&gt;An authentication failure trap signifies that the sending protocol entity is the addressee of a protocol message that is not properly
+            authenticated.&lt;/p&gt;
+        </descr>
+        <logmsg dest='logndisplay'>Incorrect Community Name (authenticationFailure Trap) enterprise:%id% (%id%) args(%parm[##]%):%parm[all]%</logmsg>
+        <severity>Warning</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="true" />
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>5</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/generic/traps/SNMP_EGP_Down</uei>
+        <event-label>OpenNMS-defined trap event: SNMP_EGP_Down</event-label>
+        <descr>
+            &lt;p&gt;An egpNeighborLoss trap signifies that an EGP neighbor for whom the sending protocol entity was an EGP peer has been marked down and the
+            peer relationship no longer obtains. The data passed with the event are The name and value of the ifIndex egpNeighAddr for the affected
+            neighbor.&lt;/p&gt;
+        </descr>
+        <logmsg dest='logndisplay'>EGP Neighbor Down (egpNeighborLoss Trap) enterprise:%id% (%id%) neighbor %parm[#1]%</logmsg>
+        <severity>Warning</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/generic/traps/EnterpriseDefault</uei>
+        <event-label>OpenNMS-defined trap event: EnterpriseDefault</event-label>
+        <descr>
+            &lt;p&gt;This is the default event format used when an enterprise specific event (trap) is received for which no format has been configured
+            (i.e. no event definition exists).&lt;/p&gt; &lt;p&gt;The total number of arguments received with the trap: %parm[##]%.&lt;/p&gt;
+            &lt;p&gt;They were:&lt;p&gt; &lt;p&gt;%parm[all]%&lt;p&gt;
+            &lt;p&gt;Here is a "mask" element definition that matches this
+            event, for use in event configuration files:&lt;br/&gt;
+            &lt;blockquote&gt;
+            &amp;lt;mask&amp;gt;&lt;br/&gt;
+            &amp;nbsp;&amp;nbsp;&amp;lt;maskelement&amp;gt;&lt;br/&gt;
+            &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;lt;mename&amp;gt;id&amp;lt;/mename&amp;gt;&lt;br/&gt;
+            &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;lt;mevalue&amp;gt;%id%&amp;lt;/mevalue&amp;gt;&lt;br/&gt;
+            &amp;nbsp;&amp;nbsp;&amp;lt;/maskelement&amp;gt;&lt;br/&gt;
+            &amp;nbsp;&amp;nbsp;&amp;lt;maskelement&amp;gt;&lt;br/&gt;
+            &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;lt;mename&amp;gt;generic&amp;lt;/mename&amp;gt;&lt;br/&gt;
+            &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;lt;mevalue&amp;gt;%generic%&amp;lt;/mevalue&amp;gt;&lt;br/&gt;
+            &amp;nbsp;&amp;nbsp;&amp;lt;/maskelement&amp;gt;&lt;br/&gt;
+            &amp;nbsp;&amp;nbsp;&amp;lt;maskelement&amp;gt;&lt;br/&gt;
+            &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;lt;mename&amp;gt;specific&amp;lt;/mename&amp;gt;&lt;br/&gt;
+            &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;lt;mevalue&amp;gt;%specific%&amp;lt;/mevalue&amp;gt;&lt;br/&gt;
+            &amp;nbsp;&amp;nbsp;&amp;lt;/maskelement&amp;gt;&lt;br/&gt;
+            &amp;lt;/mask&amp;gt;
+            &lt;/blockquote&gt;
+            &lt;p&gt;
+        </descr>
+        <logmsg dest='logndisplay'>
+            Received unformatted enterprise event (enterprise:%id% generic:%generic% specific:%specific%). %parm[##]% args: %parm[all]%
+        </logmsg>
+        <severity>Normal</severity>
+        <alarm-data reduction-key="%source%:%snmphost%:%id%:%generic%:%specific%" alarm-type="2" />
+    </event>
+    <event>
+        <uei>uei.opennms.org/default/trap</uei>
+        <event-label>OpenNMS-defined default event: trap</event-label>
+        <descr>
+            &lt;p&gt;An SNMP Trap (%snmp%) with no matching configuration was received from interface %interface%.&lt;/p&gt; &lt;p&gt;The trap included the
+            following variable bindings:&lt;/p&gt; &lt;p&gt;%parm[all]%&lt;/p&gt;
+        </descr>
+        <logmsg dest='logndisplay'>An SNMP Trap with no matching configuration was received from interface %interface%.</logmsg>
+        <severity>Indeterminate</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%id%:%generic%:%specific%" alarm-type="3" />
+    </event>
+    <event>
+        <uei>uei.opennms.org/default/event</uei>
+        <event-label>OpenNMS-defined default event: event</event-label>
+        <descr>
+            &lt;p&gt;An event with no matching configuration was received from interface %interface%. This event included the following parameters:
+            %parm[all]%&lt;/p&gt;
+        </descr>
+        <logmsg dest='logndisplay'>An event with no matching configuration was received from interface %interface%.</logmsg>
+        <severity>Indeterminate</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="3" />
+    </event>
+</events>

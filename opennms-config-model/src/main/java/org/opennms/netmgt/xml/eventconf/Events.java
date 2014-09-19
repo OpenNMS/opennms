@@ -44,6 +44,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -107,6 +109,16 @@ public class Events implements Serializable {
 	
 	@XmlTransient
 	private List<Event> m_nullPartitionedEvents;
+	
+        @XmlTransient
+        private List<Event> m_wildcardEvents;
+        
+	@XmlTransient
+	private EventOrdering m_ordering;
+	
+	public EventOrdering getOrdering() {
+	    return m_ordering;
+	}
 	
     public void addEvent(final Event event) throws IndexOutOfBoundsException {
         m_events.add(event);
@@ -373,18 +385,17 @@ public class Events implements Serializable {
 	
 	public Event findFirstMatchingEvent(org.opennms.netmgt.xml.event.Event matchingEvent) {
 		String key = m_partition.group(matchingEvent);
+		SortedSet<Event> potentialMatches = new TreeSet<Event>(m_nullPartitionedEvents);
 		if (key != null) {
 			List<Event> events = m_partitionedEvents.get(key);
 			if (events != null) {
-				for(Event event : events) {
-					if (event.matches(matchingEvent)) {
-						return event;
-					}
-				}
+			    potentialMatches.addAll(events);
 			}
 		}
+			
+			
 		
-		for(Event event : m_nullPartitionedEvents) {
+		for(Event event : potentialMatches) {
 			if (event.matches(matchingEvent)) {
 				return event;
 			}
@@ -436,16 +447,19 @@ public class Events implements Serializable {
 		return result;
 	}
 	
-	public void initialize(Partition partition) {
+	public void initialize(Partition partition, EventOrdering eventOrdering) {
+	    
+	        m_ordering = eventOrdering;
+	    
 		for(Event event : m_events) {
-			event.initialize();
+			event.initialize(m_ordering.next());
 		}
 		
 		partitionEvents(partition);
 		
 		for(Entry<String, Events> loadedEvents : m_loadedEventFiles.entrySet()) {
 			Events events = loadedEvents.getValue();
-			events.initialize(partition);
+			events.initialize(partition, m_ordering.subsequence());
 		}
 
 	}

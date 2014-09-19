@@ -44,12 +44,12 @@ public class FilterTest {
     ServiceCollector svcCollector = new ServiceCollector(null);
 
     public void setup() {
-        c.addLog("2010-03-13 02:21:30,000 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: begin:example1/0/1.1.1.1/SNMP");
-        c.addLog("2010-03-13 02:21:40,000 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: end:example1/0/1.1.1.1/SNMP");
-        c.addLog("2010-03-13 02:22:20,976 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: begin:example1/0/2.2.2.2/SNMP");
-        c.addLog("2010-03-13 02:22:50,976 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: end:example1/0/2.2.2.2/SNMP");
-        c.addLog("2010-03-13 02:23:30,000 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: begin:example1/0/3.3.3.3/SNMP");
-        c.addLog("2010-03-13 02:23:50,000 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: end:example1/0/3.3.3.3/SNMP");
+        c.addLog("2010-03-13 02:21:30,000 INFO [CollectdScheduler-400 Pool-fiber51] collector.collect: begin:example1/0/1.1.1.1/SNMP");
+        c.addLog("2010-03-13 02:21:40,000 INFO [CollectdScheduler-400 Pool-fiber51] collector.collect: end:example1/0/1.1.1.1/SNMP");
+        c.addLog("2010-03-13 02:22:20,976 INFO [CollectdScheduler-400 Pool-fiber51] collector.collect: begin:example1/0/2.2.2.2/SNMP");
+        c.addLog("2010-03-13 02:22:50,976 INFO [CollectdScheduler-400 Pool-fiber51] collector.collect: end:example1/0/2.2.2.2/SNMP");
+        c.addLog("2010-03-13 02:23:30,000 INFO [CollectdScheduler-400 Pool-fiber51] collector.collect: begin:example1/0/3.3.3.3/SNMP");
+        c.addLog("2010-03-13 02:23:50,000 INFO [CollectdScheduler-400 Pool-fiber51] collector.collect: end:example1/0/3.3.3.3/SNMP");
     }
 
     @Test
