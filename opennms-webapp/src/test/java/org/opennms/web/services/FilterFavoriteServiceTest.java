@@ -54,7 +54,8 @@ import org.springframework.transaction.annotation.Transactional;
         "classpath:/META-INF/opennms/applicationContext-setupIpLike-enabled.xml",
         "classpath*:/META-INF/opennms/component-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
-        "classpath:/org/opennms/web/svclayer/applicationContext-svclayer-test.xml"
+        "classpath:/org/opennms/web/svclayer/applicationContext-svclayer-test.xml",
+        "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml"
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase(dirtiesContext=false)

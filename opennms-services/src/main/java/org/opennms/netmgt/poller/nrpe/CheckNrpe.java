@@ -39,7 +39,7 @@ import java.util.LinkedList;
  * @author ranger
  * @version $Id: $
  */
-public class CheckNrpe {
+public abstract class CheckNrpe {
 	/** Constant <code>DEFAULT_PORT=5666</code> */
 	public static final int DEFAULT_PORT = 5666;
 	/** Constant <code>DEFAULT_TIMEOUT=10</code> */

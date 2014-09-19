@@ -36,6 +36,7 @@ import java.net.URL;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.SortedMap;
@@ -83,7 +84,7 @@ public class PropertiesBackedManagedObject implements ManagedObject, MockSnmpMOL
 	 * Cache the dynamic variable types to speed things up.
 	 * This removes the need to search the class-path and use reflection at every call.
 	 */
-	HashMap<String,DynamicVariable> m_dynamicVariableCache = new HashMap<String,DynamicVariable>();
+	Map<String,DynamicVariable> m_dynamicVariableCache = new HashMap<String,DynamicVariable>();
     
     /** {@inheritDoc} */
         @Override
@@ -319,6 +320,13 @@ public class PropertiesBackedManagedObject implements ManagedObject, MockSnmpMOL
 	 */
 	private Variable getVariableFromValueString(String oidStr, String valStr) {
 	    Variable newVar;
+	    
+	    if (valStr.startsWith("Wrong Type")) {
+	        String newVal = valStr.replaceFirst("Wrong Type \\(should be .*\\): ", "");
+	        s_log.error("Bad Mib walk has value: '"+ valStr + "' using '"+newVal+"'");
+	        valStr = newVal;
+	    }
+
 	
 	    if ("\"\"".equals(valStr)) {
 	        newVar = new Null();

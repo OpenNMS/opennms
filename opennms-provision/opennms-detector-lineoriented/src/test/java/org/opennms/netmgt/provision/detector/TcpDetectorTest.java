@@ -76,7 +76,7 @@ public class TcpDetectorTest implements ApplicationContextAware {
     
     private void initializeDefaultDetector() {
         setServiceName("TCP");
-        setTimeout(1000);
+        setTimeout(500);
         setBanner(".*");
         
         initializeDetector();
@@ -84,7 +84,7 @@ public class TcpDetectorTest implements ApplicationContextAware {
     
     private void intializeNullBannerDetector() {
         setServiceName("TCP");
-        setTimeout(1000);
+        setTimeout(500);
         setBanner(null);
         
         initializeDetector();
@@ -166,7 +166,7 @@ public class TcpDetectorTest implements ApplicationContextAware {
             
             @Override
             public void onInit() {
-                setTimeout(3000);
+                setTimeout(500);
             }
             
         };
@@ -190,7 +190,7 @@ public class TcpDetectorTest implements ApplicationContextAware {
             
             @Override
             public void onInit() {
-                setTimeout(3000);
+                setTimeout(500);
             }
             
         };

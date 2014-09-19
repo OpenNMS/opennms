@@ -38,18 +38,18 @@ public class LogPreservingThreadFactory implements ThreadFactory {
     private final BitSet m_slotNumbers;
     private final String m_name;
     private final int m_poolSize;
-    private Map m_mdc = null;
+    private Map<String,String> m_mdc = null;
     private int m_counter = 0;
 
-    public LogPreservingThreadFactory(String poolName, int poolSize, boolean preserveMDC) {
+    public LogPreservingThreadFactory(String poolName, int poolSize) {
          m_name = poolName;
          m_poolSize = poolSize;
          // Make the bitset of thread numbers one larger so that we can 1-index it.
          // If pool size is Integer.MAX_VALUE, then the BitSet will not be used.
          m_slotNumbers = poolSize < Integer.MAX_VALUE ? new BitSet(poolSize + 1) : new BitSet(1);
-         if (preserveMDC) {
-        	 m_mdc = MDC.getCopyOfContextMap();
-         }
+
+         m_mdc = MDC.getCopyOfContextMap();
+
     }
 
     @Override
@@ -63,11 +63,11 @@ public class LogPreservingThreadFactory implements ThreadFactory {
         }
     }
     
-    private Map getCopyOfContextMap() {
+    private Map<String,String> getCopyOfContextMap() {
         return MDC.getCopyOfContextMap();
     }
     
-    private void setContextMap(Map map) {
+    private void setContextMap(Map<String,String> map) {
         if (map == null) {
             MDC.clear();
         } else {
@@ -80,7 +80,7 @@ public class LogPreservingThreadFactory implements ThreadFactory {
         return new Thread(new Runnable() {
             @Override
             public void run() {
-                Map mdc = getCopyOfContextMap();
+                Map<String,String> mdc = getCopyOfContextMap();
                 try {
                     // Set the logging prefix if it was stored during creation
                     setContextMap(m_mdc);
@@ -98,7 +98,7 @@ public class LogPreservingThreadFactory implements ThreadFactory {
         return new Thread(new Runnable() {
             @Override
             public void run() {
-                Map mdc = getCopyOfContextMap();
+                Map<String,String> mdc = getCopyOfContextMap();
                 try {
                     // Set the logging prefix if it was stored during creation
                     setContextMap(m_mdc);
@@ -117,7 +117,7 @@ public class LogPreservingThreadFactory implements ThreadFactory {
         return new Thread(new Runnable() {
             @Override
             public void run() {
-                Map mdc = getCopyOfContextMap();
+                Map<String,String> mdc = getCopyOfContextMap();
                 try {
                     try {
                         setContextMap(m_mdc);

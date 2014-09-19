@@ -78,8 +78,8 @@ public class OSReportPlugin extends AbstractSystemReportPlugin {
     }
 
     @Override
-    public TreeMap<String, Resource> getEntries() {
-        final TreeMap<String, Resource> map = new TreeMap<String, Resource>();
+    public Map<String, Resource> getEntries() {
+        final Map<String, Resource> map = new TreeMap<String, Resource>();
         map.put("Name", getResourceFromProperty("os.name"));
         map.put("Architecture", getResourceFromProperty("os.arch"));
         map.put("Version", getResourceFromProperty("os.version"));

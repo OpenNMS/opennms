@@ -32,7 +32,7 @@ import org.opennms.core.spring.BeanUtils;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.springframework.beans.factory.access.BeanFactoryReference;
 
-public class DbHelper {
+public abstract class DbHelper {
 
 	
 	public static String getNodeLabel(Integer nodeid) {

@@ -114,16 +114,16 @@ public class SnmpAgentConfig extends SnmpConfiguration implements Serializable {
                 agentConfig.setPrivProtocol(value);
             } else if ("read-community".equalsIgnoreCase(key)) {
                 agentConfig.setReadCommunity(value);
-            } else if ("context-name".equalsIgnoreCase(key)) {
-                agentConfig.setContextName(value);
             } else if ("engine-id".equalsIgnoreCase(key)) {
-                agentConfig.setEngineId(value);
+            	agentConfig.setEngineId(value);
             } else if ("context-engine-id".equalsIgnoreCase(key)) {
-                agentConfig.setContextEngineId(value);
+            	agentConfig.setContextEngineId(value);
+            } else if ("context-name".equalsIgnoreCase(key)) {
+            	agentConfig.setContextName(value);
             } else if ("enterprise-id".equalsIgnoreCase(key)) {
-                agentConfig.setEnterpriseId(value);
+            	agentConfig.setEnterpriseId(value);
             } else if ("write-community".equalsIgnoreCase(key)) {
-                agentConfig.setWriteCommunity(value);
+            	agentConfig.setWriteCommunity(value);
             } else {
                 LOG.warn("Unexpected attribute in protocol configuration string for SnmpAgentConfig: '{}'", attribute);
             }
@@ -162,29 +162,29 @@ public class SnmpAgentConfig extends SnmpConfiguration implements Serializable {
     @Override
     public String toString() {
         StringBuffer buff = new StringBuffer("SnmpAgentConfig[");
-        buff.append("Address: ").append((m_address == null? null : InetAddrUtils.str(m_address)));
-        buff.append(", ProxyForAddress: ").append((m_proxyFor == null? null : InetAddrUtils.str(m_proxyFor)));
-        buff.append(", Port: ").append(getPort());
-        buff.append(", Timeout: ").append(getTimeout());
-        buff.append(", Retries: ").append(getRetries());
-        buff.append(", MaxVarsPerPdu: ").append(getMaxVarsPerPdu());
-        buff.append(", MaxRepetitions: ").append(getMaxRepetitions());
-        buff.append(", MaxRequestSize: ").append(getMaxRequestSize());
-        buff.append(", Version: ").append(versionToString(getVersion()));
+        buff.append("Address: " + InetAddrUtils.str(m_address));
+        buff.append(", ProxyForAddress: " + InetAddrUtils.str(m_proxyFor));
+        buff.append(", Port: " + getPort());
+        buff.append(", Timeout: " + getTimeout());
+        buff.append(", Retries: " + getRetries());
+        buff.append(", MaxVarsPerPdu: " + getMaxVarsPerPdu());
+        buff.append(", MaxRepetitions: " + getMaxRepetitions());
+        buff.append(", MaxRequestSize: " + getMaxRequestSize());
+        buff.append(", Version: " + versionToString(getVersion()));
         if (isVersion3()) {
-            buff.append(", Security level: ").append(getSecurityLevel());
-            buff.append(", Security name: ").append(getSecurityName());
-            buff.append(", auth-passphrase: ").append(getAuthPassPhrase());
-            buff.append(", auth-protocol: ").append(getAuthProtocol());
-            buff.append(", priv-passphrase: ").append(getPrivPassPhrase());
-            buff.append(", priv-protocol: ").append(getPrivProtocol());
-            buff.append(", Context name: ").append(getContextName());
-            buff.append(", Engine ID: ").append(getEngineId());
-            buff.append(", Context Engine ID: ").append(getContextEngineId());
-            buff.append(", Enterprise ID:").append(getEnterpriseId());
+            buff.append(", SecurityLevel: " + getSecurityLevel());
+            buff.append(", SecurityName: " + getSecurityName());
+            buff.append(", AuthPassPhrase: " + getAuthPassPhrase());
+            buff.append(", AuthProtocol: " + getAuthProtocol());
+            buff.append(", PrivPassphrase: " + getPrivPassPhrase());
+            buff.append(", PrivProtocol: " + getPrivProtocol());
+            buff.append(", EngineId: " + getEngineId());
+            buff.append(", ContextEngineId: " + getContextEngineId());
+            buff.append(", ContextName: " + getContextName());
+            buff.append(", EnterpriseId:" + getEnterpriseId());
         } else {
-            buff.append(", ReadCommunity: ").append(getReadCommunity());
-            buff.append(", WriteCommunity: ").append(getWriteCommunity());
+	    buff.append(", ReadCommunity: " + getReadCommunity());
+	    buff.append(", WriteCommunity: " + getWriteCommunity());
         }
         buff.append("]");
         return buff.toString();

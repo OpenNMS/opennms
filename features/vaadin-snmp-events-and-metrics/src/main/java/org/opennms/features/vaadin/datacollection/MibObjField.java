@@ -71,8 +71,9 @@ public class MibObjField extends CustomField<List<MibObj>> implements Button.Cli
      * Instantiates a new MIB object field.
      *
      * @param resourceTypes the available resource types
+     * @param mibGroupEditable true, if the MIB group can be modified
      */
-    public MibObjField(final List<String> resourceTypes) {
+    public MibObjField(final List<String> resourceTypes, boolean mibGroupEditable) {
         table.addStyleName("light");
         table.setVisibleColumns(new Object[] { "oid", "instance", "alias", "type" });
         table.setColumnHeaders(new String[] { "OID", "Instance", "Alias", "Type" });
@@ -82,8 +83,10 @@ public class MibObjField extends CustomField<List<MibObj>> implements Button.Cli
         table.setWidth("100%");
         table.setTableFieldFactory(new MibObjFieldFactory(resourceTypes));
 
-        toolbar.addComponent(add);
-        toolbar.addComponent(delete);
+        if (mibGroupEditable) {
+            toolbar.addComponent(add);
+            toolbar.addComponent(delete);
+        }
         toolbar.setVisible(table.isEditable());
 
         setValidationVisible(true);

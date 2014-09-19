@@ -75,8 +75,8 @@ public class AssetServiceImpl extends RemoteServiceServlet implements AssetServi
     private static final String TELNET_CONNECTION = "telnet";
     private static final String RSH_CONNECTION = "rsh";
 
-    private static ArrayList<String> s_autoenableOptions = new ArrayList<String>();
-    private static ArrayList<String> s_connectionOptions = new ArrayList<String>();
+    private static List<String> s_autoenableOptions = new ArrayList<String>();
+    private static List<String> s_connectionOptions = new ArrayList<String>();
 
     static {
         s_autoenableOptions.add(AUTOENABLE);
@@ -117,7 +117,7 @@ public class AssetServiceImpl extends RemoteServiceServlet implements AssetServi
      */
     private SecurityContextService m_securityContext;
 
-    private HashSet<String> m_allowHtmlFields;
+    private Set<String> m_allowHtmlFields;
 
     /**
      * <p>sanitizeBeanStringProperties</p>

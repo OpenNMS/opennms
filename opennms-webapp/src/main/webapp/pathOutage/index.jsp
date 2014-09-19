@@ -33,7 +33,7 @@
 	import="
 		java.util.List,
 		org.opennms.netmgt.config.OpennmsServerConfigFactory,
-		org.opennms.netmgt.poller.PathOutageFactory
+		org.opennms.netmgt.poller.PathOutageManagerJdbcImpl
 	"
 %>
 
@@ -50,9 +50,9 @@
     
 
 <%
-        List<String[]> testPaths = PathOutageFactory.getAllCriticalPaths();
+        List<String[]> testPaths = PathOutageManagerJdbcImpl.getInstance().getAllCriticalPaths();
         String dcpip = OpennmsServerConfigFactory.getInstance().getDefaultCriticalPathIp();
-        String[] pthData = PathOutageFactory.getCriticalPathData(dcpip, "ICMP");
+        String[] pthData = PathOutageManagerJdbcImpl.getInstance().getCriticalPathData(dcpip, "ICMP");
 %>
 <% if (dcpip != null && !dcpip.equals("")) { %>
 	<p>Default Critical Path = <%= dcpip %> ICMP</p>
@@ -66,7 +66,7 @@
 			<th># of Nodes</th>
 		</tr>
 		<% for (String[] pth : testPaths) {
-			pthData = PathOutageFactory.getCriticalPathData(pth[0], pth[1]); %>
+			pthData = PathOutageManagerJdbcImpl.getInstance().getCriticalPathData(pth[0], pth[1]); %>
 			<tr class="CellStatus">
 				<% if((pthData[0] == null) || (pthData[0].equals(""))) { %>
 					<td>(interface not in DB)</td>

@@ -45,6 +45,10 @@ public interface IpNetToMediaDao extends OnmsDao<IpNetToMedia, Integer> {
     
     public List<IpNetToMedia> findBySourceNodeId(Integer id);
 
+    public List<IpNetToMedia> findByPhysAddress(String physAddress);
+
+    public List<IpNetToMedia> findByNetAddress(InetAddress netAddress);
+
     public IpNetToMedia getByNetAndPhysAddress(InetAddress netAddress, String physAddress);
 
     void deleteBySourceNodeIdOlderThen(Integer nodeiId, Date now);

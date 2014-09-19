@@ -38,9 +38,11 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.opennms.core.logging.Logging;
 import org.opennms.core.utils.PropertiesUtils;
 import org.opennms.core.utils.PropertiesUtils.SymbolTable;
 import org.opennms.netmgt.config.VacuumdConfigFactory;
@@ -686,6 +688,8 @@ public class AutomationProcessor implements ReadyRunnable {
      */
     @Override
     public void run() {
+        final Map<String,String> mdc = Logging.getCopyOfContextMap();
+        Logging.putPrefix("vacuumd");
 
         Date startDate = new Date();
         LOG.debug("Start Scheduled automation {}", this);
@@ -702,7 +706,7 @@ public class AutomationProcessor implements ReadyRunnable {
         }
 
         LOG.debug("run: Finished automation {}, started at {}", m_automation.getName(), startDate);
-        
+        Logging.setContextMap(mdc);
     }
 
     /**

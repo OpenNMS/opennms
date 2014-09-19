@@ -61,8 +61,8 @@ public class DefaultKscReportService implements KscReportService, InitializingBe
     private ResourceService m_resourceService;
     private KSC_PerformanceReportFactory m_kscReportFactory;
 
-    private static final LinkedHashMap<String, String> s_timeSpans = new LinkedHashMap<String, String>();
-    private static final LinkedHashMap<String, String> s_timeSpansWithNone = new LinkedHashMap<String, String>();
+    private static final Map<String, String> s_timeSpans = new LinkedHashMap<String, String>();
+    private static final Map<String, String> s_timeSpansWithNone = new LinkedHashMap<String, String>();
 
     /** {@inheritDoc} */
     @Override

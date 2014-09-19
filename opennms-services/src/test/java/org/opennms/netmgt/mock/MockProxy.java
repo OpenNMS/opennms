@@ -59,7 +59,7 @@ public class MockProxy implements CommandResponder {
     
     private static final Logger LOG = LoggerFactory.getLogger(MockProxy.class);
 
-    private TransportMapping m_transport;
+    private TransportMapping<UdpAddress> m_transport;
     private Snmp m_snmp;
     private MockAgent m_agent;
 
@@ -167,14 +167,13 @@ public class MockProxy implements CommandResponder {
      * @param request
      * @return
      */
-    @SuppressWarnings("unchecked")
     private PDU processGet(PDU request) {
         PDU response = request;
         response.setErrorIndex(0);
         response.setErrorStatus(0);
         response.setType(PDU.RESPONSE);
         
-        Vector<VariableBinding> varBinds = response.getVariableBindings();
+        Vector<? extends VariableBinding> varBinds = response.getVariableBindings();
         for(int i = 0; i < varBinds.size(); i++) {
             VariableBinding varBind = varBinds.get(i);
             VariableBinding nextVarBind = m_agent.get(varBind.getOid());
@@ -199,14 +198,13 @@ public class MockProxy implements CommandResponder {
      * @param request
      * @return
      */
-    @SuppressWarnings("unchecked")
     private PDU processGetNext(PDU request) {
         PDU response = request;
         response.setErrorIndex(0);
         response.setErrorStatus(0);
         response.setType(PDU.RESPONSE);
         
-        Vector<VariableBinding> varBinds = response.getVariableBindings();
+        Vector<? extends VariableBinding> varBinds = response.getVariableBindings();
         for(int i = 0; i < varBinds.size(); i++) {
             VariableBinding varBind = varBinds.get(i);
             VariableBinding nextVarBind = m_agent.getNext(varBind.getOid());

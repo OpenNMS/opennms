@@ -38,7 +38,7 @@ import java.util.StringTokenizer;
  *
  * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
  */
-public class BundleLists {
+public abstract class BundleLists {
 
     /**
      * Parses a string into an array of substrings, using a comma as a delimiter

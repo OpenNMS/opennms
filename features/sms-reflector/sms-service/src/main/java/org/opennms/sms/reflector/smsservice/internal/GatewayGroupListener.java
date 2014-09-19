@@ -28,7 +28,6 @@
 
 package org.opennms.sms.reflector.smsservice.internal;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -118,18 +117,6 @@ public class GatewayGroupListener implements InitializingBean {
             LOG.warn("Unable to stop SMS service: {}", gatewayGroup, e);
         }
 
-    }
-
-    @SuppressWarnings("unused")
-    private boolean gatewayIdMatches(Collection<AGateway> gateways, AGateway[] aGateways) {
-        for(AGateway serviceGateway : gateways){
-            for(AGateway groupGateway : aGateways){
-                if(serviceGateway.getGatewayId() == groupGateway.getGatewayId()){
-                    return true;
-                }
-            }
-        }
-        return false;
     }
 
     /**

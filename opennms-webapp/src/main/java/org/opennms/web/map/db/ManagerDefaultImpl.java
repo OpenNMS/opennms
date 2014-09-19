@@ -41,8 +41,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.UUID;
-import java.util.Vector;
-
 import org.opennms.core.logging.Logging;
 import org.opennms.netmgt.config.CategoryFactory;
 import org.opennms.netmgt.config.GroupDao;
@@ -129,7 +127,7 @@ public class ManagerDefaultImpl implements Manager {
 
     private List<VMapInfo> mapInfo = new ArrayList<VMapInfo>();
     
-    private HashMap<String, Command> commandmap = new HashMap<String, Command>();
+    private Map<String, Command> commandmap = new HashMap<String, Command>();
 
     /**
      * <p>Getter for the field <code>filter</code>.</p>
@@ -404,7 +402,7 @@ public class ManagerDefaultImpl implements Manager {
     private List<VElement> localRefreshElements(
             Collection<VElement> mapElements) throws MapsException {
         List<VElement> elems = new ArrayList<VElement>();
-        Vector<Integer> deletedNodeids = dbManager.getDeletedNodes();
+        List<Integer> deletedNodeids = dbManager.getDeletedNodes();
         java.util.Map<Integer, AlarmInfo> outagedNodes = getAlarmedNodes();
         java.util.Map<Integer, Double> avails = dbManager.getAvails(mapElements.toArray(new VElement[0]));
         Set<Integer> nodesBySource = new HashSet<Integer>();
@@ -1062,7 +1060,7 @@ public class ManagerDefaultImpl implements Manager {
     }
 
     private VElement refresh(VElement mapElement, Set<Integer> nodesBySource,
-            Vector<Integer> deletedNodeids,
+            List<Integer> deletedNodeids,
             java.util.Map<Integer, AlarmInfo> outagedNodes,
             java.util.Map<Integer, Double> avails) throws MapsException {
         
@@ -1077,7 +1075,7 @@ public class ManagerDefaultImpl implements Manager {
     }
     
     private VElement refreshNodeElement(VElement ve, Set<Integer> nodesBySource,
-            Vector<Integer> deletedNodeids,
+            List<Integer> deletedNodeids,
             java.util.Map<Integer, AlarmInfo> outagedNodes,
             java.util.Map<Integer, Double> avails) throws MapsException {
     
@@ -1133,7 +1131,7 @@ public class ManagerDefaultImpl implements Manager {
 
 
     private VElement refreshMapElement(VElement ve, Set<Integer> nodesBySource,
-            Vector<Integer> deletedNodeids,
+            List<Integer> deletedNodeids,
             java.util.Map<Integer, AlarmInfo> outagedNodes,
             java.util.Map<Integer, Double> avails) throws MapsException {
 

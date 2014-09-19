@@ -1294,26 +1294,6 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
         return stpNode;
     }
 
-    /**
-     * <p>getIpAddress</p>
-     *
-     * @param nodeid a int.
-     * @param ifindex a int.
-     * @return a {@link java.lang.String} object.
-     * @throws java.sql.SQLException if any.
-     */
-    @Transactional
-    private String getIpAddress(int nodeid, int ifindex)
-            {
-    	String retval = null;
-    	OnmsSnmpInterface snmpinterface = m_snmpInterfaceDao.findByNodeIdAndIfIndex(nodeid, ifindex);
-    	for (OnmsIpInterface ipinterface: snmpinterface.getIpInterfaces() ) {
-    		retval = ipinterface.getIpAddress().getHostAddress();
-    	}
-
-        return retval;
-    }
-
     /* (non-Javadoc)
 	 * @see org.opennms.web.element.NetworkElementFactoryInterface#getNodeIdsWithIpLike(java.lang.String)
 	 */

@@ -54,6 +54,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.ModelAndView;
 
 /**
@@ -110,7 +111,7 @@ public class DefaultNodeProvisionService implements NodeProvisionService, Initia
                 info.setFirstIPAddress(ipAddress);
                 info.setVersion(snmpVersion);
                 m_snmpPeerFactory.define(info);
-                SnmpPeerFactory.saveCurrent();
+                m_snmpPeerFactory.saveCurrent();
             } catch (Throwable e) {
                 throw new NodeProvisionException("unable to add SNMP community information", e);
             }
@@ -130,7 +131,7 @@ public class DefaultNodeProvisionService implements NodeProvisionService, Initia
         }
         
         RequisitionNode reqNode = new RequisitionNode();
-        reqNode.setNodeLabel(nodeLabel);
+        reqNode.setNodeLabel(StringUtils.isEmpty(nodeLabel) ? ipAddress : nodeLabel);
         reqNode.setForeignId(foreignId);
         reqNode.putInterface(reqIface);
 

@@ -82,6 +82,7 @@ import org.springframework.transaction.support.TransactionTemplate;
  */
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
+		"classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
         "classpath*:/META-INF/opennms/component-dao.xml",
@@ -425,7 +426,7 @@ public class HttpCollectorTest implements TestContextAware, InitializingBean {
         service.addParameter(portParm);
         pkg.addService(service);
 
-        CollectionSpecification collectionSpecification = new CollectionSpecification(pkg, svcName, collector);
+        CollectionSpecification collectionSpecification = new CollectionSpecification(pkg, svcName, collector, new DefaultCollectdInstrumentation());
         collectionSpecification.initialize(m_collectionAgent);
 
         CollectionSet collectionSet = collectionSpecification.collect(m_collectionAgent);

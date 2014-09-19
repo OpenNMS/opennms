@@ -30,7 +30,7 @@ package org.opennms.core.criteria.restrictions;
 
 import java.util.Collection;
 
-public class Restrictions {
+public abstract class Restrictions {
 
     private static final Restriction[] EMPTY_RESTRICTION_ARRAY = new Restriction[0];
 

@@ -38,11 +38,16 @@ import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.netmgt.config.EnhancedLinkdConfig;
+
+import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.api.BridgeBridgeLinkDao;
+import org.opennms.netmgt.dao.api.BridgeMacLinkDao;
 import org.opennms.netmgt.dao.api.IsIsLinkDao;
 import org.opennms.netmgt.dao.api.LldpLinkDao;
-import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.OspfLinkDao;
+
 import org.opennms.netmgt.model.OnmsNode;
+
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,6 +59,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations= {
+		"classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-daemon.xml",
@@ -86,6 +92,12 @@ public abstract class EnLinkdTestBuilder extends EnLinkdTestHelper implements In
 
     @Autowired
     protected TransactionTemplate m_transactionTemplate;
+
+    @Autowired
+    protected BridgeBridgeLinkDao m_bridgeBridgeLinkDao;
+
+    @Autowired
+    protected BridgeMacLinkDao m_bridgeMacLinkDao;
 
     @Override
     public void afterPropertiesSet() throws Exception {

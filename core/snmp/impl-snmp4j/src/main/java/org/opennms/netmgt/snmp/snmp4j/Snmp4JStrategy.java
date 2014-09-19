@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -69,12 +69,10 @@ import org.snmp4j.mp.PduHandle;
 import org.snmp4j.security.SecurityLevel;
 import org.snmp4j.security.SecurityModel;
 import org.snmp4j.security.SecurityModels;
-import org.snmp4j.security.SecurityProtocols;
 import org.snmp4j.security.USM;
 import org.snmp4j.security.UsmUser;
 import org.snmp4j.smi.IpAddress;
 import org.snmp4j.smi.OID;
-import org.snmp4j.smi.OctetString;
 import org.snmp4j.smi.SMIConstants;
 import org.snmp4j.smi.UdpAddress;
 import org.snmp4j.smi.VariableBinding;
@@ -98,8 +96,9 @@ public class Snmp4JStrategy implements SnmpStrategy {
             return;
         }
 
-        MPv3.setEnterpriseID(5813);
-        USM usm = new USM(SecurityProtocols.getInstance(), new OctetString(MPv3.createLocalEngineID()), 0);
+        SNMP4JSettings.setEnterpriseID(5813);
+        //USM usm = new USM(SecurityProtocols.getInstance(), new OctetString(MPv3.createLocalEngineID()), 0);
+        USM usm = new USM();
         SecurityModels.getInstance().addSecurityModel(usm);
         
         // Enable extensibility in SNMP4J so that we can subclass some SMI classes to work around
@@ -358,7 +357,7 @@ public class Snmp4JStrategy implements SnmpStrategy {
         
         Snmp m_trapSession;
         Snmp4JTrapNotifier m_trapHandler;
-        private TransportMapping m_transportMapping;
+        private TransportMapping<UdpAddress> m_transportMapping;
 		private InetAddress m_address;
 		private int m_port;
         
@@ -402,11 +401,11 @@ public class Snmp4JStrategy implements SnmpStrategy {
             return m_port;
         }
 
-        public void setTransportMapping(final TransportMapping transport) {
+        public void setTransportMapping(final TransportMapping<UdpAddress> transport) {
             m_transportMapping = transport;
         }
         
-        public TransportMapping getTransportMapping() {
+        public TransportMapping<UdpAddress> getTransportMapping() {
             return m_transportMapping;
         }
         
@@ -439,7 +438,7 @@ public class Snmp4JStrategy implements SnmpStrategy {
         } else {
         	udpAddress = new UdpAddress(address, snmpTrapPort);
         }
-        final TransportMapping transport = new DefaultUdpTransportMapping(udpAddress);
+        final TransportMapping<UdpAddress> transport = new DefaultUdpTransportMapping(udpAddress);
         info.setTransportMapping(transport);
         Snmp snmp = new Snmp(transport);
         snmp.addCommandResponder(m_trapHandler);
@@ -579,7 +578,7 @@ public class Snmp4JStrategy implements SnmpStrategy {
             if (port == info.getPort()) {
                 Snmp snmp = info.getSession();
                 MessageDispatcher dispatcher = snmp.getMessageDispatcher();
-                TransportMapping transport = info.getTransportMapping();
+                TransportMapping<UdpAddress> transport = info.getTransportMapping();
                 
                 int securityModel = (pdu instanceof PDUv1 ? SecurityModel.SECURITY_MODEL_SNMPv1 :SecurityModel.SECURITY_MODEL_SNMPv2c);
                 int messageModel = (pdu instanceof PDUv1 ? MessageProcessingModel.MPv1 : MessageProcessingModel.MPv2c);

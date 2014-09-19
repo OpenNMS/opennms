@@ -51,7 +51,7 @@ import org.opennms.web.map.view.VLink;
 import org.opennms.web.map.view.VMap;
 import org.opennms.web.map.view.VMapInfo;
 import org.opennms.web.map.view.VProperties;
-public class ResponseAssembler {
+public abstract class ResponseAssembler {
 	
 	/**
 	 * <p>getRefreshResponse</p>

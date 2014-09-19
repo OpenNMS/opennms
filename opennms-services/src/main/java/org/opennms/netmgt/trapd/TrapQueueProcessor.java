@@ -41,9 +41,9 @@ import org.opennms.netmgt.model.events.EventIpcManager;
 import org.opennms.netmgt.snmp.TrapNotification;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.eventconf.Logmsg;
+import org.opennms.netmgt.xml.eventconf.Snmp;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.opennms.netmgt.xml.eventconf.Snmp;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 

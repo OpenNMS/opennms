@@ -880,7 +880,7 @@ public class QueuingRrdStrategy implements RrdStrategy<QueuingRrdStrategy.Create
      * Return true if and only if all the operations in the list are
      * insignificant
      */
-    private boolean hasOnlyInsignificant(LinkedList<Operation> pendingOps) {
+    private boolean hasOnlyInsignificant(List<Operation> pendingOps) {
         for(Operation op : pendingOps) {
             if (op.isSignificant()) {
                 return false;

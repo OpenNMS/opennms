@@ -45,7 +45,7 @@ import org.apache.commons.cli.PosixParser;
  *
  * @author <A HREF="mailto:matt.raykowski@gmail.com">Matt Raykowski </A>
  */
-public class CheckWmi {
+public abstract class CheckWmi {
 
 	/**
 	 * <p>main</p>
@@ -135,7 +135,7 @@ public class CheckWmi {
 
 		try {
 			// Hold the WMI objects from the results.
-			ArrayList<Object> wmiObjects;
+			List<Object> wmiObjects;
 			// Create the check parameters holder.
 			WmiParams clientParams;
             if(wmiWql == null || wmiWql.length() == 0)

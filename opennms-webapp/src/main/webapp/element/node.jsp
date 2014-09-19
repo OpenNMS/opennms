@@ -29,10 +29,11 @@
 
 --%>
 
-<%@page import="org.opennms.web.lldp.LldpElementFactory"%>
-<%@page import="org.opennms.web.lldp.LldpElementNode"%>
-<%@page import="org.opennms.web.ospf.OspfElementFactory"%>
-<%@page import="org.opennms.web.ospf.OspfElementNode"%>
+<%@page import="org.opennms.web.enlinkd.LldpElementNode"%>
+<%@page import="org.opennms.web.enlinkd.OspfElementNode"%>
+<%@page import="org.opennms.web.enlinkd.IsisElementNode"%>
+<%@page import="org.opennms.web.enlinkd.BridgeElementNode"%>
+<%@page import="org.opennms.web.enlinkd.EnLinkdElementFactory"%>
 <%@page language="java"
 	contentType="text/html"
 	session="true"
@@ -45,7 +46,7 @@
         org.opennms.netmgt.config.PollOutagesConfigFactory,
         org.opennms.netmgt.config.poller.outages.Outage,
         org.opennms.netmgt.model.OnmsNode,
-        org.opennms.netmgt.poller.PathOutageFactory,
+        org.opennms.netmgt.poller.PathOutageManagerJdbcImpl,
         org.opennms.web.api.Authentication,
         org.opennms.web.asset.Asset,
         org.opennms.web.asset.AssetModel,
@@ -167,15 +168,15 @@
         nodeModel.put("statusSite", asset.getBuilding());
     }
     
-    LldpElementNode lldp = LldpElementFactory.getInstance(getServletContext()).getLldpElement(nodeId);
-    nodeModel.put("lldp", lldp);
-    OspfElementNode ospf = OspfElementFactory.getInstance(getServletContext()).getOspfElement(nodeId);
-    nodeModel.put("ospf", ospf);
-    
+    nodeModel.put("lldp",    EnLinkdElementFactory.getInstance(getServletContext()).getLldpElement(nodeId));
+    nodeModel.put("ospf",    EnLinkdElementFactory.getInstance(getServletContext()).getOspfElement(nodeId));
+    nodeModel.put("isis",    EnLinkdElementFactory.getInstance(getServletContext()).getIsisElement(nodeId));
+    nodeModel.put("bridges", EnLinkdElementFactory.getInstance(getServletContext()).getBridgeElements(nodeId));
+
     nodeModel.put("resources", m_resourceService.findNodeChildResources(node_db));
     nodeModel.put("vlans", NetworkElementFactory.getInstance(getServletContext()).getVlansOnNode(nodeId));
-    nodeModel.put("criticalPath", PathOutageFactory.getPrettyCriticalPath(nodeId));
-    nodeModel.put("noCriticalPath", PathOutageFactory.NO_CRITICAL_PATH);
+    nodeModel.put("criticalPath", PathOutageManagerJdbcImpl.getInstance().getPrettyCriticalPath(nodeId));
+    nodeModel.put("noCriticalPath", PathOutageManagerJdbcImpl.NO_CRITICAL_PATH);
     nodeModel.put("admin", request.isUserInRole(Authentication.ROLE_ADMIN));
     
     // get the child interfaces
@@ -324,6 +325,13 @@ function confirmAssetEdit() {
       <a href="<c:out value="${assetLink}"/>" onclick="return confirmAssetEdit()">Asset Info</a>
     </li>
 
+    <c:url var="hardwareLink" value="hardware/list.jsp">
+      <c:param name="node" value="${model.id}"/>
+    </c:url>
+    <li class="o-menuitem">
+      <a href="<c:out value="${hardwareLink}"/>">Hardware Info</a>
+    </li>
+ 
     <c:if test="${! empty model.statusSite}">
       <c:url var="siteLink" value="siteStatusView.htm">
         <c:param name="statusSite" value="${model.statusSite}"/>
@@ -479,7 +487,73 @@ function confirmAssetEdit() {
     </table>
   </c:if>
 
-  <!-- Ospf box, if info available --> 
+  <!-- Bridge box if available -->
+  <c:if test="${! empty model.bridges}">
+    <c:forEach items="${model.bridges}" var="bridge">
+    <h3 class="o-box">Bridge Information
+  		<c:if test="${! empty bridge.vlan}">
+  		 vlanid ${bridge.vlan}
+  		</c:if>
+  		<c:if test="${! empty bridge.vlanname}">
+  		  (${bridge.vlan})
+  		</c:if>
+    </h3>
+    <table class="o-box">
+      <tr>
+        <th>base bridge address</th>
+        <td>${bridge.baseBridgeAddress}</td>
+      </tr>
+      <tr>
+        <th>base number of ports</th>
+        <td>${bridge.baseNumPorts}</td>
+      </tr>
+      <tr>
+        <th>base type</th>
+        <td>${bridge.baseType}</td>
+      </tr>
+ 	<c:if test="${! empty bridge.stpProtocolSpecification}">
+      <tr>
+        <th>stp protocol specification</th>
+        <td>${bridge.stpProtocolSpecification}</td>
+      </tr>
+  	</c:if>
+ 	<c:if test="${! empty bridge.stpPriority}">
+      <tr>
+        <th>stp priority</th>
+        <td>${bridge.stpPriority}</td>
+      </tr>
+  	</c:if>
+ 	<c:if test="${! empty bridge.stpDesignatedRoot}">
+      <tr>
+        <th>stp designated root</th>
+        <td>${bridge.stpDesignatedRoot}</td>
+      </tr>
+  	</c:if>
+ 	<c:if test="${! empty bridge.stpRootCost}">
+      <tr>
+        <th>stp root cost</th>
+        <td>${bridge.stpRootCost}</td>
+      </tr>
+  	</c:if>
+ 	<c:if test="${! empty bridge.stpRootPort}">
+      <tr>
+        <th>stp root port</th>
+        <td>${bridge.stpRootPort}</td>
+      </tr>
+  	</c:if>
+      <tr>
+        <th>create time</th>
+        <td>${bridge.bridgeNodeCreateTime}</td>
+      </tr>
+      <tr>
+        <th>last poll time</th>
+        <td>${bridge.bridgeNodeLastPollTime}</td>
+      </tr>
+    </table>
+    </c:forEach>
+  </c:if>
+
+  <!-- Ospf box, if info available -->
   <c:if test="${! empty model.ospf }">
     <h3 class="o-box">Ospf Information</h3>
     <table class="o-box">
@@ -502,6 +576,29 @@ function confirmAssetEdit() {
       <tr>
         <th>last poll time</th>
         <td>${model.ospf.ospfLastPollTime}</td>
+      </tr>
+    </table>
+  </c:if>
+
+  <!-- IsIs box, if info available -->
+  <c:if test="${! empty model.isis }">
+    <h3 class="o-box">Is-Is Information</h3>
+    <table class="o-box">
+      <tr>
+        <th>Sys ID</th>
+        <td>${model.isis.isisSysID}</td>
+      </tr>
+      <tr>
+        <th>Admin State</th>
+        <td>${model.isis.isisSysAdminState}</td>
+      </tr>
+      <tr>
+        <th>create time</th>
+        <td>${model.isis.isisCreateTime}</td>
+      </tr>
+      <tr>
+        <th>last poll time</th>
+        <td>${model.isis.isisLastPollTime}</td>
       </tr>
     </table>
   </c:if>

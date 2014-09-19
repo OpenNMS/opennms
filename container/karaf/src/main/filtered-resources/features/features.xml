@@ -442,7 +442,7 @@
     <feature name="ssh" description="Provide a SSHd server on Karaf" version="2.3.4">
         <config name="org.apache.karaf.shell">
             sshPort=8101
-            sshHost=0.0.0.0
+            sshHost=127.0.0.1
             sshRealm=karaf
             hostKey=${karaf.base}/etc/host.key
         </config>
