@@ -29,7 +29,7 @@ public class OnmsGeolocation implements Serializable {
      *
      * @return a {@link java.lang.String} object.
      */
-    @Column(name="address1")
+    @Column(name="address1", length=256)
     public String getAddress1() {
         return m_address1;
     }
@@ -48,7 +48,7 @@ public class OnmsGeolocation implements Serializable {
      *
      * @return a {@link java.lang.String} object.
      */
-    @Column(name="address2")
+    @Column(name="address2", length=256)
     public String getAddress2() {
         return m_address2;
     }
@@ -67,7 +67,7 @@ public class OnmsGeolocation implements Serializable {
      *
      * @return a {@link java.lang.String} object.
      */
-    @Column(name="city")
+    @Column(name="city", length=64)
     public String getCity() {
         return m_city;
     }
@@ -86,7 +86,7 @@ public class OnmsGeolocation implements Serializable {
      *
      * @return a {@link java.lang.String} object.
      */
-    @Column(name="state")
+    @Column(name="state", length=64)
     public String getState() {
         return m_state;
     }
@@ -105,7 +105,7 @@ public class OnmsGeolocation implements Serializable {
      *
      * @return a {@link java.lang.String} object.
      */
-    @Column(name="zip")
+    @Column(name="zip", length=64)
     public String getZip() {
         return m_zip;
     }
@@ -124,7 +124,7 @@ public class OnmsGeolocation implements Serializable {
      *
      * @return a {@link java.lang.String} object.
      */
-    @Column(name="country")
+    @Column(name="country", length=64)
     public String getCountry() {
         return m_country;
     }
