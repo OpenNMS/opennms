@@ -1,8 +1,8 @@
 /*******************************************************************************
 * This file is part of OpenNMS(R).
 *
-* Copyright (C) 2006-2012 The OpenNMS Group, Inc.
-* OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+* Copyright (C) 2006-2014 The OpenNMS Group, Inc.
+* OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
 *
 * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 *
@@ -26,12 +26,12 @@
 *     http://www.opennms.com/
 *******************************************************************************/
 
-package org.opennms.netmgt.poller.monitors;
+package org.opennms.netmgt.asterisk.monitor;
 
 import java.lang.reflect.UndeclaredThrowableException;
-import java.util.Map;
 import java.net.InetAddress;
 import java.net.SocketTimeoutException;
+import java.util.Map;
 
 import org.asteriskjava.manager.AuthenticationFailedException;
 import org.asteriskjava.manager.ManagerConnection;
@@ -43,10 +43,11 @@ import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.TimeoutTracker;
 import org.opennms.netmgt.config.AmiPeerFactory;
 import org.opennms.netmgt.poller.PollStatus;
+import org.opennms.netmgt.config.ami.AmiAgentConfig;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.NetworkInterface;
 import org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException;
-import org.opennms.netmgt.config.ami.AmiAgentConfig;
+import org.opennms.netmgt.poller.monitors.AbstractServiceMonitor;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

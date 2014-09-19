@@ -214,6 +214,19 @@ public class TrapHandlerTestCase implements InitializingBean {
                 "uei.opennms.org/vendor/HP/traps/hpicfFaultFinderTrap",
                 "v1", ".1.3.6.1.4.1.11.2.14.12.1", 6, 5, varbinds);
     }
+    
+    @Test
+    @DirtiesContext
+    public void testV1TrapOIDWildCardMatch()
+    throws Exception {
+        SnmpValueFactory valueFactory = SnmpUtils.getValueFactory();
+
+        LinkedHashMap<String, SnmpValue> varbinds = new LinkedHashMap <String, SnmpValue>();
+        varbinds.put(".1.3.6.1.4.1.32473.42.42.42", valueFactory.getInt32(42));
+        anticipateAndSend(false, true,
+                "uei.opennms.org/IANA/Example/traps/exampleEnterpriseTrap",
+                "v1", ".1.3.6.1.4.1.32473.42", 6, 5, varbinds);
+    }
 
     @Test
     @DirtiesContext

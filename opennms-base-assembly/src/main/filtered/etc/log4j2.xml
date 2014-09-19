@@ -50,11 +50,36 @@
             <DefaultRolloverStrategy max="4" fileIndex="min" />
           </RollingFile>
         </Route>
+          <!--
+	      This route in configured specifically for the instrumentation log so it can be parsed
+              by the instrumentation log reader.  It does not compress the logs and has modified
+              pattern.
+	  -->
+        <Route key="instrumentation">
+          <RollingFile name="Rolling-instrumentation" fileName="\${logdir}/instrumentation.log"
+                       filePattern="\${logdir}/instrumentation.%i.log">
+            <PatternLayout>
+              <!-- the logging class is not included here since its is verbose and always the same -->
+              <pattern>%d %-5p [%t] %m%n</pattern>
+            </PatternLayout>
+
+            <!-- Rotate logs at 100MB-->
+            <SizeBasedTriggeringPolicy size="100MB" />
+
+            <!-- Rotate through 4 logs -->
+            <DefaultRolloverStrategy max="4" fileIndex="min" />
+          </RollingFile>
+        </Route>
       </Routes>
     </Routing>
   </appenders>
 
   <loggers>
+
+    <!-- we always want this at info for the instrumentation log reader -->
+    <logger name="org.opennms.netmgt.collectd.DefaultCollectdInstrumentation" additivity="false" level="INFO">
+      <appender-ref ref="RoutingAppender"/>
+    </logger>
     <!-- 
       Set the threshold for individual loggers that may be too chatty at the default 
       level for their prefix.
@@ -133,6 +158,8 @@
         some well known prefixes in the log or to override the defaultThreshold for a given prefix.
       -->
       <DynamicThresholdFilter key="prefix" defaultThreshold="TRACE">
+        <!-- always leave instrumentation logging at INFO -->
+        <KeyValuePair key="instrumentation"      value="INFO" />
         <KeyValuePair key="access-point-monitor" value="DEBUG" />
         <KeyValuePair key="ackd"                 value="DEBUG" />
         <KeyValuePair key="actiond"              value="DEBUG" />
@@ -147,7 +174,6 @@
         <KeyValuePair key="eventd"               value="DEBUG" />
         <KeyValuePair key="event-translator"     value="DEBUG" />
         <KeyValuePair key="icmp"                 value="DEBUG" />
-        <KeyValuePair key="instrumentation"      value="DEBUG" />
         <KeyValuePair key="jetty-server"         value="DEBUG" />
         <KeyValuePair key="linkd"                value="DEBUG" />
         <KeyValuePair key="enlinkd"              value="DEBUG" />

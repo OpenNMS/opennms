@@ -34,7 +34,11 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.ConnectException;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketAddress;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -159,9 +163,9 @@ public class XmlrpcAnticipator implements XmlRpcHandler {
         }
     }
 
-    private List<XmlrpcCall> m_anticipated = new ArrayList<XmlrpcCall>();
+    private final List<XmlrpcCall> m_anticipated = new ArrayList<XmlrpcCall>();
 
-    private List<XmlrpcCall> m_unanticipated = new ArrayList<XmlrpcCall>();
+    private final List<XmlrpcCall> m_unanticipated = new ArrayList<XmlrpcCall>();
     
     private WebServer m_webServer = null;
     
@@ -193,7 +197,16 @@ public class XmlrpcAnticipator implements XmlRpcHandler {
     public void setupWebServer() throws IOException {
         m_logger.info("XmlrpcAnticipator starting on port number " + m_port);
 
-        m_webServer = new WebServer(m_port);
+        m_webServer = new WebServer(m_port) {
+            @Override
+            protected ServerSocket createServerSocket(int port, int backlog, InetAddress addr) throws Exception {
+                ServerSocket sock = new ServerSocket();
+                sock.setReuseAddress(true);
+                sock.bind(new InetSocketAddress(addr, port), backlog);
+                return sock;
+            }
+            
+        };
         m_webServer.addHandler("$default", this);
         m_webServer.start();
         waitForStartup();
@@ -287,7 +300,7 @@ public class XmlrpcAnticipator implements XmlRpcHandler {
         }
     }
     
-    public void anticipateCall(String method, Object... args) {
+    public synchronized void anticipateCall(String method, Object... args) {
         Vector<Object> params = new Vector<Object>();
         for(Object arg: args) {
             params.add(arg);
@@ -330,19 +343,19 @@ public class XmlrpcAnticipator implements XmlRpcHandler {
         return Collections.unmodifiableCollection(m_anticipated);
     }
 
-    public void reset() {
-        m_anticipated = new ArrayList<XmlrpcCall>();
-        m_unanticipated = new ArrayList<XmlrpcCall>();
+    public synchronized void reset() {
+        m_anticipated.clear();
+        m_unanticipated.clear();
     }
 
     /**
      * @return
      */
-    public Collection<XmlrpcCall> unanticipatedEvents() {
+    public synchronized Collection<XmlrpcCall> unanticipatedEvents() {
         return Collections.unmodifiableCollection(m_unanticipated);
     }
 
-    public void verifyAnticipated() {
+    public synchronized void verifyAnticipated() {
         StringBuffer problems = new StringBuffer();
 
         if (m_anticipated.size() > 0) {
