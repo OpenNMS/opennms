@@ -234,6 +234,7 @@ public class XmlrpcdTest extends OpenNMSTestCase {
 
         Thread.sleep(1000);
         m_anticipator1.verifyAnticipated();
+        System.err.println("Stopping xmlrpc servier for anticipator1");
         m_anticipator1.shutdown();
 
         Event nodeTwoEvent = svcEvent(EventConstants.NODE_LOST_SERVICE_EVENT_UEI, 2, "192.168.1.2", "SNMP", date);
@@ -247,11 +248,12 @@ public class XmlrpcdTest extends OpenNMSTestCase {
          * call if xmlrpcd sends the event after the web server comes up but
          * before we have anticipated it.
          */
-        m_anticipator1 = new XmlrpcAnticipator(m_port1, true);
+                m_anticipator1 = new XmlrpcAnticipator(m_port1, true);
         anticipateNotifyReceivedEvent(m_anticipator1);
 
         anticipateServerServiceCall(m_anticipator1, "sendServiceDownEvent", date);
-        
+
+        System.err.println("Restarting xmlrpc servier for anticipator1");
         m_anticipator1.setupWebServer();
         
         Thread.sleep(1000);
