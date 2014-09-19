@@ -17,6 +17,7 @@ import org.opennms.netmgt.config.EnterpriseIdPartition;
 import org.opennms.netmgt.config.EventLabelComparator;
 import org.opennms.netmgt.config.api.EventConfDao;
 import org.opennms.netmgt.xml.eventconf.Event;
+import org.opennms.netmgt.xml.eventconf.EventOrdering;
 import org.opennms.netmgt.xml.eventconf.Events;
 import org.opennms.netmgt.xml.eventconf.Events.EventCallback;
 import org.opennms.netmgt.xml.eventconf.Events.EventCriteria;
@@ -52,7 +53,7 @@ public class MockEventConfDao implements EventConfDao, InitializingBean {
             isr = new InputStreamReader(is);
             m_events = Events.unmarshal(isr);
             m_events.loadEventFiles(m_resource);
-            m_events.initialize(new EnterpriseIdPartition());
+            m_events.initialize(new EnterpriseIdPartition(), new EventOrdering());
         } catch (final IOException e) {
             throw new DataRetrievalFailureException("Failed to read from " + m_resource.toString(), e);
         } finally {

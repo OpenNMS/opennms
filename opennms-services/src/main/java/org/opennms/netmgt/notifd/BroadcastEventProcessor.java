@@ -880,6 +880,11 @@ public final class BroadcastEventProcessor implements EventListener {
         Command[] commands = new Command[commandList.length];
         for (int i = 0; i < commandList.length; i++) {
             commands[i] = getNotificationCommandManager().getCommand(commandList[i]);
+            if (commands[i] != null && commands[i].getContactType() != null) {
+                if (! userHasContactType(user, commands[i].getContactType())) {
+                    LOG.warn("User {} lacks contact of type {} which is required for notification command {} on notice #{}. Scheduling task anyway.", user.getUserId(), commands[i].getContactType(), commands[i].getName(), noticeId);
+                }
+            }
         }
 
         // if either piece of information is missing don't add the task to
@@ -924,6 +929,22 @@ public final class BroadcastEventProcessor implements EventListener {
         task.setAutoNotify(autoNotify);
 
         return task;
+    }
+    
+    boolean userHasContactType(User user, String contactType) {
+        return userHasContactType(user, contactType, false);
+    }
+    
+    boolean userHasContactType(User user, String contactType, boolean allowEmpty) {
+        boolean retVal = false;
+        for (Contact c : user.getContactCollection()) {
+            if (contactType.equalsIgnoreCase(c.getType())) {
+                if (allowEmpty || ! "".equals(c.getInfo())) {
+                    retVal = true;
+                }
+            }
+        }
+        return retVal;
     }
 
     /**

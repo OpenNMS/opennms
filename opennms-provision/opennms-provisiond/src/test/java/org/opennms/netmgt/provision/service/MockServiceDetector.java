@@ -40,6 +40,7 @@ import org.opennms.netmgt.provision.SyncServiceDetector;
 public class MockServiceDetector implements SyncServiceDetector {
     
     private String m_serviceName;
+    private String m_ipMatch;
 
     @Override
     public void init() {
@@ -81,5 +82,15 @@ public class MockServiceDetector implements SyncServiceDetector {
 
     @Override
     public void setTimeout(int timeout) {
+    }
+
+    @Override
+    public String getIpMatch() {
+        return m_ipMatch;
+    }
+
+    @Override
+    public void setIpMatch(String ipMatch) {
+        m_ipMatch = ipMatch;
     }
 }
