@@ -34,6 +34,8 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
@@ -42,16 +44,8 @@ import javax.persistence.Table;
 public class RequisitionedCategoryAssociation implements Serializable, Comparable<RequisitionedCategoryAssociation> {
     private static final long serialVersionUID = 1L;
 
-    @Id
-    @SequenceGenerator(name="opennmsSequence", sequenceName="opennmsNxtId")
-    @GeneratedValue(generator="opennmsSequence")
-    @Column(name="id")
     private Integer m_id;
-
-    @Column(name="nodeId", nullable=false)
     private OnmsNode m_node;
-
-    @Column(name="categoryId", nullable=false)
     private OnmsCategory m_category;
 
     public RequisitionedCategoryAssociation() {
@@ -62,6 +56,10 @@ public class RequisitionedCategoryAssociation implements Serializable, Comparabl
         m_category = category;
     }
 
+    @Id
+    @SequenceGenerator(name="opennmsSequence", sequenceName="opennmsNxtId")
+    @GeneratedValue(generator="opennmsSequence")
+    @Column(name="id")
     public Integer getId() {
         return m_id;
     }
@@ -70,6 +68,8 @@ public class RequisitionedCategoryAssociation implements Serializable, Comparabl
         m_id = id;
     }
 
+    @ManyToOne
+    @JoinColumn(name="nodeId", nullable=false)
     public OnmsNode getNode() {
         return m_node;
     }
@@ -78,6 +78,8 @@ public class RequisitionedCategoryAssociation implements Serializable, Comparabl
         m_node = node;
     }
 
+    @ManyToOne
+    @JoinColumn(name="categoryId", nullable=false)
     public OnmsCategory getCategory() {
         return m_category;
     }
