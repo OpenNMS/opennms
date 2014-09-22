@@ -113,6 +113,11 @@ public class OpenNMSSeleniumTestCase extends SeleneseTestBase {
         LOG.debug("Using driver: {}", m_driver);
 
         selenium = new WebDriverBackedSelenium(m_driver, BASE_URL);
+        // Change the timeout from the default of 30 seconds to 60 seconds
+        // since we have to launch the browser and visit the front page of
+        // the OpenNMS web UI in this amount of time and on the Bamboo
+        // machines, 30 seconds is cutting it close. :)
+        selenium.setTimeout("60000");
         selenium.open("/opennms/login.jsp");
         selenium.type("name=j_username", "admin");
         selenium.type("name=j_password", "admin");
