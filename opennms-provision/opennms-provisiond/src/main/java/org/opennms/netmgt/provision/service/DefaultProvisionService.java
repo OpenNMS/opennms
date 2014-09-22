@@ -207,7 +207,6 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
         m_nodeDao.flush();
 
         final EntityVisitor eventAccumlator = new AddEventVisitor(m_eventForwarder);
-
         node.visit(eventAccumlator);
 
         if (node.getCategories().size() > 0) {
@@ -918,16 +917,25 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
             }
 
             private void handleCategoryChanges(final OnmsNode dbNode) {
-                final OnmsNodeRequisition req = m_foreignSourceRepository.getNodeRequisition(dbNode.getForeignSource(), dbNode.getForeignId());
+                final String foreignSource = dbNode.getForeignSource();
+
                 final List<String> categories = new ArrayList<>();
-                for (final RequisitionCategory cat : req.getNode().getCategories()) {
-                    categories.add(cat.getName());
+
+                if (foreignSource == null) {
+                    // this is a newSuspect-scanned node, so there are no requisitioned categories
+                } else {
+                    final OnmsNodeRequisition req = m_foreignSourceRepository.getNodeRequisition(foreignSource, dbNode.getForeignId());
+                    for (final RequisitionCategory cat : req.getNode().getCategories()) {
+                        categories.add(cat.getName());
+                    }
                 }
+
+                // this will add any newly-requisitioned categories, as well as ones added by policies
                 for (final String cat : node.getRequisitionedCategories()) {
                     categories.add(cat);
                 }
 
-                LOG.debug("Node {}/{}/{} has the following requisitioned categories: {}", dbNode.getId(), dbNode.getForeignSource(), dbNode.getForeignId(), categories);
+                LOG.debug("Node {}/{}/{} has the following requisitioned categories: {}", dbNode.getId(), foreignSource, dbNode.getForeignId(), categories);
                 final List<RequisitionedCategoryAssociation> reqCats = new ArrayList<>(m_categoryAssociationDao.findByNodeId(dbNode.getId()));
                 for (final Iterator<RequisitionedCategoryAssociation> reqIter = reqCats.iterator(); reqIter.hasNext(); ) {
                     final RequisitionedCategoryAssociation reqCat = reqIter.next();
@@ -938,7 +946,7 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
                     } else {
                         // we previously stored this category, but now it shouldn't be there anymore
                         // remove it from the category association
-                        LOG.debug("Node {}/{}/{} no longer has the category: {}", dbNode.getId(), dbNode.getForeignSource(), dbNode.getForeignId(), categoryName);
+                        LOG.debug("Node {}/{}/{} no longer has the category: {}", dbNode.getId(), foreignSource, dbNode.getForeignId(), categoryName);
                         dbNode.removeCategory(reqCat.getCategory());
                         node.removeCategory(reqCat.getCategory());
                         reqIter.remove();

@@ -1346,15 +1346,11 @@ public class OnmsNode extends OnmsEntity implements Serializable, Comparable<Onm
 
         boolean send = false;
 
-        // LOG.debug("mergeNodeAttributes(): scanned = {}", scannedNode);
-        // LOG.debug("mergeNodeAttributes(): existing = {}", this);
-        // LOG.debug("mergeNodeAttributes(): oldLabel = {}", m_oldLabel);
-
         if (m_oldLabel != null || m_oldLabelSource != null) {
             send = true;
-        } else if (hasNewValue(scannedLabel, m_label)) {
-            m_oldLabel = m_label;
-            m_oldLabelSource = m_labelSource;
+        } else if (hasNewValue(scannedLabel, getLabel())) {
+            m_oldLabel = getLabel();
+            m_oldLabelSource = getLabelSource();
             send = true;
         }
 
