@@ -36,6 +36,8 @@ import java.util.Set;
 
 import org.opennms.core.soa.ServiceRegistry;
 import org.opennms.core.spring.BeanUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.provision.AsyncServiceDetector;
 import org.opennms.netmgt.provision.IpInterfacePolicy;
 import org.opennms.netmgt.provision.NodePolicy;
@@ -44,8 +46,6 @@ import org.opennms.netmgt.provision.ServiceDetector;
 import org.opennms.netmgt.provision.SnmpInterfacePolicy;
 import org.opennms.netmgt.provision.SyncServiceDetector;
 import org.opennms.netmgt.provision.persist.foreignsource.PluginConfig;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.PropertyAccessorFactory;
@@ -95,15 +95,29 @@ public class DefaultPluginRegistry implements PluginRegistry, InitializingBean {
         addAllExtensions(m_snmpInterfacePolicies, SnmpInterfacePolicy.class, OnmsPolicy.class);
     }
     
+    private static void debug(String format, Object... args) {
+        LOG.debug(String.format(format, args));
+    }
+    
+    private static void info(String format, Object... args) {
+        LOG.info(String.format(format, args));
+    }
+    
+    private static void error(Throwable cause, String format, Object... args) {
+        if (cause == null) {
+            LOG.error(String.format(format, args));
+        } else {
+            LOG.error(String.format(format, args), cause);
+        }
+    }
+    
     private <T> void addAllExtensions(Collection<T> extensions, Class<?>... extensionPoints) {
         if (extensions == null || extensions.isEmpty()) {
-            Object[] args = { Arrays.toString(extensionPoints) };
-            LOG.info("Found NO Extensions for ExtensionPoints {}", args);
+            info("Found NO Extensions for ExtensionPoints {}", Arrays.toString(extensionPoints));
             return;
         }
         for(T extension : extensions) {
-            Object[] args = { extension, Arrays.toString(extensionPoints) };
-            LOG.info("Register Extension {} for ExtensionPoints {}", args);
+            info("Register Extension {} for ExtensionPoints {}", extension, Arrays.toString(extensionPoints));
             m_serviceRegistry.register(extension, extensionPoints);
         }
     }
@@ -129,7 +143,7 @@ public class DefaultPluginRegistry implements PluginRegistry, InitializingBean {
         try {
             wrapper.setPropertyValues(parameters);
         } catch (BeansException e) {
-            LOG.error("Could not set properties on report definition: {}", e.getMessage(), e);
+            error(e, "Could not set properties on report definition: {}", e.getMessage());
         }
         
         return pluginInstance;
@@ -142,10 +156,7 @@ public class DefaultPluginRegistry implements PluginRegistry, InitializingBean {
     private <T> T beanWithNameOfType(String beanName, Class<T> pluginClass) {
         Map<String, T> beans = beansOfType(pluginClass);
         T bean = beans.get(beanName);
-        if (bean != null) {
-            Object[] args = { bean, beanName, pluginClass };
-            LOG.debug("Found bean {} with name {} of type {}", args);
-        }
+        if (bean != null) debug("Found bean {} with name {} of type {}", bean, beanName, pluginClass);
         return bean;
     }
     
