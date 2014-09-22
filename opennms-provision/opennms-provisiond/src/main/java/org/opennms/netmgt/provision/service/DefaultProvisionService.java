@@ -76,6 +76,7 @@ import org.opennms.netmgt.model.events.AddEventVisitor;
 import org.opennms.netmgt.model.events.DeleteEventVisitor;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventForwarder;
+import org.opennms.netmgt.model.events.UpdateEventVisitor;
 import org.opennms.netmgt.provision.IpInterfacePolicy;
 import org.opennms.netmgt.provision.NodePolicy;
 import org.opennms.netmgt.provision.ServiceDetector;
@@ -236,23 +237,8 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
         m_nodeDao.update(dbNode);
         m_nodeDao.flush();
 
-        /*
         final EntityVisitor eventAccumlator = new UpdateEventVisitor(m_eventForwarder, rescanExisting);
-
         node.visit(eventAccumlator);
-
-        boolean categoriesChanged = false;
-        if (existingCategories.size() != newCategories.size()) categoriesChanged = true;
-        if (!categoriesChanged && !existingCategories.containsAll(newCategories)) categoriesChanged = true;
-        if (!categoriesChanged && !newCategories.containsAll(existingCategories)) categoriesChanged = true;
-
-        if (categoriesChanged) {
-            final EventBuilder bldr = new EventBuilder(EventConstants.NODE_CATEGORY_MEMBERSHIP_CHANGED_EVENT_UEI, "OnmsNode.mergeNodeAttributes");
-            bldr.setNode(dbNode);
-            bldr.addParam(EventConstants.PARM_NODE_LABEL, dbNode.getLabel());
-            m_eventForwarder.sendNow(bldr.getEvent());
-        }
-         */
     }
 
     /** {@inheritDoc} */
