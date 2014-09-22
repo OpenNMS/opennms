@@ -34,6 +34,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentSkipListMap;
@@ -59,7 +60,9 @@ import org.springframework.test.context.ContextConfiguration;
 
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
-@ContextConfiguration(locations={"classpath:/META-INF/opennms/emptyContext.xml"})
+@ContextConfiguration(locations={"classpath:/META-INF/opennms/emptyContext.xml",
+		"classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
+		"classpath:/META-INF/opennms/applicationContext-soa.xml"})
 @JUnitConfigurationEnvironment
 public class HttpMonitorTest {
 
@@ -82,7 +85,9 @@ public class HttpMonitorTest {
         Parameter p = new Parameter();
 
         ServiceMonitor monitor = new HttpMonitor();
-        MonitoredService svc = MonitorTestUtils.getMonitoredService(99, "www.opennms.org", DnsUtils.resolveHostname("www.opennms.org"), "HTTP");
+        InetAddress address = DnsUtils.resolveHostname("www.opennms.org");
+        assertNotNull("Failed to resolved address: www.opennms.org", address);
+        MonitoredService svc = MonitorTestUtils.getMonitoredService(99, "www.opennms.org", address, "HTTP");
 
 
         p.setKey("port");

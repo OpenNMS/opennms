@@ -69,7 +69,7 @@ public class Coordinates implements Serializable {
     }
 
     public float getLatitude() {
-        return m_latitude == null? 0f : m_longitude.floatValue();
+        return m_latitude == null? 0f : m_latitude.floatValue();
     }
 
     public double getLatitudeAsDouble() {

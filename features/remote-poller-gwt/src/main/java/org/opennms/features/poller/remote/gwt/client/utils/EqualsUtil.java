@@ -35,7 +35,7 @@ package org.opennms.features.poller.remote.gwt.client.utils;
  * @version $Id: $
  * @since 1.8.1
  */
-public class EqualsUtil {
+public abstract class EqualsUtil {
 	/**
 	 * <p>areEqual</p>
 	 *

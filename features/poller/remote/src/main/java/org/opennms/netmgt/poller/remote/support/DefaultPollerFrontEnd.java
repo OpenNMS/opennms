@@ -747,11 +747,6 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean, 
         Assert.state(propertyValue != null, propertyName + " must be set for instances of " + DefaultPollerFrontEnd.class.getName());
     }
 
-    @SuppressWarnings("unused")
-    private void assertRegistered() {
-        Assert.state(isRegistered(), "The poller must be registered before we can poll or get its configuration");
-    }
-
     private void doLoadConfig() {
         Date oldTime = getCurrentConfigTimestamp();
 

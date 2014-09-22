@@ -34,7 +34,7 @@ import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.MarkerClus
 import com.google.gwt.core.client.JsArray;
 
 
-public class MarkerClusterGroupImpl {
+public abstract class MarkerClusterGroupImpl {
     public static native JSObject create(final JSObject options)/*-{
         return new $wnd.L.MarkerClusterGroup(options);
     }-*/;

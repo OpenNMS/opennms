@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class FilterUtil {
+public abstract class FilterUtil {
 
     public static String toFilterURL(String[] filters) {
         return toFilterURL(filters != null ? Arrays.asList(filters) : new ArrayList<String>());

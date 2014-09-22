@@ -167,8 +167,8 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
     @Autowired
     private PlatformTransactionManager m_transactionManager;
     
-    private final ThreadLocal<HashMap<String, OnmsServiceType>> m_typeCache = new ThreadLocal<HashMap<String, OnmsServiceType>>();
-    private final ThreadLocal<HashMap<String, OnmsCategory>> m_categoryCache = new ThreadLocal<HashMap<String, OnmsCategory>>();
+    private final ThreadLocal<Map<String, OnmsServiceType>> m_typeCache = new ThreadLocal<Map<String, OnmsServiceType>>();
+    private final ThreadLocal<Map<String, OnmsCategory>> m_categoryCache = new ThreadLocal<Map<String, OnmsCategory>>();
     
     @Override
     public void afterPropertiesSet() throws Exception {
@@ -708,7 +708,7 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
     }
     
     @Transactional(readOnly=true)
-    private HashMap<String, OnmsServiceType> loadServiceTypeMap() {
+    private Map<String, OnmsServiceType> loadServiceTypeMap() {
         final HashMap<String, OnmsServiceType> serviceTypeMap = new HashMap<String, OnmsServiceType>();
         for (final OnmsServiceType svcType : m_serviceTypeDao.findAll()) {
             serviceTypeMap.put(svcType.getName(), svcType);
@@ -743,7 +743,7 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
     }
     
     @Transactional(readOnly=true)
-    private HashMap<String, OnmsCategory> loadCategoryMap() {
+    private Map<String, OnmsCategory> loadCategoryMap() {
         final HashMap<String, OnmsCategory> categoryMap = new HashMap<String, OnmsCategory>();
         for (final OnmsCategory category : m_categoryDao.findAll()) {
             categoryMap.put(category.getName(), category);

@@ -45,7 +45,7 @@ import org.opennms.netmgt.xml.event.Value;
  * This class holds all OpenNMS events related constants - the UEIs, parm
  * names, the event time format etc.
  */
-public class EventConstants {
+public abstract class EventConstants {
     /**
      * The date format string to parse a Date.toString() type string to a
      * database timestamp using the PostgreSQL to_timestamp() built-in function.
@@ -661,7 +661,9 @@ public class EventConstants {
     /** Constant <code>TOPOLOGY_LINK_UP_EVENT_UEI="uei.opennms.org/internal/topology/linkUp"{trunked}</code> */
     public static final String TOPOLOGY_LINK_UP_EVENT_UEI = "uei.opennms.org/internal/topology/linkUp";
 
-   
+    public static final String HARDWARE_INVENTORY_FAILED_UEI = "uei.opennms.org/internal/discovery/hardwareInventoryFailed";
+    public static final String HARDWARE_INVENTORY_SUCCESSFUL_UEI = "uei.opennms.org/internal/discovery/hardwareInventorySuccessful";
+
     //
     // end eventUEIs
     //

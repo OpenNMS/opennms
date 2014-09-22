@@ -81,7 +81,7 @@ import com.google.gwt.view.client.SingleSelectionModel;
 public class SearchControl extends AbsolutePanel implements FilteredMarkersUpdatedEventHandler, SearchStringSetEventHandler {
     private Logger LOG = Logger.getLogger(getClass().getName());
 
-    private static final HashMap<String, String> m_labels;
+    private static final Map<String, String> m_labels;
     static {
         m_labels = new HashMap<String,String>();
         m_labels.put("nodeid", "Node&nbsp;ID");

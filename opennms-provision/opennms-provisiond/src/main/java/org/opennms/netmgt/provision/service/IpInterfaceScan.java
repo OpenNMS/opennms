@@ -29,18 +29,27 @@
 package org.opennms.netmgt.provision.service;
 
 import static org.opennms.core.utils.InetAddressUtils.str;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.InetAddress;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
+import org.apache.commons.jexl2.Expression;
+import org.apache.commons.jexl2.JexlEngine;
+import org.apache.commons.jexl2.MapContext;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.opennms.core.tasks.Async;
 import org.opennms.core.tasks.BatchTask;
 import org.opennms.core.tasks.Callback;
 import org.opennms.core.tasks.RunInBatch;
 import org.opennms.core.tasks.Task;
+import org.opennms.core.utils.IPLike;
 import org.opennms.netmgt.provision.AsyncServiceDetector;
 import org.opennms.netmgt.provision.ServiceDetector;
 import org.opennms.netmgt.provision.SyncServiceDetector;
@@ -219,13 +228,53 @@ public class IpInterfaceScan implements RunInBatch {
         LOG.info("Detecting services for node {}/{} on address {}: found {} detectors", getNodeId(), getForeignSource(), str(getAddress()), detectors.size());
 
         for (final ServiceDetector detector : detectors) {
-            currentPhase.add(createDetectorTask(currentPhase, detector));
+            if (shouldDetect(detector)) {
+                currentPhase.add(createDetectorTask(currentPhase, detector));
+            }
         }
 
     }
 
     private void setupAgentInfo(final BatchTask currentphase) {
         getProvisionService().setIsPrimaryFlag(getNodeId(), str(getAddress()));
+    }
+
+    protected boolean shouldDetect(ServiceDetector detector) {
+        String ipMatch = detector.getIpMatch();
+        if (ipMatch  == null) return true; // Execute the detector if the ipMatch is not provided.
+        // Regular Expression Matching
+        if (ipMatch.startsWith("~")) {
+            return getAddress().getHostAddress().matches(ipMatch.substring(1));
+        }
+        // Expression based IPLIKE Matching
+        return isIpMatching(getAddress(), ipMatch);
+    }
+
+    private boolean isIpMatching(final InetAddress ip, final String expr) {
+        try {
+            JexlEngine parser = new JexlEngine();
+            Expression e = parser.createExpression(generateExpr(expr));
+            final Map<String,Object> context = new HashMap<String,Object>();
+            context.put("iplike", IPLike.class);
+            context.put("ipaddr", ip.getHostAddress());
+            Boolean out = (Boolean) e.evaluate(new MapContext(context));
+            return out;
+        } catch (Exception e) {
+            LOG.error("Can't process rule '{}' while checking IP {} because {}", expr, ip, e);
+            return false;
+        }
+    }
+
+    private String generateExpr(final String basicExpr) {
+        LOG.debug("generateExpr: original expression {}", basicExpr);
+        String data = basicExpr;
+        Pattern p = Pattern.compile("[0-9a-f:.,\\-*]+");
+        Matcher m = p.matcher(data);
+        while (m.find()) {
+            data = data.replace(m.group(), "iplike.matches(ipaddr,'" + m.group() + "')");
+        }
+        LOG.debug("generateExpr: computed expression {}", data);
+        return data;
     }
 
 }

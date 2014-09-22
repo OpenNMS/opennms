@@ -46,6 +46,7 @@ public abstract class AbstractDetector implements ServiceDetector {
     private int m_port;
     private int m_retries;
     private int m_timeout;
+    private String m_ipMatch;
     private String m_serviceName;
     
     /**
@@ -169,4 +170,19 @@ public abstract class AbstractDetector implements ServiceDetector {
         return m_serviceName;
     }
 
+    /**
+     * <p>getIpMatch</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
+    @Override
+    public String getIpMatch() {
+        return m_ipMatch;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void setIpMatch(final String ipMatch) {
+        m_ipMatch = ipMatch;
+    }
 }

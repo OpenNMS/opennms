@@ -28,7 +28,7 @@
 
 package org.opennms.netmgt.linkd.snmp;
 
-public class LldpMibConstants  {
+public abstract class LldpMibConstants  {
     
     /*
      * LldpChassisIdSubtype ::= TEXTUAL-CONVENTION

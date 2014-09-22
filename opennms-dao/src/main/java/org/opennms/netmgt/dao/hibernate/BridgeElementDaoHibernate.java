@@ -61,6 +61,8 @@ public class BridgeElementDaoHibernate extends AbstractDaoHibernate<BridgeElemen
     
 	@Override
 	public BridgeElement getByNodeIdVlan(Integer id, Integer vlanId) {
+		if (vlanId == null)
+	        return findUnique("from BridgeElement rec where rec.node.id = ? ", id);
         return findUnique("from BridgeElement rec where rec.node.id = ? and rec.vlan = ?", id, vlanId);
 	}
 

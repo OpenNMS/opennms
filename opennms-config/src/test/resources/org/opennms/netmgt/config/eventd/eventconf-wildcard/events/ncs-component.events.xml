@@ -1,0 +1,87 @@
+<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+<!--
+function void sendImpactedComponentEvent( DroolsCorrelationEngine engine, Component c, Event e )
+{
+	EventBuilder bldr = new EventBuilder( "uei.opennms.org/internal/ncs/componentImpacted", "Drools" );
+	bldr.addParam("componentType", c.getType() );
+	bldr.addParam("componentName", c.getName() );
+	bldr.addParam("componentForeignSource", c.getForeignSource() );
+	bldr.addParam("componentForeignId", c.getForeignId() );
+	bldr.addParam("cause", e.getDbid() );
+	engine.sendEvent(bldr.getEvent());
+}
+
+
+function void sendResolvedComponentEvent( DroolsCorrelationEngine engine, Component c, Event e)
+{
+	EventBuilder bldr = new EventBuilder( "uei.opennms.org/internal/ncs/componentResolved", "Drools" );
+	bldr.addParam("componentType", c.getType() );
+	bldr.addParam("componentName", c.getName() );
+	bldr.addParam("componentForeignSource", c.getForeignSource() );
+	bldr.addParam("componentForeignId", c.getForeignId() );
+	bldr.addParam("cause", e.getDbid() );
+	engine.sendEvent(bldr.getEvent());
+}
+-->
+  <event>
+    <uei>uei.opennms.org/internal/ncs/componentImpacted</uei>
+    <event-label>OpenNMS-defined component event: componentImpacted</event-label>
+    <descr>
+      &lt;p&gt;%parm[componentType]% %parm[componentName]% was impacted &lt;/p&gt;
+    </descr>
+    <logmsg dest='logndisplay'>
+      %parm[componentType]% %parm[componentName]% was impacted due to event %parm[cause]%.
+    </logmsg>
+    <severity>Minor</severity>
+        <alarm-data reduction-key="%uei%:%parm[componentType]%:%parm[componentForeignSource]%:%parm[componentForeignId]%" alarm-type="1" auto-clean="false" />
+  </event>
+  <event>
+    <uei>uei.opennms.org/internal/ncs/componentResolved</uei>
+    <event-label>OpenNMS-defined node event: componentResolved</event-label>
+    <descr>
+      &lt;p&gt;%parm[componentType]% %parm[componentName]% has been resolved. &lt;/p&gt;
+    </descr>
+    <logmsg dest='logndisplay'>
+      %parm[componentType]% %parm[componentName]% was previously impacted due to event %parm[cause]%
+      and has been resolved
+    </logmsg>
+    <severity>Normal</severity>
+        <alarm-data reduction-key="%uei%:%parm[componentType]%:%parm[componentForeignSource]%:%parm[componentForeignId]%"
+                    alarm-type="2"
+                    clear-key="uei.opennms.org/internal/ncs/componentImpacted:%parm[componentType]%:%parm[componentForeignSource]%:%parm[componentForeignId]%"
+                    auto-clean="false"/>
+  </event>
+  <event>
+    <uei>uei.opennms.org/internal/ncs/componentAdded</uei>
+    <event-label>OpenNMS-defined component event: componentAdded</event-label>
+    <descr>
+      &lt;p&gt;%parm[componentType]% %parm[componentName]% was added with foreign source %parm[componentForeignSource]% and foreign ID %parm[componentForeignId]%.&lt;/p&gt;
+    </descr>
+    <logmsg dest='logndisplay'>
+      %parm[componentType]% %parm[componentName]% (%parm[componentForeignSource]%:%parm[componentForeignId]%) added
+    </logmsg>
+    <severity>Warning</severity>
+  </event>
+  <event>
+    <uei>uei.opennms.org/internal/ncs/componentDeleted</uei>
+    <event-label>OpenNMS-defined component event: componentDeleted</event-label>
+    <descr>
+      &lt;p&gt;%parm[componentType]% %parm[componentName]% was deleted with foreign source %parm[componentForeignSource]% and foreign ID %parm[componentForeignId]%.&lt;/p&gt;
+    </descr>
+    <logmsg dest='logndisplay'>
+      %parm[componentType]% %parm[componentName]% (%parm[componentForeignSource]%:%parm[componentForeignId]%) deleted
+    </logmsg>
+    <severity>Warning</severity>
+  </event>
+  <event>
+    <uei>uei.opennms.org/internal/ncs/componentUpdated</uei>
+    <event-label>OpenNMS-defined component event: componentUpdated</event-label>
+    <descr>
+      &lt;p&gt;%parm[componentType]% %parm[componentName]% was updated with foreign source %parm[componentForeignSource]% and foreign ID %parm[componentForeignId]%.&lt;/p&gt;
+    </descr>
+    <logmsg dest='logndisplay'>
+      %parm[componentType]% %parm[componentName]% (%parm[componentForeignSource]%:%parm[componentForeignId]%) updated
+    </logmsg>
+    <severity>Warning</severity>
+  </event>
+</events>

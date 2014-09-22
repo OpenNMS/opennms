@@ -39,6 +39,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Callable;
 
 import org.apache.commons.io.IOUtils;
@@ -85,7 +86,7 @@ public class AvailabilityReportService implements ReportService {
 
     /** {@inheritDoc} */
     @Override
-    public boolean validate(final HashMap<String, Object> reportParms, final String reportID) {
+    public boolean validate(final Map<String, Object> reportParms, final String reportID) {
         try {
             return Logging.withPrefix(LOG4J_CATEGORY, new Callable<Boolean>() {
                 @Override
@@ -200,7 +201,7 @@ public class AvailabilityReportService implements ReportService {
 
     /** {@inheritDoc} */
     @Override
-    public String run(final HashMap<String, Object> reportParms, final String reportId) {
+    public String run(final Map<String, Object> reportParms, final String reportId) {
         try {
             return Logging.withPrefix(LOG4J_CATEGORY, new Callable<String>() {
                 @Override public String call() throws Exception {
@@ -253,7 +254,7 @@ public class AvailabilityReportService implements ReportService {
 
     /** {@inheritDoc} */
     @Override
-    public void runAndRender(final HashMap<String, Object> reportParms, final String reportId, final ReportFormat format, final OutputStream outputStream) {
+    public void runAndRender(final Map<String, Object> reportParms, final String reportId, final ReportFormat format, final OutputStream outputStream) {
         Logging.withPrefix(LOG4J_CATEGORY, new Runnable() {
             @Override public void run() {
                 ByteArrayOutputStream out = null;

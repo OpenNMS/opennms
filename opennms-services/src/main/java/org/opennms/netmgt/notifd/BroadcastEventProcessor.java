@@ -63,7 +63,7 @@ import org.opennms.netmgt.config.notificationCommands.Command;
 import org.opennms.netmgt.config.notifications.Notification;
 import org.opennms.netmgt.config.users.Contact;
 import org.opennms.netmgt.config.users.User;
-import org.opennms.netmgt.eventd.EventUtil;
+import org.opennms.netmgt.eventd.AbstractEventUtil;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventIpcManager;
 import org.opennms.netmgt.model.events.EventIpcManagerFactory;
@@ -349,7 +349,7 @@ public final class BroadcastEventProcessor implements EventListener {
             final boolean wasAcked = wa;
             final Map<String, String> parmMap = rebuildParameterMap(notifId, resolutionPrefix, skipNumericPrefix);
             
-            EventUtil.expandMapValues(parmMap, 
+            AbstractEventUtil.getInstance().expandMapValues(parmMap, 
                     getNotificationManager().getEvent(Integer.parseInt(parmMap.get("eventID"))));
             
             String queueID = getNotificationManager().getQueueForNotification(notifId);
@@ -723,14 +723,14 @@ public final class BroadcastEventProcessor implements EventListener {
         paramMap.put("eventID", String.valueOf(event.getDbid()));
         paramMap.put("eventUEI", event.getUei());
 
-        EventUtil.expandMapValues(paramMap, event);
+        AbstractEventUtil.getInstance().expandMapValues(paramMap, event);
 
         return Collections.unmodifiableMap(paramMap);
         
     }
 
     private static void nullSafeExpandedPut(final String key, final String value, final Event event, Map<String, String> paramMap) {
-        String result = EventUtil.expandParms(value, event);
+        String result = AbstractEventUtil.getInstance().expandParms(value, event);
         paramMap.put(key, (result == null ? value : result));
     }
 
@@ -880,6 +880,11 @@ public final class BroadcastEventProcessor implements EventListener {
         Command[] commands = new Command[commandList.length];
         for (int i = 0; i < commandList.length; i++) {
             commands[i] = getNotificationCommandManager().getCommand(commandList[i]);
+            if (commands[i] != null && commands[i].getContactType() != null) {
+                if (! userHasContactType(user, commands[i].getContactType())) {
+                    LOG.warn("User {} lacks contact of type {} which is required for notification command {} on notice #{}. Scheduling task anyway.", user.getUserId(), commands[i].getContactType(), commands[i].getName(), noticeId);
+                }
+            }
         }
 
         // if either piece of information is missing don't add the task to
@@ -924,6 +929,22 @@ public final class BroadcastEventProcessor implements EventListener {
         task.setAutoNotify(autoNotify);
 
         return task;
+    }
+    
+    boolean userHasContactType(User user, String contactType) {
+        return userHasContactType(user, contactType, false);
+    }
+    
+    boolean userHasContactType(User user, String contactType, boolean allowEmpty) {
+        boolean retVal = false;
+        for (Contact c : user.getContactCollection()) {
+            if (contactType.equalsIgnoreCase(c.getType())) {
+                if (allowEmpty || ! "".equals(c.getInfo())) {
+                    retVal = true;
+                }
+            }
+        }
+        return retVal;
     }
 
     /**

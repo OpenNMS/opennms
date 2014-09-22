@@ -46,7 +46,7 @@ import org.krupczak.xmp.XmpVar;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class XmpUtil {
+public abstract class XmpUtil {
 
 	private static final Logger LOG = LoggerFactory.getLogger(XmpUtil.class);
 

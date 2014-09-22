@@ -97,9 +97,6 @@ public class DaoTestConfigBean implements InitializingBean {
             ConfigurationTestUtils.setAbsoluteHomeDirectory(ConfigurationTestUtils.getDaemonEtcDirectory().getParentFile().getAbsolutePath());
         }
 
-        // Turn off dumb SNMP4J logging which triggers our "no logging higher than INFO" checks
-        System.setProperty("snmp4j.LogFactory", "org.snmp4j.log.NoLogger");
-
         ConfigurationTestUtils.setRrdBinary(m_rrdBinary);
         ConfigurationTestUtils.setRelativeRrdBaseDirectory(m_relativeRrdBaseDirectory);
         ConfigurationTestUtils.setRelativeImporterDirectory(m_relativeImporterDirectory);

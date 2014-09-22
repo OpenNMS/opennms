@@ -39,6 +39,10 @@
       <property name="network" ref="pollableNetwork" />
       <property name="pollerConfig" ref="pollerConfig" />
       <property name="pollOutagesConfig" ref="pollOutagesConfig" />
+      <property name="eventIpcManager" ref="eventIpcManager"/>
     </bean>
+    
+    <bean name="pathOutageManagerDaoImpl" class="org.opennms.netmgt.poller.PathOutageManagerDaoImpl"/>
+    
     
 </beans>

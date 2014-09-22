@@ -85,7 +85,7 @@ public class VmwareCimMonitor extends AbstractServiceMonitor {
      * healthStates map
      */
 
-    private static HashMap<Integer, String> m_healthStates;
+    private static Map<Integer, String> m_healthStates;
 
     /*
      * default retries

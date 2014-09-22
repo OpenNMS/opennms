@@ -1754,7 +1754,7 @@ WHERE
 				<textElement textAlignment="Center">
 					<font fontName="SansSerif" size="6" isBold="false"/>
 				</textElement>
-				<text><![CDATA[OpenNMS Copyright 2002-2011 The OpenNMS Group, Inc. OpenNMS is a registered trademark of The OpenNMS Group, Inc.]]></text>
+				<text><![CDATA[OpenNMS Copyright 2002-2014 The OpenNMS Group, Inc. OpenNMS is a registered trademark of The OpenNMS Group, Inc.]]></text>
 			</staticText>
 		</band>
 	</pageFooter>

@@ -29,7 +29,6 @@
 package org.opennms.netmgt.vmmgr;
 
 import java.io.InputStream;
-import java.lang.reflect.UndeclaredThrowableException;
 import java.net.Authenticator;
 import java.net.ConnectException;
 import java.net.HttpURLConnection;
@@ -372,17 +371,8 @@ public class Controller {
         };
     }
 
-    private ServiceConfigFactory getServiceConfigFactory() {
-        try {
-            ServiceConfigFactory.init();
-            return ServiceConfigFactory.getInstance();
-        } catch (Throwable t) {
-            throw new UndeclaredThrowableException(t);
-        }
-    }
-
     private Service getConfiguredService(String serviceName) {
-        ServiceConfigFactory sfact = getServiceConfigFactory();
+        ServiceConfigFactory sfact = new ServiceConfigFactory();
 
         Service[] services = sfact.getServices();
 

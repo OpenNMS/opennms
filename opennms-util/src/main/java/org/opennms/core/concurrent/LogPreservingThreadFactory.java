@@ -41,15 +41,15 @@ public class LogPreservingThreadFactory implements ThreadFactory {
     private Map<String,String> m_mdc = null;
     private int m_counter = 0;
 
-    public LogPreservingThreadFactory(String poolName, int poolSize, boolean preserveMDC) {
+    public LogPreservingThreadFactory(String poolName, int poolSize) {
          m_name = poolName;
          m_poolSize = poolSize;
          // Make the bitset of thread numbers one larger so that we can 1-index it.
          // If pool size is Integer.MAX_VALUE, then the BitSet will not be used.
          m_slotNumbers = poolSize < Integer.MAX_VALUE ? new BitSet(poolSize + 1) : new BitSet(1);
-         if (preserveMDC) {
-        	 m_mdc = MDC.getCopyOfContextMap();
-         }
+
+         m_mdc = MDC.getCopyOfContextMap();
+
     }
 
     @Override

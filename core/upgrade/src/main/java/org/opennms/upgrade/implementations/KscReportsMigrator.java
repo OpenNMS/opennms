@@ -104,6 +104,7 @@ public class KscReportsMigrator extends AbstractOnmsUpgrade {
         try {
             log("Backing up %s\n", configFile);
             zipFile(configFile);
+            initializeDatasource();
             KSC_PerformanceReportFactory.init();
         } catch (Exception e) {
             throw new OnmsUpgradeException("Can't initialize ksc-performance-reports.xml because " + e.getMessage());

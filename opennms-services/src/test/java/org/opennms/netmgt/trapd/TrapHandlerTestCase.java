@@ -71,11 +71,12 @@ import org.springframework.test.context.ContextConfiguration;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
+		"classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
-        "classpath:META-INF/opennms/mockEventIpcManager.xml",
-        "classpath:META-INF/opennms/applicationContext-daemon.xml",
-        "classpath:META-INF/opennms/applicationContext-trapDaemon.xml",
-        "classpath:org/opennms/netmgt/trapd/applicationContext-trapDaemonTest.xml"}
+        "classpath:/META-INF/opennms/mockEventIpcManager.xml",
+        "classpath:/META-INF/opennms/applicationContext-daemon.xml",
+        "classpath:/META-INF/opennms/applicationContext-trapDaemon.xml",
+        "classpath:/org/opennms/netmgt/trapd/applicationContext-trapDaemonTest.xml"}
 )
 @JUnitConfigurationEnvironment
 public class TrapHandlerTestCase implements InitializingBean {
@@ -212,6 +213,19 @@ public class TrapHandlerTestCase implements InitializingBean {
         anticipateAndSend(false, true,
                 "uei.opennms.org/vendor/HP/traps/hpicfFaultFinderTrap",
                 "v1", ".1.3.6.1.4.1.11.2.14.12.1", 6, 5, varbinds);
+    }
+    
+    @Test
+    @DirtiesContext
+    public void testV1TrapOIDWildCardMatch()
+    throws Exception {
+        SnmpValueFactory valueFactory = SnmpUtils.getValueFactory();
+
+        LinkedHashMap<String, SnmpValue> varbinds = new LinkedHashMap <String, SnmpValue>();
+        varbinds.put(".1.3.6.1.4.1.32473.42.42.42", valueFactory.getInt32(42));
+        anticipateAndSend(false, true,
+                "uei.opennms.org/IANA/Example/traps/exampleEnterpriseTrap",
+                "v1", ".1.3.6.1.4.1.32473.42", 6, 5, varbinds);
     }
 
     @Test

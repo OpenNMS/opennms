@@ -249,7 +249,9 @@ public class VertexHopGraphProvider implements GraphProvider {
             }
             final FocusNodeHopCriteria other = (FocusNodeHopCriteria) obj;
             
-            if (other.getNamespace().equals(getNamespace()) &&  other.getId().equals(getId()) && other.getLabel().equals(getLabel())) {
+            if ((other.getNamespace() != null && other.getNamespace().equals(getNamespace()))
+                    &&  (other.getId() != null && other.getId().equals(getId()))
+                    && (other.getLabel() != null && other.getLabel().equals(getLabel()))) {
                return true; 
             }
             

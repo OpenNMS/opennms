@@ -31,8 +31,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
+import org.opennms.core.logging.Logging;
 import org.opennms.core.utils.FuzzyDateFormatter;
 import org.opennms.netmgt.vmmgr.ControllerUtils;
 import org.opennms.upgrade.api.Ignore;
@@ -222,6 +224,8 @@ public class Upgrade {
      * @throws OnmsUpgradeException the OpenNMS upgrade exception
      */
     public void execute() throws OnmsUpgradeException {
+        final Map<String,String> mdc = Logging.getCopyOfContextMap();
+        Logging.putPrefix("upgrade");
         log("\n==============================================================================\n");
         log("OpenNMS Upgrader");
         log("\n==============================================================================\n\n");
@@ -244,6 +248,7 @@ public class Upgrade {
             }
         }
         log("\nUpgrade completed successfully!\n");
+        Logging.setContextMap(mdc);
     }
 
     /**

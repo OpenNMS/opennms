@@ -46,7 +46,7 @@ public abstract class AbstractSnmpValue implements SnmpValue {
     public static boolean allBytesUTF_8(final byte[] bytes) {
         int i = 0;
         // Check for BOM
-        if (bytes.length >= 3 && (bytes[0] & 0xFF) == 0xEF && (bytes[1] & 0xFF) == 0xBB & (bytes[2] & 0xFF) == 0xBF) {
+        if (bytes.length >= 3 && (bytes[0] & 0xFF) == 0xEF && (bytes[1] & 0xFF) == 0xBB && (bytes[2] & 0xFF) == 0xBF) {
             i = 3;
         }
         
@@ -122,23 +122,23 @@ public abstract class AbstractSnmpValue implements SnmpValue {
             // Null (0)
             if (b == 0) {
                 if (i != (bytes.length - 1)) {
-                    System.out.println("INVALID: " + b);
+                    //System.out.println("INVALID: " + b);
                     return false;
                 }
             }
             // Low ASCII (excluding Tab, Carriage Return, and Linefeed)
             else if (b >= 0 && b < 32 && b != 9 && b != 10 && b != 13) {
-                System.out.println("INVALID: " + b);
+                //System.out.println("INVALID: " + b);
                 return false;
             }
             // Delete (127)
             else if (b == 127) {
-                System.out.println("INVALID: " + b);
+                //System.out.println("INVALID: " + b);
                 return false;
             }
             // High ASCII values not included in ISO-8859-1
             else if (b >= -128 && b < -96) {
-                System.out.println("INVALID: " + b);
+                //System.out.println("INVALID: " + b);
                 return false;
             }
         }

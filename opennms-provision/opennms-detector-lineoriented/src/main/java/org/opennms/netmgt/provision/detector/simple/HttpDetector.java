@@ -99,8 +99,7 @@ public class HttpDetector extends AsyncBasicDetectorMinaImpl<LineOrientedRequest
      * @return a {@link java.lang.String} object.
      */
     protected String httpCommand(final String command) {
-        
-        return String.format("%s %s  HTTP/1.0\r\n\r\n", command, getUrl());
+        return String.format("%s %s HTTP/1.0\r\n\r\n", command, getUrl());
     }
     
     /**

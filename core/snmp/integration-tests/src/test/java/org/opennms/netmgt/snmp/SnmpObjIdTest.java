@@ -63,6 +63,41 @@ public class SnmpObjIdTest extends TestCase {
             
         }
     }
+    
+    public void testLargeSubId() {
+        long subid = ((long)Integer.MAX_VALUE) + 10L;
+        String oidStr = ".1.3.5." + subid + ".9";
+        SnmpObjId oid = SnmpObjId.get(oidStr);
+        assertEquals(oidStr, oid.toString());
+    }
+    
+    public void testCompareWithLargeSubid() {
+        long subid = ((long)Integer.MAX_VALUE) + 10L;
+        String oidStr = ".1.3.5." + subid + ".9";
+        SnmpObjId oid = SnmpObjId.get(oidStr);
+
+        long subid2 = ((long)Integer.MAX_VALUE) + 20L;
+        String oidStr2 = ".1.3.5." + subid2 + ".9";
+        SnmpObjId oid2 = SnmpObjId.get(oidStr2);
+        
+        SnmpObjId oid3 = SnmpObjId.get(".1.3.5.7.9");
+        
+        assertTrue(oid.compareTo(oid2) < 0);
+        
+        assertTrue(oid3.compareTo(oid) < 0);
+
+    }
+
+    
+    public void testDecrementWithLargeSubid() {
+        long subid = ((long)Integer.MAX_VALUE) + 10L;
+        String oidStr = ".1.3.5." + subid;
+        SnmpObjId oid = SnmpObjId.get(oidStr);
+        String oidStr2 = ".1.3.5." +(subid-1); 
+        
+        assertEquals(oidStr2, oid.decrement().toString());
+
+    }
 
     public void testSnmpOidCompare() {
         SnmpObjId oid1 = SnmpObjId.get("1.3.5.7");

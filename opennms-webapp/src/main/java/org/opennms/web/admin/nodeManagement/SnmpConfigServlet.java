@@ -121,7 +121,7 @@ public class SnmpConfigServlet extends HttpServlet {
 				SnmpEventInfo eventInfo = snmpInfo.createEventInfo(firstIPAddress, lastIPAddress);
 				if (saveLocally) {
 					SnmpPeerFactory.getInstance().define(eventInfo);
-					SnmpPeerFactory.saveCurrent();
+					SnmpPeerFactory.getInstance().saveCurrent();
 					success |= true;
 				}
 				if (sendEvent) {

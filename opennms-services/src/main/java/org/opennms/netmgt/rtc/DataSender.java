@@ -148,7 +148,7 @@ final class DataSender implements Fiber {
 
         // create and start the data sender pool
         m_dsrPool = Executors.newFixedThreadPool(numSenders,
-                                                 new LogPreservingThreadFactory(getClass().getSimpleName(), numSenders, true)
+                                                 new LogPreservingThreadFactory(getClass().getSimpleName(), numSenders)
                 );
 
         // create category converter
