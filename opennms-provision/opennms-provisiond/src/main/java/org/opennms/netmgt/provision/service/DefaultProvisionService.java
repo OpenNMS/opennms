@@ -227,10 +227,6 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
 
         // on an update, leave categories alone, let the NodeScan handle applying requisitioned categories
         node.setCategories(dbNode.getCategories());
-        /*
-        final Set<OnmsCategory> existingCategories = dbNode.getCategories();
-        final Set<OnmsCategory> newCategories = node.getCategories();
-         */
 
         dbNode.mergeNode(node, m_eventForwarder, false);
 
@@ -238,7 +234,7 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
         m_nodeDao.flush();
 
         final EntityVisitor eventAccumlator = new UpdateEventVisitor(m_eventForwarder, rescanExisting);
-        node.visit(eventAccumlator);
+        dbNode.visit(eventAccumlator);
     }
 
     /** {@inheritDoc} */
