@@ -69,7 +69,7 @@ public class CoreImportActivities {
     public RequisitionImport loadSpecFile(final Resource resource) {
         final RequisitionImport ri = new RequisitionImport();
 
-        info("Loading requisition from resource %s", resource);
+        info("Loading requisition from resource {}", resource);
         try {
             final Requisition specFile = m_provisionService.loadRequisition(resource);
             ri.setRequisition(specFile);
@@ -90,7 +90,7 @@ public class CoreImportActivities {
         
         final Requisition specFile = ri.getRequisition();
 
-        info("Auditing nodes for requisition %s", specFile);
+        info("Auditing nodes for requisition {}", specFile);
 
         // @ipv6
         m_provisionService.createDistPollerIfNecessary("localhost", "127.0.0.1");
@@ -115,14 +115,14 @@ public class CoreImportActivities {
             return;
         }
 
-        info("Scheduling nodes for phase %s", currentPhase);
+        info("Scheduling nodes for phase {}", currentPhase);
         
         final Collection<ImportOperation> operations = opsMgr.getOperations();
         
         for(final ImportOperation op : operations) {
             final LifeCycleInstance nodeScan = currentPhase.createNestedLifeCycle("nodeImport");
 
-            debug("Created lifecycle %s for operation %s", nodeScan, op);
+            debug("Created lifecycle {} for operation {}", nodeScan, op);
             
             nodeScan.setAttribute("operation", op);
             nodeScan.setAttribute("requisitionImport", ri);
@@ -141,12 +141,12 @@ public class CoreImportActivities {
         }
 
         if (rescanExisting == null || rescanExisting) {
-            info("Running scan phase of %s", operation);
+            info("Running scan phase of {}", operation);
             operation.scan();
     
-            info("Finished Running scan phase of %s", operation);
+            info("Finished Running scan phase of {}", operation);
         } else {
-            info("Skipping scan phase of %s, because the %s parameter was set during import.", operation, EventConstants.PARM_IMPORT_RESCAN_EXISTING);
+            info("Skipping scan phase of {}, because the {} parameter was set during import.", operation, EventConstants.PARM_IMPORT_RESCAN_EXISTING);
         }
     }
     
@@ -157,9 +157,9 @@ public class CoreImportActivities {
             return;
         }
 
-        info("Running persist phase of %s", operation);
+        info("Running persist phase of {}", operation);
         operation.persist();
-        info("Finished Running persist phase of %s", operation);
+        info("Finished Running persist phase of {}", operation);
 
     }
     
