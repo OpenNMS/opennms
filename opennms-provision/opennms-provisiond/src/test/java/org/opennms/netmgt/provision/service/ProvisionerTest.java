@@ -75,6 +75,7 @@ import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.ServiceTypeDao;
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
 import org.opennms.netmgt.dao.mock.EventAnticipator;
+import org.opennms.netmgt.dao.mock.MockCategoryDao;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.dao.mock.MockNodeDao;
 import org.opennms.netmgt.mock.MockElement;
@@ -82,6 +83,7 @@ import org.opennms.netmgt.mock.MockNetwork;
 import org.opennms.netmgt.mock.MockNode;
 import org.opennms.netmgt.mock.MockVisitorAdapter;
 import org.opennms.netmgt.model.OnmsAssetRecord;
+import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsGeolocation;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
@@ -103,13 +105,6 @@ import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
 import org.opennms.netmgt.provision.persist.foreignsource.PluginConfig;
 import org.opennms.netmgt.provision.persist.policies.NodeCategorySettingPolicy;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
-import org.opennms.netmgt.provision.service.ImportScheduler;
-import org.opennms.netmgt.provision.service.ModelImportException;
-import org.opennms.netmgt.provision.service.NodeScan;
-import org.opennms.netmgt.provision.service.NodeScanSchedule;
-import org.opennms.netmgt.provision.service.ProvisionService;
-import org.opennms.netmgt.provision.service.Provisioner;
-import org.opennms.netmgt.provision.service.ProvisioningTestCase;
 import org.opennms.netmgt.snmp.SnmpAgentAddress;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.test.JUnitConfigurationEnvironment;
@@ -165,6 +160,9 @@ public class ProvisionerTest extends ProvisioningTestCase implements Initializin
 
     @Autowired
     private MockNodeDao m_nodeDao;
+
+    @Autowired
+    private MockCategoryDao m_categoryDao;
 
     @Autowired
     private DistPollerDao m_distPollerDao;
@@ -1310,7 +1308,7 @@ public class ProvisionerTest extends ProvisioningTestCase implements Initializin
 
         // Apply the policy
         nodeCopy = policy.apply(nodeCopy);
-        assertTrue(nodeCopy.hasCategory(TEST_CATEGORY));
+        assertTrue(nodeCopy.getRequisitionedCategories().contains(TEST_CATEGORY));
 
         final EventBuilder eb = new EventBuilder(EventConstants.NODE_LABEL_CHANGED_EVENT_UEI, "OnmsNode.mergeNodeAttributes");
         eb.setNodeid(node.getId());
@@ -1370,7 +1368,9 @@ public class ProvisionerTest extends ProvisioningTestCase implements Initializin
         anticpateCreationEvents(node);
         m_eventAnticipator.anticipateEvent(getNodeCategoryEvent(nextNodeId, "test"));
         m_eventAnticipator.anticipateEvent(new EventBuilder(EventConstants.NODE_UPDATED_EVENT_UEI, "Test").setNodeid(nextNodeId).getEvent());
-        m_eventAnticipator.anticipateEvent(getNodeCategoryEvent(nextNodeId, "test"));
+
+        // we should not get category update events on a re-import now, that happens during the scan phase
+        //m_eventAnticipator.anticipateEvent(getNodeCategoryEvent(nextNodeId, "test"));
         importFromResource("classpath:/requisition_with_node_categories.xml", true);
         importFromResource("classpath:/requisition_with_node_categories_changed.xml", true);
 
@@ -1415,6 +1415,170 @@ public class ProvisionerTest extends ProvisioningTestCase implements Initializin
         assertNotNull(geolocation.getLongitude());
         assertEquals(Float.valueOf(35.715723f).doubleValue(),  geolocation.getLatitude().doubleValue(),  0.1d);
         assertEquals(Float.valueOf(-79.162261f).doubleValue(), geolocation.getLongitude().doubleValue(), 0.1d);
+    }
+
+    @Test(timeout=300000)
+    public void testRequisitionedCategoriesNoPolicies() throws Exception {
+        final int nextNodeId = m_nodeDao.getNextNodeId();
+
+        final MockNetwork network = new MockNetwork();
+        final MockNode node = network.addNode(nextNodeId, "test");
+        network.addInterface("172.16.1.1");
+        network.addService("ICMP");
+        anticpateCreationEvents(node);
+        m_eventAnticipator.anticipateEvent(getNodeCategoryEvent(nextNodeId, "test"));
+
+        // we should not get new update events on a re-import now, that happens during the scan phase
+        //m_eventAnticipator.anticipateEvent(new EventBuilder(EventConstants.NODE_UPDATED_EVENT_UEI, "Test").setNodeid(nextNodeId).getEvent());
+        //m_eventAnticipator.anticipateEvent(getNodeCategoryEvent(nextNodeId, "test"));
+        importFromResource("classpath:/provisioner-testCategories-oneCategory.xml", true);
+
+        m_eventAnticipator.verifyAnticipated();
+        assertEquals(0, m_eventAnticipator.unanticipatedEvents().size());
+        m_eventAnticipator.reset();
+
+        m_eventAnticipator.anticipateEvent(nodeScanCompleted(nextNodeId));
+        m_eventAnticipator.setDiscardUnanticipated(true);
+        final NodeScan scan = m_provisioner.createNodeScan(nextNodeId, "empty", "1");
+        runScan(scan);
+
+        m_eventAnticipator.verifyAnticipated();
+        m_eventAnticipator.reset();
+
+        OnmsNode n = getNodeDao().get(nextNodeId);
+        assertEquals(1, n.getCategories().size());
+        assertEquals("TotallyMadeUpCategoryName", n.getCategories().iterator().next().getName());
+
+        // import again, should be the same
+        importFromResource("classpath:/provisioner-testCategories-oneCategory.xml", true);
+        n = getNodeDao().get(nextNodeId);
+        assertEquals(1, n.getCategories().size());
+        assertEquals("TotallyMadeUpCategoryName", n.getCategories().iterator().next().getName());
+
+        runScan(scan);
+        n = getNodeDao().get(nextNodeId);
+        assertEquals(1, n.getCategories().size());
+        assertEquals("TotallyMadeUpCategoryName", n.getCategories().iterator().next().getName());
+    }
+
+    @Test(timeout=300000)
+    public void testRequisitionedCategoriesWithPolicies() throws Exception {
+        final int nextNodeId = m_nodeDao.getNextNodeId();
+
+        final ForeignSource fs = m_foreignSourceRepository.getForeignSource("empty");
+        final PluginConfig policy = new PluginConfig("addDumbCategory", NodeCategorySettingPolicy.class.getName());
+        policy.addParameter("category", "Dumb");
+        policy.addParameter("label", "test");
+        fs.addPolicy(policy);
+        m_foreignSourceRepository.save(fs);
+
+        importFromResource("classpath:/provisioner-testCategories-oneCategory.xml", true);
+
+        // after import, we should have 1 category, because policies haven't been applied yet
+        OnmsNode n = getNodeDao().get(nextNodeId);
+        assertEquals(1, n.getCategories().size());
+        assertEquals("TotallyMadeUpCategoryName", n.getCategories().iterator().next().getName());
+        assertEquals(0, n.getRequisitionedCategories().size());
+
+        final NodeScan scan = m_provisioner.createNodeScan(nextNodeId, "empty", "1");
+        runScan(scan);
+
+        // when the scan has completed, both categories should have been applied
+        n = getNodeDao().get(nextNodeId);
+
+        assertEquals(2, n.getCategories().size());
+        assertTrue(n.hasCategory("TotallyMadeUpCategoryName"));
+        assertTrue(n.hasCategory("Dumb"));
+    }
+
+    @Test(timeout=300000)
+    public void testRequisitionedCategoriesWithUserAddedCategory() throws Exception {
+        final int nextNodeId = m_nodeDao.getNextNodeId();
+
+        importFromResource("classpath:/provisioner-testCategories-oneCategory.xml", true);
+        final NodeScan scan = m_provisioner.createNodeScan(nextNodeId, "empty", "1");
+        runScan(scan);
+
+        // make sure we have the 1 category we expect
+        OnmsNode n = getNodeDao().get(nextNodeId);
+        assertEquals(1, n.getCategories().size());
+        assertTrue(n.hasCategory("TotallyMadeUpCategoryName"));
+
+        OnmsCategory cat = new OnmsCategory("ThisIsAlsoMadeUp");
+        m_categoryDao.save(cat);
+        m_categoryDao.flush();
+
+        n.addCategory(m_categoryDao.findByName("ThisIsAlsoMadeUp"));
+        getNodeDao().save(n);
+
+        importFromResource("classpath:/provisioner-testCategories-oneCategory.xml", true);
+        runScan(scan);
+
+        // when the scan has completed, both categories should have been applied
+        n = getNodeDao().get(nextNodeId);
+
+        assertEquals(2, n.getCategories().size());
+        assertTrue(n.hasCategory("TotallyMadeUpCategoryName"));
+        assertTrue(n.hasCategory("ThisIsAlsoMadeUp"));
+    }
+
+    @Test(timeout=300000)
+    public void testRequisitionedCategoriesThenUpdateRequisitionToRemoveCategory() throws Exception {
+        final int nextNodeId = m_nodeDao.getNextNodeId();
+
+        importFromResource("classpath:/provisioner-testCategories-oneCategory.xml", true);
+        final NodeScan scan = m_provisioner.createNodeScan(nextNodeId, "empty", "1");
+        runScan(scan);
+
+        // make sure we have the 1 category we expect
+        OnmsNode n = getNodeDao().get(nextNodeId);
+        assertEquals(1, n.getCategories().size());
+        assertTrue(n.hasCategory("TotallyMadeUpCategoryName"));
+
+        importFromResource("classpath:/provisioner-testCategories-noCategories.xml", true);
+        runScan(scan);
+
+        // when the scan has completed, the category should be removed
+        n = getNodeDao().get(nextNodeId);
+
+        assertEquals(0, n.getCategories().size());
+    }
+
+    @Test(timeout=300000)
+    public void testRequisitionedCategoriesWithUserCategoryThenUpdateRequisitionToRemoveRequisitionedCategory() throws Exception {
+        final int nextNodeId = m_nodeDao.getNextNodeId();
+
+        importFromResource("classpath:/provisioner-testCategories-oneCategory.xml", true);
+        final NodeScan scan = m_provisioner.createNodeScan(nextNodeId, "empty", "1");
+        runScan(scan);
+
+        // make sure we have the 1 category we expect
+        OnmsNode n = getNodeDao().get(nextNodeId);
+        assertEquals(1, n.getCategories().size());
+        assertTrue(n.hasCategory("TotallyMadeUpCategoryName"));
+
+        OnmsCategory cat = new OnmsCategory("ThisIsAlsoMadeUp");
+        m_categoryDao.save(cat);
+        m_categoryDao.flush();
+
+        n.addCategory(m_categoryDao.findByName("ThisIsAlsoMadeUp"));
+        getNodeDao().save(n);
+
+        importFromResource("classpath:/provisioner-testCategories-noCategories.xml", true);
+        runScan(scan);
+
+        // when the scan has completed, the requisitioned category should be removed, but the user-added one should remain
+        n = getNodeDao().get(nextNodeId);
+
+        assertEquals(1, n.getCategories().size());
+        assertTrue(n.hasCategory("ThisIsAlsoMadeUp"));
+    }
+
+    private Event nodeScanCompleted(final int nodeId) {
+        final EventBuilder eb = new EventBuilder(EventConstants.PROVISION_SCAN_COMPLETE_UEI, "Test");
+        eb.setNodeid(nodeId);
+        final Event event = eb.getEvent();
+        return event;
     }
 
     private static Event nodeDeleted(int nodeid) {
