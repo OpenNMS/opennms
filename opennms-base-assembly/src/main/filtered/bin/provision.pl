@@ -12,6 +12,32 @@ provision.pl [options] command [arguments ...]
 
 use warnings;
 
+BEGIN {
+	eval("use HTTP::Cookies; use HTTP::Request; use LWP; use Pod::Usage; use XML::Twig;");
+	if ($@) {
+		print <<END;
+!!!! WARNING !!!!
+
+provision.pl requires a couple of perl modules that may not be provided by
+your perl installation.  Please make sure LWP and XML::Twig are installed.
+
+If you are on an RPM-based system, you can run:
+
+	yum install 'perl(LWP)' 'perl(XML::Twig)'
+
+If you are on a Debian-based system, run:
+
+	apt-get install libwww-perl libxml-twig-perl
+
+Otherwise, you can use CPAN directly:
+
+	cpan LWP XML::Twig
+
+END
+		exit(1);
+	}
+}
+
 use Carp;
 use Data::Dumper;
 use File::Path;

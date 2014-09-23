@@ -32,9 +32,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.opennms.netmgt.model.NetworkBuilder;
-import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.NetworkBuilder.InterfaceBuilder;
 import org.opennms.netmgt.model.NetworkBuilder.NodeBuilder;
+import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsNode.NodeLabelSource;
 import org.opennms.netmgt.model.OnmsNode.NodeType;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionAsset;
@@ -48,10 +48,8 @@ import org.slf4j.LoggerFactory;
  * OnmsNodeRequistion
  *
  * @author brozow
- * @version $Id: $
  */
 public class OnmsNodeRequisition {
-    
     private static final Logger LOG = LoggerFactory.getLogger(OnmsNodeRequisition.class);
     
     private String m_foreignSource;
@@ -174,7 +172,7 @@ public class OnmsNodeRequisition {
             nodeBldr.setForeignSource(nodeReq.getForeignSource());
             nodeBldr.setForeignId(nodeReq.getForeignId());
             nodeBldr.getAssetRecord().setBuilding(nodeReq.getBuilding());
-            nodeBldr.getAssetRecord().setCity(nodeReq.getCity());
+            nodeBldr.getAssetRecord().getGeolocation().setCity(nodeReq.getCity());
         }
         
     }

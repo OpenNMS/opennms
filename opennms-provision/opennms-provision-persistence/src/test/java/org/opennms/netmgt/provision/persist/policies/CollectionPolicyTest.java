@@ -149,7 +149,7 @@ public class CollectionPolicyTest implements InitializingBean {
         
         node2 = policy.apply(node2);
         assertNotNull(node1);
-        assertTrue(node2.hasCategory(TEST_CATEGORY));
+        assertTrue(node2.getRequisitionedCategories().contains(TEST_CATEGORY));
     }
 
     private static void matchPolicy(List<OnmsSnmpInterface> interfaces, MatchingSnmpInterfacePolicy p, InetAddress matchingIp) {
