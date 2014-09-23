@@ -40,6 +40,8 @@ package org.opennms.netmgt.xml.event;
 //---------------------------------/
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -95,6 +97,9 @@ public class Events implements Serializable {
     public void addEvent(
             final org.opennms.netmgt.xml.event.Event vEvent)
     throws java.lang.IndexOutOfBoundsException {
+        if (this._eventList == null) {
+            this._eventList = new ArrayList<>();
+        }
         this._eventList.add(vEvent);
     }
 
@@ -287,4 +292,17 @@ public class Events implements Serializable {
     		.append("event", _eventList)
     		.toString();
     }
+
+
+        public void addAllEvents(Events events) {
+            if (events == null) {
+                return;
+            }
+            final List<Event> eventCollection = events.getEventCollection();
+            if (eventCollection != null) {
+                for (final Event e : eventCollection) {
+                    this.addEvent(e);
+                }
+            }
+        }
 }
