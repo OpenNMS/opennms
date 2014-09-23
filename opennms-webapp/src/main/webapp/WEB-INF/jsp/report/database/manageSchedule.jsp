@@ -56,11 +56,15 @@
 
 <c:choose>
 	<c:when test="${empty pagedListHolder.pageList}">
-		<p>The database report schedule is empty.</p>
+        <h3>Report Schedule List</h3>
+        <div class="boxWrapper">
+            <p>The database report schedule is empty.</p>
+        </div>
+
 	</c:when>
 
 	<c:otherwise>
-		<form:form commandName="ManageReportScheduleCommand">
+		<form:form commandName="command">
 		<element:pagedList pagedListHolder="${pagedListHolder}"
 			pagedLink="${pagedLink}" />
 
@@ -97,6 +101,24 @@
 				</tr>
 			</c:forEach>
 		</table>
+        <div class="pagination">
+            <a onClick="toggle(true, 'triggerNames')">Select all</a> /
+            <a onClick="toggle(false, 'triggerNames')">Deselect all</a>
+        </div>
+
+        <% // if deletion was successful %>
+        <c:if test="${not empty success}">
+            <div class="alert-success" style="clear:both">
+                    ${success}
+            </div>
+        </c:if>
+
+        <% // If user is not allowed to delete %>
+        <c:if test="${not empty error}">
+            <div class="alert-error" style="clear:both">
+                    ${error}
+            </div>
+        </c:if>
         <% if (!request.isUserInRole(Authentication.ROLE_READONLY)) { %>
             <input type="submit" value="unschedule selected jobs"/>
         <% } %>

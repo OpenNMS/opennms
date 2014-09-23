@@ -54,5 +54,5 @@
             <input type="submit" id="proceed" name="_eventId_proceed" value="Finished" />&#160;
         </span>
     </form:form>
-<div>
+</div>
 <jsp:include page="/includes/footer.jsp" flush="false" />
