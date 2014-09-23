@@ -843,7 +843,7 @@ public class NodeScan implements RunInBatch {
 
         if (!isAborted()) {
             final OnmsNode node = getNode();
-            final OnmsIpInterface primaryIface = m_provisionService.getPrimaryInterfaceForNode(node);
+            final OnmsIpInterface primaryIface = getProvisionService().getPrimaryInterfaceForNode(node);
             if (primaryIface != null && primaryIface.getMonitoredServiceByServiceType("SNMP") != null) {
                 LOG.debug("Found primary interface and SNMP service for node {}/{}/{}", node.getId(), node.getForeignSource(), node.getForeignId());
                 onAgentFound(currentPhase, primaryIface);

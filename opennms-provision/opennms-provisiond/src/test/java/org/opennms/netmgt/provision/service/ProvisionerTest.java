@@ -408,10 +408,21 @@ public class ProvisionerTest extends ProvisioningTestCase implements Initializin
         network.addService("ICMP");
         network.addService("SNMP");
 
-        anticpateCreationEvents(node);
+        anticipateCreationEvents(node);
         m_eventAnticipator.anticipateEvent(getNodeCategoryEvent(nextNodeId, nodeLabel));
 
+        for (final Event e : m_eventAnticipator.getAnticipatedEvents()) {
+            System.err.println("anticipated: " + e);
+        }
+
         importFromResource("classpath:/tec_dump.xml", true);
+
+        for (final Event e : m_eventAnticipator.getAnticipatedEventsRecieved()) {
+            System.err.println("received anticipated: " + e);
+        }
+        for (final Event e : m_eventAnticipator.unanticipatedEvents()) {
+            System.err.println("received unanticipated: " + e);
+        }
 
         m_eventAnticipator.verifyAnticipated();
 
@@ -422,7 +433,7 @@ public class ProvisionerTest extends ProvisioningTestCase implements Initializin
         waitForImport();
     }
 
-    private void anticpateCreationEvents(final MockElement element) {
+    private void anticipateCreationEvents(final MockElement element) {
         element.visit(new MockVisitorAdapter() {
             @Override
             public void visitElement(final MockElement e) {
@@ -1365,7 +1376,7 @@ public class ProvisionerTest extends ProvisioningTestCase implements Initializin
         final MockNode node = network.addNode(nextNodeId, "test");
         network.addInterface("172.16.1.1");
         network.addService("ICMP");
-        anticpateCreationEvents(node);
+        anticipateCreationEvents(node);
         m_eventAnticipator.anticipateEvent(getNodeCategoryEvent(nextNodeId, "test"));
         m_eventAnticipator.anticipateEvent(new EventBuilder(EventConstants.NODE_UPDATED_EVENT_UEI, "Test").setNodeid(nextNodeId).getEvent());
 
@@ -1425,7 +1436,7 @@ public class ProvisionerTest extends ProvisioningTestCase implements Initializin
         final MockNode node = network.addNode(nextNodeId, "test");
         network.addInterface("172.16.1.1");
         network.addService("ICMP");
-        anticpateCreationEvents(node);
+        anticipateCreationEvents(node);
         m_eventAnticipator.anticipateEvent(getNodeCategoryEvent(nextNodeId, "test"));
 
         // we should not get new update events on a re-import now, that happens during the scan phase
