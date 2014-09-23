@@ -28,12 +28,11 @@
 
 package org.opennms.netmgt.provision.persist.policies;
 
-import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.provision.BasePolicy;
 import org.opennms.netmgt.provision.NodePolicy;
-import org.opennms.netmgt.provision.annotations.Require;
 import org.opennms.netmgt.provision.annotations.Policy;
+import org.opennms.netmgt.provision.annotations.Require;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -47,25 +46,21 @@ import org.springframework.stereotype.Component;
 @Scope("prototype")
 @Policy("Set Node Category")
 public class NodeCategorySettingPolicy extends BasePolicy<OnmsNode> implements NodePolicy {
-    
+
     private String m_category; 
-    
+
     /** {@inheritDoc} */
     @Override
-    public OnmsNode act(OnmsNode node) {
+    public OnmsNode act(final OnmsNode node) {
         if (getCategory() == null) {
             return node;
         }
-
-        OnmsCategory category = new OnmsCategory(getCategory());
-        
-        node.addCategory(category);
-        
+        node.addRequisitionedCategory(getCategory());
         return node;
-        
+
     }
 
-    
+
     /**
      * <p>getCategory</p>
      *

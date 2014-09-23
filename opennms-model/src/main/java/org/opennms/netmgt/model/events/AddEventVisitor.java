@@ -37,27 +37,30 @@ import org.opennms.netmgt.xml.event.Event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 public class AddEventVisitor extends AbstractEntityVisitor {
-	
-	private static final Logger LOG = LoggerFactory.getLogger(AddEventVisitor.class);
+
+    private static final Logger LOG = LoggerFactory.getLogger(AddEventVisitor.class);
 
     private static final String m_eventSource = "Provisiond";
-	private final EventForwarder m_eventForwarder;
+    private final EventForwarder m_eventForwarder;
 
-	/**
-	 * <p>Constructor for AddEventVisitor.</p>
-	 *
-	 * @param eventForwarder a {@link org.opennms.netmgt.model.events.EventForwarder} object.
-	 */
-	public AddEventVisitor(EventForwarder eventForwarder) {
-		m_eventForwarder = eventForwarder;
-	}
+    /**
+     * <p>Constructor for AddEventVisitor.</p>
+     *
+     * @param eventForwarder a {@link org.opennms.netmgt.model.events.EventForwarder} object.
+     */
+    public AddEventVisitor(EventForwarder eventForwarder) {
+        m_eventForwarder = eventForwarder;
+    }
 
-	/** {@inheritDoc} */
+    /** {@inheritDoc} */
     @Override
-	public void visitNode(OnmsNode node) {
+    public void visitNode(OnmsNode node) {
         LOG.info("Sending nodeAdded Event for {}\n", node);
-	    m_eventForwarder.sendNow(createNodeAddedEvent(node));
-	}
+        m_eventForwarder.sendNow(createNodeAddedEvent(node));
+        if (node.getCategories().size() > 0) {
+            m_eventForwarder.sendNow(createNodeCategoryMembershipChangedEvent(node));
+        }
+    }
 
     /** {@inheritDoc} */
     @Override
@@ -83,6 +86,10 @@ public class AddEventVisitor extends AbstractEntityVisitor {
         return EventUtils.createNodeAddedEvent(m_eventSource, node.getId(), node.getLabel(), node.getLabelSource());
     }
 
+    private Event createNodeCategoryMembershipChangedEvent(final OnmsNode node) {
+        return EventUtils.createNodeCategoryMembershipChangedEvent(m_eventSource, node.getId(), node.getLabel());
+    }
+
     /**
      * <p>createNodeGainedInterfaceEvent</p>
      *
@@ -100,13 +107,13 @@ public class AddEventVisitor extends AbstractEntityVisitor {
      * @return a {@link org.opennms.netmgt.xml.event.Event} object.
      */
     protected Event createNodeGainedServiceEvent(final OnmsMonitoredService monSvc) {
-    	final OnmsIpInterface iface = monSvc.getIpInterface();
-		final OnmsNode node = iface.getNode();
-		LOG.debug("ipinterface = {}", iface);
-		LOG.debug("snmpinterface = {}", iface.getSnmpInterface());
-		LOG.debug("node = {}", node);
-		return EventUtils.createNodeGainedServiceEvent(m_eventSource, monSvc.getNodeId(), iface.getIpAddress(), monSvc.getServiceType().getName(), node.getLabel(), node.getLabelSource(), node.getSysName(), node.getSysDescription());
+        final OnmsIpInterface iface = monSvc.getIpInterface();
+        final OnmsNode node = iface.getNode();
+        LOG.debug("ipinterface = {}", iface);
+        LOG.debug("snmpinterface = {}", iface.getSnmpInterface());
+        LOG.debug("node = {}", node);
+        return EventUtils.createNodeGainedServiceEvent(m_eventSource, monSvc.getNodeId(), iface.getIpAddress(), monSvc.getServiceType().getName(), node.getLabel(), node.getLabelSource(), node.getSysName(), node.getSysDescription());
     }
-	
+
 
 }
