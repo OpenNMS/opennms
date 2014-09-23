@@ -95,13 +95,13 @@ Import Phase
 During the import phase, the behavior differs depending on whether the node already exists in
 the database (update), or doesn't (insert).
 
-In the case of a new node (insert), SaveOrUpdateOperation.foundCategory() will add each
-requisitioned category to the node before persisting.
+In the case of a new node (insert), Provisiond will add each requisitioned category to the
+node before persisting.
 
-In the case of an existing node (update), SaveOrUpdateOperation.foundCategory() will be a no-op,
-and the node's list of categories will remain unchanged until the scan phase.  Note that between
-this time and the time that the Scan Phase finishes, updated nodes will contain any
-interface/etc. changes made by the requisition, but they will *not* contain category changes.
+In the case of an existing node (update), the node's list of categories will remain unchanged
+until the scan phase.  Note that between this time and the time that the Scan Phase finishes,
+updated nodes will contain any interface/etc. changes made by the requisition, but they will
+*not* contain category changes.
 
 Scan Phase
 ----------
@@ -116,3 +116,10 @@ pulled from the database, and compared to the list provided by getRequisitionedC
 These 2 lists will be reconciled, adding and removing categories with addCategory() and
 removeCategory() to/from the node as necessary.  The new list will be persisted back to the
 database for the next scan.
+
+Thus:
+
+* if a requisition adds a category, it will be added to the node
+* if a requisition removes a category, it will be removed from the node
+* any categories added through other means (which weren't also in the requisition) will be left alone
+
