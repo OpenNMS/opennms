@@ -454,7 +454,7 @@ public class Poller extends AbstractServiceDaemon {
                             if (scheduleService(
                                                 service.getNodeId(), 
                                                 iface.getNode().getLabel(), 
-                                                iface.getIpAddressAsString(), 
+                                                InetAddressUtils.str(iface.getIpAddress()), 
                                                 service.getServiceName(), 
                                                 "A".equals(service.getStatus()), 
                                                 event == null ? null : event.getId(), 
@@ -525,15 +525,16 @@ public class Poller extends AbstractServiceDaemon {
         // on a machine that uses multiple servers with access to the same database
         // so check the value of OpennmsServerConfigFactory.getInstance().verifyServer()
         // before doing any updates.
-        Package pkg = findPackageForService(ipAddr, serviceName);
+        final Package pkg = findPackageForService(ipAddr, serviceName);
+        final boolean verifyServer = OpennmsServerConfigFactory.getInstance().verifyServer();
         if (pkg == null) {
-            if(active && !OpennmsServerConfigFactory.getInstance().verifyServer()){
+            if(active && !verifyServer){
                 LOG.warn("Active service {} on {} not configured for any package. Marking as Not Polled.", serviceName, ipAddr);
                 m_queryManager.updateServiceStatus(nodeId, ipAddr, serviceName, "N");
             }
             return false;
-        } else if (!active && !OpennmsServerConfigFactory.getInstance().verifyServer()) {
-            LOG.info("Active service {} on {} is now configured for any package. Marking as active.", serviceName, ipAddr);
+        } else if (!active && !verifyServer) {
+            LOG.info("Active service {} on {} is now configured for a package. Marking as active.", serviceName, ipAddr);
             m_queryManager.updateServiceStatus(nodeId, ipAddr, serviceName, "A");
         }
 
@@ -582,7 +583,7 @@ public class Poller extends AbstractServiceDaemon {
 
     }
 
-    private Package findPackageForService(String ipAddr, String serviceName) {
+    Package findPackageForService(String ipAddr, String serviceName) {
         Enumeration<Package> en = m_pollerConfig.enumeratePackage();
         Package lastPkg = null;
 

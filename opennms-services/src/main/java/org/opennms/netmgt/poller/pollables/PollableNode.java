@@ -29,19 +29,20 @@
 package org.opennms.netmgt.poller.pollables;
 
 import java.net.InetAddress;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.xml.event.Event;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Represents a PollableNode
  *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
- * @version $Id: $
  */
 public class PollableNode extends PollableContainer {
     private static final Logger LOG = LoggerFactory.getLogger(PollableNode.class);
@@ -178,6 +179,16 @@ public class PollableNode extends PollableContainer {
      */
     public PollableInterface getInterface(InetAddress addr) {
         return (PollableInterface)getMember(addr);
+    }
+
+    public List<PollableInterface> getInterfaces() {
+        final List<PollableInterface> ifaces = new ArrayList<>();
+        for (final PollableElement pe : getMembers()) {
+            if (pe instanceof PollableInterface) {
+                ifaces.add((PollableInterface)pe);
+            }
+        }
+        return ifaces;
     }
 
     /**

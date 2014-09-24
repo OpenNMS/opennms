@@ -28,13 +28,18 @@
 
 package org.opennms.netmgt.poller;
 
+import static org.opennms.core.utils.InetAddressUtils.addr;
+import static org.opennms.core.utils.InetAddressUtils.str;
+
 import java.net.InetAddress;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
-import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.capsd.EventUtils;
 import org.opennms.netmgt.config.PollerConfig;
@@ -421,7 +426,7 @@ final class PollerEventProcessor implements EventListener {
             closeDate = new Date();
         }
 
-        getPoller().getQueryManager().closeOutagesForInterface(closeDate, event.getDbid(), nodeId.intValue(), InetAddressUtils.str(ipAddr));
+        getPoller().getQueryManager().closeOutagesForInterface(closeDate, event.getDbid(), nodeId.intValue(), str(ipAddr));
 
 
         PollableInterface iface = getNetwork().getInterface(nodeId.intValue(), ipAddr);
@@ -455,7 +460,7 @@ final class PollerEventProcessor implements EventListener {
             closeDate = new Date();
         }
 
-        getPoller().getQueryManager().closeOutagesForService(closeDate, event.getDbid(), nodeId.intValue(), InetAddressUtils.str(ipAddr), service);
+        getPoller().getQueryManager().closeOutagesForService(closeDate, event.getDbid(), nodeId.intValue(), str(ipAddr), service);
 
         PollableService svc = getNetwork().getService(nodeId.intValue(), ipAddr, service);
         if (svc == null) {
@@ -593,51 +598,70 @@ final class PollerEventProcessor implements EventListener {
         Long nodeId = event.getNodeid();
         String nodeLabel = pnode.getNodeLabel();
 
-        List<String[]> list = getPoller().getQueryManager().getNodeServices(nodeId.intValue());
-
-        for(String[] row : list) {
-            LOG.debug(" Removing the following from the list: {}:{}", row[0],row[1]);
-
-            InetAddress addr;
-            addr = InetAddressUtils.addr(row[0]);
-            if (addr == null) {
-                LOG.warn("Rescheduler: Could not convert {} to an InetAddress", row[0]);
-                return;
+        final Set<Service> polledServices = new HashSet<>();
+        for (final PollableInterface iface : pnode.getInterfaces()) {
+            for (final PollableService s : iface.getServices()) {
+                polledServices.add(new Service(s.getIpAddr(), s.getSvcName()));
             }
+        }
 
-            Date closeDate;
-            try {
-                closeDate = EventConstants.parseToDate(event.getTime());
-            } catch (ParseException e) {
-                closeDate = new Date();
-            }
+        final Set<Service> databaseServices = new HashSet<>();
+        for (final String[] s : getPoller().getQueryManager().getNodeServices(nodeId.intValue())) {
+            databaseServices.add(new Service(s));
+        }
 
-            getPoller().getQueryManager().closeOutagesForService(closeDate, event.getDbid(), nodeId.intValue(), row[0], row[1]);
+        Date closeDate;
+        try {
+            closeDate = EventConstants.parseToDate(event.getTime());
+        } catch (final ParseException e) {
+            closeDate = new Date();
+        }
 
-            PollableService svc = getNetwork().getService(nodeId.intValue(),addr,row[1]);
+        LOG.debug("# of Polled Services: {}; # of Services in Database: {}", polledServices.size(), databaseServices.size());
+        LOG.trace("Polled Services: {}", polledServices);
+        LOG.trace("Database Services: {}", databaseServices);
 
-            if (svc != null) {
+        // first, look for polled services that are no longer in the database
+        for (final Iterator<Service> iter = polledServices.iterator(); iter.hasNext(); ) {
+            final Service polledService = iter.next();
+            final PollableService service = pnode.getService(polledService.getInetAddress(), polledService.getServiceName());
+            // delete the service (we will re-add it if it should still be active)
+            service.delete();
 
-                svc.delete();
-
-                while(svc.isDeleted()==false) {
-                    LOG.debug("Waiting for the service to delete...");
+            while (!service.isDeleted()) {
+                try {
+                    Thread.sleep(20);
+                } catch (final InterruptedException e) {
+                    Thread.currentThread().interrupt();
                 }
-
             }
 
-            else {
-                LOG.debug("Service Not Found");
+            if (!databaseServices.contains(polledService)) {
+                // We are polling the service, but it no longer exists.  Stop polling and close outages.
+                LOG.debug("{} should no longer be polled.  Resolving outages.", polledService);
+                closeOutagesForService(event, nodeId, closeDate, polledService);
+                iter.remove();
             }
-
         }
 
-        getPoller().getPollerConfig().rebuildPackageIpListMap();
+        // anything that's left in the "databaseServices" list is a new service,
+        // add it to the list of to-be-polled services
+        polledServices.addAll(databaseServices);
 
-        for(String[] row : list) {
-            LOG.debug(" Re-adding the following to the list: {}:{}", row[0],row[1]);
-            getPoller().scheduleService(nodeId.intValue(),nodeLabel,row[0],row[1]);
+        getPollerConfig().rebuildPackageIpListMap();
+
+        for (final Service polledService : polledServices) {
+            LOG.debug("{} is being scheduled (or rescheduled) for polling.", polledService);
+            getPoller().scheduleService(nodeId.intValue(),nodeLabel,polledService.getAddress(),polledService.getServiceName());
+            if (!getPollerConfig().isPolled(polledService.getAddress(), polledService.getServiceName())) {
+                LOG.debug("{} is no longer polled.  Closing any pending outages.", polledService);
+                closeOutagesForService(event, nodeId, closeDate, polledService);
+            }
         }
+    }
+
+    protected void closeOutagesForService(final Event event, final Long nodeId, final Date closeDate, final Service polledService) {
+        getPoller().getQueryManager().closeOutagesForService(closeDate, event.getDbid(), nodeId.intValue(), polledService.getAddress(), polledService.getServiceName());
     }
 
     private void scheduledOutagesChangeHandler() {
@@ -681,4 +705,71 @@ final class PollerEventProcessor implements EventListener {
         return getPollerConfig().shouldNotifyXmlrpc();
     }
 
-} // end class
+    public static class Service implements Comparable<Service> {
+        private final String m_addr;
+        private final String m_serviceName;
+
+        public Service(final String addr, final String serviceName) {
+            m_addr = addr;
+            m_serviceName = serviceName;
+        }
+
+        public Service(final String[] service) {
+            m_addr = service[0];
+            m_serviceName = service[1];
+        }
+
+        public InetAddress getInetAddress() {
+            return addr(m_addr);
+        }
+
+        public String getAddress() {
+            return m_addr;
+        }
+        public String getServiceName() {
+            return m_serviceName;
+        }
+
+        @Override
+        public int hashCode() {
+            final int prime = 31;
+            int result = 1;
+            result = prime * result + ((m_addr == null) ? 0 : m_addr.hashCode());
+            result = prime * result + ((m_serviceName == null) ? 0 : m_serviceName.hashCode());
+            return result;
+        }
+
+        @Override
+        public boolean equals(final Object obj) {
+            if (this == obj) { return true; }
+            if (obj == null) { return false; }
+            if (!(obj instanceof Service)) { return false; }
+            final Service other = (Service) obj;
+            if (m_addr == null) {
+                if (other.m_addr != null) { return false; }
+            } else if (!m_addr.equals(other.m_addr)) {
+                return false;
+            }
+            if (m_serviceName == null) {
+                if (other.m_serviceName != null) { return false; }
+            } else if (!m_serviceName.equals(other.m_serviceName)) {
+                return false;
+            }
+            return true;
+        }
+
+        @Override
+        public String toString() {
+            return "Service [" + m_addr + ":" + m_serviceName + "]";
+        }
+
+        @Override
+        public int compareTo(final Service o) {
+            int ret = m_addr.compareTo(o.m_addr);
+            if (ret == 0) {
+                ret = m_serviceName.compareTo(o.m_serviceName);
+            }
+            return ret;
+        }
+    }
+}
