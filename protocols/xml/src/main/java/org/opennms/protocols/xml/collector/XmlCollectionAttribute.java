@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -84,18 +84,31 @@ public class XmlCollectionAttribute extends AbstractCollectionAttribute implemen
      */
     public String getNumericValue() {
         try {
-            Double d = Double.parseDouble(m_value); // This covers negative and scientific notation numbers.
-            return d.toString();
+            return parseNumber(m_value);
         } catch (Exception e) {
             log().debug("getNumericValue: the value " + m_value + " is not a valid number. Removing invalid characters and try again.");
             try {
-                Double d = Double.parseDouble(m_value.replaceAll("[^-\\d.]+", ""));  // Removing Units to return only a numeric value.
-                return d.toString();
+                return parseNumber(m_value.replaceAll("[^-\\d.]+", "")); // Removing Units to return only a numeric value.
             } catch (Exception ex) {
                 log().warn("getNumericValue: the value " + m_value + " is not parsable as a valid numeric value.");
             }
         }
         return "U"; // Ignoring value from RRDtool/JRobin point of view.
+    }
+
+    /**
+     * Parses the number.
+     *
+     * @param number the number
+     * @return the string
+     * @throws Exception the exception
+     */
+    private String parseNumber(String number) throws Exception {
+        Double d = Double.parseDouble(number); // This covers negative and scientific notation numbers.
+        if (m_attribType.getType().toLowerCase().startsWith("counter")) {
+            return Long.toString(d.longValue()); // Counter values must be integers
+        }
+        return d.toString();
     }
 
     /* (non-Javadoc)

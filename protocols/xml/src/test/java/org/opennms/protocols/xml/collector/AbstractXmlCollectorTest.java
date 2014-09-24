@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -87,7 +87,7 @@ public abstract class AbstractXmlCollectorTest {
 
         System.setProperty("org.opennms.rrd.usetcp", "false");
         System.setProperty("org.opennms.rrd.usequeue", "false");
-        RrdUtils.setStrategy(new JRobinRrdStrategy());
+        initializeRrdStrategy();
 
         m_collectionAgent = EasyMock.createMock(CollectionAgent.class);
         EasyMock.expect(m_collectionAgent.getNodeId()).andReturn(1).anyTimes();
@@ -102,6 +102,24 @@ public abstract class AbstractXmlCollectorTest {
         MockDocumentBuilder.setXmlFileName(getXmlSampleFileName());
 
         EasyMock.replay(m_collectionAgent, m_eventProxy);
+    }
+
+    /**
+     * Initialize RRD strategy.
+     *
+     * @throws Exception the exception
+     */
+    protected void initializeRrdStrategy() throws Exception {
+        RrdUtils.setStrategy(new JRobinRrdStrategy());
+    }
+
+    /**
+     * Gets the RRD extension.
+     *
+     * @return the RRD extension
+     */
+    protected String getRrdExtension() {
+        return "jrb";
     }
 
     /**
@@ -156,10 +174,10 @@ public abstract class AbstractXmlCollectorTest {
         ServiceParameters serviceParams = new ServiceParameters(new HashMap<String,Object>());
         BasePersister persister =  new GroupPersister(serviceParams, createRrdRepository((String)parameters.get("collection"))); // storeByGroup=true;
         collectionSet.visit(persister);
-        
-        Assert.assertEquals(expectedFiles, FileUtils.listFiles(new File(TEST_SNMP_DIRECTORY), new String[] { "jrb" }, true).size());
+
+        Assert.assertEquals(expectedFiles, FileUtils.listFiles(new File(TEST_SNMP_DIRECTORY), new String[] { getRrdExtension() }, true).size());
     }
-    
+
     /**
      * Validates a JRB.
      * <p>It assumes storeByGroup=true</p>
@@ -178,7 +196,6 @@ public abstract class AbstractXmlCollectorTest {
             Assert.assertNotNull(ds);
             Assert.assertEquals(dsvalues[i], Double.valueOf(ds.getLastValue()));
         }
-
     }
 
     /**
