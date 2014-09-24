@@ -267,7 +267,7 @@ public class PollableNode extends PollableContainer {
      * @return a {@link java.lang.String} object.
      */
     @Override
-    public String toString() { return String.valueOf(getNodeId()); }
+    public String toString() { return "PollableNode [" + getNodeId() + "]"; }
 
     /**
      * <p>getLockRoot</p>

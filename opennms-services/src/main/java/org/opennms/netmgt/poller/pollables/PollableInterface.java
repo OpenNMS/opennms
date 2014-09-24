@@ -253,7 +253,7 @@ public class PollableInterface extends PollableContainer {
      * @return a {@link java.lang.String} object.
      */
     @Override
-    public String toString() { return getNode()+":"+getIpAddr(); }
+    public String toString() { return "PollableInterface [" + getNode()+":"+getIpAddr() + "]"; }
 
     /**
      * <p>reparentTo</p>
