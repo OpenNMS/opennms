@@ -49,7 +49,7 @@ import java.io.File;
 import java.net.MalformedURLException;
 import java.util.*;
 
-public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider implements SearchProvider {
+public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider {
 
     private abstract class LinkDetail<K> {
         private final String m_id;
