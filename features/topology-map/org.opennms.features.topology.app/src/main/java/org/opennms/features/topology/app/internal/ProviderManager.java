@@ -47,7 +47,7 @@ public class ProviderManager {
 	}
 	
 	public synchronized void onEdgeProviderBind(EdgeProvider newProvider) {
-		s_log.info("ProviderManager onEdgeProviderBind({}}", newProvider);
+		s_log.info("ProviderManager onEdgeProviderBind({})", newProvider);
 		try {
 			EdgeProvider oldProvider = m_edgeProviders.put(newProvider.getEdgeNamespace(), newProvider);
 
@@ -58,7 +58,7 @@ public class ProviderManager {
 	}
 
 	public synchronized void onEdgeProviderUnbind(EdgeProvider edgeProvider) {
-		s_log.info("ProviderManager onEdgeProviderUnbind({}}", edgeProvider);
+		s_log.info("ProviderManager onEdgeProviderUnbind({})", edgeProvider);
 		if (edgeProvider == null) return;
 		try {
 			EdgeProvider removedProvider = m_edgeProviders.remove(edgeProvider.getEdgeNamespace());
@@ -70,7 +70,7 @@ public class ProviderManager {
 	}
 
 	public synchronized void onVertexProviderBind(VertexProvider newProvider) {
-		s_log.info("ProviderManager onVertexProviderBind({}}", newProvider);
+		s_log.info("ProviderManager onVertexProviderBind({})", newProvider);
 		try {
 			VertexProvider oldProvider = m_vertexProviders.put(newProvider.getVertexNamespace(), newProvider);
 
@@ -81,7 +81,7 @@ public class ProviderManager {
 	}
 
 	public synchronized void onVertexProviderUnbind(VertexProvider vertexProvider) {
-		s_log.info("ProviderManager onVertexProviderUnbind({}}", vertexProvider);
+		s_log.info("ProviderManager onVertexProviderUnbind({})", vertexProvider);
 		if (vertexProvider == null) return;
 		try {
 			VertexProvider removedProvider = m_vertexProviders.remove(vertexProvider.getVertexNamespace());

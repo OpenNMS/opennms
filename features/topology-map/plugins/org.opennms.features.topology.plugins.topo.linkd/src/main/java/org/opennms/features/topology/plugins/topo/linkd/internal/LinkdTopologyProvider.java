@@ -63,7 +63,7 @@ import com.google.common.collect.Lists;
 /**
  * This class is no longer used in favor of the EnhancedLinkdTopologyProvider
  */
-public class LinkdTopologyProvider extends AbstractLinkdTopologyProvider implements SearchProvider {
+public class LinkdTopologyProvider extends AbstractLinkdTopologyProvider {
 	
 	private static Logger LOG = LoggerFactory.getLogger(LinkdTopologyProvider.class);
 
