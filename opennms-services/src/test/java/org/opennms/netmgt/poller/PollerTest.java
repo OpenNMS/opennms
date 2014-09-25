@@ -1054,7 +1054,6 @@ public class PollerTest implements TemporaryDatabaseAware<MockDatabase> {
         sendNodeGainedServices(99, "TestNode", "fe80:0000:0000:0000:0231:f982:0123:4567", new String[] { "SMTP", "HTTP" });
     }
 
-    @Test
     public void sendNodeGainedService(String... svcNames) {
         sendNodeGainedServices(99, "TestNode", "10.1.1.1", svcNames);
     }
