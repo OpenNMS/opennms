@@ -580,9 +580,6 @@ rm -rf $RPM_BUILD_ROOT%{instprefix}/contrib/remote-poller
 
 rm -rf $RPM_BUILD_ROOT%{instprefix}/lib/*.tar.gz
 
-install -d -m 755 $RPM_BUILD_ROOT%{_libdir}/systemd/system
-install -m 655 $RPM_BUILD_ROOT%{instprefix}/etc/opennms.service $RPM_BUILD_ROOT%{_libdir}/systemd/system/
-
 cd $RPM_BUILD_ROOT
 
 # core package files
@@ -717,7 +714,6 @@ rm -rf $RPM_BUILD_ROOT
 %files core -f %{_tmppath}/files.main
 %defattr(664 root root 775)
 %attr(755,root,root)	%{profiledir}/%{name}.sh
-%attr(755,root,root)	%{_libdir}/systemd/system/opennms.service
 %attr(755,root,root) %{logdir}
 			%{instprefix}/data
 			%{instprefix}/deploy
@@ -893,6 +889,16 @@ fi
 if [ -n "$DEBUG" ]; then
 	env | grep RPM_INSTALL_PREFIX | sort -u
 fi
+
+for prefix in lib lib64; do
+	if [ -d "/usr/$prefix/systemd" ]; then
+		SYSTEMDDIR="/usr/$prefix/systemd/system"
+		printf -- "- installing opennms.service into $SYSTEMDDIR... "
+		install -d -m 755 "$SYSTEMDDIR"
+		install -m 655 "%{instprefix}/etc/opennms.service" "$SYSTEMDDIR"/
+		echo "done"
+	fi
+done
 
 if [ "$RPM_INSTALL_PREFIX0/logs" != "$RPM_INSTALL_PREFIX2" ]; then
 	printf -- "- making symlink for $RPM_INSTALL_PREFIX0/logs... "
