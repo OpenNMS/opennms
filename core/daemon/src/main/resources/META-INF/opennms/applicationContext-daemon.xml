@@ -32,6 +32,7 @@
 
   <onmsgi:service ref="eventIpcManager">
 	<onmsgi:interfaces>
+   		<value>org.opennms.netmgt.model.events.EventForwarder</value>
    		<value>org.opennms.netmgt.model.events.EventIpcManager</value>
   		<value>org.opennms.netmgt.model.events.EventProxy</value>
   		<value>org.opennms.netmgt.model.events.EventSubscriptionService</value>
