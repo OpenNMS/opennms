@@ -40,6 +40,7 @@ import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -109,12 +110,17 @@ public abstract class AbstractSpringJerseyRestTestCase {
     private Filter filter;
     private WebApplicationContext m_webAppContext;
 
-    private String m_username = "admin";
-    private Set<String> m_roles = Collections.synchronizedSet(new HashSet<String>(Collections.singletonList("ROLE_ADMIN")));
+    // Use thread locals for the authentication information so that if
+    // multithreaded tests change it, they only change their copy of it.
+    //
+    // @see http://issues.opennms.org/browse/NMS-6898
+    //
+    private static ThreadLocal<String> m_username = new ThreadLocal<String>();
+    private static ThreadLocal<Set<String>> m_roles = new ThreadLocal<Set<String>>();
 
     @Before
     public void setUp() throws Throwable {
-        clearUserInfo();
+        setUser("admin", new String[] { "ROLE_ADMIN" });
 
         beforeServletStart();
 
@@ -238,25 +244,26 @@ public abstract class AbstractSpringJerseyRestTestCase {
         return request;
     }
 
-    protected void setUser(final String user) {
-        m_username = user;
+    protected void setUser(final String user, final String[] roles) {
+        m_username.set(user);
+        m_roles.set(new HashSet<String>(Arrays.asList(roles)));
     }
 
-    protected String getUser() {
-        return m_username;
+    private String getUser() {
+        return m_username.get();
     }
 
-    protected Collection<String> getUserRoles() {
-        return Collections.unmodifiableSet(new HashSet<String>(m_roles));
+    private synchronized Collection<String> getUserRoles() {
+        return Collections.unmodifiableCollection(m_roles.get());
     }
 
-    protected void addUserRole(final String role) {
-        m_roles.add(role);
+    private void addUserRole(final String role) {
+        m_roles.get().add(role);
     }
 
     protected void clearUserInfo() {
-        m_username = "admin";
-        m_roles.clear();
+        m_username.set(null);
+        m_roles.set(null);
     }
 
 
