@@ -115,13 +115,15 @@ public abstract class AbstractSpringJerseyRestTestCase {
     //
     // @see http://issues.opennms.org/browse/NMS-6898
     //
-    private static ThreadLocal<String> m_username = new ThreadLocal<String>();
-    private static ThreadLocal<Set<String>> m_roles = new ThreadLocal<Set<String>>();
+    private static ThreadLocal<String> m_username = new InheritableThreadLocal<String>();
+    private static ThreadLocal<Set<String>> m_roles = new InheritableThreadLocal<Set<String>>();
+    
+    static {
+        setUser("admin", new String[] { "ROLE_ADMIN" });
+    }
 
     @Before
     public void setUp() throws Throwable {
-        setUser("admin", new String[] { "ROLE_ADMIN" });
-
         beforeServletStart();
 
         DaoTestConfigBean bean = new DaoTestConfigBean();
@@ -244,28 +246,18 @@ public abstract class AbstractSpringJerseyRestTestCase {
         return request;
     }
 
-    protected void setUser(final String user, final String[] roles) {
+    protected static void setUser(final String user, final String[] roles) {
         m_username.set(user);
         m_roles.set(new HashSet<String>(Arrays.asList(roles)));
     }
 
-    private String getUser() {
+    private static String getUser() {
         return m_username.get();
     }
 
-    private synchronized Collection<String> getUserRoles() {
+    private static Collection<String> getUserRoles() {
         return Collections.unmodifiableCollection(m_roles.get());
     }
-
-    private void addUserRole(final String role) {
-        m_roles.get().add(role);
-    }
-
-    protected void clearUserInfo() {
-        m_username.set(null);
-        m_roles.set(null);
-    }
-
 
     /**
      * @param url

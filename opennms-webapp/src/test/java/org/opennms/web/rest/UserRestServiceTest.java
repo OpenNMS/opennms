@@ -228,7 +228,6 @@ public class UserRestServiceTest extends AbstractSpringJerseyRestTestCase  {
         assertEquals(PASSWORD, users.get(1).getPassword());
         assertEquals("xxxxxxxx", users.get(2).getPassword());
 
-        clearUserInfo();
         setUser("admin", new String[] { "ROLE_ADMIN" });
         xml = sendRequest(GET, "/users", 200);
         assertTrue(xml.contains("foo"));
