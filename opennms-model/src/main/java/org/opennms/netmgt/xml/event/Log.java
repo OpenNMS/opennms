@@ -35,8 +35,8 @@
 
 package org.opennms.netmgt.xml.event;
 
-  //---------------------------------/
- //- Imported classes and packages -/
+//---------------------------------/
+//- Imported classes and packages -/
 //---------------------------------/
 
 import java.io.Serializable;
@@ -58,27 +58,27 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 @XmlAccessorType(XmlAccessType.FIELD)
 //@ValidateUsing("event.xsd")
 public class Log implements Serializable {
-	private static final long serialVersionUID = 8526177705077223094L;
+    private static final long serialVersionUID = 8526177705077223094L;
 
-	//--------------------------/
-     //- Class/Member Variables -/
+    //--------------------------/
+    //- Class/Member Variables -/
     //--------------------------/
 
     /**
      * Field _header.
      */
-	@XmlElement(name="header", required=false)
+    @XmlElement(name="header", required=false)
     private org.opennms.netmgt.xml.event.Header _header;
 
     /**
      * Field _events.
      */
-	@XmlElement(name="events", required=true)
+    @XmlElement(name="events", required=true)
     private org.opennms.netmgt.xml.event.Events _events;
 
 
-      //----------------/
-     //- Constructors -/
+    //----------------/
+    //- Constructors -/
     //----------------/
 
     public Log() {
@@ -86,8 +86,8 @@ public class Log implements Serializable {
     }
 
 
-      //-----------/
-     //- Methods -/
+    //-----------/
+    //- Methods -/
     //-----------/
 
     /**
@@ -96,7 +96,7 @@ public class Log implements Serializable {
      * @return the value of field 'Events'.
      */
     public org.opennms.netmgt.xml.event.Events getEvents(
-    ) {
+            ) {
         return this._events;
     }
 
@@ -106,7 +106,7 @@ public class Log implements Serializable {
      * @return the value of field 'Header'.
      */
     public org.opennms.netmgt.xml.event.Header getHeader(
-    ) {
+            ) {
         return this._header;
     }
 
@@ -120,6 +120,23 @@ public class Log implements Serializable {
         this._events = events;
     }
 
+    public void addEvent(final Event event) {
+        assertEventsExists();
+        this._events.addEvent(event);
+    }
+
+    public void addAllEvents(final Log log) {
+        assertEventsExists();
+        this._events.addAllEvents(log.getEvents());
+    }
+
+
+    protected void assertEventsExists() {
+        if (this._events == null) {
+            this._events = new Events();
+        }
+    }
+
     /**
      * Sets the value of field 'header'.
      * 
@@ -130,11 +147,16 @@ public class Log implements Serializable {
         this._header = header;
     }
 
-        @Override
-    public String toString() {
-    	return new ToStringBuilder(this)
-    		.append("header", _header)
-    		.append("events", _events)
-    		.toString();
+    public void clear() {
+        this._events = new Events();
     }
+
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this)
+        .append("header", _header)
+        .append("events", _events)
+        .toString();
+    }
+
 }

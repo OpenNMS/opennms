@@ -5,6 +5,25 @@ opennms_home="${install.dir}"
 
 app_class=org.opennms.netmgt.poller.MonitorTester
 
+# If you want to enable DEBUG, include the following line right before the -jar line:
+#
+# -Dlog4j.configurationFile=$opennms_home/bin/test-commands-log4j2.xml \
+#
+# Then, create the file test-commands-log4j2.xml with:
+#
+#<Configuration status="WARN">
+#  <Appenders>
+#    <Console name="Console" target="SYSTEM_OUT">
+#      <PatternLayout pattern="%d %-5p [%t] %c{1}: %m%n"/>
+#    </Console>
+#  </Appenders>
+#  <Loggers>
+#    <Root level="DEBUG">
+#      <AppenderRef ref="Console"/>
+#    </Root>
+#  </Loggers>
+#</Configuration>
+
 exec $opennms_home/bin/runjava -r -- $JAVA_OPTIONS \
     -Dopennms.home=$opennms_home \
     -Dopennms.manager.class=$app_class \
