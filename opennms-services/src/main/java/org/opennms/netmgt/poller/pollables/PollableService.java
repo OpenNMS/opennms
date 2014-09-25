@@ -29,10 +29,9 @@
 package org.opennms.netmgt.poller.pollables;
 
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.Date;
-import java.util.Map;
 
-import org.opennms.core.logging.Logging;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.poller.InetNetworkInterface;
 import org.opennms.netmgt.poller.MonitoredService;
@@ -49,7 +48,6 @@ import org.slf4j.LoggerFactory;
  * Represents a PollableService
  *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
- * @version $Id: $
  */
 public class PollableService extends PollableElement implements ReadyRunnable, MonitoredService {
     
@@ -285,7 +283,7 @@ public class PollableService extends PollableElement implements ReadyRunnable, M
      * @return a {@link java.lang.String} object.
      */
     @Override
-    public String toString() { return getInterface()+":"+getSvcName(); }
+    public String toString() { return "PollableService [" + getInterface()+":"+getSvcName() + "]"; }
 
     /** {@inheritDoc} */
     @Override

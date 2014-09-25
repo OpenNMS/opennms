@@ -43,10 +43,10 @@ import org.slf4j.LoggerFactory;
  * Represents a PollableNetwork
  *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
- * @version $Id: $
  */
 public class PollableNetwork extends PollableContainer {
-    
+    private static final Logger LOG = LoggerFactory.getLogger(PollableNetwork.class);
+
     private final PollContext m_context;
 
     /**
@@ -246,8 +246,9 @@ public class PollableNetwork extends PollableContainer {
      */
     @Override
     public void delete() {
-        throw new UnsupportedOperationException("Can't delete the entire network");
+        LOG.warn("Can't delete the entire network.");
     }
+
     /** {@inheritDoc} */
     @Override
     public PollStatus poll(PollableElement elem) {
