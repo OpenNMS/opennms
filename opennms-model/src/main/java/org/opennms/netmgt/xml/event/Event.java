@@ -37,8 +37,10 @@ import static org.opennms.core.utils.InetAddressUtils.str;
 
 import java.io.Serializable;
 import java.net.InetAddress;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
@@ -54,12 +56,14 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.opennms.core.network.InetAddressXmlAdapter;
+import org.opennms.netmgt.EventConstants;
 
 @XmlRootElement(name = "event")
 @XmlAccessorType(XmlAccessType.FIELD)
 //@ValidateUsing("event.xsd")
 public class Event implements Serializable {
-    private static final long serialVersionUID = -7181966801138679257L;
+    private static final long serialVersionUID = -3759917010981451112L;
+
 
 	// --------------------------/
 	// - Class/Member Variables -/
@@ -985,6 +989,10 @@ public class Event implements Serializable {
 	 */
 	public String getTime() {
 		return _time;
+	}
+
+	public Date getDate() throws ParseException {
+	    return _time == null? null : EventConstants.parseToDate(_time);
 	}
 
 	/**
