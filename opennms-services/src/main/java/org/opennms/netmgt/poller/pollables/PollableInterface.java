@@ -29,7 +29,9 @@
 package org.opennms.netmgt.poller.pollables;
 
 import java.net.InetAddress;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.concurrent.Callable;
 
 import org.opennms.core.utils.InetAddressUtils;
@@ -156,6 +158,16 @@ public class PollableInterface extends PollableContainer {
     public PollableService getService(String svcName) {
         return (PollableService)getMember(svcName);
     }
+    
+    public List<PollableService> getServices() {
+        final List<PollableService> services = new ArrayList<>();
+        for (final PollableElement pe : getMembers()) {
+            if (pe instanceof PollableService) {
+                services.add((PollableService)pe);
+            }
+        }
+        return services;
+    }
 
     /** {@inheritDoc} */
     @Override
@@ -253,7 +265,7 @@ public class PollableInterface extends PollableContainer {
      * @return a {@link java.lang.String} object.
      */
     @Override
-    public String toString() { return getNode()+":"+getIpAddr(); }
+    public String toString() { return "PollableInterface [" + getNode()+":"+getIpAddr() + "]"; }
 
     /**
      * <p>reparentTo</p>

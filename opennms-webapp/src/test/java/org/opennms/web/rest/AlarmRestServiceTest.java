@@ -204,7 +204,9 @@ public class AlarmRestServiceTest extends AbstractSpringJerseyRestTestCase {
         alarm.setAlarmAckUser(null);
         getAlarmDao().saveOrUpdate(alarm);
 
-        MockUserPrincipal.setName("foo");
+        // Log in as a normal REST user and attempt to resolve an alarm as a different user.
+        // This should fail.
+        setUser("foo", new String[] { "ROLE_REST" });
         Exception failure = null;
         try {
             sendPut("/alarms/" + alarmId, "ack=true&ackUser=bar", 303, "/alarms/" + alarmId);

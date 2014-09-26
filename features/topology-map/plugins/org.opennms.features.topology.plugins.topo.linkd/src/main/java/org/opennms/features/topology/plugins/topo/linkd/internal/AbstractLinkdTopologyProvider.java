@@ -52,7 +52,7 @@ import java.util.Collections;
 import java.util.EnumMap;
 import java.util.List;
 
-public abstract class AbstractLinkdTopologyProvider extends AbstractTopologyProvider implements GraphProvider{
+public abstract class AbstractLinkdTopologyProvider extends AbstractTopologyProvider implements GraphProvider,  SearchProvider {
 
     public static final String TOPOLOGY_NAMESPACE_LINKD = "nodes";
     protected static final String HTML_TOOLTIP_TAG_OPEN = "<p>";

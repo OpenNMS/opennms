@@ -92,11 +92,6 @@ public class ConfigTesterTest {
     }
 
     @Test
-    public void testAccessPointMonitorConfiguration() {
-        ignoreConfigFile("access-point-monitor-configuration.xml");
-    }
-
-    @Test
     public void testAckdConfiguration() {
         testConfigFile("ackd-configuration.xml");
     }
@@ -434,11 +429,6 @@ public class ConfigTesterTest {
     @Test
     public void testSiteStatusViews() {
         testConfigFile("site-status-views.xml");
-    }
-
-    @Test
-    public void testSmsPhonebook() {
-        testConfigFile("smsPhonebook.properties");
     }
 
     @Test

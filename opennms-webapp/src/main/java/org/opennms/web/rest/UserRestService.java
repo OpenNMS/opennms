@@ -208,7 +208,7 @@ public class UserRestService extends OnmsRestService {
         }
     }
 
-    public boolean hasEditRights() {
+    private boolean hasEditRights() {
         if (m_securityContext.isUserInRole(Authentication.ROLE_ADMIN) || m_securityContext.isUserInRole(Authentication.ROLE_REST)) {
             return true;
         }

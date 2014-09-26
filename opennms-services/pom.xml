@@ -216,10 +216,12 @@
       <artifactId>opennms-util</artifactId>
       <scope>compile</scope>
     </dependency>
+    <!--
     <dependency>
       <groupId>org.opennms.features</groupId>
       <artifactId>org.opennms.features.phonebook</artifactId>
     </dependency>
+    -->
     <dependency>
       <groupId>org.opennms.features.collection</groupId>
       <artifactId>org.opennms.features.collection.api</artifactId>
