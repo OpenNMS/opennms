@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2012 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,26 +26,27 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.dao.api;
+package org.opennms.features.topology.plugins.topo.linkd.internal;
 
-import java.util.Date;
+import org.opennms.features.topology.api.topo.EdgeRef;
+import org.opennms.netmgt.model.topology.EdgeAlarmStatusSummary;
+
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
-import org.opennms.netmgt.model.CdpLink;
-import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.model.topology.CdpTopologyLink;
+public class CdpLinkStatusProvider extends AbstractLinkStatusProvider{
 
+    @Override
+    public String getNameSpace() { return EnhancedLinkdTopologyProvider.CDP_EDGE_NAMESPACE; }
 
-public interface CdpLinkDao extends OnmsDao<CdpLink, Integer> {
+    @Override
+    protected List<EdgeAlarmStatusSummary> getEdgeAlarmSummaries(List<Integer> linkIds) {
+        return null;
+    }
 
-    CdpLink get(OnmsNode node, Integer cdpCacheIfIndex);
-
-    CdpLink get(Integer nodeId, Integer cdpCacheIfIndex);
-    
-    List<CdpLink> findByNodeId(Integer nodeId);
-
-    public List<CdpTopologyLink> findLinksForTopology();
-
-    void deleteByNodeIdOlderThen(Integer nodeiId, Date now);
-
+    @Override
+    protected Set<Integer> getLinkIds(Map<String, EdgeRef> mappedRefs) {
+        return null;
+    }
 }
