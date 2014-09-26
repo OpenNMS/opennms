@@ -326,7 +326,8 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
                     } else {  // Add the port if it is non-standard
                         host = new HttpHost(getVirtualHost(svc), uri.getPort());
                     }
-                    method.getParams().setParameter(ClientPNames.VIRTUAL_HOST, host);
+                    // method.getParams().setParameter(ClientPNames.VIRTUAL_HOST, host);
+                    method.setHeader("Host", host.toHostString()); // This will override the Host header as the HttpClient always going to add it even if it is not specified.
                 }
 
                 if (getUserAgent() != null) {
