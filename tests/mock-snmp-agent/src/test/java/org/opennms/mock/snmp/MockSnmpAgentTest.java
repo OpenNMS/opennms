@@ -76,7 +76,6 @@ import org.snmp4j.transport.DefaultUdpTransportMapping;
 
 @RunWith(Parameterized.class)
 public class MockSnmpAgentTest  {
-
     @Parameters
     public static Collection<Object[]> versions() {
         return Arrays.asList(new Object[][] {
@@ -144,7 +143,9 @@ public class MockSnmpAgentTest  {
         m_usm = new USM(SecurityProtocols.getInstance(), new OctetString(MPv3.createLocalEngineID()), 0);
         SecurityModels.getInstance().addSecurityModel(m_usm);
 
-        m_agent = MockSnmpAgent.createAgentAndRun(classPathResource("loadSnmpDataTest.properties"), "127.0.0.1/1691");	// Homage to Empire
+        m_agent = MockSnmpAgent.createAgentAndRun(classPathResource("loadSnmpDataTest.properties"), "127.0.0.1/0");
+        Thread.sleep(200);
+        System.err.println("Started MockSnmpAgent on port " + m_agent.getPort());
 
         m_requestedVarbinds = new ArrayList<AnticipatedRequest>();
     }
@@ -155,6 +156,7 @@ public class MockSnmpAgentTest  {
         if (m_agent != null) {
             m_agent.shutDownAndWait();
         }
+        Thread.sleep(200);
     }
 
     public AnticipatedRequest request(String requestedOid, Variable requestedValue) {
@@ -429,7 +431,7 @@ public class MockSnmpAgentTest  {
         PDU response = null;
         CommunityTarget target = new CommunityTarget();
         target.setCommunity(new OctetString("public"));
-        target.setAddress(new UdpAddress(InetAddressUtils.addr("127.0.0.1"), 1691));
+        target.setAddress(new UdpAddress(InetAddressUtils.addr("127.0.0.1"), m_agent.getPort()));
         target.setVersion(version);
 
         TransportMapping<UdpAddress> transport = null;
@@ -471,7 +473,7 @@ public class MockSnmpAgentTest  {
         UserTarget target = new UserTarget();
         target.setSecurityLevel(SecurityLevel.AUTH_PRIV);
         target.setSecurityName(userId);
-        target.setAddress(new UdpAddress(InetAddressUtils.addr("127.0.0.1"), 1691));
+        target.setAddress(new UdpAddress(InetAddressUtils.addr("127.0.0.1"), m_agent.getPort()));
         target.setVersion(SnmpConstants.version3);
         target.setTimeout(DEFAULT_TIMEOUT);
 
