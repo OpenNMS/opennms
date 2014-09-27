@@ -594,19 +594,19 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
             r_node.setDeviceType(getTypeFromCategories(node)); 
         } else {
             LOG.debug("getSuitableRancidNode: Using Sysoid to get Rancid devicetype for node: {}", node.getLabel());
-            r_node.setDeviceType(getTypeFromSysObjectId(node.getSysObjectId()));
+            r_node.setDeviceType(getTypeFromSysObjectId(node.getSysObjectId(),node.getSysDescription()));
         }
         r_node.setStateUp(false);
-        r_node.setComment(RANCID_COMMENT);
+        r_node.setComment(RANCID_COMMENT+" nodeid:" + node.getNodeId());
         r_node.setAuth(getSuitableRancidNodeAuthentication(node));
         return r_node;
         
 
     }
     
-    private String getTypeFromSysObjectId(String sysoid) {
-        String rancidType = m_rancidAdapterConfig.getType(sysoid);
-        LOG.debug("getTypeFromSysObjectId: Rancid devicetype found: {} for sysOid: {}", sysoid, rancidType);
+    private String getTypeFromSysObjectId(String sysoid, String sysdescr) {
+        String rancidType = m_rancidAdapterConfig.getType(sysoid, sysdescr);
+        LOG.debug("getTypeFromSysObjectId: sysOid {}, sysDescr {}, Rancid devicetype found: {} ", sysoid,sysdescr,rancidType);
         return rancidType;
     }
     
@@ -828,7 +828,7 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
                 try {
                 	updateConfiguration(nodeId.intValue(), rnode, m_cp, true);
                 } catch (ProvisioningAdapterException pae) {
-                	LOG.error("updateGroupConfiguration: group: " + group + "failed set down for rancid node: " + rnode.getDeviceName() + "Reason: " + pae.getMessage());
+                    LOG.error("updateGroupConfiguration: group: " + group + "failed set down for rancid node: " + rnode.getDeviceName() + "Reason: " + pae.getMessage());
                 }
                 rnode.setStateUp(stateUp);
             }
