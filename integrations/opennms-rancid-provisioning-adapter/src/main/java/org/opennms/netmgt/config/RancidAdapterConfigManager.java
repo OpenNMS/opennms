@@ -440,12 +440,12 @@ abstract public class RancidAdapterConfigManager implements RancidAdapterConfig 
                     if (sysoid.startsWith(map.getSysoidMask())) {
                         if (map.getSysdescrMatch() != null
                                 && sysdescr.matches(map.getSysdescrMatch())) {
-                            LogUtils.debugf(this, "getType: matched type: ",
+                            LogUtils.debugf(this, "getType: matched type: %s",
                                             map.getType());
                             return map.getType();
                         }
                         if (map.getSysdescrMatch() == null && notMatched) {
-                            LogUtils.debugf(this,"getType: null sysdescrmatch: first match: type: {} "
+                            LogUtils.debugf(this,"getType: null sysdescrmatch: first match: type: %s "
                                                     , map.getType());
                             type = map.getType();
                             notMatched = false;
@@ -454,10 +454,10 @@ abstract public class RancidAdapterConfigManager implements RancidAdapterConfig 
                 }
             } else if (sysoid != null) {
                 for (Mapping map : mappings()) {
-                    LogUtils.debugf(this,"getType: sysdescr is null: parsing map with SysoidMaSk: {} "
+                    LogUtils.debugf(this,"getType: sysdescr is null: parsing map with SysoidMaSk: %s "
                                             , map.getSysoidMask());
                     if (sysoid.startsWith(map.getSysoidMask())) {
-                        LogUtils.debugf(this,"getType: matched type: {} "
+                        LogUtils.debugf(this,"getType: matched type: %s "
                                                 , map.getType());
                         return map.getType();
                     }
