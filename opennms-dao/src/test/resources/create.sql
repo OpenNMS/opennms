@@ -2310,7 +2310,7 @@ create table cdpLink (
       cdpInterfaceName varchar(96) not null,
       cdpCacheAddressType integer not null,
       cdpCacheAddress varchar(64) not null,
-      cdpCacheVersion varchar(255) not null,
+      cdpCacheVersion text not null,
       cdpCacheDeviceId varchar(64) not null,
       cdpCacheDevicePort varchar(96) not null,
       cdpCacheDevicePlatform varchar(96) not null,
