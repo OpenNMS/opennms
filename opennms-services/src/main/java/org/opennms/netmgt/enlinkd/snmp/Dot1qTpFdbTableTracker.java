@@ -35,8 +35,6 @@ import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpRowResult;
 import org.opennms.netmgt.snmp.TableTracker;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  *<P>The Dot1qTpFdbTableTracker class is designed to hold all the MIB-II
@@ -54,8 +52,6 @@ import org.slf4j.LoggerFactory;
  * @version $Id: $
  */
 public class Dot1qTpFdbTableTracker extends TableTracker {
-
-	private final static Logger LOG = LoggerFactory.getLogger(Dot1qTpFdbTableTracker.class);
 
 	public final static SnmpObjId DOT1Q_TP_FDB_PORT    = SnmpObjId.get(".1.3.6.1.2.1.17.7.1.2.2.1.2");
 	public final static SnmpObjId DOT1Q_TP_FDB_STATUS  = SnmpObjId.get(".1.3.6.1.2.1.17.7.1.2.2.1.3");
@@ -169,7 +165,6 @@ public class Dot1qTpFdbTableTracker extends TableTracker {
 		}
 
 		public BridgeMacLink getLink() {
-            LOG.info("processDot1qTpFdbRow: row count: {}", getColumnCount());
 			BridgeMacLink link = new BridgeMacLink();
 			link.setBridgePort(getDot1qTpFdbPort());
 			link.setMacAddress(getDot1qTpFdbAddress());

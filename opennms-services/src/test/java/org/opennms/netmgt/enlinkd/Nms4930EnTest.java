@@ -114,7 +114,9 @@ public class Nms4930EnTest extends EnLinkdTestBuilder {
         	assertEquals(2,maclinks.size());
     		printBackboneBridgeMacLink(maclinks.get(0),maclinks.get(1));
         }
-        
+
+        // Test the bridge link second query
+        assertTrue(m_linkd.runSingleSnmpCollection(dlink1.getId()));
     }
     
     @Test
