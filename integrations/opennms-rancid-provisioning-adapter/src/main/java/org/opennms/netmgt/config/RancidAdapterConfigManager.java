@@ -424,16 +424,48 @@ abstract public class RancidAdapterConfigManager implements RancidAdapterConfig 
     }
 
     /** {@inheritDoc} */
-    public String getType(final String sysoid) {
+    public String getType(final String sysoid, final String sysdescr) {
+        LogUtils.debugf(this, "getType: sysoid: %s", sysoid);
+        LogUtils.debugf(this, "getType: sysdescription: %s", sysdescr);
         getReadLock().lock();
         try {
-            if (sysoid != null) {
-                for (final Mapping map: mappings()) {
-                    if (sysoid.startsWith(map.getSysoidMask()))
-                    return map.getType();
+            String type = getConfiguration().getDefaultType();
+            boolean notMatched = true;
+            if (sysoid != null && sysdescr != null) {
+                for (Mapping map : mappings()) {
+                    LogUtils.debugf(this,
+                                    "getType: parsing map with SysoidMaSk: %s, SysdescrMatch: %s",
+                                    map.getSysoidMask(),
+                                    map.getSysdescrMatch());
+                    if (sysoid.startsWith(map.getSysoidMask())) {
+                        if (map.getSysdescrMatch() != null
+                                && sysdescr.matches(map.getSysdescrMatch())) {
+                            LogUtils.debugf(this, "getType: matched type: ",
+                                            map.getType());
+                            return map.getType();
+                        }
+                        if (map.getSysdescrMatch() == null && notMatched) {
+                            LogUtils.debugf(this,"getType: null sysdescrmatch: first match: type: {} "
+                                                    , map.getType());
+                            type = map.getType();
+                            notMatched = false;
+                        }
+                    }
                 }
+            } else if (sysoid != null) {
+                for (Mapping map : mappings()) {
+                    LogUtils.debugf(this,"getType: sysdescr is null: parsing map with SysoidMaSk: {} "
+                                            , map.getSysoidMask());
+                    if (sysoid.startsWith(map.getSysoidMask())) {
+                        LogUtils.debugf(this,"getType: matched type: {} "
+                                                , map.getType());
+                        return map.getType();
+                    }
+                }
+
             }
-            return getConfiguration().getDefaultType();
+            LogUtils.debugf(this,"getType: matched type: {}", type);
+            return type;
         } finally {
             getReadLock().unlock();
         }

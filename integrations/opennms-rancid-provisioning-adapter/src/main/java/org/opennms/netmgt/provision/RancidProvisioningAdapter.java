@@ -592,19 +592,19 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
             r_node.setDeviceType(getTypeFromCategories(node)); 
         } else {
             log().debug("getSuitableRancidNode: Using Sysoid to get Rancid devicetype for node: " + node.getLabel());
-            r_node.setDeviceType(getTypeFromSysObjectId(node.getSysObjectId()));
+            r_node.setDeviceType(getTypeFromSysObjectId(node.getSysObjectId(),node.getSysDescription()));
         }
         r_node.setStateUp(false);
-        r_node.setComment(RANCID_COMMENT);
+        r_node.setComment(RANCID_COMMENT+" nodeid:" + node.getNodeId());
         r_node.setAuth(getSuitableRancidNodeAuthentication(node));
         return r_node;
         
 
     }
     
-    private String getTypeFromSysObjectId(String sysoid) {
-        String rancidType = m_rancidAdapterConfig.getType(sysoid);
-        log().debug("getTypeFromSysObjectId: Rancid devicetype found: " + rancidType + " for sysOid: " + sysoid);
+    private String getTypeFromSysObjectId(String sysoid, String sysdescr) {
+        String rancidType = m_rancidAdapterConfig.getType(sysoid, sysdescr);
+        log().debug("getTypeFromSysObjectId: Rancid devicetype found: " + rancidType + " for sysOid/sysDescr " + sysoid+"/"+sysdescr);
         return rancidType;
     }
     

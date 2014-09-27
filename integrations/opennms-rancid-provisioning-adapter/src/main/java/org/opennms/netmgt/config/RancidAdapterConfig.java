@@ -87,7 +87,7 @@ public interface RancidAdapterConfig {
      *          the system OID identifier of the node
      * @return RancidType String
      */
-    public abstract String getType(String sysoid);  
+    public abstract String getType(String sysoid, String sysdescr);  
 
     /**
      * Return if current time is ready to be scheduled.
