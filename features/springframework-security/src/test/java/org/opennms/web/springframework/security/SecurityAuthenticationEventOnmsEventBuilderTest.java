@@ -166,7 +166,7 @@ public class SecurityAuthenticationEventOnmsEventBuilderTest extends TestCase {
             }
             
             Event actualEvent = (Event) actual;
-            return MockEventUtil.eventsMatchDeep(m_expected, actualEvent);
+            return MockEventUtil.eventsMatchDeep(m_expected, actualEvent, 5000);
         }
 
         @Override

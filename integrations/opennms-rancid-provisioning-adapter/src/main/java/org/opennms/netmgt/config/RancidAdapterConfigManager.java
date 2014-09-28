@@ -430,17 +430,47 @@ public abstract class RancidAdapterConfigManager implements RancidAdapterConfig 
     }
 
     /** {@inheritDoc} */
-    @Override
-    public String getType(final String sysoid) {
+    public String getType(final String sysoid, final String sysdescr) {
+        LOG.debug("getType: sysoid: {}", sysoid);
+        LOG.debug("getType: sysdescription: {}", sysdescr);
+        getReadLock().lock();
         try {
-            getReadLock().lock();
-            if (sysoid != null) {
-                for (final Mapping map: mappings()) {
-                    if (sysoid.startsWith(map.getSysoidMask()))
-                    return map.getType();
+            String type = getConfiguration().getDefaultType();
+            boolean notMatched = true;
+            if (sysoid != null && sysdescr != null) {
+                for (Mapping map : mappings()) {
+                    LOG.debug("getType: parsing map with SysoidMaSk: {}, SysdescrMatch: {}",
+                                    map.getSysoidMask(),
+                                    map.getSysdescrMatch());
+                    if (sysoid.startsWith(map.getSysoidMask())) {
+                        if (map.getSysdescrMatch() != null
+                                && sysdescr.matches(map.getSysdescrMatch())) {
+                            LOG.debug("getType: matched type: {}",
+                                            map.getType());
+                            return map.getType();
+                        }
+                        if (map.getSysdescrMatch() == null && notMatched) {
+                            LOG.debug("getType: null sysdescrmatch: first match: type: {} "
+                                                    , map.getType());
+                            type = map.getType();
+                            notMatched = false;
+                        }
+                    }
                 }
+            } else if (sysoid != null) {
+                for (Mapping map : mappings()) {
+                    LOG.debug("getType: sysdescr is null: parsing map with SysoidMaSk: {} "
+                                            , map.getSysoidMask());
+                    if (sysoid.startsWith(map.getSysoidMask())) {
+                        LOG.debug("getType: matched type: {} "
+                                                , map.getType());
+                        return map.getType();
+                    }
+                }
+
             }
-            return getConfiguration().getDefaultType();
+            LOG.debug("getType: matched type: {}", type);
+            return type;
         } finally {
             getReadLock().unlock();
         }
