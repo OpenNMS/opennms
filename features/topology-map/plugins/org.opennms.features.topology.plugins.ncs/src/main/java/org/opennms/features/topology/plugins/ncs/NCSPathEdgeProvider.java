@@ -14,7 +14,8 @@ import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanItem;
 
 public class NCSPathEdgeProvider implements EdgeProvider {
-    
+
+    public static final String PATH_NAMESPACE = "ncsPath";
     private static final String HTML_TOOLTIP_TAG_OPEN = "<p>";
     private static final String HTML_TOOLTIP_TAG_END  = "</p>";
     
@@ -32,7 +33,7 @@ public class NCSPathEdgeProvider implements EdgeProvider {
 
         @Override
         public String getNamespace() {
-            return "ncsPath";
+            return PATH_NAMESPACE;
         }
 
         @Override

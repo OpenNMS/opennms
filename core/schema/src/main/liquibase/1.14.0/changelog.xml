@@ -125,4 +125,17 @@
     </rollback>
   </changeSet>
 
+  <!--
+      Fix for issue NMS-6910:
+        PSQLException in EnhancedLinkd Cdp discovery
+        Change the datatype of cdplink.cdpcacheversion to text.
+  -->
+  <changeSet author="rssntn67" id="1.14.0-changeDataTypeOfcdpLinkCdpVersion">
+    <modifyDataType tableName="cdplink" columnName="cdpcacheversion" newDataType="text"/>
+
+    <rollback>
+      <modifyDataType tableName="cdplink" columnName="cdpcacheversion" newDataType="varchar(255)"/>
+    </rollback>
+  </changeSet>
+
 </databaseChangeLog>
