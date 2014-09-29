@@ -30,6 +30,7 @@ package org.opennms.features.vaadin.nodemaps.internal.gwt.client.ui.controls.ala
 
 import java.util.logging.Logger;
 
+import org.opennms.features.vaadin.nodemaps.internal.gwt.client.AlarmSeverity;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.OpenNMSEventManager;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.AlarmSeverityUpdatedEvent;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.AlarmSeverityUpdatedEventHandler;
@@ -80,11 +81,9 @@ public class AlarmControl extends AbsolutePanel implements AlarmSeverityUpdatedE
 
         m_severityBox = new ListBox(false);
         m_severityBox.getElement().setId("alarmControl");
-        m_severityBox.addItem("Normal", "0");
-        m_severityBox.addItem("Warning", "4");
-        m_severityBox.addItem("Minor", "5");
-        m_severityBox.addItem("Major", "6");
-        m_severityBox.addItem("Critical", "7");
+        for (final AlarmSeverity sev : AlarmSeverity.values()) {
+            m_severityBox.addItem(sev.getLabel());
+        }
 
         m_severityBox.addChangeHandler(new ChangeHandler() {
             @Override public void onChange(final ChangeEvent event) {
@@ -92,8 +91,7 @@ public class AlarmControl extends AbsolutePanel implements AlarmSeverityUpdatedE
                 LOG.info("new selection index = " + selected);
                 final String value = m_severityBox.getValue(selected);
                 LOG.info("new severity = " + value);
-                final int intValue = value == null? 0 : Integer.valueOf(value).intValue();
-                m_eventManager.fireEvent(new AlarmSeverityUpdatedEvent(intValue));
+                m_eventManager.fireEvent(new AlarmSeverityUpdatedEvent(AlarmSeverity.get(value)));
                 event.stopPropagation();
             }
         });
@@ -117,6 +115,6 @@ public class AlarmControl extends AbsolutePanel implements AlarmSeverityUpdatedE
 
     @Override
     public void onAlarmSeverityUpdated(final AlarmSeverityUpdatedEvent event) {
-        m_severityBox.setItemSelected(event.getSeverity(), true);
+        m_severityBox.setItemSelected(event.getSeverity().ordinal(), true);
     }
 }

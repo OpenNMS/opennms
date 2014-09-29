@@ -44,6 +44,7 @@ import org.discotools.gwt.leaflet.client.map.MapOptions;
 import org.discotools.gwt.leaflet.client.types.LatLng;
 import org.discotools.gwt.leaflet.client.types.LatLngBounds;
 import org.opennms.features.geocoder.Coordinates;
+import org.opennms.features.vaadin.nodemaps.internal.gwt.client.AlarmSeverity;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.JSNodeMarker;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.Map;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.NodeMarker;
@@ -118,7 +119,7 @@ public class NodeMapWidget extends AbsolutePanel implements MarkerProvider, Filt
                 if (event.isAttached()) {
                     LOG.info("NodeMapWidget.onAttach()");
 
-                    m_filter = new MarkerFilterImpl("", 0, m_eventManager);
+                    m_filter = new MarkerFilterImpl("", AlarmSeverity.NORMAL, m_eventManager);
                     m_markerContainer = new MarkerContainer(m_filter, m_eventManager);
 
                     m_filter.onLoad();

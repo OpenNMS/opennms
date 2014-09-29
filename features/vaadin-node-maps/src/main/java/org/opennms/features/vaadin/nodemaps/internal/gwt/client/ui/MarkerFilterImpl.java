@@ -33,6 +33,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import org.opennms.features.vaadin.nodemaps.internal.gwt.client.AlarmSeverity;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.NodeMarker;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.OpenNMSEventManager;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.AlarmSeverityUpdatedEvent;
@@ -53,9 +54,9 @@ public class MarkerFilterImpl implements MarkerFilter, AlarmSeverityUpdatedEvent
     private OpenNMSEventManager m_eventManager;
 
     String m_searchString = null;
-    int m_minimumSeverity = 0;
+    AlarmSeverity m_minimumSeverity = AlarmSeverity.NORMAL;
 
-    public MarkerFilterImpl(final String searchString, final int minimumSeverity, final OpenNMSEventManager openNMSEventManager) {
+    public MarkerFilterImpl(final String searchString, final AlarmSeverity minimumSeverity, final OpenNMSEventManager openNMSEventManager) {
         m_searchString = searchString;
         m_minimumSeverity = minimumSeverity;
         m_eventManager = openNMSEventManager;
@@ -82,7 +83,7 @@ public class MarkerFilterImpl implements MarkerFilter, AlarmSeverityUpdatedEvent
         }
     }
 
-    public void setMinimumSeverity(final int minimumSeverity) {
+    public void setMinimumSeverity(final AlarmSeverity minimumSeverity) {
         if (Util.hasChanged(m_minimumSeverity, minimumSeverity)) {
             LOG.info("MarkerFilterImpl.setMinimumSeverity(" + minimumSeverity + "): minimum severity modified (old = '" + m_minimumSeverity + "'");
             m_minimumSeverity = minimumSeverity;
@@ -98,7 +99,15 @@ public class MarkerFilterImpl implements MarkerFilter, AlarmSeverityUpdatedEvent
 
     @Override
     public boolean matches(final NodeMarker marker) {
-        if (marker.getSeverity() != null && marker.getSeverity() < m_minimumSeverity) return false;
+        if (marker == null) return false;
+
+        final AlarmSeverity severity;
+        if (marker.getSeverity() == null) {
+            severity = AlarmSeverity.NORMAL;
+        } else {
+            severity = AlarmSeverity.get(marker.getSeverity());
+        }
+        if (severity.isLessThan(m_minimumSeverity)) return false;
         if (m_searchString == null || "".equals(m_searchString)) return true;
 
         final String searchProperty;
