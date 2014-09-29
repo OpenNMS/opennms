@@ -46,6 +46,8 @@ public interface CdpLinkDao extends OnmsDao<CdpLink, Integer> {
 
     public List<CdpTopologyLink> findLinksForTopology();
 
+    public List<CdpTopologyLink> findLinksForTopologyByIds(Integer... ids);
+
     void deleteByNodeIdOlderThen(Integer nodeiId, Date now);
 
 }
