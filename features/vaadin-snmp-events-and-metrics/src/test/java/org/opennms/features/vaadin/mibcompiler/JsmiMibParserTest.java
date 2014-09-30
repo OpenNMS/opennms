@@ -280,7 +280,7 @@ public class JsmiMibParserTest {
             PrefabGraphDumper dumper = new PrefabGraphDumper();
             dumper.dump(graphs, writer);
             System.out.println(writer.getBuffer().toString());
-            Assert.assertEquals(99198, writer.getBuffer().toString().length());
+            Assert.assertEquals(99344, writer.getBuffer().toString().length());
 
             PropertiesGraphDao dao = new PropertiesGraphDao();
             StringBuffer sb = new StringBuffer();
