@@ -58,6 +58,10 @@ public class NodeMapComponent extends AbstractComponent {
         public void setSelectedNodes(final List<Integer> nodeIds) {
             ((NodeMapsApplication)UI.getCurrent()).setFocusedNodes(nodeIds);
         }
+        @Override
+        public void refresh() {
+            ((NodeMapsApplication)UI.getCurrent()).refresh();
+        }
     };
 
     public NodeMapComponent() {

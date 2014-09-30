@@ -166,7 +166,6 @@ public class NodeMapsApplication extends UI {
                 bottomLayoutBar.setSizeFull();
                 bottomLayoutBar.setSecondComponent(getTabSheet());
                 m_layout.addComponent(bottomLayoutBar);
-
                 m_layout.markAsDirty();
             }
         } else {
@@ -346,6 +345,10 @@ public class NodeMapsApplication extends UI {
         final Refresher refresher = new Refresher();
         refresher.setRefreshInterval(REFRESH_INTERVAL);
         addExtension(refresher);
+    }
+
+    public void refresh() {
+        m_mapWidgetComponent.refresh();
     }
 
     public void setFocusedNodes(final List<Integer> nodeIds) {

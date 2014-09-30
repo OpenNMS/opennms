@@ -125,6 +125,14 @@ public class MapWidgetComponent extends NodeMapComponent implements GeoAssetProv
         }, 0, 5, TimeUnit.MINUTES);
     }
 
+    public void refresh() {
+        m_executor.schedule(new Runnable() {
+            @Override public void run() {
+                refreshNodeData();
+            }
+        }, 0, TimeUnit.MINUTES);
+    }
+
     @Override
     public Collection<VertexRef> getNodesWithCoordinates() {
         final List<VertexRef> nodes = new ArrayList<VertexRef>();
