@@ -31,10 +31,10 @@ package org.opennms.features.vaadin.nodemaps.internal.gwt.client.ui.controls.ala
 import java.util.logging.Logger;
 
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.AlarmSeverity;
+import org.opennms.features.vaadin.nodemaps.internal.gwt.client.ComponentTracker;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.OpenNMSEventManager;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.AlarmSeverityUpdatedEvent;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.AlarmSeverityUpdatedEventHandler;
-import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.ComponentInitializedEvent;
 
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
@@ -46,13 +46,15 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 
 public class AlarmControl extends AbsolutePanel implements AlarmSeverityUpdatedEventHandler {
-    private static final Logger LOG = Logger.getLogger(AlarmControl.class.getName());
+    private final Logger LOG = Logger.getLogger(getClass().getName());
 
     private ListBox m_severityBox;
     private OpenNMSEventManager m_eventManager;
+    private ComponentTracker m_componentTracker;
 
-    public AlarmControl(final OpenNMSEventManager eventManager) {
+    public AlarmControl(final OpenNMSEventManager eventManager, final ComponentTracker componentTracker) {
         m_eventManager = eventManager;
+        m_componentTracker = componentTracker;
         addAttachHandler(new Handler() {
             @Override public void onAttachOrDetach(final AttachEvent event) {
                 if (event.isAttached()) {
@@ -102,19 +104,22 @@ public class AlarmControl extends AbsolutePanel implements AlarmSeverityUpdatedE
         this.add(m_severityBox);
 
         LOG.info("AlarmControl.doOnAdd(): finished, returning: " + this.getElement());
-
-        m_eventManager.fireEvent(new ComponentInitializedEvent(AlarmControl.class.getName()));
+        m_componentTracker.ready(getClass());
         return this.getElement();
     }
 
     public void doOnRemove() {
         LOG.info("doOnRemove() called");
         m_eventManager.removeHandler(AlarmSeverityUpdatedEvent.TYPE, this);
-        m_eventManager.fireEvent(new AlarmSeverityUpdatedEvent(0));
+        m_eventManager.fireEvent(new AlarmSeverityUpdatedEvent(AlarmSeverity.NORMAL));
     }
 
     @Override
     public void onAlarmSeverityUpdated(final AlarmSeverityUpdatedEvent event) {
-        m_severityBox.setItemSelected(event.getSeverity().ordinal(), true);
+        setSeverity(event.getSeverity());
+    }
+
+    public void setSeverity(final AlarmSeverity severity) {
+        m_severityBox.setItemSelected(severity.ordinal(), true);
     }
 }

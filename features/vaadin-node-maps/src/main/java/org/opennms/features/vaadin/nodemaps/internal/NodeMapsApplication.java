@@ -122,7 +122,8 @@ import com.vaadin.ui.VerticalSplitPanel;
 })
 public class NodeMapsApplication extends UI {
     private static final Logger LOG = LoggerFactory.getLogger(NodeMapsApplication.class);
-    private static final int REFRESH_INTERVAL = 5 * 60 * 1000;
+    // private static final int REFRESH_INTERVAL = 5 * 60 * 1000;
+    private static final int REFRESH_INTERVAL = 10 * 1000;
     private VerticalLayout m_rootLayout;
     private VerticalLayout m_layout;
 

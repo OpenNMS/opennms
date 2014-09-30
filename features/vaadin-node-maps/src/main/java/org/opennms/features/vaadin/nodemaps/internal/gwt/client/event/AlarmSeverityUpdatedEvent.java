@@ -39,10 +39,6 @@ public class AlarmSeverityUpdatedEvent extends OpenNMSEvent<AlarmSeverityUpdated
         m_severity = severity;
     }
 
-    public AlarmSeverityUpdatedEvent(final int severity) {
-        m_severity = AlarmSeverity.get(severity);
-    }
-
     public AlarmSeverity getSeverity() {
         return m_severity;
     }
