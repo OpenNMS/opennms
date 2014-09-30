@@ -293,7 +293,7 @@ public class JsmiMibParser implements MibParser, Serializable {
                     sb.append(" LINE1:var#0000ff:\"").append(v.getId()).append("\" \\\n");
                     sb.append(" GPRINT:var:AVERAGE:\"Avg\\\\: %8.2lf %s\" \\\n");
                     sb.append(" GPRINT:var:MIN:\"Min\\\\: %8.2lf %s\" \\\n");
-                    sb.append(" GPRINT:var:MAX:\"Max\\\\: %8.2lf %s\\n\"");
+                    sb.append(" GPRINT:var:MAX:\"Max\\\\: %8.2lf %s\\\\n\"");
                     sb.append("\n\n");
                     PrefabGraph graph = new PrefabGraph(name, descr, new String[] { alias }, sb.toString(), new String[0], new String[0], order++, new String[] { resourceType }, descr, null, null, new String[0]);
                     graphs.add(graph);
