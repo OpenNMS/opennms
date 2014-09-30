@@ -30,8 +30,12 @@ public class OspfIpAddrTableGetter extends TableTracker {
 		if (val != null && val.length == 2 ) {
 			if (!val[0].isNull() && val[0].isNumeric() )
 				element.setOspfRouterIdIfindex(val[0].toInt());
-			if (!val[1].isNull()) {
-				element.setOspfRouterIdNetmask(val[1].toInetAddress());
+			if (!val[1].isNull() && !val[1].isError()) {
+				try {
+					element.setOspfRouterIdNetmask(val[1].toInetAddress());
+				} catch (IllegalArgumentException e) {
+					
+				}
 			}
 		}
 		return element;
@@ -43,12 +47,17 @@ public class OspfIpAddrTableGetter extends TableTracker {
 		if (val != null && val.length == 2 ) {
 			if (!val[0].isNull() && val[0].isNumeric() )
 				link.setOspfIfIndex(val[0].toInt());
-			if (!val[1].isNull()) {
-				link.setOspfIpMask(val[1].toInetAddress());
+			if (!val[1].isNull() && !val[1].isError()) {
+				try {
+					link.setOspfIpMask(val[1].toInetAddress());
+				} catch (IllegalArgumentException e) {
+					
+				}
 			}
 		}
 		return link;
 	}
+
 	private SnmpValue[] get(InetAddress addr) {
 		SnmpObjId instance = SnmpObjId.get(addr.getHostAddress());
 		SnmpObjId[] oids = new SnmpObjId[]

@@ -33,6 +33,7 @@ import java.util.List;
 
 import org.opennms.netmgt.model.CdpLink;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.topology.CdpTopologyLink;
 
 
 public interface CdpLinkDao extends OnmsDao<CdpLink, Integer> {
@@ -42,6 +43,10 @@ public interface CdpLinkDao extends OnmsDao<CdpLink, Integer> {
     CdpLink get(Integer nodeId, Integer cdpCacheIfIndex);
     
     List<CdpLink> findByNodeId(Integer nodeId);
+
+    public List<CdpTopologyLink> findLinksForTopology();
+
+    public List<CdpTopologyLink> findLinksForTopologyByIds(Integer... ids);
 
     void deleteByNodeIdOlderThen(Integer nodeiId, Date now);
 

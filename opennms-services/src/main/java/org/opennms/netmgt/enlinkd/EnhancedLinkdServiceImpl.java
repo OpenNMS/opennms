@@ -615,6 +615,11 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
 	}
 	
 	protected void saveLink(final BridgeTopologyLink bridgelink, Integer nodeId, Map<Integer,Integer> bridgeportIfIndex) {
+		if (bridgelink == null)
+			return;
+		if (bridgeportIfIndex == null)
+			return;
+		
 		OnmsNode node = m_nodeDao.get(bridgelink.getBridgeTopologyPort().getNodeid());
 		if (node == null)
 			return;
@@ -641,7 +646,7 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
 			BridgeMacLink maclink1 = new BridgeMacLink();
 			maclink1.setNode(node);
 			maclink1.setBridgePort(bridgelink.getBridgeTopologyPort().getBridgePort());
-			if (node.getId().intValue() == nodeId.intValue() && bridgeportIfIndex.containsKey(bridgelink.getBridgeTopologyPort().getBridgePort())) {
+			if (node.getId().intValue() == nodeId.intValue() && bridgelink.getBridgeTopologyPort() != null && bridgeportIfIndex.containsKey(bridgelink.getBridgeTopologyPort().getBridgePort())) {
 				maclink1.setBridgePortIfIndex(bridgeportIfIndex.get(bridgelink.getBridgeTopologyPort().getBridgePort()));
 			}
 			maclink1.setMacAddress(mac);
@@ -651,7 +656,7 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
 			BridgeMacLink maclink2 = new BridgeMacLink();
 			maclink2.setNode(designatenode);
 			maclink2.setBridgePort(bridgelink.getDesignateBridgePort().getBridgePort());
-			if (designatenode.getId().intValue() == nodeId.intValue() && bridgeportIfIndex.containsKey(bridgelink.getDesignateBridgePort().getBridgePort())) {
+			if (designatenode.getId().intValue() == nodeId.intValue() && bridgelink.getDesignateBridgePort() != null && bridgeportIfIndex.containsKey(bridgelink.getDesignateBridgePort().getBridgePort())) {
 				maclink2.setBridgePortIfIndex(bridgeportIfIndex.get(bridgelink.getDesignateBridgePort().getBridgePort()));
 			}
 			maclink2.setMacAddress(mac);
