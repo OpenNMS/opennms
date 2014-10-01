@@ -28,16 +28,18 @@
 
 package org.opennms.features.vaadin.nodemaps.internal.gwt.client.event;
 
+import org.opennms.features.vaadin.nodemaps.internal.gwt.client.AlarmSeverity;
+
 
 public class AlarmSeverityUpdatedEvent extends OpenNMSEvent<AlarmSeverityUpdatedEventHandler> {
     public static Type<AlarmSeverityUpdatedEventHandler> TYPE = new Type<AlarmSeverityUpdatedEventHandler>();
-    private final int m_severity;
+    private final AlarmSeverity m_severity;
 
-    public AlarmSeverityUpdatedEvent(final int severity) {
+    public AlarmSeverityUpdatedEvent(final AlarmSeverity severity) {
         m_severity = severity;
     }
 
-    public int getSeverity() {
+    public AlarmSeverity getSeverity() {
         return m_severity;
     }
 

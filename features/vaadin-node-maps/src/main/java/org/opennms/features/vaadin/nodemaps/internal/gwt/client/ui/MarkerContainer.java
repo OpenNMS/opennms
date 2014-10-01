@@ -34,44 +34,40 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.logging.Logger;
 
+import org.opennms.features.vaadin.nodemaps.internal.gwt.client.ComponentTracker;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.JSNodeMarker;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.NodeMarker;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.OpenNMSEventManager;
-import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.ApplicationInitializedEvent;
-import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.ApplicationInitializedEventHandler;
-import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.ComponentInitializedEvent;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.FilterUpdatedEvent;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.FilterUpdatedEventHandler;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.FilteredMarkersUpdatedEvent;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.MarkersModelUpdatedEvent;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.MarkersModelUpdatedEventHandler;
 
-public class MarkerContainer implements MarkerProvider, FilterUpdatedEventHandler, MarkersModelUpdatedEventHandler, ApplicationInitializedEventHandler {
+public class MarkerContainer implements MarkerProvider, FilterUpdatedEventHandler, MarkersModelUpdatedEventHandler {
     List<JSNodeMarker> m_markers         = new ArrayList<JSNodeMarker>();
     List<JSNodeMarker> m_filteredMarkers = new ArrayList<JSNodeMarker>();
 
     private Logger logger = Logger.getLogger(getClass().getName());
-    private OpenNMSEventManager m_eventManager;
-    private MarkerFilter m_filter;
+    private final OpenNMSEventManager m_eventManager;
+    private final MarkerFilter m_filter;
+    private final ComponentTracker m_componentTracker;
 
-    public MarkerContainer(final MarkerFilter filter, final OpenNMSEventManager eventManager) {
+    public MarkerContainer(final MarkerFilter filter, final OpenNMSEventManager eventManager, final ComponentTracker componentTracker) {
         m_filter = filter;
         m_eventManager = eventManager;
+        m_componentTracker = componentTracker;
     }
 
     public void onLoad() {
         m_eventManager.addHandler(FilterUpdatedEvent.TYPE, this);
         m_eventManager.addHandler(MarkersModelUpdatedEvent.TYPE, this);
-        m_eventManager.addHandler(ApplicationInitializedEvent.TYPE, this);
-
-        //refresh();
-        m_eventManager.fireEvent(new ComponentInitializedEvent(MarkerContainer.class.getName()));
+        m_componentTracker.ready(getClass());
     }
 
     public void onUnload() {
         m_eventManager.removeHandler(FilterUpdatedEvent.TYPE, this);
         m_eventManager.removeHandler(MarkersModelUpdatedEvent.TYPE, this);
-        m_eventManager.removeHandler(ApplicationInitializedEvent.TYPE, this);
     }
 
     public int size() {
@@ -145,12 +141,6 @@ public class MarkerContainer implements MarkerProvider, FilterUpdatedEventHandle
     @Override
     public void onMarkersModelUpdated(final MarkersModelUpdatedEvent event) {
         logger.info("MarkerContainer.onMarkersModelUpdated()");
-        refresh();
-    }
-
-    @Override
-    public void onApplicationInitialized(final ApplicationInitializedEvent event) {
-        logger.info("MarkerContainer.onApplicationInitialized()");
         refresh();
     }
 }

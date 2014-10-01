@@ -122,7 +122,8 @@ import com.vaadin.ui.VerticalSplitPanel;
 })
 public class NodeMapsApplication extends UI {
     private static final Logger LOG = LoggerFactory.getLogger(NodeMapsApplication.class);
-    private static final int REFRESH_INTERVAL = 5 * 60 * 1000;
+    // private static final int REFRESH_INTERVAL = 5 * 60 * 1000;
+    private static final int REFRESH_INTERVAL = 10 * 1000;
     private VerticalLayout m_rootLayout;
     private VerticalLayout m_layout;
 
@@ -166,7 +167,6 @@ public class NodeMapsApplication extends UI {
                 bottomLayoutBar.setSizeFull();
                 bottomLayoutBar.setSecondComponent(getTabSheet());
                 m_layout.addComponent(bottomLayoutBar);
-
                 m_layout.markAsDirty();
             }
         } else {
@@ -346,6 +346,10 @@ public class NodeMapsApplication extends UI {
         final Refresher refresher = new Refresher();
         refresher.setRefreshInterval(REFRESH_INTERVAL);
         addExtension(refresher);
+    }
+
+    public void refresh() {
+        m_mapWidgetComponent.refresh();
     }
 
     public void setFocusedNodes(final List<Integer> nodeIds) {
