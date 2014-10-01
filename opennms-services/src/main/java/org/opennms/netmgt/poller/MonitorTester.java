@@ -35,11 +35,13 @@ import java.net.InetAddress;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
+import java.util.logging.Logger;
 
 import javax.sql.DataSource;
 
@@ -140,6 +142,10 @@ public class MonitorTester {
 
         public boolean isWrapperFor(Class<?> iface) throws SQLException {
             return false;
+        }
+
+        public Logger getParentLogger() throws SQLFeatureNotSupportedException {
+            throw new SQLFeatureNotSupportedException("getParentLogger() not implemented");
         }
     }
 
