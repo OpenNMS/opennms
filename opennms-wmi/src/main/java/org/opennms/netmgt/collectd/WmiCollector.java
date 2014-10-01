@@ -46,6 +46,7 @@ import org.opennms.netmgt.collectd.wmi.WmiCollectionAttributeType;
 import org.opennms.netmgt.collectd.wmi.WmiCollectionResource;
 import org.opennms.netmgt.collectd.wmi.WmiCollectionSet;
 import org.opennms.netmgt.collectd.wmi.WmiMultiInstanceCollectionResource;
+import org.opennms.netmgt.collectd.wmi.WmiResourceType;
 import org.opennms.netmgt.collectd.wmi.WmiSingleInstanceCollectionResource;
 import org.opennms.netmgt.config.DataCollectionConfigFactory;
 import org.opennms.netmgt.config.WmiDataCollectionConfigFactory;
@@ -55,6 +56,10 @@ import org.opennms.netmgt.config.collector.CollectionSet;
 import org.opennms.netmgt.config.wmi.Attrib;
 import org.opennms.netmgt.config.wmi.WmiCollection;
 import org.opennms.netmgt.config.wmi.Wpm;
+import org.opennms.netmgt.config.datacollection.ResourceType;
+import org.opennms.netmgt.config.datacollection.StorageStrategy;
+import org.opennms.netmgt.config.datacollection.PersistenceSelectorStrategy;
+import org.opennms.netmgt.dao.support.IndexStorageStrategy;
 import org.opennms.netmgt.model.RrdRepository;
 import org.opennms.netmgt.model.events.EventProxy;
 import org.opennms.protocols.wmi.WmiClient;
@@ -146,7 +151,7 @@ public class WmiCollector implements ServiceCollector {
                                 } else {
                                     instance = propVal.toString();
                                 }
-                                resource = new WmiMultiInstanceCollectionResource(agent,instance,wpm.getResourceType());
+                                resource = new WmiMultiInstanceCollectionResource(agent,instance,getWmiResourceType(agent, wpm.getResourceType()));
                             } else {
                                 resource = nodeResource;
                             }
@@ -236,6 +241,22 @@ public class WmiCollector implements ServiceCollector {
         }
         return true;
     }
+    
+    private WmiResourceType getWmiResourceType(CollectionAgent agent, String resourceType){
+        ResourceType rt = DataCollectionConfigFactory.getInstance().getConfiguredResourceTypes().get(resourceType);
+        if (rt == null) {
+            LogUtils.debugf(this, "getWmiResourceType: using default WMI resource type strategy - index / all");
+            rt = new ResourceType();
+            rt.setName(resourceType);
+            rt.setStorageStrategy(new StorageStrategy());
+            rt.getStorageStrategy().setClazz(IndexStorageStrategy.class.getName());
+            rt.setPersistenceSelectorStrategy(new PersistenceSelectorStrategy());
+            rt.getPersistenceSelectorStrategy().setClazz(PersistAllSelectorStrategy.class.getName());
+        }
+        WmiResourceType type = new WmiResourceType(agent, rt);
+        return type;
+    }
+ 
 
     /** {@inheritDoc} */
     public void initialize(final Map<String, String> parameters) {

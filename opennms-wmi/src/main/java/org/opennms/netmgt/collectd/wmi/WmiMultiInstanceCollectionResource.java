@@ -32,6 +32,7 @@ import java.io.File;
 
 import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.collectd.CollectionAgent;
+import org.opennms.netmgt.config.collector.ServiceParameters;
 import org.opennms.netmgt.model.RrdRepository;
 
 /**
@@ -42,7 +43,8 @@ import org.opennms.netmgt.model.RrdRepository;
  */
 public class WmiMultiInstanceCollectionResource extends WmiCollectionResource {
     private String m_inst;
-    private String m_name;
+    private String m_resourceLabel;
+    private WmiResourceType m_resourceType;
 
     /**
      * <p>Constructor for WmiMultiInstanceCollectionResource.</p>
@@ -51,21 +53,24 @@ public class WmiMultiInstanceCollectionResource extends WmiCollectionResource {
      * @param instance a {@link java.lang.String} object.
      * @param name a {@link java.lang.String} object.
      */
-    public WmiMultiInstanceCollectionResource(final CollectionAgent agent, final String instance, final String name) {
+    public WmiMultiInstanceCollectionResource(final CollectionAgent agent, final String instance, final WmiResourceType type) {
         super(agent);
         m_inst = instance;
-        m_name = name;
+        m_resourceType = type;
+    }
+    
+    @Override
+    public boolean shouldPersist(ServiceParameters params) {
+        return m_resourceType.getPersistenceSelectorStrategy().shouldPersist(this);
     }
 
     /** {@inheritDoc} */
     @Override
     public File getResourceDir(final RrdRepository repository) {
-        final File rrdBaseDir = repository.getRrdBaseDir();
-        final File nodeDir = new File(rrdBaseDir, getParent());
-        final File typeDir = new File(nodeDir, m_name);
-        final File instDir = new File(typeDir, m_inst.replaceAll("\\s+", "_").replaceAll(":", "_").replaceAll("\\\\", "_").replaceAll("[\\[\\]]", "_"));
-        LogUtils.debugf(this, "getResourceDir: %s", instDir);
-        return instDir;
+        String resourcePath = m_resourceType.getStorageStrategy().getRelativePathForAttribute(getParent(), getInterfaceLabel(), null);
+        File resourceDir = new File(repository.getRrdBaseDir(), resourcePath);
+        LogUtils.debugf(this, "getResourceDir: %s", resourceDir);
+        return resourceDir;
     }
 
     /**
@@ -74,7 +79,7 @@ public class WmiMultiInstanceCollectionResource extends WmiCollectionResource {
      * @return a {@link java.lang.String} object.
      */
     public String getResourceTypeName() {
-        return m_name;
+        return m_resourceType.getName();
     }
 
     /**
@@ -89,7 +94,12 @@ public class WmiMultiInstanceCollectionResource extends WmiCollectionResource {
     /** {@inheritDoc} */
     @Override
     public String toString() {
-        return "Node[" + m_agent.getNodeId() + "]/type["+ m_name+"]/instance[" + m_inst +"]";
+        return "Node[" + m_agent.getNodeId() + "]/type["+ getResourceTypeName() +"]/instance[" + m_inst +"]";
     }
 
+    public String getInterfaceLabel(){
+        return (m_resourceLabel == null 
+                ? m_resourceType.getStorageStrategy().getResourceNameFromIndex(this)
+                : m_resourceLabel);
+    }
 }
