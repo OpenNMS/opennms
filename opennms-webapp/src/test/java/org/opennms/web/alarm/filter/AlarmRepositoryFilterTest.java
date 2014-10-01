@@ -35,7 +35,6 @@ import static org.opennms.core.utils.InetAddressUtils.addr;
 import java.util.Date;
 import java.util.List;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -55,6 +54,7 @@ import org.opennms.web.filter.Filter;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -70,6 +70,7 @@ import org.springframework.transaction.annotation.Transactional;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
+@DirtiesContext
 public class AlarmRepositoryFilterTest implements InitializingBean {
     
     @Autowired
@@ -89,11 +90,6 @@ public class AlarmRepositoryFilterTest implements InitializingBean {
     @Before
     public void setUp(){
         m_dbPopulator.populateDatabase();
-    }
-    
-    @After
-    public void tearDown(){
-        
     }
     
     @Test
