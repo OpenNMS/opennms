@@ -44,13 +44,19 @@ import org.opennms.netmgt.collectd.wmi.WmiCollectionAttributeType;
 import org.opennms.netmgt.collectd.wmi.WmiCollectionResource;
 import org.opennms.netmgt.collectd.wmi.WmiCollectionSet;
 import org.opennms.netmgt.collectd.wmi.WmiMultiInstanceCollectionResource;
+import org.opennms.netmgt.collectd.wmi.WmiResourceType;
 import org.opennms.netmgt.collectd.wmi.WmiSingleInstanceCollectionResource;
 import org.opennms.netmgt.collection.api.AttributeGroupType;
 import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionSet;
 import org.opennms.netmgt.collection.api.ServiceCollector;
+import org.opennms.netmgt.collection.support.IndexStorageStrategy;
+import org.opennms.netmgt.config.DataCollectionConfigFactory;
 import org.opennms.netmgt.config.WmiDataCollectionConfigFactory;
 import org.opennms.netmgt.config.WmiPeerFactory;
+import org.opennms.netmgt.config.datacollection.PersistenceSelectorStrategy;
+import org.opennms.netmgt.config.datacollection.ResourceType;
+import org.opennms.netmgt.config.datacollection.StorageStrategy;
 import org.opennms.netmgt.config.wmi.Attrib;
 import org.opennms.netmgt.config.wmi.WmiCollection;
 import org.opennms.netmgt.config.wmi.Wpm;
@@ -151,7 +157,7 @@ public class WmiCollector implements ServiceCollector {
                                 } else {
                                     instance = propVal.toString();
                                 }
-                                resource = new WmiMultiInstanceCollectionResource(agent,instance,wpm.getResourceType());
+                                resource = new WmiMultiInstanceCollectionResource(agent,instance,getWmiResourceType(agent, wpm.getResourceType()));
                             } else {
                                 resource = nodeResource;
                             }
@@ -181,7 +187,7 @@ public class WmiCollector implements ServiceCollector {
         collectionSet.setStatus(ServiceCollector.COLLECTION_SUCCEEDED);
         return collectionSet;
     }
-
+    
     private void loadAttributeGroupList(final WmiCollection collection) {
         for (final Wpm wpm : collection.getWpms().getWpm()) {
             final AttributeGroupType attribGroupType1 = new AttributeGroupType(wpm.getName(), wpm.getIfType());
@@ -242,6 +248,21 @@ public class WmiCollector implements ServiceCollector {
         return true;
     }
 
+    private WmiResourceType getWmiResourceType(CollectionAgent agent, String resourceType){
+        ResourceType rt = DataCollectionConfigFactory.getInstance().getConfiguredResourceTypes().get(resourceType);
+        if (rt == null) {
+            LOG.debug("getWmiResourceType: using default WMI resource type strategy - index / all");
+            rt = new ResourceType();
+            rt.setName(resourceType);
+            rt.setStorageStrategy(new StorageStrategy());
+            rt.getStorageStrategy().setClazz(IndexStorageStrategy.class.getName());
+            rt.setPersistenceSelectorStrategy(new PersistenceSelectorStrategy());
+            rt.getPersistenceSelectorStrategy().setClazz(PersistAllSelectorStrategy.class.getName());
+        }
+        WmiResourceType type = new WmiResourceType(agent, rt);
+        return type;
+    }
+    
     /** {@inheritDoc} */
     @Override
     public void initialize(final Map<String, String> parameters) {

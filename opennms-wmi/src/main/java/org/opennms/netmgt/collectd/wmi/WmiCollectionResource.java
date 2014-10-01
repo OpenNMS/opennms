@@ -39,9 +39,6 @@ import org.opennms.netmgt.collection.support.AbstractCollectionResource;
  * @version $Id: $
  */
 public abstract class WmiCollectionResource extends AbstractCollectionResource {
-    
-    protected final int m_nodeId;
-    protected final CollectionAgent m_agent;
 
     /**
      * <p>Constructor for WmiCollectionResource.</p>
@@ -50,8 +47,6 @@ public abstract class WmiCollectionResource extends AbstractCollectionResource {
      */
     public WmiCollectionResource(CollectionAgent agent) {
         super(agent);
-        m_agent = agent;
-        m_nodeId = agent.getNodeId();
     }
 
     /**
