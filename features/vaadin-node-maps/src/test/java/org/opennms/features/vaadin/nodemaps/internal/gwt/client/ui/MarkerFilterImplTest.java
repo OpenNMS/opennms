@@ -10,6 +10,8 @@ import java.util.logging.Logger;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.opennms.features.vaadin.nodemaps.internal.gwt.client.AlarmSeverity;
+import org.opennms.features.vaadin.nodemaps.internal.gwt.client.ComponentTracker;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.NodeMarker;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.OpenNMSEventManager;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.SimpleNodeMarker;
@@ -18,8 +20,8 @@ public class MarkerFilterImplTest {
     public class WrappedMarkerFilterImpl extends MarkerFilterImpl {
         private int m_filterUpdatedCalls = 0;
 
-        public WrappedMarkerFilterImpl(final String searchString, final int minimumSeverity, final OpenNMSEventManager eventManager) {
-            super(searchString, minimumSeverity, eventManager);
+        public WrappedMarkerFilterImpl(final String searchString, final AlarmSeverity minimumSeverity, final OpenNMSEventManager eventManager, final ComponentTracker componentTracker) {
+            super(searchString, minimumSeverity, eventManager, componentTracker);
         }
 
         protected void initHandlers() {
@@ -35,17 +37,19 @@ public class MarkerFilterImplTest {
     }
 
     private OpenNMSEventManager m_eventManager;
+    private ComponentTracker m_componentTracker;
 
     @Before
     public void setUp() throws Exception {
         Logger.getLogger(Logger.GLOBAL_LOGGER_NAME).setLevel(Level.FINER);
         m_eventManager = new OpenNMSEventManager();
+        m_componentTracker = new ComponentTracker(m_eventManager);
     }
     
     @Test
     public void testEmptySearch() {
         // empty searches should always match
-        final WrappedMarkerFilterImpl filter = new WrappedMarkerFilterImpl(null, 0, m_eventManager);
+        final WrappedMarkerFilterImpl filter = new WrappedMarkerFilterImpl(null, AlarmSeverity.NORMAL, m_eventManager, m_componentTracker);
 
         final NodeMarker marker = new SimpleNodeMarker();
         assertTrue(filter.matches(marker));
@@ -57,7 +61,7 @@ public class MarkerFilterImplTest {
 
     @Test
     public void testSubstringMatch() {
-        final MarkerFilterImpl filter = new WrappedMarkerFilterImpl("blah", 0, m_eventManager);
+        final MarkerFilterImpl filter = new WrappedMarkerFilterImpl("blah", AlarmSeverity.NORMAL, m_eventManager, m_componentTracker);
 
         final SimpleNodeMarker marker = new SimpleNodeMarker();
 
@@ -114,7 +118,7 @@ public class MarkerFilterImplTest {
 
     @Test
     public void testExactMatch() {
-        final MarkerFilterImpl filter = new WrappedMarkerFilterImpl("nodeLabel=blah", 0, m_eventManager);
+        final MarkerFilterImpl filter = new WrappedMarkerFilterImpl("nodeLabel=blah", AlarmSeverity.NORMAL, m_eventManager, m_componentTracker);
         final SimpleNodeMarker marker = new SimpleNodeMarker();
 
         marker.setNodeLabel("blah");
@@ -134,7 +138,7 @@ public class MarkerFilterImplTest {
 
     @Test
     public void testInMatch() {
-        final MarkerFilterImpl filter = new WrappedMarkerFilterImpl("nodeLabel in foo, bar, baz", 0, m_eventManager);
+        final MarkerFilterImpl filter = new WrappedMarkerFilterImpl("nodeLabel in foo, bar, baz", AlarmSeverity.NORMAL, m_eventManager, m_componentTracker);
         final SimpleNodeMarker marker = new SimpleNodeMarker();
 
         marker.setNodeLabel("fo");

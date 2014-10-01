@@ -34,4 +34,5 @@ import com.vaadin.shared.communication.ServerRpc;
 
 public interface NodeIdSelectionRpc extends ServerRpc {
     public void setSelectedNodes(List<Integer> nodeIds);
+    public void refresh();
 }
