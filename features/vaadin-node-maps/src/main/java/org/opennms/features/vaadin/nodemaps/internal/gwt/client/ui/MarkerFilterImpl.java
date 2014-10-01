@@ -33,11 +33,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import org.opennms.features.vaadin.nodemaps.internal.gwt.client.AlarmSeverity;
+import org.opennms.features.vaadin.nodemaps.internal.gwt.client.ComponentTracker;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.NodeMarker;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.OpenNMSEventManager;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.AlarmSeverityUpdatedEvent;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.AlarmSeverityUpdatedEventHandler;
-import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.ComponentInitializedEvent;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.FilterUpdatedEvent;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.SearchStringSetEvent;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.SearchStringSetEventHandler;
@@ -51,20 +52,22 @@ public class MarkerFilterImpl implements MarkerFilter, AlarmSeverityUpdatedEvent
     private static final RegExp m_searchPattern = RegExp.compile("^\\s*(.*?)\\s*( in |\\=|\\:)\\s*(.*)\\s*$");
 
     private OpenNMSEventManager m_eventManager;
+    private ComponentTracker m_componentTracker;
 
     String m_searchString = null;
-    int m_minimumSeverity = 0;
+    AlarmSeverity m_minimumSeverity = AlarmSeverity.NORMAL;
 
-    public MarkerFilterImpl(final String searchString, final int minimumSeverity, final OpenNMSEventManager openNMSEventManager) {
+    public MarkerFilterImpl(final String searchString, final AlarmSeverity minimumSeverity, final OpenNMSEventManager eventManager, final ComponentTracker componentTracker) {
         m_searchString = searchString;
         m_minimumSeverity = minimumSeverity;
-        m_eventManager = openNMSEventManager;
+        m_eventManager = eventManager;
+        m_componentTracker = componentTracker;
     }
 
     public void onLoad() {
         m_eventManager.addHandler(SearchStringSetEvent.TYPE, this);
         m_eventManager.addHandler(AlarmSeverityUpdatedEvent.TYPE, this);
-        m_eventManager.fireEvent(new ComponentInitializedEvent(MarkerFilterImpl.class.getName()));
+        m_componentTracker.ready(getClass());
     }
 
     public void onUnload() {
@@ -82,7 +85,7 @@ public class MarkerFilterImpl implements MarkerFilter, AlarmSeverityUpdatedEvent
         }
     }
 
-    public void setMinimumSeverity(final int minimumSeverity) {
+    public void setMinimumSeverity(final AlarmSeverity minimumSeverity) {
         if (Util.hasChanged(m_minimumSeverity, minimumSeverity)) {
             LOG.info("MarkerFilterImpl.setMinimumSeverity(" + minimumSeverity + "): minimum severity modified (old = '" + m_minimumSeverity + "'");
             m_minimumSeverity = minimumSeverity;
@@ -98,7 +101,15 @@ public class MarkerFilterImpl implements MarkerFilter, AlarmSeverityUpdatedEvent
 
     @Override
     public boolean matches(final NodeMarker marker) {
-        if (marker.getSeverity() != null && marker.getSeverity() < m_minimumSeverity) return false;
+        if (marker == null) return false;
+
+        final AlarmSeverity severity;
+        if (marker.getSeverity() == null) {
+            severity = AlarmSeverity.NORMAL;
+        } else {
+            severity = AlarmSeverity.get(marker.getSeverity());
+        }
+        if (severity.isLessThan(m_minimumSeverity)) return false;
         if (m_searchString == null || "".equals(m_searchString)) return true;
 
         final String searchProperty;
