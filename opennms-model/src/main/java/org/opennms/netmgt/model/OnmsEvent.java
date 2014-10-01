@@ -56,6 +56,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+import org.hibernate.ObjectNotFoundException;
 import org.hibernate.annotations.Filter;
 import org.hibernate.annotations.Type;
 import org.opennms.core.network.InetAddressXmlAdapter;
@@ -1026,8 +1027,7 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	 *
 	 * @return a {@link org.opennms.netmgt.model.OnmsNode} object.
 	 */
-	@XmlIDREF
-	@XmlElement(name="nodeId")
+	@XmlTransient
 	@JsonIgnore
 	@ManyToOne(fetch=FetchType.LAZY)
 	@JoinColumn(name="nodeId")
@@ -1035,12 +1035,28 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 		return m_node;
 	}
 
-	@Transient
-	@XmlElement(name="nodeLabel", required=false)
-	public String getNodeLabel() {
-	    if (m_node == null) return null;
-	    return m_node.getLabel();
-	}
+    @Transient
+    @XmlElement(name="nodeId")
+    public Integer getNodeId() {
+        try {
+            return m_node != null ? m_node.getId() : null;
+        } catch (ObjectNotFoundException e) {
+            return 1;
+        }
+    }
+
+
+    @Transient
+    @XmlElement(name="nodeLabel", required=false)
+    public String getNodeLabel() {
+        try{
+            if (m_node == null) return null;
+            return m_node.getLabel();
+        } catch (ObjectNotFoundException e){
+            return "";
+        }
+
+    }
 
 	/**
 	 * <p>setNode</p>
