@@ -1,9 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Top25PercentDown_subreport" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
-	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.zoom" value="1.9487171000000014"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
-	<template><![CDATA["${install.dir}/etc/report-templates/assets/styles/defaultStyles.jrtx"]]></template>
+	<template><![CDATA[$P{ONMS_REPORT_DIR} + "/assets/styles/defaultStyles.jrtx"]]></template>
+	<parameter name="ONMS_REPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<parameterDescription><![CDATA[The directory where all reports can be found]]></parameterDescription>
+		<defaultValueExpression><![CDATA["${install.dir}/etc/report-templates"]]></defaultValueExpression>
+	</parameter>
 	<parameter name="START_TIME" class="java.util.Date">
 		<defaultValueExpression><![CDATA[new java.util.Date(new java.util.Date().getTime() - (86400 * 7 * 1000))]]></defaultValueExpression>
 	</parameter>
@@ -150,37 +154,34 @@ LIMIT 25]]>
 	<columnHeader>
 		<band height="50">
 			<staticText>
-				<reportElement style="Sub-sub-sub-header" x="125" y="30" width="148" height="20"/>
+				<reportElement style="Sub-sub-sub-header" x="0" y="30" width="148" height="20"/>
 				<textElement/>
 				<text><![CDATA[Node]]></text>
 			</staticText>
 			<staticText>
-				<reportElement style="Sub-sub-sub-header" x="273" y="30" width="151" height="20"/>
+				<reportElement style="Sub-sub-sub-header" x="148" y="30" width="151" height="20"/>
 				<textElement textAlignment="Right"/>
-				<text><![CDATA[Percent Down]]></text>
+				<text><![CDATA[Down]]></text>
 			</staticText>
 			<staticText>
-				<reportElement style="Sub-sub-header" x="220" y="0" width="108" height="20"/>
+				<reportElement style="Sub-sub-header" x="0" y="0" width="299" height="20"/>
 				<textElement/>
-				<text><![CDATA[Top 25 Percent Down]]></text>
+				<text><![CDATA[Top 25 Nodes Down (%)]]></text>
 			</staticText>
 		</band>
 	</columnHeader>
 	<detail>
-		<band height="29" splitType="Stretch">
+		<band height="20" splitType="Stretch">
 			<textField>
-				<reportElement style="Body" x="125" y="0" width="148" height="20"/>
+				<reportElement style="Body" x="0" y="0" width="148" height="20"/>
 				<textElement/>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{nodelabel}]]></textFieldExpression>
 			</textField>
 			<textField pattern="###0.00">
-				<reportElement style="Body" x="273" y="0" width="151" height="20"/>
+				<reportElement style="Body" x="148" y="0" width="151" height="20"/>
 				<textElement textAlignment="Right"/>
 				<textFieldExpression class="java.lang.String"><![CDATA[String.format("%10.2f", $F{outages_percent}) + "%"]]></textFieldExpression>
 			</textField>
-			<line>
-				<reportElement x="125" y="20" width="299" height="1"/>
-			</line>
 		</band>
 	</detail>
 	<noData>
