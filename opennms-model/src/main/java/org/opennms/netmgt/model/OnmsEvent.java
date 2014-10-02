@@ -1041,7 +1041,7 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
         try {
             return m_node != null ? m_node.getId() : null;
         } catch (ObjectNotFoundException e) {
-            return 1;
+            return null;
         }
     }
 
