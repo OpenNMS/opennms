@@ -75,7 +75,9 @@
                     <th>report ID</th>
                     <th>run date</th>
                     <th>view report</th>
+                    <% if (!request.isUserInRole(Authentication.ROLE_READONLY)) { %>
                     <th>select</th>
+                    <% } %>
                 </tr>
                 </thead>
                     <%-- // show only current page worth of data --%>
@@ -92,14 +94,18 @@
                                 <a href="report/database/downloadReport.htm?locatorId=${report.id}&format=${format}">${format}</a>
                             </c:forEach>
                         </td>
+                        <% if (!request.isUserInRole(Authentication.ROLE_READONLY)) { %>
                         <td><form:checkbox path="ids" value="${report.id}"/></td>
+                        <% } %>
                     </tr>
                 </c:forEach>
             </table>
-            <div class="pagination">
-                <a onClick="toggle(true, 'ids')">Select all</a> /
-                <a onClick="toggle(false, 'ids')">Deselect all</a>
-            </div>
+            <% if (!request.isUserInRole(Authentication.ROLE_READONLY)) { %>
+                <div class="pagination">
+                    <a onClick="toggle(true, 'ids')">Select all</a> /
+                    <a onClick="toggle(false, 'ids')">Deselect all</a>
+                </div>
+            <% } %>
 
             <% // if deletion was successful %>
             <c:if test="${not empty success}">

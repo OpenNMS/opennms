@@ -75,7 +75,9 @@
 					<th>Trigger Name</th>
 					<th>Next fire time</th>
 					<th>Report Parameters</th>
+                    <% if (!request.isUserInRole(Authentication.ROLE_READONLY)) { %>
 					<th>Select</th>
+                    <% } %>
 				</tr>
 			</thead>
 			<%-- // show only current page worth of data --%>
@@ -97,14 +99,18 @@
 							<tr><th>${entry.key}</th><td>${entry.value}</td></tr>
 						</c:forEach>
 					</table></td>
+                    <% if (!request.isUserInRole(Authentication.ROLE_READONLY)) { %>
 					<td><form:checkbox path="triggerNames" value="${trigger.triggerName}"/></td>
+                    <% } %>
 				</tr>
 			</c:forEach>
 		</table>
-        <div class="pagination">
-            <a onClick="toggle(true, 'triggerNames')">Select all</a> /
-            <a onClick="toggle(false, 'triggerNames')">Deselect all</a>
-        </div>
+        <% if (!request.isUserInRole(Authentication.ROLE_READONLY)) { %>
+            <div class="pagination">
+                <a onClick="toggle(true, 'triggerNames')">Select all</a> /
+                <a onClick="toggle(false, 'triggerNames')">Deselect all</a>
+            </div>
+        <% } %>
 
         <% // if deletion was successful %>
         <c:if test="${not empty success}">
