@@ -1,9 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="sample-report" pageWidth="595" pageHeight="842" columnWidth="535" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
-	<style name="Title" isDefault="false" fontName="SansSerif" fontSize="26" isBold="true" pdfFontName="Helvetica-Bold"/>
-	<style name="SubTitle" isDefault="false" forecolor="#666666" fontName="SansSerif" fontSize="18"/>
-	<style name="Column header" isDefault="false" forecolor="#666666" fontName="SansSerif" fontSize="12" isBold="true"/>
-	<style name="Detail" isDefault="false" fontName="SansSerif" fontSize="12"/>
+	<property name="ireport.zoom" value="1.610510000000001"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<style name="Title" fontName="SansSerif" fontSize="26" isBold="true" pdfFontName="Helvetica-Bold"/>
+	<style name="SubTitle" forecolor="#666666" fontName="SansSerif" fontSize="18"/>
+	<style name="Column header" forecolor="#666666" fontName="SansSerif" fontSize="12" isBold="true"/>
+	<style name="Detail" fontName="SansSerif" fontSize="12"/>
+	<parameter name="ONMS_REPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<parameterDescription><![CDATA[The directory where all reports can be found]]></parameterDescription>
+		<defaultValueExpression><![CDATA["${install.dir}/etc/report-templates"]]></defaultValueExpression>
+	</parameter>
 	<queryString language="SQL">
 		<![CDATA[SELECT * FROM node;]]>
 	</queryString>
@@ -16,16 +23,16 @@
 	<group name="nodelabel">
 		<groupExpression><![CDATA[$F{nodelabel}]]></groupExpression>
 		<groupHeader>
-			<band height="40">
+			<band height="32">
 				<textField>
-					<reportElement style="SubTitle" x="47" y="13" width="506" height="24" forecolor="#006600"/>
+					<reportElement style="SubTitle" x="47" y="0" width="506" height="24" forecolor="#006600"/>
 					<textElement>
 						<font isBold="true"/>
 					</textElement>
 					<textFieldExpression class="java.lang.String"><![CDATA[$F{nodelabel}]]></textFieldExpression>
 				</textField>
 				<rectangle>
-					<reportElement mode="Opaque" x="0" y="13" width="36" height="24" forecolor="#CCCCCC" backcolor="#CCCCCC"/>
+					<reportElement mode="Opaque" x="0" y="0" width="36" height="24" forecolor="#CCCCCC" backcolor="#CCCCCC"/>
 				</rectangle>
 			</band>
 		</groupHeader>
@@ -42,7 +49,7 @@
 					<textElement>
 						<font size="16" isBold="true"/>
 					</textElement>
-					<textFieldExpression class="java.lang.String"><![CDATA[$F{nodesysname}]]></textFieldExpression>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{nodesysname} == null ||  "".equals($F{nodesysname}) ? "<unknown>" : $F{nodesysname}]]></textFieldExpression>
 				</textField>
 			</band>
 		</groupHeader>
@@ -50,26 +57,27 @@
 	<background>
 		<band splitType="Stretch"/>
 	</background>
-	<title>
-		<band height="70" splitType="Stretch">
+	<pageHeader>
+		<band height="82" splitType="Stretch">
 			<image>
 				<reportElement x="275" y="0" width="300" height="64"/>
-				<imageExpression class="java.lang.String"><![CDATA["${install.dir}/etc/report-templates/leaf_banner_green.png"]]></imageExpression>
+				<imageExpression class="java.lang.String"><![CDATA[$P{ONMS_REPORT_DIR} + "/assets/images/company-logo.png"]]></imageExpression>
 			</image>
 			<staticText>
-				<reportElement style="Title" x="0" y="13" width="263" height="33"/>
+				<reportElement style="Title" x="0" y="0" width="263" height="64"/>
 				<textElement verticalAlignment="Middle"/>
-				<text><![CDATA[Node List]]></text>
+				<text><![CDATA[Sample Report
+Nodelist]]></text>
 			</staticText>
+			<line>
+				<reportElement x="0" y="72" width="553" height="1"/>
+			</line>
 		</band>
-	</title>
-	<pageHeader>
-		<band splitType="Stretch"/>
 	</pageHeader>
 	<columnHeader>
-		<band height="36" splitType="Stretch">
+		<band height="6" splitType="Stretch">
 			<line>
-				<reportElement positionType="FixRelativeToBottom" x="0" y="35" width="555" height="1"/>
+				<reportElement positionType="FixRelativeToBottom" x="0" y="0" width="555" height="1"/>
 				<graphicElement>
 					<pen lineWidth="0.5" lineColor="#999999"/>
 				</graphicElement>
