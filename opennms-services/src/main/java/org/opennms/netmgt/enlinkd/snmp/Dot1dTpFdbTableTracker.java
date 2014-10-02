@@ -35,8 +35,6 @@ import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpRowResult;
 import org.opennms.netmgt.snmp.TableTracker;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  *<P>The Dot1dTpFdbTableTracker class is designed to hold all the MIB-II
@@ -55,7 +53,6 @@ import org.slf4j.LoggerFactory;
  */
 public class Dot1dTpFdbTableTracker extends TableTracker {
 
-	private final static Logger LOG = LoggerFactory.getLogger(Dot1dTpFdbTableTracker.class);
 	/**
 	 * The status of the info in FDB table entry The status of this entry. The
 	 * meanings of the values are: learned(3) : the value of the corresponding
@@ -162,7 +159,6 @@ public class Dot1dTpFdbTableTracker extends TableTracker {
 		}
 
 		public BridgeMacLink getLink() {
-            LOG.info("processDot1qTpFdbRow: row count: {}", getColumnCount());
 			BridgeMacLink link = new BridgeMacLink();
 			link.setBridgePort(getDot1dTpFdbPort());
 			link.setMacAddress(getDot1dTpFdbAddress());

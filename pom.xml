@@ -1061,7 +1061,7 @@
     <felixVersion>2.2.0</felixVersion>
     <liquibaseVersion>2.0.5</liquibaseVersion>
     <log4jVersion>99.99.99-use-log4j2</log4jVersion>
-    <log4j2Version>2.0</log4j2Version>
+    <log4j2Version>2.1-ONMS-20140918</log4j2Version>
     <minaVersion>2.0.7</minaVersion>
     <paxExamVersion>2.6.0</paxExamVersion>
     <powermockVersion>1.5.5</powermockVersion>
@@ -1647,26 +1647,6 @@
       <dependency>
         <groupId>org.opennms</groupId>
         <artifactId>opennms-snmp-hardware-inventory-provisioning-adapter</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms.features.sms-reflector</groupId>
-        <artifactId>sms-gateway</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms.features.sms-reflector</groupId>
-        <artifactId>sms-service</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms.features.sms-reflector</groupId>
-        <artifactId>sms-ping</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms.features.sms-reflector</groupId>
-        <artifactId>sms-monitor</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>

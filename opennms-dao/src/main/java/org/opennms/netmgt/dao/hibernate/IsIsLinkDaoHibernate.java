@@ -126,12 +126,6 @@ public class IsIsLinkDaoHibernate extends AbstractDaoHibernate<IsIsLink, Integer
 
         });
 
-        /*String query = "select * from isislink l1 left join isiselement e on l1.isisisadjneighsysid = e.isissysid left join isislink l2 on e.nodeid=l2.nodeid where l1.isisisadjindex = l2.isisisadjindex";
-        List<Object[]> links = getHibernateTemplate().find("select l1.id, l1.nodeid, l2.id, l2.nodeid from IsisLink as l1 "
-                + "join IsisElement e on l1.isisisadjneighsysid = e.isissysid "
-                + "left join isislink l2 on e.nodeid=l2.nodeid "
-                + "where l1.isisisadjindex = l2.isisisadjindex");*/
-
     }
     
     

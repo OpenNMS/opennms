@@ -40,6 +40,7 @@ import org.opennms.features.topology.api.topo.*;
 import org.opennms.netmgt.dao.api.*;
 import org.opennms.netmgt.model.*;
 import org.opennms.netmgt.model.topology.BridgeMacTopologyLink;
+import org.opennms.netmgt.model.topology.CdpTopologyLink;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
@@ -49,7 +50,15 @@ import java.io.File;
 import java.net.MalformedURLException;
 import java.util.*;
 
-public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider implements SearchProvider {
+public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider {
+
+    public CdpLinkDao getCdpLinkDao() {
+        return m_cdpLinkDao;
+    }
+
+    public void setCdpLinkDao(CdpLinkDao cdpLinkDao) {
+        m_cdpLinkDao = cdpLinkDao;
+    }
 
     private abstract class LinkDetail<K> {
         private final String m_id;
@@ -289,6 +298,54 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
         }
     }
 
+    public class CdpLinkDetail extends LinkDetail<Integer>{
+
+        private final Integer m_sourceIfIndex;
+        private final String m_sourceIfName;
+        private final String m_targetIfName;
+
+        public CdpLinkDetail(String id, Vertex source, Integer sourceIfIndex, String sourceIfName, Vertex target, String targetIfName) {
+            super(id, source, null, target, null);
+            m_sourceIfIndex = sourceIfIndex;
+            m_sourceIfName = sourceIfName;
+            m_targetIfName = targetIfName;
+        }
+
+        @Override
+        public int hashCode() {
+            final int prime = 31;
+            int result = 1;
+            result = prime * result + ((getSourceLink() == null) ? 0 : getSource().getNodeID().hashCode()) + ((getTargetLink() == null) ? 0 : getTarget().getNodeID().hashCode());
+            result = prime * result
+                    + ((getVertexNamespace() == null) ? 0 : getVertexNamespace().hashCode());
+            return result;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if(obj instanceof CdpLinkDetail){
+                CdpLinkDetail objDetail = (CdpLinkDetail)obj;
+
+                return getId().equals(objDetail.getId());
+            } else  {
+                return false;
+            }
+        }
+
+        @Override
+        public Integer getSourceIfIndex() {
+            return m_sourceIfIndex;
+        }
+
+        @Override
+        public Integer getTargetIfIndex() {
+            return null;
+        }
+
+        @Override
+        public String getType() { return "CDP"; }
+    }
+
     private interface LinkState {
         void setParentInterfaces(OnmsSnmpInterface sourceInterface, OnmsSnmpInterface targetInterface);
         String getLinkStatus();
@@ -310,12 +367,14 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
     private LldpLinkDao m_lldpLinkDao;
     private OspfLinkDao m_ospfLinkDao;
     private IsIsLinkDao m_isisLinkDao;
-    BridgeBridgeLinkDao m_bridgeBridgeLinkDao;
-    BridgeMacLinkDao m_bridgeMacLinkDao;
+    private BridgeBridgeLinkDao m_bridgeBridgeLinkDao;
+    private BridgeMacLinkDao m_bridgeMacLinkDao;
+    private CdpLinkDao m_cdpLinkDao;
     public final static String LLDP_EDGE_NAMESPACE = TOPOLOGY_NAMESPACE_LINKD + "::LLDP";
     public final static String OSPF_EDGE_NAMESPACE = TOPOLOGY_NAMESPACE_LINKD + "::OSPF";
     public final static String ISIS_EDGE_NAMESPACE = TOPOLOGY_NAMESPACE_LINKD + "::ISIS";
     public final static String BRIDGE_EDGE_NAMESPACE = TOPOLOGY_NAMESPACE_LINKD + "::BRIDGE";
+    public final static String CDP_EDGE_NAMESPACE = TOPOLOGY_NAMESPACE_LINKD + "::CDP";
 
     public EnhancedLinkdTopologyProvider() { }
 
@@ -345,6 +404,7 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
             getOspfLinks();
             getIsIsLinks();
             getBridgeLinks();
+            getCdpLinks();
 
 
         } catch (Exception e){
@@ -499,6 +559,24 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
         }
     }
 
+    private void getCdpLinks() {
+        List<CdpTopologyLink> cdpLinks = m_cdpLinkDao.findLinksForTopology();
+
+        for (CdpTopologyLink link : cdpLinks) {
+            String id = Math.min(link.getSourceId(), link.getTargetId()) + "|" + Math.max(link.getSourceId(), link.getTargetId());
+            CdpLinkDetail linkDetail = new CdpLinkDetail(id,
+                    getVertex(m_nodeDao.get(link.getSrcNodeId())),
+                    link.getSrcIfIndex(),
+                    link.getSrcIfName(),
+                    getVertex(m_nodeDao.get(link.getTargetNodeId())),
+                    link.getTargetIfName());
+
+            AbstractEdge edge = connectVertices(linkDetail.getId(), linkDetail.getSource(), linkDetail.getTarget(), CDP_EDGE_NAMESPACE);
+            edge.setTooltipText(getEdgeTooltipText(linkDetail));
+
+        }
+    }
+
     private void getIsIsLinks(){
         List<Object[]> isislinks = m_isisLinkDao.getLinksForTopology();
 
@@ -525,7 +603,6 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
     }
 
     private void getBridgeLinks(){
-        //List<BridgeBridgeLink> bridgeBridgeLinks = getBridgeBridgeLinks();
 
         List<BridgeMacTopologyLink> bridgeMacLinks = m_bridgeMacLinkDao.getAllBridgeLinksToIpAddrToNodes();
 
@@ -853,5 +930,6 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
             LOG.debug("SearchProvider->addVertexHopCriteria: criterion: '{}' is in the GraphContainer.", crit);
         }
     }
+
 
 }

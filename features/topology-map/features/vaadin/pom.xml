@@ -27,7 +27,7 @@
             <feature>http-whiteboard</feature>
           </features>
           <bundles>
-            <bundle>wrap:mvn:org.vaadin.addons/refresher/1.2.1.7</bundle>
+            <bundle>wrap:mvn:org.vaadin.addons/refresher/1.2.3.7</bundle>
             <bundle>wrap:mvn:org.vaadin.addons/contextmenu/4.2.1</bundle>
             <bundle>wrap:mvn:org.vaadin.addon/confirmdialog/2.0.4</bundle>
           </bundles>
@@ -88,7 +88,7 @@
     <dependency>
     	<groupId>org.vaadin.addons</groupId>
     	<artifactId>refresher</artifactId>
-    	<version>1.2.1.7</version>
+    	<version>1.2.3.7</version>
     </dependency>
     <dependency>
       <groupId>org.vaadin.addon</groupId>

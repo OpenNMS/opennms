@@ -116,5 +116,36 @@
       <dropTable tableName="hwentityattribute" />
     </rollback>
   </changeSet>
+  
+  <changeSet author="ranger@opennms.org" id="1.13.5-requisitioned-categories">
+    <createTable tableName="requisitioned_categories">
+      <column name="id" type="integer">
+        <constraints primaryKey="true" nullable="false" />
+      </column>
+      <column name="nodeid" type="integer">
+        <constraints nullable="false" />
+      </column>
+      <column name="categoryid" type="integer">
+        <constraints nullable="false" />
+      </column>
+    </createTable>
+    <ext:addAutoIncrement tableName="requisitioned_categories" columnName="id" sequenceName="opennmsnxtid" />
+
+    <addForeignKeyConstraint constraintName="requisitioned_nodeid_fkey"
+      onDelete="CASCADE" baseTableName="requisitioned_categories" baseColumnNames="nodeid"
+      referencedTableName="node" referencedColumnNames="nodeid" />
+    <addForeignKeyConstraint constraintName="requisitioned_categoryid_fkey"
+      onDelete="CASCADE" baseTableName="requisitioned_categories" baseColumnNames="categoryid"
+      referencedTableName="categories" referencedColumnNames="categoryid" />
+
+    <createIndex tableName="requisitioned_categories" indexName="requisitioned_category_node_unique_idx">
+      <column name="nodeid" />
+      <column name="categoryid" />
+    </createIndex>
+
+    <rollback>
+      <dropTable tableName="requisitioned_categories" cascadeConstraints="true" />
+    </rollback>
+  </changeSet>
 
 </databaseChangeLog>

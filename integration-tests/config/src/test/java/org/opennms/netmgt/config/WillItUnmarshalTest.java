@@ -24,7 +24,6 @@ import org.opennms.features.reporting.model.basicreport.LegacyLocalReportsDefini
 import org.opennms.features.reporting.model.jasperreport.LocalJasperReports;
 import org.opennms.features.reporting.model.remoterepository.RemoteRepositoryConfig;
 import org.opennms.netmgt.alarmd.northbounder.syslog.SyslogNorthbounderConfig;
-import org.opennms.netmgt.config.accesspointmonitor.AccessPointMonitorConfig;
 import org.opennms.netmgt.config.ackd.AckdConfiguration;
 import org.opennms.netmgt.config.actiond.ActiondConfiguration;
 import org.opennms.netmgt.config.ami.AmiConfig;
@@ -161,7 +160,6 @@ public class WillItUnmarshalTest {
 
         addFile(Source.SPRING, "eventconf-bad-element.xml", Events.class, Impl.JAXB, "Invalid content was found starting with element 'bad-element'.");
 
-        addFile(Source.CONFIG, "access-point-monitor-configuration.xml", AccessPointMonitorConfig.class, Impl.CASTOR);
         addFile(Source.CONFIG, "actiond-configuration.xml", ActiondConfiguration.class, Impl.JAXB);
         addFile(Source.CONFIG, "ami-config.xml", AmiConfig.class, Impl.JAXB);
         addFile(Source.CONFIG, "availability-reports.xml", OpennmsReports.class, Impl.CASTOR);

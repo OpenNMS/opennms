@@ -96,28 +96,28 @@ public class DefaultPluginRegistry implements PluginRegistry, InitializingBean {
     }
     
     private static void debug(String format, Object... args) {
-        LOG.debug(String.format(format, args));
+        LOG.debug(format, args);
     }
     
     private static void info(String format, Object... args) {
-        LOG.info(String.format(format, args));
+        LOG.info(format, args);
     }
     
     private static void error(Throwable cause, String format, Object... args) {
         if (cause == null) {
-            LOG.error(String.format(format, args));
+            LOG.error(format, args);
         } else {
-            LOG.error(String.format(format, args), cause);
+            LOG.error(format, args, cause);
         }
     }
     
     private <T> void addAllExtensions(Collection<T> extensions, Class<?>... extensionPoints) {
         if (extensions == null || extensions.isEmpty()) {
-            info("Found NO Extensions for ExtensionPoints %s", Arrays.toString(extensionPoints));
+            info("Found NO Extensions for ExtensionPoints {}", Arrays.toString(extensionPoints));
             return;
         }
         for(T extension : extensions) {
-            info("Register Extension %s for ExtensionPoints %s", extension, Arrays.toString(extensionPoints));
+            info("Register Extension {} for ExtensionPoints {}", extension, Arrays.toString(extensionPoints));
             m_serviceRegistry.register(extension, extensionPoints);
         }
     }
@@ -143,7 +143,7 @@ public class DefaultPluginRegistry implements PluginRegistry, InitializingBean {
         try {
             wrapper.setPropertyValues(parameters);
         } catch (BeansException e) {
-            error(e, "Could not set properties on report definition: %s", e.getMessage());
+            error(e, "Could not set properties on report definition: {}", e.getMessage());
         }
         
         return pluginInstance;
@@ -156,7 +156,7 @@ public class DefaultPluginRegistry implements PluginRegistry, InitializingBean {
     private <T> T beanWithNameOfType(String beanName, Class<T> pluginClass) {
         Map<String, T> beans = beansOfType(pluginClass);
         T bean = beans.get(beanName);
-        if (bean != null) debug("Found bean %s with name %s of type %s", bean, beanName, pluginClass);
+        if (bean != null) debug("Found bean {} with name {} of type {}", bean, beanName, pluginClass);
         return bean;
     }
     

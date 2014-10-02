@@ -45,10 +45,6 @@
     <module>topology-map</module>
     <module>vaadin-node-maps</module>
 
-    <!-- SMS monitoring -->
-    <module>phonebook</module>
-    <module>sms-reflector</module>
-
     <!-- webapps -->
     <module>root-webapp</module>
 
@@ -64,9 +60,6 @@
 
     <!-- Notifications -->
     <module>notifications</module>
-
-    <!-- Access point monitor -->
-    <module>access-point-monitor</module>
 
     <!-- OpenNMS Vaadin Themes -->
     <module>themes</module>

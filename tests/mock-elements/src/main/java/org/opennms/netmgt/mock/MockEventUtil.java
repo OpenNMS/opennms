@@ -596,12 +596,36 @@ public abstract class MockEventUtil {
      * @return a boolean.
      */
     public static boolean eventsMatchDeep(Event e1, Event e2) {
+        return MockEventUtil.eventsMatchDeep(e1, e2, 0);
+    }
+
+    /**
+     * <p>eventsMatchDeep</p>
+     *
+     * @param e1 a {@link org.opennms.netmgt.xml.event.Event} object.
+     * @param e2 a {@link org.opennms.netmgt.xml.event.Event} object.
+     * @return a boolean.
+     */
+    public static boolean eventsMatchDeep(Event e1, Event e2, long toleratedTimestampOffset) {
         if (e1.getTime() != null || e2.getTime() != null) {
             if (e1.getTime() == null || e2.getTime() == null) {
                 return false;
             }
             
-            if (!e1.getTime().equals(e2.getTime())) {
+            if (toleratedTimestampOffset > 0) {
+                try {
+                    final long d1 = e1.getDate().getTime();
+                    final long d2 = e2.getDate().getTime();
+                    if ((d2 - toleratedTimestampOffset) < d1 && d1 < (d2 + toleratedTimestampOffset)) {
+                        // d1 is within [toleratedTimestampOffset] of d2
+                    } else if ((d1 - toleratedTimestampOffset) < d2 && d2 < (d1 + toleratedTimestampOffset)) {
+                        // d2 is within [toleratedTimestampOffset] of d1
+                    } else {
+                        return false;
+                    }
+                } catch (final ParseException e) {
+                }
+            } else if (!e1.getTime().equals(e2.getTime())) {
                 return false;
             }
         }
