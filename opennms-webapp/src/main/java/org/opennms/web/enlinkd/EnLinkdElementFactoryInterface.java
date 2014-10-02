@@ -23,4 +23,8 @@ public interface EnLinkdElementFactoryInterface {
 	
 	List<OspfLinkNode> getOspfLinks(int nodeId);
 
+        CdpElementNode getCdpElement(int nodeId);
+	        
+	List<CdpLinkNode> getCdpLinks(int nodeId);
+
 }
