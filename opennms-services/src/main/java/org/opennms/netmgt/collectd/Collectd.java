@@ -625,7 +625,8 @@ public class Collectd extends AbstractServiceDaemon implements
         synchronized (m_collectableServices) {
         	for (CollectableService cSvc : m_collectableServices) {
                 InetAddress addr = (InetAddress) cSvc.getAddress();
-                if (str(addr).equals(ipAddress)
+                if (cSvc.getNodeId() == iface.getNode().getId()
+                        && str(addr).equals(ipAddress)
                         && cSvc.getPackageName().equals(pkgName)
                         && cSvc.getServiceName().equals(svcName)) {
                     isScheduled = true;
@@ -1291,7 +1292,7 @@ public class Collectd extends AbstractServiceDaemon implements
                 final InetAddress addr = (InetAddress) cSvc.getAddress();
                 final String addrString = str(addr);
                 LOG.debug("Comparing CollectableService ip address = {} and event ip interface = {}", addrString, ipAddress);
-                if (addrString != null && addrString.equals(ipAddress)) {
+                if (addrString != null && addrString.equals(ipAddress) && cSvc.getNodeId() == nodeid.intValue()) {
                     synchronized (cSvc) {
                     	if (iface == null) {
                             iface = getIpInterface(nodeid.intValue(), ipAddress);

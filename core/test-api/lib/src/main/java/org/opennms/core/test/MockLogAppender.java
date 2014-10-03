@@ -363,20 +363,3 @@ public class MockLogAppender {
     }
 
 }
-
-class LoggingEvent {
-    private String m_name;
-    private Level m_level;
-    private String m_message;
-    public LoggingEvent(final String name, final Level level, final String message) {
-        m_name = name;
-        m_level = level;
-        m_message = message;
-    }
-    String getLoggerName() { return m_name; }
-    String getMessage() { return m_message; }
-    Level getLevel() { return m_level; }
-    @Override public String toString() {
-        return m_name + "(" + m_level + "): " + m_message;
-    }
-}
