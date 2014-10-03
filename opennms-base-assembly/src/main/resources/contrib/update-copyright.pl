@@ -1,8 +1,11 @@
 #!/usr/bin/perl
 
+use Cwd qw(abs_path getcwd);
 use Fcntl ':mode';
-use File::Find;
+use File::Basename;
 use File::Copy;
+use File::Find;
+use File::Spec;
 
 my $debug = 0;
 my (undef,undef,undef,undef,undef,$current_year) = localtime(time);
@@ -72,6 +75,7 @@ sub write_properties {
 die "usage: $0 <directory>" if (@ARGV == 0);
 
 my @directories = ();
+my @skipped = ();
 
 for my $entry (@ARGV) {
 	if (-d $entry) {
@@ -93,6 +97,40 @@ find({
 	no_chdir => 1
 }, @directories) unless (@directories == 0);
 
+update_license();
+
+sub get_rootdir {
+	my $dirname = abs_path(File::Spec->catdir(dirname($0), '..', '..', '..', '..', '..'));
+	return $dirname;
+}
+
+sub update_license {
+	my $license_text = <<END;
+OpenNMS License
+===============
+
+$header
+
+Special Cases
+=============
+
+The following files have special cases in their licensing.  For details,
+view the header in each file:
+
+END
+	$license_text =~ s/\#\#\#datestring\#\#\#/${current_year}/gs;
+
+	for my $skipped (@skipped) {
+		$skipped =~ s/^\.\///;
+		$license_text .= '* ' . $skipped . "\n";
+	}
+	$license_text .= "\n";
+
+	open (FILEOUT, '>' . File::Spec->catfile(get_rootdir(), 'LICENSE.md')) or die "Unable to write to LICENSE.md: $!\n";
+	print FILEOUT $license_text;
+	close (FILEOUT) or die "Failed to close LICENSE.md: $!\n";
+}
+
 sub process_file {
 	my $name = shift;
 
@@ -102,6 +140,7 @@ sub process_file {
 	return unless ($name =~ /\.(jsp|java|properties)$/);
 	return if ($name =~ /\/test\/.*\.properties$/);
 	return if ($name =~ /\/castor.properties$/);
+	return if ($name =~ /opennms-base-assembly\/src\/main\/filtered\/etc/);
 
 	print "* $name\n";
 
@@ -146,6 +185,7 @@ sub process_file {
 			close(FILEOUT) or die "Unable to close $name.tmp.$$: $!";
 			close(FILEIN)  or die "Unable to close $name: $!";
 			unlink("$name.tmp.$$");
+			push(@skipped, $name);
 			return;
 		}
 
