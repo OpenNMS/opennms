@@ -53,7 +53,7 @@ public class AddNodePageTest extends OpenNMSSeleniumTestCase {
         selenium.open("/opennms/admin/node/add.htm");
         clickAndWait("link=Admin");
         clickAndWait("link=Manage Provisioning Requisitions");
-        selenium.type("css=form[name=takeAction] > input[name=groupName]", "test");
+        selenium.type("css=form[name=takeAction] > div > input[name=groupName]", "test");
         clickAndWait("css=input[type=submit]");
         clickAndWait("//input[@value='Synchronize']");
 

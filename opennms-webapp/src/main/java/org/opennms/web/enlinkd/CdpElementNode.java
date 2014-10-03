@@ -28,31 +28,43 @@
 
 package org.opennms.web.enlinkd;
 
-import java.util.Collection;
-import java.util.List;
+public class CdpElementNode {
 
-public interface EnLinkdElementFactoryInterface {
+    private String m_cdpGlobalRun;
+    private String m_cdpGlobalDeviceId;
+    private String m_cdpCreateTime;
+    private String m_cdpLastPollTime;
 
-	List<BridgeElementNode> getBridgeElements(int nodeId);
+    public String getCdpCreateTime() {
+        return m_cdpCreateTime;
+    }
 
-	Collection<BridgeLinkNode> getBridgeLinks(int nodeId);
+    public void setCdpCreateTime(String cdpCreateTime) {
+        m_cdpCreateTime = cdpCreateTime;
+    }
 
-	Collection<NodeLinkBridge> getNodeLinks(int nodeId);
+    public String getCdpLastPollTime() {
+        return m_cdpLastPollTime;
+    }
 
-	IsisElementNode getIsisElement(int nodeId);
-	
-	List<IsisLinkNode> getIsisLinks(int nodeId);
+    public void setCdpLastPollTime(String cdpLastPollTime) {
+        m_cdpLastPollTime = cdpLastPollTime;
+    }
 
-	LldpElementNode getLldpElement(int nodeId);
-	
-	List<LldpLinkNode> getLldpLinks(int nodeId);
-	
-	OspfElementNode getOspfElement(int nodeId);
-	
-	List<OspfLinkNode> getOspfLinks(int nodeId);
+    public String getCdpGlobalRun() {
+        return m_cdpGlobalRun;
+    }
 
-        CdpElementNode getCdpElement(int nodeId);
-	        
-	List<CdpLinkNode> getCdpLinks(int nodeId);
+    public void setCdpGlobalRun(String cdpGlobalRun) {
+        m_cdpGlobalRun = cdpGlobalRun;
+    }
+
+    public String getCdpGlobalDeviceId() {
+        return m_cdpGlobalDeviceId;
+    }
+
+    public void setCdpGlobalDeviceId(String cdpGlobalDeviceId) {
+        m_cdpGlobalDeviceId = cdpGlobalDeviceId;
+    }
 
 }

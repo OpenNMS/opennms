@@ -35,6 +35,7 @@
 <%@page import="org.opennms.web.enlinkd.NodeLinkBridge"%>
 <%@page import="org.opennms.web.enlinkd.BridgeLinkRemoteNode"%>
 <%@page import="org.opennms.web.enlinkd.LldpLinkNode"%>
+<%@page import="org.opennms.web.enlinkd.CdpLinkNode"%>
 <%@page import="org.opennms.web.enlinkd.OspfLinkNode"%>
 <%@page import="org.opennms.web.enlinkd.IsisLinkNode"%>
 <%@page
@@ -619,6 +620,69 @@
 		    <td class="standard"><%=lldplink.getLldpRemPortDescr()%></td>
 		    <td class="standard"><%=lldplink.getLldpCreateTime()%></td>
 		    <td class="standard"><%=lldplink.getLldpLastPollTime()%></td>
+	    </tr>
+	    <% } %>
+		    
+	    </table>
+
+<% }  %>
+
+<hr />        
+<%
+   if (enlinkdfactory.getCdpLinks(nodeId).isEmpty()) {
+%>
+	<div class="TwoColLeft">
+		<h3>No Cdp Cache Table Links found on <%=node_db.getLabel()%> by Enhanced Linkd</h3>
+	</div>
+<% } else { %>
+<h3><%=node_db.getLabel()%> Cdp Cache Table Links found by Enhanced Linkd</h3>
+		
+		<!-- Link box -->
+		<table class="standard">
+		
+		<thead>
+			<tr>
+			<th>Local Port</th> 
+			<th>Address Type</th>
+			<th>Address</th>
+			<th>Version</th>
+			<th>Device Id</th>
+			<th>Device Port</th> 
+            <th>Platform</th>
+			<th>Created</th>
+			<th>Last Poll</th>
+			</tr>
+		</thead>
+				
+		<% for( CdpLinkNode cdplink: enlinkdfactory.getCdpLinks(nodeId)) { %>
+	    <tr>
+		    <td class="standard">
+		 	<% if (cdplink.getCdpLocalPortUrl() != null) { %>
+            	<a href="<%=cdplink.getCdpLocalPortUrl()%>"><%=cdplink.getCdpLocalPort()%></a>
+            <% } else { %> 
+                    <%=cdplink.getCdpLocalPort()%>
+    		<% } %> 
+            </td>
+		    <td class="standard"><%=cdplink.getCdpCacheAddressType()%></td>
+		    <td class="standard"><%=cdplink.getCdpCacheAddress()%></td>
+		    <td class="standard"><%=cdplink.getCdpCacheVersion()%></td>
+            <td class="standard">
+            <% if (cdplink.getCdpCacheDeviceUrl() != null) { %>
+            	<a href="<%=cdplink.getCdpCacheDeviceUrl()%>"><%=cdplink.getCdpCacheDeviceId()%></a>
+            <% } else { %> 
+                    <%=cdplink.getCdpCacheDeviceId()%>
+    			<% } %> 
+            </td>
+		    <td class="standard">
+		 	<% if (cdplink.getCdpCacheDevicePortUrl() != null) { %>
+            	<a href="<%=cdplink.getCdpCacheDevicePortUrl()%>"><%=cdplink.getCdpCacheDevicePort()%></a>
+            <% } else { %> 
+                    <%=cdplink.getCdpCacheDevicePort()%>
+    		<% } %> 
+            </td>
+		    <td class="standard"><%=cdplink.getCdpCacheDevicePlatform()%></td>
+		    <td class="standard"><%=cdplink.getCdpCreateTime()%></td>
+		    <td class="standard"><%=cdplink.getCdpLastPollTime()%></td>
 	    </tr>
 	    <% } %>
 		    

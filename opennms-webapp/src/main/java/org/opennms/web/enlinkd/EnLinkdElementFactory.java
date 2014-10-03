@@ -37,10 +37,13 @@ import java.util.Map;
 import javax.servlet.ServletContext;
 
 import org.opennms.core.criteria.CriteriaBuilder;
+import org.opennms.core.criteria.Alias.JoinType;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.netmgt.dao.api.BridgeBridgeLinkDao;
 import org.opennms.netmgt.dao.api.BridgeElementDao;
 import org.opennms.netmgt.dao.api.BridgeMacLinkDao;
+import org.opennms.netmgt.dao.api.CdpElementDao;
+import org.opennms.netmgt.dao.api.CdpLinkDao;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.IpNetToMediaDao;
 import org.opennms.netmgt.dao.api.IsIsElementDao;
@@ -55,6 +58,9 @@ import org.opennms.netmgt.model.BridgeBridgeLink;
 import org.opennms.netmgt.model.BridgeElement;
 import org.opennms.netmgt.model.BridgeElement.BridgeDot1dBaseType;
 import org.opennms.netmgt.model.BridgeElement.BridgeDot1dStpProtocolSpecification;
+import org.opennms.netmgt.model.CdpElement;
+import org.opennms.netmgt.model.CdpLink;
+import org.opennms.netmgt.model.CdpLink.CiscoNetworkProtocolType;
 import org.opennms.netmgt.model.IsIsElement.IsisAdminState;
 import org.opennms.netmgt.model.IsIsLink.IsisISAdjNeighSysType;
 import org.opennms.netmgt.model.IsIsLink.IsisISAdjState;
@@ -70,6 +76,7 @@ import org.opennms.netmgt.model.LldpLink;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.OspfElement;
+import org.opennms.netmgt.model.OspfElement.TruthValue;
 import org.opennms.netmgt.model.OspfLink;
 import org.opennms.web.api.Util;
 import org.springframework.beans.factory.InitializingBean;
@@ -99,6 +106,12 @@ public class EnLinkdElementFactory implements InitializingBean, EnLinkdElementFa
 	
 	@Autowired 
 	private LldpLinkDao m_lldpLinkDao;
+
+	@Autowired
+	private CdpElementDao m_cdpElementDao;
+	        
+        @Autowired 
+	private CdpLinkDao m_cdpLinkDao;
 
 	@Autowired
 	private BridgeElementDao m_bridgeElementDao;
@@ -220,6 +233,63 @@ public class EnLinkdElementFactory implements InitializingBean, EnLinkdElementFa
     }
 
     @Override
+    public CdpElementNode getCdpElement(int nodeId) {
+        return convertFromModel(m_cdpElementDao.findByNodeId(Integer.valueOf(nodeId)));
+    }
+
+    private CdpElementNode convertFromModel(CdpElement cdp) {
+        if (cdp ==  null)
+                return null;
+        
+        CdpElementNode cdpNode = new CdpElementNode();
+        cdpNode.setCdpGlobalRun(TruthValue.getTypeString(cdp.getCdpGlobalRun().getValue()));
+        cdpNode.setCdpGlobalDeviceId(cdp.getCdpGlobalDeviceId());
+        cdpNode.setCdpCreateTime(Util.formatDateToUIString(cdp.getCdpNodeCreateTime()));
+        cdpNode.setCdpLastPollTime(Util.formatDateToUIString(cdp.getCdpNodeLastPollTime()));
+        
+        return cdpNode;
+    }
+    
+    @Override
+    public List<CdpLinkNode> getCdpLinks(int nodeId) {
+        List<CdpLinkNode> nodelinks = new ArrayList<CdpLinkNode>(); 
+        for (CdpLink link: m_cdpLinkDao.findByNodeId(Integer.valueOf(nodeId))) {
+                nodelinks.add(convertFromModel(nodeId,link));
+        }
+        return nodelinks;
+    }
+
+    @Transactional
+    private CdpLinkNode convertFromModel(int nodeid, CdpLink link) {
+        CdpLinkNode linknode = new CdpLinkNode();
+        linknode.setCdpLocalPort(getPortString(link.getCdpCacheIfIndex(),link.getCdpInterfaceName()));
+        if (link.getCdpCacheIfIndex() != null)
+            linknode.setCdpLocalPortUrl(getSnmpInterfaceUrl(nodeid, link.getCdpCacheIfIndex()));
+
+        linknode.setCdpCacheAddressType(CiscoNetworkProtocolType.getTypeString(link.getCdpCacheAddressType().getValue()));
+        linknode.setCdpCacheAddress(link.getCdpCacheAddress());
+        
+        linknode.setCdpCacheDeviceId(link.getCdpCacheDeviceId());
+        linknode.setCdpCacheDevicePlatform(link.getCdpCacheDevicePlatform());
+        linknode.setCdpCacheVersion(link.getCdpCacheVersion());
+        linknode.setCdpCacheDevicePort(link.getCdpCacheDevicePort());
+        
+        CdpElement cdpCacheElement = m_cdpElementDao.findByGlobalDeviceId(link.getCdpCacheDeviceId());
+        if (cdpCacheElement != null) {
+            linknode.setCdpCacheDeviceUrl(getNodeUrl(cdpCacheElement.getNode().getId()));
+            OnmsSnmpInterface cdpcachesnmp = getFromCdpCacheDevicePort(cdpCacheElement.getNode().getId(), link.getCdpCacheDevicePort());
+            if (cdpcachesnmp != null) {
+                linknode.setCdpCacheDevicePort(getPortString(cdpcachesnmp.getIfIndex(), link.getCdpCacheDevicePort()));
+                linknode.setCdpCacheDevicePortUrl(getSnmpInterfaceUrl(cdpCacheElement.getNode().getId(), cdpcachesnmp.getIfIndex()));
+            }            
+        }
+
+        linknode.setCdpCreateTime(Util.formatDateToUIString(link.getCdpLinkCreateTime()));
+        linknode.setCdpLastPollTime(Util.formatDateToUIString(link.getCdpLinkLastPollTime()));
+        return linknode;
+    }
+
+        @Override
 	public LldpElementNode getLldpElement(int nodeId) {
 		return convertFromModel(m_lldpElementDao.findByNodeId(Integer.valueOf(nodeId)));
 	}
@@ -335,7 +405,7 @@ public class EnLinkdElementFactory implements InitializingBean, EnLinkdElementFa
 		}
 		
 		if (remiface != null) {
-			linknode.setIsisISAdjNeighPort(getPortString(remiface));
+			linknode.setIsisISAdjNeighPort(getPortString(remiface.getIfIndex(),remiface.getIfName()));
 			linknode.setIsisISAdjUrl(getSnmpInterfaceUrl(remiface.getNode().getId(), remiface.getIfIndex()));
 		} else {
 			linknode.setIsisISAdjNeighPort("(Isis IS Adj Index: "+link.getIsisISAdjIndex()+ ")");
@@ -402,7 +472,11 @@ public class EnLinkdElementFactory implements InitializingBean, EnLinkdElementFa
 			
 			remlinknode.setBridgeRemoteNode(link.getNode().getLabel());
 			remlinknode.setBridgeRemoteUrl(getNodeUrl(link.getNode().getId()));
-			remlinknode.setBridgeRemotePort(getPortString(m_snmpInterfaceDao.findByNodeIdAndIfIndex(link.getNode().getId(), link.getBridgePortIfIndex())));
+			OnmsSnmpInterface remiface = m_snmpInterfaceDao.findByNodeIdAndIfIndex(link.getNode().getId(), link.getBridgePortIfIndex());
+			if (remiface != null)
+			    remlinknode.setBridgeRemotePort(getPortString(remiface));
+			else 
+                            remlinknode.setBridgeRemotePort(getPortString(link.getBridgePortIfIndex(),null));
 			remlinknode.setBridgeRemotePortUrl(getSnmpInterfaceUrl(link.getNode().getId(), link.getBridgePortIfIndex()));
 			remlinknode.setBridgeRemoteVlan(link.getVlan());
 			
@@ -450,7 +524,11 @@ public class EnLinkdElementFactory implements InitializingBean, EnLinkdElementFa
 		remlinknode.setBridgeRemoteNode(link.getDesignatedNode().getLabel());
 		remlinknode.setBridgeRemoteUrl(getNodeUrl(link.getDesignatedNode().getId()));
 		
-		remlinknode.setBridgeRemotePort(getPortString(m_snmpInterfaceDao.findByNodeIdAndIfIndex(link.getDesignatedNode().getId(), link.getDesignatedPortIfIndex())));
+                OnmsSnmpInterface remiface = m_snmpInterfaceDao.findByNodeIdAndIfIndex(link.getNode().getId(), link.getBridgePortIfIndex());
+                if (remiface != null)
+                    remlinknode.setBridgeRemotePort(getPortString(remiface));
+                else 
+                    remlinknode.setBridgeRemotePort(getPortString(link.getBridgePortIfIndex(),null));
 		remlinknode.setBridgeRemotePortUrl(getSnmpInterfaceUrl(link.getDesignatedNode().getId(), link.getDesignatedPortIfIndex()));
 		
 		remlinknode.setBridgeRemoteVlan(link.getDesignatedVlan());
@@ -521,7 +599,21 @@ public class EnLinkdElementFactory implements InitializingBean, EnLinkdElementFa
 	private String getPortString(String portId,LldpPortIdSubType type) {
 		return LldpPortIdSubType.getTypeString(type.getValue()) + ": " + portId;
 	}
-		
+
+    private OnmsSnmpInterface getFromCdpCacheDevicePort(Integer nodeid,
+            String cdpCacheDevicePort) {
+        final CriteriaBuilder builder = new CriteriaBuilder(
+                                                            OnmsSnmpInterface.class);
+        builder.alias("node", "node", JoinType.LEFT_JOIN);
+        builder.sql("snmpifalias = '" + cdpCacheDevicePort + "' OR snmpifname = '" + cdpCacheDevicePort + "' OR snmpifdescr = '" +cdpCacheDevicePort+"'").eq("node.id", nodeid);
+        final List<OnmsSnmpInterface> nodes = m_snmpInterfaceDao.findMatching(builder.toCriteria());
+
+        if (nodes.size() == 1)
+            return nodes.get(0);
+        return null;
+
+    }
+
 	private OnmsSnmpInterface getFromPhysAddress(String physAddress) {
 		final CriteriaBuilder builder = new CriteriaBuilder(OnmsSnmpInterface.class);
         builder.eq("physAddr", physAddress);
@@ -543,8 +635,20 @@ public class EnLinkdElementFactory implements InitializingBean, EnLinkdElementFa
 		return "bridge port: "+ bridgePort;
 	}
 
-	private String getPortString(OnmsSnmpInterface snmpiface) {
-		return snmpiface.getIfName() + "(ifindex:"+ snmpiface.getIfIndex()+")";
+        private String getPortString(OnmsSnmpInterface iface) {
+            if (iface != null)
+               return getPortString(iface.getIfIndex(),iface.getIfName());
+            return "(no interface found in db)";
+        }	        
+
+	private String getPortString(Integer ifindex, String portName) {
+	    if (ifindex != null && portName != null)
+		return portName + "(ifindex:"+ ifindex+")";
+	    if (portName != null )
+	        return portName;
+	    if (ifindex != null)
+	        return "(ifindex:"+ ifindex+")";
+	    return "(no interface found in db)";
 	}
 	
 	private String getRemRouterIdString(String ip, String label) {

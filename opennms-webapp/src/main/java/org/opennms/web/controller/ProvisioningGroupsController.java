@@ -153,6 +153,9 @@ public class ProvisioningGroupsController extends SimpleFormController {
         String groupName = command.getGroupName();
         if (groupName.equals("default") || groupName.equals("")) {
             return showForm(request, response, errors);
+        } if (m_provisioningService.getProvisioningGroup(groupName) != null) {
+            // Requisition already exists; don't clobber it!
+            return showForm(request, response, errors);
         } else {
             m_provisioningService.createProvisioningGroup(command.getGroupName());
         }
