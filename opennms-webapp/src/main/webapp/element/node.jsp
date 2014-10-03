@@ -30,6 +30,7 @@
 --%>
 
 <%@page import="org.opennms.web.enlinkd.LldpElementNode"%>
+<%@page import="org.opennms.web.enlinkd.CdpElementNode"%>
 <%@page import="org.opennms.web.enlinkd.OspfElementNode"%>
 <%@page import="org.opennms.web.enlinkd.IsisElementNode"%>
 <%@page import="org.opennms.web.enlinkd.BridgeElementNode"%>
@@ -169,6 +170,7 @@
     }
     
     nodeModel.put("lldp",    EnLinkdElementFactory.getInstance(getServletContext()).getLldpElement(nodeId));
+    nodeModel.put("cdp",    EnLinkdElementFactory.getInstance(getServletContext()).getCdpElement(nodeId));
     nodeModel.put("ospf",    EnLinkdElementFactory.getInstance(getServletContext()).getOspfElement(nodeId));
     nodeModel.put("isis",    EnLinkdElementFactory.getInstance(getServletContext()).getIsisElement(nodeId));
     nodeModel.put("bridges", EnLinkdElementFactory.getInstance(getServletContext()).getBridgeElements(nodeId));
@@ -483,6 +485,29 @@ function confirmAssetEdit() {
       <tr>
         <th>last poll time</th>
         <td>${model.lldp.lldpLastPollTime}</td>
+      </tr>
+    </table>
+  </c:if>
+
+  <!-- Cdp box, if info available --> 
+  <c:if test="${! empty model.cdp }">
+    <h3 class="o-box">Cdp Information</h3>
+    <table class="o-box">
+      <tr>
+        <th>global device id</th>
+        <td>${model.cdp.cdpGlobalDeviceId}</td>
+      </tr>
+      <tr>
+        <th>global run</th>
+        <td>${model.cdp.cdpGlobalRun}</td>
+      </tr>
+      <tr>
+        <th>create time</th>
+        <td>${model.cdp.cdpCreateTime}</td>
+      </tr>
+      <tr>
+        <th>last poll time</th>
+        <td>${model.cdp.cdpLastPollTime}</td>
       </tr>
     </table>
   </c:if>

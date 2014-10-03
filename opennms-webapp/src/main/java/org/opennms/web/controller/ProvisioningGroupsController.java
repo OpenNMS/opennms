@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -152,6 +152,9 @@ public class ProvisioningGroupsController extends SimpleFormController {
     private ModelAndView doAddGroup(HttpServletRequest request, HttpServletResponse response, GroupAction command, BindException errors) throws Exception {
         String groupName = command.getGroupName();
         if (groupName.equals("default") || groupName.equals("")) {
+            return showForm(request, response, errors);
+        } if (m_provisioningService.getProvisioningGroup(groupName) != null) {
+            // Requisition already exists; don't clobber it!
             return showForm(request, response, errors);
         } else {
             m_provisioningService.createProvisioningGroup(command.getGroupName());

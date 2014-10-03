@@ -44,8 +44,9 @@
   <jsp:param name="breadcrumb" value="run"/>
 </jsp:include>
 
+<div class="OneColLeft">
 <h3>Run Online Report</h3>
-
+<div class="boxWrapper">
 <form:form commandName="parameters" cssClass="stdform">
 	
 		<%-- // string parameters --%>
@@ -121,6 +122,7 @@
 	</span>
 	
  </form:form>
-  
+</div>
+</div>
 
 <jsp:include page="/includes/footer.jsp" flush="false" />
