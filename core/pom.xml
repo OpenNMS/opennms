@@ -15,7 +15,7 @@
         <artifactId>maven-assembly-plugin</artifactId>
         <configuration>
           <descriptors>
-            <descriptor>src/assemble/bin.xml</descriptor>
+            <descriptor>src/assembly/bin.xml</descriptor>
           </descriptors>
         </configuration>
       </plugin>
