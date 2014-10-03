@@ -62,7 +62,7 @@ public static class AutocompleteRecord {
 }
 %>
 <%
-List<org.opennms.web.element.Interface> items = Arrays.asList(NetworkElementFactory.getInstance(getServletContext()).getAllManagedIpInterfaces(false));
+//List<org.opennms.web.element.Interface> items = Arrays.asList(NetworkElementFactory.getInstance(getServletContext()).getAllManagedIpInterfaces(false));
 %>
 
 <%-- Use this segment to test large numbers of JSON objects
@@ -90,37 +90,39 @@ for (int i = 0; i < 50000; i++) {
 boolean printedFirst = false;
 int recordCounter = 1;
 final int recordLimit = 200;
-for (org.opennms.web.element.Interface item : items) {
-	String autocomplete = request.getParameter("term");
-	// Check to see if the interface matches the search term
-	if (
-		autocomplete == null || 
-		"".equals(autocomplete) || 
-		item.getName().contains(autocomplete) || 
-		item.getIpAddress().contains(autocomplete)
-	) {
-		String hostnameClause = (
-			item.getName() == null || 
-			"".equals(item.getName())) || 
-			item.getName().equals(item.getIpAddress()
-		) ? "" : " (" + item.getName() + ")";
 
-		String label = item.getIpAddress() + hostnameClause;
-		if (autocomplete != null && !"".equals(autocomplete)) {
-			label = label.replace(autocomplete, "<strong>" + autocomplete + "</strong>");
-		}
-		// If we've already printed the first item, separate the items with a comma
-		if (printedFirst) {
-			out.println(",");
-		}
-		out.println(JSONSerializer.toJSON(new AutocompleteRecord(label, item.getIpAddress())));
-		printedFirst = true;
-		// Don't print more than a certain number of records to limit the
-		// performance impact in the web browser
-		if (recordCounter++ >= recordLimit) {
-			break;
-		}
-	}
+String autocomplete = request.getParameter("term");
+List<org.opennms.web.element.Interface> items;
+if(autocomplete == null || autocomplete.equals("")) {
+    items = Arrays.asList(NetworkElementFactory.getInstance(getServletContext()).getAllManagedIpInterfaces(false));
+} else{
+    items = Arrays.asList(NetworkElementFactory.getInstance(getServletContext()).getAllManagedIpInterfacesLike(autocomplete));
+}
+
+for (org.opennms.web.element.Interface item : items) {
+
+	// Check to see if the interface matches the search term
+
+    String hostnameClause = (
+        item.getName() == null ||
+        "".equals(item.getName())) ||
+        item.getName().equals(item.getIpAddress()
+    ) ? "" : " (" + item.getName() + ")";
+
+    String label = item.getIpAddress() + hostnameClause;
+
+    // If we've already printed the first item, separate the items with a comma
+    if (printedFirst) {
+        out.println(",");
+    }
+    out.println(JSONSerializer.toJSON(new AutocompleteRecord(label, item.getIpAddress())));
+    printedFirst = true;
+    // Don't print more than a certain number of records to limit the
+    // performance impact in the web browser
+    if (recordCounter++ >= recordLimit) {
+        break;
+    }
+
 }
 %>
 ]
