@@ -1,16 +1,7 @@
 
 === JCifsMonitor
 This monitor allows to test a file sharing service based on the CIFS/SMB protocol.
-With the JCIFS monitor you have different possibilities to test the availability or the existence of files in a network share.
-
-A network resource in SMB like a file or folder is addressed as a link:https://en.wikipedia.org/wiki/Path_%28computing%29#Uniform_Naming_Convention[UNC Path].
-
- \\server\share\folder\file.txt
-
-The Java implementation jCIFS, which implements the CIFS/SMB network protocol, uses SMB URLs to access the network resource.
-The same resource as in our example would look like this as an link:http://www.iana.org/assignments/uri-schemes/prov/smb[SMB URL]:
-
- smb://workgroup;user:password@server/share/folder/file.txt
+With the _JCIFS_ monitor you have different possibilities to test the availability of the _JCIFS_ service:
 
 With the _JCifsMonitor_ it is possible to run tests for the following use cases:
 
@@ -20,6 +11,15 @@ With the _JCifsMonitor_ it is possible to run tests for the following use cases:
 * a given folder should contain at least one (1) file
 * a given folder folder should contain no (0) files
 * by testing on files and folders, you can use a regular expression to ignore specific file and folder names from the test
+
+A network resource in SMB like a file or folder is addressed as a link:https://en.wikipedia.org/wiki/Path_%28computing%29#Uniform_Naming_Convention[UNC Path].
+
+ \\server\share\folder\file.txt
+
+The Java implementation _jCIFS_, which implements the _CIFS/SMB_ network protocol, uses _SMB_ URLs to access the network resource.
+The same resource as in our example would look like this as an link:http://www.iana.org/assignments/uri-schemes/prov/smb[SMB URL]:
+
+ smb://workgroup;user:password@server/share/folder/file.txt
 
 The _JCifsMonitor_ can *not* test:
 
