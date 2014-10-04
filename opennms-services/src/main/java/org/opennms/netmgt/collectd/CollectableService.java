@@ -382,7 +382,7 @@ final class CollectableService implements ReadyRunnable {
          * Perform data collection.
          */
 	private void doCollection() throws CollectionException {
-		LOG.info("run: starting new collection for {}/{}/{}", getHostAddress(), m_spec.getServiceName(), m_spec.getPackageName());
+		LOG.info("run: starting new collection for {}/{}/{}/{}", m_nodeId, getHostAddress(), m_spec.getServiceName(), m_spec.getPackageName());
 		CollectionSet result = null;
 		try {
 		    result = m_spec.collect(m_agent);
@@ -413,13 +413,13 @@ final class CollectableService implements ReadyRunnable {
                         }
                     }
                 } catch (CollectionException e) {
-                    LOG.warn("run: failed collection for {}/{}/{}", getHostAddress(), m_spec.getServiceName(), m_spec.getPackageName());
+                    LOG.warn("run: failed collection for {}/{}/{}/{}", m_nodeId, getHostAddress(), m_spec.getServiceName(), m_spec.getPackageName());
                     throw e;
 		} catch (Throwable t) {
-                    LOG.warn("run: failed collection for {}/{}/{}", getHostAddress(), m_spec.getServiceName(), m_spec.getPackageName());
-                    throw new CollectionException("An undeclared throwable was caught during data collection for interface " + getHostAddress() +"/"+ m_spec.getServiceName(), t);
+                    LOG.warn("run: failed collection for {}/{}/{}/{}", m_nodeId, getHostAddress(), m_spec.getServiceName(), m_spec.getPackageName());
+                    throw new CollectionException("An undeclared throwable was caught during data collection for interface " + m_nodeId + "/" + getHostAddress() + "/" + m_spec.getServiceName(), t);
 		}
-		LOG.info("run: finished collection for {}/{}/{}", getHostAddress(), m_spec.getServiceName(), m_spec.getPackageName());
+		LOG.info("run: finished collection for {}/{}/{}/{}", m_nodeId, getHostAddress(), m_spec.getServiceName(), m_spec.getPackageName());
 	}
 
 	/**
@@ -458,11 +458,11 @@ final class CollectableService implements ReadyRunnable {
 
                 try {
                     reinitialize(newIface);
-                    LOG.debug("Completed reinitializing {} collector for {}/{}", this.getServiceName(), getHostAddress(), m_spec.getServiceName());
+                    LOG.debug("Completed reinitializing {} collector for {}/{}/{}", this.getServiceName(), m_nodeId, getHostAddress(), m_spec.getServiceName());
                 } catch (CollectionInitializationException rE) {
-                    LOG.warn("Unable to initialize {} for {} collection, reason: {}", getHostAddress(), m_spec.getServiceName(), rE.getMessage());
+                    LOG.warn("Unable to initialize {}/{} for {} collection, reason: {}", m_nodeId, getHostAddress(), m_spec.getServiceName(), rE.getMessage());
                 } catch (Throwable t) {
-                    LOG.error("Uncaught exception, failed to intialize interface {} for {} data collection", getHostAddress(), m_spec.getServiceName(), t);
+                    LOG.error("Uncaught exception, failed to intialize interface {}/{} for {} data collection", m_nodeId, getHostAddress(), m_spec.getServiceName(), t);
                 }
             }
 
@@ -559,13 +559,13 @@ final class CollectableService implements ReadyRunnable {
                 // to the interface's parent node among other things.
                 //
                 try {
-                    LOG.debug("Reinitializing collector for {}/{}", getHostAddress(), m_spec.getServiceName());
+                    LOG.debug("Reinitializing collector for {}/{}/{}", m_nodeId, getHostAddress(), m_spec.getServiceName());
                     reinitialize(m_updates.getUpdatedInterface());
-                    LOG.debug("Completed reinitializing collector for {}/{}", getHostAddress(), m_spec.getServiceName());
+                    LOG.debug("Completed reinitializing collector for {}/{}/{}", m_nodeId, getHostAddress(), m_spec.getServiceName());
                 } catch (CollectionInitializationException rE) {
-                    LOG.warn("Unable to initialize {} for {} collection, reason: {}", getHostAddress(), m_spec.getServiceName(), rE.getMessage());
+                    LOG.warn("Unable to initialize {}/{} for {} collection, reason: {}", m_nodeId, getHostAddress(), m_spec.getServiceName(), rE.getMessage());
                 } catch (Throwable t) {
-                    LOG.error("Uncaught exception, failed to initialize interface {} for {} data collection", getHostAddress(), m_spec.getServiceName(), t);
+                    LOG.error("Uncaught exception, failed to initialize interface {}/{} for {} data collection", m_nodeId, getHostAddress(), m_spec.getServiceName(), t);
                 }
             }
 
