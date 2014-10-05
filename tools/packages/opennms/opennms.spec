@@ -49,7 +49,7 @@ Name:			opennms
 Summary:		Enterprise-grade Network Management Platform (Easy Install)
 Release:		%releasenumber
 Version:		%version
-License:		LGPL/GPL
+License:		LGPL/AGPL
 Group:			Applications/System
 BuildArch:		noarch
 
@@ -455,6 +455,7 @@ The Juniper JCA collector provides a collector plugin for Collectd to collect da
 %package plugin-collector-vtdxml-handler
 Summary:	VTD-XML Collection Handler for OpenNMS
 Group:		Applications/System
+License:	GPL
 Requires(pre):	opennms-plugin-protocol-xml = %{version}-%{release}
 Requires:	opennms-plugin-protocol-xml = %{version}-%{release}
 

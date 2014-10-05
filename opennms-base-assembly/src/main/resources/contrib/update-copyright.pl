@@ -1,8 +1,11 @@
 #!/usr/bin/perl
 
+use Cwd qw(abs_path getcwd);
 use Fcntl ':mode';
-use File::Find;
+use File::Basename;
 use File::Copy;
+use File::Find;
+use File::Spec;
 
 my $debug = 0;
 my (undef,undef,undef,undef,undef,$current_year) = localtime(time);
@@ -16,16 +19,16 @@ OpenNMS(R) is Copyright (C) 1999-$current_year The OpenNMS Group, Inc.
 OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 
 OpenNMS(R) is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published
+it under the terms of the GNU Affero General Public License as published
 by the Free Software Foundation, either version 3 of the License,
 or (at your option) any later version.
 
 OpenNMS(R) is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+GNU Affero General Public License for more details.
 
-You should have received a copy of the GNU General Public License
+You should have received a copy of the GNU Affero General Public License
 along with OpenNMS(R).  If not, see:
      http://www.gnu.org/licenses/
 
@@ -72,6 +75,7 @@ sub write_properties {
 die "usage: $0 <directory>" if (@ARGV == 0);
 
 my @directories = ();
+my @skipped = ();
 
 for my $entry (@ARGV) {
 	if (-d $entry) {
@@ -93,6 +97,40 @@ find({
 	no_chdir => 1
 }, @directories) unless (@directories == 0);
 
+update_license();
+
+sub get_rootdir {
+	my $dirname = abs_path(File::Spec->catdir(dirname($0), '..', '..', '..', '..', '..'));
+	return $dirname;
+}
+
+sub update_license {
+	my $license_text = <<END;
+OpenNMS License
+===============
+
+$header
+
+Special Cases
+=============
+
+The following files have special cases in their licensing.  For details,
+view the header in each file:
+
+END
+	$license_text =~ s/\#\#\#datestring\#\#\#/${current_year}/gs;
+
+	for my $skipped (@skipped) {
+		$skipped =~ s/^\.\///;
+		$license_text .= '* ' . $skipped . "\n";
+	}
+	$license_text .= "\n";
+
+	open (FILEOUT, '>' . File::Spec->catfile(get_rootdir(), 'LICENSE.md')) or die "Unable to write to LICENSE.md: $!\n";
+	print FILEOUT $license_text;
+	close (FILEOUT) or die "Failed to close LICENSE.md: $!\n";
+}
+
 sub process_file {
 	my $name = shift;
 
@@ -102,13 +140,14 @@ sub process_file {
 	return unless ($name =~ /\.(jsp|java|properties)$/);
 	return if ($name =~ /\/test\/.*\.properties$/);
 	return if ($name =~ /\/castor.properties$/);
+	return if ($name =~ /opennms-base-assembly\/src\/main\/filtered\/etc/);
 
 	print "* $name\n";
 
 	my $begin_date = $current_year;
 	my $end_date   = $current_year;
 
-	open (GIT, "git log --date=short '$name' |") or die "unable to read from 'git log --date=short $name': $!\n";
+	open (GIT, "git log --follow --date=short '$name' |") or die "unable to read from 'git log --date=short $name': $!\n";
 	while (my $line = <GIT>) {
 		if ($line =~ /^\s*Date:\s+(\d+)/) {
 			my $date = $1;
@@ -140,6 +179,15 @@ sub process_file {
 
 	LOOP: while (my $line = <FILEIN>) {
 		print "  $line" if ($debug);
+
+		if ($line =~ /Licensed to the Apache Software Foundation|Licensed under the Apache License, Version|Brian Wellington|Original version by Tim Endres|Licensed to the OpenNMS Group|under the terms of the Eclipse Public License/i) {
+			print "  Alternative license found, skipping.\n";
+			close(FILEOUT) or die "Unable to close $name.tmp.$$: $!";
+			close(FILEIN)  or die "Unable to close $name: $!";
+			unlink("$name.tmp.$$");
+			push(@skipped, $name);
+			return;
+		}
 
 		print "1. in_comment = $in_comment\n" if ($debug);
 		print "2. in_header  = $in_header\n"  if ($debug);

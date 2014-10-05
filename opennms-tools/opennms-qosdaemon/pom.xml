@@ -100,7 +100,7 @@
   </contributors>
   <!-- 
        This project builds an OSS/J interface for OpenNMS.
-       It is released with OpenNMS under the GPL liscence
+       It is released with OpenNMS under the AGPL liscence
        It uses code contributed by the University of Southampton
        
        This project leverages the OSSbeans project.
