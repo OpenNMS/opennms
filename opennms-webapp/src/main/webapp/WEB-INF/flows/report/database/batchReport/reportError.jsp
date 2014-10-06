@@ -45,14 +45,19 @@
 </jsp:include>
 
 <h3>Report Error</h3>
-      
-<form:form cssClass="stdform">
-	<p><span class="indent">
-    	An error has occurred and it has not been possible to run or schedule your report.
-	</span></p>
-	<span class="indent">
-    	<input type="submit" id="proceed" name="_eventId_proceed" value="Finished" />&#160;
-	</span>
-</form:form>
+<div class="boxWrapper">
+    <form:form cssClass="stdform">
+        <p><span class="indent">
+            <c:forEach var="message" items="${flowRequestContext.messageContext.allMessages}">
+                <span class="info">${message.text}</span><br/>
+            </c:forEach>
+
+            <%--An error has occurred and it has not been possible to run or schedule your report.--%>
+        </span></p>
+        <span class="indent">
+            <input type="submit" id="proceed" name="_eventId_proceed" value="Finished" />&#160;
+        </span>
+    </form:form>
+</div>
 
 <jsp:include page="/includes/footer.jsp" flush="false" />

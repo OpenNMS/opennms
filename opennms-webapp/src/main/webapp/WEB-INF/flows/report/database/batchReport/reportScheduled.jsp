@@ -45,14 +45,14 @@
 </jsp:include>
 
 <h3>Report Scheduled</h3>
-      
-<form:form cssClass="stdform">
-	<p><span class="indent">
-    	Your report has been scheduled.
-	</span></p>
-	<span class="indent">
-    	<input type="submit" id="proceed" name="_eventId_proceed" value="Finished" />&#160;
-	</span>
-</form:form>
-
+<div class="boxWrapper">
+    <form:form cssClass="stdform">
+        <p><span class="indent">
+            Your report has been scheduled.
+        </span></p>
+        <span class="indent">
+            <input type="submit" id="proceed" name="_eventId_proceed" value="Finished" />&#160;
+        </span>
+    </form:form>
+</div>
 <jsp:include page="/includes/footer.jsp" flush="false" />
