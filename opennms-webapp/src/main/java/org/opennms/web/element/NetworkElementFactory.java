@@ -463,6 +463,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
         return getInterfaceArray(m_ipInterfaceDao.findMatching(criteria));
     }
 
+
     
 
     /* (non-Javadoc)
@@ -587,6 +588,22 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
         }else {
             return getInterfaceArrayWithSnmpData(m_ipInterfaceDao.findMatching(criteria));
         }
+    }
+
+    @Override
+    public Interface[] getAllManagedIpInterfacesLike(String ipHost){
+        OnmsCriteria criteria = new OnmsCriteria(OnmsIpInterface.class);
+        criteria.createAlias("snmpInterface", "snmpInterface", OnmsCriteria.LEFT_JOIN);
+        criteria.createAlias("node", "node");
+        criteria.add(Restrictions.ne("isManaged", "D"));
+        //criteria.add(Restrictions.ne("ipAddress", InetAddressUtils.addr("0.0.0.0")));
+        criteria.add(Restrictions.or(Restrictions.ilike("ipHostName", ipHost, MatchMode.ANYWHERE), Restrictions.ilike("ipAddress", ipHost, MatchMode.ANYWHERE)));
+        //criteria.add(Restrictions.isNotNull("ipAddress"));
+        criteria.addOrder(Order.asc("ipHostName"));
+        criteria.addOrder(Order.asc("node.id"));
+        criteria.addOrder(Order.asc("ipAddress"));
+
+        return getInterfaceArray(m_ipInterfaceDao.findMatching(criteria));
     }
 
     /* (non-Javadoc)
