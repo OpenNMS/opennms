@@ -552,6 +552,12 @@ public class CollectorTest {
 
     }
 
+    @Test 
+    public void testOnms14() throws IOException {
+        Collector c = new Collector ();
+        c.readLogMessagesFromFile("target/test-classes/instrumentation-1.14.log");
+    }
+
     static Date timestamp(final String dateString) throws ParseException {
         return BaseLogMessage.parseTimestamp(dateString);
     }

@@ -85,4 +85,9 @@ public class MainTest {
         setup("target/test-classes/TestLogFile.log","-tpt");
         assertEquals("TOTALPERSISTTIME", main.getCollector().m_sortColumn.toString());
      }
+    @Test
+    public void testOnms14() {
+        setup("target/test-classes/instrumentation-1.14.log","-tc");
+        assertEquals("TOTALCOLLECTS", main.getCollector().m_sortColumn.toString());
+     }
 }
