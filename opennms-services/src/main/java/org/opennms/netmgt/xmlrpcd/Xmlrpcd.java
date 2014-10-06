@@ -264,6 +264,16 @@ public class Xmlrpcd extends AbstractServiceDaemon {
         // interrupt the processor daemon thread
         for (final EventQueueProcessor proc : m_processors) {
             proc.stop();
+            while (true) {
+                if (proc.getStatus() == STOPPED) {
+                    break;
+                }
+                try {
+                    Thread.sleep(20);
+                } catch (final InterruptedException e) {
+                    // already shutting down, eat the exception
+                }
+            }
         }
         
         LOG.debug("stop: Processor stopped");
