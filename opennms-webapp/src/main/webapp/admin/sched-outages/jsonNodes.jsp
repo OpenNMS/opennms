@@ -71,10 +71,7 @@ boolean printedFirst = false;
 int recordCounter = 1;
 final int recordLimit = 200;
 String autocomplete = request.getParameter("term");
-//Pattern pattern = null;
-//if (autocomplete != null && !"".equals(autocomplete)) {
-//	pattern = Pattern.compile(autocomplete, Pattern.LITERAL + Pattern.CASE_INSENSITIVE);
-//}
+
 List<OnmsNode> items;
 if(autocomplete == null || autocomplete.equals("")){
     items = NetworkElementFactory.getInstance(getServletContext()).getAllNodes();
