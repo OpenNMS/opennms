@@ -45,99 +45,98 @@
 </jsp:include>
 
 <h3>Report Parameters</h3>
+<div class="boxWrapper">
+    <form:form modelAttribute="parameters" cssClass="stdform">
 
-<form:form modelAttribute="parameters" cssClass="stdform">
-	
-	
-		<%-- // string parameters --%>
-		<c:forEach items="${parameters.stringParms}" var="stringParm" varStatus="stringParmRow">
-			<p><form:label path="stringParms[${stringParmRow.index}].value" cssClass="label">
-				<c:out value="${stringParm.displayName}"/>
-			</form:label>
-            <c:choose>
-                <c:when test="${stringParm.inputType == 'reportCategorySelector'}">
-                	<form:select path="stringParms[${stringParmRow.index}].value"> 
-	                <form:options items="${categories}"/>
-	                </form:select>
-                </c:when>
-				<c:when test="${stringParm.inputType == 'onmsCategorySelector'}">
-                	<form:select path="stringParms[${stringParmRow.index}].value"> 
-	                <form:options items="${onmsCategories}"/>
-	                </form:select>
-                </c:when>
-                <c:otherwise>
-                	<form:input path="stringParms[${stringParmRow.index}].value"/>
-                </c:otherwise>
-            </c:choose>
-            </p>
-		</c:forEach>
-		<%-- // int parameters --%>
-		<c:forEach items="${parameters.intParms}" var="intParm" varStatus="intParmRow">
-			<p><form:label path="intParms[${intParmRow.index}].value" cssClass="label" >
-				<c:out value="${intParm.displayName}"/>
-			</form:label>
-            <form:input path="intParms[${intParmRow.index}].value"/></p>
-		</c:forEach>
-		<%-- // Float parameters --%>
-		<c:forEach items="${parameters.floatParms}" var="floatParm" varStatus="floatParmRow">
-			<p><form:label path="floatParms[${floatParmRow.index}].value" cssClass="label" >
-				<c:out value="${floatParm.displayName}"/>
-			</form:label>
-			<form:input path="floatParms[${floatParmRow.index}].value"/></p>
-		</c:forEach>
-		<%-- // Double parameters --%>
-		<c:forEach items="${parameters.doubleParms}" var="doubleParm" varStatus="doubleParmRow">
-			<p><form:label path="doubleParms[${doubleParmRow.index}].value" cssClass="label" >
-				<c:out value="${doubleParm.displayName}"/>
-			</form:label>
-	        <form:input path="doubleParms[${doubleParmRow.index}].value"/></p>
-		</c:forEach>
-		<%-- // date parameters --%>
-		<c:forEach items="${parameters.dateParms}" var="date" varStatus="dateParmRow">
-			<p><span class="label">
-				<c:out value="${date.displayName}"/>
-			</span>
-			<c:choose>
-				<c:when test="${ schedule && !date.useAbsoluteDate}">
-					<form:select path="dateParms[${dateParmRow.index}].count">
-						<c:forEach var="count" begin="0" end="31">
-							<form:option value="${count}" />
-						</c:forEach>
-					</form:select>
-					<form:select path="dateParms[${dateParmRow.index}].interval">
-							<form:option value="day">day</form:option>
-							<form:option value="month">month</form:option>
-							<form:option value="year">year</form:option>
-                	</form:select>	
-					ago, at
-				</c:when>
-				<c:otherwise>
-					<form:input path="dateParms[${dateParmRow.index}].date" />
-				</c:otherwise>
-			</c:choose>
-			<form:select path="dateParms[${dateParmRow.index}].hours">
-				<c:forEach var="hour" begin="0" end="23">
-					<form:option value="${hour}">
-						<fmt:formatNumber minIntegerDigits="2" value="${hour}" />
-					</form:option>
-				</c:forEach>
-			</form:select>
-			:
-			<form:select path="dateParms[${dateParmRow.index}].minutes">
-				<c:forEach var="minute" begin="0" end="59">
-					<form:option value="${minute}">
-						<fmt:formatNumber minIntegerDigits="2" value="${minute}" />
-					</form:option>
-				</c:forEach>
-			</form:select></p>
-		</c:forEach>
-		
-	<span class="indent">
- 		<input type="submit" id="proceed" name="_eventId_proceed" value="Proceed" />&#160;
-		<input type="submit" id="cancel" name="_eventId_cancel" value="Cancel"/>&#160;
-	</span>
-	
- </form:form>
-  
+            <%-- // string parameters --%>
+            <c:forEach items="${parameters.stringParms}" var="stringParm" varStatus="stringParmRow">
+                <p><form:label path="stringParms[${stringParmRow.index}].value" cssClass="label">
+                    <c:out value="${stringParm.displayName}"/>
+                </form:label>
+                <c:choose>
+                    <c:when test="${stringParm.inputType == 'reportCategorySelector'}">
+                        <form:select path="stringParms[${stringParmRow.index}].value">
+                        <form:options items="${categories}"/>
+                        </form:select>
+                    </c:when>
+                    <c:when test="${stringParm.inputType == 'onmsCategorySelector'}">
+                        <form:select path="stringParms[${stringParmRow.index}].value">
+                        <form:options items="${onmsCategories}"/>
+                        </form:select>
+                    </c:when>
+                    <c:otherwise>
+                        <form:input path="stringParms[${stringParmRow.index}].value"/>
+                    </c:otherwise>
+                </c:choose>
+                </p>
+            </c:forEach>
+            <%-- // int parameters --%>
+            <c:forEach items="${parameters.intParms}" var="intParm" varStatus="intParmRow">
+                <p><form:label path="intParms[${intParmRow.index}].value" cssClass="label" >
+                    <c:out value="${intParm.displayName}"/>
+                </form:label>
+                <form:input path="intParms[${intParmRow.index}].value"/></p>
+            </c:forEach>
+            <%-- // Float parameters --%>
+            <c:forEach items="${parameters.floatParms}" var="floatParm" varStatus="floatParmRow">
+                <p><form:label path="floatParms[${floatParmRow.index}].value" cssClass="label" >
+                    <c:out value="${floatParm.displayName}"/>
+                </form:label>
+                <form:input path="floatParms[${floatParmRow.index}].value"/></p>
+            </c:forEach>
+            <%-- // Double parameters --%>
+            <c:forEach items="${parameters.doubleParms}" var="doubleParm" varStatus="doubleParmRow">
+                <p><form:label path="doubleParms[${doubleParmRow.index}].value" cssClass="label" >
+                    <c:out value="${doubleParm.displayName}"/>
+                </form:label>
+                <form:input path="doubleParms[${doubleParmRow.index}].value"/></p>
+            </c:forEach>
+            <%-- // date parameters --%>
+            <c:forEach items="${parameters.dateParms}" var="date" varStatus="dateParmRow">
+                <p><span class="label">
+                    <c:out value="${date.displayName}"/>
+                </span>
+                <c:choose>
+                    <c:when test="${ schedule && !date.useAbsoluteDate}">
+                        <form:select path="dateParms[${dateParmRow.index}].count">
+                            <c:forEach var="count" begin="0" end="31">
+                                <form:option value="${count}" />
+                            </c:forEach>
+                        </form:select>
+                        <form:select path="dateParms[${dateParmRow.index}].interval">
+                                <form:option value="day">day</form:option>
+                                <form:option value="month">month</form:option>
+                                <form:option value="year">year</form:option>
+                        </form:select>
+                        ago, at
+                    </c:when>
+                    <c:otherwise>
+                        <form:input path="dateParms[${dateParmRow.index}].date" />
+                    </c:otherwise>
+                </c:choose>
+                <form:select path="dateParms[${dateParmRow.index}].hours">
+                    <c:forEach var="hour" begin="0" end="23">
+                        <form:option value="${hour}">
+                            <fmt:formatNumber minIntegerDigits="2" value="${hour}" />
+                        </form:option>
+                    </c:forEach>
+                </form:select>
+                :
+                <form:select path="dateParms[${dateParmRow.index}].minutes">
+                    <c:forEach var="minute" begin="0" end="59">
+                        <form:option value="${minute}">
+                            <fmt:formatNumber minIntegerDigits="2" value="${minute}" />
+                        </form:option>
+                    </c:forEach>
+                </form:select></p>
+            </c:forEach>
+
+        <span class="indent">
+            <input type="submit" id="proceed" name="_eventId_proceed" value="Proceed" />&#160;
+            <input type="submit" id="cancel" name="_eventId_cancel" value="Cancel"/>&#160;
+        </span>
+
+     </form:form>
+ </div>
 
 <jsp:include page="/includes/footer.jsp" flush="false" />
