@@ -49,6 +49,7 @@ import org.opennms.test.JUnitConfigurationEnvironment;
 import org.opennms.web.svclayer.outage.OutageService;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -68,6 +69,7 @@ import org.springframework.transaction.annotation.Transactional;
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
 @Transactional
+@DirtiesContext
 public class DefaultOutageServiceIntegrationTest implements InitializingBean {
     private static final int RANGE_LIMIT = 5;
 
