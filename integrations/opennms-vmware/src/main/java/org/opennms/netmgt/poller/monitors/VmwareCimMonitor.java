@@ -44,6 +44,7 @@ import com.vmware.vim25.mo.HostSystem;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
+import org.opennms.core.soa.support.DefaultServiceRegistry;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.utils.TimeoutTracker;
 import org.opennms.netmgt.dao.api.NodeDao;
@@ -119,7 +120,7 @@ public class VmwareCimMonitor extends AbstractServiceMonitor {
      */
     @Override
     public void initialize(Map<String, Object> parameters) {
-        m_nodeDao = BeanUtils.getBean("daoContext", "nodeDao", NodeDao.class);
+        m_nodeDao = DefaultServiceRegistry.INSTANCE.findProvider(NodeDao.class);
         if (m_nodeDao == null) {
             logger.error("Node dao should be a non-null value.");
         }
