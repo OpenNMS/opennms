@@ -251,7 +251,7 @@ public class SnmpHardwareInventoryProvisioningAdapter extends SimplerQueuedProvi
 
         OnmsHwEntity root = tracker.getRootEntity();
         if (root == null) {
-            throw new SnmpHardwareInventoryException("Cannot get root entity for node " + node);
+            throw new SnmpHardwareInventoryException("Cannot get root entity for node " + node.getLabel() + ", it seems like the node does not have an implementation for the entPhysicalTable of the ENTITY-MIB.");
         }
 
         return root;
