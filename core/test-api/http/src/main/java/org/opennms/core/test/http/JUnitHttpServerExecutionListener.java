@@ -40,7 +40,7 @@ import org.springframework.test.context.TestExecutionListener;
  * @author ranger
  */
 public class JUnitHttpServerExecutionListener extends OpenNMSAbstractTestExecutionListener {
-    private JUnitServer m_junitServer;
+    private static JUnitServer m_junitServer;
 
     /** {@inheritDoc} */
     @Override
@@ -60,6 +60,10 @@ public class JUnitHttpServerExecutionListener extends OpenNMSAbstractTestExecuti
         super.afterTestMethod(testContext);
 
         if (m_junitServer != null) m_junitServer.stop();
+        m_junitServer = null;
     }
 
+    public static int getPort() {
+        return m_junitServer == null? -1 : m_junitServer.getPort();
+    }
 }
