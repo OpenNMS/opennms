@@ -85,7 +85,7 @@ public class JUnitCollectorExecutionListener extends AbstractTestExecutionListen
 
         // set up the collection configuration factory
         if ("http".equalsIgnoreCase(config.datacollectionType()) || "https".equalsIgnoreCase(config.datacollectionType())) {
-        	is = ConfigurationTestUtils.getInputStreamForResourceWithReplacements(testContext.getTestInstance(), config.datacollectionConfig(), new String[] { "%rrdRepository%", m_snmpRrdDirectory.getAbsolutePath() });
+            is = ConfigurationTestUtils.getInputStreamForResourceWithReplacements(testContext.getTestInstance(), config.datacollectionConfig(), new String[] { "%rrdRepository%", m_snmpRrdDirectory.getAbsolutePath() });
             HttpCollectionConfigFactory factory = new HttpCollectionConfigFactory(is);
             HttpCollectionConfigFactory.setInstance(factory);
             HttpCollectionConfigFactory.init();
@@ -110,16 +110,17 @@ public class JUnitCollectorExecutionListener extends AbstractTestExecutionListen
 
         boolean shouldIgnoreNonExistent = testContext.getTestException() != null;
 
-        if (config.anticipateFiles().length > 0 ||
-                config.anticipateRrds().length > 0) {
+        /*
+        if (config.anticipateFiles().length > 0 || config.anticipateRrds().length > 0) {
             // make sure any RRDs have time to get written
-            Thread.sleep(1000);
+            Thread.sleep(config.timeout());
         }
+        */
 
         if (config.anticipateRrds().length > 0) {
             for (String rrdFile : config.anticipateRrds()) {
                 m_fileAnticipator.expecting(m_snmpRrdDirectory, rrdFile + RrdUtils.getExtension());
-                
+
                 //the nrtg feature requires .meta files in parallel to the rrd/jrb files.
                 //this .meta files are expected
                 m_fileAnticipator.expecting(m_snmpRrdDirectory, rrdFile + ".meta");
@@ -134,31 +135,43 @@ public class JUnitCollectorExecutionListener extends AbstractTestExecutionListen
 
         Exception e = null;
         if (m_fileAnticipator.isInitialized()) {
-        	try {
-        		m_fileAnticipator.deleteExpected(shouldIgnoreNonExistent);
-        	} catch (Throwable t) {
-        		e = new RuntimeException(t);
-        	}
-        }
+            final long finished = System.currentTimeMillis() + config.timeout();
+            while (System.currentTimeMillis() <= finished) {
+                if (m_fileAnticipator.foundExpected()) {
+                    break;
+                }
+                try {
+                    Thread.sleep(200);
+                } catch (final InterruptedException ie) {
+                    break;
+                }
+            }
 
-        deleteResursively(m_snmpRrdDirectory);
-        m_fileAnticipator.tearDown();
-        
-        if (e != null) {
-        	throw e;
-        }
-    }
-    
-    private static void deleteResursively(File directory) {
-    	if (!directory.exists()) return;
-    	
-    	if (directory.isDirectory()) {
-    		for (File f : directory.listFiles()) {
-                deleteResursively(f);
+            try {
+                m_fileAnticipator.deleteExpected(shouldIgnoreNonExistent);
+            } catch (Throwable t) {
+                e = new RuntimeException(t);
             }
         }
-    	
-    	directory.delete();
+
+        deleteRecursively(m_snmpRrdDirectory);
+        m_fileAnticipator.tearDown();
+
+        if (e != null) {
+            throw e;
+        }
+    }
+
+    private static void deleteRecursively(File directory) {
+        if (!directory.exists()) return;
+
+        if (directory.isDirectory()) {
+            for (File f : directory.listFiles()) {
+                deleteRecursively(f);
+            }
+        }
+
+        directory.delete();
     }
 
     private static JUnitCollector findCollectorAnnotation(TestContext testContext) {
