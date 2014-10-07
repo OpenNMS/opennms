@@ -79,7 +79,7 @@ public class SuggestionComboboxPresenter implements Presenter, SuggestionCombobo
                     m_view.setData(NodeRestResponseMapper.mapNodeJSONtoNodeDetail(response.getText()));
                 }else {
                     //m_view.setData(NodeRestResponseMapper.mapNodeJSONtoNodeDetail(DefaultNodeService.TEST_RESPONSE));
-                    Window.alert("Error Occurred Retreiving Nodes");
+                    Window.alert("Error Occurred Retrieving Nodes: " + response.getStatusCode() + " " + response.getStatusText());
                 }
             }
             
@@ -98,8 +98,8 @@ public class SuggestionComboboxPresenter implements Presenter, SuggestionCombobo
             public void onResponseReceived(Request request, Response response) {
                 if(response.getStatusCode() == 200) {
                     m_view.setData(NodeRestResponseMapper.mapNodeJSONtoNodeDetail(response.getText()));
-                    Window.alert("Error Occurred Retreiving Nodes");
                 }else {
+                    Window.alert("Error Occurred Retrieving Nodes: " + response.getStatusCode() + " " + response.getStatusText());
                     // m_view.setData(NodeRestResponseMapper.mapNodeJSONtoNodeDetail(DefaultNodeService.TEST_RESPONSE));
                 }
             }
