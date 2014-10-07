@@ -63,7 +63,7 @@ public static class AutocompleteRecord {
 }
 %>
 <%
-List<OnmsNode> items = NetworkElementFactory.getInstance(getServletContext()).getAllNodes();
+
 %>
 [
 <% 
@@ -71,27 +71,19 @@ boolean printedFirst = false;
 int recordCounter = 1;
 final int recordLimit = 200;
 String autocomplete = request.getParameter("term");
-Pattern pattern = null;
-if (autocomplete != null && !"".equals(autocomplete)) {
-	pattern = Pattern.compile(autocomplete, Pattern.LITERAL + Pattern.CASE_INSENSITIVE);
+
+List<OnmsNode> items;
+if(autocomplete == null || autocomplete.equals("")){
+    items = NetworkElementFactory.getInstance(getServletContext()).getAllNodes();
+} else{
+    items = NetworkElementFactory.getInstance(getServletContext()).getNodesLike(autocomplete);
 }
 for (OnmsNode item : items) {
 	// Check to see if the item matches the search term
-	Matcher matcher = null;
-	if (pattern != null) {
-		matcher = pattern.matcher(item.getLabel());
-	}
-	if (pattern == null || (matcher != null && matcher.find())) {
+
 		StringBuffer result = new StringBuffer();
-		if (pattern != null) {
-			matcher.reset();
-			while (matcher.find()) {
-				matcher.appendReplacement(result, "<strong>" + matcher.group(0) + "</strong>");
-			}
-			matcher.appendTail(result);
-		} else {
-			result.append(item.getLabel());
-		}
+
+        result.append(item.getLabel());
 		result.append(" (Node ID ").append(item.getId()).append(")");
 		// If we've already printed the first item, separate the items with a comma
 		if (printedFirst) {
@@ -104,7 +96,6 @@ for (OnmsNode item : items) {
 		if (recordCounter++ >= recordLimit) {
 			break;
 		}
-	}
 }
 %>
 ]

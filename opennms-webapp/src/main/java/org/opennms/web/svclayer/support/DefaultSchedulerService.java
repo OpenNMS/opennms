@@ -203,9 +203,8 @@ public class DefaultSchedulerService implements InitializingBean, SchedulerServi
                     // cronExpression);
                 } catch (ParseException e) {
                     LOG.error(TRIGGER_PARSE_ERROR, e);
-                    context.getMessageContext().addMessage(
-                                                           new MessageBuilder().error().defaultText(
-                                                                                                    TRIGGER_PARSE_ERROR).build());
+                    context.getMessageContext().addMessage(new MessageBuilder().error().defaultText(TRIGGER_PARSE_ERROR).build());
+                    context.getMessageContext().addMessage(new MessageBuilder().error().defaultText(e.getMessage()).build());
                     return ERROR;
                 }
 

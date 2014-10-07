@@ -126,7 +126,7 @@ pageContext.setAttribute("searchString",searchString);
 <c:choose>
 	<c:when test="${filesMatched == 0}">
 		<script type="text/javascript">
-			alert ("instrumentation.log either does not exist or is empty. Check to see if you have it set to DEBUG in log4j2.properties")
+			alert ("instrumentation.log either does not exist or is empty. Check to see if you have it set to INFO in log4j2.xml")
 		</script>
 	</c:when>
 </c:choose>
@@ -151,8 +151,8 @@ Threads Used: ${collector.threadCount}
 <c:if test="${collector.startTime == null && collector.endTime == null}">
 <p>
 No service collector data is available. Be sure that the <strong>Collectd</strong> and
-<strong>Instrumentation</strong> appenders are set to log at <strong>DEBUG</strong> in
-the <em>log4j2.properties</em> configuration file.
+<strong>Instrumentation</strong> appenders are set to log at <strong>INFO</strong> in
+the <em>log4j2.xml</em> configuration file.
 </p>
 </c:if>
 

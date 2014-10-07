@@ -241,6 +241,15 @@ public interface NetworkElementFactoryInterface {
 	 */
 	Interface[] getAllManagedIpInterfaces(boolean includeSNMP);
 
+    /**
+     * Returns all managed interfaces that matches the ipHost String to either
+     * the ipHost or ipAddress field.
+     *
+     * @param ipHost
+     * @return an arrau of {@link org.opennms.web.element.Interface} objects
+     */
+    public Interface[] getAllManagedIpInterfacesLike(String ipHost);
+
 	/**
 	 * Return the service specified by the node identifier, IP address, and
 	 * service identifier.

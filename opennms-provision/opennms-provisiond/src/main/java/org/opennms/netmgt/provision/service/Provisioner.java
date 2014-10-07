@@ -277,6 +277,17 @@ public class Provisioner implements SpringServiceDaemon {
         return new NewSuspectScan(ipAddress, m_provisionService, m_eventForwarder, m_agentConfigFactory, m_taskCoordinator, foreignSource);
     }
 
+    /**
+     * <p>createForceRescanScan</p>
+     *
+     * @param ipAddress a {@link java.net.InetAddress} object.
+     * @return a {@link org.opennms.netmgt.provision.service.ForceRescanScan} object.
+     */
+    public ForceRescanScan createForceRescanScan(Integer nodeId) {
+        LOG.info("createForceRescanScan called with nodeId: "+nodeId);
+        return new ForceRescanScan(nodeId, m_provisionService, m_eventForwarder, m_agentConfigFactory, m_taskCoordinator);
+    }
+
     //Helper functions for the schedule
     /**
      * <p>addToScheduleQueue</p>
@@ -526,12 +537,28 @@ public class Provisioner implements SpringServiceDaemon {
      */
     @EventHandler(uei = EventConstants.FORCE_RESCAN_EVENT_UEI)
     public void handleForceRescan(Event e) {
-        removeNodeFromScheduleQueue(new Long(e.getNodeid()).intValue());
-        NodeScanSchedule scheduleForNode = getProvisionService().getScheduleForNode(e.getNodeid().intValue(), true);
-        if (scheduleForNode != null) {
-            addToScheduleQueue(scheduleForNode);
-        }
-
+        final Integer nodeId = new Integer(e.getNodeid().intValue());
+        removeNodeFromScheduleQueue(nodeId);
+        Runnable r = new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    ForceRescanScan scan = createForceRescanScan(nodeId);
+                    Task t = scan.createTask();
+                    t.schedule();
+                    t.waitFor();
+                    NodeScanSchedule scheduleForNode = getProvisionService().getScheduleForNode(nodeId, false); // It has 'false' because a node scan was already executed by ForceRescanScan.
+                    if (scheduleForNode != null) {
+                        addToScheduleQueue(scheduleForNode);
+                    }
+                } catch (InterruptedException ex) {
+                    LOG.error("Task interrupted waiting for rescan of nodeId {} to finish", nodeId, ex);
+                } catch (ExecutionException ex) {
+                    LOG.error("An expected execution occurred waiting for rescan of nodeId {} to finish", nodeId, ex);
+                }
+            }
+        };
+        m_scheduledExecutor.execute(r);
     }
     
     /**
