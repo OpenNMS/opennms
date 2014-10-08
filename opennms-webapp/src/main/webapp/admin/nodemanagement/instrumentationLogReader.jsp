@@ -2,22 +2,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -126,7 +126,7 @@ pageContext.setAttribute("searchString",searchString);
 <c:choose>
 	<c:when test="${filesMatched == 0}">
 		<script type="text/javascript">
-			alert ("instrumentation.log either does not exist or is empty. Check to see if you have it set to DEBUG in log4j2.properties")
+			alert ("instrumentation.log either does not exist or is empty. Check to see if you have it set to INFO in log4j2.xml")
 		</script>
 	</c:when>
 </c:choose>
@@ -151,8 +151,8 @@ Threads Used: ${collector.threadCount}
 <c:if test="${collector.startTime == null && collector.endTime == null}">
 <p>
 No service collector data is available. Be sure that the <strong>Collectd</strong> and
-<strong>Instrumentation</strong> appenders are set to log at <strong>DEBUG</strong> in
-the <em>log4j2.properties</em> configuration file.
+<strong>Instrumentation</strong> appenders are set to log at <strong>INFO</strong> in
+the <em>log4j2.xml</em> configuration file.
 </p>
 </c:if>
 

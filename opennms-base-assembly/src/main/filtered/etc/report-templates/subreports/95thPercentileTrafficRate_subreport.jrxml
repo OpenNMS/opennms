@@ -1,9 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="InterfaceUtilizationSummary_subreport" pageWidth="725" pageHeight="802" whenNoDataType="NoDataSection" columnWidth="725" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
-	<property name="ireport.zoom" value="1.5"/>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="InterfaceUtilizationSummary_subreport" pageWidth="555" pageHeight="802" whenNoDataType="NoDataSection" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
+	<property name="ireport.zoom" value="1.8150000000000004"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
-	<template><![CDATA["${install.dir}/etc/report-templates/assets/styles/defaultStyles.jrtx"]]></template>
+	<template><![CDATA[$P{ONMS_REPORT_DIR} + "/assets/styles/defaultStyles.jrtx"]]></template>
+	<parameter name="ONMS_REPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<parameterDescription><![CDATA[The directory where all reports can be found]]></parameterDescription>
+		<defaultValueExpression><![CDATA["${install.dir}/etc/report-templates"]]></defaultValueExpression>
+	</parameter>
 	<parameter name="rrdDir" class="java.lang.String" isForPrompting="false">
 		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
 	</parameter>
@@ -124,30 +128,30 @@
 		<band splitType="Stretch"/>
 	</pageFooter>
 	<summary>
-		<band height="162" splitType="Stretch">
+		<band height="200" splitType="Stretch">
 			<textField>
-				<reportElement style="Body" x="0" y="0" width="140" height="20"/>
+				<reportElement style="Body" x="0" y="20" width="140" height="20"/>
 				<textElement/>
 				<textFieldExpression class="java.lang.String"><![CDATA[$P{snmpifname} != null ? $P{snmpifname} : $P{snmpifdescr}]]></textFieldExpression>
 			</textField>
 			<textField pattern="#,##0.00">
-				<reportElement style="Body" x="435" y="0" width="140" height="20" backcolor="#333333"/>
+				<reportElement style="Body" x="298" y="20" width="120" height="20" backcolor="#333333"/>
 				<textElement textAlignment="Right"/>
 				<textFieldExpression class="java.lang.String"><![CDATA[$V{transmitted_RATE_BITS} > 1048576 ? String.format("%10.2f", $V{transmitted_RATE_BITS}/new Double("1048576.0")) + " mb/s" : String.format("%10.2f", $V{transmitted_RATE_BITS}/new Double("1024.0")) + " kb/s"]]></textFieldExpression>
 			</textField>
 			<textField pattern="#,##0.00">
-				<reportElement style="Body" x="580" y="0" width="140" height="20"/>
+				<reportElement style="Body" x="435" y="20" width="120" height="20"/>
 				<textElement textAlignment="Right"/>
 				<textFieldExpression class="java.lang.String"><![CDATA[$P{snmpifspeed} > 1048576 ? String.format("%10.2f", $P{snmpifspeed}/new Double("1048576.0")) + " mb/s" : String.format("%10.2f", $P{snmpifspeed}/new Double("1024.0")) + " kb/s"]]></textFieldExpression>
 			</textField>
 			<textField pattern="#,##0.00">
-				<reportElement style="Body" x="290" y="0" width="140" height="20" backcolor="#CC9900"/>
+				<reportElement style="Body" x="158" y="20" width="120" height="20" backcolor="#CC9900"/>
 				<textElement textAlignment="Right"/>
 				<textFieldExpression class="java.lang.String"><![CDATA[$V{received_RATE_BITS} > 1048576 ? String.format("%10.2f", $V{received_RATE_BITS}/new Double("1048576.0")) + " mb/s" : String.format("%10.2f", $V{received_RATE_BITS}/new Double("1024.0")) + " kb/s"]]></textFieldExpression>
 			</textField>
 			<pieChart>
 				<chart isShowLegend="true">
-					<reportElement x="290" y="20" width="140" height="140"/>
+					<reportElement x="158" y="51" width="140" height="140"/>
 					<chartTitle/>
 					<chartSubtitle/>
 					<chartLegend/>
@@ -169,7 +173,7 @@
 			</pieChart>
 			<pieChart>
 				<chart isShowLegend="true">
-					<reportElement x="435" y="20" width="140" height="140"/>
+					<reportElement x="303" y="51" width="140" height="140"/>
 					<chartTitle/>
 					<chartSubtitle/>
 					<chartLegend/>
@@ -189,19 +193,39 @@
 					<itemLabel color="#000000" backgroundColor="#FFFFFF"/>
 				</piePlot>
 			</pieChart>
+			<staticText>
+				<reportElement style="Sub-sub-header" x="435" y="0" width="120" height="20"/>
+				<textElement textAlignment="Right"/>
+				<text><![CDATA[interface rate]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="Sub-sub-header" x="298" y="0" width="120" height="20"/>
+				<textElement textAlignment="Right"/>
+				<text><![CDATA[avg rate (out)]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="Sub-sub-header" x="158" y="0" width="120" height="20"/>
+				<textElement textAlignment="Right"/>
+				<text><![CDATA[avg rate (in)	]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="Sub-sub-header" x="0" y="0" width="140" height="20"/>
+				<textElement/>
+				<text><![CDATA[interface]]></text>
+			</staticText>
 		</band>
 	</summary>
 	<noData>
-		<band height="50">
+		<band height="21">
 			<textField>
-				<reportElement style="Body" x="0" y="15" width="140" height="20"/>
+				<reportElement style="Body" x="0" y="0" width="140" height="20"/>
 				<textElement/>
 				<textFieldExpression class="java.lang.String"><![CDATA[$P{snmpifname} != null ? $P{snmpifname} : $P{snmpifdescr}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="435" y="15" width="166" height="20"/>
+				<reportElement x="158" y="0" width="437" height="20"/>
 				<textElement/>
-				<text><![CDATA[There is No Data for this Entry]]></text>
+				<text><![CDATA[There is no data for this entry.]]></text>
 			</staticText>
 		</band>
 	</noData>
