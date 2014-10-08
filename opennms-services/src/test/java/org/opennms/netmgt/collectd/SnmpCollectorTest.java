@@ -77,7 +77,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
-		"classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
+        "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
         "classpath*:/META-INF/opennms/component-dao.xml",
@@ -139,7 +139,7 @@ public class SnmpCollectorTest implements InitializingBean, TestContextAware {
             builder.addSnmpInterface(3).setIfName("stf0").setPhysAddr("00:11:22:33:46").setIfType(57);
 
             builder.addSnmpInterface(6).setIfName("fw0").setPhysAddr("44:33:22:11:00").setIfType(144).setCollectionEnabled(true)
-                .addIpInterface(m_testHostName).setIsSnmpPrimary("P");
+            .addIpInterface(m_testHostName).setIsSnmpPrimary("P");
 
             testNode = builder.getCurrentNode();
             assertNotNull(testNode);
@@ -316,11 +316,11 @@ public class SnmpCollectorTest implements InitializingBean, TestContextAware {
 
         Object rrdFileObject = m_rrdStrategy.openFile(rrdFile.getAbsolutePath());
         for (int i = 0; i < numUpdates; i++) {
-            m_rrdStrategy.updateFile(rrdFileObject, "test", (start/1000 - stepSize*(numUpdates-i)) + ":1");
+            m_rrdStrategy.updateFile(rrdFileObject, "test", ((start/1000) - (stepSize*(numUpdates-i))) + ":1");
         }
         m_rrdStrategy.closeFile(rrdFileObject);
 
-        assertEquals(Double.valueOf(1.0), m_rrdStrategy.fetchLastValueInRange(rrdFile.getAbsolutePath(), "testAttr", stepSize*1000, stepSize*1000));
+        assertEquals(Double.valueOf(1.0), m_rrdStrategy.fetchLastValueInRange(rrdFile.getAbsolutePath(), "testAttr", stepSize*1000, 2*stepSize*1000));
     }
 
     @Test

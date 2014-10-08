@@ -498,5 +498,15 @@ public class FileAnticipator extends Assert {
     public boolean isInitialized() {
         return m_initialized;
     }
+
+    public boolean foundExpected() {
+        LOG.debug("checking for {} expected files...", m_expecting.size());
+        for (final File expected : m_expecting) {
+            if (!expected.exists()) {
+                return false;
+            }
+        }
+        return true;
+    }
     
 }

@@ -41,4 +41,5 @@ public @interface JUnitCollector {
     String datacollectionType();
     String[] anticipateRrds() default {};
     String[] anticipateFiles() default {};
+    int timeout() default 5000;
 }
