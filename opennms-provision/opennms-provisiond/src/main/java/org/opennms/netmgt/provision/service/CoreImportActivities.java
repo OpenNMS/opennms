@@ -82,7 +82,7 @@ public class CoreImportActivities {
     }
     
     @Activity( lifecycle = "import", phase = "audit", schedulingHint="import" )
-    public ImportOperationsManager auditNodes(final RequisitionImport ri, final Boolean rescanExisting) {
+    public ImportOperationsManager auditNodes(final RequisitionImport ri, final String rescanExisting) {
         if (ri.isAborted()) {
             info("The import has been aborted, skipping audit phase import.");
             return null;
@@ -134,13 +134,13 @@ public class CoreImportActivities {
     
     
     @Activity( lifecycle = "nodeImport", phase = "scan", schedulingHint="import" )
-    public void scanNode(final ImportOperation operation, final RequisitionImport ri, final Boolean rescanExisting) {
+    public void scanNode(final ImportOperation operation, final RequisitionImport ri, final String rescanExisting) {
         if (ri.isAborted()) {
             info("The import has been aborted, skipping scan phase nodeImport.");
             return;
         }
 
-        if (rescanExisting == null || rescanExisting) {
+        if (rescanExisting == null || Boolean.valueOf(rescanExisting)) {
             info("Running scan phase of {}", operation);
             operation.scan();
     
