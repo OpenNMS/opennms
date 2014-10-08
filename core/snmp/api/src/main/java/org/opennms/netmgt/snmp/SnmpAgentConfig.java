@@ -35,6 +35,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.xml.bind.InetAddressXmlAdapter;
 import org.slf4j.Logger;
@@ -90,6 +92,8 @@ public class SnmpAgentConfig extends SnmpConfiguration implements Serializable {
 
             if ("address".equalsIgnoreCase(key) && !"null".equals(value)) {
                 agentConfig.setAddress(InetAddressUtils.addr(value));
+            } else if ("proxyFor".equalsIgnoreCase(key) && !"null".equals(value)) {
+                agentConfig.setProxyFor(InetAddressUtils.addr(value));
             } else if ("port".equalsIgnoreCase(key)) {
                 agentConfig.setPort(Integer.parseInt(value));
             } else if ("timeout".equalsIgnoreCase(key)) {
@@ -138,6 +142,7 @@ public class SnmpAgentConfig extends SnmpConfiguration implements Serializable {
     public String toProtocolConfigString() {
         StringBuffer buff = new StringBuffer("snmp:");
         buff.append("address=" + (m_address == null? null : InetAddressUtils.str(m_address)));
+        buff.append(",proxyFor=" + (m_proxyFor == null ? null : InetAddressUtils.str(m_proxyFor)));
         buff.append(",port=" + getPort());
         buff.append(",timeout=" + getTimeout());
         buff.append(",retries=" + getRetries());
@@ -152,10 +157,10 @@ public class SnmpAgentConfig extends SnmpConfiguration implements Serializable {
             buff.append(",auth-protocol=" + getAuthProtocol());
             buff.append(",priv-passphrase=" + getPrivPassPhrase());
             buff.append(",priv-protocol=" + getPrivProtocol());
-            buff.append(",engine-id=" + getEngineId());
-            buff.append(",context-engine-id=" + getContextEngineId());
-            buff.append(",context-name=" + getContextName());
-            buff.append(",enterprise-id=" + getEnterpriseId());
+            if (getEngineId() != null) buff.append(",engine-id=" + getEngineId());
+            if (getContextEngineId() != null) buff.append(",context-engine-id=" + getContextEngineId());
+            if (getContextName() != null) buff.append(",context-name=" + getContextName());
+            if (getEnterpriseId() != null) buff.append(",enterprise-id=" + getEnterpriseId());
         } else {
             buff.append(",read-community=" + getReadCommunity());
             buff.append(",write-community=" + getWriteCommunity());
@@ -218,4 +223,66 @@ public class SnmpAgentConfig extends SnmpConfiguration implements Serializable {
         return m_proxyFor;
     }
 
+    @Override
+    public int hashCode() {
+        HashCodeBuilder builder = new HashCodeBuilder();
+        builder.append(getAddress());
+        builder.append(getProxyFor());
+        builder.append(getPort());
+        builder.append(getTimeout());
+        builder.append(getRetries());
+        builder.append(getMaxRepetitions());
+        builder.append(getMaxRequestSize());
+        builder.append(getMaxVarsPerPdu());
+        builder.append(getVersion());
+        builder.append(getSecurityLevel());
+        builder.append(getSecurityName());
+        builder.append(getAuthPassPhrase());
+        builder.append(getAuthProtocol());
+        builder.append(getPrivPassPhrase());
+        builder.append(getPrivProtocol());
+        builder.append(getEngineId());
+        builder.append(getContextEngineId());
+        builder.append(getEnterpriseId());
+        builder.append(getReadCommunity());
+        builder.append(getWriteCommunity());
+        return builder.toHashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == this) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (obj.getClass() == getClass()) {
+            SnmpAgentConfig other = (SnmpAgentConfig) obj;
+
+            EqualsBuilder builder = new EqualsBuilder();
+            builder.append(getAddress(), other.getAddress());
+            builder.append(getProxyFor(), other.getProxyFor());
+            builder.append(getPort(), other.getPort());
+            builder.append(getTimeout(), other.getTimeout());
+            builder.append(getRetries(), other.getRetries());
+            builder.append(getMaxRepetitions(), other.getMaxRepetitions());
+            builder.append(getMaxRequestSize(), other.getMaxRequestSize());
+            builder.append(getMaxVarsPerPdu(), other.getMaxVarsPerPdu());
+            builder.append(getVersion(), other.getVersion());
+            builder.append(getSecurityLevel(), other.getSecurityLevel());
+            builder.append(getSecurityName(), other.getSecurityName());
+            builder.append(getAuthPassPhrase(), other.getAuthPassPhrase());
+            builder.append(getAuthProtocol(), other.getAuthProtocol());
+            builder.append(getPrivPassPhrase(), other.getPrivPassPhrase());
+            builder.append(getPrivProtocol(), other.getPrivProtocol());
+            builder.append(getEngineId(), other.getEngineId());
+            builder.append(getContextEngineId(), other.getContextEngineId());
+            builder.append(getEnterpriseId(), other.getEnterpriseId());
+            builder.append(getReadCommunity(), other.getReadCommunity());
+            builder.append(getWriteCommunity(), other.getWriteCommunity());
+            return builder.isEquals();
+        }
+        return false;
+    }
 }
