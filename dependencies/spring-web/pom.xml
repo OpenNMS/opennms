@@ -27,49 +27,10 @@
       <artifactId>org.apache.servicemix.bundles.spring-webmvc</artifactId>
       <version>${springVersion}</version>
     </dependency>
-<!--
     <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>org.springframework.web.struts</artifactId>
+      <groupId>org.apache.servicemix.bundles</groupId>
+      <artifactId>org.apache.servicemix.bundles.spring-struts</artifactId>
       <version>${springVersion}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>org.springframework</groupId>
-          <artifactId>org.springframework.beans</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.springframework</groupId>
-          <artifactId>org.springframework.context</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.springframework</groupId>
-          <artifactId>org.springframework.context.support</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.springframework</groupId>
-          <artifactId>org.springframework.core</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.apache.commons</groupId>
-          <artifactId>com.springsource.org.apache.commons.beanutils</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>commons-beanutils</groupId>
-          <artifactId>commons-beanutils</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.apache.commons</groupId>
-          <artifactId>com.springsource.org.apache.commons.logging</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>commons-logging</groupId>
-          <artifactId>commons-logging</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.apache.struts</groupId>
-          <artifactId>com.springsource.org.apache.struts</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.springframework.webflow</groupId>
@@ -168,7 +129,6 @@
         </exclusion>
       </exclusions>
     </dependency>
--->
     <!-- Spring Dependencies -->
     <dependency>
       <groupId>org.opennms.dependencies</groupId>

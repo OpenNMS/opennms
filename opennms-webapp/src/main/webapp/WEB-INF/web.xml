@@ -9,6 +9,10 @@
             <url-pattern>*.jsp</url-pattern>
             <page-encoding>UTF-8</page-encoding>
         </jsp-property-group>
+        <taglib>
+            <taglib-uri>http://www.springframework.org/tags/form</taglib-uri>
+            <taglib-location>/META-INF/spring-form.tld</taglib-location>
+        </taglib>
     </jsp-config>
 
   <display-name>opennms</display-name>
