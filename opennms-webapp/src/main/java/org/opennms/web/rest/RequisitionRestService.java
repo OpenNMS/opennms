@@ -549,7 +549,7 @@ public class RequisitionRestService extends OnmsRestService {
     @PUT
     @Path("{foreignSource}/import")
     @Transactional
-    public Response importRequisition(@PathParam("foreignSource") final String foreignSource, @QueryParam("rescanExisting") final String rescanExisting) {
+    public Response importRequisition(@PathParam("foreignSource") final String foreignSource, @QueryParam("rescanExisting") final Boolean rescanExisting) {
         debug("importRequisition: Importing requisition for foreign source %s", foreignSource);
         m_accessService.importRequisition(foreignSource, rescanExisting);
         return Response.seeOther(m_uriInfo.getBaseUriBuilder().path(this.getClass()).path(this.getClass(), "getRequisition").build(foreignSource)).build();

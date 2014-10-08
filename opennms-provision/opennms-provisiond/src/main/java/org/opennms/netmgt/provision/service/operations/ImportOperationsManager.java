@@ -69,7 +69,7 @@ public class ImportOperationsManager {
     
     private final ProvisionService m_provisionService;
     private final Map<String, Integer> m_foreignIdToNodeMap;
-    private String m_rescanExisting;
+    private Boolean m_rescanExisting;
     
     private String m_foreignSource;
     
@@ -80,7 +80,7 @@ public class ImportOperationsManager {
      * @param provisionService a {@link org.opennms.netmgt.provision.service.ProvisionService} object.
      * @param rescanExisting TODO
      */
-    public ImportOperationsManager(Map<String, Integer> foreignIdToNodeMap, ProvisionService provisionService, final String rescanExisting) {
+    public ImportOperationsManager(Map<String, Integer> foreignIdToNodeMap, ProvisionService provisionService, final Boolean rescanExisting) {
         m_provisionService = provisionService;
         m_foreignIdToNodeMap = new HashMap<String, Integer>(foreignIdToNodeMap);
         m_rescanExisting = rescanExisting;
@@ -117,13 +117,8 @@ public class ImportOperationsManager {
     }
 
     private SaveOrUpdateOperation updateNode(final String foreignId, final String nodeLabel, final String building, final String city) {
-        final Integer nodeId = processForeignId(foreignId);
-        final UpdateOperation updateOperation;
-        if (Boolean.valueOf(m_rescanExisting) || m_rescanExisting.equalsIgnoreCase("dbonly")) {
-            updateOperation = new UpdateOperation(nodeId, getForeignSource(), foreignId, nodeLabel, building, city, m_provisionService, m_rescanExisting);
-        } else {
-            updateOperation = new NullUpdateOperation(nodeId, getForeignSource(), foreignId, nodeLabel, building, city, m_provisionService, m_rescanExisting);
-        }
+    	final Integer nodeId = processForeignId(foreignId);
+    	final UpdateOperation updateOperation = new UpdateOperation(nodeId, getForeignSource(), foreignId, nodeLabel, building, city, m_provisionService, m_rescanExisting);
         m_updates.add(updateOperation);
         return updateOperation;
     }
@@ -299,7 +294,7 @@ public class ImportOperationsManager {
         return m_foreignSource;
     }
 
-    public String getRescanExisting() {
+    public Boolean getRescanExisting() {
         return m_rescanExisting;
     }
     

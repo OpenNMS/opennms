@@ -136,7 +136,7 @@ public class PolicyTest {
             final BackgroundTask eventRecieved = anticipateEvents(EventConstants.PROVISION_SCAN_COMPLETE_UEI, EventConstants.PROVISION_SCAN_ABORTED_UEI );
 
             // Import the provisioning group
-            m_provisioner.importModelFromResource(m_resourceLoader.getResource("classpath:/NMS-5414.xml"), Boolean.TRUE.toString());
+            m_provisioner.importModelFromResource(m_resourceLoader.getResource("classpath:/NMS-5414.xml"), true);
             int nodeId = getNodeId();
             eventRecieved.await();
 

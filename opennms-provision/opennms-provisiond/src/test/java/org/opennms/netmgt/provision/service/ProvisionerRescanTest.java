@@ -194,7 +194,7 @@ public class ProvisionerRescanTest implements InitializingBean {
         System.err.println("Import Part 1");
         System.err.println("-------------------------------------------------------------------------");
 
-        importFromResource("classpath:/testNoRescanOnImport-part1.xml", Boolean.TRUE.toString());
+        importFromResource("classpath:/testNoRescanOnImport-part1.xml", true);
 
         final List<OnmsNode> nodes = getNodeDao().findAll();
         assertEquals(1, nodes.size());
@@ -210,7 +210,7 @@ public class ProvisionerRescanTest implements InitializingBean {
         m_eventAnticipator.reset();
         anticipateNoRescanFirstNodeEvents();
         anticipateNoRescanSecondNodeEvents();
-        importFromResource("classpath:/testNoRescanOnImport-part2.xml", Boolean.FALSE.toString());
+        importFromResource("classpath:/testNoRescanOnImport-part2.xml", false);
         m_eventAnticipator.verifyAnticipated();
         setupLogging("INFO");
 
@@ -259,7 +259,7 @@ public class ProvisionerRescanTest implements InitializingBean {
         }
 	}
 
-	private void importFromResource(final String path, final String rescanExisting) throws Exception {
+	private void importFromResource(final String path, final Boolean rescanExisting) throws Exception {
         m_provisioner.importModelFromResource(m_resourceLoader.getResource(path), rescanExisting);
     }
     

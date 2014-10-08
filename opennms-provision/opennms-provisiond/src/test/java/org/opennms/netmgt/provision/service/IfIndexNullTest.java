@@ -112,7 +112,7 @@ public class IfIndexNullTest extends ProvisioningTestCase implements Initializin
     public void testNullIfIndex() throws Exception {
         final CountDownLatch eventRecieved = anticipateEvents(1, EventConstants.PROVISION_SCAN_COMPLETE_UEI, EventConstants.PROVISION_SCAN_ABORTED_UEI);
 
-        m_provisioner.importModelFromResource(m_resourceLoader.getResource("classpath:/tec_dump.xml"), Boolean.TRUE.toString());
+        m_provisioner.importModelFromResource(m_resourceLoader.getResource("classpath:/tec_dump.xml"), true);
         waitForEverything();
 
         final List<OnmsNode> nodes = getNodeDao().findAll();

@@ -119,7 +119,7 @@ public class Nms5414Test extends ProvisioningTestCase {
 
         final CountDownLatch eventRecieved = anticipateEvents(1, EventConstants.PROVISION_SCAN_COMPLETE_UEI, EventConstants.PROVISION_SCAN_ABORTED_UEI);
 
-        m_provisioner.importModelFromResource(m_resourceLoader.getResource("classpath:/NMS-5414.xml"), Boolean.TRUE.toString());
+        m_provisioner.importModelFromResource(m_resourceLoader.getResource("classpath:/NMS-5414.xml"), true);
         waitForEverything();
 
         final OnmsNode node = getNodeDao().get(nextNodeId);

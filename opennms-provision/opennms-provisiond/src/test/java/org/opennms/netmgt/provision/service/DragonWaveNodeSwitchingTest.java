@@ -227,7 +227,7 @@ public class DragonWaveNodeSwitchingTest extends ProvisioningTestCase implements
     }
 
     private void importResource(final String location) throws Exception {
-        m_provisioner.importModelFromResource(m_resourceLoader.getResource(location), Boolean.TRUE.toString());
+        m_provisioner.importModelFromResource(m_resourceLoader.getResource(location), true);
         waitForEverything();
     }
 

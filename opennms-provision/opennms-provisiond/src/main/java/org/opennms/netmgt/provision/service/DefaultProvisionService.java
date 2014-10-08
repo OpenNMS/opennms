@@ -215,7 +215,7 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
     /** {@inheritDoc} */
     @Transactional
     @Override
-    public void updateNode(final OnmsNode node, String rescanExisting) {
+    public void updateNode(final OnmsNode node, boolean rescanExisting) {
 
         final OnmsNode dbNode = m_nodeDao.getHierarchy(node.getId());
 

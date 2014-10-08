@@ -401,7 +401,7 @@ public class Provisioner implements SpringServiceDaemon {
      * @param rescanExisting TODO
      * @throws java.lang.Exception if any.
      */
-    protected void importModelFromResource(final Resource resource, final String rescanExisting) throws Exception {
+    protected void importModelFromResource(final Resource resource, final Boolean rescanExisting) throws Exception {
     	importModelFromResource(resource, rescanExisting, new NoOpProvisionMonitor());
     }
 
@@ -413,10 +413,10 @@ public class Provisioner implements SpringServiceDaemon {
      * @param monitor a {@link org.opennms.netmgt.provision.service.operations.ProvisionMonitor} object.
      * @throws java.lang.Exception if any.
      */
-    protected void importModelFromResource(final Resource resource, final String rescanExisting, final ProvisionMonitor monitor) throws Exception {
+    protected void importModelFromResource(final Resource resource, final Boolean rescanExisting, final ProvisionMonitor monitor) throws Exception {
         final LifeCycleInstance doImport = m_lifeCycleRepository.createLifeCycleInstance("import", m_importActivities);
         doImport.setAttribute("resource", resource);
-        doImport.setAttribute("rescanExisting", rescanExisting);
+        doImport.setAttribute("rescanExisting", Boolean.valueOf(rescanExisting));
         doImport.trigger();
         doImport.waitFor();
         final RequisitionImport ri = doImport.findAttributeByType(RequisitionImport.class);
@@ -462,7 +462,7 @@ public class Provisioner implements SpringServiceDaemon {
     @EventHandler(uei = EventConstants.RELOAD_IMPORT_UEI)
     public void doImport(final Event event) {
         final String url = getEventUrl(event);
-        final String rescanExistingOnImport = getEventRescanExistingOnImport(event);
+        final boolean rescanExistingOnImport = getEventRescanExistingOnImport(event);
 
         if (url != null) {
             doImport(url, rescanExistingOnImport);
@@ -480,7 +480,7 @@ public class Provisioner implements SpringServiceDaemon {
      * @param url a {@link java.lang.String} object.
      * @param rescanExisting TODO
      */
-    public void doImport(final String url, final String rescanExisting) {
+    public void doImport(final String url, final boolean rescanExisting) {
         
         try {
             
@@ -631,13 +631,13 @@ public class Provisioner implements SpringServiceDaemon {
         	LOG.debug("Rescanning updated nodes is disabled via property: {}", SCHEDULE_RESCAN_FOR_UPDATED_NODES);
         	return;
         }
-        String rescanExisting = Boolean.TRUE.toString(); // Default
+        boolean rescanExisting = true; // Default
         for (Parm parm : e.getParmCollection()) {
             if (EventConstants.PARM_RESCAN_EXISTING.equals(parm.getParmName()) && "false".equalsIgnoreCase(parm.getValue().getContent())) {
-                rescanExisting = Boolean.FALSE.toString();
+                rescanExisting = false;
             }
         }
-        if (!Boolean.valueOf(rescanExisting)) {
+        if (!rescanExisting) {
             LOG.debug("Rescanning updated nodes is disabled via event parameter: {}", EventConstants.PARM_RESCAN_EXISTING);
             return;
         }
@@ -893,15 +893,15 @@ public class Provisioner implements SpringServiceDaemon {
         return EventUtils.getParm(event, EventConstants.PARM_URL);
     }
 
-    private String getEventRescanExistingOnImport(final Event event) {
+    private boolean getEventRescanExistingOnImport(final Event event) {
         final String rescanExisting = EventUtils.getParm(event, EventConstants.PARM_IMPORT_RESCAN_EXISTING);
         
         if (rescanExisting == null) {
             String enabled = System.getProperty(SCHEDULE_RESCAN_FOR_UPDATED_NODES, "true");
-            return enabled;
+            return Boolean.valueOf(enabled);
         }
         
-        return rescanExisting;
+        return Boolean.parseBoolean(rescanExisting);
     }
     
     /**

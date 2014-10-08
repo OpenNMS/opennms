@@ -53,7 +53,7 @@ public abstract class SaveOrUpdateOperation extends ImportOperation {
     private OnmsIpInterface m_currentInterface;
     
     private ScanManager m_scanManager;
-    private String m_rescanExisting = Boolean.TRUE.toString();
+    private boolean m_rescanExisting = true;
     
     /**
      * <p>Constructor for SaveOrUpdateOperation.</p>
@@ -66,7 +66,7 @@ public abstract class SaveOrUpdateOperation extends ImportOperation {
      * @param provisionService a {@link org.opennms.netmgt.provision.service.ProvisionService} object.
      */
     public SaveOrUpdateOperation(String foreignSource, String foreignId, String nodeLabel, String building, String city, ProvisionService provisionService) {
-		this(null, foreignSource, foreignId, nodeLabel, building, city, provisionService, Boolean.TRUE.toString());
+		this(null, foreignSource, foreignId, nodeLabel, building, city, provisionService, true);
 	}
 
 	/**
@@ -79,9 +79,9 @@ public abstract class SaveOrUpdateOperation extends ImportOperation {
 	 * @param building a {@link java.lang.String} object.
 	 * @param city a {@link java.lang.String} object.
 	 * @param provisionService a {@link org.opennms.netmgt.provision.service.ProvisionService} object.
-         * @param rescanExisting a {@link java.lang.String} object
+         * @param rescanExisting a {@link java.lang.Boolean} object
 	 */
-	public SaveOrUpdateOperation(Integer nodeId, String foreignSource, String foreignId, String nodeLabel, String building, String city, ProvisionService provisionService, String rescanExisting) {
+	public SaveOrUpdateOperation(Integer nodeId, String foreignSource, String foreignId, String nodeLabel, String building, String city, ProvisionService provisionService, boolean rescanExisting) {
 	    super(provisionService);
 	    
         m_node = new OnmsNode();
@@ -144,7 +144,11 @@ public abstract class SaveOrUpdateOperation extends ImportOperation {
      */
     @Override
     public void scan() {
+        if (m_rescanExisting) {
     	updateSnmpData();
+	} else {
+            LOG.debug("Skipping scan for node {}: rescanExisting is false", getNode());
+	}
     }
 	
     /**
@@ -191,7 +195,7 @@ public abstract class SaveOrUpdateOperation extends ImportOperation {
         return m_node;
     }
 
-    protected String getRescanExisting() {
+    protected boolean getRescanExisting() {
         return m_rescanExisting;
     }
 

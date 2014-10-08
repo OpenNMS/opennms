@@ -108,11 +108,11 @@ public class MultipleImportTest extends ProvisioningTestCase {
         final CountDownLatch eventReceived = anticipateEvents(1, ueis);
 
         System.err.println("triggering first import");
-        m_provisioner.importModelFromResource(m_resourceLoader.getResource("classpath:/SPC-222-a.xml"), Boolean.TRUE.toString());
+        m_provisioner.importModelFromResource(m_resourceLoader.getResource("classpath:/SPC-222-a.xml"), true);
         waitForEverything();
 
         System.err.println("triggering second import");
-        m_provisioner.importModelFromResource(m_resourceLoader.getResource("classpath:/SPC-222-b.xml"), Boolean.TRUE.toString());
+        m_provisioner.importModelFromResource(m_resourceLoader.getResource("classpath:/SPC-222-b.xml"), true);
         waitForEverything();
 
         System.err.println("finished triggering imports");
