@@ -119,7 +119,7 @@ public class Spc391Test extends ProvisioningTestCase {
         final CountDownLatch eventReceived = anticipateEvents(1, ueis);
 
         System.err.println("triggering import");
-        m_provisioner.importModelFromResource(m_resourceLoader.getResource("classpath:/SPC-391.xml"), true);
+        m_provisioner.importModelFromResource(m_resourceLoader.getResource("classpath:/SPC-391.xml"), Boolean.TRUE.toString());
         System.err.println("finished triggering imports");
         waitForEverything();
 

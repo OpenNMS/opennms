@@ -147,7 +147,7 @@ public class InvalidRequisitionDataTest extends ProvisioningTestCase implements 
 
         // This requisition has an asset on some nodes called "pollercategory".
         // Change it to "pollerCategory" (capital 'C') and the test passes...
-        m_provisioner.doImport(invalidAssetFieldResource.getURL().toString(), true);
+        m_provisioner.doImport(invalidAssetFieldResource.getURL().toString(), Boolean.TRUE.toString());
         waitForEverything();
         m_anticipator.verifyAnticipated();
 
@@ -179,7 +179,7 @@ public class InvalidRequisitionDataTest extends ProvisioningTestCase implements 
         // This requisition has an asset called "maintContractNumber" which was changed in
         // OpenNMS 1.10. We want to preserve backwards compatibility so make sure that the
         // field still works.
-        m_provisioner.doImport(resource.getURL().toString(), true);
+        m_provisioner.doImport(resource.getURL().toString(), Boolean.TRUE.toString());
         waitForEverything();
         m_anticipator.verifyAnticipated();
 
@@ -201,7 +201,7 @@ public class InvalidRequisitionDataTest extends ProvisioningTestCase implements 
 
         // This requisition has a "foreign-source" on the node tag, which is invalid,
         // foreign-source only belongs on the top-level model-import tag.
-        m_provisioner.doImport(invalidRequisitionResource.getURL().toString(), true);
+        m_provisioner.doImport(invalidRequisitionResource.getURL().toString(), Boolean.TRUE.toString());
         waitForEverything();
         m_anticipator.verifyAnticipated();
 

@@ -49,14 +49,14 @@ public class UpdateEventVisitor extends AbstractEntityVisitor {
     
     private static final String m_eventSource = "Provisiond";
     private EventForwarder m_eventForwarder;
-    private boolean m_rescanExisting;
+    private String m_rescanExisting;
 
     /**
      * <p>Constructor for UpdateEventVisitor.</p>
      *
      * @param eventForwarder a {@link org.opennms.netmgt.model.events.EventForwarder} object.
      */
-    public UpdateEventVisitor(EventForwarder eventForwarder, boolean rescanExisting) {
+    public UpdateEventVisitor(EventForwarder eventForwarder, String rescanExisting) {
         m_eventForwarder = eventForwarder;
         m_rescanExisting = rescanExisting;
     }
