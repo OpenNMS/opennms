@@ -1034,7 +1034,7 @@
     <!-- dependency versions -->
     <oldAsmVersion>99.99.99-exclude-and-use-org.ow2.asm.asm-all-instead</oldAsmVersion>
     <asmVersion>5.0.3</asmVersion>
-    <activemqVersion>5.9.0</activemqVersion>
+    <activemqVersion>5.10.0</activemqVersion>
     <atomikosVersion>3.9.2</atomikosVersion>
     <camelVersion>2.13.2</camelVersion>
     <cloverVersion>3.2.0</cloverVersion>
@@ -1059,7 +1059,7 @@
     <jettyVersion>7.6.15.v20140411</jettyVersion>
     <karafVersion>2.4.0</karafVersion>
     <karafPaxExamVersion>2.3.8</karafPaxExamVersion>
-    <felixVersion>2.2.0</felixVersion>
+    <felixVersion>2.3.0</felixVersion>
     <liquibaseVersion>2.0.5</liquibaseVersion>
     <log4jVersion>99.99.99-use-log4j2</log4jVersion>
     <log4j2Version>2.1-ONMS-20140918</log4j2Version>

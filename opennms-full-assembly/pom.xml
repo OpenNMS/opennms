@@ -198,7 +198,6 @@
               <karafVersion>DONT_USE_STANDARD_FEATURES</karafVersion>
               <descriptors>
                 <descriptor>mvn:org.opennms.karaf/opennms/${project.version}/xml/features</descriptor>
-                <descriptor>mvn:org.apache.karaf.assemblies.features/spring/2.4.0/xml/features</descriptor>
               </descriptors>
               <features>
                 <feature>http-whiteboard</feature>
