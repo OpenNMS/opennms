@@ -90,8 +90,8 @@ import org.springframework.transaction.annotation.Transactional;
 })
 @JUnitConfigurationEnvironment(systemProperties="org.opennms.provisiond.enableDiscovery=false")
 @DirtiesContext
-public class ProvisionerRescanTest implements InitializingBean {
-    private static final Logger LOG = LoggerFactory.getLogger(ProvisionerRescanTest.class);
+public class ProvisionerRescanExistingFalse implements InitializingBean {
+    private static final Logger LOG = LoggerFactory.getLogger(ProvisionerRescanExistingFalse.class);
 
     @Autowired
     private MockEventIpcManager m_mockEventIpcManager;
@@ -115,7 +115,7 @@ public class ProvisionerRescanTest implements InitializingBean {
     @Autowired
     private SnmpPeerFactory m_snmpPeerFactory;
 
-    private EventAnticipator m_eventAnticipator;
+    protected EventAnticipator m_eventAnticipator;
 
     private ForeignSourceRepository m_foreignSourceRepository;
 
@@ -188,6 +188,10 @@ public class ProvisionerRescanTest implements InitializingBean {
         @JUnitSnmpAgent(host="10.1.15.245", port=161, resource="classpath:testNoRescanOnImport-part2.properties")
     })
     public void testNoRescanOnImport() throws Exception {
+        executeTest(Boolean.FALSE.toString());
+    }
+    
+    protected void executeTest(String rescanExistingFlag) throws Exception {
         setupLogging("INFO");
 
         System.err.println("-------------------------------------------------------------------------");
@@ -208,9 +212,8 @@ public class ProvisionerRescanTest implements InitializingBean {
 
         setupLogging("DEBUG");
         m_eventAnticipator.reset();
-        anticipateNoRescanFirstNodeEvents();
         anticipateNoRescanSecondNodeEvents();
-        importFromResource("classpath:/testNoRescanOnImport-part2.xml", Boolean.FALSE.toString());
+        importFromResource("classpath:/testNoRescanOnImport-part2.xml", rescanExistingFlag);
         m_eventAnticipator.verifyAnticipated();
         setupLogging("INFO");
 
@@ -227,18 +230,7 @@ public class ProvisionerRescanTest implements InitializingBean {
         setupLogging("ERROR");
     }
 
-    private void anticipateNoRescanFirstNodeEvents() {
-        final String name = this.getClass().getSimpleName();
-
-        EventBuilder builder = new EventBuilder(EventConstants.NODE_UPDATED_EVENT_UEI, name);
-        builder.setNodeid(1);
-        builder.addParam(EventConstants.PARM_NODE_LABEL, "a");
-        builder.addParam(EventConstants.PARM_NODE_LABEL_SOURCE, "U");
-        builder.addParam(EventConstants.PARM_RESCAN_EXISTING, "false");
-        m_eventAnticipator.anticipateEvent(builder.getEvent());
-    }
-
-    private void anticipateNoRescanSecondNodeEvents() {
+    protected void anticipateNoRescanSecondNodeEvents() {
         final String name = this.getClass().getSimpleName();
 
         EventBuilder builder = new EventBuilder(EventConstants.NODE_ADDED_EVENT_UEI, name);

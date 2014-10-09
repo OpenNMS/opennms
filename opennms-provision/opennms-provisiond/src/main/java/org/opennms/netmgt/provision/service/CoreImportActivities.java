@@ -90,7 +90,7 @@ public class CoreImportActivities {
         
         final Requisition specFile = ri.getRequisition();
 
-        info("Auditing nodes for requisition {}", specFile);
+        info("Auditing nodes for requisition {}. The parameter {} was set to {} during import.", specFile, EventConstants.PARM_IMPORT_RESCAN_EXISTING, rescanExisting);
 
         // @ipv6
         m_provisionService.createDistPollerIfNecessary("localhost", "127.0.0.1");
@@ -141,12 +141,12 @@ public class CoreImportActivities {
         }
 
         if (rescanExisting == null || Boolean.valueOf(rescanExisting)) {
-            info("Running scan phase of {}", operation);
+            info("Running scan phase of {}, the parameter {} was set to {} during import.", operation, EventConstants.PARM_IMPORT_RESCAN_EXISTING, rescanExisting);
             operation.scan();
     
             info("Finished Running scan phase of {}", operation);
         } else {
-            info("Skipping scan phase of {}, because the {} parameter was set during import.", operation, EventConstants.PARM_IMPORT_RESCAN_EXISTING);
+            info("Skipping scan phase of {}, because the parameter {} was set to {} during import.", operation, EventConstants.PARM_IMPORT_RESCAN_EXISTING, rescanExisting);
         }
     }
     

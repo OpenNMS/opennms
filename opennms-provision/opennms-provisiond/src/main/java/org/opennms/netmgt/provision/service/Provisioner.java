@@ -633,7 +633,7 @@ public class Provisioner implements SpringServiceDaemon {
         }
         String rescanExisting = Boolean.TRUE.toString(); // Default
         for (Parm parm : e.getParmCollection()) {
-            if (EventConstants.PARM_RESCAN_EXISTING.equals(parm.getParmName()) && "false".equalsIgnoreCase(parm.getValue().getContent())) {
+            if (EventConstants.PARM_RESCAN_EXISTING.equals(parm.getParmName()) && ("false".equalsIgnoreCase(parm.getValue().getContent()) || "dbonly".equalsIgnoreCase(parm.getValue().getContent()))) {
                 rescanExisting = Boolean.FALSE.toString();
             }
         }
@@ -897,7 +897,7 @@ public class Provisioner implements SpringServiceDaemon {
         final String rescanExisting = EventUtils.getParm(event, EventConstants.PARM_IMPORT_RESCAN_EXISTING);
         
         if (rescanExisting == null) {
-            String enabled = System.getProperty(SCHEDULE_RESCAN_FOR_UPDATED_NODES, "true");
+            final String enabled = System.getProperty(SCHEDULE_RESCAN_FOR_UPDATED_NODES, "true");
             return enabled;
         }
         
