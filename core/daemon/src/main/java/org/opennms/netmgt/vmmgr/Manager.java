@@ -31,12 +31,8 @@ package org.opennms.netmgt.vmmgr;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.TreeMap;
 
 import javax.management.MBeanServer;
 import javax.management.MBeanServerFactory;
@@ -178,7 +174,13 @@ public class Manager implements ManagerMBean {
         
         LOG.info("calling System.exit(1)");
         shutdownLogging();
-        System.exit(1);
+        new Timer().schedule(new TimerTask() {
+            @Override
+            public void run() {
+                System.exit(1);
+            }
+        }, 500);
+
     }
 
     private void dumpThreads() {

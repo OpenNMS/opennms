@@ -277,20 +277,22 @@ public class Controller {
             InputStream in = connection.getInputStream();
 
             int ch;
+            StringBuffer line = new StringBuffer();
             while ((ch = in.read()) != -1) {
-                System.out.write((char) ch);
+                line.append((char)ch);
             }
+            LOG.debug(line.toString());
             in.close();
             System.out.println("");
             System.out.flush();
         } catch (final ConnectException e) {
-        	LOG.error("error when attempting to fetch URL \"{}\"", urlString, e);
+            LOG.error("error when attempting to fetch URL \"{}\"", urlString, e);
             if (isVerbose()) {
                 System.out.println(e.getMessage() + " when attempting to fetch URL \"" + urlString + "\"");
             }
             return 1;
         } catch (final Throwable t) {
-        	LOG.error("error invoking {} operation", operation, t);
+            LOG.error("error invoking {} operation", operation, t);
             System.out.println("error invoking " + operation + " operation");
             return 1;
         }
