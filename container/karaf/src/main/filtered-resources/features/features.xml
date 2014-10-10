@@ -160,20 +160,26 @@
 
     <!-- ################ START OPENNMS CUSTOMIZATION ############ -->
     <!-- Replace the Pax Web HTTP service with our servlet bridge -->
-    <feature name="http" version="2.2.0.ONMS" description="HTTP feature using custom servlet bridge">
+    <feature name="http" version="14.0.0.ONMS" description="HTTP feature using custom servlet bridge">
         <bundle>mvn:org.opennms.container/bridge/${project.version}</bundle>
+    </feature>
+
+    <feature name="http-whiteboard" description="Provide HTTP Whiteboard pattern support" version="14.0.0.ONMS" resolver="(obr)">
+        <feature>http</feature>
+        <bundle start-level="30">mvn:org.ops4j.pax.web/pax-web-jsp/3.1.2</bundle>
+        <bundle start-level="30">mvn:org.ops4j.pax.web/pax-web-extender-whiteboard/3.1.2</bundle>
     </feature>
 
     <!--
     <feature name="http" description="Implementation of the OSGi HTTP service" version="2.4.0" resolver="(obr)">
         <feature version="3.1.2">pax-http</feature>
     </feature>
-    -->
-    <!-- ################ END OPENNMS CUSTOMIZATION ############## -->
 
     <feature name="http-whiteboard" description="Provide HTTP Whiteboard pattern support" version="2.4.0" resolver="(obr)">
         <feature version="3.1.2">pax-http-whiteboard</feature>
     </feature>
+    -->
+    <!-- ################ END OPENNMS CUSTOMIZATION ############## -->
 
     <feature name="war" description="Turn Karaf as a full WebContainer" version="2.4.0" resolver="(obr)">
         <feature version="3.1.2">pax-war</feature>
