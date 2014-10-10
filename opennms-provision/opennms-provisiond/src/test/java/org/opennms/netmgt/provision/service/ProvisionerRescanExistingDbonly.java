@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -28,27 +28,27 @@
 
 package org.opennms.netmgt.provision.service;
 
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
-import org.springframework.core.io.FileSystemResource;
-import org.springframework.core.io.Resource;
+import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.model.events.EventBuilder;
 
-public abstract class Main {
+public class ProvisionerRescanExistingDbonly extends ProvisionerRescanExistingFalse {
 
-    /**
-     * <p>main</p>
-     *
-     * @param args an array of {@link java.lang.String} objects.
-     */
-    public static void main(String[] args) {
-        try {
-            ApplicationContext appContext = new ClassPathXmlApplicationContext("/META-INF/modelImport-appContext.xml");
-            Provisioner importer = (Provisioner)appContext.getBean("modelImporter");
-            Resource resource = new FileSystemResource(args[0]);
-            importer.importModelFromResource(resource, Boolean.TRUE.toString());
-        } catch (Throwable e) {
-            e.printStackTrace();
-        }
+    public void testNoRescanOnImport() throws Exception {
+        executeTest("dbonly");
     }
 
+    @Override
+    protected void anticipateNoRescanSecondNodeEvents() {
+        super.anticipateNoRescanSecondNodeEvents();
+        
+        final String name = this.getClass().getSimpleName();
+
+        EventBuilder builder = new EventBuilder(EventConstants.NODE_UPDATED_EVENT_UEI, name);
+        builder.setNodeid(1);
+        builder.addParam(EventConstants.PARM_NODE_LABEL, "a");
+        builder.addParam(EventConstants.PARM_NODE_LABEL_SOURCE, "U");
+        builder.addParam(EventConstants.PARM_RESCAN_EXISTING, "false");
+        m_eventAnticipator.anticipateEvent(builder.getEvent());
+    }
+    
 }

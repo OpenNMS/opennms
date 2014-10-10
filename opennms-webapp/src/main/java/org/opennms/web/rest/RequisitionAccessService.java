@@ -691,7 +691,7 @@ public class RequisitionAccessService {
         });
     }
 
-    public void importRequisition(final String foreignSource, final Boolean rescanExisting) {
+    public void importRequisition(final String foreignSource, final String rescanExisting) {
         final URL activeUrl = createSnapshot(foreignSource);
 
         final String url = activeUrl.toString();

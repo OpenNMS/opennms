@@ -344,10 +344,10 @@ public abstract class EventUtils {
      * @param nodeId a {@link java.lang.Integer} object.
      * @param nodeLabel a {@link java.lang.String} object.
      * @param labelSource a {@link java.lang.String} object.
-     * @param rescanExisting a {@link java.lang.Boolean} object.
+     * @param rescanExisting a {@link java.lang.String} object.
      * @return a {@link org.opennms.netmgt.xml.event.Event} object.
      */
-    public static Event createNodeUpdatedEvent(String source, Integer nodeId, String nodeLabel, NodeLabelSource labelSource, boolean rescanExisting) {
+    public static Event createNodeUpdatedEvent(String source, Integer nodeId, String nodeLabel, NodeLabelSource labelSource, String rescanExisting) {
         debug("CreateNodeUpdatedEvent: nodedId: %d", nodeId);
         EventBuilder bldr = new EventBuilder(NODE_UPDATED_EVENT_UEI, source);
         bldr.setNodeid(nodeId);
@@ -355,7 +355,9 @@ public abstract class EventUtils {
         if (labelSource != null) {
             bldr.addParam(PARM_NODE_LABEL_SOURCE, labelSource.toString());
         }
-        bldr.addParam(PARM_RESCAN_EXISTING, Boolean.toString(rescanExisting));
+        if (rescanExisting != null) {
+            bldr.addParam(PARM_RESCAN_EXISTING, rescanExisting);
+        }
         return bldr.getEvent();
     }
 

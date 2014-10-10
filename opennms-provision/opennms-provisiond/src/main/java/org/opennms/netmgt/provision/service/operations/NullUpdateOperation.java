@@ -28,40 +28,20 @@
 
 package org.opennms.netmgt.provision.service.operations;
 
-
 import org.opennms.netmgt.provision.service.ProvisionService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public class UpdateOperation extends SaveOrUpdateOperation {
-    
-    /**
-     * <p>Constructor for UpdateOperation.</p>
-     *
-     * @param nodeId a {@link java.lang.Integer} object.
-     * @param foreignSource a {@link java.lang.String} object.
-     * @param foreignId a {@link java.lang.String} object.
-     * @param nodeLabel a {@link java.lang.String} object.
-     * @param building a {@link java.lang.String} object.
-     * @param city a {@link java.lang.String} object.
-     * @param provisionService a {@link org.opennms.netmgt.provision.service.ProvisionService} object.
-     * @param rescanExisting a {@link java.lang.String} object
-     */
-    public UpdateOperation(Integer nodeId, String foreignSource, String foreignId, String nodeLabel, String building, String city, ProvisionService provisionService, String rescanExisting) {
-		super(nodeId, foreignSource, foreignId, nodeLabel, building, city, provisionService, rescanExisting);
-	}
+public class NullUpdateOperation extends UpdateOperation {
 
-	/**
-	 * <p>toString</p>
-	 *
-	 * @return a {@link java.lang.String} object.
-	 */
-	@Override
-	public String toString() {
-       return "UPDATE: Node: "+getNode().getId()+": "+getNode().getLabel();
+    private static final Logger LOG = LoggerFactory.getLogger(NullUpdateOperation.class);
+
+    public NullUpdateOperation(final Integer nodeId, final String foreignSource, final String foreignId, final String nodeLabel, final String building, final String city, final ProvisionService provisionService, final String rescanExisting) {
+        super(nodeId, foreignSource, foreignId, nodeLabel, building, city, provisionService, rescanExisting);
     }
 
-	/** {@inheritDoc} */
-	@Override
+    @Override
     protected void doPersist() {
-        getProvisionService().updateNode(getNode(), getRescanExisting());
+        LOG.debug("Skipping persist for node {}: rescanExisting is false", getNode());
     }
 }
