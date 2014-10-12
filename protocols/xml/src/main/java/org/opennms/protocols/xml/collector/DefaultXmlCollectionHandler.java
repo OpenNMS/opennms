@@ -28,18 +28,28 @@
 
 package org.opennms.protocols.xml.collector;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.nio.charset.Charset;
 import java.util.Date;
 import java.util.Map;
+
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 
 import org.opennms.netmgt.collectd.CollectionAgent;
 import org.opennms.netmgt.collectd.CollectionException;
 import org.opennms.netmgt.collectd.ServiceCollector;
 import org.opennms.netmgt.config.collector.AttributeGroupType;
-
 import org.opennms.protocols.xml.config.Request;
 import org.opennms.protocols.xml.config.XmlDataCollection;
 import org.opennms.protocols.xml.config.XmlSource;
-
 import org.w3c.dom.Document;
 
 /**
@@ -76,5 +86,5 @@ public class DefaultXmlCollectionHandler extends AbstractXmlCollectionHandler {
      * @see org.opennms.protocols.xml.collector.AbstractXmlCollectionHandler#processXmlResource(org.opennms.protocols.xml.collector.XmlCollectionResource, org.opennms.netmgt.config.collector.AttributeGroupType)
      */
     protected void processXmlResource(XmlCollectionResource collectionResource, AttributeGroupType attribGroupType) {}
-
+    
 }

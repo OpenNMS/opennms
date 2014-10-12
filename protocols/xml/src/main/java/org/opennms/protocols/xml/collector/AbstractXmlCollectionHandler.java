@@ -42,6 +42,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
+import javax.xml.namespace.NamespaceContext;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.Source;
@@ -60,7 +61,6 @@ import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.jsoup.Jsoup;
-
 import org.opennms.core.utils.BeanUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.collectd.CollectionAgent;
@@ -82,7 +82,6 @@ import org.opennms.protocols.xml.config.XmlObject;
 import org.opennms.protocols.xml.config.XmlSource;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -174,7 +173,9 @@ public abstract class AbstractXmlCollectionHandler implements XmlCollectionHandl
      * @throws ParseException the parse exception
      */
     protected void fillCollectionSet(CollectionAgent agent, XmlCollectionSet collectionSet, XmlSource source, Document doc) throws XPathExpressionException, ParseException {
+        NamespaceContext nc = new DocumentNamespaceResolver(doc);
         XPath xpath = XPathFactory.newInstance().newXPath();
+        xpath.setNamespaceContext(nc);
         for (XmlGroup group : source.getXmlGroups()) {
             log().debug("fillCollectionSet: getting resources for XML group " + group.getName() + " using XPATH " + group.getResourceXpath());
             Date timestamp = getTimeStamp(doc, xpath, group);
@@ -421,6 +422,7 @@ public abstract class AbstractXmlCollectionHandler implements XmlCollectionHandl
             is = applyXsltTransformation(request, is);
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             factory.setIgnoringComments(true);
+            factory.setNamespaceAware(true);
             DocumentBuilder builder = factory.newDocumentBuilder();
             final Document doc = builder.parse(is);
             return doc;
