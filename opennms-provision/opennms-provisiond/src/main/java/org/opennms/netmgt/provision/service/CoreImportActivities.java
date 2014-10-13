@@ -82,7 +82,7 @@ public class CoreImportActivities {
     }
     
     @Activity( lifecycle = "import", phase = "audit", schedulingHint="import" )
-    public ImportOperationsManager auditNodes(final RequisitionImport ri, final Boolean rescanExisting) {
+    public ImportOperationsManager auditNodes(final RequisitionImport ri, final String rescanExisting) {
         if (ri.isAborted()) {
             info("The import has been aborted, skipping audit phase import.");
             return null;
@@ -90,7 +90,7 @@ public class CoreImportActivities {
         
         final Requisition specFile = ri.getRequisition();
 
-        info("Auditing nodes for requisition {}", specFile);
+        info("Auditing nodes for requisition {}. The parameter {} was set to {} during import.", specFile, EventConstants.PARM_IMPORT_RESCAN_EXISTING, rescanExisting);
 
         // @ipv6
         m_provisionService.createDistPollerIfNecessary("localhost", "127.0.0.1");
@@ -134,19 +134,19 @@ public class CoreImportActivities {
     
     
     @Activity( lifecycle = "nodeImport", phase = "scan", schedulingHint="import" )
-    public void scanNode(final ImportOperation operation, final RequisitionImport ri, final Boolean rescanExisting) {
+    public void scanNode(final ImportOperation operation, final RequisitionImport ri, final String rescanExisting) {
         if (ri.isAborted()) {
             info("The import has been aborted, skipping scan phase nodeImport.");
             return;
         }
 
-        if (rescanExisting == null || rescanExisting) {
-            info("Running scan phase of {}", operation);
+        if (rescanExisting == null || Boolean.valueOf(rescanExisting)) {
+            info("Running scan phase of {}, the parameter {} was set to {} during import.", operation, EventConstants.PARM_IMPORT_RESCAN_EXISTING, rescanExisting);
             operation.scan();
     
             info("Finished Running scan phase of {}", operation);
         } else {
-            info("Skipping scan phase of {}, because the {} parameter was set during import.", operation, EventConstants.PARM_IMPORT_RESCAN_EXISTING);
+            info("Skipping scan phase of {}, because the parameter {} was set to {} during import.", operation, EventConstants.PARM_IMPORT_RESCAN_EXISTING, rescanExisting);
         }
     }
     
