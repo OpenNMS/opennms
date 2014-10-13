@@ -150,7 +150,7 @@ if (not exists $ENV{'JAVA_VENDOR'}) {
 	warning("you might need to set it, eg, to 'Sun' or 'openjdk'.");
 }
 
-$MAVEN_VERSION = `$MVN --version`;
+$MAVEN_VERSION = `'$MVN' --version`;
 $MAVEN_VERSION =~ s/^.*Apache Maven ([\d\.]+).*?$/$1/gs;
 chomp($MAVEN_VERSION);
 if ($MAVEN_VERSION =~ /^[12]/) {
