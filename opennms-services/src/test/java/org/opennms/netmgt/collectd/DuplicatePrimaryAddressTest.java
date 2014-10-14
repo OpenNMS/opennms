@@ -148,7 +148,7 @@ public class DuplicatePrimaryAddressTest {
         m_collectd.onEvent(nodeGained.getEvent());
         m_collectd.onEvent(reinitialize.getEvent());
 
-        // Emulate Provisiond events for node1
+        // Emulate Provisiond events for node3
         nodeGained.setNodeid(3);
         reinitialize.setNodeid(3);
         m_collectd.onEvent(nodeGained.getEvent());
@@ -256,8 +256,8 @@ public class DuplicatePrimaryAddressTest {
      * @throws Exception the exception
      */
     private void verify() throws Exception {
-        Thread.sleep(6000);
-        int successfulCollections = 5; // At least 5 collections must be performed on 6 seconds.
+        Thread.sleep(10000);
+        int successfulCollections = 5; // At least 5 collections must be performed for the above wait time.
         m_collectd.stop();
         m_mockUtils.verifyAll();
         MockLogAppender.assertNoWarningsOrGreater();
