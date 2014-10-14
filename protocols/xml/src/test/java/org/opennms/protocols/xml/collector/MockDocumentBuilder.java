@@ -60,9 +60,16 @@ public class MockDocumentBuilder {
         Document doc = null;
         try {
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            factory.setNamespaceAware(true);
             factory.setIgnoringComments(true);
             DocumentBuilder builder = factory.newDocumentBuilder();
             doc = builder.parse(m_xmlFileName);
+            //ugly but necessary hack to deal with documents that have a namespace defined without a prefix
+            if(doc.getDocumentElement().getNamespaceURI() != null && doc.getDocumentElement().getPrefix() == null){
+                factory.setNamespaceAware(false);
+                builder = factory.newDocumentBuilder();
+                doc = builder.parse(m_xmlFileName);
+            }
             doc.getDocumentElement().normalize();
             return doc;
         } catch (Exception e) {
@@ -79,6 +86,7 @@ public class MockDocumentBuilder {
     public static void setXmlFileName(String xmlFileName) {
         m_xmlFileName = xmlFileName;
     }
+    
 
 }
 

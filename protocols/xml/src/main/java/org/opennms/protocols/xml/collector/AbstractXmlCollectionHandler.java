@@ -34,6 +34,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.StringWriter;
 import java.net.URL;
 import java.net.URLConnection;
 import java.text.ParseException;
@@ -424,7 +425,17 @@ public abstract class AbstractXmlCollectionHandler implements XmlCollectionHandl
             factory.setIgnoringComments(true);
             factory.setNamespaceAware(true);
             DocumentBuilder builder = factory.newDocumentBuilder();
-            final Document doc = builder.parse(is);
+            StringWriter writer = new StringWriter();
+            IOUtils.copy(is, writer, "UTF-8");
+            String contents = writer.toString();
+            Document doc = builder.parse(IOUtils.toInputStream(contents, "UTF-8"));
+            // Ugly hack to deal with DOM & XPath 1.0's battle royale 
+            // over handling namespaces without a prefix. 
+            if(doc.getNamespaceURI() != null && doc.getPrefix() == null){
+                factory.setNamespaceAware(false);
+                builder = factory.newDocumentBuilder();
+                doc = builder.parse(IOUtils.toInputStream(contents, "UTF-8"));
+            }
             return doc;
         } catch (Exception e) {
             throw new XmlCollectorException(e.getMessage(), e);
