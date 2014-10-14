@@ -1,0 +1,9 @@
+<xml-groups>
+    <xml-group name="opennms-pollerd" resource-type="node"
+        resource-xpath="/MBean" >
+        <xml-object name="ONMSPollerThreadAct" type="GAUGE" xpath="Attribute[@name=ActiveThreads]" />
+        <xml-object name="ONMSPollCount" type="counter" xpath="Attribute[@name=NumPolls]" />
+        <xml-object name="ONMSPollerTasksTot" type="counter" xpath="Attribute[@name=TasksTotal]" />
+        <xml-object name="ONMSPollerTasksCpt" type="counter" xpath="Attribute[@name=TasksCompleted]" />
+    </xml-group>
+</xml-groups>

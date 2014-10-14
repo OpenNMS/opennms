@@ -1,0 +1,12 @@
+<xml-groups>
+    <xml-group name="opennms-collectd" resource-type="node"
+        resource-xpath="/MBean" >
+        <xml-object name="ONMSCollectThrdAct" type="GAUGE" xpath="Attribute[@name=ActiveThreads]" />
+        <xml-object name="ONMSCollectPoolMax" type="GAUGE" xpath="Attribute[@name=MaxPoolThreads]" />
+        <xml-object name="ONMSCollectPoolThrd" type="GAUGE" xpath="Attribute[@name=NumPoolThreads]" />
+        <xml-object name="ONMSCollectPoolPeak" type="GAUGE" xpath="Attribute[@name=PeakPoolThreads]" />
+        <xml-object name="ONMSCollectTasksTot" type="GAUGE" xpath="Attribute[@name=TasksCompleted]" />
+        <xml-object name="ONMSCollectTasksCpt" type="GAUGE" xpath="Attribute[@name=TasksTotal]" />
+        <xml-object name="ONMSCollectSvcCount" type="GAUGE" xpath="Attribute[@name=CollectableServiceCount]" />
+    </xml-group>
+</xml-groups>
