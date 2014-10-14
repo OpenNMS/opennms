@@ -108,9 +108,11 @@ public interface ProvisionService {
      *            database
      * @param rescanExisting
      *            true, if the node must be rescanned.
+     *            false, if the node should not be rescanned (perform only add/delete operations on the DB)
+     *            dbonly, if the node should not be rescanned (perform all DB operations)
      */
     @Transactional
-    void updateNode(OnmsNode node, boolean rescanExisting);
+    void updateNode(OnmsNode node, String rescanExisting);
     
     /**
      * <p>updateNodeAttributes</p>

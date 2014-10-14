@@ -275,7 +275,7 @@ public class ProvisionerTest extends ProvisioningTestCase implements Initializin
     // 192.0.2.0/24 reserved by IANA for testing purposes
     @JUnitSnmpAgent(host="192.0.2.123", resource="classpath:no-ipaddrtable.properties")
     public void testNoIPAddrTable() throws Exception {
-        importFromResource("classpath:/no-ipaddrtable.xml", true);
+        importFromResource("classpath:/no-ipaddrtable.xml", Boolean.TRUE.toString());
 
         OnmsNode node = getNodeDao().findByForeignId("empty", "123");
 
@@ -316,7 +316,7 @@ public class ProvisionerTest extends ProvisioningTestCase implements Initializin
     // 192.0.2.0/24 reserved by IANA for testing purposes
     @JUnitSnmpAgent(host="192.0.2.123", resource="classpath:lameForce10.properties")
     public void testLameForce10Agent() throws Exception {
-        importFromResource("classpath:/lameForce10.xml", true);
+        importFromResource("classpath:/lameForce10.xml", Boolean.TRUE.toString());
 
         OnmsNode node = getNodeDao().findByForeignId("empty", "123");
 
@@ -415,7 +415,7 @@ public class ProvisionerTest extends ProvisioningTestCase implements Initializin
             System.err.println("anticipated: " + e);
         }
 
-        importFromResource("classpath:/tec_dump.xml", true);
+        importFromResource("classpath:/tec_dump.xml", Boolean.TRUE.toString());
 
         for (final Event e : m_eventAnticipator.getAnticipatedEventsRecieved()) {
             System.err.println("received anticipated: " + e);
@@ -428,7 +428,7 @@ public class ProvisionerTest extends ProvisioningTestCase implements Initializin
 
     }
 
-    private void importFromResource(final String path, final Boolean rescanExisting) throws Exception {
+    private void importFromResource(final String path, final String rescanExisting) throws Exception {
         m_provisioner.importModelFromResource(m_resourceLoader.getResource(path), rescanExisting);
         waitForImport();
     }
@@ -447,7 +447,7 @@ public class ProvisionerTest extends ProvisioningTestCase implements Initializin
 
     @Test(timeout=300000)
     public void testNonSnmpImportAndScan() throws Exception {
-        importFromResource("classpath:/import_localhost.xml", true);
+        importFromResource("classpath:/import_localhost.xml", Boolean.TRUE.toString());
 
         final List<OnmsNode> nodes = getNodeDao().findAll();
         final OnmsNode node = nodes.get(0);
@@ -463,7 +463,7 @@ public class ProvisionerTest extends ProvisioningTestCase implements Initializin
 
     @Test(timeout=300000)
     public void testFindQuery() throws Exception {
-        importFromResource("classpath:/tec_dump.xml.smalltest", true);
+        importFromResource("classpath:/tec_dump.xml.smalltest", Boolean.TRUE.toString());
 
         for (final OnmsAssetRecord assetRecord : getAssetRecordDao().findAll()) {
             LOG.debug("Building = {}", assetRecord.getBuilding());
@@ -478,7 +478,7 @@ public class ProvisionerTest extends ProvisioningTestCase implements Initializin
             m_eventAnticipator.setDiscardUnanticipated(true);
             final String path = file.toURI().toURL().toExternalForm();
             LOG.debug("Importing: {}", path);
-            importFromResource(path, true);
+            importFromResource(path, Boolean.TRUE.toString());
         }
 
     }
@@ -488,7 +488,7 @@ public class ProvisionerTest extends ProvisioningTestCase implements Initializin
     public void testPopulateWithSnmp() throws Exception {
         m_populator.resetDatabase();
 
-        importFromResource("classpath:/tec_dump.xml", true);
+        importFromResource("classpath:/tec_dump.xml", Boolean.TRUE.toString());
 
         //Verify distpoller count
         assertEquals(1, getDistPollerDao().countAll());
@@ -518,7 +518,7 @@ public class ProvisionerTest extends ProvisioningTestCase implements Initializin
         @JUnitSnmpAgent(host="172.20.2.204", resource="classpath:snmpTestData3.properties")
     })
     public void testPopulateWithSnmpAndNodeScan() throws Exception {
-        importFromResource("classpath:/requisition_then_scan2.xml", true);
+        importFromResource("classpath:/requisition_then_scan2.xml", Boolean.TRUE.toString());
 
         //Verify distpoller count
         assertEquals(1, getDistPollerDao().countAll());
@@ -569,7 +569,7 @@ public class ProvisionerTest extends ProvisioningTestCase implements Initializin
 
 
         // Node Delete
-        importFromResource("classpath:/nonodes-snmp.xml", true);
+        importFromResource("classpath:/nonodes-snmp.xml", Boolean.TRUE.toString());
 
         //Verify node count
         assertEquals(0, getNodeDao().countAll());
@@ -583,7 +583,7 @@ public class ProvisionerTest extends ProvisioningTestCase implements Initializin
         @JUnitSnmpAgent(host="172.20.2.204", resource="classpath:snmpTestData3.properties")
     })
     public void testPopulateWithoutSnmpAndNodeScan() throws Exception {
-        importFromResource("classpath:/requisition_then_scan_no_snmp_svc.xml", true);
+        importFromResource("classpath:/requisition_then_scan_no_snmp_svc.xml", Boolean.TRUE.toString());
 
         //Verify distpoller count
         assertEquals(1, getDistPollerDao().countAll());
@@ -630,7 +630,7 @@ public class ProvisionerTest extends ProvisioningTestCase implements Initializin
         assertEquals(6, getSnmpInterfaceDao().countAll());
 
         // Node Delete
-        importFromResource("classpath:/nonodes-snmp.xml", true);
+        importFromResource("classpath:/nonodes-snmp.xml", Boolean.TRUE.toString());
 
         //Verify node count
         assertEquals(0, getNodeDao().countAll());
@@ -649,7 +649,7 @@ public class ProvisionerTest extends ProvisioningTestCase implements Initializin
         fs.addDetector(new PluginConfig("SNMP", "org.opennms.netmgt.provision.detector.snmp.SnmpDetector"));
         m_foreignSourceRepository.putDefaultForeignSource(fs);
 
-        importFromResource("classpath:/requisition_then_scanv6.xml", true);
+        importFromResource("classpath:/requisition_then_scanv6.xml", Boolean.TRUE.toString());
 
         //Verify distpoller count
         assertEquals(1, getDistPollerDao().countAll());
@@ -716,7 +716,7 @@ public class ProvisionerTest extends ProvisioningTestCase implements Initializin
         @JUnitSnmpAgent(host="2001:0470:e2f1:cafe:16c1:7cff:12d6:7bb9", resource="classpath:snmpwalk-demo.properties")
     })
     public void testPopulateWithIpv6OnlySnmpAndNodeScan() throws Exception {
-        importFromResource("classpath:/requisition_then_scanv6only.xml", true);
+        importFromResource("classpath:/requisition_then_scanv6only.xml", Boolean.TRUE.toString());
 
         //Verify distpoller count
         assertEquals(1, getDistPollerDao().countAll());
@@ -774,7 +774,7 @@ public class ProvisionerTest extends ProvisioningTestCase implements Initializin
         @JUnitSnmpAgent(host="172.20.2.204", port=161, resource="classpath:snmpTestData4.properties")
     })
     public void testImportAddrThenChangeAddr() throws Exception {
-        importFromResource("classpath:/requisition_then_scan2.xml", true);
+        importFromResource("classpath:/requisition_then_scan2.xml", Boolean.TRUE.toString());
 
         final List<OnmsNode> nodes = getNodeDao().findAll();
         final OnmsNode node = nodes.get(0);
@@ -791,7 +791,7 @@ public class ProvisionerTest extends ProvisioningTestCase implements Initializin
 
         m_mockSnmpDataProvider.setDataForAddress(new SnmpAgentAddress(InetAddressUtils.addr("172.20.2.201"), 161), m_resourceLoader.getResource("classpath:snmpTestData4.properties"));
 
-        importFromResource("classpath:/requisition_primary_addr_changed.xml", true);
+        importFromResource("classpath:/requisition_primary_addr_changed.xml", Boolean.TRUE.toString());
 
         final NodeScan scan2 = m_provisioner.createNodeScan(node.getId(), node.getForeignSource(), node.getForeignId());
 
@@ -821,7 +821,7 @@ public class ProvisionerTest extends ProvisioningTestCase implements Initializin
 
 
         // Node Delete
-        importFromResource("classpath:/nonodes-snmp.xml", true);
+        importFromResource("classpath:/nonodes-snmp.xml", Boolean.TRUE.toString());
 
         //Verify node count
         assertEquals(0, getNodeDao().countAll());
@@ -837,7 +837,7 @@ public class ProvisionerTest extends ProvisioningTestCase implements Initializin
         // This test assumes that discovery is disabled
         assertFalse(m_provisionService.isDiscoveryEnabled());
 
-        importFromResource("classpath:/deleteService.xml", true);
+        importFromResource("classpath:/deleteService.xml", Boolean.TRUE.toString());
 
         //Verify distpoller count
         assertEquals(1, getDistPollerDao().countAll());
@@ -877,7 +877,7 @@ public class ProvisionerTest extends ProvisioningTestCase implements Initializin
         // This test assumes that discovery is disabled
         assertFalse(m_provisionService.isDiscoveryEnabled());
 
-        importFromResource("classpath:/deleteService.xml", true);
+        importFromResource("classpath:/deleteService.xml", Boolean.TRUE.toString());
 
         //Verify distpoller count
         assertEquals(1, getDistPollerDao().countAll());
@@ -923,7 +923,7 @@ public class ProvisionerTest extends ProvisioningTestCase implements Initializin
         // This test assumes that discovery is disabled
         assertFalse(m_provisionService.isDiscoveryEnabled());
 
-        importFromResource("classpath:/deleteService.xml", true);
+        importFromResource("classpath:/deleteService.xml", Boolean.TRUE.toString());
 
         //Verify distpoller count
         assertEquals(1, getDistPollerDao().countAll());
@@ -968,7 +968,7 @@ public class ProvisionerTest extends ProvisioningTestCase implements Initializin
         // This test assumes that discovery is disabled
         assertFalse(m_provisionService.isDiscoveryEnabled());
 
-        importFromResource("classpath:/deleteService.xml", true);
+        importFromResource("classpath:/deleteService.xml", Boolean.TRUE.toString());
 
         //Verify distpoller count
         assertEquals(1, getDistPollerDao().countAll());
@@ -1016,7 +1016,7 @@ public class ProvisionerTest extends ProvisioningTestCase implements Initializin
 
     @Test(timeout=300000)
     public void testPopulate() throws Exception {
-        importFromResource("classpath:/tec_dump.xml.smalltest", true);
+        importFromResource("classpath:/tec_dump.xml.smalltest", Boolean.TRUE.toString());
 
         //Verify distpoller count
         assertEquals(1, getDistPollerDao().countAll());
@@ -1086,7 +1086,7 @@ public class ProvisionerTest extends ProvisioningTestCase implements Initializin
     public void testImportUtf8() throws Exception {
         final int nextNodeId = m_nodeDao.getNextNodeId();
 
-        m_provisioner.importModelFromResource(new ClassPathResource("/utf-8.xml"), true);
+        m_provisioner.importModelFromResource(new ClassPathResource("/utf-8.xml"), Boolean.TRUE.toString());
 
         assertEquals(1, getNodeDao().countAll());
         // \u00f1 is unicode for n~ 
@@ -1104,12 +1104,12 @@ public class ProvisionerTest extends ProvisioningTestCase implements Initializin
      */
     @Test(timeout=300000)
     public void testDelete() throws Exception {
-        importFromResource("classpath:/tec_dump.xml.smalltest", true);
+        importFromResource("classpath:/tec_dump.xml.smalltest", Boolean.TRUE.toString());
         assertEquals(10, getNodeDao().countAll());
-        importFromResource("classpath:/tec_dump.xml.smalltest.delete", true);
+        importFromResource("classpath:/tec_dump.xml.smalltest.delete", Boolean.TRUE.toString());
         assertEquals(9, getNodeDao().countAll());
 
-        importFromResource("classpath:/tec_dump.xml.smalltest.nonodes", true);
+        importFromResource("classpath:/tec_dump.xml.smalltest.nonodes", Boolean.TRUE.toString());
         assertEquals(0, getNodeDao().countAll());
     }
 
@@ -1119,7 +1119,7 @@ public class ProvisionerTest extends ProvisioningTestCase implements Initializin
      */
     @Test(timeout=300000)
     public void testAssets() throws Exception {
-        importFromResource("classpath:/tec_dump.xml", true);
+        importFromResource("classpath:/tec_dump.xml", Boolean.TRUE.toString());
         final OnmsNode n = getNodeDao().findByForeignId("empty", "4243");
         assertEquals("Asset Record: Manufacturer",     "Dell",                   n.getAssetRecord().getManufacturer());
         assertEquals("Asset Record: Operating System", "Windows Pi",             n.getAssetRecord().getOperatingSystem());
@@ -1141,7 +1141,7 @@ public class ProvisionerTest extends ProvisioningTestCase implements Initializin
 
     @Test(timeout=300000)
     public void testProvisionServiceGetScheduleForNodesUponDelete() throws Exception {
-        importFromResource("classpath:/tec_dump.xml.smalltest", true);
+        importFromResource("classpath:/tec_dump.xml.smalltest", Boolean.TRUE.toString());
         getScanExecutor().pause();
 
         m_provisioner.scheduleRescanForExistingNodes();
@@ -1150,7 +1150,7 @@ public class ProvisionerTest extends ProvisioningTestCase implements Initializin
         assertEquals(10, schedulesForNode.size());
 
         getScanExecutor().resume();
-        importFromResource("classpath:/tec_dump.xml.smalltest.delete", true);
+        importFromResource("classpath:/tec_dump.xml.smalltest.delete", Boolean.TRUE.toString());
         getScanExecutor().pause();
 
         m_provisioner.scheduleRescanForExistingNodes();
@@ -1182,7 +1182,7 @@ public class ProvisionerTest extends ProvisioningTestCase implements Initializin
 
     @Test(timeout=300000)
     public void testProvisionerRescanWorking() throws Exception{
-        importFromResource("classpath:/tec_dump.xml.smalltest", true);
+        importFromResource("classpath:/tec_dump.xml.smalltest", Boolean.TRUE.toString());
         getScanExecutor().pause();
 
         m_provisioner.scheduleRescanForExistingNodes();
@@ -1215,7 +1215,7 @@ public class ProvisionerTest extends ProvisioningTestCase implements Initializin
 
     @Test(timeout=300000)
     public void testProvisionerRemoveNodeInSchedule() throws Exception{
-        importFromResource("classpath:/tec_dump.xml.smalltest", true);
+        importFromResource("classpath:/tec_dump.xml.smalltest", Boolean.TRUE.toString());
         getScanExecutor().pause();
 
         m_provisioner.scheduleRescanForExistingNodes();
@@ -1246,7 +1246,7 @@ public class ProvisionerTest extends ProvisioningTestCase implements Initializin
 
     @Test(timeout=300000)
     public void testProvisionerNodeRescanSchedule() throws Exception {
-        importFromResource("classpath:/tec_dump.xml.smalltest", true);
+        importFromResource("classpath:/tec_dump.xml.smalltest", Boolean.TRUE.toString());
         getScanExecutor().pause();
 
         m_provisioner.scheduleRescanForExistingNodes();
@@ -1259,7 +1259,7 @@ public class ProvisionerTest extends ProvisioningTestCase implements Initializin
 
     @Test(timeout=300000)
     public void testProvisionerUpdateScheduleAfterImport() throws Exception {
-        importFromResource("classpath:/tec_dump.xml.smalltest", true);
+        importFromResource("classpath:/tec_dump.xml.smalltest", Boolean.TRUE.toString());
         getScanExecutor().pause();
 
         List<NodeScanSchedule> schedulesForNode = m_provisionService.getScheduleForNodes();
@@ -1269,7 +1269,7 @@ public class ProvisionerTest extends ProvisioningTestCase implements Initializin
 
         //reimport with one missing node
         getScanExecutor().resume();
-        importFromResource("classpath:/tec_dump.xml.smalltest.delete", true);
+        importFromResource("classpath:/tec_dump.xml.smalltest.delete", Boolean.TRUE.toString());
         getScanExecutor().pause();
 
         m_provisioner.scheduleRescanForExistingNodes();
@@ -1291,7 +1291,7 @@ public class ProvisionerTest extends ProvisioningTestCase implements Initializin
         final String OLD_LABEL = "apknd";
         final String NEW_LABEL = "apknd-new";
 
-        importFromResource("classpath:/tec_dump.xml.smalltest", true);
+        importFromResource("classpath:/tec_dump.xml.smalltest", Boolean.TRUE.toString());
         getScanExecutor().pause();
 
         m_provisioner.scheduleRescanForExistingNodes();
@@ -1356,8 +1356,8 @@ public class ProvisionerTest extends ProvisioningTestCase implements Initializin
      */
     @Test(timeout=300000)
     public void testParentForeignSource() throws Exception {
-        importFromResource("classpath:/parent_foreign_source_server.xml", true);
-        importFromResource("classpath:/parent_foreign_source_client.xml", true);
+        importFromResource("classpath:/parent_foreign_source_server.xml", Boolean.TRUE.toString());
+        importFromResource("classpath:/parent_foreign_source_client.xml", Boolean.TRUE.toString());
 
         final List<OnmsNode> nodes = getNodeDao().findAll();
         assertEquals(2, nodes.size());
@@ -1382,8 +1382,8 @@ public class ProvisionerTest extends ProvisioningTestCase implements Initializin
 
         // we should not get category update events on a re-import now, that happens during the scan phase
         //m_eventAnticipator.anticipateEvent(getNodeCategoryEvent(nextNodeId, "test"));
-        importFromResource("classpath:/requisition_with_node_categories.xml", true);
-        importFromResource("classpath:/requisition_with_node_categories_changed.xml", true);
+        importFromResource("classpath:/requisition_with_node_categories.xml", Boolean.TRUE.toString());
+        importFromResource("classpath:/requisition_with_node_categories_changed.xml", Boolean.TRUE.toString());
 
         m_eventAnticipator.verifyAnticipated();
     }
@@ -1391,7 +1391,7 @@ public class ProvisionerTest extends ProvisioningTestCase implements Initializin
     @Test(timeout=300000)
     @JUnitTemporaryDatabase
     public void testImportWithGeoData() throws Exception {
-        importFromResource("classpath:/tec_dump.xml", true);
+        importFromResource("classpath:/tec_dump.xml", Boolean.TRUE.toString());
         final NodeDao nodeDao = getNodeDao();
 
         OnmsNode node = nodeDao.findByForeignId("empty", "4243");
@@ -1418,7 +1418,7 @@ public class ProvisionerTest extends ProvisioningTestCase implements Initializin
         assertEquals(Float.valueOf(-79.162261f).doubleValue(), geolocation.getLongitude().doubleValue(), 0.1d);
 
         System.err.println("=================================================================BLEARGH");
-        importFromResource("classpath:/tec_dump.xml", true);
+        importFromResource("classpath:/tec_dump.xml", Boolean.TRUE.toString());
         node = nodeDao.findByForeignId("empty", "4243");
         geolocation = node.getAssetRecord().getGeolocation();
 
@@ -1442,7 +1442,7 @@ public class ProvisionerTest extends ProvisioningTestCase implements Initializin
         // we should not get new update events on a re-import now, that happens during the scan phase
         //m_eventAnticipator.anticipateEvent(new EventBuilder(EventConstants.NODE_UPDATED_EVENT_UEI, "Test").setNodeid(nextNodeId).getEvent());
         //m_eventAnticipator.anticipateEvent(getNodeCategoryEvent(nextNodeId, "test"));
-        importFromResource("classpath:/provisioner-testCategories-oneCategory.xml", true);
+        importFromResource("classpath:/provisioner-testCategories-oneCategory.xml", Boolean.TRUE.toString());
 
         m_eventAnticipator.verifyAnticipated();
         assertEquals(0, m_eventAnticipator.unanticipatedEvents().size());
@@ -1461,7 +1461,7 @@ public class ProvisionerTest extends ProvisioningTestCase implements Initializin
         assertEquals("TotallyMadeUpCategoryName", n.getCategories().iterator().next().getName());
 
         // import again, should be the same
-        importFromResource("classpath:/provisioner-testCategories-oneCategory.xml", true);
+        importFromResource("classpath:/provisioner-testCategories-oneCategory.xml", Boolean.TRUE.toString());
         n = getNodeDao().get(nextNodeId);
         assertEquals(1, n.getCategories().size());
         assertEquals("TotallyMadeUpCategoryName", n.getCategories().iterator().next().getName());
@@ -1483,7 +1483,7 @@ public class ProvisionerTest extends ProvisioningTestCase implements Initializin
         fs.addPolicy(policy);
         m_foreignSourceRepository.save(fs);
 
-        importFromResource("classpath:/provisioner-testCategories-oneCategory.xml", true);
+        importFromResource("classpath:/provisioner-testCategories-oneCategory.xml", Boolean.TRUE.toString());
 
         // after import, we should have 1 category, because policies haven't been applied yet
         OnmsNode n = getNodeDao().get(nextNodeId);
@@ -1506,7 +1506,7 @@ public class ProvisionerTest extends ProvisioningTestCase implements Initializin
     public void testRequisitionedCategoriesWithUserAddedCategory() throws Exception {
         final int nextNodeId = m_nodeDao.getNextNodeId();
 
-        importFromResource("classpath:/provisioner-testCategories-oneCategory.xml", true);
+        importFromResource("classpath:/provisioner-testCategories-oneCategory.xml", Boolean.TRUE.toString());
         final NodeScan scan = m_provisioner.createNodeScan(nextNodeId, "empty", "1");
         runScan(scan);
 
@@ -1522,7 +1522,7 @@ public class ProvisionerTest extends ProvisioningTestCase implements Initializin
         n.addCategory(m_categoryDao.findByName("ThisIsAlsoMadeUp"));
         getNodeDao().save(n);
 
-        importFromResource("classpath:/provisioner-testCategories-oneCategory.xml", true);
+        importFromResource("classpath:/provisioner-testCategories-oneCategory.xml", Boolean.TRUE.toString());
         runScan(scan);
 
         // when the scan has completed, both categories should have been applied
@@ -1537,7 +1537,7 @@ public class ProvisionerTest extends ProvisioningTestCase implements Initializin
     public void testRequisitionedCategoriesThenUpdateRequisitionToRemoveCategory() throws Exception {
         final int nextNodeId = m_nodeDao.getNextNodeId();
 
-        importFromResource("classpath:/provisioner-testCategories-oneCategory.xml", true);
+        importFromResource("classpath:/provisioner-testCategories-oneCategory.xml", Boolean.TRUE.toString());
         final NodeScan scan = m_provisioner.createNodeScan(nextNodeId, "empty", "1");
         runScan(scan);
 
@@ -1546,7 +1546,7 @@ public class ProvisionerTest extends ProvisioningTestCase implements Initializin
         assertEquals(1, n.getCategories().size());
         assertTrue(n.hasCategory("TotallyMadeUpCategoryName"));
 
-        importFromResource("classpath:/provisioner-testCategories-noCategories.xml", true);
+        importFromResource("classpath:/provisioner-testCategories-noCategories.xml", Boolean.TRUE.toString());
         runScan(scan);
 
         // when the scan has completed, the category should be removed
@@ -1559,7 +1559,7 @@ public class ProvisionerTest extends ProvisioningTestCase implements Initializin
     public void testRequisitionedCategoriesWithUserCategoryThenUpdateRequisitionToRemoveRequisitionedCategory() throws Exception {
         final int nextNodeId = m_nodeDao.getNextNodeId();
 
-        importFromResource("classpath:/provisioner-testCategories-oneCategory.xml", true);
+        importFromResource("classpath:/provisioner-testCategories-oneCategory.xml", Boolean.TRUE.toString());
         final NodeScan scan = m_provisioner.createNodeScan(nextNodeId, "empty", "1");
         runScan(scan);
 
@@ -1575,7 +1575,7 @@ public class ProvisionerTest extends ProvisioningTestCase implements Initializin
         n.addCategory(m_categoryDao.findByName("ThisIsAlsoMadeUp"));
         getNodeDao().save(n);
 
-        importFromResource("classpath:/provisioner-testCategories-noCategories.xml", true);
+        importFromResource("classpath:/provisioner-testCategories-noCategories.xml", Boolean.TRUE.toString());
         runScan(scan);
 
         // when the scan has completed, the requisitioned category should be removed, but the user-added one should remain

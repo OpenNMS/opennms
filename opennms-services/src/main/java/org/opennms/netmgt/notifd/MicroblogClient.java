@@ -90,7 +90,8 @@ public class MicroblogClient extends Bootstrap {
                 System.out.println("Step " + step++ + ".  Go to https://twitter.com/oauth_clients/new and create a Twitter");
                 System.out.println("\"application\" for your OpenNMS install.  If you have already created an application,");
                 System.out.println("you can get the info you need for the next steps at https://dev.twitter.com/apps/");
-                System.out.println("instead.");
+                System.out.println("instead.  Make sure you go to 'Keys and Access Tokens' and configure the 'Access Level'");
+                System.out.println("to allow 'Read, Write and Access direct messages'.");
                 System.out.println("");
                 System.out.print("Step " + step++ + ".  Enter your consumer key: ");
                 final String consumerKey = br.readLine();
