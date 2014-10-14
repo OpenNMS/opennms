@@ -223,6 +223,8 @@ Requires(pre):	opennms-plugin-protocol-xml
 Requires:	opennms-plugin-protocol-xml
 Requires(pre):	opennms-plugin-protocol-xmp
 Requires:	opennms-plugin-protocol-xmp
+Requires(pre):	opennms-plugin-collector-vtdxml-handler
+Requires:	opennms-plugin-collector-vtdxml-handler
 
 %description plugins
 This installs all optional plugins for OpenNMS.
