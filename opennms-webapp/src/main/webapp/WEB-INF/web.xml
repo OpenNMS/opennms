@@ -11,7 +11,7 @@
         </jsp-property-group>
         <taglib>
             <taglib-uri>http://www.springframework.org/tags/form</taglib-uri>
-            <taglib-location>/META-INF/spring-form.tld</taglib-location>
+            <taglib-location>/WEB-INF/spring-form.tld</taglib-location>
         </taglib>
     </jsp-config>
 
