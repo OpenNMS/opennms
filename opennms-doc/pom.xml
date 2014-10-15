@@ -7,7 +7,8 @@
     <artifactId>opennms</artifactId>
     <version>1.13.5-SNAPSHOT</version>
   </parent>
-  <artifactId>documentation</artifactId>
+  <groupId>org.opennms.doc</groupId>
+  <artifactId>parent</artifactId>
   <packaging>pom</packaging>
   <name>OpenNMS :: Documentation</name>
   <description>Official documentation</description>
@@ -99,9 +100,6 @@
             <descriptors>
               <descriptor>${basedir}/../src/assembly/doc.xml</descriptor>
             </descriptors>
-            <appendAssemblyId>true</appendAssemblyId>
-            <outputDirectory>${dist.dir}</outputDirectory>
-            <finalName>${dist.name}</finalName>
           </configuration>
         </plugin>
       </plugins>
