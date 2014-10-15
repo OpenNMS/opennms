@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -25,6 +25,7 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
+
 package org.opennms.features.vaadin.datacollection;
 
 import java.io.File;
@@ -38,6 +39,7 @@ import org.opennms.core.xml.JaxbUtils;
 import org.opennms.features.vaadin.api.Logger;
 import org.opennms.netmgt.config.DataCollectionConfigDao;
 import org.opennms.netmgt.config.datacollection.DatacollectionGroup;
+import org.opennms.netmgt.model.ResourceTypeUtils;
 import org.slf4j.LoggerFactory;
 import org.vaadin.dialogs.ConfirmDialog;
 
@@ -59,13 +61,12 @@ import com.vaadin.ui.VerticalLayout;
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a> 
  */
-// FIXME: When renaming a datacollection-group, all the SNMP collections must be updated.
-// FIXME: When a different group is selected and the current one is being edited, warn about discard the changes or save them before continue
 @SuppressWarnings("serial")
 public abstract class DataCollectionGroupPanel extends Panel implements TabSheet.SelectedTabChangeListener {
 
-	private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(DataCollectionGroupPanel.class);
-	
+    /** The Constant LOG. */
+    private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(DataCollectionGroupPanel.class);
+
     /** The group name. */
     private final TextField groupName = new TextField("Data Collection Group Name");
 
@@ -78,14 +79,20 @@ public abstract class DataCollectionGroupPanel extends Panel implements TabSheet
     /** The system definitions. */
     private final SystemDefPanel systemDefs;
 
+    /** The existing file. */
+    private final File existingFile;
+
     /**
      * Instantiates a new data collection group panel.
      *
      * @param dataCollectionConfigDao the OpenNMS Data Collection Configuration DAO
      * @param group the data collection group object
      * @param logger the logger object
+     * @param existingFile the existing file
      */
-    public DataCollectionGroupPanel(final DataCollectionConfigDao dataCollectionConfigDao, final DatacollectionGroup group, final Logger logger) {
+    public DataCollectionGroupPanel(final DataCollectionConfigDao dataCollectionConfigDao, final DatacollectionGroup group, final Logger logger, final File existingFile) {
+        this.existingFile = existingFile;
+
         setCaption("Data Collection");
         addStyleName("light");
 
@@ -94,9 +101,13 @@ public abstract class DataCollectionGroupPanel extends Panel implements TabSheet
         groupName.setPropertyDataSource(new ObjectProperty<String>(group.getName()));
         groupName.setNullSettingAllowed(false);
         groupName.setImmediate(true);
+        if (isExistingGroup()) { // If we allow to rename an existing group, we should modify the SNMP Collection as well
+            groupName.setEnabled(false);
+        }
 
+        boolean mibGroupEditable = !(isExistingGroup() && ResourceTypeUtils.isStoreByGroup());
         resourceTypes = new ResourceTypePanel(dataCollectionConfigDao, group, logger);
-        groups = new GroupPanel(dataCollectionConfigDao, group, logger);
+        groups = new GroupPanel(dataCollectionConfigDao, group, logger, mibGroupEditable);
         systemDefs = new SystemDefPanel(dataCollectionConfigDao, group, logger);
 
         // Button Toolbar
@@ -181,6 +192,15 @@ public abstract class DataCollectionGroupPanel extends Panel implements TabSheet
     public abstract void failure(String reason);
 
     /**
+     * Checks if is existing group.
+     *
+     * @return true, if this object is associated with an existing group
+     */
+    private boolean isExistingGroup() {
+        return existingFile != null && existingFile.exists();
+    }
+
+    /**
      * Process data collection.
      *
      * @param dataCollectionConfigDao the OpenNMS data collection configuration DAO
@@ -188,9 +208,7 @@ public abstract class DataCollectionGroupPanel extends Panel implements TabSheet
      */
     private void processDataCollection(final DataCollectionConfigDao dataCollectionConfigDao, final Logger logger) {
         final DatacollectionGroup dcGroup = getOnmsDataCollection();
-        final File configDir = new File(ConfigFileConstants.getHome(), "etc" + File.separatorChar + "datacollection");
-        final File file = new File(configDir, dcGroup.getName().replaceAll(" ", "_") + ".xml");
-        if (file.exists()) {
+        if (isExistingGroup()) {
             ConfirmDialog.show(getUI(),
                                "Are you sure?",
                                "Do you really want to override the existig file?\nAll current information will be lost.",
@@ -199,7 +217,7 @@ public abstract class DataCollectionGroupPanel extends Panel implements TabSheet
                                new ConfirmDialog.Listener() {
                 public void onClose(ConfirmDialog dialog) {
                     if (dialog.isConfirmed()) {
-                        saveFile(file, dcGroup, logger);
+                        saveFile(existingFile, dcGroup, logger);
                     }
                 }
             });
@@ -207,6 +225,8 @@ public abstract class DataCollectionGroupPanel extends Panel implements TabSheet
             if (dataCollectionConfigDao.getAvailableDataCollectionGroups().contains(dcGroup.getName())) {
                 Notification.show("There is a group with the same name, please pick another one.");
             } else {
+                final File configDir = new File(ConfigFileConstants.getHome(), "etc" + File.separatorChar + "datacollection");
+                final File file = new File(configDir, dcGroup.getName().replaceAll(" ", "_") + ".xml");
                 saveFile(file, dcGroup, logger);
             }
         }
@@ -229,7 +249,7 @@ public abstract class DataCollectionGroupPanel extends Panel implements TabSheet
             try {
                 final File configFile = ConfigFileConstants.getFile(ConfigFileConstants.DATA_COLLECTION_CONF_FILE_NAME);
                 if(!configFile.setLastModified(System.currentTimeMillis())) {
-                	LOG.warn("Could not set last modified: {}",configFile.getPath());
+                    LOG.warn("Could not set last modified: {}",configFile.getPath());
                 }
             } catch (IOException e) {
                 logger.warn("Can't reach datacollection-config.xml: " + e.getMessage());

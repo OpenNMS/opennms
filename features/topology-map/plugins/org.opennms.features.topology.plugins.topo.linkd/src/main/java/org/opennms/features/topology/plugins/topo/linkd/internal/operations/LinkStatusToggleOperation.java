@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -44,6 +44,8 @@ public class LinkStatusToggleOperation extends AbstractCheckedOperation {
     private EdgeStatusProvider m_llpdStatusProvider;
     private EdgeStatusProvider m_ospfLinkStatusProvider;
     private EdgeStatusProvider m_isisLinkStatusProvider;
+    private EdgeStatusProvider m_bridgeLinkStatusProvider;
+    private EdgeStatusProvider m_cdpLinkStatusProvider;
     private List<EdgeStatusProvider> m_providers;
     //TODO: add functionality to check bundle context when bundle is deregistered
     //private BundleContext m_bundleContext;
@@ -53,6 +55,8 @@ public class LinkStatusToggleOperation extends AbstractCheckedOperation {
         m_providers.add(m_llpdStatusProvider);
         m_providers.add(m_ospfLinkStatusProvider);
         m_providers.add(m_isisLinkStatusProvider);
+        m_providers.add(m_bridgeLinkStatusProvider);
+        m_providers.add(m_cdpLinkStatusProvider);
     }
 
     @Override
@@ -125,5 +129,17 @@ public class LinkStatusToggleOperation extends AbstractCheckedOperation {
 
     public void setIsisLinkStatusProvider(EdgeStatusProvider isisLinkStatusProvider) {
         m_isisLinkStatusProvider = isisLinkStatusProvider;
+    }
+
+    public void setBridgeLinkStatusProvider(EdgeStatusProvider bridgeLinkStatusProvider) {
+        m_bridgeLinkStatusProvider = bridgeLinkStatusProvider;
+    }
+
+    public EdgeStatusProvider getCdpLinkStatusProvider() {
+        return m_cdpLinkStatusProvider;
+    }
+
+    public void setCdpLinkStatusProvider(EdgeStatusProvider cdpLinkStatusProvider) {
+        m_cdpLinkStatusProvider = cdpLinkStatusProvider;
     }
 }

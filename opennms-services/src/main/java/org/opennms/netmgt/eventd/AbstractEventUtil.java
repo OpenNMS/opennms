@@ -7,16 +7,16 @@
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -292,6 +292,17 @@ public abstract class AbstractEventUtil implements EventUtil {
 	 */
 	protected static final String TAG_PERCENT_SIGN = "pctsign";
 
+	/**
+	 * The string that starts the expansion for a hardware field - used to lookup values
+	 * of hardware attributes by their index|name 
+	 */
+	static final String HARDWARE_BEGIN = "hardware[";
+
+	/**
+	 * The string that ends the expansion of a hardware
+	 */
+	static final String HARDWARE_END_SUFFIX = "]";
+
 	public static EventUtil getInstance() {
 		return new EventUtilJdbcImpl();
 	}
@@ -529,19 +540,29 @@ public abstract class AbstractEventUtil implements EventUtil {
 		} else if (parm.startsWith(PARM_NAME_NUMBERED_PREFIX)) {
 			retParmVal = getNumParmName(parm, event);
 		} else if (parm.startsWith(PARM_BEGIN)) {
-			if (parm.length() > PARM_BEGIN_LENGTH) {
-				retParmVal = getNamedParmValue(parm, event);
-			}
-				} else if (parm.startsWith(ASSET_BEGIN)) {
-			retParmVal = null;
-			String assetFieldValue = null;
-			if (event.getNodeid() > 0) {
-				assetFieldValue = getAssetFieldValue(parm, event.getNodeid());
-			}
-			if (assetFieldValue != null)
-				retParmVal = assetFieldValue;
-			else
-				retParmVal = "Unknown";
+		    if (parm.length() > PARM_BEGIN_LENGTH) {
+			retParmVal = getNamedParmValue(parm, event);
+		    }
+		} else if (parm.startsWith(ASSET_BEGIN)) {
+		    retParmVal = null;
+		    String assetFieldValue = null;
+		    if (event.getNodeid() > 0) {
+			assetFieldValue = getAssetFieldValue(parm, event.getNodeid());
+		    }
+		    if (assetFieldValue != null)
+			retParmVal = assetFieldValue;
+		    else
+			retParmVal = "Unknown";
+		} else if (parm.startsWith(HARDWARE_BEGIN)) {
+		    retParmVal = null;
+		    String hwFieldValue = null;
+		    if (event.getNodeid() > 0) {
+			hwFieldValue = getHardwareFieldValue(parm, event.getNodeid());
+		    }
+		    if (hwFieldValue != null)
+			retParmVal = hwFieldValue;
+		    else
+			retParmVal = "Unknown";
 		}
 
 		return (retParmVal == null ? null : retParmVal.trim());

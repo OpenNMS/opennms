@@ -7,16 +7,16 @@
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -30,6 +30,7 @@ package org.opennms.netmgt.eventd;
 
 import java.sql.SQLException;
 import java.util.Map;
+
 import org.opennms.netmgt.xml.event.Event;
 
 /**
@@ -41,6 +42,7 @@ import org.opennms.netmgt.xml.event.Event;
  * @author <A HREF="mailto:weave@oculan.com">Brain Weaver </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
+
 public interface EventUtil {
 
 	/**
@@ -82,6 +84,8 @@ public interface EventUtil {
      */
     String getAssetFieldValue(String parm, long nodeId);
 
+	String getHardwareFieldValue(String parm, long nodeId);
+
 	String expandParms(String string, Event event);
 	
 	String expandParms(String inp, Event event, Map<String, Map<String, String>> decode);
@@ -90,6 +94,6 @@ public interface EventUtil {
 
 	void expandMapValues(Map<String, String> parmMap, Event event);
 
-	String getValueOfParm(String tagUei, Event m_svcLostEvent);	
+	String getValueOfParm(String tagUei, Event m_svcLostEvent);
 
 }

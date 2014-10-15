@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -880,6 +880,11 @@ public final class BroadcastEventProcessor implements EventListener {
         Command[] commands = new Command[commandList.length];
         for (int i = 0; i < commandList.length; i++) {
             commands[i] = getNotificationCommandManager().getCommand(commandList[i]);
+            if (commands[i] != null && commands[i].getContactType() != null) {
+                if (! userHasContactType(user, commands[i].getContactType())) {
+                    LOG.warn("User {} lacks contact of type {} which is required for notification command {} on notice #{}. Scheduling task anyway.", user.getUserId(), commands[i].getContactType(), commands[i].getName(), noticeId);
+                }
+            }
         }
 
         // if either piece of information is missing don't add the task to
@@ -924,6 +929,22 @@ public final class BroadcastEventProcessor implements EventListener {
         task.setAutoNotify(autoNotify);
 
         return task;
+    }
+    
+    boolean userHasContactType(User user, String contactType) {
+        return userHasContactType(user, contactType, false);
+    }
+    
+    boolean userHasContactType(User user, String contactType, boolean allowEmpty) {
+        boolean retVal = false;
+        for (Contact c : user.getContactCollection()) {
+            if (contactType.equalsIgnoreCase(c.getType())) {
+                if (allowEmpty || ! "".equals(c.getInfo())) {
+                    retVal = true;
+                }
+            }
+        }
+        return retVal;
     }
 
     /**

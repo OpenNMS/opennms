@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -86,7 +86,7 @@ public class IsisLinkStatusProviderTest {
     }
 
     @Test
-    public void testGetLldpLinkStatus() {
+    public void testGetIsisLinkStatus() {
 
         EasyMock.expect(
                 m_alarmDao.findMatching(EasyMock.anyObject(org.opennms.core.criteria.Criteria.class))).andReturn(createAlarm());
@@ -105,7 +105,7 @@ public class IsisLinkStatusProviderTest {
     }
 
     @Test
-    public void testGetLldpLinkStatusDown(){
+    public void testGetIsisLinkStatusDown(){
         EasyMock.expect(
                 m_alarmDao.findMatching(EasyMock.anyObject(org.opennms.core.criteria.Criteria.class))).andReturn(createDownAlarm());
         EasyMock.expect(m_isIsLinkDao.findMatching(EasyMock.<org.opennms.core.criteria.Criteria>anyObject())).andReturn(createIsIsLinks());
@@ -119,16 +119,6 @@ public class IsisLinkStatusProviderTest {
         assertEquals(edges.get(0), new ArrayList<EdgeRef>(statusMap.keySet()).get(0));
         Status status = statusMap.get(edges.get(0));
         assertEquals("down", status.computeStatus());
-    }
-
-    private List<EdgeAlarmStatusSummary> createDownLldpStatusSummary() {
-        EdgeAlarmStatusSummary summary = new EdgeAlarmStatusSummary(1,2, EventConstants.TOPOLOGY_LINK_DOWN_EVENT_UEI);
-        return Arrays.asList(summary);
-    }
-
-    private List<EdgeAlarmStatusSummary> createLldpLinkStatusSummary() {
-        EdgeAlarmStatusSummary summary = new EdgeAlarmStatusSummary(1,2, EventConstants.TOPOLOGY_LINK_UP_EVENT_UEI);
-        return Arrays.asList(summary);
     }
 
     private List<EdgeRef> createEdges() {

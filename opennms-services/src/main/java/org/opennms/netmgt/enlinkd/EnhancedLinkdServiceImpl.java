@@ -1,3 +1,31 @@
+/*******************************************************************************
+ * This file is part of OpenNMS(R).
+ *
+ * Copyright (C) 2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * OpenNMS(R) is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with OpenNMS(R).  If not, see:
+ *      http://www.gnu.org/licenses/
+ *
+ * For more information contact:
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
+ *******************************************************************************/
+
 package org.opennms.netmgt.enlinkd;
 
 import java.util.ArrayList;
@@ -86,6 +114,16 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
 	private BridgeStpLinkDao m_bridgeStpLinkDao; 
 	
 	volatile Map<Integer,Map<Integer,Set<String>>> m_bftMap = new HashMap<Integer, Map<Integer,Set<String>>>();
+
+	volatile Map<Integer,Map<Integer,Integer>> m_nodebridgeportifindex = new HashMap<Integer, Map<Integer,Integer>>();
+
+	private void addBridgePortIfIndexEntry(Integer nodeid,Integer bridgeport, Integer ifindex) {
+		Map<Integer,Integer>bridgeportifindex = new HashMap<Integer, Integer>();
+		if (m_nodebridgeportifindex.containsKey(nodeid))
+			bridgeportifindex = m_nodebridgeportifindex.get(nodeid);
+		bridgeportifindex.put(bridgeport, ifindex);
+		m_nodebridgeportifindex.put(nodeid, bridgeportifindex);
+	}
 	
 	private void addBridgeForwardingTableEntry(Integer nodeid,Integer bridgeport, String mac) {
 		Map<Integer,Set<String>> bft = new HashMap<Integer, Set<String>>();
@@ -476,6 +514,7 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
 				final OnmsNode node = m_nodeDao.get(nodeId);
 				if ( node == null )
 					return null;
+				saveMe.setNode(node);
 				saveMe.setBridgeNodeLastPollTime(saveMe.getBridgeNodeCreateTime());
 				m_dao.saveOrUpdate(saveMe);
 				m_dao.flush();
@@ -515,6 +554,7 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
 				final OnmsNode node = m_nodeDao.get(nodeId);
 				if ( node == null )
 					return null;
+				saveMe.setNode(node);
 				saveMe.setBridgeStpLinkLastPollTime(saveMe.getBridgeStpLinkCreateTime());
 				m_dao.saveOrUpdate(saveMe);
 				m_dao.flush();
@@ -529,7 +569,8 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
 		if (link == null)
 			return;
 		addBridgeForwardingTableEntry(nodeId, link.getBridgePort(), link.getMacAddress());
-		
+		if (link.getBridgePortIfIndex() != null)
+			addBridgePortIfIndexEntry(nodeId, link.getBridgePort(), link.getBridgePortIfIndex());
 	}
 
 	@Override
@@ -540,6 +581,7 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
 		m_bridgeStpLinkDao.deleteByNodeIdOlderThen(nodeId, now);
 		m_bridgeStpLinkDao.flush();
 		
+		Map<Integer,Integer> bridgeportifindex = m_nodebridgeportifindex.get(nodeId);
 		Map<Integer,Set<String>> bft = m_bftMap.remove(nodeId);
 		if (bft == null || bft.isEmpty())
 			return;
@@ -551,24 +593,18 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
 		for (BridgeMacLink maclink: m_bridgeMacLinkDao.findAll()) {
 			if (maclink.getNode().getId().intValue() == nodeId)
 				continue;
-			if (macs.contains(maclink.getMacAddress())) {
-				Map<Integer,Set<String>> nodesavedtopology = new HashMap<Integer, Set<String>>();
-				if (savedtopology.containsKey(maclink.getNode().getId())) 
-					nodesavedtopology = savedtopology.get(maclink.getNode().getId());
-				Set<String> macsonport = new HashSet<String>();
-				if (nodesavedtopology.containsKey(maclink.getBridgePort()))
-					macsonport = nodesavedtopology.get(maclink.getBridgePort());
-				macsonport.add(maclink.getMacAddress());
-				nodesavedtopology.put(maclink.getBridgePort(), macsonport);
-				savedtopology.put(maclink.getNode().getId(), nodesavedtopology);
-				break;	
-			}
+			Map<Integer,Set<String>> nodesavedtopology = new HashMap<Integer, Set<String>>();
+			if (savedtopology.containsKey(maclink.getNode().getId())) 
+				nodesavedtopology = savedtopology.get(maclink.getNode().getId());
+			Set<String> macsonport = new HashSet<String>();
+			if (nodesavedtopology.containsKey(maclink.getBridgePort()))
+				macsonport = nodesavedtopology.get(maclink.getBridgePort());
+			macsonport.add(maclink.getMacAddress());
+			nodesavedtopology.put(maclink.getBridgePort(), macsonport);
+			savedtopology.put(maclink.getNode().getId(), nodesavedtopology);
 		}
 		
 		BridgeTopology topology = new BridgeTopology();
-		for (Integer savednode: savedtopology.keySet()) {
-			topology.addTopology(savednode, savedtopology.get(savednode),new HashSet<Integer>());
-		}
 		Set<Integer> targets = new HashSet<Integer>();
 		targets.add(nodeId);
 		for (BridgeBridgeLink bblink: m_bridgeBridgeLinkDao.findByNodeId(nodeId)) {
@@ -581,13 +617,17 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
 			nodesavedtopology.put(bblink.getBridgePort(), new HashSet<String>());
 			topology.addTopology(bblink.getNode().getId(), nodesavedtopology, targets);
 		}
+		for (Integer savednode: savedtopology.keySet()) {
+			topology.parseBFT(savednode, savedtopology.get(savednode));
+		}
 		topology.parseBFT(nodeId, bft);
 
 		// now check the topology with the old one
 		// delete the not found links
 		for (BridgeTopologyLink btl: topology.getTopology()) {
-				saveLink(btl);
+			saveLink(btl, nodeId, bridgeportifindex);
 		}
+		
 		for (Integer curNodeId: savedtopology.keySet()) {
 			m_bridgeMacLinkDao.deleteByNodeIdOlderThen(curNodeId, now);
 		}
@@ -602,19 +642,31 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
 
 	}
 	
-	protected void saveLink(final BridgeTopologyLink bridgelink) {
+	protected void saveLink(final BridgeTopologyLink bridgelink, Integer nodeId, Map<Integer,Integer> bridgeportIfIndex) {
+		if (bridgelink == null)
+			return;
+		if (bridgeportIfIndex == null)
+			return;
+		
 		OnmsNode node = m_nodeDao.get(bridgelink.getBridgeTopologyPort().getNodeid());
 		if (node == null)
 			return;
 		OnmsNode designatenode = null;
-		if (bridgelink.getDesignateBridgePort() != null)
+		if (bridgelink.getDesignateBridgePort() != null) {
 			designatenode = m_nodeDao.get(bridgelink.getDesignateBridgePort().getNodeid());
+		}
 		if (bridgelink.getMacs().isEmpty() && designatenode != null) {
 			BridgeBridgeLink link = new BridgeBridgeLink();
 			link.setNode(node);
 			link.setBridgePort(bridgelink.getBridgeTopologyPort().getBridgePort());
+			if (node.getId().intValue() == nodeId.intValue() && bridgeportIfIndex.containsKey(bridgelink.getBridgeTopologyPort().getBridgePort())) {
+				link.setBridgePortIfIndex(bridgeportIfIndex.get(bridgelink.getBridgeTopologyPort().getBridgePort()));
+			}
 			link.setDesignatedNode(designatenode);
 			link.setDesignatedPort(bridgelink.getDesignateBridgePort().getBridgePort());
+			if (designatenode.getId().intValue() == nodeId.intValue() && bridgeportIfIndex.containsKey(bridgelink.getDesignateBridgePort().getBridgePort())) {
+				link.setDesignatedPortIfIndex(bridgeportIfIndex.get(bridgelink.getDesignateBridgePort().getBridgePort()));
+			}
 			saveBridgeBridgeLink(link);
 			return;
 		} 
@@ -622,6 +674,9 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
 			BridgeMacLink maclink1 = new BridgeMacLink();
 			maclink1.setNode(node);
 			maclink1.setBridgePort(bridgelink.getBridgeTopologyPort().getBridgePort());
+			if (node.getId().intValue() == nodeId.intValue() && bridgelink.getBridgeTopologyPort() != null && bridgeportIfIndex.containsKey(bridgelink.getBridgeTopologyPort().getBridgePort())) {
+				maclink1.setBridgePortIfIndex(bridgeportIfIndex.get(bridgelink.getBridgeTopologyPort().getBridgePort()));
+			}
 			maclink1.setMacAddress(mac);
 			saveBridgeMacLink(maclink1);
 			if (designatenode == null)
@@ -629,9 +684,11 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
 			BridgeMacLink maclink2 = new BridgeMacLink();
 			maclink2.setNode(designatenode);
 			maclink2.setBridgePort(bridgelink.getDesignateBridgePort().getBridgePort());
+			if (designatenode.getId().intValue() == nodeId.intValue() && bridgelink.getDesignateBridgePort() != null && bridgeportIfIndex.containsKey(bridgelink.getDesignateBridgePort().getBridgePort())) {
+				maclink2.setBridgePortIfIndex(bridgeportIfIndex.get(bridgelink.getDesignateBridgePort().getBridgePort()));
+			}
 			maclink2.setMacAddress(mac);
 			saveBridgeMacLink(maclink2);
-			
 		}
 	}
 
@@ -641,7 +698,7 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
 
 			@Override
 			protected BridgeMacLink query() {
-				return m_dao.getByNodeIdBridgePort(saveMe.getNode().getId(),saveMe.getBridgePort());
+				return m_dao.getByNodeIdBridgePortMac(saveMe.getNode().getId(),saveMe.getBridgePort(),saveMe.getMacAddress());
 			}
 
 			@Override

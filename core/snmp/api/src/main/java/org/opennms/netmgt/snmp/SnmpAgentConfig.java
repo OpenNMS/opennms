@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -30,6 +30,7 @@ package org.opennms.netmgt.snmp;
 
 import java.io.Serializable;
 import java.net.InetAddress;
+import java.util.Objects;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
@@ -86,6 +87,8 @@ public class SnmpAgentConfig extends SnmpConfiguration implements Serializable {
 
             if ("address".equalsIgnoreCase(key) && !"null".equals(value)) {
                 agentConfig.setAddress(InetAddrUtils.addr(value));
+            } else if ("proxyFor".equalsIgnoreCase(key) && !"null".equals(value)) {
+                agentConfig.setProxyFor(InetAddrUtils.addr(value));
             } else if ("port".equalsIgnoreCase(key)) {
                 agentConfig.setPort(Integer.parseInt(value));
             } else if ("timeout".equalsIgnoreCase(key)) {
@@ -134,6 +137,7 @@ public class SnmpAgentConfig extends SnmpConfiguration implements Serializable {
     public String toProtocolConfigString() {
         StringBuffer buff = new StringBuffer("snmp:");
         buff.append("address=").append((m_address == null? null : InetAddrUtils.str(m_address)));
+        buff.append(",proxyFor=" + (m_proxyFor == null ? null : InetAddrUtils.str(m_proxyFor)));
         buff.append(",port=").append(getPort());
         buff.append(",timeout=").append(getTimeout());
         buff.append(",retries=").append(getRetries());
@@ -176,7 +180,7 @@ public class SnmpAgentConfig extends SnmpConfiguration implements Serializable {
             buff.append(", SecurityName: " + getSecurityName());
             buff.append(", AuthPassPhrase: " + getAuthPassPhrase());
             buff.append(", AuthProtocol: " + getAuthProtocol());
-            buff.append(", PrivPassprhase: " + getPrivPassPhrase());
+            buff.append(", PrivPassphrase: " + getPrivPassPhrase());
             buff.append(", PrivProtocol: " + getPrivProtocol());
             buff.append(", EngineId: " + getEngineId());
             buff.append(", ContextEngineId: " + getContextEngineId());
@@ -215,4 +219,64 @@ public class SnmpAgentConfig extends SnmpConfiguration implements Serializable {
         return m_proxyFor;
     }
 
+    @Override
+    public int hashCode() {
+        int hash = Objects.hash(getAddress(),
+                getProxyFor(),
+                getPort(),
+                getTimeout(),
+                getRetries(),
+                getMaxRepetitions(),
+                getMaxRequestSize(),
+                getMaxVarsPerPdu(),
+                getVersion(),
+                getSecurityLevel(),
+                getSecurityName(),
+                getAuthPassPhrase(),
+                getAuthProtocol(),
+                getPrivPassPhrase(),
+                getPrivProtocol(),
+                getEngineId(),
+                getContextEngineId(),
+                getEnterpriseId(),
+                getReadCommunity(),
+                getWriteCommunity());
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == this) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (obj.getClass() == getClass()) {
+            SnmpAgentConfig other = (SnmpAgentConfig) obj;
+
+            boolean equals = Objects.equals(getAddress(), other.getAddress())
+                && Objects.equals(getProxyFor(), other.getProxyFor())
+                && Objects.equals(getPort(), other.getPort())
+                && Objects.equals(getTimeout(), other.getTimeout())
+                && Objects.equals(getRetries(), other.getRetries())
+                && Objects.equals(getMaxRepetitions(), other.getMaxRepetitions())
+                && Objects.equals(getMaxRequestSize(), other.getMaxRequestSize())
+                && Objects.equals(getMaxVarsPerPdu(), other.getMaxVarsPerPdu())
+                && Objects.equals(getVersion(), other.getVersion())
+                && Objects.equals(getSecurityLevel(), other.getSecurityLevel())
+                && Objects.equals(getSecurityName(), other.getSecurityName())
+                && Objects.equals(getAuthPassPhrase(), other.getAuthPassPhrase())
+                && Objects.equals(getAuthProtocol(), other.getAuthProtocol())
+                && Objects.equals(getPrivPassPhrase(), other.getPrivPassPhrase())
+                && Objects.equals(getPrivProtocol(), other.getPrivProtocol())
+                && Objects.equals(getEngineId(), other.getEngineId())
+                && Objects.equals(getContextEngineId(), other.getContextEngineId())
+                && Objects.equals(getEnterpriseId(), other.getEnterpriseId())
+                && Objects.equals(getReadCommunity(), other.getReadCommunity())
+                && Objects.equals(getWriteCommunity(), other.getWriteCommunity());
+            return equals;
+        }
+        return false;
+    }
 }

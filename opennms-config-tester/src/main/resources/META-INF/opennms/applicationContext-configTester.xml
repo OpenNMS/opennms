@@ -66,7 +66,6 @@
         <entry key="scriptd-configuration.xml" value="scriptdConfigFactory"/>
         <entry key="service-configuration.xml" value="serviceConfigFactory"/>
         <entry key="site-status-views.xml" value="siteStatusViewConfigDao"/>
-        <entry key="smsPhonebook.properties" value="smsPhonebookCheck"/>
         <entry key="snmp-adhoc-graph.properties" value="snmpAdhocGraph"/>
         <!-- <entry key="snmp-asset-adapter-configuration.xml" value="snmpAssetAdapterConfigFactory"/> --><!-- Not part of standard build -->
         <entry key="snmp-config.xml" value="snmpConfigDao"/>
@@ -465,20 +464,6 @@ org.opennms.netmgt.filter.FilterParseException: SQL Exception occurred getting I
   <bean id="serviceConfigFactory" class="org.opennms.netmgt.config.ServiceConfigFactory" />
 
   <bean id="siteStatusViewConfigDao" class="org.opennms.netmgt.dao.castor.DefaultSiteStatusViewConfigDao"/>
-  
-  <bean id="smsPhonebook" class="org.opennms.sms.phonebook.PropertyPhonebook">
-    <constructor-arg><value>${opennms.home}/etc/smsPhonebook.properties</value></constructor-arg>
-  </bean>
-
-  <bean id="smsPhonebookCheck" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-	<property name="targetObject"><ref local="smsPhonebook"/></property>
-    <property name="targetMethod"><value>getTargetForAddress</value></property>
-    <property name="arguments">
-      <list>
-        <value>127.0.0.1</value>
-      </list>
-    </property>
-  </bean>
   
   <bean id="snmpAssetAdapterConfigFactory" class="org.opennms.netmgt.config.SnmpAssetAdapterConfigFactory"/>
 

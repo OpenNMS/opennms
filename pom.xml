@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms</groupId>
   <artifactId>opennms</artifactId>
-  <version>1.13.5-SNAPSHOT</version>
+  <version>1.15.0-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>OpenNMS</name>
   <url>http://opennms.org/</url>
@@ -981,7 +981,7 @@
     <install.version>${project.version}</install.version>
     <display.version>${install.version}</display.version>
     <opennms.home>${dist.dir}/${dist.name}</opennms.home>
-    <opennms.osgi.version>1.13.5.SNAPSHOT</opennms.osgi.version>
+    <opennms.osgi.version>1.15.0.SNAPSHOT</opennms.osgi.version>
     <maven.metadata.legacy>true</maven.metadata.legacy>
     <root.dir>${project.basedir}</root.dir>
     <dist.dir>${root.dir}/target</dist.dir>
@@ -1072,7 +1072,7 @@
     <felixVersion>2.2.0</felixVersion>
     <liquibaseVersion>2.0.5</liquibaseVersion>
     <log4jVersion>99.99.99-use-log4j2</log4jVersion>
-    <log4j2Version>2.0</log4j2Version>
+    <log4j2Version>2.1-ONMS-20140918</log4j2Version>
     <minaVersion>2.0.7</minaVersion>
     <paxExamVersion>2.6.0</paxExamVersion>
     <powermockVersion>1.5.5</powermockVersion>
@@ -1656,23 +1656,8 @@
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.opennms.features.sms-reflector</groupId>
-        <artifactId>sms-gateway</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms.features.sms-reflector</groupId>
-        <artifactId>sms-service</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms.features.sms-reflector</groupId>
-        <artifactId>sms-ping</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms.features.sms-reflector</groupId>
-        <artifactId>sms-monitor</artifactId>
+        <groupId>org.opennms</groupId>
+        <artifactId>opennms-snmp-hardware-inventory-provisioning-adapter</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>

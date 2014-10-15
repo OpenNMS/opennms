@@ -1,3 +1,31 @@
+/*******************************************************************************
+ * This file is part of OpenNMS(R).
+ *
+ * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * OpenNMS(R) is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with OpenNMS(R).  If not, see:
+ *      http://www.gnu.org/licenses/
+ *
+ * For more information contact:
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
+ *******************************************************************************/
+
 package org.opennms.netmgt.config;
 
 import static org.junit.Assert.assertEquals;
@@ -24,7 +52,6 @@ import org.opennms.features.reporting.model.basicreport.LegacyLocalReportsDefini
 import org.opennms.features.reporting.model.jasperreport.LocalJasperReports;
 import org.opennms.features.reporting.model.remoterepository.RemoteRepositoryConfig;
 import org.opennms.netmgt.alarmd.northbounder.syslog.SyslogNorthbounderConfig;
-import org.opennms.netmgt.config.accesspointmonitor.AccessPointMonitorConfig;
 import org.opennms.netmgt.config.ackd.AckdConfiguration;
 import org.opennms.netmgt.config.actiond.ActiondConfiguration;
 import org.opennms.netmgt.config.ami.AmiConfig;
@@ -42,6 +69,7 @@ import org.opennms.netmgt.config.enlinkd.EnlinkdConfiguration;
 import org.opennms.netmgt.config.eventd.EventdConfiguration;
 import org.opennms.netmgt.config.filter.DatabaseSchema;
 import org.opennms.netmgt.config.groups.Groupinfo;
+import org.opennms.netmgt.config.hardware.HwInventoryAdapterConfiguration;
 import org.opennms.netmgt.config.httpdatacollection.HttpDatacollectionConfig;
 import org.opennms.netmgt.config.javamail.JavamailConfiguration;
 import org.opennms.netmgt.config.jdbc.JdbcDataCollectionConfig;
@@ -160,7 +188,6 @@ public class WillItUnmarshalTest {
 
         addFile(Source.SPRING, "eventconf-bad-element.xml", Events.class, Impl.JAXB, "Invalid content was found starting with element 'bad-element'.");
 
-        addFile(Source.CONFIG, "access-point-monitor-configuration.xml", AccessPointMonitorConfig.class, Impl.CASTOR);
         addFile(Source.CONFIG, "actiond-configuration.xml", ActiondConfiguration.class, Impl.JAXB);
         addFile(Source.CONFIG, "ami-config.xml", AmiConfig.class, Impl.JAXB);
         addFile(Source.CONFIG, "availability-reports.xml", OpennmsReports.class, Impl.CASTOR);
@@ -265,6 +292,7 @@ public class WillItUnmarshalTest {
         addFile(Source.EXAMPLE, "jvm-datacollection/jmx-datacollection/Jvm/1.6/JvmLegacy.xml", Mbeans.class, Impl.JAXB);
         addFile(Source.EXAMPLE, "jvm-datacollection/jmx-datacollection/OpenNMS/1.10/OpenNMSBasic0.xml", Mbeans.class, Impl.JAXB);
         addFile(Source.EXAMPLE, "jvm-datacollection/jmx-datacollection/OpenNMS/1.10/OpenNMSLegacy.xml", Mbeans.class, Impl.JAXB);
+        addFile(Source.CONFIG, "snmp-hardware-inventory-adapter-configuration.xml", HwInventoryAdapterConfiguration.class, Impl.JAXB);
 
         // Add all event files
         for (final File file : FileUtils.listFiles(new File(getDaemonEtcDirectory(), "events"),

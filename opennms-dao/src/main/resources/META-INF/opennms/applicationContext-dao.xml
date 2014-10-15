@@ -103,6 +103,18 @@
     <property name="sessionFactory" ref="sessionFactory" />
   </bean>
   
+  <onmsgi:service interface="org.opennms.netmgt.dao.api.HwEntityDao" ref="hwEntityDao" />
+
+  <bean id="hwEntityDao" class="org.opennms.netmgt.dao.hibernate.HwEntityDaoHibernate">
+    <property name="sessionFactory" ref="sessionFactory" />
+  </bean>
+
+  <onmsgi:service interface="org.opennms.netmgt.dao.api.HwEntityAttributeTypeDao" ref="hwEntityAttributeTypeDao" />
+
+  <bean id="hwEntityAttributeTypeDao" class="org.opennms.netmgt.dao.hibernate.HwEntityAttributeTypeDaoHibernate">
+    <property name="sessionFactory" ref="sessionFactory" />
+  </bean>
+  
   <onmsgi:service interface="org.opennms.netmgt.dao.api.LldpLinkDao" ref="lldpLinkDao" />
     
   <bean id="lldpElementDao" class="org.opennms.netmgt.dao.hibernate.LldpElementDaoHibernate">
@@ -246,6 +258,12 @@
   </bean>
   
   <onmsgi:service interface="org.opennms.netmgt.dao.api.NodeDao" ref="nodeDao" />
+
+  <bean id="requisitionedCategoryAssociationDao" class="org.opennms.netmgt.dao.hibernate.RequisitionedCategoryAssociationDaoHibernate">
+    <property name="sessionFactory" ref="sessionFactory" />
+  </bean>
+  
+  <onmsgi:service interface="org.opennms.netmgt.dao.api.RequisitionedCategoryAssociationDao" ref="requisitionedCategoryAssociationDao" />
 
   <bean id="linkStateDao" class="org.opennms.netmgt.dao.hibernate.LinkStateDaoHibernate">
     <property name="sessionFactory" ref="sessionFactory" />

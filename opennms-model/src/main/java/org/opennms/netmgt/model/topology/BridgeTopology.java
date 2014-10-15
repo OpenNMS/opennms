@@ -1,3 +1,31 @@
+/*******************************************************************************
+ * This file is part of OpenNMS(R).
+ *
+ * Copyright (C) 2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * OpenNMS(R) is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with OpenNMS(R).  If not, see:
+ *      http://www.gnu.org/licenses/
+ *
+ * For more information contact:
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
+ *******************************************************************************/
+
 package org.opennms.netmgt.model.topology;
 
 import java.util.ArrayList;
@@ -189,7 +217,7 @@ public class BridgeTopology {
 			this.designatebridgePort = designatedbridgePort;
 			for (String mac : bridgeport.getMacs()) {
 				if (designatedbridgePort.getMacs().contains(mac))
-					macs.add(mac);
+				   macs.add(mac);
 			}
 		}
 
@@ -245,7 +273,7 @@ public class BridgeTopology {
 
 	public void addTopology(Integer nodeid, Map<Integer, Set<String>> bridgeTopologyTable, Set<Integer> targets) {
 		LOG.info("addTopology: -----------------------------------------------------");
-		LOG.info("addTopology: adding bridge topology for node {}", nodeid);
+		LOG.info("addTopology: adding bridge topology for node {} with targets {}", nodeid, targets);
 		for (final Entry<Integer, Set<String>> curEntry : bridgeTopologyTable
 				.entrySet()) {
 			LOG.info(
@@ -481,7 +509,7 @@ public class BridgeTopology {
 					topologyLinkCandidate.getTargets(), topologyLinkCandidate
 							.getRole());
 			LOG.info(
-					"parseBFTEntry: cycle end: node {} port {} macs {} targets {} role {}: node {} port {} macs {} targets {} role {}",
+					"parseBFTEntry: cycle end: node {} port {} macs {} targets {} role {}",
 					linkcandidate.getBridgeTopologyPort()
 							.getNodeid(), linkcandidate.getBridgeTopologyPort()
 							.getBridgePort(), linkcandidate.getMacs(),
