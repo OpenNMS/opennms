@@ -1,0 +1,6 @@
+<xml-groups>
+    <xml-group name="opennms-vacuumd" resource-type="node"
+        resource-xpath="/MBean" >
+        <xml-object name="ONMSAutomCount" type="counter" xpath="Attribute[@name='NumAutomations']/@value" />
+    </xml-group>
+</xml-groups>
