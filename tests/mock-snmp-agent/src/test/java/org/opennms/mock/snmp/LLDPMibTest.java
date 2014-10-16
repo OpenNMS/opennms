@@ -139,7 +139,7 @@ public class LLDPMibTest  {
         m_usm = new USM(SecurityProtocols.getInstance(), new OctetString(MPv3.createLocalEngineID()), 0);
         SecurityModels.getInstance().addSecurityModel(m_usm);
 
-        m_agent = MockSnmpAgent.createAgentAndRun(classPathResource("penrose-lldp-mib.properties"), "127.0.0.1/1691");	
+        m_agent = MockSnmpAgent.createAgentAndRun(classPathResource("penrose-lldp-mib.properties"), "127.0.0.1/0");	
         
         m_requestedVarbinds = new ArrayList<AnticipatedRequest>();
     }
@@ -276,7 +276,7 @@ public class LLDPMibTest  {
 		PDU response;
 		CommunityTarget target = new CommunityTarget();
         target.setCommunity(new OctetString("public"));
-        target.setAddress(new UdpAddress(InetAddress.getByName("127.0.0.1"), 1691));
+        target.setAddress(new UdpAddress(InetAddress.getByName("127.0.0.1"), m_agent.getPort()));
 		target.setVersion(version);
 		if (m_timeout > 0) { 
 			target.setTimeout(m_timeout);
@@ -307,7 +307,7 @@ public class LLDPMibTest  {
         UserTarget target = new UserTarget();
         target.setSecurityLevel(SecurityLevel.AUTH_PRIV);
         target.setSecurityName(userId);
-        target.setAddress(new UdpAddress(InetAddress.getByName("127.0.0.1"), 1691));
+        target.setAddress(new UdpAddress(InetAddress.getByName("127.0.0.1"), m_agent.getPort()));
         target.setVersion(SnmpConstants.version3);
 		if (m_timeout > 0) { 
 			target.setTimeout(m_timeout);
