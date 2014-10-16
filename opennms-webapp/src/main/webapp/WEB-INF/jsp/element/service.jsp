@@ -85,7 +85,9 @@
                         continue; // Hide passwords for security reasons
                     }
                     if (p.getValue() == null) {
-                        xmlParams.put(p.getKey(), p.getAnyObject().toString().replaceAll("<","&lt;").replaceAll(">", "&gt;").replaceAll("[\\r\\n]+", "<br/>").replaceAll(" ","&nbsp;").replaceAll("(password|user-info)=\"[^\"]+\"", "$1=\"XXXX\"").replaceAll("key=\"([^\"]*pass(word|wd)[^\"]*)\"(\\s|&nbsp;)+value=\"[^\"]+\"", "key=\"$1\" value=\"XXXX\""));
+                        String xmlData  = org.opennms.core.xml.JaxbUtils.marshal(p.getAnyObject());
+                        String xmlFixed = xmlData.replaceAll("<","&lt;").replaceAll(">", "&gt;").replaceAll("[\\r\\n]+", "<br/>").replaceAll(" ","&nbsp;").replaceAll("(password|user-info)=\"[^\"]+\"", "$1=\"XXXX\"").replaceAll("key=\"([^\"]*pass(word|wd)[^\"]*)\"(\\s|&nbsp;)+value=\"[^\"]+\"", "key=\"$1\" value=\"XXXX\"");
+                        xmlParams.put(p.getKey(), xmlFixed);
                     } else {
                         parameters.put(p.getKey(), p.getValue());
                     }
