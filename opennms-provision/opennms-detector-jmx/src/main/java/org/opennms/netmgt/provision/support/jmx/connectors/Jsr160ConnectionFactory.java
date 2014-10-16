@@ -86,7 +86,7 @@ public abstract class Jsr160ConnectionFactory {
         if (factory == null || factory.equals("STANDARD")) {
             try {
                 
-                url = new JMXServiceURL("service:jmx:" + protocol + ":///jndi/"+protocol+"://" + hostAddress + ":" + port + urlPath);
+                url = getUrl(address, port, protocol, urlPath);
                 
                 // Connect a JSR 160 JMXConnector to the server side
                 JMXConnector connector = JMXConnectorFactory.connect(url);
@@ -113,7 +113,7 @@ public abstract class Jsr160ConnectionFactory {
                 // Create an RMI connector client and
                 // connect it to the RMI connector server
                 //
-                url = new JMXServiceURL("service:jmx:" + protocol + ":///jndi/"+protocol+"://" + hostAddress + ":" + port + urlPath);
+                url = getUrl(address, port, protocol, urlPath);
                 
                 // Connect a JSR 160 JMXConnector to the server side
                 JMXConnector connector = JMXConnectorFactory.newJMXConnector(url, null);
@@ -223,4 +223,20 @@ public abstract class Jsr160ConnectionFactory {
         */
         return connectionWrapper;
     }    
+
+    private static JMXServiceURL getUrl(InetAddress address, int port, String protocol, String urlPath) throws MalformedURLException {
+        JMXServiceURL url;
+        if (protocol.equalsIgnoreCase("jmxmp") || protocol.equalsIgnoreCase("remoting-jmx")) {
+
+            // Create an JMXMP connector client and
+            // connect it to the JMXMP connector server
+            //
+            url = new JMXServiceURL(protocol, InetAddressUtils.str(address), port, urlPath);
+        } else {
+            // Fallback, building a URL for RMI
+            url = new JMXServiceURL("service:jmx:" + protocol + ":///jndi/" + protocol + "://" + InetAddressUtils.str(address) + ":" + port + urlPath);
+        }
+        return url;
+    }    
+
 }

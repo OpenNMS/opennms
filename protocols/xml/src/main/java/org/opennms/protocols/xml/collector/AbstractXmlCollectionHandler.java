@@ -34,6 +34,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.StringWriter;
 import java.net.URL;
 import java.net.URLConnection;
 import java.text.ParseException;
@@ -43,6 +44,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.xml.namespace.NamespaceContext;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.Source;
@@ -61,6 +63,7 @@ import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.jsoup.Jsoup;
+
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.netmgt.collectd.PersistAllSelectorStrategy;
 import org.opennms.netmgt.collection.api.AttributeGroupType;
@@ -214,7 +217,9 @@ public abstract class AbstractXmlCollectionHandler implements XmlCollectionHandl
      * @throws ParseException the parse exception
      */
     protected void fillCollectionSet(CollectionAgent agent, XmlCollectionSet collectionSet, XmlSource source, Document doc) throws XPathExpressionException, ParseException {
+        NamespaceContext nc = new DocumentNamespaceResolver(doc);
         XPath xpath = XPathFactory.newInstance().newXPath();
+        xpath.setNamespaceContext(nc);
         for (XmlGroup group : source.getXmlGroups()) {
             LOG.debug("fillCollectionSet: getting resources for XML group {} using XPATH {}", group.getName(), group.getResourceXpath());
             Date timestamp = getTimeStamp(doc, xpath, group);
@@ -476,8 +481,20 @@ public abstract class AbstractXmlCollectionHandler implements XmlCollectionHandl
             is = applyXsltTransformation(request, is);
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             factory.setIgnoringComments(true);
+            factory.setNamespaceAware(true);
             DocumentBuilder builder = factory.newDocumentBuilder();
-            return builder.parse(is);
+            StringWriter writer = new StringWriter();
+            IOUtils.copy(is, writer, "UTF-8");
+            String contents = writer.toString();
+            Document doc = builder.parse(IOUtils.toInputStream(contents, "UTF-8"));
+            // Ugly hack to deal with DOM & XPath 1.0's battle royale 
+            // over handling namespaces without a prefix. 
+            if(doc.getNamespaceURI() != null && doc.getPrefix() == null){
+                factory.setNamespaceAware(false);
+                builder = factory.newDocumentBuilder();
+                doc = builder.parse(IOUtils.toInputStream(contents, "UTF-8"));
+            }
+            return doc;
         } catch (Exception e) {
             throw new XmlCollectorException(e.getMessage(), e);
         }
