@@ -1,8 +1,3 @@
-TODO
-====
-
-* add to wiki rest docs: hardware inventory, /groups/users, /groups/categories
-
 What's New in OpenNMS 14
 ========================
 
@@ -126,7 +121,7 @@ Provisioning
   reappear during scan.
 * New provisioning adapter: opennms-snmp-hardware-inventory-provisioning-adapter
   A provisioning adapter using the ENTITY-MIB for collecting hardware inventory while
-  doing a provisioning scan.
+  doing a provisioning scan.  For details, see [the Hardware Inventory wiki page].
 * In 1.12 we introduced the `rescanExisting` flag when performing an import.  Previously
   this would allow you to push nodes to Provisiond in batches and trigger imports, and it
   would only import any *new* nodes that didn't already exist in the database.  In OpenNMS
@@ -157,9 +152,9 @@ Web UI and APIs
 * The outage UI can now sort by a node's foreign source.
 * Some ReST services have been cleaned up to provide more consistent output.
 * The group ReST service now supports querying the users or categories associated with
-  a group (ie, `/opennms/rest/groups/users/` and `/opennms/rest/groups/categories/`)
-* The node ReST service now supports manually adding and removing hardware inventory data
-  (the same information determined by the harware inventory provisioning adapter)
+  a group. (ie, `/opennms/rest/groups/users/` and `/opennms/rest/groups/categories/`)
+* The node ReST service now supports manually adding and removing hardware inventory data.
+  For details, see [the Hardware Inventory wiki page].
 
 Dashboard
 ---------
@@ -206,3 +201,4 @@ in OpenNMS 1.10.x.
 
 [GNU Affero General Public License 3.0]: http://www.gnu.org/licenses/agpl-3.0.html
 [User Restriction Filters]: http://www.opennms.org/wiki/User_Restriction_Filters
+[the Hardware Inventory wiki page]: http://www.opennms.org/wiki/Hardware_Inventory_Entity_MIB
