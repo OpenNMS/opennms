@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -34,7 +34,6 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -78,13 +77,6 @@ import org.springframework.test.context.web.WebAppConfiguration;
 @JUnitTemporaryDatabase
 public class UserRestServiceTest extends AbstractSpringJerseyRestTestCase  {
     private static final String PASSWORD = "21232F297A57A5A743894A0E4A801FC3";
-
-    @Override
-    public void beforeServletStart() throws Exception {
-        //MockLogAppender.setupLogging(true, "DEBUG");
-        setUser("admin");
-        addUserRole("ROLE_ADMIN");
-    }
 
     @Test
     public void testUser() throws Exception {
@@ -212,12 +204,10 @@ public class UserRestServiceTest extends AbstractSpringJerseyRestTestCase  {
 
     @Test
     public void testGetUserWithoutAuth() throws Exception {
-        clearUserInfo();
-        setUser("foo");
-        addUserRole("ROLE_USER");
-
         createUser("foo");
         createUser("bar");
+
+        setUser("foo", new String[] { "ROLE_USER" });
 
         String xml = sendRequest(GET, "/users", 200);
         assertTrue(xml.contains("foo"));
@@ -228,7 +218,7 @@ public class UserRestServiceTest extends AbstractSpringJerseyRestTestCase  {
         assertEquals("xxxxxxxx", users.get(1).getPassword());
         assertEquals(PASSWORD, users.get(2).getPassword());
 
-        setUser("bar");
+        setUser("bar", new String[] { "ROLE_USER" });
         xml = sendRequest(GET, "/users", 200);
         assertTrue(xml.contains("foo"));
         assertTrue(xml.contains("bar"));
@@ -238,9 +228,7 @@ public class UserRestServiceTest extends AbstractSpringJerseyRestTestCase  {
         assertEquals(PASSWORD, users.get(1).getPassword());
         assertEquals("xxxxxxxx", users.get(2).getPassword());
 
-        clearUserInfo();
-        setUser("admin");
-        addUserRole("ROLE_ADMIN");
+        setUser("admin", new String[] { "ROLE_ADMIN" });
         xml = sendRequest(GET, "/users", 200);
         assertTrue(xml.contains("foo"));
         assertTrue(xml.contains("bar"));
@@ -256,12 +244,7 @@ public class UserRestServiceTest extends AbstractSpringJerseyRestTestCase  {
     }
 
     protected void createUser(final String username, final String email) throws Exception {
-        final String previousUser = getUser();
-        final Collection<String> previousRoles = getUserRoles();
-
-        clearUserInfo();
-        setUser("admin");
-        addUserRole("ROLE_ADMIN");
+        setUser("admin", new String[] { "ROLE_ADMIN" });
 
         String userXml = "<user>" +
                 "<user-id>" + username + "</user-id>" +
@@ -272,11 +255,5 @@ public class UserRestServiceTest extends AbstractSpringJerseyRestTestCase  {
                 "</user>";
         userXml = userXml.replace("{EMAIL}", email != null ?  "<email>" + email + "</email>": "");
         sendPost("/users", userXml, 303, "/users/" + username);
-
-        clearUserInfo();
-        setUser(previousUser);
-        for (final String role : previousRoles) {
-            addUserRole(role);
-        }
     }
 }

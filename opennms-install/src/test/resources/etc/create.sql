@@ -35,6 +35,7 @@
 
 drop table accessLocks cascade;
 drop table accesspoints cascade;
+drop table requisitioned_categories cascade;
 drop table category_node cascade;
 drop table categories cascade;
 drop table assets cascade;
@@ -1290,6 +1291,28 @@ CREATE INDEX catnode_idx on category_node(nodeId);
 CREATE UNIQUE INDEX catenode_unique_idx on category_node(categoryId, nodeId);
 
 --########################################################################
+--# requisitioned_categories table - Many-to-Many mapping table of
+--# requisition categories to nodes
+--#
+--# This table contains the following fields:
+--#
+--# id           : The ID of the association
+--# categoryId   : The category ID from categories table
+--# nodeId       : The node ID from the node table.
+--########################################################################
+
+create table requisitioned_categories (
+                id                      integer default nextval('opennmsNxtId') not null,
+                categoryId              integer not null,
+                nodeId                  integer not null,
+
+                constraint requisitioned_nodeid_fkey foreign key (nodeId) references node ON DELETE CASCADE,
+                constraint requisitioned_categoryid_fkey foreign key (categoryId) references categories (categoryId) ON DELETE CASCADE
+);
+
+CREATE UNIQUE INDEX requisitioned_category_node_unique_idx on requisitioned_categories(nodeId, categoryId);
+
+--########################################################################
 --# pathOutage Table - Contains the critical path IP address and service
 --#                    associated with each node for suppressing nodeDown
 --#                    notifications
@@ -2313,7 +2336,7 @@ create table cdpLink (
       cdpInterfaceName varchar(96) not null,
       cdpCacheAddressType integer not null,
       cdpCacheAddress varchar(64) not null,
-      cdpCacheVersion varchar(255) not null,
+      cdpCacheVersion text not null,
       cdpCacheDeviceId varchar(64) not null,
       cdpCacheDevicePort varchar(96) not null,
       cdpCacheDevicePlatform varchar(96) not null,

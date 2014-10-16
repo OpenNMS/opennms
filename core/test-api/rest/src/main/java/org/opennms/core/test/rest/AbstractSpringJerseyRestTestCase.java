@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -40,6 +40,7 @@ import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -109,13 +110,20 @@ public abstract class AbstractSpringJerseyRestTestCase {
     private Filter filter;
     private WebApplicationContext m_webAppContext;
 
-    private String m_username = "admin";
-    private Set<String> m_roles = Collections.synchronizedSet(new HashSet<String>(Collections.singletonList("ROLE_ADMIN")));
+    // Use thread locals for the authentication information so that if
+    // multithreaded tests change it, they only change their copy of it.
+    //
+    // @see http://issues.opennms.org/browse/NMS-6898
+    //
+    private static ThreadLocal<String> m_username = new InheritableThreadLocal<String>();
+    private static ThreadLocal<Set<String>> m_roles = new InheritableThreadLocal<Set<String>>();
+    
+    static {
+        setUser("admin", new String[] { "ROLE_ADMIN" });
+    }
 
     @Before
     public void setUp() throws Throwable {
-        clearUserInfo();
-
         beforeServletStart();
 
         DaoTestConfigBean bean = new DaoTestConfigBean();
@@ -238,27 +246,18 @@ public abstract class AbstractSpringJerseyRestTestCase {
         return request;
     }
 
-    protected void setUser(final String user) {
-        m_username = user;
+    protected static void setUser(final String user, final String[] roles) {
+        m_username.set(user);
+        m_roles.set(new HashSet<String>(Arrays.asList(roles)));
     }
 
-    protected String getUser() {
-        return m_username;
+    private static String getUser() {
+        return m_username.get();
     }
 
-    protected Collection<String> getUserRoles() {
-        return Collections.unmodifiableSet(new HashSet<String>(m_roles));
+    private static Collection<String> getUserRoles() {
+        return Collections.unmodifiableCollection(m_roles.get());
     }
-
-    protected void addUserRole(final String role) {
-        m_roles.add(role);
-    }
-
-    protected void clearUserInfo() {
-        m_username = "admin";
-        m_roles.clear();
-    }
-
 
     /**
      * @param url

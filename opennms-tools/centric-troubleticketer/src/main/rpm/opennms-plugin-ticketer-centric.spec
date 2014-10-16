@@ -16,7 +16,7 @@ Name:          opennms-plugin-ticketer-centric
 Summary:       OpenNMS Trouble-Ticketer Plugin: CentricCRM
 Release:       %releasenumber
 Version:       %version
-License:       LGPL/GPL
+License:       LGPL/AGPL
 Group:         Applications/System
 BuildArch:     noarch
 
