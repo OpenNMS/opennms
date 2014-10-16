@@ -27,7 +27,6 @@
       <artifactId>org.apache.servicemix.bundles.spring-webmvc</artifactId>
       <version>${springVersion}</version>
     </dependency>
-<!--
     <dependency>
       <groupId>org.apache.servicemix.bundles</groupId>
       <artifactId>org.apache.servicemix.bundles.spring-struts</artifactId>
@@ -130,7 +129,6 @@
         </exclusion>
       </exclusions>
     </dependency>
--->
     <!-- Spring Dependencies -->
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
