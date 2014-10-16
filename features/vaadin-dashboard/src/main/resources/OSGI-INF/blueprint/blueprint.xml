@@ -20,7 +20,7 @@
     <service id="wallboardService" interface="org.ops4j.pax.vaadin.ApplicationFactory" ref="wallboardUIFactory">
         <service-properties>
             <entry key="alias" value="/vaadin-wallboard"/>
-            <entry key="widgetset" value="org.opennms.features.vaadin.dashboard.DashboardWidgetSet"/>
+            <entry key="init.widgetset" value="org.opennms.features.vaadin.dashboard.DashboardWidgetSet"/>
         </service-properties>
     </service>
 
