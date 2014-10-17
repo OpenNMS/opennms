@@ -13,11 +13,14 @@ It is identical to the GPLv3 OpenNMS was previously licensed under, with the add
 caveat that users who interact with OpenNMS software over a network are entitled to receive
 the source.
 
-Java 7
-------
+Java 7 and 8
+------------
 
 OpenNMS 14 drops support for Java 6, which has been EOL'd for some time now.  OpenNMS 14
 requires Java 7 or higher to run.
+
+Note that *building* under Java 8 still has some known issues.  It is strongly recommended
+that you build and run under Java 7 until Java 8 has had enough time to be well-tested.
 
 Logging System Upgrade
 ----------------------
