@@ -58,6 +58,7 @@ import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.xml.CastorUtils;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.config.PollerConfigFactory;
 import org.opennms.netmgt.config.opennmsDataSources.DataSourceConfiguration;
@@ -344,7 +345,13 @@ public abstract class MonitorTester {
         if (config.isPolledLocally(ipAddress, serviceName)) {
             for (Parameter p : svc.getParameters()) {
                 if (!parameters.containsKey(p.getKey())) {
-                    parameters.put(p.getKey(), p.getValue() == null ? p.getAnyObject() : p.getValue());
+                    String value = p.getValue();
+                    if (value == null) {
+                        try {
+                            value = JaxbUtils.marshal(p.getAnyObject());
+                        } catch (Exception e) {}
+                    }
+                    parameters.put(p.getKey(), value);
                 }
             }
             for (Entry<String,Object> e : parameters.entrySet()) {
