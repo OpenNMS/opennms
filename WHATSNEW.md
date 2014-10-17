@@ -16,9 +16,8 @@ the source.
 Java 7
 ------
 
-OpenNMS 14 requires Java 7 to run.  Because of some code generation issues with Java 8 that
-are still under investigation, parts of OpenNMS do not yet run under Java 8.  We are looking
-to resolve this in a future update.
+OpenNMS 14 drops support for Java 6, which has been EOL'd for some time now.  OpenNMS 14
+requires Java 7 or higher to run.
 
 Logging System Upgrade
 ----------------------
@@ -33,7 +32,7 @@ Core Updates
 As always, many updates and cleanups have been made to the OpenNMS core, through refactoring,
 addition of unit tests, and other code modernization.
 
-* The embedded Karaf OSGi container has been updated to 2.3.4.
+* The embedded Karaf OSGi container has been updated to 2.4.0.
 * Many core OpenNMS modules are now capable of being loaded inside an OSGi container.
 * A large number of legacy Castor-based classes have been updated to use JAXB instead.
 * SNMP4J has been updated to version 2, which provides improved handling of SNMPv3, in
