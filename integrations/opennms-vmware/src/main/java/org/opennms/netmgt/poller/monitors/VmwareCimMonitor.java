@@ -41,10 +41,8 @@ package org.opennms.netmgt.poller.monitors;
 import com.vmware.vim25.HostRuntimeInfo;
 import com.vmware.vim25.HostSystemPowerState;
 import com.vmware.vim25.mo.HostSystem;
-
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
-import org.opennms.core.soa.support.DefaultServiceRegistry;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.utils.TimeoutTracker;
 import org.opennms.netmgt.dao.api.NodeDao;
@@ -55,6 +53,7 @@ import org.opennms.protocols.vmware.VmwareViJavaAccess;
 import org.sblim.wbem.cim.CIMObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -114,16 +113,17 @@ public class VmwareCimMonitor extends AbstractServiceMonitor {
     }
 
     /**
-     * Initializes this object with a given parameter map.
+     * Called by the poller framework when an interface is being added to the scheduler.
      *
-     * @param parameters the parameter map to use
+     * @param svc a {@link org.opennms.netmgt.poller.MonitoredService} instance
      */
     @Override
-    public void initialize(Map<String, Object> parameters) {
-        m_nodeDao = DefaultServiceRegistry.INSTANCE.findProvider(NodeDao.class);
+    public void initialize(MonitoredService svc) {
         if (m_nodeDao == null) {
-            logger.error("Node dao should be a non-null value.");
+            m_nodeDao = (NodeDao) BeanUtils.getFactory("commonContext", ClassPathXmlApplicationContext.class).getBean("nodeDao");
         }
+
+        super.initialize(svc);
     }
 
     /**
@@ -252,14 +252,4 @@ public class VmwareCimMonitor extends AbstractServiceMonitor {
 
         return serviceStatus;
     }
-
-    /**
-     * Sets the NodeDao object for this instance.
-     *
-     * @param nodeDao the NodeDao object to use
-     */
-    public void setNodeDao(NodeDao nodeDao) {
-        m_nodeDao = nodeDao;
-    }
-
 }

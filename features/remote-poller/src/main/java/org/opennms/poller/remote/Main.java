@@ -45,6 +45,8 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
 import org.opennms.netmgt.poller.remote.PollerFrontEnd;
+import org.quartz.Scheduler;
+import org.quartz.SchedulerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.support.AbstractApplicationContext;
@@ -236,7 +238,17 @@ public class Main implements Runnable {
 			@Override
 			public void run() {
 				m_shuttingDown = true;
-				context.close();
+
+                // MVR: gracefully shutdown scheduler, otherwise context.close will raise an exception
+                // See #NMS-6966 for more details.
+                try {
+                    ((Scheduler)context.getBean("scheduler")).shutdown(true);
+                } catch (SchedulerException e) {
+                    LOG.warn("Scheduler shutdown failed.", e);
+                }
+
+                // now close the application context
+                context.close();
 			}
 		});
 		return context;
