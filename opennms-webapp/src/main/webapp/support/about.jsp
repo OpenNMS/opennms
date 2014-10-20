@@ -187,8 +187,8 @@ try {
     <td style="border-right: none;">
       <p align="center">
         Powered By Jetty<br/>
-        <a href="http://www.eclipse.org/jetty/" target="_new"><img src="images/powered_by_jetty.gif" hspace="0" vspace="0"
-        border="0" alt="eclipse.org/jetty/" align="center"></a>.
+        <a href="http://www.eclipse.org/jetty/" target="_new"><img src="images/powered_by_jetty.png" hspace="0" vspace="0"
+        border="0" alt="eclipse.org/jetty" align="center"></a>.
       </p>
     </td>
     <td style="border-left: none; border-right: none;">
@@ -203,6 +203,29 @@ try {
         PostgreSQL Powered<br/>
         <a href="http://www.postgresql.org/" target="_new"><img src="images/pg-power_95x51_4.gif" hspace="0" vspace="0" width="95" height="51"
         border="0" alt="www.postgresql.org" align="center"></a>
+      </p>
+    </td>
+  </tr>
+  <tr>
+    <td style="border-right: none;">
+      <p align="center">
+        Apache Karaf<br/>
+        <a href="http://karaf.apache.org/" target="_new"><img src="images/logokaraf.png" hspace="0" vspace="0"
+        border="0" alt="karaf.apache.org" align="center"></a>.
+      </p>
+    </td>
+    <td style="border-left: none; border-right: none;">
+      <p align="center">
+        ActiveMQ<br/>
+        <a href="http://activemq.apache.org/" target="_new"><img src="images/activemq.png" hspace="0" vspace="0"
+        border="0" alt="activemq.apache.org" align="center"></a>
+      </p>
+    </td>
+    <td style="border-left: none;">
+      <p align="center">
+        JRobin<br/>
+        <a href="http://www.jrobin.org/" target="_new"><img src="images/jrobin.png" hspace="0" vspace="0"
+        border="0" alt="jrobin.org" align="center"></a>
       </p>
     </td>
   </tr>
