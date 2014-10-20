@@ -48,6 +48,7 @@ DiscoveryConfiguration currConfig  = (DiscoveryConfiguration) sess.getAttribute(
   <title>Add Specific | Admin | OpenNMS Web Console</title>
   <base HREF="<%=org.opennms.web.api.Util.calculateUrlBase( request )%>" />
   <link rel="stylesheet" type="text/css" href="css/styles.css" />
+  <link rel="shortcut icon" href="favicon.ico">
   <script type='text/javascript' src='js/ipv6/ipv6.js'></script>
   <script type='text/javascript' src='js/ipv6/lib/jsbn.js'></script>
   <script type='text/javascript' src='js/ipv6/lib/jsbn2.js'></script>
