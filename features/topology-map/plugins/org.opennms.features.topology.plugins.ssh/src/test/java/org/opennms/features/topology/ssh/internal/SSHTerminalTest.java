@@ -49,7 +49,7 @@ public class SSHTerminalTest {
 	String testHost = "debian.opennms.org";
 	int testPort = 22;
 	SSHTerminal sshTerm;
-	SSHTerminal.SessionTerminal sessionTerm;
+	SessionTerminal sessionTerm;
 	UI app;
 	VerticalLayout mainWindow;
 
