@@ -124,35 +124,33 @@
 </p>
 <p>
   OpenNMS is a derivative work, containing both original code, included
-  code and modified code that was published under the GNU General Public
-  License. Please see the source for detailed copyright notices, but some
-  notable copyright owners are listed below:
+  code and modified code that was published under the GNU Affero General Public
+  License. Please see the source for detailed copyright notices.
 </p>
-<ul>
-    <li>Original (static) Mapping code Copyright &copy; 2003
-      <a href="http://www.nksi.com">Networked Knowledge Systems, Inc.</a>.</li>
-  </ul>
+<p>
+  The source for this release can be downloaded
+  <a href="source/opennms-<%=Vault.getProperty("version.display")%>-source.tar.gz">here</a>.
+</p>
 <p>
   This program is free software; you can redistribute it and/or
   modify it under the terms of the 
-  <a href="http://www.gnu.org/copyleft/gpl.html">GNU General Public License</a>
+  <a href="http://www.gnu.org/licenses/agpl.html">GNU Affero General Public License</a>
   as published by the
   <a href="http://www.gnu.org/">Free Software Foundation</a>; either version 3
   of the License, or (at your option) any later version.
 </p>
-
 <p>        
   This program is distributed in the hope that it will be useful,
   but <strong>without any warranty</strong>; without even the implied
   warranty of <strong>merchantability</strong> or <strong>fitness for
   a particular purpose</strong>.  See the
-  <a href="http://www.gnu.org/copyleft/gpl.html">GNU General Public License</a>
+  <a href="http://www.gnu.org/licenses/agpl.html">GNU Affero General Public License</a>
   for more details.
 </p>
         
 <p>
   You should have received a copy of the
-  <a href="http://www.gnu.org/copyleft/gpl.html">GNU General Public License</a>
+  <a href="http://www.gnu.org/licenses/agpl.html">GNU Affero General Public License</a>
   along with this program; if not, write to the</p>
     <p>Free Software Foundation, Inc.<br/>
     59 Temple Place - Suite 330<br/>

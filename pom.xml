@@ -443,6 +443,16 @@
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-clean-plugin</artifactId>
+        <version>2.6</version>
+        <executions>
+          <execution>
+            <goals><goal>clean</goal></goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-eclipse-plugin</artifactId>
         <version>${maven.eclipse.plugin.version}</version>
       </plugin>
@@ -705,6 +715,48 @@
     </plugins>
   </pluginManagement>
    <plugins>
+     <plugin>
+       <groupId>org.apache.maven.plugins</groupId>
+       <artifactId>maven-clean-plugin</artifactId>
+       <inherited>false</inherited>
+       <executions>
+         <execution>
+           <id>remove-source-tarball</id>
+           <phase>process-resources</phase>
+           <goals><goal>clean</goal></goals>
+           <configuration>
+             <excludeDefaultDirectories>true</excludeDefaultDirectories>
+             <filesets>
+               <fileset>
+                 <directory>target</directory>
+                 <excludes><exclude>**/*</exclude></excludes>
+                 <includes><include>${project.name}-${project.version}-source.*</include></includes>
+               </fileset>
+             </filesets>
+           </configuration>
+         </execution>
+         <execution>
+           <id>clean</id>
+           <phase>clean</phase>
+           <goals><goal>clean</goal></goals>
+         </execution>
+       </executions>
+     </plugin>
+     <plugin>
+       <groupId>org.apache.maven.plugins</groupId>
+       <artifactId>maven-assembly-plugin</artifactId>
+       <inherited>false</inherited>
+       <executions>
+         <execution>
+           <phase>process-resources</phase>
+           <goals><goal>single</goal></goals>
+           <configuration>
+             <descriptor>src/assembly/source.xml</descriptor>
+             <classifier>source</classifier>
+           </configuration>
+         </execution>
+       </executions>
+     </plugin>
      <plugin>
        <groupId>org.apache.maven.plugins</groupId>
        <artifactId>maven-eclipse-plugin</artifactId>
