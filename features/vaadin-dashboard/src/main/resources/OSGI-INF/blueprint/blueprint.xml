@@ -57,6 +57,7 @@
     <bean id="undefinedDashletFactory" class="org.opennms.features.vaadin.dashboard.dashlets.UndefinedDashletFactory" scope="singleton">
         <property name="name" value="Undefined"/>
         <property name="boostable" value="false"/>
+        <property name="dashboardSuitable" value="true"/>
     </bean>
 
     <service ref="undefinedDashletFactory" interface="org.opennms.features.vaadin.dashboard.model.DashletFactory"/>
