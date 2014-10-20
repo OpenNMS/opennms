@@ -2961,6 +2961,11 @@
         <version>1.2.0.v201112081803</version>
       </dependency>
       <dependency>
+        <groupId>com.jcraft</groupId>
+        <artifactId>jsch</artifactId>
+        <version>0.1.51</version>
+      </dependency>
+      <dependency>
         <groupId>org.eclipse.jdt.core.compiler</groupId>
         <artifactId>ecj</artifactId>
         <version>4.2.2</version>
