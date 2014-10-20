@@ -31,7 +31,12 @@ package org.opennms.features.vaadin.dashboard.config.ui;
 import com.vaadin.data.Property;
 import com.vaadin.data.validator.AbstractStringValidator;
 import com.vaadin.server.ThemeResource;
-import com.vaadin.ui.*;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.FormLayout;
+import com.vaadin.ui.GridLayout;
+import com.vaadin.ui.NativeSelect;
+import com.vaadin.ui.Panel;
+import com.vaadin.ui.TextField;
 import org.opennms.features.vaadin.dashboard.config.DashletSelector;
 import org.opennms.features.vaadin.dashboard.model.DashletConfigurationWindow;
 import org.opennms.features.vaadin.dashboard.model.DashletFactory;
@@ -262,6 +267,7 @@ public class DashletSpecEditor extends Panel {
         m_dashletSelect.setImmediate(true);
         m_dashletSelect.setNewItemsAllowed(false);
         m_dashletSelect.setNullSelectionItemId("Undefined");
+        m_dashletSelect.setNullSelectionAllowed(false);
         m_dashletSelect.select(dashletSpec.getDashletName());
         m_dashletSelect.setDescription("Dashlet selection");
 
@@ -275,6 +281,7 @@ public class DashletSpecEditor extends Panel {
                     m_dashletSpec.setDashletName("Undefined");
                 } else {
                     m_dashletSpec.setDashletName(valueChangeEvent.getProperty().getValue().toString());
+                    m_dashletSelect.removeItem("Undefined");
                 }
 
                 m_dashletSpec.getParameters().clear();
@@ -437,7 +444,9 @@ public class DashletSpecEditor extends Panel {
         }
 
         for (DashletFactory dashletFactory : factoryList) {
-            m_dashletSelect.addItem(dashletFactory.getName());
+            if (!"Undefined".equals(dashletFactory.getName())) {
+                m_dashletSelect.addItem(dashletFactory.getName());
+            }
         }
 
         m_dashletSelect.select(savedSelection);
