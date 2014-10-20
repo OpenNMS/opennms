@@ -2153,6 +2153,7 @@
   <event-file>events/TUT.events.xml</event-file>
   <event-file>events/UPS-MIB.events.xml</event-file>
   <event-file>events/Uptime.events.xml</event-file>
+  <event-file>events/Veeam_Backup-Replication.events.xml</event-file>
   <event-file>events/Veraz.events.xml</event-file>
   <event-file>events/VMWare.env.events.xml</event-file>
   <event-file>events/VMWare.vc.events.xml</event-file>
