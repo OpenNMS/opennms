@@ -217,16 +217,18 @@ public class AlarmDetailsDashlet extends AbstractDashlet {
                 public void refresh() {
                     List<OnmsAlarm> alarms = getAlarms();
 
-                    List<Integer> alarmIds = new LinkedList<Integer>();
+                    if (alarms.size()>0) {
+                        List<Integer> alarmIds = new LinkedList<Integer>();
 
-                    for (OnmsAlarm onmsAlarm : alarms) {
-                        alarmIds.add(onmsAlarm.getId());
+                        for (OnmsAlarm onmsAlarm : alarms) {
+                            alarmIds.add(onmsAlarm.getId());
+                        }
+
+                        List<Restriction> restrictions = new LinkedList<Restriction>();
+                        restrictions.add(new InRestriction("id", alarmIds));
+
+                        ((OnmsDaoContainer) m_alarmTable.getContainerDataSource()).setRestrictions(restrictions);
                     }
-
-                    List<Restriction> restrictions = new LinkedList<Restriction>();
-                    restrictions.add(new InRestriction("id", alarmIds));
-
-                    ((OnmsDaoContainer) m_alarmTable.getContainerDataSource()).setRestrictions(restrictions);
 
                     setBoosted(checkBoosted(alarms));
 

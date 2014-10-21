@@ -316,19 +316,19 @@ public class Snmp4JStrategy implements SnmpStrategy {
         SnmpValue[] retvalues = { null };
 
         if (responseEvent.getResponse() == null) {
-            LOG.warn("processResponse: Timeout.  Agent: {}", agentConfig);
+            LOG.warn("processResponse: Timeout.  Agent: {}, requestID={}", agentConfig, responseEvent.getRequest().getRequestID());
         } else if (responseEvent.getError() != null) {
-            LOG.warn("processResponse: Error during get operation.  Error: {}", responseEvent.getError().getLocalizedMessage(), responseEvent.getError());
+            LOG.warn("processResponse: Error during get operation.  Error: {}, requestID={}", responseEvent.getError().getLocalizedMessage(), responseEvent.getError(), responseEvent.getRequest().getRequestID());
         } else if (responseEvent.getResponse().getType() == PDU.REPORT) {
-            LOG.warn("processResponse: Error during get operation.  Report returned with varbinds: {}", responseEvent.getResponse().getVariableBindings());
+            LOG.warn("processResponse: Error during get operation.  Report returned with varbinds: {}, requestID={}", responseEvent.getResponse().getVariableBindings(), responseEvent.getRequest().getRequestID());
         } else if (responseEvent.getResponse().getVariableBindings().size() < 1) {
-            LOG.warn("processResponse: Received PDU with 0 varbinds.");
+            LOG.warn("processResponse: Received PDU with 0 varbinds. Agent: {}, requestID={}", agentConfig, responseEvent.getRequest().getRequestID());
         } else if (responseEvent.getResponse().get(0).getSyntax() == SMIConstants.SYNTAX_NULL) {
-            LOG.info("processResponse: Null value returned in varbind: {}", responseEvent.getResponse().get(0));
+            LOG.info("processResponse: Null value returned in varbind: {}. Agent: {}, requestID={}", responseEvent.getResponse().get(0), agentConfig, responseEvent.getRequest().getRequestID());
         } else {
             retvalues = convertResponseToValues(responseEvent);
 
-            LOG.debug("processResponse: SNMP operation successful, value: {} ", (Object)retvalues);
+            LOG.debug("processResponse: SNMP operation successful, value: {}", (Object)retvalues);
         }
 
         return retvalues;

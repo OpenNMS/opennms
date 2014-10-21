@@ -28,10 +28,16 @@
 
 package org.opennms.web.controller;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.opennms.web.navigate.DisplayStatus;
 import org.opennms.web.navigate.MenuDropdownNavBarEntry;
+import org.opennms.web.navigate.NavBarEntry;
+import org.opennms.web.navigate.NavBarModel;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 import org.springframework.web.servlet.ModelAndView;
@@ -52,10 +58,21 @@ public class MapsController extends AbstractController implements InitializingBe
     public void setMapMenuEntries(final MenuDropdownNavBarEntry entries) {
         m_mapMenuEntries = entries;
     }
+    
+    private NavBarModel createNavBarModel(HttpServletRequest request) {
+        Map<NavBarEntry, DisplayStatus> navBar = new LinkedHashMap<NavBarEntry, DisplayStatus>();
+        
+        for (NavBarEntry entry : m_mapMenuEntries.getEntries()) {
+            navBar.put(entry, entry.evaluate(request));
+        }
+
+        return new NavBarModel(navBar);
+    }
+
 
     @Override
     protected ModelAndView handleRequestInternal(final HttpServletRequest request, final HttpServletResponse response) throws Exception {
-        return new ModelAndView("maps", "entries", m_mapMenuEntries);
+        return new ModelAndView("maps", "entries", createNavBarModel(request));
     }
 
 }

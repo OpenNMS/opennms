@@ -44,12 +44,9 @@ import org.springframework.util.Assert;
  * @version $Id: $
  */
 public class DefaultPollService implements PollService {
-    
-    TimeAdjustment m_timeAdjustment;
-	
-    Collection<ServiceMonitorLocator> m_locators;
-    Map<String, ServiceMonitor> m_monitors;
-    
+
+    private TimeAdjustment m_timeAdjustment;
+    private Map<String, ServiceMonitor> m_monitors = null;
 
     /**
      * @param timeAdjustment the timeAdjustment to set
@@ -61,8 +58,7 @@ public class DefaultPollService implements PollService {
     /** {@inheritDoc} */
     @Override
     public void setServiceMonitorLocators(Collection<ServiceMonitorLocator> locators) {
-        m_locators = locators;
-        
+
         Map<String, ServiceMonitor> monitors = new HashMap<String, ServiceMonitor>();
         for (ServiceMonitorLocator locator : locators) {
             monitors.put(locator.getServiceName(), locator.getServiceMonitor());
@@ -75,22 +71,28 @@ public class DefaultPollService implements PollService {
     @Override
     public void initialize(PolledService polledService) {
         ServiceMonitor monitor = getServiceMonitor(polledService);
-        monitor.initialize(polledService);
+        if (monitor != null) {
+            monitor.initialize(polledService);
+        }
     }
 
     /** {@inheritDoc} */
     @Override
     public PollStatus poll(PolledService polledService) {
         ServiceMonitor monitor = getServiceMonitor(polledService);
-        PollStatus result = monitor.poll(polledService, polledService.getMonitorConfiguration());
-        result.setTimestamp(m_timeAdjustment.adjustDateToMasterDate(result.getTimestamp()));
-        return result;
+        if (monitor == null) {
+            return PollStatus.unknown("No service monitor for service " + polledService.getSvcName());
+        } else {
+            PollStatus result = monitor.poll(polledService, polledService.getMonitorConfiguration());
+            result.setTimestamp(m_timeAdjustment.adjustDateToMasterDate(result.getTimestamp()));
+            return result;
+        }
     }
 
     private ServiceMonitor getServiceMonitor(PolledService polledService) {
         Assert.notNull(m_monitors, "setServiceMonitorLocators must be called before any other operations");
         ServiceMonitor monitor = (ServiceMonitor)m_monitors.get(polledService.getSvcName());
-        Assert.notNull(monitor, "Unable to find monitor for service "+polledService.getSvcName());
+        //Assert.notNull(monitor, "Unable to find monitor for service "+polledService.getSvcName());
         return monitor;
     }
 
@@ -102,8 +104,4 @@ public class DefaultPollService implements PollService {
         ServiceMonitor monitor = getServiceMonitor(polledService);
         monitor.release(polledService);
     }
-
-
-
-
 }

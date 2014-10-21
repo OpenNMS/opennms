@@ -246,7 +246,6 @@
     <dependency>
       <groupId>com.jcraft</groupId>
       <artifactId>jsch</artifactId>
-      <version>0.1.42</version>
     </dependency>
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>

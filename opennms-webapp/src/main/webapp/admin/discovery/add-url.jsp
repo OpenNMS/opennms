@@ -48,6 +48,7 @@ DiscoveryConfiguration currConfig  = (DiscoveryConfiguration) sess.getAttribute(
   <title>Add Include URL | Admin | OpenNMS Web Console</title>
   <base href="<%=org.opennms.web.api.Util.calculateUrlBase( request )%>" />
   <link rel="stylesheet" type="text/css" href="css/styles.css" />
+  <link rel="shortcut icon" href="favicon.ico">
 </head>
 
 <body>
