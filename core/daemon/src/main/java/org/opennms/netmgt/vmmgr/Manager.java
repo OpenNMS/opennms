@@ -31,8 +31,14 @@ package org.opennms.netmgt.vmmgr;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.TreeMap;
 
 import javax.management.MBeanServer;
 import javax.management.MBeanServerFactory;
@@ -83,6 +89,7 @@ public class Manager implements ManagerMBean {
      */
     private static final String LOG4J_CATEGORY = "manager";
     private static final String m_osName = System.getProperty("os.name") == null? "" : System.getProperty("os.name").toLowerCase();
+    private static long startTime = System.currentTimeMillis();
 
     /**
      * <p>stop</p>
@@ -291,5 +298,9 @@ public class Manager implements ManagerMBean {
 
     private List<MBeanServer> getMBeanServers() {
         return MBeanServerFactory.findMBeanServer(null);
+    }
+
+    public Long getUptime() {
+        return (System.currentTimeMillis() - startTime);
     }
 }
