@@ -38,7 +38,9 @@ import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
 import org.opennms.core.xml.JaxbUtils;
@@ -48,12 +50,19 @@ import org.opennms.core.xml.JaxbUtils;
  * 
  * @version $Revision$ $Date$
  */
+@XmlRootElement(name = "service")
 public class Service implements Serializable {
     private static final long serialVersionUID = -2554947387909986065L;
 
     // --------------------------/
     // - Class/Member Variables -/
     // --------------------------/
+
+    /**
+     * Field _enabled
+     */
+    @XmlAttribute(name = "enabled")
+    private Boolean _enabled = Boolean.TRUE;
 
     /**
      * Field _name.
@@ -349,6 +358,16 @@ public class Service implements Serializable {
     }
 
     /**
+     * Returns the value of field 'enabled'.
+     * 
+     * @return true if the service is enabled
+     */
+    @XmlTransient
+    public Boolean isEnabled() {
+        return this._enabled;
+    }
+
+    /**
      * Overrides the java.lang.Object.hashCode method.
      * <p>
      * The following steps came from <b>Effective Java Programming Language
@@ -569,4 +588,15 @@ public class Service implements Serializable {
     public void setName(final java.lang.String name) {
         this._name = name;
     }
+
+    /**
+     * Sets the value of field 'enabled'.
+     * 
+     * @param name
+     *            the value of field 'enabled'.
+     */
+    public void setEnabled(final java.lang.Boolean enabled) {
+        this._enabled = enabled;
+    }
+
 }
