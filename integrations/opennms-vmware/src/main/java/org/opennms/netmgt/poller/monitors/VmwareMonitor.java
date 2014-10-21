@@ -82,20 +82,6 @@ public class VmwareMonitor extends AbstractServiceMonitor {
     private static final int DEFAULT_TIMEOUT = 3000;
 
     /**
-     * Called by the poller framework when an interface is being added to the scheduler.
-     *
-     * @param svc a {@link org.opennms.netmgt.poller.MonitoredService} instance
-     */
-    @Override
-    public void initialize(MonitoredService svc) {
-        if (m_nodeDao == null) {
-            m_nodeDao = (NodeDao) BeanUtils.getFactory("commonContext", ClassPathXmlApplicationContext.class).getBean("nodeDao");
-        }
-
-        super.initialize(svc);
-    }
-
-    /**
      * This method queries the Vmware vCenter server for sensor data.
      *
      * @param svc        the monitored service
@@ -104,6 +90,16 @@ public class VmwareMonitor extends AbstractServiceMonitor {
      */
     @Override
     public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
+
+        if (m_nodeDao == null) {
+            m_nodeDao = BeanUtils.getBean("daoContext", "nodeDao", NodeDao.class);
+
+            if (m_nodeDao == null) {
+                logger.error("Node dao should be a non-null value.");
+                return PollStatus.unknown();
+            }
+        }
+
         OnmsNode onmsNode = m_nodeDao.get(svc.getNodeId());
 
         // retrieve the assets and
