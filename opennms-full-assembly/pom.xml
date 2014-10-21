@@ -321,6 +321,13 @@
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
+      <artifactId>opennms-jetty</artifactId>
+      <version>${project.version}</version>
+      <type>tar.gz</type>
+      <classifier>etc</classifier>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
       <artifactId>opennms-link-provisioning-adapter</artifactId>
       <version>${project.version}</version>
     </dependency>
