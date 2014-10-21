@@ -32,6 +32,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
 import org.opennms.features.poller.remote.gwt.client.FilterPanel.StatusSelectionChangedEvent;
 import org.opennms.features.poller.remote.gwt.client.location.LocationInfo;
 
@@ -41,6 +42,7 @@ import com.google.gwt.event.logical.shared.ResizeEvent;
 import com.google.gwt.event.logical.shared.ResizeHandler;
 import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.i18n.client.DateTimeFormat;
+import com.google.gwt.i18n.client.DateTimeFormat.PredefinedFormat;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -104,7 +106,7 @@ public class DefaultApplicationView implements ApplicationView, ResizeHandler {
     private Application m_presenter;
 
 
-    static final DateTimeFormat UPDATE_TIMESTAMP_FORMAT = DateTimeFormat.getMediumDateTimeFormat();
+    static final DateTimeFormat UPDATE_TIMESTAMP_FORMAT = DateTimeFormat.getFormat(PredefinedFormat.DATE_TIME_MEDIUM);
     
     
     public DefaultApplicationView(Application presenter, HandlerManager eventBus, MapPanel mapPanel) {
@@ -259,9 +261,9 @@ public class DefaultApplicationView implements ApplicationView, ResizeHandler {
     }
 
     private Integer getAppHeight() {
-    	final com.google.gwt.user.client.Element e = getMainPanel().getElement();
-    	int extraHeight = e.getAbsoluteTop();
-    	return Window.getClientHeight() - extraHeight;
+        final com.google.gwt.dom.client.Element e = getMainPanel().getElement();
+        int extraHeight = e.getAbsoluteTop();
+        return Window.getClientHeight() - extraHeight;
     }
 
     /* (non-Javadoc)

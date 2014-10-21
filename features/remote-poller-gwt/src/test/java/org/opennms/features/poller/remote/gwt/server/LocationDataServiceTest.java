@@ -28,6 +28,7 @@
 
 package org.opennms.features.poller.remote.gwt.server;
 
+import static org.opennms.core.utils.InetAddressUtils.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -158,9 +159,9 @@ public class LocationDataServiceTest implements TemporaryDatabaseAware<Temporary
         googleNode.setLabel("google");
         m_nodeDao.saveOrUpdate(googleNode);
 
-        OnmsIpInterface localhostIpInterface = new OnmsIpInterface("127.0.0.1", localhostNode);
+        OnmsIpInterface localhostIpInterface = new OnmsIpInterface(addr("127.0.0.1"), localhostNode);
         m_ipInterfaceDao.saveOrUpdate(localhostIpInterface);
-        OnmsIpInterface googleIpInterface = new OnmsIpInterface("66.249.80.104", googleNode);
+        OnmsIpInterface googleIpInterface = new OnmsIpInterface(addr("66.249.80.104"), googleNode);
         m_ipInterfaceDao.saveOrUpdate(googleIpInterface);
 
         OnmsServiceType httpServiceType = new OnmsServiceType("HTTP");

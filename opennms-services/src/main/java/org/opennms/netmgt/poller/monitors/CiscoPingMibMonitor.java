@@ -376,29 +376,6 @@ public class CiscoPingMibMonitor extends SnmpMonitorStrategy {
     }
 
     /**
-     * <P>
-     * Called by the poller framework when an interface is being added to the
-     * scheduler. Here we perform any necessary initialization to prepare the
-     * NetworkInterface object for polling.
-     * </P>
-     *
-     * @exception RuntimeException
-     *                Thrown if an unrecoverable error occurs that prevents the
-     *                interface from being monitored.
-     * @param svc a {@link org.opennms.netmgt.poller.MonitoredService} object.
-     */
-    @Override
-    public void initialize(MonitoredService svc) {
-    	// Get the NodeDao from the common context so we can look up nodes in poll()
-    	// Cannot use the pollerdContext because it creates a circular reference
-    	// Cannot do this in the one-time initialize for the same reason, so do it here instead.
-    	if (s_nodeDao == null) s_nodeDao = (NodeDao) BeanUtils.getFactory("commonContext", ClassPathXmlApplicationContext.class).getBean("nodeDao");
-    	
-        super.initialize(svc);
-        return;
-    }
-
-    /**
      * {@inheritDoc}
      *
      * <P>
@@ -411,6 +388,16 @@ public class CiscoPingMibMonitor extends SnmpMonitorStrategy {
      */
     @Override
     public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
+
+        if (s_nodeDao == null) {
+            s_nodeDao = BeanUtils.getBean("daoContext", "nodeDao", NodeDao.class);
+
+            if (s_nodeDao == null) {
+                LOG.error("Node dao should be a non-null value.");
+                return PollStatus.unknown();
+            }
+        }
+
         InetAddress targetIpAddr = (InetAddress) determineTargetAddress(svc, parameters);
     	
         int pingProtocol = 0;

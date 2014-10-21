@@ -38,10 +38,10 @@ import net.simon04.jelementtree.ElementTree;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.opennms.features.poller.remote.gwt.client.GWTLatLng;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.opennms.features.poller.remote.gwt.client.GWTLatLng;
 
 /**
  * <p>NominatimGeocoder class.</p>
@@ -53,7 +53,7 @@ import org.opennms.features.poller.remote.gwt.client.GWTLatLng;
 public class NominatimGeocoder implements Geocoder {
     private static final Logger LOG = LoggerFactory.getLogger(NominatimGeocoder.class);
 	private static final String GEOCODE_URL = "http://open.mapquestapi.com/nominatim/v1/search?format=xml";
-	private static final HttpClient m_httpClient = new DefaultHttpClient();
+	private static final HttpClient m_httpClient = HttpClientBuilder.create().build();
 	private String m_emailAddress;
 	private String m_referer = null;
 
