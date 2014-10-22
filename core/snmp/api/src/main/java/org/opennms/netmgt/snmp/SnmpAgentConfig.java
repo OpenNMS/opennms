@@ -28,16 +28,15 @@
 
 package org.opennms.netmgt.snmp;
 
-import java.io.Serializable;
-import java.net.InetAddress;
-import java.util.Objects;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.io.Serializable;
+import java.net.InetAddress;
+import java.util.Objects;
 
 /**
  * @author (various previous authors not documented)
@@ -72,7 +71,7 @@ public class SnmpAgentConfig extends SnmpConfiguration implements Serializable {
             throw new IllegalArgumentException("Invalid protocol configuration string for SnmpAgentConfig: Expected it to start with snmp:" + protocolConfigString);
         }
 
-        SnmpAgentConfig agentConfig = new SnmpAgentConfig();
+        SnmpAgentConfig agentConfig = new SnmpAgentConfig(null, null);
 
         String[] attributes = protocolConfigString.substring("snmp:".length()).split(",");
 
@@ -85,9 +84,9 @@ public class SnmpAgentConfig extends SnmpConfiguration implements Serializable {
             String key = pair[0];
             String value = pair[1];
 
-            if ("address".equalsIgnoreCase(key) && !"null".equals(value)) {
+            if ("address".equalsIgnoreCase(key)) {
                 agentConfig.setAddress(InetAddrUtils.addr(value));
-            } else if ("proxyFor".equalsIgnoreCase(key) && !"null".equals(value)) {
+            } else if ("proxyFor".equalsIgnoreCase(key)) {
                 agentConfig.setProxyFor(InetAddrUtils.addr(value));
             } else if ("port".equalsIgnoreCase(key)) {
                 agentConfig.setPort(Integer.parseInt(value));
@@ -136,8 +135,8 @@ public class SnmpAgentConfig extends SnmpConfiguration implements Serializable {
 
     public String toProtocolConfigString() {
         StringBuffer buff = new StringBuffer("snmp:");
-        buff.append("address=").append((m_address == null? null : InetAddrUtils.str(m_address)));
-        buff.append(",proxyFor=" + (m_proxyFor == null ? null : InetAddrUtils.str(m_proxyFor)));
+        if (m_address != null) buff.append("address=").append(InetAddrUtils.str(m_address));
+        if (m_proxyFor != null) buff.append(",proxyFor=").append(InetAddrUtils.str(m_proxyFor));
         buff.append(",port=").append(getPort());
         buff.append(",timeout=").append(getTimeout());
         buff.append(",retries=").append(getRetries());
@@ -145,21 +144,18 @@ public class SnmpAgentConfig extends SnmpConfiguration implements Serializable {
         buff.append(",max-repetitions=").append(getMaxRepetitions());
         buff.append(",max-request-size=").append(getMaxRequestSize());
         buff.append(",version=").append(versionToString(getVersion()));
-        if (isVersion3()) {
-            buff.append(",security-level=").append(getSecurityLevel());
-            buff.append(",security-name=").append(getSecurityName());
-            buff.append(",auth-passphrase=").append(getAuthPassPhrase());
-            buff.append(",auth-protocol=").append(getAuthProtocol());
-            buff.append(",priv-passphrase=").append(getPrivPassPhrase());
-            buff.append(",priv-protocol=").append(getPrivProtocol());
-            if (getContextName() != null) buff.append(",context-name=").append(getContextName());
-            if (getEngineId() != null) buff.append(",engine-id=").append(getEngineId());
-            if (getContextEngineId() != null) buff.append(",context-engine-id=").append(getContextEngineId());
-            if (getEnterpriseId() != null) buff.append(",enterprise-id=").append(getEnterpriseId());
-        } else {
-            buff.append(",read-community=").append(getReadCommunity());
-            buff.append(",write-community=").append(getWriteCommunity());
-        }
+        buff.append(",security-level=").append(getSecurityLevel());
+        if (getSecurityName() != null) buff.append(",security-name=").append(getSecurityName());
+        if (getAuthPassPhrase() != null) buff.append(",auth-passphrase=").append(getAuthPassPhrase());
+        if (getAuthProtocol() != null) buff.append(",auth-protocol=").append(getAuthProtocol());
+        if (getPrivPassPhrase() != null) buff.append(",priv-passphrase=").append(getPrivPassPhrase());
+        if (getPrivProtocol() != null) buff.append(",priv-protocol=").append(getPrivProtocol());
+        if (getContextName() != null) buff.append(",context-name=").append(getContextName());
+        if (getEngineId() != null) buff.append(",engine-id=").append(getEngineId());
+        if (getContextEngineId() != null) buff.append(",context-engine-id=").append(getContextEngineId());
+        if (getEnterpriseId() != null) buff.append(",enterprise-id=").append(getEnterpriseId());
+        if (getReadCommunity() != null) buff.append(",read-community=").append(getReadCommunity());
+        if (getWriteCommunity() != null) buff.append(",write-community=").append(getWriteCommunity());
         return buff.toString();
     }
 

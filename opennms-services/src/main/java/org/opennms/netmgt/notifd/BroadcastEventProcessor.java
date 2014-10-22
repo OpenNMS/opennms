@@ -187,11 +187,11 @@ public final class BroadcastEventProcessor implements EventListener {
         }
 
         if (event.getLogmsg() != null && event.getLogmsg().getDest().equalsIgnoreCase("donotpersist")) {
-            LOG.warn("discarding event {}, the event has been configured as 'doNotPersist'.", event.getUei());
+            LOG.debug("discarding event {}, the event has been configured as 'doNotPersist'.", event.getUei());
             return;
         }
         if (event.getAlarmData() != null && event.getAlarmData().isAutoClean()) {
-            LOG.warn("discarding event {}, the event has been configured with autoClean=true on its alarmData.", event.getUei());
+            LOG.debug("discarding event {}, the event has been configured with autoClean=true on its alarmData.", event.getUei());
             return;
         }
 

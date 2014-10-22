@@ -314,7 +314,7 @@ public class DefaultForeignSourceService implements ForeignSourceService, Initia
     @Override
     public Map<String,PluginWrapper> getWrappers() {
         if (m_wrappers == null && m_policies != null && m_detectors != null) {
-            m_wrappers = new HashMap<String,PluginWrapper>(m_policies.size());
+            m_wrappers = new HashMap<String,PluginWrapper>(m_policies.size() + m_detectors.size());
             for (String key : m_policies.keySet()) {
                 try {
                     PluginWrapper wrapper = new PluginWrapper(key);

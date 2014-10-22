@@ -201,7 +201,7 @@
       <plugin>
         <groupId>org.opennms.maven.plugins</groupId>
         <artifactId>features-maven-plugin</artifactId>
-        <version>1.1.1-SNAPSHOT</version>
+        <version>1.2.0-SNAPSHOT</version>
         <executions>
           <execution>
             <id>features.xml</id>
@@ -450,6 +450,16 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-assembly-plugin</artifactId>
         <version>2.4</version>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-clean-plugin</artifactId>
+        <version>2.6</version>
+        <executions>
+          <execution>
+            <goals><goal>clean</goal></goals>
+          </execution>
+        </executions>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -715,6 +725,48 @@
     </plugins>
   </pluginManagement>
    <plugins>
+     <plugin>
+       <groupId>org.apache.maven.plugins</groupId>
+       <artifactId>maven-clean-plugin</artifactId>
+       <inherited>false</inherited>
+       <executions>
+         <execution>
+           <id>remove-source-tarball</id>
+           <phase>process-resources</phase>
+           <goals><goal>clean</goal></goals>
+           <configuration>
+             <excludeDefaultDirectories>true</excludeDefaultDirectories>
+             <filesets>
+               <fileset>
+                 <directory>target</directory>
+                 <excludes><exclude>**/*</exclude></excludes>
+                 <includes><include>${project.name}-${project.version}-source.*</include></includes>
+               </fileset>
+             </filesets>
+           </configuration>
+         </execution>
+         <execution>
+           <id>clean</id>
+           <phase>clean</phase>
+           <goals><goal>clean</goal></goals>
+         </execution>
+       </executions>
+     </plugin>
+     <plugin>
+       <groupId>org.apache.maven.plugins</groupId>
+       <artifactId>maven-assembly-plugin</artifactId>
+       <inherited>false</inherited>
+       <executions>
+         <execution>
+           <phase>process-resources</phase>
+           <goals><goal>single</goal></goals>
+           <configuration>
+             <descriptor>src/assembly/source.xml</descriptor>
+             <classifier>source</classifier>
+           </configuration>
+         </execution>
+       </executions>
+     </plugin>
      <plugin>
        <groupId>org.apache.maven.plugins</groupId>
        <artifactId>maven-eclipse-plugin</artifactId>
@@ -1044,8 +1096,8 @@
     <!-- dependency versions -->
     <oldAsmVersion>99.99.99-exclude-and-use-org.ow2.asm.asm-all-instead</oldAsmVersion>
     <asmVersion>5.0.3</asmVersion>
-    <activemqVersion>5.9.0</activemqVersion>
     <asciidoctorVersion>0.1.4</asciidoctorVersion>
+    <activemqVersion>5.10.0</activemqVersion>
     <atomikosVersion>3.9.2</atomikosVersion>
     <camelVersion>2.13.2</camelVersion>
     <cloverVersion>3.2.0</cloverVersion>
@@ -1068,8 +1120,9 @@
     <jacksonVersion>1.9.13</jacksonVersion>
     <jasperreportsVersion>3.7.6</jasperreportsVersion>
     <jettyVersion>7.6.15.v20140411</jettyVersion>
-    <karafVersion>2.3.4</karafVersion>
-    <felixVersion>2.2.0</felixVersion>
+    <karafVersion>2.4.0</karafVersion>
+    <karafPaxExamVersion>2.3.8</karafPaxExamVersion>
+    <felixVersion>2.3.0</felixVersion>
     <liquibaseVersion>2.0.5</liquibaseVersion>
     <log4jVersion>99.99.99-use-log4j2</log4jVersion>
     <log4j2Version>2.1-ONMS-20140918</log4j2Version>
@@ -1081,16 +1134,16 @@
     <osgiEnterpriseVersion>4.2.0</osgiEnterpriseVersion>
     <slf4jVersion>1.7.7</slf4jVersion>
     <springJaxbVersion>2.1.7</springJaxbVersion>
-    <xalanVersion>2.7.1</xalanVersion>
+    <xalanVersion>2.7.2</xalanVersion>
     <xercesVersion>2.9.1</xercesVersion>
     <xmlApisVersion>1.4.01</xmlApisVersion>
 
-    <springVersion>3.2.4.RELEASE</springVersion>
+    <springVersion>3.2.9.RELEASE_1</springVersion>
     <!-- ALWAYS change aspectj to match the version referenced in the spring poms -->
-    <aspectjVersion>1.7.1</aspectjVersion>
-    <springWebFlowVersion>2.3.0.RELEASE</springWebFlowVersion>
-    <springSecurityVersion>3.1.4.RELEASE</springSecurityVersion>
-    <springLdapVersion>3.1.4.RELEASE</springLdapVersion>
+    <aspectjVersion>1.7.4</aspectjVersion>
+    <springWebFlowVersion>2.3.2.RELEASE</springWebFlowVersion>
+    <springSecurityVersion>3.1.7.RELEASE</springSecurityVersion>
+    <springLdapVersion>3.1.7.RELEASE</springLdapVersion>
 
     <!-- moved here from topology features -->
     <jungVersion>2.0.1</jungVersion>
@@ -2969,6 +3022,11 @@
         <groupId>org.eclipse.jetty.orbit</groupId>
         <artifactId>org.apache.taglibs.standard.glassfish</artifactId>
         <version>1.2.0.v201112081803</version>
+      </dependency>
+      <dependency>
+        <groupId>com.jcraft</groupId>
+        <artifactId>jsch</artifactId>
+        <version>0.1.51</version>
       </dependency>
       <dependency>
         <groupId>org.eclipse.jdt.core.compiler</groupId>

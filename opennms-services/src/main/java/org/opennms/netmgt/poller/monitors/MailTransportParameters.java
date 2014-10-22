@@ -28,15 +28,11 @@
 
 package org.opennms.netmgt.poller.monitors;
 
-import java.io.ByteArrayInputStream;
-import java.io.UnsupportedEncodingException;
 import java.util.Map;
 import java.util.Properties;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ParameterMap;
-import org.opennms.core.xml.CastorUtils;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.mailtransporttest.MailTransportTest;
 import org.opennms.netmgt.config.mailtransporttest.ReadmailHost;
 import org.opennms.netmgt.config.mailtransporttest.ReadmailTest;
@@ -62,11 +58,17 @@ public class MailTransportParameters {
 
     MailTransportParameters(Map<String,Object> parameterMap) {
         m_parameterMap = parameterMap;
-        String test = getStringParm("mail-transport-test", null);
-        if (test == null) {
+        Object mailTransportTest = AbstractServiceMonitor.getKeyedObject(m_parameterMap, "mail-transport-test", null);
+        if (mailTransportTest == null) {
             throw new IllegalArgumentException("mail-transport-test must be set in monitor parameters");
         }
-        m_transportTest = parseMailTransportTest(test);
+        if (mailTransportTest instanceof MailTransportTest) {
+            m_transportTest = (MailTransportTest) mailTransportTest;
+        } else if (mailTransportTest instanceof String) {
+            m_transportTest = JaxbUtils.unmarshal(MailTransportTest.class, (String)mailTransportTest);
+        } else {
+            throw new IllegalArgumentException("Unsure how to deal with Mail Transport Test of type " + mailTransportTest.getClass());
+        }
     }
     
     static synchronized MailTransportParameters get(Map<String,Object> parameterMap) {
@@ -84,19 +86,6 @@ public class MailTransportParameters {
 
     MailTransportTest getTransportTest() {
         return m_transportTest;
-    }
-
-    MailTransportTest parseMailTransportTest(String test) {
-        try {
-            return CastorUtils.unmarshal(MailTransportTest.class, new ByteArrayInputStream(test.getBytes("UTF-8")));
-        } catch (MarshalException e) {
-            throw new IllegalArgumentException("Unable to parse mail-test-sequence for MailTransportMonitor: "+test, e);
-        } catch (ValidationException e) {
-            throw new IllegalArgumentException("Unable to parse mail-test-sequence for MailTransportMonitor: "+test, e);
-        } catch (UnsupportedEncodingException e) {
-            throw new IllegalArgumentException("Unable to parse mail-test-sequence for MailTransportMonitor: "+test, e);
-        }
-    
     }
 
     private String getStringParm(String key, String deflt) {

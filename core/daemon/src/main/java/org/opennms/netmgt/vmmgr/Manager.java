@@ -172,12 +172,12 @@ public class Manager implements ManagerMBean {
             LOG.debug("memory usage (free/used/total/max allowed): {}/{}/{}/{}", r.freeMemory(), (r.totalMemory() - r.freeMemory()), r.totalMemory(), (r.maxMemory() == Long.MAX_VALUE ? "infinite" : r.maxMemory()));
         }
         
-        LOG.info("calling System.exit(1)");
+        LOG.info("calling System.exit(0)");
         shutdownLogging();
         new Timer().schedule(new TimerTask() {
             @Override
             public void run() {
-                System.exit(1);
+                System.exit(0);
             }
         }, 500);
 
