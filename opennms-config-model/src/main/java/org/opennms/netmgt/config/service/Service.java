@@ -47,22 +47,16 @@ import org.opennms.core.xml.JaxbUtils;
 
 /**
  * Service to be launched by the manager.
- * 
- * @version $Revision$ $Date$
  */
 @XmlRootElement(name = "service")
 public class Service implements Serializable {
-    private static final long serialVersionUID = -2554947387909986065L;
-
-    // --------------------------/
-    // - Class/Member Variables -/
-    // --------------------------/
+    private static final long serialVersionUID = -3812929848708891094L;
 
     /**
      * Field _enabled
      */
     @XmlAttribute(name = "enabled")
-    private Boolean _enabled = Boolean.TRUE;
+    private Boolean _enabled;
 
     /**
      * Field _name.
@@ -80,7 +74,7 @@ public class Service implements Serializable {
      * Field _attributeList.
      */
     @XmlElement(name = "attribute")
-    private List<Attribute> _attributeList = new ArrayList<Attribute>(0);;
+    private List<Attribute> _attributeList = new ArrayList<Attribute>(0);
 
     /**
      * Field _invokeList.
@@ -364,7 +358,7 @@ public class Service implements Serializable {
      */
     @XmlTransient
     public Boolean isEnabled() {
-        return this._enabled;
+        return this._enabled == null? Boolean.TRUE : this._enabled;
     }
 
     /**
