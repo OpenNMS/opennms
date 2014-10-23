@@ -15,6 +15,9 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-assembly-plugin</artifactId>
+	<configuration>
+            <skipAssembly>false</skipAssembly>
+        </configuration>
       </plugin>
     </plugins>
   </build>

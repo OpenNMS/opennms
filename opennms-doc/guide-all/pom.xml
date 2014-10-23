@@ -16,6 +16,7 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-assembly-plugin</artifactId>
         <configuration>
+            <skipAssembly>false</skipAssembly>
           <descriptors>
             <descriptor>src/assembly/all.xml</descriptor>
           </descriptors>

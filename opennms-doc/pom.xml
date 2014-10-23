@@ -97,7 +97,8 @@
             </execution>
           </executions>
           <configuration>
-            <descriptors>
+            <skipAssembly>true</skipAssembly>
+	    <descriptors>
               <descriptor>${basedir}/../src/assembly/doc.xml</descriptor>
             </descriptors>
           </configuration>
