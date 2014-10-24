@@ -157,6 +157,8 @@ Web UI and APIs
   a group. (ie, `/opennms/rest/groups/users/` and `/opennms/rest/groups/categories/`)
 * The node ReST service now supports manually adding and removing hardware inventory data.
   For details, see [the Hardware Inventory wiki page].
+* The snmp ReST service now supports SNMP v3 configurations.
+* The Snmp Configuration by IP UI in the admin page has been improved and now supports SNMP v3 configurations.
 
 Dashboard
 ---------

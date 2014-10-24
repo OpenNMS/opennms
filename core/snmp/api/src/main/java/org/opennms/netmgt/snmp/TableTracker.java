@@ -169,7 +169,7 @@ public class TableTracker extends CollectionTracker implements RowCallback, RowR
 
             rp.processResponse(responseObjId, val);
             } catch (Exception e) {
-                e.printStackTrace();
+                LOG.warn("Failed to process response", e);
             }
 
         }

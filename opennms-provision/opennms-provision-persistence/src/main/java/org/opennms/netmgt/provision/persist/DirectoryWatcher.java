@@ -52,8 +52,10 @@ public class DirectoryWatcher<T> {
 
 	public DirectoryWatcher(File directory, FileReloadCallback<T> loader) {
 		m_directory = directory;
-		if(!m_directory.mkdirs()) {
-			LOG.warn("Could not make directory: {}",m_directory.getPath());
+		if (!m_directory.exists()) {
+		    if(!m_directory.mkdirs()) {
+		        LOG.warn("Could not make directory: {}",m_directory.getPath());
+		    }
 		}
 		m_loader = loader;
 	}

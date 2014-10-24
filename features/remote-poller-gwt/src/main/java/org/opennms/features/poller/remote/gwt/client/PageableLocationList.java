@@ -28,7 +28,6 @@
 
 package org.opennms.features.poller.remote.gwt.client;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.opennms.features.poller.remote.gwt.client.events.LocationPanelSelectEvent;
@@ -61,6 +60,7 @@ public class PageableLocationList extends PageableList {
         Label m_statusLabel = new Label();
         
         @Override
+        @SuppressWarnings("deprecation")
         protected void doAttachChildren() {
             super.doAttachChildren();
             DOM.appendChild(this.getElement(), m_icon.getElement());
@@ -80,6 +80,7 @@ public class PageableLocationList extends PageableList {
             setHeight(Integer.toString(newHeight + 2));
         }
 
+        @SuppressWarnings("deprecation")
         public LocationInfoDisplay(final LocationInfo locationInfo) {
             setElement(DOM.createDiv());
 
