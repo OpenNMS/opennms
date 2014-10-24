@@ -77,6 +77,7 @@ public class Main implements Runnable {
 	protected String m_password = null;
 	protected static boolean m_shuttingDown = false;
 	protected boolean m_gui = false;
+	protected boolean m_disableIcmp = false;
 
 	private Main(String[] args) {
 		// Give us some time to attach a debugger if necessary
@@ -86,6 +87,13 @@ public class Main implements Runnable {
 	}
 
         public void initializePinger() {
+                if (m_disableIcmp) {
+                        LOG.info("Disabling ICMP by user request.");
+                        System.setProperty("org.opennms.netmgt.icmp.pingerClass", "org.opennms.netmgt.icmp.NullPinger");
+                        PingerFactory.setInstance(new NullPinger());
+                        return;
+                }
+
                 final String pingerClass = System.getProperty("org.opennms.netmgt.icmp.pingerClass");
     		if (pingerClass == null) {
     			LOG.info("System property org.opennms.netmgt.icmp.pingerClass is not set; using JnaPinger by default");
@@ -96,11 +104,12 @@ public class Main implements Runnable {
     		        final Pinger pinger = PingerFactory.getInstance();
     		        pinger.ping(InetAddress.getLoopbackAddress());
     		} catch (final Throwable t) {
-    		        LOG.warn("Unable to get pinger instance.  Setting pingerClass to NullPinger.");
+    		        LOG.warn("Unable to get pinger instance.  Setting pingerClass to NullPinger.  For details, see: http://www.opennms.org/wiki/ICMP_could_not_be_initialized");
     		        System.setProperty("org.opennms.netmgt.icmp.pingerClass", "org.opennms.netmgt.icmp.NullPinger");
     		        PingerFactory.setInstance(new NullPinger());
     		        final String message = "ICMP (ping) could not be initialized: " + t.getMessage()
-    		                + "\nDisabling ICMP and using the NullPinger instead.";
+    		                + "\nDisabling ICMP and using the NullPinger instead."
+    		                + "\nFor details, see: http://www.opennms.org/wiki/ICMP_could_not_be_initialized";
     		        JOptionPane.showMessageDialog(null, message, "ICMP Not Available", JOptionPane.WARNING_MESSAGE);
     		}
         }
@@ -171,6 +180,7 @@ public class Main implements Runnable {
 
 		options.addOption("d", "debug", false, "write debug messages to the log");
 		options.addOption("g", "gui", false, "start a GUI (default: false)");
+		options.addOption("i", "disable-icmp", false, "disable ICMP/ping (overrides -Dorg.opennms.netmgt.icmp.pingerClass=)");
 		options.addOption("l", "location", true, "the location name of this remote poller");
 		options.addOption("u", "url", true, "the URL for OpenNMS (example: https://server-name/opennms-remoting)");
 		options.addOption("n", "name", true, "the name of the user to connect as");
@@ -185,6 +195,10 @@ public class Main implements Runnable {
 		}
 
 		if (cl.hasOption("d")) {
+		}
+
+		if (cl.hasOption("i")) {
+		        m_disableIcmp = true;
 		}
 
 		if (cl.hasOption("l")) {
