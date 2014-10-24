@@ -30,6 +30,8 @@ package org.opennms.netmgt.config;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.opennms.core.utils.ConfigFileConstants;
 import org.slf4j.Logger;
@@ -96,13 +98,11 @@ public final class ServiceConfigFactory {
      *         instances.
      */
     public Service[] getServices() {
-        int count = m_config.getServiceCount();
-        Service[] slist = new Service[count];
-
-        count = 0;
+        final List<Service> services = new ArrayList<Service>();
         for (Service s : m_config.getServiceCollection()) {
-            slist[count++] = s;
+            if (s.isEnabled())
+                services.add(s);
         }
-        return slist;
+        return services.toArray(new Service[services.size()]);
     }
 }

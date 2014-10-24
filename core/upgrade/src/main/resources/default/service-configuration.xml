@@ -1,11 +1,6 @@
 <?xml version="1.0"?>
-<!-- NOTE!!!!!!!!!!!!!!!!!!!
-The order in which these services are specified is important - for example, Eventd
-will need to come up last so that none of the event topic subcribers loose any event.
 
-When splitting services to run on mutiple VMs, the order of the services should be
-maintained
--->
+<!--  This is the default state of services for 14.0.0 -->
 <service-configuration xmlns="http://xmlns.opennms.org/xsd/config/vmmgr">
   <service>
     <name>:Name=XSLTProcessor</name>

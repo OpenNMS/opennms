@@ -54,6 +54,7 @@ public class EventsAlarmsWindow extends Window {
 	private Embedded eventsBrowser = null; //Browser component which is directed at the events page
 	private Embedded alarmsBrowser = null; //Browser component which is directed at the alarms page
 	private static final String noLabel = "no such label"; //Label given to vertexes that have no real label.
+    private TabSheet m_tabSheet;
 
 	private static String makeLabel(final Node node) {
 		String label = node == null? "" : node.getLabel();
@@ -78,22 +79,25 @@ public class EventsAlarmsWindow extends Window {
 	public EventsAlarmsWindow(final Node node, final URL eventsURL, final URL alarmsURL) throws MalformedURLException {
 		super("Events & Alarms" + makeLabel(node));
 		eventsBrowser = new Embedded("", new ExternalResource(eventsURL));
+        eventsBrowser.setSizeFull();
 		alarmsBrowser = new Embedded("", new ExternalResource(alarmsURL));
+        alarmsBrowser.setSizeFull();
 		
 		setImmediate(true);
 		setResizable(false);
 		
 		/*Adds the two browsers to separate tabs in a tabsheet layout*/
-		TabSheet tabsheet = new TabSheet();
-		tabsheet.addTab(eventsBrowser, "Events");
-		tabsheet.addTab(alarmsBrowser, "Alarms");
+        m_tabSheet = new TabSheet();
+        m_tabSheet.setSizeFull();
+        m_tabSheet.addTab(eventsBrowser, "Events");
+        m_tabSheet.addTab(alarmsBrowser, "Alarms");
 		
 		/*Adds tabsheet component to the main layout of the sub-window*/
 		VerticalLayout layout = new VerticalLayout();
-		layout.addComponent(tabsheet);
-		
+		layout.addComponent(m_tabSheet);
+		layout.setSizeFull();
 		setContent(layout);
-		//addComponent(layout);
+
 	}
 	
 	@Override
@@ -102,22 +106,21 @@ public class EventsAlarmsWindow extends Window {
 		
 		int width = (int)getUI().getPage().getBrowserWindowWidth();
     	int height = (int)getUI().getPage().getBrowserWindowHeight();
-    	
+
 		/*Sets the browser and window sizes based on the main window*/
-		int browserWidth = (int)(sizePercentage * width), browserHeight = (int)(sizePercentage * height);
-		int windowWidth = browserWidth + widthCushion, windowHeight = browserHeight + heightCushion;
-		setWidth("" + windowWidth + "px");
-		setHeight("" + windowHeight + "px");
-		setPositionX((width - windowWidth)/2);
-		setPositionY((height - windowHeight)/2);
-		
+		int browserWidth = (int)(sizePercentage * width);
+        int browserHeight = (int)(sizePercentage * height);
+		setWidth("" + browserWidth + "px");
+		setHeight("" + browserHeight + "px");
+		setPositionX((width - browserWidth)/2);
+		setPositionY((height - browserHeight)/2);
+        int viewHeight = browserHeight - 76;
+
 		/*Changes the size of the browsers to fit within the sub-window*/
-		alarmsBrowser.setType(Embedded.TYPE_BROWSER);
-		alarmsBrowser.setWidth("" + browserWidth + "px");
-		alarmsBrowser.setHeight("" + browserHeight + "px");
-		eventsBrowser.setType(Embedded.TYPE_BROWSER);
-		eventsBrowser.setWidth("" + browserWidth + "px");
-		eventsBrowser.setHeight("" + browserHeight + "px");
+        alarmsBrowser.setType(Embedded.TYPE_BROWSER);
+        alarmsBrowser.setHeight(viewHeight + "px");
+        eventsBrowser.setType(Embedded.TYPE_BROWSER);
+        eventsBrowser.setHeight(viewHeight + "px"); //424 When I set it to this size it works but otherwise its doesn't
 	}
 	
 }

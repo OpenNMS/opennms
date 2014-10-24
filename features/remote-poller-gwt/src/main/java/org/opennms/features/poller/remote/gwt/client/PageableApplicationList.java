@@ -28,7 +28,6 @@
 
 package org.opennms.features.poller.remote.gwt.client;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -85,6 +84,7 @@ public class PageableApplicationList extends PageableList implements Application
         final HTML m_statusLabel = new HTML();
 
         @Override
+        @SuppressWarnings("deprecation")
         protected void doAttachChildren() {
             super.doAttachChildren();
             DOM.appendChild(this.getElement(), m_icon.getElement());

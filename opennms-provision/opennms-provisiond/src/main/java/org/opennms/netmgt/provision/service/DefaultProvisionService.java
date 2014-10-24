@@ -563,6 +563,9 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
                         m_monitoredServiceDao.update(dbObj);
                         sendEvent(EventConstants.RESUME_POLLING_SERVICE_EVENT_UEI, dbObj);
                         break;
+                    case "A":
+                        // we can ignore active statuses
+                        break;
                     default:
                         LOG.warn("Unhandled state: {}", dbObj.getStatus());
                         break;

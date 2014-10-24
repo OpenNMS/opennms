@@ -241,9 +241,8 @@ public abstract class SnmpUtils {
 	    try {
 			return new String(hex, "ASCII");
 		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return null;
+		    LOG.warn("Failed to get hex string", e);
+		    return null;
 		}
 	}
 

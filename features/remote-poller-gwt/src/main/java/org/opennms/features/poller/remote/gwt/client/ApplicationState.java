@@ -109,6 +109,9 @@ public class ApplicationState implements Serializable, IsSerializable {
 					m_applicationsMarginal.add(appName);
 					break;
 				}
+				default: {
+				    break;
+				}
 			}
 		}
 		if (m_applicationsUnknown.size() > 0) {

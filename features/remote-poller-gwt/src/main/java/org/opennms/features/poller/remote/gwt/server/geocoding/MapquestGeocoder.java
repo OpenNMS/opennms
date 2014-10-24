@@ -38,10 +38,10 @@ import net.simon04.jelementtree.ElementTree;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.opennms.features.poller.remote.gwt.client.GWTLatLng;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.opennms.features.poller.remote.gwt.client.GWTLatLng;
 
 /**
  * <p>MapquestGeocoder class.</p>
@@ -67,7 +67,7 @@ public class MapquestGeocoder implements Geocoder {
 	}
 
 	private static final String GEOCODE_URL = "http://www.mapquestapi.com/geocoding/v1/address?callback=renderGeocode&outFormat=xml";
-	private static final HttpClient m_httpClient = new DefaultHttpClient();
+	private static final HttpClient m_httpClient = HttpClientBuilder.create().build();
 	private String m_apiKey;
 	private Quality m_minimumQuality;
 	private String m_referer;
