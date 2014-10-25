@@ -34,6 +34,19 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="element" tagdir="/WEB-INF/tags/element" %>
 
+<script type="text/javascript">
+function toggleClassDisplay(clazz, displayA, displayB) {
+	var targetElems = document.getElementsByClassName(clazz);
+	Array.prototype.filter.call(targetElems, function(e) {
+		if (e.style.display == displayA) {
+			e.style.display = displayB;
+		} else {
+			e.style.display = displayA;
+		}
+	});
+}
+</script>
+
 <c:if test="${model.nodeCount == 1 && command.snmpParm == null && command.maclike == null}">
   <jsp:forward page="/element/node.jsp?node=${model.nodes[0].node.id}"/>
 </c:if>
@@ -52,7 +65,7 @@
   </c:when>
   
   <c:otherwise>
-    <h3>Nodes</h3>
+    <h3><span>Nodes</span><span style="padding-left: 32px;"><a href="javascript:toggleClassDisplay('NLdbid', '', 'inline');"><img src="images/nodelist/dbid-16.png" title="Toggle database IDs" width="16" height="16"/></a>&nbsp;<a href="javascript:toggleClassDisplay('NLfs', '', 'inline');"><img src="images/nodelist/foreignsource-16.png" title="Toggle requisition names" width="16" height="16"/></a>&nbsp;<a href="javascript:toggleClassDisplay('NLfid', '', 'inline');"><img src="images/nodelist/foreignid-16.png" title="Toggle foreign-IDs" width="16" height="16"/></a></span></h3>
   </c:otherwise>
 </c:choose>
 <div class="boxWrapper">
