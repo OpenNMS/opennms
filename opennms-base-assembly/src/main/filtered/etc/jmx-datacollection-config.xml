@@ -152,6 +152,9 @@
         <attrib name="JavaNoticesInterrupted" alias="JavaNoticesInterru" type="counter"/>
         <attrib name="UnknownNoticesInterrupted" alias="UnknowNoticeInterr" type="counter"/>
       </mbean>
+      <mbean name="OpenNMS.Manager" objectname="OpenNMS:Name=Manager">
+        <attrib name="onmsUptime" alias="Uptime" type="gauge"/>
+      </mbean>
       <mbean name="JVM Memory" objectname="java.lang:type=OperatingSystem">
         <attrib name="FreePhysicalMemorySize" alias="FreeMemory" type="gauge"/>
         <attrib name="TotalPhysicalMemorySize" alias="TotalMemory" type="gauge"/>

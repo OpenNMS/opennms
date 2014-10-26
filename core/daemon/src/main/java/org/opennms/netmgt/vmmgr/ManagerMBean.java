@@ -52,4 +52,12 @@ public interface ManagerMBean {
      * <p>doTestLoadLibraries</p>
      */
     public void doTestLoadLibraries();
+    
+    /**
+     * <p>getUptime</p>
+     * 
+     * @return a {@link java.lang.Long} expressing the time, in milliseconds,
+     * since the manager first started 
+     */
+    public Long getUptime();
 }
