@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -25,6 +25,7 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
+
 package org.opennms.netmgt.rrd.model;
 
 import java.io.File;
@@ -41,6 +42,8 @@ import org.jrobin.core.RrdException;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.rrd.model.v1.RRDv1;
 import org.opennms.netmgt.rrd.model.v3.RRDv3;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
@@ -51,6 +54,8 @@ import org.xml.sax.helpers.XMLReaderFactory;
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a> 
  */
 public class RrdConvertUtils {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(RrdConvertUtils.class);
 
     /**
      * Instantiates a new RRDtool Convert Utils.
@@ -111,7 +116,9 @@ public class RrdConvertUtils {
         JaxbUtils.marshal(rrd, new FileWriter(outputXmlFile));
         RrdDb targetJrb = new RrdDb(targetFile.getCanonicalPath(), RrdDb.PREFIX_XML + outputXmlFile.getAbsolutePath());
         targetJrb.close();
-        outputXmlFile.delete();
+        if(!outputXmlFile.delete()) {
+        	LOG.warn("Could not delete file: {}", outputXmlFile.getPath());
+        }
     }
 
     /**
@@ -132,7 +139,9 @@ public class RrdConvertUtils {
             JaxbUtils.marshal(rrd, new FileWriter(xmlDest));
             Process process = Runtime.getRuntime().exec(new String[]{ rrdBinary, "restore", xmlDest.getAbsolutePath(), targetFile.getAbsolutePath() });
             process.waitFor();
-            xmlDest.delete();
+            if(!xmlDest.delete()) {
+            	LOG.warn("Could not delete file: {}", xmlDest.getPath());
+            }
         } catch (Exception e) {
             throw new RrdException("Can't restore RRD", e);
         }

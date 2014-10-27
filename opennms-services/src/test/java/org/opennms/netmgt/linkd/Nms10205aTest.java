@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -106,7 +106,7 @@ public class Nms10205aTest extends LinkdTestBuilder {
             @JUnitSnmpAgent(host=J6350_42_IP, port=161, resource=J6350_42_SNMP_RESOURCE),
             @JUnitSnmpAgent(host=SRX_100_IP, port=161, resource=SRX_100_SNMP_RESOURCE),
             @JUnitSnmpAgent(host=SSG550_IP, port=161, resource=SSG550_SNMP_RESOURCE)
-    })
+    }, forceMockStrategy=true)
     public void testNetwork10205Links() throws Exception {
         m_nodeDao.save(builder.getMumbai());
         m_nodeDao.save(builder.getChennai());
@@ -258,7 +258,8 @@ public class Nms10205aTest extends LinkdTestBuilder {
                 checkLink(spaceexsw2, mumbai, 34, 508, datalinkinterface);
                 assertEquals(DiscoveryProtocol.iproute, datalinkinterface.getProtocol());
             } else if (start+19 == id ) {
-                checkLink(spaceexsw1,spaceexsw2, 1361, 501 , datalinkinterface);
+//                checkLink(spaceexsw1,spaceexsw2, 1361, 501 , datalinkinterface);
+            	checkLink(spaceexsw2, spaceexsw1, 523,1361, datalinkinterface);
                 assertEquals(DiscoveryProtocol.bridge, datalinkinterface.getProtocol());
             } else {
                 assertEquals(-1, 0);
@@ -286,7 +287,7 @@ public class Nms10205aTest extends LinkdTestBuilder {
             @JUnitSnmpAgent(host=J6350_42_IP, port=161, resource=J6350_42_SNMP_RESOURCE),
             @JUnitSnmpAgent(host=SRX_100_IP, port=161, resource=SRX_100_SNMP_RESOURCE),
             @JUnitSnmpAgent(host=SSG550_IP, port=161, resource=SSG550_SNMP_RESOURCE)
-    })
+    }, forceMockStrategy=true)
     public void testNetwork10205OspfLinks() throws Exception {
         m_nodeDao.save(builder.getMumbai());
         m_nodeDao.save(builder.getChennai());
@@ -392,13 +393,13 @@ public class Nms10205aTest extends LinkdTestBuilder {
 
     /*
      *  
-     *  Get only ospf links.
+     *  Get only bridge links.
      */
     @Test
     @JUnitSnmpAgents(value={
             @JUnitSnmpAgent(host=SPACE_EX_SW1_IP, port=161, resource=SPACE_EX_SW1_SNMP_RESOURCE),
             @JUnitSnmpAgent(host=SPACE_EX_SW2_IP, port=161, resource=SPACE_EX_SW2_SNMP_RESOURCE)
-    })
+    }, forceMockStrategy=true)
     public void testNetwork10205BridgeLinks() throws Exception {
         m_nodeDao.save(builder.getSpaceExSw1());
         m_nodeDao.save(builder.getSpaceExSw2());
@@ -435,7 +436,8 @@ public class Nms10205aTest extends LinkdTestBuilder {
         for (final DataLinkInterface datalinkinterface: links) {
             int id = datalinkinterface.getId().intValue();
             if (start == id ) {
-            	checkLink(spaceexsw1, spaceexsw2, 1361, 501, datalinkinterface);
+//            	checkLink(spaceexsw1, spaceexsw2, 1361, 501, datalinkinterface);
+            	checkLink(spaceexsw2, spaceexsw1, 523,1361, datalinkinterface);
                 assertEquals(DiscoveryProtocol.bridge, datalinkinterface.getProtocol());
              } else {
                 checkLink(spaceexsw1,spaceexsw1,-1,-1,datalinkinterface);

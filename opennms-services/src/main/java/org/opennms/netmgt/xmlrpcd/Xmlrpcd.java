@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2004-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -32,6 +32,7 @@ import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.util.Enumeration;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
@@ -41,7 +42,6 @@ import org.opennms.netmgt.config.OpennmsServerConfigFactory;
 import org.opennms.netmgt.config.XmlrpcdConfigFactory;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.xml.event.Event;
-
 import org.opennms.netmgt.config.xmlrpcd.XmlrpcServer;
 import org.opennms.netmgt.config.xmlrpcd.ExternalServers;
 import org.slf4j.Logger;
@@ -69,18 +69,18 @@ public class Xmlrpcd extends AbstractServiceDaemon {
     /**
      * The communication queues -- ArrayList of FifoQueues
      */
-    private ArrayList<FifoQueue<Event>> m_eventlogQs = new ArrayList<FifoQueue<Event>>();
+    private List<FifoQueue<Event>> m_eventlogQs = new ArrayList<FifoQueue<Event>>();
 
     /**
      * The queue processing threads -- ArrayList of EventQueueProcessors
      */
-    private ArrayList<EventQueueProcessor> m_processors = new ArrayList<EventQueueProcessor>();
+    private List<EventQueueProcessor> m_processors = new ArrayList<EventQueueProcessor>();
 
     /**
      * The class instance used to receive new events from for the system.
      *  -- ArrayList of BroadcastEventProcessors
      */
-    private ArrayList<BroadcastEventProcessor> m_eventReceivers = new ArrayList<BroadcastEventProcessor>();
+    private List<BroadcastEventProcessor> m_eventReceivers = new ArrayList<BroadcastEventProcessor>();
 
     private OpennmsServerConfigFactory m_serverConfig;
 
@@ -264,6 +264,16 @@ public class Xmlrpcd extends AbstractServiceDaemon {
         // interrupt the processor daemon thread
         for (final EventQueueProcessor proc : m_processors) {
             proc.stop();
+            while (true) {
+                if (proc.getStatus() == STOPPED) {
+                    break;
+                }
+                try {
+                    Thread.sleep(20);
+                } catch (final InterruptedException e) {
+                    // already shutting down, eat the exception
+                }
+            }
         }
         
         LOG.debug("stop: Processor stopped");

@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2004-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -33,9 +33,6 @@ package org.opennms.netmgt.xmlrpcd;
 import java.io.IOException;
 import java.net.ConnectException;
 import java.net.MalformedURLException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Hashtable;
@@ -44,16 +41,17 @@ import java.util.Vector;
 
 import org.apache.xmlrpc.XmlRpcClient;
 import org.apache.xmlrpc.XmlRpcException;
-import org.opennms.core.db.DataSourceFactory;
-import org.opennms.core.utils.DBUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.xmlrpcd.XmlrpcServer;
+import org.opennms.netmgt.utils.NodeLabelDaoImpl;
+import org.opennms.netmgt.utils.NodeLabelJDBCImpl;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Snmp;
 import org.opennms.netmgt.xml.event.Value;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
 
 /**
@@ -161,6 +159,9 @@ public final class XmlRpcNotifier {
      * The host NMS server name
      */
     private String m_localServer;
+    
+    @Autowired
+    private NodeLabelDaoImpl m_nodeLabel;
     
     //private ExternalEventRecipient m_recipient;
 
@@ -532,47 +533,15 @@ public final class XmlRpcNotifier {
 
 
     private String getLabelForEventNode(final Event event) {
-        return getNodeLabel(event.getNodeid());
-    }
-
-    /**
-     * <p>
-     * This method retrieves the nodeLable from the database for a given nodeId.
-     * </p>
-     * 
-     * @param nodeId
-     *            the nodeId to retrieve the node label for.
-     */
-    private String getNodeLabel(final long nodeId) {
-        Connection dbConn = null;
-        String nodeLabel = null;
-
-        final DBUtils d = new DBUtils(getClass());
-        try {
-            dbConn = DataSourceFactory.getInstance().getConnection();
-            d.watch(dbConn);
-
-            LOG.debug("getNodeLabel: retrieve node label for: {}", nodeId);
-
-            final PreparedStatement stmt = dbConn.prepareStatement("SELECT nodelabel FROM NODE WHERE nodeid = ?");
-            d.watch(stmt);
-            stmt.setLong(1, nodeId);
-            final ResultSet rs = stmt.executeQuery();
-            d.watch(rs);
-
-            while (rs.next()) {
-                nodeLabel = rs.getString(1);
-            }
-
-        } catch (final SQLException sqle) {
-            LOG.warn("SQL exception while retrieving nodeLabel for: {}", nodeId, sqle);
-        } finally {
-            d.cleanUp();
-        }
-
-        LOG.debug("getNodeLabel: retrieved node label '{}' for: {}", nodeLabel, nodeId);
-
-        return nodeLabel;
+    	int id = (int)event.getNodeid().intValue();
+    	String label = "";
+    	try {
+			label = NodeLabelJDBCImpl.getInstance().retrieveLabel(id).getLabel();
+		} catch (SQLException e) {
+			LOG.error("Couldn't retrieve NodeLabel: {}" + e.getMessage(), e);
+		}
+ 
+		return label;
     }
 
     /**

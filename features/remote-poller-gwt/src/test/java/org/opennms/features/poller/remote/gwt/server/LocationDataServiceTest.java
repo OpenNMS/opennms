@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2010-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -28,6 +28,7 @@
 
 package org.opennms.features.poller.remote.gwt.server;
 
+import static org.opennms.core.utils.InetAddressUtils.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -79,6 +80,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
+		"classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
         "classpath:META-INF/opennms/mockEventIpcManager.xml",
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
@@ -87,6 +89,7 @@ import org.springframework.transaction.annotation.Transactional;
         "file:src/main/webapp/WEB-INF/applicationContext-remote-poller.xml",
         "classpath:/locationDataServiceTest.xml",
         "classpath:META-INF/opennms/applicationContext-minimal-conf.xml"
+        
 })
 @JUnitConfigurationEnvironment(systemProperties={
     "opennms.pollerBackend.monitorCheckInterval=500",
@@ -156,9 +159,9 @@ public class LocationDataServiceTest implements TemporaryDatabaseAware<Temporary
         googleNode.setLabel("google");
         m_nodeDao.saveOrUpdate(googleNode);
 
-        OnmsIpInterface localhostIpInterface = new OnmsIpInterface("127.0.0.1", localhostNode);
+        OnmsIpInterface localhostIpInterface = new OnmsIpInterface(addr("127.0.0.1"), localhostNode);
         m_ipInterfaceDao.saveOrUpdate(localhostIpInterface);
-        OnmsIpInterface googleIpInterface = new OnmsIpInterface("66.249.80.104", googleNode);
+        OnmsIpInterface googleIpInterface = new OnmsIpInterface(addr("66.249.80.104"), googleNode);
         m_ipInterfaceDao.saveOrUpdate(googleIpInterface);
 
         OnmsServiceType httpServiceType = new OnmsServiceType("HTTP");

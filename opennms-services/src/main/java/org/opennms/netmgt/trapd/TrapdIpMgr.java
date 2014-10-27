@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -48,7 +48,7 @@ public interface TrapdIpMgr {
      *             Thrown if the connection cannot be created or a database
      *             error occurs.
      */
-    public abstract void dataSourceSync() throws SQLException;
+    void dataSourceSync() throws SQLException;
 
     /**
      * Returns the nodeid for the IP Address
@@ -57,7 +57,7 @@ public interface TrapdIpMgr {
      *            The IP Address to query.
      * @return The node ID of the IP Address if known.
      */
-    public abstract long getNodeId(String addr);
+    long getNodeId(String addr);
 
     /**
      * Sets the IP Address and Node ID in the Map.
@@ -68,7 +68,7 @@ public interface TrapdIpMgr {
      *            The Node ID to add.
      * @return The nodeid if it existed in the map.
      */
-    public abstract long setNodeId(String addr, long nodeid);
+    long setNodeId(String addr, long nodeid);
 
     /**
      * Removes an address from the node ID map.
@@ -77,11 +77,6 @@ public interface TrapdIpMgr {
      *            The address to remove from the node ID map.
      * @return The nodeid that was in the map.
      */
-    public abstract long removeNodeId(String addr);
-
-    /**
-     * <p>clearKnownIpsMap</p>
-     */
-    public abstract void clearKnownIpsMap();
+    long removeNodeId(String addr);
 
 }

@@ -7,16 +7,16 @@
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -68,17 +68,17 @@ public class DownloadReportController extends AbstractController {
             HttpServletResponse response) throws Exception {
                 
         String fileName = request.getParameter("fileName");
-        final File requestedFile = new File(fileName);
 
         m_reportdConfigurationDao = BeanUtils.getBean("reportdContext", "reportdConfigDao", ReportdConfigurationDao.class);
         final File storageDirectory = new File(m_reportdConfigurationDao.getStorageDirectory());
         
-        if (!requestedFile.getParentFile().getCanonicalFile().equals(storageDirectory.getCanonicalFile())) {
-            LOG.warn("User attempted to retrieve file {} but was restricted to {}", requestedFile, storageDirectory);
-            throw new IllegalArgumentException("Cannot retrieve reports from outside Reportd storage directory");
-        }
-        
         if (fileName != null) {
+            final File requestedFile = new File(fileName);
+            if (!requestedFile.getParentFile().getCanonicalFile().equals(storageDirectory.getCanonicalFile())) {
+                LOG.warn("User attempted to retrieve file {} but was restricted to {}", requestedFile, storageDirectory);
+                throw new IllegalArgumentException("Cannot retrieve reports from outside Reportd storage directory");
+            }
+
             if (fileName.toLowerCase().endsWith(".pdf")) {
                 response.setContentType("application/pdf;charset=UTF-8");
 

@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -46,7 +46,7 @@ public abstract class AbstractSnmpValue implements SnmpValue {
     public static boolean allBytesUTF_8(final byte[] bytes) {
         int i = 0;
         // Check for BOM
-        if (bytes.length >= 3 && (bytes[0] & 0xFF) == 0xEF && (bytes[1] & 0xFF) == 0xBB & (bytes[2] & 0xFF) == 0xBF) {
+        if (bytes.length >= 3 && (bytes[0] & 0xFF) == 0xEF && (bytes[1] & 0xFF) == 0xBB && (bytes[2] & 0xFF) == 0xBF) {
             i = 3;
         }
         
@@ -122,23 +122,23 @@ public abstract class AbstractSnmpValue implements SnmpValue {
             // Null (0)
             if (b == 0) {
                 if (i != (bytes.length - 1)) {
-                    System.out.println("INVALID: " + b);
+                    //System.out.println("INVALID: " + b);
                     return false;
                 }
             }
             // Low ASCII (excluding Tab, Carriage Return, and Linefeed)
             else if (b >= 0 && b < 32 && b != 9 && b != 10 && b != 13) {
-                System.out.println("INVALID: " + b);
+                //System.out.println("INVALID: " + b);
                 return false;
             }
             // Delete (127)
             else if (b == 127) {
-                System.out.println("INVALID: " + b);
+                //System.out.println("INVALID: " + b);
                 return false;
             }
             // High ASCII values not included in ISO-8859-1
             else if (b >= -128 && b < -96) {
-                System.out.println("INVALID: " + b);
+                //System.out.println("INVALID: " + b);
                 return false;
             }
         }

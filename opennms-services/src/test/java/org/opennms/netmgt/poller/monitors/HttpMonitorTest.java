@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2005-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -34,6 +34,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentSkipListMap;
@@ -44,6 +45,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.core.test.http.JUnitHttpServerExecutionListener;
 import org.opennms.core.test.http.annotations.JUnitHttpServer;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.poller.Parameter;
@@ -55,14 +57,15 @@ import org.opennms.netmgt.poller.mock.MonitorTestUtils;
 import org.opennms.netmgt.utils.DnsUtils;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.opennms.test.mock.MockUtil;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={"classpath:/META-INF/opennms/emptyContext.xml"})
 @JUnitConfigurationEnvironment
+@DirtiesContext
 public class HttpMonitorTest {
-
     private boolean m_runTests = true;
 
     @Before
@@ -75,15 +78,15 @@ public class HttpMonitorTest {
      */
     @Test
     public void testPollStatusReason() throws UnknownHostException {
-
         if (m_runTests == false) return;
 
         Map<String, Object> m = new ConcurrentSkipListMap<String, Object>();
         Parameter p = new Parameter();
 
         ServiceMonitor monitor = new HttpMonitor();
-        MonitoredService svc = MonitorTestUtils.getMonitoredService(99, "www.opennms.org", DnsUtils.resolveHostname("www.opennms.org"), "HTTP");
-
+        InetAddress address = DnsUtils.resolveHostname("www.opennms.org");
+        assertNotNull("Failed to resolved address: www.opennms.org", address);
+        MonitoredService svc = MonitorTestUtils.getMonitoredService(99, "www.opennms.org", address, "HTTP");
 
         p.setKey("port");
         p.setValue("3020");
@@ -114,13 +117,13 @@ public class HttpMonitorTest {
     }
 
     @Test
-    @JUnitHttpServer(port=10342)
+    @JUnitHttpServer(port=0)
     public void testResponseRange() throws UnknownHostException {
         callTestResponseRange(false);
     }
 
     @Test
-    @JUnitHttpServer(port=10342)
+    @JUnitHttpServer(port=0)
     public void testResponseRangeIPv6() throws UnknownHostException {
         callTestResponseRange(true);
     }
@@ -133,7 +136,12 @@ public class HttpMonitorTest {
         ServiceMonitor monitor = new HttpMonitor();
         MonitoredService svc = MonitorTestUtils.getMonitoredService(3, "localhost", DnsUtils.resolveHostname("localhost", preferIPv6), "HTTP");
 
-        m.put("port", "10342");
+        final int port = JUnitHttpServerExecutionListener.getPort();
+        if (port > 0) {
+            m.put("port", String.valueOf(port));
+        } else {
+            throw new IllegalStateException("Unable to determine what port the HTTP server started on!");
+        }
         m.put("retry", "1");
         m.put("timeout", "500");
         m.put("response", "100-199");
@@ -198,7 +206,7 @@ public class HttpMonitorTest {
         // We need a routable but unreachable address in order to simulate a timeout
         final MonitoredService svc = MonitorTestUtils.getMonitoredService(3, preferIPv6 ? InetAddressUtils.UNPINGABLE_ADDRESS_IPV6 : InetAddressUtils.UNPINGABLE_ADDRESS, "HTTP");
 
-        m.put("port", "10342");
+        m.put("port", "12345");
         m.put("retry", "1");
         m.put("timeout", "500");
         m.put("response", "100-199");
@@ -212,13 +220,13 @@ public class HttpMonitorTest {
     }
 
     @Test
-    @JUnitHttpServer(port=10342)
+    @JUnitHttpServer()
     public void testMatchingTextInResponse() throws UnknownHostException {
         callTestMatchingTextInResponse(false);
     }
 
     @Test
-    @JUnitHttpServer(port=10342)
+    @JUnitHttpServer()
     public void testMatchingTextInResponseIPv6() throws UnknownHostException {
         callTestMatchingTextInResponse(true);
     }
@@ -233,7 +241,12 @@ public class HttpMonitorTest {
         final Map<String, Object> m = new ConcurrentSkipListMap<String, Object>();
         final MonitoredService svc = MonitorTestUtils.getMonitoredService(3, "localhost", DnsUtils.resolveHostname("localhost", preferIPv6), "HTTP");
 
-        m.put("port", "10342");
+        final int port = JUnitHttpServerExecutionListener.getPort();
+        if (port > 0) {
+            m.put("port", String.valueOf(port));
+        } else {
+            throw new IllegalStateException("Unable to determine what port the HTTP server started on!");
+        }
         m.put("retry", "0");
         m.put("timeout", "500");
         m.put("response", "100-499");
@@ -278,13 +291,13 @@ public class HttpMonitorTest {
     }
 
     @Test
-    @JUnitHttpServer(port=10342, basicAuth=true)
+    @JUnitHttpServer(basicAuth=true)
     public void testBasicAuthentication() throws UnknownHostException {
         callTestBasicAuthentication(false);
     }
 
     @Test
-    @JUnitHttpServer(port=10342, basicAuth=true)
+    @JUnitHttpServer(basicAuth=true)
     public void testBasicAuthenticationIPv6() throws UnknownHostException {
         callTestBasicAuthentication(true);
     }
@@ -299,7 +312,12 @@ public class HttpMonitorTest {
         ServiceMonitor monitor = new HttpMonitor();
         MonitoredService svc = MonitorTestUtils.getMonitoredService(1, "localhost", DnsUtils.resolveHostname("localhost", preferIPv6), "HTTP");
 
-        m.put("port", "10342");
+        final int port = JUnitHttpServerExecutionListener.getPort();
+        if (port > 0) {
+            m.put("port", String.valueOf(port));
+        } else {
+            throw new IllegalStateException("Unable to determine what port the HTTP server started on!");
+        }
         m.put("retry", "0");
         m.put("timeout", "500");
         m.put("response", "100-302");
@@ -324,13 +342,13 @@ public class HttpMonitorTest {
     }
 
     @Test
-    @JUnitHttpServer(port=10342, https=true, basicAuth=true)
+    @JUnitHttpServer(https=true, basicAuth=true)
     public void testBasicAuthenticationWithHttps() throws UnknownHostException {
         callTestBasicAuthenticationWithHttps(false);
     }
 
     @Test
-    @JUnitHttpServer(port=10342, https=true, basicAuth=true)
+    @JUnitHttpServer(https=true, basicAuth=true)
     public void testBasicAuthenticationWithHttpsIPv6() throws UnknownHostException {
         callTestBasicAuthenticationWithHttps(true);
     }
@@ -345,7 +363,12 @@ public class HttpMonitorTest {
         ServiceMonitor monitor = new HttpsMonitor();
         MonitoredService svc = MonitorTestUtils.getMonitoredService(1, "localhost", DnsUtils.resolveHostname("localhost", preferIPv6), "HTTPS");
 
-        m.put("port", "10342");
+        final int port = JUnitHttpServerExecutionListener.getPort();
+        if (port > 0) {
+            m.put("port", String.valueOf(port));
+        } else {
+            throw new IllegalStateException("Unable to determine what port the HTTP server started on!");
+        }
         m.put("retry", "1");
         m.put("timeout", "500");
         m.put("response", "100-302");
@@ -356,8 +379,8 @@ public class HttpMonitorTest {
         status = monitor.poll(svc, m);
         MockUtil.println("Reason: "+status.getReason());
         assertEquals(PollStatus.SERVICE_UNAVAILABLE, status.getStatusCode());
-        assertEquals("HTTP response value: 401. Expecting: 100-302./Ports: 10342", status.getReason());
-        
+        assertEquals("HTTP response value: 401. Expecting: 100-302./Ports: " + port, status.getReason());
+
         m.put("basic-authentication", "admin:istrator");
 
         status = monitor.poll(svc, m);
@@ -367,13 +390,13 @@ public class HttpMonitorTest {
     }
 
     @Test
-    @JUnitHttpServer(port=10342)
+    @JUnitHttpServer()
     public void testWithUrl() throws UnknownHostException {
         callTestWithUrl(false);
     }
 
     @Test
-    @JUnitHttpServer(port=10342)
+    @JUnitHttpServer()
     public void testWithUrlIPv6() throws UnknownHostException {
         callTestWithUrl(true);
     }
@@ -387,7 +410,12 @@ public class HttpMonitorTest {
         ServiceMonitor monitor = new HttpMonitor();
         MonitoredService svc = MonitorTestUtils.getMonitoredService(3, "localhost", DnsUtils.resolveHostname("localhost", preferIPv6), "HTTP");
 
-        m.put("port", "10342");
+        final int port = JUnitHttpServerExecutionListener.getPort();
+        if (port > 0) {
+            m.put("port", String.valueOf(port));
+        } else {
+            throw new IllegalStateException("Unable to determine what port the HTTP server started on!");
+        }
         m.put("retry", "0");
         m.put("timeout", "500");
         m.put("response", "100-499");
@@ -404,13 +432,13 @@ public class HttpMonitorTest {
     }
 
     @Test
-    @JUnitHttpServer(port=10342)
+    @JUnitHttpServer()
     public void testWithInvalidNodelabelHostName() throws UnknownHostException {
         callTestWithInvalidNodelabelHostName(false);
     }
 
     @Test
-    @JUnitHttpServer(port=10342)
+    @JUnitHttpServer()
     public void testWithInvalidNodelabelHostNameIPv6() throws UnknownHostException {
         callTestWithInvalidNodelabelHostName(true);
     }
@@ -425,7 +453,12 @@ public class HttpMonitorTest {
         MockMonitoredService svc = MonitorTestUtils.getMonitoredService(3, "localhost", DnsUtils.resolveHostname("localhost", preferIPv6), "HTTP");
         svc.setNodeLabel("bad.virtual.host.example.com");
 
-        m.put("port", "10342");
+        final int port = JUnitHttpServerExecutionListener.getPort();
+        if (port > 0) {
+            m.put("port", String.valueOf(port));
+        } else {
+            throw new IllegalStateException("Unable to determine what port the HTTP server started on!");
+        }
         m.put("retry", "0");
         m.put("timeout", "500");
         // Ensure that we get a 404 for this GET since we're using an inappropriate virtual host
@@ -441,13 +474,13 @@ public class HttpMonitorTest {
     }
 
     @Test
-    @JUnitHttpServer(port=10342, vhosts={"opennms.com"})
+    @JUnitHttpServer(vhosts={"opennms.com"})
     public void testPollInInvalidVirtualDomain() throws UnknownHostException {
         callTestPollInInvalidVirtualDomain(false);
     }
 
     @Test
-    @JUnitHttpServer(port=10342, vhosts={"opennms.com"})
+    @JUnitHttpServer(vhosts={"opennms.com"})
     public void testPollInInvalidVirtualDomainIPv6() throws UnknownHostException {
         callTestPollInInvalidVirtualDomain(true);
     }
@@ -461,7 +494,12 @@ public class HttpMonitorTest {
         ServiceMonitor monitor = new HttpMonitor();
         MonitoredService svc = MonitorTestUtils.getMonitoredService(3, "localhost", DnsUtils.resolveHostname("localhost", preferIPv6), "HTTP");
 
-        m.put("port", "10342");
+        final int port = JUnitHttpServerExecutionListener.getPort();
+        if (port > 0) {
+            m.put("port", String.valueOf(port));
+        } else {
+            throw new IllegalStateException("Unable to determine what port the HTTP server started on!");
+        }
         m.put("retry", "0");
         m.put("timeout", "500");
         m.put("host-name", "www.google.com");
@@ -473,13 +511,13 @@ public class HttpMonitorTest {
     }
 
     @Test
-    @JUnitHttpServer(port=10342, vhosts={"www.opennms.org"})
+    @JUnitHttpServer(vhosts={"www.opennms.org"})
     public void testPollValidVirtualDomain() throws UnknownHostException {
         callTestPollValidVirtualDomain(false);
     }
 
     @Test
-    @JUnitHttpServer(port=10342, vhosts={"www.opennms.org"})
+    @JUnitHttpServer(vhosts={"www.opennms.org"})
     public void testPollValidVirtualDomainIPv6() throws UnknownHostException {
         callTestPollValidVirtualDomain(true);
     }
@@ -493,7 +531,12 @@ public class HttpMonitorTest {
         ServiceMonitor monitor = new HttpMonitor();
         MonitoredService svc = MonitorTestUtils.getMonitoredService(3, "localhost", DnsUtils.resolveHostname("localhost", preferIPv6), "HTTP");
 
-        m.put("port", "10342");
+        final int port = JUnitHttpServerExecutionListener.getPort();
+        if (port > 0) {
+            m.put("port", String.valueOf(port));
+        } else {
+            throw new IllegalStateException("Unable to determine what port the HTTP server started on!");
+        }
         m.put("retry", "1");
         m.put("timeout", "500");
         m.put("host-name", "www.opennms.org");
@@ -505,11 +548,16 @@ public class HttpMonitorTest {
     }
 
     @Test
-    @JUnitHttpServer(port=10342)
+    @JUnitHttpServer()
     public void testNMS2702() throws UnknownHostException {
         HttpMonitor monitor = new HttpMonitor();
         Map<String, Object> parameters = new ConcurrentSkipListMap<String, Object>();
-        parameters.put("port", "10342");
+        final int port = JUnitHttpServerExecutionListener.getPort();
+        if (port > 0) {
+            parameters.put("port", String.valueOf(port));
+        } else {
+            throw new IllegalStateException("Unable to determine what port the HTTP server started on!");
+        }
         parameters.put("url", "/test-NMS2702.html");
         parameters.put("retry", "1");
         parameters.put("timeout", "500");

@@ -1,17 +1,29 @@
 /*******************************************************************************
- * This file is part of OpenNMS(R). Copyright (C) 2006-2012 The OpenNMS Group,
- * Inc. OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc. OpenNMS(R)
- * is free software: you can redistribute it and/or modify it under the terms
- * of the GNU General Public License as published by the Free Software
- * Foundation, either version 3 of the License, or (at your option) any later
- * version. OpenNMS(R) is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
- * or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
- * more details. You should have received a copy of the GNU General Public
- * License along with OpenNMS(R). If not, see: http://www.gnu.org/licenses/
- * For more information contact: OpenNMS(R) Licensing <license@opennms.org>
- * http://www.opennms.org/ http://www.opennms.com/
+ * This file is part of OpenNMS(R).
+ *
+ * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * OpenNMS(R) is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with OpenNMS(R).  If not, see:
+ *      http://www.gnu.org/licenses/
+ *
+ * For more information contact:
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
  *******************************************************************************/
 
 package org.opennms.netmgt.linkd;
@@ -333,28 +345,26 @@ public final class SnmpVlanCollection implements ReadyRunnable {
 
         // if not found macaddresses forwarding table find it in Qbridge
         // ExtremeNetwork works.....
+        //Check in any case qbridge too!
+        LOG.info("run: Trying to collect QbridgeDot1dTpFdbTable for {} Community: {}",
+                 hostAddress, m_agentConfig.getReadCommunity());
+        m_dot1qTpFdbTable = new QBridgeDot1dTpFdbTable(m_address);
+        walker = SnmpUtils.createWalker(m_agentConfig,
+                                        "qBridgedot1dTpFdbTable ",
+                                        new CollectionTracker[] { m_dot1qTpFdbTable });
+        walker.start();
 
-        if (m_dot1dTpFdbTable.isEmpty() && m_collectBridge) {
-            LOG.info("run: Trying to collect QbridgeDot1dTpFdbTable for {} Community: {}",
+        try {
+            walker.waitFor();
+        } catch (final InterruptedException e) {
+            m_dot1qTpFdbTable = null;
+            LOG.warn("SnmpVlanCollection.run: collection interrupted", e);
+
+        }
+
+        if (!hasQBridgeDot1dTpFdbTable()) {
+            LOG.info("run: failed to collect QBridgeDot1dTpFdbTable for {} Community: {}",
                      hostAddress, m_agentConfig.getReadCommunity());
-            m_dot1qTpFdbTable = new QBridgeDot1dTpFdbTable(m_address);
-            walker = SnmpUtils.createWalker(m_agentConfig,
-                                            "qBridgedot1dTpFdbTable ",
-                                            new CollectionTracker[] { m_dot1qTpFdbTable });
-            walker.start();
-
-            try {
-                walker.waitFor();
-            } catch (final InterruptedException e) {
-                m_dot1qTpFdbTable = null;
-                LOG.warn("SnmpVlanCollection.run: collection interrupted", e);
-
-            }
-
-            if (!hasQBridgeDot1dTpFdbTable()) {
-                LOG.info("run: failed to collect QBridgeDot1dTpFdbTable for {} Community: {}",
-                         hostAddress, m_agentConfig.getReadCommunity());
-            }
         }
     }
 

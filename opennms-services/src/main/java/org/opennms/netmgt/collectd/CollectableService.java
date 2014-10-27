@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -147,7 +147,7 @@ final class CollectableService implements ReadyRunnable {
         
         m_spec.initialize(m_agent);
         
-        m_params=new ServiceParameters(m_spec.getReadOnlyPropertyMap());
+        m_params = m_spec.getServiceParameters();
         m_repository=m_spec.getRrdRepository(m_params.getCollectionName());
 
         m_thresholdVisitor = ThresholdingVisitor.create(m_nodeId, getHostAddress(), m_spec.getServiceName(), m_repository,  m_params);
@@ -382,7 +382,7 @@ final class CollectableService implements ReadyRunnable {
          * Perform data collection.
          */
 	private void doCollection() throws CollectionException {
-		LOG.info("run: starting new collection for {}/{}/{}", getHostAddress(), m_spec.getServiceName(), m_spec.getPackageName());
+		LOG.info("run: starting new collection for {}/{}/{}/{}", m_nodeId, getHostAddress(), m_spec.getServiceName(), m_spec.getPackageName());
 		CollectionSet result = null;
 		try {
 		    result = m_spec.collect(m_agent);
@@ -413,13 +413,13 @@ final class CollectableService implements ReadyRunnable {
                         }
                     }
                 } catch (CollectionException e) {
-                    LOG.warn("run: failed collection for {}/{}/{}", getHostAddress(), m_spec.getServiceName(), m_spec.getPackageName());
+                    LOG.warn("run: failed collection for {}/{}/{}/{}", m_nodeId, getHostAddress(), m_spec.getServiceName(), m_spec.getPackageName());
                     throw e;
 		} catch (Throwable t) {
-                    LOG.warn("run: failed collection for {}/{}/{}", getHostAddress(), m_spec.getServiceName(), m_spec.getPackageName());
-                    throw new CollectionException("An undeclared throwable was caught during data collection for interface " + getHostAddress() +"/"+ m_spec.getServiceName(), t);
+                    LOG.warn("run: failed collection for {}/{}/{}/{}", m_nodeId, getHostAddress(), m_spec.getServiceName(), m_spec.getPackageName());
+                    throw new CollectionException("An undeclared throwable was caught during data collection for interface " + m_nodeId + "/" + getHostAddress() + "/" + m_spec.getServiceName(), t);
 		}
-		LOG.info("run: finished collection for {}/{}/{}", getHostAddress(), m_spec.getServiceName(), m_spec.getPackageName());
+		LOG.info("run: finished collection for {}/{}/{}/{}", m_nodeId, getHostAddress(), m_spec.getServiceName(), m_spec.getPackageName());
 	}
 
 	/**
@@ -458,11 +458,11 @@ final class CollectableService implements ReadyRunnable {
 
                 try {
                     reinitialize(newIface);
-                    LOG.debug("Completed reinitializing {} collector for {}/{}", this.getServiceName(), getHostAddress(), m_spec.getServiceName());
+                    LOG.debug("Completed reinitializing {} collector for {}/{}/{}", this.getServiceName(), m_nodeId, getHostAddress(), m_spec.getServiceName());
                 } catch (CollectionInitializationException rE) {
-                    LOG.warn("Unable to initialize {} for {} collection, reason: {}", getHostAddress(), m_spec.getServiceName(), rE.getMessage());
+                    LOG.warn("Unable to initialize {}/{} for {} collection, reason: {}", m_nodeId, getHostAddress(), m_spec.getServiceName(), rE.getMessage());
                 } catch (Throwable t) {
-                    LOG.error("Uncaught exception, failed to intialize interface {} for {} data collection", getHostAddress(), m_spec.getServiceName(), t);
+                    LOG.error("Uncaught exception, failed to intialize interface {}/{} for {} data collection", m_nodeId, getHostAddress(), m_spec.getServiceName(), t);
                 }
             }
 
@@ -505,7 +505,9 @@ final class CollectableService implements ReadyRunnable {
                     try {
                         // Rename <oldNodeId> dir to <newNodeId> dir.
                         LOG.debug("Attempting to rename {} to {}", oldNodeDir, newNodeDir);
-                        oldNodeDir.renameTo(newNodeDir);
+                        if(!oldNodeDir.renameTo(newNodeDir)) {
+                        	LOG.warn("Could not rename file: {}", oldNodeDir.getPath());
+                        }
                         LOG.debug("Rename successful!!");
                     } catch (SecurityException se) {
                         LOG.error("Insufficient authority to rename RRD directory.", se);
@@ -557,13 +559,13 @@ final class CollectableService implements ReadyRunnable {
                 // to the interface's parent node among other things.
                 //
                 try {
-                    LOG.debug("Reinitializing collector for {}/{}", getHostAddress(), m_spec.getServiceName());
+                    LOG.debug("Reinitializing collector for {}/{}/{}", m_nodeId, getHostAddress(), m_spec.getServiceName());
                     reinitialize(m_updates.getUpdatedInterface());
-                    LOG.debug("Completed reinitializing collector for {}/{}", getHostAddress(), m_spec.getServiceName());
+                    LOG.debug("Completed reinitializing collector for {}/{}/{}", m_nodeId, getHostAddress(), m_spec.getServiceName());
                 } catch (CollectionInitializationException rE) {
-                    LOG.warn("Unable to initialize {} for {} collection, reason: {}", getHostAddress(), m_spec.getServiceName(), rE.getMessage());
+                    LOG.warn("Unable to initialize {}/{} for {} collection, reason: {}", m_nodeId, getHostAddress(), m_spec.getServiceName(), rE.getMessage());
                 } catch (Throwable t) {
-                    LOG.error("Uncaught exception, failed to initialize interface {} for {} data collection", getHostAddress(), m_spec.getServiceName(), t);
+                    LOG.error("Uncaught exception, failed to initialize interface {}/{} for {} data collection", m_nodeId, getHostAddress(), m_spec.getServiceName(), t);
                 }
             }
 

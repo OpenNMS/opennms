@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -62,6 +62,41 @@ public class SnmpObjIdTest extends TestCase {
         } catch (IllegalArgumentException e) {
             
         }
+    }
+    
+    public void testLargeSubId() {
+        long subid = ((long)Integer.MAX_VALUE) + 10L;
+        String oidStr = ".1.3.5." + subid + ".9";
+        SnmpObjId oid = SnmpObjId.get(oidStr);
+        assertEquals(oidStr, oid.toString());
+    }
+    
+    public void testCompareWithLargeSubid() {
+        long subid = ((long)Integer.MAX_VALUE) + 10L;
+        String oidStr = ".1.3.5." + subid + ".9";
+        SnmpObjId oid = SnmpObjId.get(oidStr);
+
+        long subid2 = ((long)Integer.MAX_VALUE) + 20L;
+        String oidStr2 = ".1.3.5." + subid2 + ".9";
+        SnmpObjId oid2 = SnmpObjId.get(oidStr2);
+        
+        SnmpObjId oid3 = SnmpObjId.get(".1.3.5.7.9");
+        
+        assertTrue(oid.compareTo(oid2) < 0);
+        
+        assertTrue(oid3.compareTo(oid) < 0);
+
+    }
+
+    
+    public void testDecrementWithLargeSubid() {
+        long subid = ((long)Integer.MAX_VALUE) + 10L;
+        String oidStr = ".1.3.5." + subid;
+        SnmpObjId oid = SnmpObjId.get(oidStr);
+        String oidStr2 = ".1.3.5." +(subid-1); 
+        
+        assertEquals(oidStr2, oid.decrement().toString());
+
     }
 
     public void testSnmpOidCompare() {

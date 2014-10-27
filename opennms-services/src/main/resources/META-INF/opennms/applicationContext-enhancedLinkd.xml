@@ -5,12 +5,14 @@
 	xmlns:util="http://www.springframework.org/schema/util"
 	xmlns:aop="http://www.springframework.org/schema/aop"
     xmlns:context="http://www.springframework.org/schema/context"
+    xmlns:onmsgi="http://xmlns.opennms.org/xsd/spring/onms-osgi"
 	xsi:schemaLocation="
 	http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
 	http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
 	http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
 	http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd
 	http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
+	http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd
 	">
 
     <context:annotation-config />
@@ -19,12 +21,14 @@
 
     <bean id="queryManager" class="org.opennms.netmgt.enlinkd.EnhancedLinkdServiceImpl">
       <property name="nodeDao" ref="nodeDao" />
+      <property name="cdpLinkDao" ref="cdpLinkDao" />
       <property name="lldpLinkDao" ref="lldpLinkDao" />
       <property name="ospfLinkDao" ref="ospfLinkDao" />
       <property name="isisLinkDao" ref="isisLinkDao" />
       <property name="bridgeMacLinkDao" ref="bridgeMacLinkDao" />
       <property name="bridgeStpLinkDao" ref="bridgeStpLinkDao" />
       <property name="bridgeBridgeLinkDao" ref="bridgeBridgeLinkDao" />
+      <property name="cdpElementDao" ref="cdpElementDao" />
       <property name="lldpElementDao" ref="lldpElementDao" />
       <property name="ospfElementDao" ref="ospfElementDao" />
       <property name="isisElementDao" ref="isisElementDao" />
@@ -56,5 +60,11 @@
       <property name="annotatedListener" ref="receiver" />
       <property name="eventSubscriptionService" ref="eventSubscriptionService" />
     </bean>
+    
+    <onmsgi:service interface="org.opennms.netmgt.model.ServiceDaemon" ref="daemon">
+    	<onmsgi:service-properties>
+    		<entry key="name" value="enlinkd" />
+    	</onmsgi:service-properties>
+    </onmsgi:service>
 
 </beans>

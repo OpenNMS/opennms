@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -430,17 +430,47 @@ public abstract class RancidAdapterConfigManager implements RancidAdapterConfig 
     }
 
     /** {@inheritDoc} */
-    @Override
-    public String getType(final String sysoid) {
+    public String getType(final String sysoid, final String sysdescr) {
+        LOG.debug("getType: sysoid: {}", sysoid);
+        LOG.debug("getType: sysdescription: {}", sysdescr);
+        getReadLock().lock();
         try {
-            getReadLock().lock();
-            if (sysoid != null) {
-                for (final Mapping map: mappings()) {
-                    if (sysoid.startsWith(map.getSysoidMask()))
-                    return map.getType();
+            String type = getConfiguration().getDefaultType();
+            boolean notMatched = true;
+            if (sysoid != null && sysdescr != null) {
+                for (Mapping map : mappings()) {
+                    LOG.debug("getType: parsing map with SysoidMaSk: {}, SysdescrMatch: {}",
+                                    map.getSysoidMask(),
+                                    map.getSysdescrMatch());
+                    if (sysoid.startsWith(map.getSysoidMask())) {
+                        if (map.getSysdescrMatch() != null
+                                && sysdescr.matches(map.getSysdescrMatch())) {
+                            LOG.debug("getType: matched type: {}",
+                                            map.getType());
+                            return map.getType();
+                        }
+                        if (map.getSysdescrMatch() == null && notMatched) {
+                            LOG.debug("getType: null sysdescrmatch: first match: type: {} "
+                                                    , map.getType());
+                            type = map.getType();
+                            notMatched = false;
+                        }
+                    }
                 }
+            } else if (sysoid != null) {
+                for (Mapping map : mappings()) {
+                    LOG.debug("getType: sysdescr is null: parsing map with SysoidMaSk: {} "
+                                            , map.getSysoidMask());
+                    if (sysoid.startsWith(map.getSysoidMask())) {
+                        LOG.debug("getType: matched type: {} "
+                                                , map.getType());
+                        return map.getType();
+                    }
+                }
+
             }
-            return getConfiguration().getDefaultType();
+            LOG.debug("getType: matched type: {}", type);
+            return type;
         } finally {
             getReadLock().unlock();
         }

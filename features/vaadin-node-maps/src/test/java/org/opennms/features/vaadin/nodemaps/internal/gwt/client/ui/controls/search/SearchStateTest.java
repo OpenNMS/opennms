@@ -1,3 +1,31 @@
+/*******************************************************************************
+ * This file is part of OpenNMS(R).
+ *
+ * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * OpenNMS(R) is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with OpenNMS(R).  If not, see:
+ *      http://www.gnu.org/licenses/
+ *
+ * For more information contact:
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
+ *******************************************************************************/
+
 package org.opennms.features.vaadin.nodemaps.internal.gwt.client.ui.controls.search;
 
 import static org.easymock.EasyMock.expect;
@@ -13,6 +41,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.features.vaadin.nodemaps.internal.gwt.client.ComponentTracker;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.OpenNMSEventManager;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.ui.controls.search.SearchStateManager.State;
 import org.powermock.api.easymock.PowerMock;
@@ -55,6 +84,7 @@ public class SearchStateTest {
     private ValueItem m_mockHistory = new TestValueItem();
     private MockSearchStateManager m_searchManager;
     private OpenNMSEventManager m_eventManager = new OpenNMSEventManager();
+    private ComponentTracker m_componentTracker = new ComponentTracker(m_eventManager);
 
     @BeforeClass
     public static void setUpClass() throws Exception {
@@ -72,7 +102,7 @@ public class SearchStateTest {
     public void setUp() throws Exception {
         m_mockSearchInput.setValue("");
         m_mockHistory.setValue("");
-        m_searchManager = new MockSearchStateManager(m_mockSearchInput, m_mockHistory, m_eventManager);
+        m_searchManager = new MockSearchStateManager(m_mockSearchInput, m_mockHistory, m_eventManager, m_componentTracker);
     }
 
     @Test
@@ -275,7 +305,7 @@ public class SearchStateTest {
     @Test
     public void testInitializingWithHistory() throws Exception {
         m_mockHistory.setValue("search/ae");
-        m_searchManager = new MockSearchStateManager(m_mockSearchInput, m_mockHistory, m_eventManager);
+        m_searchManager = new MockSearchStateManager(m_mockSearchInput, m_mockHistory, m_eventManager, m_componentTracker);
         assertEquals(State.SEARCHING_FINISHED, m_searchManager.getState());
 
         typeCharacter(m_searchManager, 'a');
@@ -354,8 +384,8 @@ public class SearchStateTest {
     }
 
     private static class MockSearchStateManager extends SearchStateManager {
-        public MockSearchStateManager(final ValueItem searchString, final ValueItem history, final OpenNMSEventManager eventManager) {
-            super(searchString, history, eventManager);
+        public MockSearchStateManager(final ValueItem searchString, final ValueItem history, final OpenNMSEventManager eventManager, final ComponentTracker componentTracker) {
+            super(searchString, history, eventManager, componentTracker);
         }
 
         private boolean m_autocompleteVisible = false;

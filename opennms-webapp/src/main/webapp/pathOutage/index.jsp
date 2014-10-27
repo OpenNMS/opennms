@@ -2,22 +2,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -33,7 +33,7 @@
 	import="
 		java.util.List,
 		org.opennms.netmgt.config.OpennmsServerConfigFactory,
-		org.opennms.netmgt.poller.PathOutageFactory
+		org.opennms.netmgt.poller.PathOutageManagerJdbcImpl
 	"
 %>
 
@@ -50,9 +50,9 @@
     
 
 <%
-        List<String[]> testPaths = PathOutageFactory.getAllCriticalPaths();
+        List<String[]> testPaths = PathOutageManagerJdbcImpl.getInstance().getAllCriticalPaths();
         String dcpip = OpennmsServerConfigFactory.getInstance().getDefaultCriticalPathIp();
-        String[] pthData = PathOutageFactory.getCriticalPathData(dcpip, "ICMP");
+        String[] pthData = PathOutageManagerJdbcImpl.getInstance().getCriticalPathData(dcpip, "ICMP");
 %>
 <% if (dcpip != null && !dcpip.equals("")) { %>
 	<p>Default Critical Path = <%= dcpip %> ICMP</p>
@@ -66,7 +66,7 @@
 			<th># of Nodes</th>
 		</tr>
 		<% for (String[] pth : testPaths) {
-			pthData = PathOutageFactory.getCriticalPathData(pth[0], pth[1]); %>
+			pthData = PathOutageManagerJdbcImpl.getInstance().getCriticalPathData(pth[0], pth[1]); %>
 			<tr class="CellStatus">
 				<% if((pthData[0] == null) || (pthData[0].equals(""))) { %>
 					<td>(interface not in DB)</td>

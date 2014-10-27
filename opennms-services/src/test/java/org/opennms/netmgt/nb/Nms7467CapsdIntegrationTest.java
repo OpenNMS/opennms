@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -99,7 +99,7 @@ public class Nms7467CapsdIntegrationTest extends Nms7467NetworkBuilder implement
 
     @Test
     @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=CISCO_WS_C2948_IP, port=161, resource="classpath:linkd/nms7467/"+CISCO_WS_C2948_IP+"-walk.txt")
+            @JUnitSnmpAgent(host=CISCO_WS_C2948_IP, port=161, resource=CISCO_WS_C2948_SNMP_RESOURCE)
     })
     @Transactional
     public final void testCiscoWSC2948CapsdCollection() throws MarshalException, ValidationException, IOException {
@@ -133,7 +133,7 @@ public class Nms7467CapsdIntegrationTest extends Nms7467NetworkBuilder implement
 
     @Test
     @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=NETGEAR_SW_108_IP, port=161, resource="classpath:linkd/nms7467/"+NETGEAR_SW_108_IP+"-walk.txt")
+            @JUnitSnmpAgent(host=NETGEAR_SW_108_IP, port=161, resource=NETGEAR_SW_108_SNMP_RESOURCE)
     })
     @Transactional
     public final void testNETGEARSW108CapsdCollection() throws MarshalException, ValidationException, IOException {
@@ -166,7 +166,7 @@ public class Nms7467CapsdIntegrationTest extends Nms7467NetworkBuilder implement
     
     @Test
     @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=CISCO_C870_IP_PRIMARY, port=161, resource="classpath:linkd/nms7467/"+CISCO_C870_IP+"-walk.txt")
+            @JUnitSnmpAgent(host=CISCO_C870_IP_PRIMARY, port=161, resource=CISCO_C870_SNMP_RESOURCE)
     })
     @Transactional
     public final void testCISCO870CapsdCollection() throws MarshalException, ValidationException, IOException {
@@ -201,7 +201,7 @@ public class Nms7467CapsdIntegrationTest extends Nms7467NetworkBuilder implement
 
     @Test
     @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=LINUX_UBUNTU_IP, port=161, resource="classpath:linkd/nms7467/"+LINUX_UBUNTU_IP+"-walk.txt")
+            @JUnitSnmpAgent(host=LINUX_UBUNTU_IP, port=161, resource=LINUX_UBUNTU_SNMP_RESOURCE)
     })
     @Transactional
     public final void testLINUXUBUNTUCapsdCollection() throws MarshalException, ValidationException, IOException {
@@ -241,7 +241,7 @@ public class Nms7467CapsdIntegrationTest extends Nms7467NetworkBuilder implement
     
     @Test
     @JUnitSnmpAgents(value={
-            @JUnitSnmpAgent(host=DARWIN_10_8_IP, port=161, resource="classpath:linkd/nms7467/"+DARWIN_10_8_IP+"-walk.txt")
+            @JUnitSnmpAgent(host=DARWIN_10_8_IP, port=161, resource=DARWIN_10_8_SNMP_RESOURCE)
     })
     @Transactional
     public final void testDARWIN108CapsdCollection() throws MarshalException, ValidationException, IOException {

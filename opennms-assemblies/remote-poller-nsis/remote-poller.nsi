@@ -111,7 +111,7 @@ UserLocal:
   Pop $1
   StrCmp $1 "0" GotNoJava GotJava
 GotNoJava:
-  MessageBox MB_OK|MB_ICONEXCLAMATION "A Java 6 or Java 7 runtime environment or development kit with support$\r$\nfor Java Web Start is required, but none was found on this system.$\r$\n$\r$\nPlease download and install an appropriate Java distribution$\r$\nfrom http://java.sun.com/ and run the installer again."
+  MessageBox MB_OK|MB_ICONEXCLAMATION "A Java 7 runtime environment or development kit with support$\r$\nfor Java Web Start is required, but none was found on this system.$\r$\n$\r$\nPlease download and install an appropriate Java distribution$\r$\nfrom http://java.sun.com/ and run the installer again."
   Abort
 GotJava:
 
@@ -178,7 +178,7 @@ FunctionEnd
 
 # Pages
 !insertmacro MUI_PAGE_WELCOME
-!insertmacro MUI_PAGE_LICENSE "resources\GPL.TXT"
+!insertmacro MUI_PAGE_LICENSE "resources\agpl-3.0.txt"
 
 
 Page custom javaCheckPage javaCheckPageLeave
@@ -221,7 +221,7 @@ UninstPage instfiles
 
 #----------------------
 # Basic attributes of this installer
-Name "${PROJECT_NAME} Installer"
+Name "${PROJECT_NAME}"
 Icon resources\big-o-install.ico
 UninstallIcon resources\big-o-uninstall.ico
 # If this is a Maven build, leave OutFile undefined
@@ -235,7 +235,7 @@ VIAddVersionKey FileDescription  "${PROJECT_NAME} Installer"
 VIAddVersionKey FileVersion      1
 VIAddVersionKey ProductName      "${PROJECT_NAME}"
 VIAddVersionKey ProductVersion   "${PROJECT_VERSION}"
-VIAddVersionKey LegalCopyright   "© 2008-2013 The OpenNMS Group, Inc."
+VIAddVersionKey LegalCopyright   "© 2008-2014 The OpenNMS Group, Inc."
 VIAddVersionKey Comments         ""
 VIAddVersionKey CompanyName      "The OpenNMS Group, Inc."
 
@@ -251,11 +251,11 @@ RequestExecutionLevel admin
 # Include an XP manifest
 XPStyle On
 
-BrandingText "© 2008-2013 The OpenNMS Group, Inc.  Installer made with NSIS."
+BrandingText "© 2008-2014 The OpenNMS Group, Inc.  Installer made with NSIS."
 
 #AddBrandingImage top 110
 
-LicenseData resources\GPL.TXT
+LicenseData resources\agpl-3.0.txt
 #LicenseForceSelection checkbox
 
 #----------------------
@@ -308,7 +308,7 @@ Section "-Files"
   Push $PROFILE
   Call MkJavaPath
   Pop $PROFILEJAVA
-  File resources\GPL.TXT
+  File resources\agpl-3.0.txt
   File /nonfatal /r /x .svn /x .git etc
   DetailPrint "Customizing log file location"
   Call WriteCustomLogPropsFile
@@ -374,7 +374,7 @@ Section "Uninstall"
   MessageBox MB_OK|MB_ICONINFORMATION "The uninstaller was unable to remove the Log On As a Service right from user $ServiceUser.$\r$\n$\r$\nYou may wish to remove this right manually for security reasons."
   RightRemovedOK:
   Call un.RemoveSystrayMonitorStartup
-  Delete "$INSTDIR\resources\GPL.TXT"
+  Delete "$INSTDIR\resources\agpl-3.0.txt"
   Delete "$INSTDIR\bin\$POLLER_SERVICE_FILE_NAME"
   Delete "$INSTDIR\bin\$POLLER_TRAY_FILE_NAME"
   Delete "$INSTDIR\$UNINSTALLER_FILE_NAME"
@@ -382,7 +382,7 @@ Section "Uninstall"
   RMDir /r "$INSTDIR\etc"
   RMDir /r "$INSTDIR\logs"
   RMDir /r "$INSTDIR\bin"
-  Delete "$INSTDIR\GPL.TXT"
+  Delete "$INSTDIR\agpl-3.0.txt"
   RMDir "$INSTDIR"
   StrCmp $ShouldRemovePollerProps "true" 0 SkipDeletePollerProps
   Delete $POLLER_PROPS_FILE
@@ -844,10 +844,9 @@ Function GetJavaHomeCandidates
   LoopJRE:
     EnumRegKey $TEMP3 HKLM "SOFTWARE\JavaSoft\Java Runtime Environment" $TEMP2
     StrCmp $TEMP3 "" DoneJRE
-    # Check that it's a 1.5 or 1.6 JRE
+    # Check that it's a 1.7 JRE
     StrCpy $TEMP4 $TEMP3 3
-    StrCmp $TEMP4 "1.6" ValidateJRE 0
-    StrCmp $TEMP4 "1.5" ValidateJRE NextJRE
+    StrCmp $TEMP4 "1.7" ValidateJRE NextJRE
     ValidateJRE:
     ReadRegStr $TEMP3 HKLM "SOFTWARE\JavaSoft\Java Runtime Environment\$TEMP3" "JavaHome"
     StrCmp $TEMP3 "" NextJRE 0
@@ -865,10 +864,9 @@ Function GetJavaHomeCandidates
   LoopJDK:
     EnumRegKey $TEMP3 HKLM "SOFTWARE\JavaSoft\Java Development Kit" $TEMP2
     StrCmp $TEMP3 "" DoneJDK
-    # Check that it's a 1.5 or 1.6 JRE
+    # Check that it's a 1.7 JRE
     StrCpy $TEMP4 $TEMP3 3
-    StrCmp $TEMP4 "1.6" ValidateJDK 0
-    StrCmp $TEMP4 "1.5" ValidateJDK NextJDK
+    StrCmp $TEMP4 "1.7" ValidateJDK NextJDK
     ValidateJDK:
     ReadRegStr $TEMP3 HKLM "SOFTWARE\JavaSoft\Java Development Kit\$TEMP3" "JavaHome"
     StrCmp $TEMP3 "" NextJDK 0

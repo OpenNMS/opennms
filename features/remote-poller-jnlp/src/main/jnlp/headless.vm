@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<jnlp spec="1.5+" codebase="$$codebase" href="$$name">
+<jnlp spec="6.0+" codebase="$$codebase" href="$$name">
   <information>
     <title>OpenNMS Remote Poller (Headless)</title>
     <vendor>The OpenNMS Group</vendor>
@@ -13,7 +13,7 @@
       <all-permissions/>
   </security>
   <resources>
-    <j2se version="1.6+" java-vm-args="-Xmx384m" />
+    <j2se version="1.7+" java-vm-args="-Xmx384m" />
     $dependencies
   </resources>
   <application-desc main-class="$mainClass">

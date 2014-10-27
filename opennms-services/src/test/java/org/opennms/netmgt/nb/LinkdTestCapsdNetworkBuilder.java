@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -118,7 +118,70 @@ public class LinkdTestCapsdNetworkBuilder extends TestNetworkBuilder implements 
         
         m_capsd.stop();
     }
-    
+
+    @Test
+    @Ignore
+    @JUnitSnmpAgents(value={
+            @JUnitSnmpAgent(host = CISCO_C870_IP, port = 161, resource = CISCO_C870_SNMP_RESOURCE),
+    })
+    @Transactional
+    public final void testCapsdA() throws MarshalException, ValidationException, IOException {
+        m_capsd.init();
+        m_capsd.start();
+        m_capsd.scanSuspectInterface(CISCO_C870_IP);
+
+        printNode(CISCO_C870_IP,CISCO_C870_ROOT);
+        
+        m_capsd.stop();
+    }
+
+    @Test
+    @Ignore
+    @JUnitSnmpAgents(value={
+            @JUnitSnmpAgent(host = FROH_IP, port = 161, resource = FROH_SNMP_RESOURCE),
+    })
+    @Transactional
+    public final void testCapsdB() throws MarshalException, ValidationException, IOException {
+        m_capsd.init();
+        m_capsd.start();
+        m_capsd.scanSuspectInterface(FROH_IP);
+
+        printNode(FROH_IP,FROH_ROOT);
+        
+        m_capsd.stop();
+    }
+
+    @Test
+    @Ignore
+    @JUnitSnmpAgents(value={
+            @JUnitSnmpAgent(host = OEDIPUS_IP, port = 161, resource = OEDIPUS_SNMP_RESOURCE),
+    })
+    @Transactional
+    public final void testCapsdC() throws MarshalException, ValidationException, IOException {
+        m_capsd.init();
+        m_capsd.start();
+        m_capsd.scanSuspectInterface(OEDIPUS_IP);
+
+        printNode(OEDIPUS_IP,OEDIPUS_ROOT);
+        
+        m_capsd.stop();
+    }
+
+    @Test
+    @JUnitSnmpAgents(value={
+            @JUnitSnmpAgent(host = SIEGFRIE_IP, port = 161, resource = SIEGFRIE_SNMP_RESOURCE),
+    })
+    @Transactional
+    public final void testCapsdD() throws MarshalException, ValidationException, IOException {
+        m_capsd.init();
+        m_capsd.start();
+        m_capsd.scanSuspectInterface(SIEGFRIE_IP);
+
+        printNode(SIEGFRIE_IP,SIEGFRIE_ROOT);
+        
+        m_capsd.stop();
+    }
+
     protected final void printNode(String ipAddr, String prefix) {
 
         List<OnmsIpInterface> ips = m_ipInterfaceDao.findByIpAddress(ipAddr);

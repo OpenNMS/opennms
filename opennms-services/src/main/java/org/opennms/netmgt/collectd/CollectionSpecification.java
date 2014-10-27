@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -36,8 +36,10 @@ import java.util.TreeMap;
 import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionException;
 import org.opennms.netmgt.collection.api.CollectionInitializationException;
+import org.opennms.netmgt.collection.api.CollectionInstrumentation;
 import org.opennms.netmgt.collection.api.CollectionSet;
 import org.opennms.netmgt.collection.api.ServiceCollector;
+import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.config.CollectdConfigFactory;
 import org.opennms.netmgt.config.PollOutagesConfigFactory;
 import org.opennms.netmgt.config.collectd.Package;
@@ -60,9 +62,10 @@ public class CollectionSpecification {
     private static final Logger LOG = LoggerFactory.getLogger(CollectionSpecification.class);
 
     private Package m_package;
-    private String m_svcName;
-    private ServiceCollector m_collector;
+    private final String m_svcName;
+    private final ServiceCollector m_collector;
     private Map<String, Object> m_parameters;
+    private CollectionInstrumentation m_instrumentation;
 
     /**
      * <p>Constructor for CollectionSpecification.</p>
@@ -71,10 +74,11 @@ public class CollectionSpecification {
      * @param svcName a {@link java.lang.String} object.
      * @param collector a {@link org.opennms.netmgt.collection.api.ServiceCollector} object.
      */
-    public CollectionSpecification(Package wpkg, String svcName, ServiceCollector collector) {
+    public CollectionSpecification(Package wpkg, String svcName, ServiceCollector collector, CollectionInstrumentation instrumentation) {
         m_package = wpkg;
         m_svcName = svcName;
         m_collector = collector;
+        m_instrumentation = instrumentation;
         
         initializeParameters();
     }
@@ -159,8 +163,8 @@ public class CollectionSpecification {
      *
      * @return A read only Map instance
      */
-    public Map<String, Object> getReadOnlyPropertyMap() {
-        return Collections.unmodifiableMap(m_parameters);
+    public ServiceParameters getServiceParameters() {
+        return new ServiceParameters(Collections.unmodifiableMap(m_parameters));
     }
 
     private boolean isTrue(String stg) {
@@ -235,11 +239,11 @@ public class CollectionSpecification {
      * @param agent a {@link org.opennms.netmgt.collection.api.CollectionAgent} object.
      */
     public void initialize(CollectionAgent agent) throws CollectionInitializationException {
-        Collectd.instrumentation().beginCollectorInitialize(m_package.getName(), agent.getNodeId(), agent.getHostAddress(), m_svcName);
+        m_instrumentation.beginCollectorInitialize(m_package.getName(), agent.getNodeId(), agent.getHostAddress(), m_svcName);
         try {
             m_collector.initialize(agent, getPropertyMap());
         } finally {
-            Collectd.instrumentation().endCollectorInitialize(m_package.getName(), agent.getNodeId(), agent.getHostAddress(), m_svcName);
+            m_instrumentation.endCollectorInitialize(m_package.getName(), agent.getNodeId(), agent.getHostAddress(), m_svcName);
         }
     }
 
@@ -249,11 +253,11 @@ public class CollectionSpecification {
      * @param agent a {@link org.opennms.netmgt.collection.api.CollectionAgent} object.
      */
     public void release(CollectionAgent agent) {
-        Collectd.instrumentation().beginCollectorRelease(m_package.getName(), agent.getNodeId(), agent.getHostAddress(), m_svcName);
+        m_instrumentation.beginCollectorRelease(m_package.getName(), agent.getNodeId(), agent.getHostAddress(), m_svcName);
         try {
             m_collector.release(agent);
         } finally {
-            Collectd.instrumentation().endCollectorRelease(m_package.getName(), agent.getNodeId(), agent.getHostAddress(), m_svcName);
+            m_instrumentation.endCollectorRelease(m_package.getName(), agent.getNodeId(), agent.getHostAddress(), m_svcName);
         }
     }
 
@@ -265,19 +269,19 @@ public class CollectionSpecification {
      * @throws org.opennms.netmgt.collection.api.CollectionException if any.
      */
     public CollectionSet collect(CollectionAgent agent) throws CollectionException {
-        Collectd.instrumentation().beginCollectorCollect(m_package.getName(), agent.getNodeId(), agent.getHostAddress(), m_svcName);
+        m_instrumentation.beginCollectorCollect(m_package.getName(), agent.getNodeId(), agent.getHostAddress(), m_svcName);
         try {
             CollectionSet set = getCollector().collect(agent, EventIpcManagerFactory.getIpcManager(), getPropertyMap());
             // There are collector implementations that never throw an exception just return a collection failed
             if (set.getStatus() == ServiceCollector.COLLECTION_FAILED) {
-                Collectd.instrumentation().reportCollectionException(m_package.getName(), agent.getNodeId(), agent.getHostAddress(), m_svcName, new CollectionFailed(ServiceCollector.COLLECTION_FAILED));
+                m_instrumentation.reportCollectionException(m_package.getName(), agent.getNodeId(), agent.getHostAddress(), m_svcName, new CollectionFailed(ServiceCollector.COLLECTION_FAILED));
             }
             return set;
         } catch (CollectionException e) {
-            Collectd.instrumentation().reportCollectionException(m_package.getName(), agent.getNodeId(), agent.getHostAddress(), m_svcName, e);
+            m_instrumentation.reportCollectionException(m_package.getName(), agent.getNodeId(), agent.getHostAddress(), m_svcName, e);
             throw e;
         } finally {
-            Collectd.instrumentation().endCollectorCollect(m_package.getName(), agent.getNodeId(), agent.getHostAddress(), m_svcName);
+            m_instrumentation.endCollectorCollect(m_package.getName(), agent.getNodeId(), agent.getHostAddress(), m_svcName);
         }
     }
 

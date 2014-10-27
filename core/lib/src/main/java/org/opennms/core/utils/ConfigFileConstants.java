@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -39,7 +39,7 @@ import java.io.IOException;
 /**
  * This class holds all OpenNMS related config filenames
  */
-public final class ConfigFileConstants {
+public abstract class ConfigFileConstants {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(ConfigFileConstants.class);
 
@@ -132,11 +132,6 @@ public final class ConfigFileConstants {
      * The services config file
      */
     public static final int SERVICE_CONF_FILE_NAME;
-
-    /**
-     * The events archiver config file
-     */
-    public static final int EVENTS_ARCHIVER_CONFIG_FILE_NAME;
 
     /**
      * The opennms collectd config file
@@ -504,7 +499,6 @@ public final class ConfigFileConstants {
         TRAPD_CONFIG_FILE_NAME = 11;
         MANAGER_CONFIG_FILE_NAME = 12;
         SERVICE_CONF_FILE_NAME = 13;
-        EVENTS_ARCHIVER_CONFIG_FILE_NAME = 14;
 
         ADMIN_PITXML_FILE_NAME = 15;
         MAGIC_USERS_CONF_FILE_NAME = 16;
@@ -630,7 +624,6 @@ public final class ConfigFileConstants {
         FILE_ID_TO_NAME[TRAPD_CONFIG_FILE_NAME] = "trapd-configuration.xml";
         FILE_ID_TO_NAME[MANAGER_CONFIG_FILE_NAME] = "manager-configuration.xml";
         FILE_ID_TO_NAME[SERVICE_CONF_FILE_NAME] = "service-configuration.xml";
-        FILE_ID_TO_NAME[EVENTS_ARCHIVER_CONFIG_FILE_NAME] = "events-archiver-configuration.xml";
 
         FILE_ID_TO_NAME[ADMIN_PITXML_FILE_NAME] = "pitXML.xml";
         FILE_ID_TO_NAME[MAGIC_USERS_CONF_FILE_NAME] = "magic-users.properties";

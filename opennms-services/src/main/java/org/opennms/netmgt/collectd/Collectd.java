@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -50,6 +50,7 @@ import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.capsd.EventUtils;
 import org.opennms.netmgt.capsd.InsufficientInformationException;
 import org.opennms.netmgt.collection.api.CollectionInitializationException;
+import org.opennms.netmgt.collection.api.CollectionInstrumentation;
 import org.opennms.netmgt.collection.api.ServiceCollector;
 import org.opennms.netmgt.config.CollectdConfigFactory;
 import org.opennms.netmgt.config.DataCollectionConfigFactory;
@@ -97,18 +98,18 @@ public class Collectd extends AbstractServiceDaemon implements
     
     private static final Logger LOG = LoggerFactory.getLogger(Collectd.class);
     
-    private static CollectdInstrumentation s_instrumentation = null;
+    private static CollectionInstrumentation s_instrumentation = null;
     
     /**
      * <p>instrumentation</p>
      *
-     * @return a {@link org.opennms.netmgt.collectd.CollectdInstrumentation} object.
+     * @return a {@link org.opennms.netmgt.collection.api.CollectionInstrumentation} object.
      */
-    public static CollectdInstrumentation instrumentation() {
+    public static CollectionInstrumentation instrumentation() {
         if (s_instrumentation == null) {
             String className = System.getProperty("org.opennms.collectd.instrumentationClass", DefaultCollectdInstrumentation.class.getName());
             try { 
-                s_instrumentation = (CollectdInstrumentation) ClassUtils.forName(className, Thread.currentThread().getContextClassLoader()).newInstance();
+                s_instrumentation = (CollectionInstrumentation) ClassUtils.forName(className, Thread.currentThread().getContextClassLoader()).newInstance();
             } catch (Throwable e) {
                 s_instrumentation = new DefaultCollectdInstrumentation();
             }
@@ -120,7 +121,7 @@ public class Collectd extends AbstractServiceDaemon implements
     /**
      * Log4j category
      */
-    final static String LOG4J_CATEGORY = "collectd";
+    static final String LOG4J_CATEGORY = "collectd";
     
     /**
      * Instantiated service collectors specified in config file
@@ -459,8 +460,7 @@ public class Collectd extends AbstractServiceDaemon implements
 
 	private OnmsIpInterface getIpInterface(int nodeId, String ipAddress) {
 		OnmsNode node = m_nodeDao.load(nodeId);
-        OnmsIpInterface iface = node.getIpInterfaceByIpAddress(ipAddress);
-		return iface;
+		return node.getIpInterfaceByIpAddress(ipAddress);
 	}
 
     private void scheduleInterface(OnmsIpInterface iface, String svcName, boolean existing) {
@@ -508,9 +508,14 @@ public class Collectd extends AbstractServiceDaemon implements
                  * interface, service and package pairing
                  */
 
-                cSvc = new CollectableService(iface, m_ifaceDao, spec, getScheduler(),
-                                              m_schedulingCompletedFlag,
-                                              m_transTemplate.getTransactionManager());
+                cSvc = new CollectableService(
+                    iface, 
+                    m_ifaceDao, 
+                    spec, 
+                    getScheduler(),
+                    m_schedulingCompletedFlag,
+                    m_transTemplate.getTransactionManager()
+                );
 
                 // Add new collectable service to the collectable service list.
                 m_collectableServices.add(cSvc);
@@ -581,7 +586,7 @@ public class Collectd extends AbstractServiceDaemon implements
 
             LOG.debug("getSpecificationsForInterface: address/service: {}/{} scheduled, interface does belong to package: {}", iface, svcName, wpkg.getName());
             
-            matchingPkgs.add(new CollectionSpecification(wpkg, svcName, getServiceCollector(svcName)));
+            matchingPkgs.add(new CollectionSpecification(wpkg, svcName, getServiceCollector(svcName), instrumentation()));
         }
         return matchingPkgs;
     }
@@ -620,7 +625,8 @@ public class Collectd extends AbstractServiceDaemon implements
         synchronized (m_collectableServices) {
         	for (CollectableService cSvc : m_collectableServices) {
                 InetAddress addr = (InetAddress) cSvc.getAddress();
-                if (str(addr).equals(ipAddress)
+                if (cSvc.getNodeId() == iface.getNode().getId()
+                        && str(addr).equals(ipAddress)
                         && cSvc.getPackageName().equals(pkgName)
                         && cSvc.getServiceName().equals(svcName)) {
                     isScheduled = true;
@@ -778,7 +784,7 @@ public class Collectd extends AbstractServiceDaemon implements
             
             LOG.debug("configureSNMPHandler: processing configure SNMP event: {}", info);
             SnmpPeerFactory.getInstance().define(info);
-            SnmpPeerFactory.saveCurrent();
+            SnmpPeerFactory.getInstance().saveCurrent();
             LOG.debug("configureSNMPHandler: process complete. {}", info);
             
         } catch (Throwable e) {
@@ -1286,7 +1292,7 @@ public class Collectd extends AbstractServiceDaemon implements
                 final InetAddress addr = (InetAddress) cSvc.getAddress();
                 final String addrString = str(addr);
                 LOG.debug("Comparing CollectableService ip address = {} and event ip interface = {}", addrString, ipAddress);
-                if (addrString != null && addrString.equals(ipAddress)) {
+                if (addrString != null && addrString.equals(ipAddress) && cSvc.getNodeId() == nodeid.intValue()) {
                     synchronized (cSvc) {
                     	if (iface == null) {
                             iface = getIpInterface(nodeid.intValue(), ipAddress);
@@ -1496,4 +1502,9 @@ public class Collectd extends AbstractServiceDaemon implements
     public static String getLoggingCategory() {
     	return LOG4J_CATEGORY;
     }
+
+    public long getCollectableServiceCount() {
+        return m_collectableServices.size();
+    }
+
 }

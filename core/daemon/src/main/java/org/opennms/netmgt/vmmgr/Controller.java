@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -29,7 +29,6 @@
 package org.opennms.netmgt.vmmgr;
 
 import java.io.InputStream;
-import java.lang.reflect.UndeclaredThrowableException;
 import java.net.Authenticator;
 import java.net.ConnectException;
 import java.net.HttpURLConnection;
@@ -278,20 +277,22 @@ public class Controller {
             InputStream in = connection.getInputStream();
 
             int ch;
+            StringBuffer line = new StringBuffer();
             while ((ch = in.read()) != -1) {
-                System.out.write((char) ch);
+                line.append((char)ch);
             }
+            LOG.debug(line.toString());
             in.close();
             System.out.println("");
             System.out.flush();
         } catch (final ConnectException e) {
-        	LOG.error("error when attempting to fetch URL \"{}\"", urlString, e);
+            LOG.error("error when attempting to fetch URL \"{}\"", urlString, e);
             if (isVerbose()) {
                 System.out.println(e.getMessage() + " when attempting to fetch URL \"" + urlString + "\"");
             }
             return 1;
         } catch (final Throwable t) {
-        	LOG.error("error invoking {} operation", operation, t);
+            LOG.error("error invoking {} operation", operation, t);
             System.out.println("error invoking " + operation + " operation");
             return 1;
         }
@@ -372,17 +373,8 @@ public class Controller {
         };
     }
 
-    private ServiceConfigFactory getServiceConfigFactory() {
-        try {
-            ServiceConfigFactory.init();
-            return ServiceConfigFactory.getInstance();
-        } catch (Throwable t) {
-            throw new UndeclaredThrowableException(t);
-        }
-    }
-
     private Service getConfiguredService(String serviceName) {
-        ServiceConfigFactory sfact = getServiceConfigFactory();
+        ServiceConfigFactory sfact = new ServiceConfigFactory();
 
         Service[] services = sfact.getServices();
 

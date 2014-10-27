@@ -2,22 +2,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2005-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -41,7 +41,7 @@
         org.opennms.core.utils.DBUtils,
         org.opennms.core.utils.WebSecurityUtils,
         org.opennms.web.element.*,
-        org.opennms.netmgt.poller.PathOutageFactory,
+        org.opennms.netmgt.poller.PathOutageManagerJdbcImpl,
         org.opennms.netmgt.model.OnmsNode,
         org.opennms.netmgt.EventConstants,
         org.opennms.netmgt.xml.event.Event,
@@ -130,76 +130,13 @@
 
     private static final String GET_NODES_IN_PATH = "SELECT DISTINCT pathoutage.nodeid FROM pathoutage, ipinterface WHERE pathoutage.criticalpathip=? AND pathoutage.nodeid=ipinterface.nodeid AND ipinterface.ismanaged!='D' ORDER BY nodeid";
 
-    private static Set<Integer> getAllDependencyNodesByCriticalPath(String criticalpathip) throws SQLException {
-	    Set<Integer> allPathNodes = getDependencyNodesByCriticalPath(criticalpathip);
-	    Set<Integer> currentNodes=allPathNodes;
-	    while (currentNodes.size() > 0) {
-	        Set<Integer> nextIterationNodes=new TreeSet<Integer>();
-	        for (Integer pathnodeid : currentNodes ) {
-	            nextIterationNodes.addAll(getDependencyNodesByNodeid(pathnodeid));
-	        }
-	        allPathNodes.addAll(nextIterationNodes);
-	        currentNodes=nextIterationNodes;
-	    }
-	    return allPathNodes;        
-    }
-    
-
     private static Set<Integer> getDependencyNodesByCriticalPath(String criticalpathip) throws SQLException {
-	    final Connection conn = DataSourceFactory.getInstance().getConnection();
-	    final DBUtils d = new DBUtils(PathOutageFactory.class, conn);
-	    Set<Integer> pathNodes = new TreeSet<Integer>();
-        try {
-            PreparedStatement stmt = conn.prepareStatement(GET_NODES_IN_PATH);
-            d.watch(stmt);
-            stmt.setString(1, criticalpathip);
-
-            ResultSet rs = stmt.executeQuery();
-            d.watch(rs);
-            while (rs.next()) {
-                pathNodes.add(rs.getInt(1));
-            }
-        } finally {
-            d.cleanUp();
-        }
-	    return pathNodes;
+	    return PathOutageManagerJdbcImpl.getInstance().getDependencyNodesByCriticalPath(criticalpathip);
         
     }
-    
-	private static Set<Integer> getAllDependencyNodesByNodeid(int nodeid) throws SQLException {
-	    Set<Integer> allPathNodes = getDependencyNodesByNodeid(nodeid);
-	    Set<Integer> currentNodes=allPathNodes;
-	    while (currentNodes.size() > 0) {
-	        Set<Integer> nextIterationNodes=new TreeSet<Integer>();
-	        for (Integer pathnodeid : currentNodes ) {
-	            nextIterationNodes.addAll(getDependencyNodesByNodeid(pathnodeid));
-	        }
-	        allPathNodes.addAll(nextIterationNodes);
-	        currentNodes=nextIterationNodes;
-	    }
-	    return allPathNodes;
-	}
 	
-	private static Set<Integer> getDependencyNodesByNodeid(int nodeid) throws SQLException {
-	    final Connection conn = DataSourceFactory.getInstance().getConnection();
-	    final DBUtils d = new DBUtils(PathOutageFactory.class, conn);
-
-	    Set<Integer> pathNodes = new TreeSet<Integer>();
-        try {
-            PreparedStatement stmt = conn.prepareStatement(GET_DEPENDENCY_NODES_BY_NODEID);
-            d.watch(stmt);
-            stmt.setInt(1, nodeid);
-
-            ResultSet rs = stmt.executeQuery();
-            d.watch(rs);
-            while (rs.next()) {
-                pathNodes.add(rs.getInt(1));
-            }
-        } finally {
-            d.cleanUp();
-        }
-	    
-	    return pathNodes;
+	private static Set<Integer> getDependencyNodesByNodeId(int nodeid) throws SQLException {
+	    return PathOutageManagerJdbcImpl.getInstance().getDependencyNodesByNodeId(nodeid);
 	}
 	
 	public void sendOutagesChangedEvent() throws ServletException {
@@ -520,7 +457,7 @@ Could not find an outage to edit because no outage name parameter was specified 
 					int newNodeId = WebSecurityUtils.safeParseInt(newNode);
 					addNode(theOutage, newNodeId);
 					if (request.getParameter("addPathOutageNodeRadio") != null) {
-						for (Integer pathOutageNodeid: getAllDependencyNodesByNodeid(newNodeId)) {
+						for (Integer pathOutageNodeid: getDependencyNodesByNodeId(newNodeId)) {
 						    addNode(theOutage,pathOutageNodeid.intValue());
 						}
 					}
@@ -535,7 +472,7 @@ Could not find an outage to edit because no outage name parameter was specified 
 					newInterface.setAddress(newIface);
 					addInterface(theOutage, newInterface);
 					if (request.getParameter("addPathOutageInterfaceRadio") != null) {
-						for (Integer pathOutageNodeid: getAllDependencyNodesByCriticalPath(newIface)) {
+						for (Integer pathOutageNodeid: getDependencyNodesByCriticalPath(newIface)) {
 						    addNode(theOutage,pathOutageNodeid.intValue());
 						}
 					}

@@ -25,7 +25,6 @@
         <entry key="discovery-configuration.xml" value="discoveryConfigFactory"/>
         <entry key="eventconf.xml" value="eventConfDao"/>
         <entry key="eventd-configuration.xml" value="eventdConfigFactory"/>
-        <entry key="events-archiver-configuration.xml" value="eventsArchiverConfigFactory"/>
         <entry key="exclude-ueis.properties" value="excludeUeisProperties"/>
         <entry key="groups.xml" value="groupFactory"/>
         <entry key="http-datacollection-config.xml" value="httpCollectionConfigFactory"/>
@@ -67,7 +66,6 @@
         <entry key="scriptd-configuration.xml" value="scriptdConfigFactory"/>
         <entry key="service-configuration.xml" value="serviceConfigFactory"/>
         <entry key="site-status-views.xml" value="siteStatusViewConfigDao"/>
-        <entry key="smsPhonebook.properties" value="smsPhonebookCheck"/>
         <entry key="snmp-adhoc-graph.properties" value="snmpAdhocGraph"/>
         <!-- <entry key="snmp-asset-adapter-configuration.xml" value="snmpAssetAdapterConfigFactory"/> --><!-- Not part of standard build -->
         <entry key="snmp-config.xml" value="snmpConfigDao"/>
@@ -199,17 +197,9 @@ org.opennms.netmgt.filter.FilterParseException: SQL Exception occurred getting I
     <property name="configResource" value="file:${opennms.home}/etc/eventconf.xml"/>
   </bean>
   
-  <bean id="eventdConfigFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-    <property name="staticMethod"><value>org.opennms.netmgt.config.EventdConfigFactory.init</value></property>
-  </bean>
 
-  <bean id="eventdConfigFactory" class="org.opennms.netmgt.config.EventdConfigFactory" depends-on="eventdConfigFactory-init" factory-method="getInstance"/>
-  
-  <bean id="eventsArchiverConfigFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-    <property name="staticMethod"><value>org.opennms.netmgt.config.EventsArchiverConfigFactory.init</value></property>
-  </bean>
 
-  <bean id="eventsArchiverConfigFactory" class="org.opennms.netmgt.config.EventsArchiverConfigFactory" depends-on="eventsArchiverConfigFactory-init" factory-method="getInstance"/>
+  <bean id="eventdConfigFactory" class="org.opennms.netmgt.config.EventdConfigManager"/>
   
   <bean id="excludeUeisProperties" class="org.opennms.netmgt.config.tester.support.ExcludeUeisProperties"/>
   
@@ -471,27 +461,9 @@ org.opennms.netmgt.filter.FilterParseException: SQL Exception occurred getting I
 
   <bean id="scriptdConfigFactory" class="org.opennms.netmgt.config.ScriptdConfigFactory" depends-on="scriptdConfigFactory-init" factory-method="getInstance"/>
 
-  <bean id="serviceConfigFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-    <property name="staticMethod"><value>org.opennms.netmgt.config.ServiceConfigFactory.init</value></property>
-  </bean>
-
-  <bean id="serviceConfigFactory" class="org.opennms.netmgt.config.ServiceConfigFactory" depends-on="serviceConfigFactory-init" factory-method="getInstance"/>
+  <bean id="serviceConfigFactory" class="org.opennms.netmgt.config.ServiceConfigFactory" />
 
   <bean id="siteStatusViewConfigDao" class="org.opennms.netmgt.dao.castor.DefaultSiteStatusViewConfigDao"/>
-  
-  <bean id="smsPhonebook" class="org.opennms.sms.phonebook.PropertyPhonebook">
-    <constructor-arg><value>${opennms.home}/etc/smsPhonebook.properties</value></constructor-arg>
-  </bean>
-
-  <bean id="smsPhonebookCheck" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-	<property name="targetObject"><ref local="smsPhonebook"/></property>
-    <property name="targetMethod"><value>getTargetForAddress</value></property>
-    <property name="arguments">
-      <list>
-        <value>127.0.0.1</value>
-      </list>
-    </property>
-  </bean>
   
   <bean id="snmpAssetAdapterConfigFactory" class="org.opennms.netmgt.config.SnmpAssetAdapterConfigFactory"/>
 

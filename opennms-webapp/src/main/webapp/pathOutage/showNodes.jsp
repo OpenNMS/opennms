@@ -2,22 +2,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -34,7 +34,7 @@
 			java.util.List,
 			org.opennms.core.db.DataSourceFactory,
 			org.opennms.core.utils.DBUtils,
-			org.opennms.netmgt.poller.PathOutageFactory
+			org.opennms.netmgt.poller.PathOutageManagerJdbcImpl
 " %>
 
 <jsp:include page="/includes/header.jsp" flush="false">
@@ -47,8 +47,8 @@
 <% 
       String critIp = request.getParameter("critIp");
       String critSvc = request.getParameter("critSvc");
-      String[] pthData = PathOutageFactory.getCriticalPathData(critIp, critSvc);
-      List<String> nodeList = PathOutageFactory.getNodesInPath(critIp, critSvc); %>
+      String[] pthData = PathOutageManagerJdbcImpl.getInstance().getCriticalPathData(critIp, critSvc);
+      List<String> nodeList = PathOutageManagerJdbcImpl.getInstance().getNodesInPath(critIp, critSvc); %>
   
       <h3>Path Outage Node List</h3>
       <table>
@@ -68,10 +68,10 @@
           </tr>
 
 <%        final Connection conn = DataSourceFactory.getInstance().getConnection();
-          final DBUtils d = new DBUtils(PathOutageFactory.class, conn);
+          final DBUtils d = new DBUtils(PathOutageManagerJdbcImpl.class, conn);
           try {
               for (String nodeid : nodeList) {
-                  String labelColor[] = PathOutageFactory.getLabelAndStatus(nodeid, conn); %>
+                  String labelColor[] = PathOutageManagerJdbcImpl.getInstance().getLabelAndStatus(nodeid, conn); %>
                   <tr class="CellStatus">
                   <td><a href="element/node.jsp?node=<%= nodeid %>"><%= labelColor[0] %></a></td>
                   <td class="<%= labelColor[1] %>"><%= labelColor[2] %></td>

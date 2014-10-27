@@ -1,0 +1,9 @@
+<xml-groups>
+    <xml-group name="jvm-memory" resource-type="node"
+        resource-xpath="/MBean" >
+        <xml-object name="FreeMemory" type="GAUGE" xpath="Attribute[@name='FreePhysicalMemorySize']/@value" />
+        <xml-object name="TotalMemory" type="GAUGE" xpath="Attribute[@name='TotalPhysicalMemorySize']/@value" />
+        <xml-object name="FreeSwapSpace" type="GAUGE" xpath="Attribute[@name='FreeSwapSpaceSize']/@value" />
+        <xml-object name="TotalSwapSpace" type="GAUGE" xpath="Attribute[@name='TotalSwapSpaceSize']/@value" />
+    </xml-group>
+</xml-groups>

@@ -116,6 +116,14 @@ div.v-table-header-wrap {
 	stroke: #00ffff;
 }
 
+.edge.ncs.down{
+    stroke:#CC0000;
+}
+
+.edge.ncs.up{
+    stroke:#336600;
+}
+
 .map-controls {
 	background-color: #ffffff;
 	border-left: 1px solid #dddddd;
