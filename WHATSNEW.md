@@ -13,12 +13,14 @@ It is identical to the GPLv3 OpenNMS was previously licensed under, with the add
 caveat that users who interact with OpenNMS software over a network are entitled to receive
 the source.
 
-Java 7
-------
+Java 7 and 8
+------------
 
-OpenNMS 14 requires Java 7 to run.  Because of some code generation issues with Java 8 that
-are still under investigation, parts of OpenNMS do not yet run under Java 8.  We are looking
-to resolve this in a future update.
+OpenNMS 14 drops support for Java 6, which has been EOL'd for some time now.  OpenNMS 14
+requires Java 7 or higher to run.
+
+Note that *building* under Java 8 still has some known issues.  It is strongly recommended
+that you build and run under Java 7 until Java 8 has had enough time to be well-tested.
 
 Logging System Upgrade
 ----------------------
@@ -33,7 +35,7 @@ Core Updates
 As always, many updates and cleanups have been made to the OpenNMS core, through refactoring,
 addition of unit tests, and other code modernization.
 
-* The embedded Karaf OSGi container has been updated to 2.3.4.
+* The embedded Karaf OSGi container has been updated to 2.4.0.
 * Many core OpenNMS modules are now capable of being loaded inside an OSGi container.
 * A large number of legacy Castor-based classes have been updated to use JAXB instead.
 * SNMP4J has been updated to version 2, which provides improved handling of SNMPv3, in
@@ -155,6 +157,8 @@ Web UI and APIs
   a group. (ie, `/opennms/rest/groups/users/` and `/opennms/rest/groups/categories/`)
 * The node ReST service now supports manually adding and removing hardware inventory data.
   For details, see [the Hardware Inventory wiki page].
+* The snmp ReST service now supports SNMP v3 configurations.
+* The Snmp Configuration by IP UI in the admin page has been improved and now supports SNMP v3 configurations.
 
 Dashboard
 ---------

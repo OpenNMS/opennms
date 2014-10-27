@@ -31,17 +31,17 @@ package org.opennms.features.poller.remote.gwt.client;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Window;
 
 import de.novanic.eventservice.client.event.RemoteEventService;
 import de.novanic.eventservice.client.event.RemoteEventServiceFactory;
 
 public class Main implements EntryPoint {
-    
-    private static class DeferredCommandExecutor implements CommandExecutor{
+
+    private static class DeferredCommandExecutor implements CommandExecutor {
 
         @Override
         public void schedule(Scheduler.RepeatingCommand command) {
@@ -49,12 +49,17 @@ public class Main implements EntryPoint {
         }
 
         @Override
-        public void schedule(Command command) {
-            DeferredCommand.addCommand(command);
+        public void schedule(final Command command) {
+            Scheduler.get().scheduleDeferred(new ScheduledCommand() {
+                @Override
+                public void execute() {
+                    command.execute();
+                }
+            });
         }
-        
+
     }
-    
+
     private HandlerManager m_eventBus;
 
     @Override
@@ -62,11 +67,10 @@ public class Main implements EntryPoint {
         m_eventBus = new HandlerManager(null);
         Application application = new Application(getEventBus());
         MapPanel mapPanel = createMap(application);
-        
+
         LocationStatusServiceAsync remoteService = GWT.create(LocationStatusService.class);
         RemoteEventService remoteEventService = RemoteEventServiceFactory.getInstance().getRemoteEventService();
         application.initialize(new DefaultApplicationView(application, getEventBus(), mapPanel), remoteService, remoteEventService, new DeferredCommandExecutor());
-
     }
 
     private MapPanel createMap(Application application) {

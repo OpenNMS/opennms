@@ -41,14 +41,18 @@
 <div class="boxWrapper">
 <ul class="plain o-box">
 <c:forEach var="entry" items="${entries.entries}">
-	<c:choose>
-		<c:when test="${empty entry.url}">
-			<li>${entry.name}</li>
-		</c:when>
-		<c:otherwise>
-			<li><a href="${entry.url}">${entry.name}</a></li>
-		</c:otherwise>
-	</c:choose>
+	<c:if test="${entry.value.display}">
+        <li>
+          <c:choose>
+            <c:when test="${entry.value.displayLink}">
+              <a href="${entry.key.url}">${entry.key.name}</a>
+            </c:when>
+            <c:otherwise>
+              ${entry.key.name}
+            </c:otherwise>
+          </c:choose>
+        </li>
+      </c:if>
 </c:forEach>
 </ul>
 </div>

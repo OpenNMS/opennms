@@ -61,10 +61,9 @@ public class UndefinedDashlet extends AbstractDashlet {
             @Override
             public Component getComponent() {
                 VerticalLayout verticalLayout = new VerticalLayout();
-                Label label = new Label("The defined dashlet could not be found!");
+                Label label = new Label("The specified dashlet could not be found!");
                 verticalLayout.addComponent(label);
                 verticalLayout.setComponentAlignment(label, Alignment.MIDDLE_CENTER);
-                verticalLayout.setCaption(getName());
 
                 return verticalLayout;
             }

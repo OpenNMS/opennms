@@ -34,18 +34,20 @@ import com.vmware.vim25.VirtualMachinePowerState;
 import com.vmware.vim25.VirtualMachineRuntimeInfo;
 import com.vmware.vim25.mo.HostSystem;
 import com.vmware.vim25.mo.VirtualMachine;
+
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.utils.TimeoutTracker;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.poller.Distributable;
+import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.protocols.vmware.VmwareViJavaAccess;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -59,6 +61,7 @@ import java.util.Map;
  *
  * @author Christian Pape <Christian.Pape@informatik.hs-fulda.de>
  */
+@Distributable(DistributionContext.DAEMON)
 public class VmwareMonitor extends AbstractServiceMonitor {
 
     /**
@@ -82,20 +85,6 @@ public class VmwareMonitor extends AbstractServiceMonitor {
     private static final int DEFAULT_TIMEOUT = 3000;
 
     /**
-     * Called by the poller framework when an interface is being added to the scheduler.
-     *
-     * @param svc a {@link org.opennms.netmgt.poller.MonitoredService} instance
-     */
-    @Override
-    public void initialize(MonitoredService svc) {
-        if (m_nodeDao == null) {
-            m_nodeDao = (NodeDao) BeanUtils.getFactory("commonContext", ClassPathXmlApplicationContext.class).getBean("nodeDao");
-        }
-
-        super.initialize(svc);
-    }
-
-    /**
      * This method queries the Vmware vCenter server for sensor data.
      *
      * @param svc        the monitored service
@@ -104,6 +93,16 @@ public class VmwareMonitor extends AbstractServiceMonitor {
      */
     @Override
     public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
+
+        if (m_nodeDao == null) {
+            m_nodeDao = BeanUtils.getBean("daoContext", "nodeDao", NodeDao.class);
+
+            if (m_nodeDao == null) {
+                logger.error("Node dao should be a non-null value.");
+                return PollStatus.unknown();
+            }
+        }
+
         OnmsNode onmsNode = m_nodeDao.get(svc.getNodeId());
 
         // retrieve the assets and

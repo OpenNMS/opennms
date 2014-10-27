@@ -1,10 +1,10 @@
 package org.opennms.netmgt.snmp;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-
 import org.junit.Assert;
 import org.junit.Test;
+
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 public class SnmpAgentConfigTest {
 
@@ -44,6 +44,12 @@ public class SnmpAgentConfigTest {
         Assert.assertEquals(config.hashCode(), config2.hashCode());
 
         config.setVersion(3);
+        config2 = SnmpAgentConfig.parseProtocolConfigurationString(config.toProtocolConfigString());
+        Assert.assertEquals(config, config2);
+        Assert.assertEquals(config.hashCode(), config2.hashCode());
+
+        config.setAuthPassPhrase(null);
+        config.setPrivPassPhrase(null);
         config2 = SnmpAgentConfig.parseProtocolConfigurationString(config.toProtocolConfigString());
         Assert.assertEquals(config, config2);
         Assert.assertEquals(config.hashCode(), config2.hashCode());

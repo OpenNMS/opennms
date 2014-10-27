@@ -78,8 +78,9 @@ public class PollableNode extends PollableContainer {
                 while (m_owner != null) {
                     try { wait(endTime-now);} catch (InterruptedException e) { throw new ThreadInterrupted("Lock for "+PollableNode.this+" is unavailable", e);}
                     now = System.currentTimeMillis();
-                    if (now >= endTime)
+                    if (m_owner != null && now >= endTime) {
                         throw new LockUnavailable("Unable to obtain lock for "+PollableNode.this+" before timeout");
+                    }
                 }
                 m_owner = Thread.currentThread();
                 LOG.debug("Obtained lock for {}", PollableNode.this);
