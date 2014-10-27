@@ -952,7 +952,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
         Criteria[] crits = graphContainer.getCriteria();
         for(Criteria criteria : crits){
             try{
-                CategoryHopCriteria catCrit = (CategoryHopCriteria) criteria;
+                VertexHopGraphProvider.VertexHopCriteria catCrit = (VertexHopGraphProvider.VertexHopCriteria) criteria;
                 count += catCrit.getVertices().size();
             } catch(ClassCastException e){}
 
