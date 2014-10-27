@@ -1,0 +1,20 @@
+// Global settings
+:ascii-ids:
+:encoding: UTF-8
+:lang: en
+:icons: font
+:toc: left
+:toclevels: 8
+:numbered:
+
+= Documentation Guide
+OpenNMS Release v{opennms-version}
+The OpenNMS Group, Inc. 220 Chatham Business Drive, Suite 220 Pittsboro, NC 27312
+
+// Include your documentation sections here
+include::text/introduction.adoc[]
+include::text/git-workflow.adoc[]
+include::text/writing.adoc[]
+include::text/images.adoc[]
+include::text/include-source.adoc[]
+include::text/cheat-sheets.adoc[]
