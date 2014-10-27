@@ -231,6 +231,18 @@ try {
   </tr>
 </table>
 
+<h3>Artwork Attribution</h3>
+
+<table>
+  <tr>
+    <td style="border-right: none;">
+      <div>
+        Icons in node list page made by Freepik from <a href="http://www.flaticon.com" title="Flaticon">www.flaticon.com</a> and licensed by <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0">CC BY 3.0</a>
+      </div>
+    </td>
+  </tr>
+</table>
+
 <jsp:include page="/includes/bookmarkAll.jsp" flush="false" >
   <jsp:param name="adminrole" value="<%= role %>" />
 </jsp:include>
