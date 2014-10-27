@@ -162,20 +162,20 @@
 
     <feature name="http" description="Implementation of the OSGi HTTP service" version="2.4.0" resolver="(obr)">
         <!-- <feature version="3.1.2">pax-http</feature> -->
-        <feature version="14.0.0.ONMS">opennms-bridge-http</feature>
+        <feature version="${opennms.osgi.version}">opennms-bridge-http</feature>
     </feature>
 
     <feature name="http-whiteboard" description="Provide HTTP Whiteboard pattern support" version="2.4.0" resolver="(obr)">
         <!-- <feature version="3.1.2">pax-http-whiteboard</feature> -->
-        <feature version="14.0.0.ONMS">opennms-http-whiteboard</feature>
+        <feature version="${opennms.osgi.version}">opennms-http-whiteboard</feature>
     </feature>
 
     <!-- Replace the Pax Web HTTP service with our servlet bridge -->
-    <feature name="opennms-bridge-http" description="HTTP feature using custom servlet bridge" version="14.0.0.ONMS" resolver="(obr)">
+    <feature name="opennms-bridge-http" description="HTTP feature using custom servlet bridge" version="${opennms.osgi.version}" resolver="(obr)">
         <bundle>mvn:org.opennms.container/bridge/${project.version}</bundle>
     </feature>
 
-    <feature name="opennms-http-whiteboard" description="Provide HTTP Whiteboard pattern support" version="14.0.0.ONMS" resolver="(obr)">
+    <feature name="opennms-http-whiteboard" description="Provide HTTP Whiteboard pattern support" version="${opennms.osgi.version}" resolver="(obr)">
         <feature>opennms-bridge-http</feature>
 
         <!-- Install pax-web-extender-whiteboard and all of its dependencies except Jetty -->

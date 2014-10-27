@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 
-<!--  This is the default state of services for 14.0.0 -->
+<!--  This is the default state of services as of 14.0.0 -->
 <service-configuration xmlns="http://xmlns.opennms.org/xsd/config/vmmgr">
   <service>
     <name>:Name=XSLTProcessor</name>
