@@ -43,7 +43,7 @@ public class NodeListPageTest extends OpenNMSSeleniumTestCase {
 
     @Test
     public void a_testAllTextIsPresent() throws Exception {
-        assertTrue("Could not find header '<h3>Nodes</h3>'", selenium.getHtmlSource().contains("<h3>Nodes</h3>"));
+        assertTrue("Could not find header opener '<h3><span>Nodes</span>'", selenium.getHtmlSource().contains("<h3><span>Nodes</span>"));
     }
     
     @Test
