@@ -34,19 +34,6 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="element" tagdir="/WEB-INF/tags/element" %>
 
-<script type="text/javascript">
-function toggleClassDisplay(clazz, displayA, displayB) {
-	var targetElems = document.getElementsByClassName(clazz);
-	Array.prototype.filter.call(targetElems, function(e) {
-		if (e.style.display == displayA) {
-			e.style.display = displayB;
-		} else {
-			e.style.display = displayA;
-		}
-	});
-}
-</script>
-
 <c:if test="${model.nodeCount == 1 && command.snmpParm == null && command.maclike == null}">
   <jsp:forward page="/element/node.jsp?node=${model.nodes[0].node.id}"/>
 </c:if>
@@ -58,6 +45,20 @@ function toggleClassDisplay(clazz, displayA, displayB) {
   <jsp:param name="breadcrumb" value="<a href ='element/index.jsp'>Search</a>"/>
   <jsp:param name="breadcrumb" value="Node List"/>
 </jsp:include>
+
+<!-- NMS-7099: Add custom javascripts AFTER the header was included -->
+<script type="text/javascript">
+    function toggleClassDisplay(clazz, displayA, displayB) {
+        var targetElems = document.getElementsByClassName(clazz);
+        Array.prototype.filter.call(targetElems, function(e) {
+            if (e.style.display == displayA) {
+                e.style.display = displayB;
+            } else {
+                e.style.display = displayA;
+            }
+        });
+    }
+</script>
 
 <c:choose>
   <c:when test="${command.listInterfaces}">
