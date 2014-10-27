@@ -74,6 +74,7 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
         public void backgroundClicked() {
             m_blockSelectionEvents = true;
             m_graphContainer.getSelectionManager().deselectAll();
+            updateMenuItems();
             m_blockSelectionEvents = false;
         }
 
