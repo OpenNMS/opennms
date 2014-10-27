@@ -57,7 +57,7 @@ public class JsonCollectorSolarisZonesTest extends AbstractJsonCollectorTest {
     public String getJSONConfigFileName() {
         return "src/test/resources/solaris-zones-datacollection-config.xml";
     }
-    
+
     /* (non-Javadoc)
      * @see org.opennms.protocols.xml.collector.AbcstractXmlCollectorTest#getXmlSampleFileName()
      */
@@ -106,6 +106,16 @@ public class JsonCollectorSolarisZonesTest extends AbstractJsonCollectorTest {
         File file = new File("target/snmp/1/solarisZoneStats/global/solaris-zone-stats.jrb");
         String[] dsnames = new String[] { "nproc", "nlwp", "pr_size", "pr_rssize", "pctmem", "pctcpu" };
         Double[] dsvalues = new Double[] { 245.0, 1455.0, 2646864.0, 1851072.0, 0.7, 0.24 };
+        validateJrb(file, dsnames, dsvalues);
+        // Checking data from Zone 1
+        file = new File("target/snmp/1/solarisZoneStats/zone1/solaris-zone-stats.jrb");
+        dsnames = new String[] { "nproc", "nlwp", "pr_size", "pr_rssize", "pctmem", "pctcpu" };
+        dsvalues = new Double[] { 24.0, 328.0, 1671128.0, 1193240.0, 0.4, 0.07 };
+        validateJrb(file, dsnames, dsvalues);
+        // Checking data from Zone 2
+        file = new File("target/snmp/1/solarisZoneStats/zone2/solaris-zone-stats.jrb");
+        dsnames = new String[] { "nproc", "nlwp", "pr_size", "pr_rssize", "pctmem", "pctcpu" };
+        dsvalues = new Double[] { 124.0, 1328.0, 1571128.0, 193240.0, 0.5, 0.06 };
         validateJrb(file, dsnames, dsvalues);
     }
 

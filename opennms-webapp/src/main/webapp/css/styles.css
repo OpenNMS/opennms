@@ -786,6 +786,34 @@ div .alert-warning {
 }
 
 /* --------------------------------------------------
+    :: Styles for DBIDs, foreign-source, and foreign-ID
+    :: spans in the node list page
+    -------------------------------------------------- */
+
+span.NLdbid, span.NLfs, span.NLfid {
+	display: none;
+	background-repeat: no-repeat;
+	padding-left: 17px;
+	padding-right: 4px;
+}
+
+span.NLdbid {
+	background-image: url(../images/nodelist/dbid-16.png);
+}
+
+span.NLfs {
+	background-image: url(../images/nodelist/foreignsource-16.png);
+}
+
+span.NLfid {
+	background-image: url(../images/nodelist/foreignid-16.png);
+}
+
+div.NLnode:hover span.NLdbid, div.NLnode:hover span.NLfs, div.NLnode:hover span.NLfid {
+	display: inline;
+}
+
+/* --------------------------------------------------
     :: Deprecated Styles, Please do not uncomment, these
        will eventually be removed after testing.
     -------------------------------------------------- */
