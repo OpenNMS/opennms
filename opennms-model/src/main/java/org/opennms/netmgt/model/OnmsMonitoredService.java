@@ -282,6 +282,7 @@ Comparable<OnmsMonitoredService> {
     }
     
     @Transient
+    @XmlAttribute
     public String getStatusLong() {
     	return STATUS_MAP.get(getStatus());
     }
@@ -437,6 +438,7 @@ Comparable<OnmsMonitoredService> {
      * @return a boolean.
      */
     @Transient
+    @XmlAttribute
     public boolean isDown() {
         boolean down = true;
         if (!"A".equals(getStatus()) || m_currentOutages.isEmpty()) {
