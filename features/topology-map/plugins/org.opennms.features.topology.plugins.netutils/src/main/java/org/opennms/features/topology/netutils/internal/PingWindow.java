@@ -58,7 +58,7 @@ import java.net.URL;
 @SuppressWarnings("serial")
 public class PingWindow extends Window {
 
-    private static final double sizePercentage = 0.80; // Window size proportionate to main window
+    private static final int sizePercentage = 80; // Window size proportionate to main window
     protected NativeSelect ipDropdown = null; //Dropdown component for IP Address
     protected NativeSelect packetSizeDropdown = null; //Dropdown component for Packet Size
     private Label nodeLabel = null; //Label displaying the name of the Node at the top of the window
@@ -67,8 +67,6 @@ public class PingWindow extends Window {
     protected CheckBox numericalDataCheckBox = null; //Checkbox for toggling numeric output
     protected Button pingButton; //Button to execute the ping operation
     private Embedded resultsBrowser = null; //Browser which displays the ping results
-    private static final int margin = 40; //Padding around the results browser
-    private static final int topHeight = 280; //Set height size for everything above the split
     private static final String noLabel = "no such label"; //Label given to vertexes that have no real label.
     private String pingUrl;
 
@@ -207,17 +205,12 @@ public class PingWindow extends Window {
     public void attach() {
         super.attach();
 
-        int width = (int) getUI().getPage().getBrowserWindowWidth();
-        int height = (int) getUI().getPage().getBrowserWindowHeight();
+        setWidth(sizePercentage, Unit.PERCENTAGE);
+        setHeight(sizePercentage, Unit.PERCENTAGE);
 
-        int windowWidth = (int) (sizePercentage * width), windowHeight = (int) (sizePercentage * height);
-        setWidth("" + windowWidth + "px");
-        setHeight("" + windowHeight + "px");
-        setPositionX((width - windowWidth) / 2);
-        setPositionY((height - windowHeight) / 2);
+        center();
 
-        resultsBrowser.setWidth("" + (int) (this.getWidth() - margin) + "px"); //Cuts off "close" button from window
-        resultsBrowser.setHeight("" + (int) (this.getHeight() - topHeight - margin) + "px");
+        resultsBrowser.setSizeFull();
     }
 
     /**
@@ -264,6 +257,7 @@ public class PingWindow extends Window {
                 options.append("address=").append(ipDropdown.getValue())
                         .append("&timeout=").append(timeoutField.getValue())
                         .append("&numberOfRequest=").append(requestsField.getValue())
+                        .append("&hideCloseButton=true")
                         .append("&packetSize=").append(Integer.parseInt(packetSizeDropdown.getValue().toString()) - 8);
                 if (numericalDataCheckBox.getValue().equals(true)) {
                     options.append("&numericOutput=true");
