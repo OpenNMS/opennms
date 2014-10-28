@@ -28,18 +28,17 @@
 
 package org.opennms.netmgt.snmp;
 
-import org.json.JSONObject;
-import org.json.JSONStringer;
-import org.json.JSONTokener;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.io.Serializable;
+import java.net.InetAddress;
+import java.util.Objects;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-import java.io.Serializable;
-import java.net.InetAddress;
-import java.util.Objects;
+
+import org.json.JSONObject;
+import org.json.JSONStringer;
+import org.json.JSONTokener;
 
 /**
  * @author (various previous authors not documented)
@@ -47,8 +46,7 @@ import java.util.Objects;
  */
 @XmlRootElement(name = "snmpAgentConfig")
 public class SnmpAgentConfig extends SnmpConfiguration implements Serializable {
-    private static final long serialVersionUID = 1456963719970029200L;
-    private static final transient Logger LOG = LoggerFactory.getLogger(SnmpAgentConfig.class);
+    private static final long serialVersionUID = -6646744513933866811L;
 
     private InetAddress m_address;
     private InetAddress m_proxyFor;
@@ -78,64 +76,64 @@ public class SnmpAgentConfig extends SnmpConfiguration implements Serializable {
         }
 
         final SnmpAgentConfig agentConfig = new SnmpAgentConfig();
-        agentConfig.setAddress(InetAddrUtils.addr(protocolConfig.optString("address")));
-        agentConfig.setProxyFor(InetAddrUtils.addr(protocolConfig.optString("proxyFor")));
-        agentConfig.setPort(protocolConfig.optInt("port"));
-        agentConfig.setTimeout(protocolConfig.optInt("timeout"));
-        agentConfig.setRetries(protocolConfig.optInt("retries"));
-        agentConfig.setMaxVarsPerPdu(protocolConfig.optInt("max-vars-per-pdu"));
-        agentConfig.setMaxRepetitions(protocolConfig.optInt("max-repetitions"));
-        agentConfig.setMaxRequestSize(protocolConfig.optInt("max-request-size"));
-        agentConfig.setVersion(protocolConfig.optInt("version"));
-        agentConfig.setSecurityLevel(protocolConfig.optInt("security-level"));
-        agentConfig.setSecurityName(protocolConfig.optString("security-name"));
-        agentConfig.setAuthPassPhrase(protocolConfig.optString("auth-passphrase"));
-        agentConfig.setAuthProtocol(protocolConfig.optString("auth-protocol"));
-        agentConfig.setPrivPassPhrase(protocolConfig.optString("priv-passphrase"));
-        agentConfig.setPrivProtocol(protocolConfig.optString("priv-protocol"));
-        agentConfig.setEngineId(protocolConfig.optString("engine-id"));
-        agentConfig.setContextEngineId(protocolConfig.optString("context-engine-id"));
-        agentConfig.setContextName(protocolConfig.optString("context-name"));
-        agentConfig.setEnterpriseId(protocolConfig.optString("enterprise-id"));
-        agentConfig.setReadCommunity(protocolConfig.optString("read-community"));
-        agentConfig.setWriteCommunity(protocolConfig.optString("write-community"));
+        if (!protocolConfig.isNull("address")) agentConfig.setAddress(InetAddrUtils.addr(protocolConfig.optString("address")));
+        if (!protocolConfig.isNull("proxyFor")) agentConfig.setProxyFor(InetAddrUtils.addr(protocolConfig.optString("proxyFor")));
+        if (!protocolConfig.isNull("port")) agentConfig.setPort(protocolConfig.optInt("port"));
+        if (!protocolConfig.isNull("timeout")) agentConfig.setTimeout(protocolConfig.optInt("timeout"));
+        if (!protocolConfig.isNull("retries")) agentConfig.setRetries(protocolConfig.optInt("retries"));
+        if (!protocolConfig.isNull("max-vars-per-pdu")) agentConfig.setMaxVarsPerPdu(protocolConfig.optInt("max-vars-per-pdu"));
+        if (!protocolConfig.isNull("max-repetitions")) agentConfig.setMaxRepetitions(protocolConfig.optInt("max-repetitions"));
+        if (!protocolConfig.isNull("max-request-size")) agentConfig.setMaxRequestSize(protocolConfig.optInt("max-request-size"));
+        if (!protocolConfig.isNull("version")) agentConfig.setVersion(protocolConfig.optInt("version"));
+        if (!protocolConfig.isNull("security-level")) agentConfig.setSecurityLevel(protocolConfig.optInt("security-level"));
+        if (!protocolConfig.isNull("security-name")) agentConfig.setSecurityName(protocolConfig.optString("security-name"));
+        if (!protocolConfig.isNull("auth-passphrase")) agentConfig.setAuthPassPhrase(protocolConfig.optString("auth-passphrase"));
+        if (!protocolConfig.isNull("auth-protocol")) agentConfig.setAuthProtocol(protocolConfig.optString("auth-protocol"));
+        if (!protocolConfig.isNull("priv-passphrase")) agentConfig.setPrivPassPhrase(protocolConfig.optString("priv-passphrase"));
+        if (!protocolConfig.isNull("priv-protocol")) agentConfig.setPrivProtocol(protocolConfig.optString("priv-protocol"));
+        if (!protocolConfig.isNull("context-name")) agentConfig.setContextName(protocolConfig.optString("context-name"));
+        if (!protocolConfig.isNull("engine-id")) agentConfig.setEngineId(protocolConfig.optString("engine-id"));
+        if (!protocolConfig.isNull("context-engine-id")) agentConfig.setContextEngineId(protocolConfig.optString("context-engine-id"));
+        if (!protocolConfig.isNull("enterprise-id")) agentConfig.setEnterpriseId(protocolConfig.optString("enterprise-id"));
+        if (!protocolConfig.isNull("read-community")) agentConfig.setReadCommunity(protocolConfig.optString("read-community"));
+        if (!protocolConfig.isNull("write-community")) agentConfig.setWriteCommunity(protocolConfig.optString("write-community"));
 
         return agentConfig;
     }
 
     public String toProtocolConfigString() {
         return new JSONStringer()
-                .object()
-                .key("snmp")
-                .object()
-                .key("address").value((m_address == null)
-                                      ? null
-                                      : InetAddrUtils.str(m_address))
-                .key("proxyFor").value((m_proxyFor == null)
-                                       ? null
-                                       : InetAddrUtils.str(m_proxyFor))
-                .key("port").value(getPort())
-                .key("timeout").value(getTimeout())
-                .key("retries").value(getRetries())
-                .key("max-vars-per-pdu").value(getMaxVarsPerPdu())
-                .key("max-repetitions").value(getMaxRepetitions())
-                .key("max-request-size").value(getMaxRequestSize())
-                .key("version").value(getVersion())
-                .key("security-level").value(getSecurityLevel())
-                .key("security-name").value(getSecurityName())
-                .key("auth-passphrase").value(getAuthPassPhrase())
-                .key("auth-protocol").value(getAuthProtocol())
-                .key("priv-passphrase").value(getPrivPassPhrase())
-                .key("priv-protocol").value(getPrivProtocol())
-                .key("context-name").value(getContextName())
-                .key("engine-id").value(getEngineId())
-                .key("context-engine-id").value(getContextEngineId())
-                .key("enterprise-id").value(getEnterpriseId())
-                .key("read-community").value(getReadCommunity())
-                .key("write-community").value(getWriteCommunity())
-                .endObject()
-                .endObject()
-                .toString();
+        .object()
+        .key("snmp")
+        .object()
+        .key("address").value((m_address == null)
+                              ? null
+                                  : InetAddrUtils.str(m_address))
+                                  .key("proxyFor").value((m_proxyFor == null)
+                                                         ? null
+                                                             : InetAddrUtils.str(m_proxyFor))
+                                                             .key("port").value(getPort())
+                                                             .key("timeout").value(getTimeout())
+                                                             .key("retries").value(getRetries())
+                                                             .key("max-vars-per-pdu").value(getMaxVarsPerPdu())
+                                                             .key("max-repetitions").value(getMaxRepetitions())
+                                                             .key("max-request-size").value(getMaxRequestSize())
+                                                             .key("version").value(getVersion())
+                                                             .key("security-level").value(getSecurityLevel())
+                                                             .key("security-name").value(getSecurityName())
+                                                             .key("auth-passphrase").value(getAuthPassPhrase())
+                                                             .key("auth-protocol").value(getAuthProtocol())
+                                                             .key("priv-passphrase").value(getPrivPassPhrase())
+                                                             .key("priv-protocol").value(getPrivProtocol())
+                                                             .key("context-name").value(getContextName())
+                                                             .key("engine-id").value(getEngineId())
+                                                             .key("context-engine-id").value(getContextEngineId())
+                                                             .key("enterprise-id").value(getEnterpriseId())
+                                                             .key("read-community").value(getReadCommunity())
+                                                             .key("write-community").value(getWriteCommunity())
+                                                             .endObject()
+                                                             .endObject()
+                                                             .toString();
     }
 
     @Override
@@ -157,13 +155,13 @@ public class SnmpAgentConfig extends SnmpConfiguration implements Serializable {
             buff.append(", AuthProtocol: " + getAuthProtocol());
             buff.append(", PrivPassphrase: " + getPrivPassPhrase());
             buff.append(", PrivProtocol: " + getPrivProtocol());
+            buff.append(", ContextName: " + getContextName());
             buff.append(", EngineId: " + getEngineId());
             buff.append(", ContextEngineId: " + getContextEngineId());
-            buff.append(", ContextName: " + getContextName());
             buff.append(", EnterpriseId:" + getEnterpriseId());
         } else {
-	    buff.append(", ReadCommunity: " + getReadCommunity());
-	    buff.append(", WriteCommunity: " + getWriteCommunity());
+            buff.append(", ReadCommunity: " + getReadCommunity());
+            buff.append(", WriteCommunity: " + getWriteCommunity());
         }
         buff.append("]");
         return buff.toString();
@@ -197,60 +195,61 @@ public class SnmpAgentConfig extends SnmpConfiguration implements Serializable {
     @Override
     public int hashCode() {
         int hash = Objects.hash(getAddress(),
-                getProxyFor(),
-                getPort(),
-                getTimeout(),
-                getRetries(),
-                getMaxRepetitions(),
-                getMaxRequestSize(),
-                getMaxVarsPerPdu(),
-                getVersion(),
-                getSecurityLevel(),
-                getSecurityName(),
-                getAuthPassPhrase(),
-                getAuthProtocol(),
-                getPrivPassPhrase(),
-                getPrivProtocol(),
-                getEngineId(),
-                getContextEngineId(),
-                getEnterpriseId(),
-                getReadCommunity(),
-                getWriteCommunity());
+                                getProxyFor(),
+                                getPort(),
+                                getTimeout(),
+                                getRetries(),
+                                getMaxVarsPerPdu(),
+                                getMaxRepetitions(),
+                                getMaxRequestSize(),
+                                getVersion(),
+                                getSecurityLevel(),
+                                getSecurityName(),
+                                getAuthPassPhrase(),
+                                getAuthProtocol(),
+                                getPrivPassPhrase(),
+                                getPrivProtocol(),
+                                getContextName(),
+                                getEngineId(),
+                                getContextEngineId(),
+                                getEnterpriseId(),
+                                getReadCommunity(),
+                                getWriteCommunity());
         return hash;
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(final Object obj) {
         if (obj == this) {
             return true;
         }
         if (obj == null) {
+            System.err.println("obj = null!");
             return false;
         }
-        if (obj.getClass() == getClass()) {
-            SnmpAgentConfig other = (SnmpAgentConfig) obj;
+        if (obj instanceof SnmpAgentConfig) {
+            final SnmpAgentConfig other = (SnmpAgentConfig) obj;
 
-            boolean equals = Objects.equals(getAddress(), other.getAddress())
-                && Objects.equals(getProxyFor(), other.getProxyFor())
-                && Objects.equals(getPort(), other.getPort())
-                && Objects.equals(getTimeout(), other.getTimeout())
-                && Objects.equals(getRetries(), other.getRetries())
-                && Objects.equals(getMaxRepetitions(), other.getMaxRepetitions())
-                && Objects.equals(getMaxRequestSize(), other.getMaxRequestSize())
-                && Objects.equals(getMaxVarsPerPdu(), other.getMaxVarsPerPdu())
-                && Objects.equals(getVersion(), other.getVersion())
-                && Objects.equals(getSecurityLevel(), other.getSecurityLevel())
-                && Objects.equals(getSecurityName(), other.getSecurityName())
-                && Objects.equals(getAuthPassPhrase(), other.getAuthPassPhrase())
-                && Objects.equals(getAuthProtocol(), other.getAuthProtocol())
-                && Objects.equals(getPrivPassPhrase(), other.getPrivPassPhrase())
-                && Objects.equals(getPrivProtocol(), other.getPrivProtocol())
-                && Objects.equals(getEngineId(), other.getEngineId())
-                && Objects.equals(getContextEngineId(), other.getContextEngineId())
-                && Objects.equals(getEnterpriseId(), other.getEnterpriseId())
-                && Objects.equals(getReadCommunity(), other.getReadCommunity())
-                && Objects.equals(getWriteCommunity(), other.getWriteCommunity());
-            return equals;
+            return Objects.equals(getAddress(), other.getAddress())
+                    && Objects.equals(getProxyFor(), other.getProxyFor())
+                    && Objects.equals(getPort(), other.getPort())
+                    && Objects.equals(getTimeout(), other.getTimeout())
+                    && Objects.equals(getRetries(), other.getRetries())
+                    && Objects.equals(getMaxRepetitions(), other.getMaxRepetitions())
+                    && Objects.equals(getMaxRequestSize(), other.getMaxRequestSize())
+                    && Objects.equals(getMaxVarsPerPdu(), other.getMaxVarsPerPdu())
+                    && Objects.equals(getVersion(), other.getVersion())
+                    && Objects.equals(getSecurityLevel(), other.getSecurityLevel())
+                    && Objects.equals(getSecurityName(), other.getSecurityName())
+                    && Objects.equals(getAuthPassPhrase(), other.getAuthPassPhrase())
+                    && Objects.equals(getAuthProtocol(), other.getAuthProtocol())
+                    && Objects.equals(getPrivPassPhrase(), other.getPrivPassPhrase())
+                    && Objects.equals(getPrivProtocol(), other.getPrivProtocol())
+                    && Objects.equals(getEngineId(), other.getEngineId())
+                    && Objects.equals(getContextEngineId(), other.getContextEngineId())
+                    && Objects.equals(getEnterpriseId(), other.getEnterpriseId())
+                    && Objects.equals(getReadCommunity(), other.getReadCommunity())
+                    && Objects.equals(getWriteCommunity(), other.getWriteCommunity());
         }
         return false;
     }
