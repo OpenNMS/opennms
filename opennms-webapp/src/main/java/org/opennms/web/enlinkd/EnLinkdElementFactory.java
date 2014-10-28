@@ -311,41 +311,51 @@ public class EnLinkdElementFactory implements InitializingBean, EnLinkdElementFa
 	public List<LldpLinkNode> getLldpLinks(int nodeId) {
 		List<LldpLinkNode> nodelinks = new ArrayList<LldpLinkNode>(); 
 		for (LldpLink link: m_lldpLinkDao.findByNodeId(Integer.valueOf(nodeId))) {
-			nodelinks.add(convertFromModel(nodeId,link));
+			nodelinks.addAll(convertFromModel(nodeId, link));
 		}
 		return nodelinks;
 	}
 	
 	@Transactional
-	private LldpLinkNode convertFromModel(int nodeid, LldpLink link) {
-		LldpLinkNode linknode = new LldpLinkNode();
-		linknode.setLldpPortString(getPortString(link.getLldpPortId(), link.getLldpPortIdSubType()));
-		linknode.setLldpPortDescr(link.getLldpPortDescr());
-		linknode.setLldpPortUrl(getSnmpInterfaceUrl(Integer.valueOf(nodeid), link.getLldpPortIfindex()));
-		
-		LldpElement lldpremelement= m_lldpElementDao.findByChassisId(link.getLldpRemChassisId(),link.getLldpRemChassisIdSubType());
-		if (lldpremelement != null) 
-			linknode.setLldpRemChassisIdString(getRemChassisIdString(lldpremelement.getNode().getLabel(),link.getLldpRemChassisId(), link.getLldpRemChassisIdSubType()));
-		else
-			linknode.setLldpRemChassisIdString(getRemChassisIdString(link.getLldpRemSysname(),link.getLldpRemChassisId(), link.getLldpRemChassisIdSubType()));
-		linknode.setLldpRemSysName(link.getLldpRemSysname());
-		if (lldpremelement != null)
-			linknode.setLldpRemChassisIdUrl(getNodeUrl(lldpremelement.getNode().getId()));
+	private List<LldpLinkNode> convertFromModel(int nodeid, LldpLink link) {
+		List<LldpLinkNode> linknodes = new ArrayList<>();
 
-		linknode.setLldpRemPortString(getPortString(link.getLldpRemPortId(), link.getLldpRemPortIdSubType()));
-		linknode.setLldpRemPortDescr(link.getLldpRemPortDescr());
-		if (lldpremelement != null && link.getLldpRemPortIdSubType() == LldpPortIdSubType.LLDP_PORTID_SUBTYPE_LOCAL) {
-			try {
-				Integer remIfIndex = Integer.getInteger(link.getLldpRemPortId());
-				linknode.setLldpRemPortUrl(getSnmpInterfaceUrl(Integer.valueOf(lldpremelement.getNode().getId()), remIfIndex));
-			} catch (Exception e) {
-				
+		List<LldpElement> lldpremelements= m_lldpElementDao.findByChassisId(link.getLldpRemChassisId(),link.getLldpRemChassisIdSubType());
+
+		for (LldpElement lldpremelement : lldpremelements) {
+			LldpLinkNode linknode = new LldpLinkNode();
+			linknode.setLldpPortString(getPortString(link.getLldpPortId(), link.getLldpPortIdSubType()));
+			linknode.setLldpPortDescr(link.getLldpPortDescr());
+			linknode.setLldpPortUrl(getSnmpInterfaceUrl(Integer.valueOf(nodeid), link.getLldpPortIfindex()));
+
+			linknode.setLldpRemSysName(link.getLldpRemSysname());
+			linknode.setLldpRemPortString(getPortString(link.getLldpRemPortId(), link.getLldpRemPortIdSubType()));
+			linknode.setLldpRemPortDescr(link.getLldpRemPortDescr());
+
+			linknode.setLldpCreateTime(Util.formatDateToUIString(link.getLldpLinkCreateTime()));
+			linknode.setLldpLastPollTime(Util.formatDateToUIString(link.getLldpLinkLastPollTime()));
+
+			if (lldpremelement != null) {
+				linknode.setLldpRemChassisIdString(getRemChassisIdString(lldpremelement.getNode().getLabel(), link.getLldpRemChassisId(), link.getLldpRemChassisIdSubType()));
+				linknode.setLldpRemChassisIdUrl(getNodeUrl(lldpremelement.getNode().getId()));
+
+				if (link.getLldpRemPortIdSubType() == LldpPortIdSubType.LLDP_PORTID_SUBTYPE_LOCAL) {
+					try {
+						Integer remIfIndex = Integer.getInteger(link.getLldpRemPortId());
+						linknode.setLldpRemPortUrl(getSnmpInterfaceUrl(Integer.valueOf(lldpremelement.getNode().getId()), remIfIndex));
+					} catch (Exception e) {
+					}
+				}
+
+			} else {
+				linknode.setLldpRemChassisIdString(getRemChassisIdString(link.getLldpRemSysname(),
+														 link.getLldpRemChassisId(),
+														 link.getLldpRemChassisIdSubType()));
 			}
+			linknodes.add(linknode);
 		}
-		linknode.setLldpCreateTime(Util.formatDateToUIString(link.getLldpLinkCreateTime()));
-		linknode.setLldpLastPollTime(Util.formatDateToUIString(link.getLldpLinkLastPollTime()));
 		
-		return linknode;
+		return linknodes;
 	}
 
 	public IsisElementNode getIsisElement(int nodeId) {

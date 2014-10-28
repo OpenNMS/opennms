@@ -32,6 +32,8 @@ import org.opennms.netmgt.dao.api.LldpElementDao;
 import org.opennms.netmgt.model.LldpElement;
 import org.opennms.netmgt.model.LldpElement.LldpChassisIdSubType;
 
+import java.util.List;
+
 public class LldpElementDaoHibernate extends AbstractDaoHibernate<LldpElement, Integer> implements LldpElementDao {
 
     /**
@@ -57,8 +59,8 @@ public class LldpElementDaoHibernate extends AbstractDaoHibernate<LldpElement, I
     }
 
 	@Override
-	public LldpElement findByChassisId(String chassisId, LldpChassisIdSubType type) {
-        return findUnique("from LldpElement rec where rec.lldpChassisId = ? and rec.lldpChassisIdSubType = ?", chassisId, type);
+	public List<LldpElement> findByChassisId(String chassisId, LldpChassisIdSubType type) {
+        return find("from LldpElement rec where rec.lldpChassisId = ? and rec.lldpChassisIdSubType = ?", chassisId, type);
 	}
 
 	@Override
