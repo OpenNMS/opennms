@@ -404,6 +404,7 @@ final class CollectableService implements ReadyRunnable {
                             if (m_thresholdVisitor.isNodeInOutage()) {
                                 LOG.info("run: the threshold processing will be skipped because the node {} is on a scheduled outage.", m_nodeId);
                             } else if (m_thresholdVisitor.hasThresholds()) {
+                                m_thresholdVisitor.setCounterReset(result.ignorePersist()); // Required to reinitialize the counters.
                                 result.visit(m_thresholdVisitor);
                             }
                         }

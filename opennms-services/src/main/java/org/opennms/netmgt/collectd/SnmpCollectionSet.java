@@ -436,12 +436,17 @@ public class SnmpCollectionSet implements Collectable, CollectionSet {
             return;
         }
 
-        logSysUpTime();
-
-    	m_ignorePersist = false;
-        if (getSysUpTime().isChanged(getCollectionAgent().getSavedSysUpTime())) {
+        checkForSystemRestart();
+        if (m_ignorePersist) {
             LOG.info("Sending rescan event because sysUpTime has changed on primary SNMP interface {}, generating 'ForceRescan' event.", getCollectionAgent().getHostAddress());
             rescanNeeded.rescanIndicated();
+        }
+    }
+
+    void checkForSystemRestart() {
+        logSysUpTime();
+        m_ignorePersist = false;
+        if (getSysUpTime().isChanged(getCollectionAgent().getSavedSysUpTime())) {
             /*
              * Only on sysUpTime change (i.e. SNMP Agent Restart) we must ignore collected data
              * to avoid spikes on RRD/JRB files
