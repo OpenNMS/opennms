@@ -199,6 +199,14 @@ final class PollerEventProcessor implements EventListener {
             LOG.error("Unable to retrieve nodeLabel for node {}", nodeId, e);
         }
 
+        final PollableNode pnode = getNetwork().getNode(nodeId.intValue());
+        if (pnode != null) {
+            final PollableService service = pnode.getService(addr(ipAddr), svcName);
+            if (service != null) {
+                LOG.debug("Node {} gained service {} on IP {}, but it is already being polled!", nodeId, svcName, ipAddr);
+                return;
+            }
+        }
         getPoller().scheduleService(nodeId.intValue(), nodeLabel, ipAddr, svcName);
 
     }
@@ -594,21 +602,14 @@ final class PollerEventProcessor implements EventListener {
     } // end onEvent()
 
     private void serviceReschedule(Event event)   {       
-        PollableNode pnode = getNetwork().getNode(event.getNodeid().intValue());
-        Long nodeId = event.getNodeid();
-        String nodeLabel = pnode.getNodeLabel();
+        final Long nodeId = event.getNodeid();
 
-        final Set<Service> polledServices = new HashSet<>();
-        for (final PollableInterface iface : pnode.getInterfaces()) {
-            for (final PollableService s : iface.getServices()) {
-                polledServices.add(new Service(s.getIpAddr(), s.getSvcName()));
-            }
+        if (nodeId == null || nodeId <= 0) {
+            LOG.warn("Invalid node ID for event, skipping service reschedule: {}", event);
+            return;
         }
 
-        final Set<Service> databaseServices = new HashSet<>();
-        for (final String[] s : getPoller().getQueryManager().getNodeServices(nodeId.intValue())) {
-            databaseServices.add(new Service(s));
-        }
+        String nodeLabel = EventUtils.getParm(event, EventConstants.PARM_NODE_LABEL);
 
         Date closeDate;
         try {
@@ -617,22 +618,48 @@ final class PollerEventProcessor implements EventListener {
             closeDate = new Date();
         }
 
-        LOG.debug("# of Polled Services: {}; # of Services in Database: {}", polledServices.size(), databaseServices.size());
-        LOG.trace("Polled Services: {}", polledServices);
+        final Set<Service> databaseServices = new HashSet<>();
+
+        for (final String[] s : getPoller().getQueryManager().getNodeServices(nodeId.intValue())) {
+            databaseServices.add(new Service(s));
+        }
+        LOG.debug("# of Services in Database: {}", databaseServices.size());
         LOG.trace("Database Services: {}", databaseServices);
+
+        final Set<Service> polledServices = new HashSet<>();
+
+        final PollableNode pnode = getNetwork().getNode(nodeId.intValue());
+        if (pnode == null) {
+            LOG.debug("Node {} is not already being polled.", nodeId);
+        } else {
+            if (pnode.getNodeLabel() != null) {
+                nodeLabel = pnode.getNodeLabel();
+            }
+
+            for (final PollableInterface iface : pnode.getInterfaces()) {
+                for (final PollableService s : iface.getServices()) {
+                    polledServices.add(new Service(s.getIpAddr(), s.getSvcName()));
+                }
+            }
+            LOG.debug("# of Polled Services: {}", polledServices.size());
+            LOG.trace("Polled Services: {}", polledServices);
+        }
 
         // first, look for polled services that are no longer in the database
         for (final Iterator<Service> iter = polledServices.iterator(); iter.hasNext(); ) {
             final Service polledService = iter.next();
-            final PollableService service = pnode.getService(polledService.getInetAddress(), polledService.getServiceName());
-            // delete the service (we will re-add it if it should still be active)
-            service.delete();
 
-            while (!service.isDeleted()) {
-                try {
-                    Thread.sleep(20);
-                } catch (final InterruptedException e) {
-                    Thread.currentThread().interrupt();
+            if (pnode != null) {
+                final PollableService service = pnode.getService(polledService.getInetAddress(), polledService.getServiceName());
+                // delete the service (we will re-add it if it should still be active)
+                service.delete();
+
+                while (!service.isDeleted()) {
+                    try {
+                        Thread.sleep(20);
+                    } catch (final InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                    }
                 }
             }
 

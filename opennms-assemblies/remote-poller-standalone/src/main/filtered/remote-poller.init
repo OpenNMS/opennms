@@ -71,6 +71,10 @@ if [ x$GUI = xtrue ]; then
 	EXTRA_ARGS="$EXTRA_ARGS --gui"
 fi
 
+if [ x$DISABLE_ICMP = xtrue ]; then
+	EXTRA_ARGS="$EXTRA_ARGS --disable-icmp"
+fi
+
 if [ x$USERNAME != x ]; then
 	EXTRA_ARGS="$EXTRA_ARGS -n $USERNAME"
 fi

@@ -62,16 +62,8 @@ import org.opennms.netmgt.EventConstants;
 @XmlAccessorType(XmlAccessType.FIELD)
 //@ValidateUsing("event.xsd")
 public class Event implements Serializable {
-    private static final long serialVersionUID = -3759917010981451112L;
+        private static final long serialVersionUID = 6997816158234653400L;
 
-
-	// --------------------------/
-	// - Class/Member Variables -/
-	// --------------------------/
-
-	/**
-	 * Field _uuid.
-	 */
 	@XmlAttribute(name = "uuid")
 	private String _uuid;
 
@@ -868,6 +860,22 @@ public class Event implements Serializable {
         return _parms == null ? Collections.<Parm>emptyList() : _parms;
     }
 
+    public Parm getParm(final String key) {
+        if (_parms == null) {
+            return null;
+        }
+        if (key == null) {
+            throw new IllegalArgumentException("Parameter key cannot be null!");
+        }
+
+        for (final Parm parm : _parms) {
+            if (key.equals(parm.getParmName())) {
+                return parm;
+            }
+        }
+
+        return null;
+    }
 
 	/**
 	 * Returns the value of field 'pathoutage'. The field 'pathoutage' has the

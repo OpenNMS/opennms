@@ -159,26 +159,41 @@
     </feature>
 
     <!-- ################ START OPENNMS CUSTOMIZATION ############ -->
+
+    <feature name="http" description="Implementation of the OSGi HTTP service" version="2.4.0" resolver="(obr)">
+        <!-- <feature version="3.1.2">pax-http</feature> -->
+        <feature version="14.0.0.ONMS">opennms-bridge-http</feature>
+    </feature>
+
+    <feature name="http-whiteboard" description="Provide HTTP Whiteboard pattern support" version="2.4.0" resolver="(obr)">
+        <!-- <feature version="3.1.2">pax-http-whiteboard</feature> -->
+        <feature version="14.0.0.ONMS">opennms-http-whiteboard</feature>
+    </feature>
+
     <!-- Replace the Pax Web HTTP service with our servlet bridge -->
-    <feature name="http" version="14.0.0.ONMS" description="HTTP feature using custom servlet bridge">
+    <feature name="opennms-bridge-http" description="HTTP feature using custom servlet bridge" version="14.0.0.ONMS" resolver="(obr)">
         <bundle>mvn:org.opennms.container/bridge/${project.version}</bundle>
     </feature>
 
-    <feature name="http-whiteboard" description="Provide HTTP Whiteboard pattern support" version="14.0.0.ONMS" resolver="(obr)">
-        <feature>http</feature>
+    <feature name="opennms-http-whiteboard" description="Provide HTTP Whiteboard pattern support" version="14.0.0.ONMS" resolver="(obr)">
+        <feature>opennms-bridge-http</feature>
+
+        <!-- Install pax-web-extender-whiteboard and all of its dependencies except Jetty -->
+        <bundle dependency="true" start-level="30">mvn:org.ops4j.base/ops4j-base-lang/1.4.0</bundle>
+        <bundle dependency="true" start-level="30">mvn:org.ops4j.pax.swissbox/pax-swissbox-core/1.7.0</bundle>
+        <bundle dependency="true" start-level="20">mvn:org.ow2.asm/asm-all/5.0.2</bundle>
+        <bundle dependency="true" start-level="20">mvn:org.apache.xbean/xbean-bundleutils/3.18</bundle>
+        <bundle dependency="true" start-level="20">mvn:org.apache.xbean/xbean-reflect/3.18</bundle>
+        <bundle dependency="true" start-level="20">mvn:org.apache.xbean/xbean-finder/3.18</bundle>
+        <bundle start-level="30">mvn:org.ops4j.pax.web/pax-web-api/3.1.2</bundle>
+        <bundle start-level="30">mvn:org.ops4j.pax.web/pax-web-spi/3.1.2</bundle>
+        <bundle start-level="30">mvn:org.ops4j.pax.web/pax-web-runtime/3.1.2</bundle>
+        <!-- <bundle start-level="30">mvn:org.ops4j.pax.web/pax-web-jetty/3.1.2</bundle> -->
+
         <bundle start-level="30">mvn:org.ops4j.pax.web/pax-web-jsp/3.1.2</bundle>
         <bundle start-level="30">mvn:org.ops4j.pax.web/pax-web-extender-whiteboard/3.1.2</bundle>
     </feature>
 
-    <!--
-    <feature name="http" description="Implementation of the OSGi HTTP service" version="2.4.0" resolver="(obr)">
-        <feature version="3.1.2">pax-http</feature>
-    </feature>
-
-    <feature name="http-whiteboard" description="Provide HTTP Whiteboard pattern support" version="2.4.0" resolver="(obr)">
-        <feature version="3.1.2">pax-http-whiteboard</feature>
-    </feature>
-    -->
     <!-- ################ END OPENNMS CUSTOMIZATION ############## -->
 
     <feature name="war" description="Turn Karaf as a full WebContainer" version="2.4.0" resolver="(obr)">
