@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -172,6 +172,8 @@ public final class NodeDiscoveryBridge extends NodeDiscovery {
 	}
 
 	protected Map<Integer,Integer> walkDot1d(Integer vlan, String vlanname) {
+		LOG.debug("run: Bridge Linkd node scan : ready to walk dot1d data on {}, vlan {}, vlanname {}.",
+				str(getPeer().getAddress()),vlan,vlanname);
 		String trackerName = "dot1dbase";
 		final Dot1dBaseTracker dot1dbase = new Dot1dBaseTracker();
 		SnmpWalker walker = SnmpUtils.createWalker(getPeer(), trackerName,
@@ -198,7 +200,7 @@ public final class NodeDiscoveryBridge extends NodeDiscovery {
 		bridge.setVlan(vlan);
 		bridge.setVlanname(vlanname);
 		if (bridge.getBaseBridgeAddress() == null) {
-			LOG.info("run: bridge mib not supported on: {}",
+			LOG.info("run: base bridge address is null: bridge mib not supported on: {}",
 					str(getPeer().getAddress()));
 			return new HashMap<Integer, Integer>();
 		}
@@ -215,7 +217,7 @@ public final class NodeDiscoveryBridge extends NodeDiscovery {
 			return new HashMap<Integer, Integer>();
 		}
 		LOG.info("run: bridge {} has is if type {}, on: {}", dot1dbase
-				.getBridgeAddress(), BridgeDot1dBaseType.getTypeString(dot1dbase.getBridgeType()));
+				.getBridgeAddress(), BridgeDot1dBaseType.getTypeString(dot1dbase.getBridgeType()),str(getPeer().getAddress()));
 
 		if (bridge.getBaseType() ==  BridgeDot1dBaseType.DOT1DBASETYPE_SOURCEROUTE_ONLY) {
 			LOG.info("run: {}: source route only type bridge, on: {}",

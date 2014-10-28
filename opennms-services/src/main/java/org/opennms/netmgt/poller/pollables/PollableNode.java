@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -29,19 +29,20 @@
 package org.opennms.netmgt.poller.pollables;
 
 import java.net.InetAddress;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.xml.event.Event;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Represents a PollableNode
  *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
- * @version $Id: $
  */
 public class PollableNode extends PollableContainer {
     private static final Logger LOG = LoggerFactory.getLogger(PollableNode.class);
@@ -77,8 +78,9 @@ public class PollableNode extends PollableContainer {
                 while (m_owner != null) {
                     try { wait(endTime-now);} catch (InterruptedException e) { throw new ThreadInterrupted("Lock for "+PollableNode.this+" is unavailable", e);}
                     now = System.currentTimeMillis();
-                    if (now >= endTime)
+                    if (m_owner != null && now >= endTime) {
                         throw new LockUnavailable("Unable to obtain lock for "+PollableNode.this+" before timeout");
+                    }
                 }
                 m_owner = Thread.currentThread();
                 LOG.debug("Obtained lock for {}", PollableNode.this);
@@ -180,6 +182,16 @@ public class PollableNode extends PollableContainer {
         return (PollableInterface)getMember(addr);
     }
 
+    public List<PollableInterface> getInterfaces() {
+        final List<PollableInterface> ifaces = new ArrayList<>();
+        for (final PollableElement pe : getMembers()) {
+            if (pe instanceof PollableInterface) {
+                ifaces.add((PollableInterface)pe);
+            }
+        }
+        return ifaces;
+    }
+
     /**
      * <p>getNetwork</p>
      *
@@ -267,7 +279,7 @@ public class PollableNode extends PollableContainer {
      * @return a {@link java.lang.String} object.
      */
     @Override
-    public String toString() { return String.valueOf(getNodeId()); }
+    public String toString() { return "PollableNode [" + getNodeId() + "]"; }
 
     /**
      * <p>getLockRoot</p>

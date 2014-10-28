@@ -77,7 +77,24 @@ xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0"
 
 	<service interface="org.opennms.features.topology.api.topo.EdgeProvider" ref="ncsEdgeProvider"/>
 	<service interface="org.opennms.features.topology.api.topo.EdgeProvider" ref="ncsPathEdgeProvider" />
-	
+
+    <!--NCS Edge Status Provider-->
+    <reference id="alarmDao" interface="org.opennms.netmgt.dao.api.AlarmDao" availability="mandatory" />
+
+    <bean id="ncsEdgeStatusProvider" class="org.opennms.features.topology.plugins.ncs.NCSEdgeStatusProvider">
+        <property name="alarmDao" ref="alarmDao"/>
+    </bean>
+
+    <service interface="org.opennms.features.topology.api.CheckedOperation">
+        <service-properties>
+            <entry key="operation.menuLocation" value="View"/>
+            <entry key="operation.label" value="NCS Link Status"/>
+        </service-properties>
+        <bean class="org.opennms.features.topology.plugins.ncs.NCSStatusToggleOperation">
+            <property name="ncsEdgeStatusProvider" ref="ncsEdgeStatusProvider"/>
+        </bean>
+    </service>
+
 	<bean id="ncsPathProviderService" class="org.opennms.features.topology.plugins.ncs.NCSPathProviderService">
 	   <argument ref="camel1" />
 	</bean>

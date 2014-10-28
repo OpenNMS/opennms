@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="EventAnalysis" pageWidth="595" pageHeight="842" whenNoDataType="NoDataSection" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" isTitleNewPage="true">
-	<property name="ireport.zoom" value="1.0"/>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="EventAnalysis" pageWidth="595" pageHeight="842" whenNoDataType="NoDataSection" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
+	<property name="ireport.zoom" value="1.948717100000002"/>
 	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="16"/>
+	<property name="ireport.y" value="975"/>
 	<property name="net.sf.jasperreports.chart.theme" value="default"/>
-	<template><![CDATA["${install.dir}/etc/report-templates/assets/styles/defaultStyles.jrtx"]]></template>
+	<template><![CDATA[$P{ONMS_REPORT_DIR} + "/assets/styles/defaultStyles.jrtx"]]></template>
 	<style name="Eventdisplay Link Style" forecolor="#000000" hAlign="Left" vAlign="Middle" fontSize="10">
 		<conditionalStyle>
 			<conditionExpression><![CDATA[!$F{eventdisplay}.equals("Y")]]></conditionExpression>
@@ -41,7 +41,7 @@
 	</style>
 	<subDataset name="top25_events">
 		<parameter name="OPENNMS_URL_BASE" class="java.lang.String" isForPrompting="false">
-			<defaultValueExpression><![CDATA["change-onms-url-base"]]></defaultValueExpression>
+			<defaultValueExpression><![CDATA[$P{OPENNMS_URL_BASE}]]></defaultValueExpression>
 		</parameter>
 		<queryString>
 			<![CDATA[SELECT
@@ -70,7 +70,7 @@ LIMIT
 	</subDataset>
 	<subDataset name="top25_event_hours">
 		<parameter name="OPENNMS_URL_BASE" class="java.lang.String" isForPrompting="false">
-			<defaultValueExpression><![CDATA["change-onms-url-base"]]></defaultValueExpression>
+			<defaultValueExpression><![CDATA[$P{OPENNMS_URL_BASE}]]></defaultValueExpression>
 		</parameter>
 		<queryString>
 			<![CDATA[SELECT
@@ -100,7 +100,7 @@ LIMIT 25;]]>
 	</subDataset>
 	<subDataset name="events_by_source">
 		<parameter name="OPENNMS_URL_BASE" class="java.lang.String" isForPrompting="false">
-			<defaultValueExpression><![CDATA["change-onms-url-base"]]></defaultValueExpression>
+			<defaultValueExpression><![CDATA[$P{OPENNMS_URL_BASE}]]></defaultValueExpression>
 		</parameter>
 		<queryString>
 			<![CDATA[SELECT
@@ -140,7 +140,7 @@ ORDER BY
 	</subDataset>
 	<subDataset name="top25_events_by_node_uei">
 		<parameter name="OPENNMS_URL_BASE" class="java.lang.String" isForPrompting="false">
-			<defaultValueExpression><![CDATA["change-onms-url-base"]]></defaultValueExpression>
+			<defaultValueExpression><![CDATA[$P{OPENNMS_URL_BASE}]]></defaultValueExpression>
 		</parameter>
 		<queryString>
 			<![CDATA[SELECT
@@ -184,7 +184,7 @@ ORDER BY
 	</subDataset>
 	<subDataset name="top25_events_by_node">
 		<parameter name="OPENNMS_URL_BASE" class="java.lang.String" isForPrompting="false">
-			<defaultValueExpression><![CDATA["change-onms-url-base"]]></defaultValueExpression>
+			<defaultValueExpression><![CDATA[$P{OPENNMS_URL_BASE}]]></defaultValueExpression>
 		</parameter>
 		<queryString>
 			<![CDATA[SELECT
@@ -220,7 +220,7 @@ ORDER BY
 	</subDataset>
 	<subDataset name="events_eph">
 		<parameter name="OPENNMS_URL_BASE" class="java.lang.String" isForPrompting="false">
-			<defaultValueExpression><![CDATA["change-onms-url-base"]]></defaultValueExpression>
+			<defaultValueExpression><![CDATA[$P{OPENNMS_URL_BASE}]]></defaultValueExpression>
 		</parameter>
 		<queryString>
 			<![CDATA[SELECT
@@ -295,7 +295,7 @@ ORDER BY
 	</subDataset>
 	<subDataset name="events_per_day">
 		<parameter name="OPENNMS_URL_BASE" class="java.lang.String" isForPrompting="false">
-			<defaultValueExpression><![CDATA["change-onms-url-base"]]></defaultValueExpression>
+			<defaultValueExpression><![CDATA[$P{OPENNMS_URL_BASE}]]></defaultValueExpression>
 		</parameter>
 		<queryString>
 			<![CDATA[SELECT
@@ -365,7 +365,7 @@ ORDER BY
 	</subDataset>
 	<subDataset name="unknown_mibs">
 		<parameter name="OPENNMS_URL_BASE" class="java.lang.String" isForPrompting="false">
-			<defaultValueExpression><![CDATA["change-onms-url-base"]]></defaultValueExpression>
+			<defaultValueExpression><![CDATA[$P{OPENNMS_URL_BASE}]]></defaultValueExpression>
 		</parameter>
 		<queryString>
 			<![CDATA[SELECT
@@ -408,13 +408,17 @@ ON
 			<variableExpression><![CDATA[$F{node}]]></variableExpression>
 		</variable>
 	</subDataset>
-	<parameter name="COMPANY_LOGO" class="java.lang.String">
+  <parameter name="ONMS_REPORT_DIR" class="java.lang.String" isForPrompting="false">
+    <parameterDescription><![CDATA[The directory where all reports can be found]]></parameterDescription>
+    <defaultValueExpression><![CDATA["${install.dir}/etc/report-templates"]]></defaultValueExpression>
+  </parameter>
+	<parameter name="COMPANY_LOGO" class="java.lang.String" isForPrompting="false">
 		<parameterDescription><![CDATA[Company logo]]></parameterDescription>
-		<defaultValueExpression><![CDATA["${install.dir}/etc/report-templates/assets/images/company-logo.png"]]></defaultValueExpression>
+		<defaultValueExpression><![CDATA[$P{ONMS_REPORT_DIR} + "/assets/images/company-logo.png"]]></defaultValueExpression>
 	</parameter>
 	<parameter name="OPENNMS_URL_BASE" class="java.lang.String">
 		<parameterDescription><![CDATA[OpenNMS URL base for embedded links]]></parameterDescription>
-		<defaultValueExpression><![CDATA["change-me-opennms-url-base"]]></defaultValueExpression>
+		<defaultValueExpression><![CDATA["http://localhost:8980/opennms"]]></defaultValueExpression>
 	</parameter>
 	<queryString>
 		<![CDATA[SELECT
@@ -438,11 +442,35 @@ ON
 	<background>
 		<band splitType="Stretch"/>
 	</background>
-	<title>
-		<band height="766" splitType="Stretch">
+	<pageHeader>
+		<band height="59" splitType="Stretch">
+			<staticText>
+				<reportElement style="Title" x="0" y="0" width="392" height="29"/>
+				<textElement/>
+				<text><![CDATA[Event Analysis]]></text>
+			</staticText>
+			<line>
+				<reportElement x="0" y="52" width="555" height="1"/>
+			</line>
+			<textField pattern="dd/MM/yyyy h.mm a">
+				<reportElement style="Body" x="0" y="29" width="392" height="20"/>
+				<textElement/>
+				<textFieldExpression class="java.util.Date"><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+			<image>
+				<reportElement x="392" y="0" width="164" height="49"/>
+				<imageExpression class="java.lang.String"><![CDATA[$P{COMPANY_LOGO}]]></imageExpression>
+			</image>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band splitType="Stretch"/>
+	</columnHeader>
+	<detail>
+		<band height="662">
 			<pie3DChart>
 				<chart isShowLegend="true">
-					<reportElement positionType="Float" x="0" y="85" width="320" height="130"/>
+					<reportElement positionType="Float" x="0" y="25" width="320" height="130"/>
 					<chartTitle>
 						<font size="8"/>
 					</chartTitle>
@@ -478,7 +506,7 @@ ON
 				</pie3DPlot>
 			</pie3DChart>
 			<componentElement>
-				<reportElement key="event_source_table" positionType="Float" x="330" y="85" width="226" height="134"/>
+				<reportElement key="event_source_table" positionType="Float" x="330" y="25" width="226" height="134"/>
 				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
 					<datasetRun subDataset="events_by_source">
 						<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
@@ -549,7 +577,7 @@ ON
 			</componentElement>
 			<timeSeriesChart>
 				<chart isShowLegend="false">
-					<reportElement positionType="Float" x="0" y="245" width="555" height="190"/>
+					<reportElement positionType="Float" x="0" y="185" width="555" height="190"/>
 					<chartTitle position="Top">
 						<font size="12" isBold="true"/>
 						<titleExpression><![CDATA[new String("Total average processed events per hour")]]></titleExpression>
@@ -601,7 +629,7 @@ ON
 			</timeSeriesChart>
 			<timeSeriesChart>
 				<chart isShowLegend="true">
-					<reportElement positionType="Float" x="0" y="440" width="555" height="190"/>
+					<reportElement positionType="Float" x="0" y="375" width="555" height="190"/>
 					<chartTitle position="Top">
 						<font size="12" isBold="true"/>
 						<titleExpression><![CDATA[new String("Events per day")]]></titleExpression>
@@ -656,179 +684,129 @@ ON
 				</timeSeriesPlot>
 			</timeSeriesChart>
 			<staticText>
-				<reportElement style="Title" x="0" y="0" width="391" height="29"/>
-				<textElement/>
-				<text><![CDATA[Event Analysis Overview]]></text>
-			</staticText>
-			<staticText>
-				<reportElement style="Body" x="0" y="29" width="69" height="20"/>
-				<textElement/>
-				<text><![CDATA[Report time:]]></text>
-			</staticText>
-			<textField pattern="dd/MM/yyyy h.mm a">
-				<reportElement style="Body" x="69" y="29" width="322" height="20"/>
-				<textElement/>
-				<textFieldExpression class="java.util.Date"><![CDATA[new java.util.Date()]]></textFieldExpression>
-			</textField>
-			<staticText>
-				<reportElement style="Section" x="0" y="60" width="555" height="20"/>
+				<reportElement style="Section" x="0" y="0" width="555" height="20"/>
 				<textElement rotation="None">
 					<font size="16"/>
 				</textElement>
 				<text><![CDATA[ All events by source]]></text>
 			</staticText>
 			<staticText>
-				<reportElement style="Section" x="0" y="220" width="555" height="20"/>
+				<reportElement style="Section" x="0" y="160" width="555" height="20"/>
 				<textElement rotation="None">
 					<font size="16"/>
 				</textElement>
 				<text><![CDATA[ Events per hour and by source]]></text>
 			</staticText>
 			<staticText>
-				<reportElement style="Section" x="0" y="635" width="555" height="20"/>
+				<reportElement style="Section" x="0" y="565" width="555" height="23"/>
 				<textElement rotation="None">
 					<font size="16"/>
 				</textElement>
-				<text><![CDATA[ Database informations]]></text>
+				<text><![CDATA[ Database information]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="0" y="717" width="556" height="12"/>
+				<reportElement x="0" y="632" width="82" height="12"/>
 				<textElement>
-					<font size="8" isBold="true" isItalic="true"/>
+					<font size="8" isBold="true" isItalic="false"/>
 				</textElement>
-				<text><![CDATA[Postgres version:]]></text>
+				<text><![CDATA[Postgres version]]></text>
 			</staticText>
 			<textField isStretchWithOverflow="true">
-				<reportElement x="0" y="732" width="556" height="28"/>
+				<reportElement x="83" y="632" width="473" height="12"/>
 				<textElement verticalAlignment="Top">
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{version}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="0" y="662" width="50" height="12"/>
+				<reportElement x="0" y="588" width="82" height="12"/>
 				<textElement>
-					<font size="8" isBold="true" isItalic="true"/>
+					<font size="8" isBold="true" isItalic="false"/>
 				</textElement>
-				<text><![CDATA[Uptime:]]></text>
+				<text><![CDATA[Uptime]]></text>
 			</staticText>
 			<textField pattern="hh:mm:ss dd mm yyyy">
-				<reportElement x="50" y="662" width="231" height="12"/>
+				<reportElement x="82" y="588" width="199" height="12"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{uptime}.getYears() + " years " + $F{uptime}.getMonths() + " months " + $F{uptime}.getDays() + " days " + $F{uptime}.getHours() + " hours " + $F{uptime}.getMinutes() + " minutes"]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="0" y="692" width="50" height="12"/>
+				<reportElement x="0" y="603" width="82" height="12"/>
 				<textElement>
-					<font size="8" isBold="true" isItalic="true"/>
+					<font size="8" isBold="true" isItalic="false"/>
 				</textElement>
-				<text><![CDATA[Tablespace:]]></text>
+				<text><![CDATA[Tablespace]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="50" y="692" width="231" height="12"/>
+				<reportElement x="82" y="603" width="199" height="12"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{pg_size_pretty}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="0" y="677" width="50" height="12"/>
+				<reportElement x="281" y="588" width="94" height="12"/>
 				<textElement>
-					<font size="8" isBold="true" isItalic="true"/>
+					<font size="8" isBold="true" isItalic="false"/>
 				</textElement>
-				<text><![CDATA[Database: ]]></text>
+				<text><![CDATA[Database name]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="50" y="677" width="231" height="12"/>
+				<reportElement x="375" y="588" width="180" height="12"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{current_database}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="281" y="662" width="94" height="12"/>
+				<reportElement x="0" y="618" width="82" height="12"/>
 				<textElement>
-					<font size="8" isBold="true" isItalic="true"/>
+					<font size="8" isBold="true" isItalic="false"/>
 				</textElement>
-				<text><![CDATA[Postgres socket:]]></text>
+				<text><![CDATA[Postgres socket]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="375" y="662" width="180" height="12"/>
+				<reportElement x="82" y="618" width="199" height="12"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{inet_server_addr}+":"+$F{inet_server_port}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="281" y="677" width="94" height="12"/>
+				<reportElement x="281" y="603" width="94" height="12"/>
 				<textElement>
-					<font size="8" isBold="true" isItalic="true"/>
+					<font size="8" isBold="true" isItalic="false"/>
 				</textElement>
-				<text><![CDATA[Database schema: ]]></text>
+				<text><![CDATA[Database schema]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="375" y="677" width="180" height="12"/>
+				<reportElement x="375" y="603" width="180" height="12"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{current_schema}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="281" y="692" width="94" height="12"/>
+				<reportElement x="281" y="618" width="94" height="12"/>
 				<textElement>
-					<font size="8" isBold="true" isItalic="true"/>
+					<font size="8" isBold="true" isItalic="false"/>
 				</textElement>
-				<text><![CDATA[Database user: ]]></text>
+				<text><![CDATA[Database user]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="375" y="692" width="180" height="12"/>
+				<reportElement x="375" y="618" width="180" height="12"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{current_user}]]></textFieldExpression>
 			</textField>
-			<line>
-				<reportElement x="0" y="51" width="555" height="1"/>
-			</line>
-			<image>
-				<reportElement x="391" y="0" width="164" height="49"/>
-				<imageExpression class="java.lang.String"><![CDATA[$P{COMPANY_LOGO}]]></imageExpression>
-			</image>
+			<break>
+				<reportElement x="0" y="654" width="100" height="1"/>
+			</break>
 		</band>
-	</title>
-	<pageHeader>
-		<band height="60" splitType="Stretch">
-			<staticText>
-				<reportElement style="Title" x="0" y="0" width="392" height="29"/>
-				<textElement/>
-				<text><![CDATA[Event Analysis]]></text>
-			</staticText>
-			<line>
-				<reportElement x="0" y="52" width="555" height="1"/>
-			</line>
-			<textField pattern="dd/MM/yyyy h.mm a">
-				<reportElement style="Body" x="69" y="29" width="323" height="20"/>
-				<textElement/>
-				<textFieldExpression class="java.util.Date"><![CDATA[new java.util.Date()]]></textFieldExpression>
-			</textField>
-			<staticText>
-				<reportElement style="Body" x="0" y="29" width="69" height="20"/>
-				<textElement/>
-				<text><![CDATA[Report time:]]></text>
-			</staticText>
-			<image>
-				<reportElement x="392" y="0" width="164" height="49"/>
-				<imageExpression class="java.lang.String"><![CDATA[$P{COMPANY_LOGO}]]></imageExpression>
-			</image>
-		</band>
-	</pageHeader>
-	<columnHeader>
-		<band splitType="Stretch"/>
-	</columnHeader>
-	<detail>
-		<band height="203" splitType="Stretch">
+		<band height="205">
 			<staticText>
 				<reportElement style="Section" x="0" y="0" width="555" height="20"/>
 				<textElement rotation="None">
@@ -836,8 +814,45 @@ ON
 				</textElement>
 				<text><![CDATA[ Top 25 events by UEI and event source]]></text>
 			</staticText>
+			<lineChart>
+				<chart isShowLegend="false">
+					<reportElement positionType="Float" x="0" y="50" width="555" height="145"/>
+					<chartTitle/>
+					<chartSubtitle/>
+					<chartLegend/>
+				</chart>
+				<categoryDataset>
+					<dataset>
+						<datasetRun subDataset="top25_events"/>
+					</dataset>
+					<categorySeries>
+						<seriesExpression><![CDATA["Dummy Series"]]></seriesExpression>
+						<categoryExpression><![CDATA[$F{eventuei}]]></categoryExpression>
+						<valueExpression><![CDATA[$F{tally}]]></valueExpression>
+						<labelExpression><![CDATA[$F{eventuei}]]></labelExpression>
+					</categorySeries>
+				</categoryDataset>
+				<linePlot isShowLines="true" isShowShapes="false">
+					<plot/>
+					<categoryAxisFormat>
+						<axisFormat tickLabelColor="#FFFFFF" verticalTickLabels="false">
+							<labelFont/>
+							<tickLabelFont/>
+						</axisFormat>
+					</categoryAxisFormat>
+					<valueAxisFormat>
+						<axisFormat verticalTickLabels="false">
+							<labelFont/>
+							<tickLabelFont/>
+						</axisFormat>
+					</valueAxisFormat>
+				</linePlot>
+			</lineChart>
+			<break>
+				<reportElement x="0" y="200" width="100" height="1"/>
+			</break>
 			<componentElement>
-				<reportElement key="Top 25 Events by UEI" positionType="Float" x="0" y="25" width="555" height="10"/>
+				<reportElement key="Top 25 Events by UEI" positionType="Float" x="0" y="26" width="555" height="10"/>
 				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
 					<datasetRun subDataset="top25_events">
 						<datasetParameter name="OPENNMS_URL_BASE">
@@ -874,7 +889,7 @@ ON
 						<jr:detailCell style="table_5line_grid" height="18" rowSpan="1">
 							<box topPadding="0" leftPadding="0" bottomPadding="0" rightPadding="0"/>
 							<textField>
-								<reportElement style="Table-Body" x="2" y="1" width="197" height="15"/>
+								<reportElement style="Table-Body" x="0" y="1" width="197" height="15"/>
 								<textElement/>
 								<textFieldExpression class="java.lang.String"><![CDATA[$F{eventsource}]]></textFieldExpression>
 							</textField>
@@ -891,7 +906,7 @@ ON
 						<jr:detailCell style="table_5line_grid" height="18" rowSpan="1">
 							<box leftPadding="0" rightPadding="0"/>
 							<textField>
-								<reportElement style="Table-Body" x="2" y="1" width="41" height="15"/>
+								<reportElement style="Table-Body" x="0" y="1" width="41" height="15"/>
 								<textElement textAlignment="Right"/>
 								<textFieldExpression class="java.lang.Long"><![CDATA[$F{tally}]]></textFieldExpression>
 							</textField>
@@ -899,42 +914,6 @@ ON
 					</jr:column>
 				</jr:table>
 			</componentElement>
-			<lineChart>
-				<chart isShowLegend="false">
-					<reportElement positionType="Float" x="0" y="50" width="555" height="145"/>
-					<chartTitle/>
-					<chartSubtitle/>
-					<chartLegend/>
-				</chart>
-				<categoryDataset>
-					<dataset>
-						<datasetRun subDataset="top25_events"/>
-					</dataset>
-					<categorySeries>
-						<seriesExpression><![CDATA["Dummy Series"]]></seriesExpression>
-						<categoryExpression><![CDATA[$F{eventuei}]]></categoryExpression>
-						<valueExpression><![CDATA[$F{tally}]]></valueExpression>
-					</categorySeries>
-				</categoryDataset>
-				<linePlot isShowLines="true" isShowShapes="false">
-					<plot/>
-					<categoryAxisFormat>
-						<axisFormat tickLabelColor="#FFFFFF" verticalTickLabels="false">
-							<labelFont/>
-							<tickLabelFont/>
-						</axisFormat>
-					</categoryAxisFormat>
-					<valueAxisFormat>
-						<axisFormat verticalTickLabels="false">
-							<labelFont/>
-							<tickLabelFont/>
-						</axisFormat>
-					</valueAxisFormat>
-				</linePlot>
-			</lineChart>
-			<break>
-				<reportElement x="0" y="200" width="100" height="1"/>
-			</break>
 		</band>
 		<band height="206">
 			<staticText>
@@ -982,7 +961,7 @@ ON
 						<jr:detailCell style="table_5line_grid" height="18" rowSpan="1">
 							<box topPadding="0" leftPadding="0" bottomPadding="0" rightPadding="0"/>
 							<textField>
-								<reportElement style="Table-Body" x="2" y="1" width="118" height="15"/>
+								<reportElement style="Table-Body" x="0" y="1" width="118" height="15"/>
 								<textElement/>
 								<textFieldExpression class="java.sql.Timestamp"><![CDATA[$F{hour}]]></textFieldExpression>
 							</textField>
@@ -999,7 +978,7 @@ ON
 						<jr:detailCell style="table_5line_grid" height="18" rowSpan="1">
 							<box leftPadding="0" rightPadding="0"/>
 							<textField>
-								<reportElement style="Table-Body" x="2" y="1" width="41" height="15"/>
+								<reportElement style="Table-Body" x="0" y="1" width="41" height="15"/>
 								<textElement textAlignment="Right"/>
 								<textFieldExpression class="java.lang.Long"><![CDATA[$F{count}]]></textFieldExpression>
 							</textField>
@@ -1064,7 +1043,7 @@ ON
 					<jr:column width="460">
 						<jr:columnHeader height="20" rowSpan="1">
 							<staticText>
-								<reportElement style="Table-Header" x="2" y="0" width="458" height="20"/>
+								<reportElement style="Table-Header" x="0" y="0" width="458" height="20"/>
 								<textElement/>
 								<text><![CDATA[Node label]]></text>
 							</staticText>
@@ -1072,7 +1051,7 @@ ON
 						<jr:columnFooter height="30" rowSpan="1"/>
 						<jr:detailCell style="table_3line_grid" height="18" rowSpan="1">
 							<textField hyperlinkType="Reference" hyperlinkTarget="Blank">
-								<reportElement style="Table-Body" x="2" y="0" width="458" height="18"/>
+								<reportElement style="Table-Body" x="0" y="0" width="458" height="18"/>
 								<textElement/>
 								<textFieldExpression class="java.lang.String"><![CDATA[$F{nodelabel}]]></textFieldExpression>
 								<hyperlinkReferenceExpression><![CDATA[$P{OPENNMS_URL_BASE}+"/event/list?sortby=id&filter=node="+$F{nodeid}]]></hyperlinkReferenceExpression>
@@ -1090,7 +1069,7 @@ ON
 						<jr:columnFooter height="30" rowSpan="1"/>
 						<jr:detailCell style="table_3line_grid" height="18" rowSpan="1">
 							<textField pattern="#,##0;-#,##0">
-								<reportElement style="Table-Body" x="2" y="0" width="92" height="18"/>
+								<reportElement style="Table-Body" x="0" y="0" width="92" height="18"/>
 								<textElement textAlignment="Right"/>
 								<textFieldExpression class="java.lang.Long"><![CDATA[$F{tally}]]></textFieldExpression>
 							</textField>
@@ -1155,7 +1134,7 @@ ON
 					<jr:column width="198">
 						<jr:columnHeader height="20" rowSpan="1">
 							<staticText>
-								<reportElement style="Table-Header" x="2" y="0" width="196" height="20"/>
+								<reportElement style="Table-Header" x="0" y="0" width="196" height="20"/>
 								<textElement>
 									<font isBold="true"/>
 								</textElement>
@@ -1164,7 +1143,7 @@ ON
 						</jr:columnHeader>
 						<jr:detailCell style="table_5line_grid" height="18" rowSpan="1">
 							<textField hyperlinkType="Reference" hyperlinkTarget="Blank">
-								<reportElement style="Table-Body" x="2" y="0" width="196" height="18"/>
+								<reportElement style="Table-Body" x="0" y="0" width="196" height="18"/>
 								<textElement>
 									<font size="10"/>
 								</textElement>
@@ -1185,7 +1164,7 @@ ON
 						</jr:columnHeader>
 						<jr:detailCell style="table_5line_grid" height="18" rowSpan="1">
 							<textField hyperlinkType="Reference" hyperlinkTarget="Blank">
-								<reportElement style="Eventdisplay Link Style" x="2" y="0" width="303" height="18"/>
+								<reportElement style="Eventdisplay Link Style" x="0" y="0" width="303" height="18"/>
 								<textElement>
 									<font size="10" isBold="false"/>
 								</textElement>
@@ -1365,19 +1344,19 @@ ON
 	</columnFooter>
 	<pageFooter>
 		<band height="29" splitType="Stretch">
+			<line>
+				<reportElement x="0" y="2" width="555" height="1"/>
+			</line>
 			<textField>
-				<reportElement x="439" y="5" width="76" height="20"/>
+				<reportElement x="435" y="9" width="80" height="20"/>
 				<textElement textAlignment="Right"/>
 				<textFieldExpression class="java.lang.String"><![CDATA["Page "+$V{PAGE_NUMBER}+" of"]]></textFieldExpression>
 			</textField>
 			<textField evaluationTime="Report">
-				<reportElement x="515" y="5" width="40" height="20"/>
+				<reportElement x="515" y="9" width="40" height="20"/>
 				<textElement/>
 				<textFieldExpression class="java.lang.String"><![CDATA[" " + $V{PAGE_NUMBER}]]></textFieldExpression>
 			</textField>
-			<line>
-				<reportElement x="0" y="2" width="555" height="1"/>
-			</line>
 		</band>
 	</pageFooter>
 	<summary>

@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -32,11 +32,14 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import javax.swing.JOptionPane;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -44,7 +47,12 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
+import org.opennms.netmgt.icmp.NullPinger;
+import org.opennms.netmgt.icmp.Pinger;
+import org.opennms.netmgt.icmp.PingerFactory;
 import org.opennms.netmgt.poller.remote.PollerFrontEnd;
+import org.quartz.Scheduler;
+import org.quartz.SchedulerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.support.AbstractApplicationContext;
@@ -69,20 +77,44 @@ public class Main implements Runnable {
 	protected String m_password = null;
 	protected static boolean m_shuttingDown = false;
 	protected boolean m_gui = false;
+	protected boolean m_disableIcmp = false;
 
 	private Main(String[] args) {
 		// Give us some time to attach a debugger if necessary
 		//try { Thread.sleep(20000); } catch (InterruptedException e) {}        
 
 		m_args = Arrays.copyOf(args, args.length);
-
-		final String pingerClass = System.getProperty("org.opennms.netmgt.icmp.pingerClass");
-		if (pingerClass == null) {
-			LOG.info("System property org.opennms.netmgt.icmp.pingerClass is not set; using JnaPinger by default");
-			System.setProperty("org.opennms.netmgt.icmp.pingerClass", "org.opennms.netmgt.icmp.jna.JnaPinger");
-		}
-		LOG.info("Pinger class: {}", System.getProperty("org.opennms.netmgt.icmp.pingerClass"));
 	}
+
+        public void initializePinger() {
+                if (m_disableIcmp) {
+                        LOG.info("Disabling ICMP by user request.");
+                        System.setProperty("org.opennms.netmgt.icmp.pingerClass", "org.opennms.netmgt.icmp.NullPinger");
+                        PingerFactory.setInstance(new NullPinger());
+                        return;
+                }
+
+                final String pingerClass = System.getProperty("org.opennms.netmgt.icmp.pingerClass");
+    		if (pingerClass == null) {
+    			LOG.info("System property org.opennms.netmgt.icmp.pingerClass is not set; using JnaPinger by default");
+    			System.setProperty("org.opennms.netmgt.icmp.pingerClass", "org.opennms.netmgt.icmp.jna.JnaPinger");
+    		}
+    		LOG.info("Pinger class: {}", System.getProperty("org.opennms.netmgt.icmp.pingerClass"));
+    		try {
+    		        final Pinger pinger = PingerFactory.getInstance();
+    		        pinger.ping(InetAddress.getLoopbackAddress());
+    		} catch (final Throwable t) {
+    		        LOG.warn("Unable to get pinger instance.  Setting pingerClass to NullPinger.  For details, see: http://www.opennms.org/wiki/ICMP_could_not_be_initialized");
+    		        System.setProperty("org.opennms.netmgt.icmp.pingerClass", "org.opennms.netmgt.icmp.NullPinger");
+    		        PingerFactory.setInstance(new NullPinger());
+    		        if (m_gui) {
+            		        final String message = "ICMP (ping) could not be initialized: " + t.getMessage()
+            		                + "\nDisabling ICMP and using the NullPinger instead."
+            		                + "\nFor details, see: http://www.opennms.org/wiki/ICMP_could_not_be_initialized";
+            		        JOptionPane.showMessageDialog(null, message, "ICMP Not Available", JOptionPane.WARNING_MESSAGE);
+    		        }
+    		}
+        }
 
 	private void getAuthenticationInfo() {
 		if (m_uri == null || m_uri.getScheme() == null) {
@@ -120,6 +152,7 @@ public class Main implements Runnable {
 
 		try {
 			parseArguments(m_args);
+	                initializePinger();
 			getAuthenticationInfo();
 			AbstractApplicationContext context = createAppContext();
 			PollerFrontEnd frontEnd = getPollerFrontEnd(context);
@@ -149,6 +182,7 @@ public class Main implements Runnable {
 
 		options.addOption("d", "debug", false, "write debug messages to the log");
 		options.addOption("g", "gui", false, "start a GUI (default: false)");
+		options.addOption("i", "disable-icmp", false, "disable ICMP/ping (overrides -Dorg.opennms.netmgt.icmp.pingerClass=)");
 		options.addOption("l", "location", true, "the location name of this remote poller");
 		options.addOption("u", "url", true, "the URL for OpenNMS (example: https://server-name/opennms-remoting)");
 		options.addOption("n", "name", true, "the name of the user to connect as");
@@ -163,6 +197,10 @@ public class Main implements Runnable {
 		}
 
 		if (cl.hasOption("d")) {
+		}
+
+		if (cl.hasOption("i")) {
+		        m_disableIcmp = true;
 		}
 
 		if (cl.hasOption("l")) {
@@ -236,7 +274,17 @@ public class Main implements Runnable {
 			@Override
 			public void run() {
 				m_shuttingDown = true;
-				context.close();
+
+                // MVR: gracefully shutdown scheduler, otherwise context.close will raise an exception
+                // See #NMS-6966 for more details.
+                try {
+                    ((Scheduler)context.getBean("scheduler")).shutdown(true);
+                } catch (SchedulerException e) {
+                    LOG.warn("Scheduler shutdown failed.", e);
+                }
+
+                // now close the application context
+                context.close();
 			}
 		});
 		return context;

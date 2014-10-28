@@ -1,0 +1,9 @@
+<xml-groups>
+    <xml-group name="jvm-threading" resource-type="node"
+        resource-xpath="/MBean" >
+        <xml-object name="ThreadCount" type="GAUGE" xpath="Attribute[@name='ThreadCount']/@value" />
+        <xml-object name="PeakThreadCount" type="GAUGE" xpath="Attribute[@name='PeakThreadCount']/@value" />
+        <xml-object name="DaemonThreadCount" type="GAUGE" xpath="Attribute[@name='DaemonThreadCount']/@value" />
+        <xml-object name="CurThreadCpuTime" type="GAUGE" xpath="Attribute[@name='CurrentThreadCpuTime']/@value" />
+    </xml-group>
+</xml-groups>

@@ -29,7 +29,7 @@ as an example, the interface has been successfully used to integrate OpenNMS wit
 
 Liscence
 ----------
-The qosdaemon project builds an OSS/J interface for OpenNMS. It is released with OpenNMS under the GPL licence and uses code contributed to OpenNMS by the University of Southampton.
+The qosdaemon project builds an OSS/J interface for OpenNMS. It is released with OpenNMS under the AGPL licence and uses code contributed to OpenNMS by the University of Southampton.
 
 OSSbeans ( http://sourceforge.net/projects/openoss ) are released under the Apache-2 licence by the University of Southampton
 

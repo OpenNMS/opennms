@@ -7,16 +7,16 @@
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -316,19 +316,19 @@ public class Snmp4JStrategy implements SnmpStrategy {
         SnmpValue[] retvalues = { null };
 
         if (responseEvent.getResponse() == null) {
-            LOG.warn("processResponse: Timeout.  Agent: {}", agentConfig);
+            LOG.warn("processResponse: Timeout.  Agent: {}, requestID={}", agentConfig, responseEvent.getRequest().getRequestID());
         } else if (responseEvent.getError() != null) {
-            LOG.warn("processResponse: Error during get operation.  Error: {}", responseEvent.getError().getLocalizedMessage(), responseEvent.getError());
+            LOG.warn("processResponse: Error during get operation.  Error: {}, requestID={}", responseEvent.getError().getLocalizedMessage(), responseEvent.getError(), responseEvent.getRequest().getRequestID());
         } else if (responseEvent.getResponse().getType() == PDU.REPORT) {
-            LOG.warn("processResponse: Error during get operation.  Report returned with varbinds: {}", responseEvent.getResponse().getVariableBindings());
+            LOG.warn("processResponse: Error during get operation.  Report returned with varbinds: {}, requestID={}", responseEvent.getResponse().getVariableBindings(), responseEvent.getRequest().getRequestID());
         } else if (responseEvent.getResponse().getVariableBindings().size() < 1) {
-            LOG.warn("processResponse: Received PDU with 0 varbinds.");
+            LOG.warn("processResponse: Received PDU with 0 varbinds. Agent: {}, requestID={}", agentConfig, responseEvent.getRequest().getRequestID());
         } else if (responseEvent.getResponse().get(0).getSyntax() == SMIConstants.SYNTAX_NULL) {
-            LOG.info("processResponse: Null value returned in varbind: {}", responseEvent.getResponse().get(0));
+            LOG.info("processResponse: Null value returned in varbind: {}. Agent: {}, requestID={}", responseEvent.getResponse().get(0), agentConfig, responseEvent.getRequest().getRequestID());
         } else {
             retvalues = convertResponseToValues(responseEvent);
 
-            LOG.debug("processResponse: SNMP operation successful, value: {} ", (Object)retvalues);
+            LOG.debug("processResponse: SNMP operation successful, value: {}", (Object)retvalues);
         }
 
         return retvalues;
