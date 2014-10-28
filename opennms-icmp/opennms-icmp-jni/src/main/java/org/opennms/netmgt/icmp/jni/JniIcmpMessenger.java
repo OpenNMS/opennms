@@ -34,6 +34,7 @@ import java.util.Queue;
 
 import org.opennms.core.logging.Logging;
 import org.opennms.protocols.icmp.ICMPEchoPacket;
+import org.opennms.protocols.icmp.ICMPHeader;
 import org.opennms.protocols.icmp.IcmpSocket;
 import org.opennms.protocols.rt.Messenger;
 import org.slf4j.Logger;
@@ -138,12 +139,6 @@ public class JniIcmpMessenger implements Messenger<JniPingRequest, JniPingRespon
      * @return a {@link org.opennms.netmgt.icmp.spi.PingReply} object.
      */
     public static JniPingResponse createPingResponse(DatagramPacket packet) {
-        // Check the packet length
-        //
-        if (packet.getData().length != ICMPEchoPacket.getNetworkSize()) {
-            throw new IllegalArgumentException("The packet is not the correct network size");
-        }
-
         // Construct a new packet
         //
         ICMPEchoPacket pkt = new ICMPEchoPacket(packet.getData());
