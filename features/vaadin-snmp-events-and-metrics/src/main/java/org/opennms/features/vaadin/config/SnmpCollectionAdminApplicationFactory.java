@@ -29,7 +29,7 @@
 package org.opennms.features.vaadin.config;
 
 import org.opennms.netmgt.config.DataCollectionConfigDao;
-import org.ops4j.pax.vaadin.AbstractApplicationFactory;
+import org.opennms.vaadin.extender.AbstractApplicationFactory;
 
 import com.vaadin.ui.UI;
 
@@ -51,7 +51,7 @@ public class SnmpCollectionAdminApplicationFactory extends AbstractApplicationFa
     }
 
     /* (non-Javadoc)
-     * @see org.ops4j.pax.vaadin.AbstractApplicationFactory#getUI()
+     * @see org.opennms.vaadin.extender.AbstractApplicationFactory#getUI()
      */
     @Override
     public UI createUI() {
@@ -61,7 +61,7 @@ public class SnmpCollectionAdminApplicationFactory extends AbstractApplicationFa
     }
 
     /* (non-Javadoc)
-     * @see org.ops4j.pax.vaadin.AbstractApplicationFactory#getUIClass()
+     * @see org.opennms.vaadin.extender.AbstractApplicationFactory#getUIClass()
      */
     @Override
     public Class<? extends UI> getUIClass() {

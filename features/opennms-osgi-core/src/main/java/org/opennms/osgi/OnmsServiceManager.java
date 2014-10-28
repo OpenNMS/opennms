@@ -29,7 +29,7 @@
 package org.opennms.osgi;
 
 
-import org.ops4j.pax.vaadin.SessionListener;
+import org.opennms.vaadin.extender.SessionListener;
 
 import java.util.List;
 import java.util.Properties;

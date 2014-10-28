@@ -107,7 +107,7 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
         <argument value="topologyApplication"/>
     </bean>
 
-    <service interface="org.ops4j.pax.vaadin.ApplicationFactory" ref="topologyUIFactory">
+    <service interface="org.opennms.vaadin.extender.ApplicationFactory" ref="topologyUIFactory">
         <service-properties>
             <entry key="alias" value="${servletAlias}"/>
             <entry key="init.widgetset" value="${widgetset}"/>
