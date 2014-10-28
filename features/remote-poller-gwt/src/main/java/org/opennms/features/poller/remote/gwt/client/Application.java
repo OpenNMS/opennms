@@ -36,13 +36,6 @@ import com.google.gwt.event.shared.HandlerManager;
 
 import de.novanic.eventservice.client.event.RemoteEventService;
 
-/**
- * Entry point classes define <code>onModuleLoad()</code>.
- *
- * @author ranger
- * @version $Id: $
- * @since 1.8.1
- */
 public class Application implements LocationsUpdatedEventHandler {
 
     private LocationManager m_locationManager;

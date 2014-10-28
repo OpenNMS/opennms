@@ -37,6 +37,11 @@ For more information contact:
     http://www.opennms.org/
     http://www.opennms.com/";
 
+sub write_groovy {
+	my $dates = shift;
+	write_java($dates);
+}
+
 sub write_jsp {
 	my $dates = shift;
 	print FILEOUT "<%--\n";
@@ -137,7 +142,7 @@ sub process_file {
 	return if ($name =~ /\/target\//);
 	return if ($name =~ /\/\.git\//);
 	return unless (-f $name);
-	return unless ($name =~ /\.(jsp|java|properties)$/);
+	return unless ($name =~ /\.(jsp|java|properties|groovy)$/);
 	return if ($name =~ /\/test\/.*\.properties$/);
 	return if ($name =~ /\/castor.properties$/);
 	return if ($name =~ /opennms-base-assembly\/src\/main\/filtered\/etc/);
@@ -176,9 +181,16 @@ sub process_file {
 	my $in_comment = undef;
 	my $comment_contents = "";
 	my $didit = 0;
+	my $hashbang = undef;
+	my $lineno = 0;
 
 	LOOP: while (my $line = <FILEIN>) {
-		print "  $line" if ($debug);
+		$lineno++;
+		print sprintf("%04d  %s\n", $lineno, $line) if ($debug);
+
+		if ($lineno == 1 and $line =~ /^(\#\!.*)$/) {
+			$hashbang = $1;
+		}
 
 		if ($line =~ /Licensed to the Apache Software Foundation|Licensed under the Apache License, Version|Brian Wellington|Original version by Tim Endres|Licensed to the OpenNMS Group|under the terms of the Eclipse Public License/i) {
 			print "  Alternative license found, skipping.\n";
@@ -213,6 +225,10 @@ sub process_file {
 				if ($line =~ /\-\-\!?\>/) {
 					$doit = 1;
 				}
+			} elsif ($extension eq "groovy" and $in_comment eq "#") {
+				if (($line !~ /^\s*#/ and $line !~ /^\s*$/) or ($line =~ /^\s*\#\#\#\#\#\#\#\#\#\#\#*\s*$/)) {
+					$doit = 1;
+				}
 			} elsif ($extension eq "properties" and $in_comment eq "#") {
 				if (($line !~ /^\s*#/ and $line !~ /^\s*$/) or ($line =~ /^\s*\#\#\#\#\#\#\#\#\#\#\#*\s*$/)) {
 					$doit = 1;
@@ -223,10 +239,11 @@ sub process_file {
 				}
 			}
 
+			#print "doit: $doit, \$in_header: $in_header, \$in_comment: $in_comment\n" if ($debug);
 			if ($doit) {
 				if (defined $in_header) {
 					if ($in_comment eq "//") {
-						if ($extension eq "jsp") {
+						if ($extension eq "jsp" or $extension eq "groovy") {
 							write_java($datestring);
 						} else {
 							&{"write_$extension"}($datestring);
@@ -264,6 +281,8 @@ sub process_file {
 			} elsif ($extension eq "jsp" and $line =~ /(\<\%\-\-)/) {
 				$in_comment = $1;
 			} elsif ($extension eq "properties" and $line =~ /^\s*(\#)/) {
+				$in_comment = $1;
+			} elsif ($extension eq "groovy" and $line =~ /^\s*(\#)[^\!]/) {
 				$in_comment = $1;
 			}
 
@@ -306,9 +325,18 @@ sub process_file {
 		open (FILEIN, "$name") or die "unable to read from $name: $!\n";
 		open (FILEOUT, ">$name.tmp.$$") or die "unable to write to $name.tmp.$$: $!\n";
 
+		if (defined $hashbang) {
+			print FILEOUT $hashbang, "\n\n";
+		}
+
 		&{"write_$extension"}($datestring);
 
+		my $nonempty = 0;
+
 		while (my $line = <FILEIN>) {
+			next if (defined $hashbang and $line =~ /^\#\!/);
+			next if ($nonempty == 0 and $line =~ /^\s*$/);
+			$nonempty = 1;
 			print FILEOUT $line;
 		}
 
