@@ -290,13 +290,14 @@ function confirmAssetEdit() {
 </script>
 
 <div class="onms">
-<h2>Node: ${model.label} (ID: ${model.id})</h2>
+<h2>Node: ${model.label} <span class="NPdbid" title="Database ID: ${model.id}">${model.id}</span>
 <c:if test="${model.foreignSource != null}">
-<h2><em>Created via provisioning requisition <strong>${model.foreignSource} (foreignId: ${model.foreignId})</strong></em></h2>
+<span class="NPfs" title="Created via requisition: ${model.foreignSource}">${model.foreignSource}</span>&nbsp;<span class="NPfid" title="Foreign-ID: ${model.foreignId}">${model.foreignId}</span>
 </c:if>
 <c:if test="${model.foreignSource == null}">
-<h2><em>Not a member of any provisioning requisition</em></h2>
+Auto-provisioned node (Not a member of any requisition)
 </c:if>
+</h2>
 <div id="linkbar">
   <ul class="o-menu">
     <c:url var="eventLink" value="event/list">
