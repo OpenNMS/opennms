@@ -5,14 +5,14 @@
 		 xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
 
     <jsp-config>
-        <jsp-property-group>
-            <url-pattern>*.jsp</url-pattern>
-            <page-encoding>UTF-8</page-encoding>
-        </jsp-property-group>
         <taglib>
             <taglib-uri>http://www.springframework.org/tags/form</taglib-uri>
             <taglib-location>/WEB-INF/spring-form.tld</taglib-location>
         </taglib>
+        <jsp-property-group>
+            <url-pattern>*.jsp</url-pattern>
+            <page-encoding>UTF-8</page-encoding>
+        </jsp-property-group>
     </jsp-config>
 
   <display-name>opennms</display-name>

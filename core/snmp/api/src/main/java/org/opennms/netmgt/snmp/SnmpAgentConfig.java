@@ -28,6 +28,9 @@
 
 package org.opennms.netmgt.snmp;
 
+import org.json.JSONObject;
+import org.json.JSONStringer;
+import org.json.JSONTokener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -67,96 +70,72 @@ public class SnmpAgentConfig extends SnmpConfiguration implements Serializable {
         if (protocolConfigString == null) {
             throw new IllegalArgumentException("Protocol configuration string for SnmpAgentConfig must not be null.");
         }
-        if (!protocolConfigString.startsWith("snmp:")) {
-            throw new IllegalArgumentException("Invalid protocol configuration string for SnmpAgentConfig: Expected it to start with snmp:" + protocolConfigString);
+
+        final JSONObject protocolConfig = new JSONObject(new JSONTokener(protocolConfigString)).optJSONObject("snmp");
+
+        if (protocolConfig == null) {
+            throw new IllegalArgumentException("Invalid protocol configuration string for SnmpAgentConfig: Expected it to start with snmp object" + protocolConfigString);
         }
 
-        SnmpAgentConfig agentConfig = new SnmpAgentConfig(null, null);
+        final SnmpAgentConfig agentConfig = new SnmpAgentConfig();
+        agentConfig.setAddress(InetAddrUtils.addr(protocolConfig.optString("address")));
+        agentConfig.setProxyFor(InetAddrUtils.addr(protocolConfig.optString("proxyFor")));
+        agentConfig.setPort(protocolConfig.optInt("port"));
+        agentConfig.setTimeout(protocolConfig.optInt("timeout"));
+        agentConfig.setRetries(protocolConfig.optInt("retries"));
+        agentConfig.setMaxVarsPerPdu(protocolConfig.optInt("max-vars-per-pdu"));
+        agentConfig.setMaxRepetitions(protocolConfig.optInt("max-repetitions"));
+        agentConfig.setMaxRequestSize(protocolConfig.optInt("max-request-size"));
+        agentConfig.setVersion(protocolConfig.optInt("version"));
+        agentConfig.setSecurityLevel(protocolConfig.optInt("security-level"));
+        agentConfig.setSecurityName(protocolConfig.optString("security-name"));
+        agentConfig.setAuthPassPhrase(protocolConfig.optString("auth-passphrase"));
+        agentConfig.setAuthProtocol(protocolConfig.optString("auth-protocol"));
+        agentConfig.setPrivPassPhrase(protocolConfig.optString("priv-passphrase"));
+        agentConfig.setPrivProtocol(protocolConfig.optString("priv-protocol"));
+        agentConfig.setEngineId(protocolConfig.optString("engine-id"));
+        agentConfig.setContextEngineId(protocolConfig.optString("context-engine-id"));
+        agentConfig.setContextName(protocolConfig.optString("context-name"));
+        agentConfig.setEnterpriseId(protocolConfig.optString("enterprise-id"));
+        agentConfig.setReadCommunity(protocolConfig.optString("read-community"));
+        agentConfig.setWriteCommunity(protocolConfig.optString("write-community"));
 
-        String[] attributes = protocolConfigString.substring("snmp:".length()).split(",");
-
-        for (String attribute : attributes) {
-            String[] pair = attribute.split("=");
-            if (pair.length != 2) {
-                throw new IllegalArgumentException("unexpected format for key value pair in SnmpAgentConfig configuration string" + attribute);
-            }
-
-            String key = pair[0];
-            String value = pair[1];
-
-            if ("address".equalsIgnoreCase(key)) {
-                agentConfig.setAddress(InetAddrUtils.addr(value));
-            } else if ("proxyFor".equalsIgnoreCase(key)) {
-                agentConfig.setProxyFor(InetAddrUtils.addr(value));
-            } else if ("port".equalsIgnoreCase(key)) {
-                agentConfig.setPort(Integer.parseInt(value));
-            } else if ("timeout".equalsIgnoreCase(key)) {
-                agentConfig.setTimeout(Integer.parseInt(value));
-            } else if ("retries".equalsIgnoreCase(key)) {
-                agentConfig.setRetries(Integer.parseInt(value));
-            } else if ("max-vars-per-pdu".equalsIgnoreCase(key)) {
-                agentConfig.setMaxVarsPerPdu(Integer.parseInt(value));
-            } else if ("max-repetitions".equalsIgnoreCase(key)) {
-                agentConfig.setMaxRepetitions(Integer.parseInt(value));
-            } else if ("max-request-size".equalsIgnoreCase(key)) {
-                agentConfig.setMaxRequestSize(Integer.parseInt(value));
-            } else if ("version".equalsIgnoreCase(key)) {
-                agentConfig.setVersionAsString(value);
-            } else if ("security-level".equalsIgnoreCase(key)) {
-                agentConfig.setSecurityLevel(Integer.parseInt(value));
-            } else if ("security-name".equalsIgnoreCase(key)) {
-                agentConfig.setSecurityName(value);
-            } else if ("auth-passphrase".equalsIgnoreCase(key)) {
-                agentConfig.setAuthPassPhrase(value);
-            } else if ("auth-protocol".equalsIgnoreCase(key)) {
-                agentConfig.setAuthProtocol(value);
-            } else if ("priv-passphrase".equalsIgnoreCase(key)) {
-                agentConfig.setPrivPassPhrase(value);
-            } else if ("priv-protocol".equalsIgnoreCase(key)) {
-                agentConfig.setPrivProtocol(value);
-            } else if ("read-community".equalsIgnoreCase(key)) {
-                agentConfig.setReadCommunity(value);
-            } else if ("engine-id".equalsIgnoreCase(key)) {
-            	agentConfig.setEngineId(value);
-            } else if ("context-engine-id".equalsIgnoreCase(key)) {
-            	agentConfig.setContextEngineId(value);
-            } else if ("context-name".equalsIgnoreCase(key)) {
-            	agentConfig.setContextName(value);
-            } else if ("enterprise-id".equalsIgnoreCase(key)) {
-            	agentConfig.setEnterpriseId(value);
-            } else if ("write-community".equalsIgnoreCase(key)) {
-            	agentConfig.setWriteCommunity(value);
-            } else {
-                LOG.warn("Unexpected attribute in protocol configuration string for SnmpAgentConfig: '{}'", attribute);
-            }
-        }
         return agentConfig;
     }
 
     public String toProtocolConfigString() {
-        StringBuffer buff = new StringBuffer("snmp:");
-        if (m_address != null) buff.append("address=").append(InetAddrUtils.str(m_address));
-        if (m_proxyFor != null) buff.append(",proxyFor=").append(InetAddrUtils.str(m_proxyFor));
-        buff.append(",port=").append(getPort());
-        buff.append(",timeout=").append(getTimeout());
-        buff.append(",retries=").append(getRetries());
-        buff.append(",max-vars-per-pdu=").append(getMaxVarsPerPdu());
-        buff.append(",max-repetitions=").append(getMaxRepetitions());
-        buff.append(",max-request-size=").append(getMaxRequestSize());
-        buff.append(",version=").append(versionToString(getVersion()));
-        buff.append(",security-level=").append(getSecurityLevel());
-        if (getSecurityName() != null) buff.append(",security-name=").append(getSecurityName());
-        if (getAuthPassPhrase() != null) buff.append(",auth-passphrase=").append(getAuthPassPhrase());
-        if (getAuthProtocol() != null) buff.append(",auth-protocol=").append(getAuthProtocol());
-        if (getPrivPassPhrase() != null) buff.append(",priv-passphrase=").append(getPrivPassPhrase());
-        if (getPrivProtocol() != null) buff.append(",priv-protocol=").append(getPrivProtocol());
-        if (getContextName() != null) buff.append(",context-name=").append(getContextName());
-        if (getEngineId() != null) buff.append(",engine-id=").append(getEngineId());
-        if (getContextEngineId() != null) buff.append(",context-engine-id=").append(getContextEngineId());
-        if (getEnterpriseId() != null) buff.append(",enterprise-id=").append(getEnterpriseId());
-        if (getReadCommunity() != null) buff.append(",read-community=").append(getReadCommunity());
-        if (getWriteCommunity() != null) buff.append(",write-community=").append(getWriteCommunity());
-        return buff.toString();
+        return new JSONStringer()
+                .object()
+                .key("snmp")
+                .object()
+                .key("address").value((m_address == null)
+                                      ? null
+                                      : InetAddrUtils.str(m_address))
+                .key("proxyFor").value((m_proxyFor == null)
+                                       ? null
+                                       : InetAddrUtils.str(m_proxyFor))
+                .key("port").value(getPort())
+                .key("timeout").value(getTimeout())
+                .key("retries").value(getRetries())
+                .key("max-vars-per-pdu").value(getMaxVarsPerPdu())
+                .key("max-repetitions").value(getMaxRepetitions())
+                .key("max-request-size").value(getMaxRequestSize())
+                .key("version").value(getVersion())
+                .key("security-level").value(getSecurityLevel())
+                .key("security-name").value(getSecurityName())
+                .key("auth-passphrase").value(getAuthPassPhrase())
+                .key("auth-protocol").value(getAuthProtocol())
+                .key("priv-passphrase").value(getPrivPassPhrase())
+                .key("priv-protocol").value(getPrivProtocol())
+                .key("context-name").value(getContextName())
+                .key("engine-id").value(getEngineId())
+                .key("context-engine-id").value(getContextEngineId())
+                .key("enterprise-id").value(getEnterpriseId())
+                .key("read-community").value(getReadCommunity())
+                .key("write-community").value(getWriteCommunity())
+                .endObject()
+                .endObject()
+                .toString();
     }
 
     @Override
