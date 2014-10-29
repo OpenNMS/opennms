@@ -202,11 +202,8 @@ public class SnmpCollectionSet implements Collectable, CollectionSet {
     }
 
     private SysUpTimeTracker createSysUpTimeTracker() {
-        SysUpTimeTracker sysUpTime = null;
-        if (hasInterfaceDataToCollect()) {
-            sysUpTime = new SysUpTimeTracker();
-        }
-        return sysUpTime;
+        // It seems like it is not necessary to check if hasInterfaceDataToCollect() returns true to create the tracker.
+        return new SysUpTimeTracker();
     }
 
     private SnmpIfCollector createIfCollector() {
