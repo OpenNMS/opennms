@@ -66,6 +66,7 @@ import org.opennms.netmgt.model.IsIsLink.IsisISAdjNeighSysType;
 import org.opennms.netmgt.model.IsIsLink.IsisISAdjState;
 import org.opennms.netmgt.model.LldpElement.LldpChassisIdSubType;
 import org.opennms.netmgt.model.LldpLink.LldpPortIdSubType;
+import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OspfElement.Status;
 import org.opennms.netmgt.model.BridgeMacLink;
 import org.opennms.netmgt.model.IpNetToMedia;
@@ -324,7 +325,7 @@ public class EnLinkdElementFactory implements InitializingBean, EnLinkdElementFa
 		linknode.setLldpPortUrl(getSnmpInterfaceUrl(Integer.valueOf(nodeid), link.getLldpPortIfindex()));
 		
 		LldpElement lldpremelement= m_lldpElementDao.findByChassisId(link.getLldpRemChassisId(),link.getLldpRemChassisIdSubType());
-		if (lldpremelement != null) 
+		if (lldpremelement != null)
 			linknode.setLldpRemChassisIdString(getRemChassisIdString(lldpremelement.getNode().getLabel(),link.getLldpRemChassisId(), link.getLldpRemChassisIdSubType()));
 		else
 			linknode.setLldpRemChassisIdString(getRemChassisIdString(link.getLldpRemSysname(),link.getLldpRemChassisId(), link.getLldpRemChassisIdSubType()));
