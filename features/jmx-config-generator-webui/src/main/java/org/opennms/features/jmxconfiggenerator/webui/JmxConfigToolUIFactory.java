@@ -28,14 +28,14 @@
 
 package org.opennms.features.jmxconfiggenerator.webui;
 
-import org.ops4j.pax.vaadin.AbstractApplicationFactory;
+import org.opennms.vaadin.extender.AbstractApplicationFactory;
 
 import com.vaadin.ui.UI;
 
 public class JmxConfigToolUIFactory extends AbstractApplicationFactory {
 
     /* (non-Javadoc)
-     * @see org.ops4j.pax.vaadin.ApplicationFactory#createApplication(javax.servlet.http.HttpServletRequest)
+     * @see org.opennms.vaadin.extender.ApplicationFactory#createApplication(javax.servlet.http.HttpServletRequest)
      */
     @Override
     public UI createUI() {
@@ -43,7 +43,7 @@ public class JmxConfigToolUIFactory extends AbstractApplicationFactory {
     }
 
     /* (non-Javadoc)
-     * @see org.ops4j.pax.vaadin.ApplicationFactory#getApplicationClass()
+     * @see org.opennms.vaadin.extender.ApplicationFactory#getApplicationClass()
      */
     @Override
     public Class<? extends UI> getUIClass() {
