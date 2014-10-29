@@ -17,7 +17,7 @@
         <argument value="wallboardUI"/>
     </bean>
 
-    <service id="wallboardService" interface="org.ops4j.pax.vaadin.ApplicationFactory" ref="wallboardUIFactory">
+    <service id="wallboardService" interface="org.opennms.vaadin.extender.ApplicationFactory" ref="wallboardUIFactory">
         <service-properties>
             <entry key="alias" value="/vaadin-wallboard"/>
             <entry key="init.widgetset" value="org.opennms.features.vaadin.dashboard.DashboardWidgetSet"/>
@@ -40,7 +40,7 @@
         <argument value="wallboardConfigUI"/>
     </bean>
 
-    <service interface="org.ops4j.pax.vaadin.ApplicationFactory" ref="wallboardConfigUIFactory">
+    <service interface="org.opennms.vaadin.extender.ApplicationFactory" ref="wallboardConfigUIFactory">
         <service-properties>
             <entry key="alias" value="/wallboard-config"/>
         </service-properties>
