@@ -55,7 +55,7 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.ops4j.pax.vaadin</groupId>
+            <groupId>org.opennms.vaadin-extender</groupId>
             <artifactId>service</artifactId>
             <scope>provided</scope>
         </dependency>

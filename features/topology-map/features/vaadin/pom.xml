@@ -71,7 +71,7 @@
     </dependency>
     
     <dependency>
-      <groupId>org.ops4j.pax.vaadin</groupId>
+      <groupId>org.opennms.vaadin-extender</groupId>
       <artifactId>service</artifactId>
     </dependency>
     <dependency>
