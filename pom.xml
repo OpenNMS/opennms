@@ -1138,7 +1138,7 @@
     <jungVersion>2.0.1</jungVersion>
     <vaadinVersion>7.1.7</vaadinVersion>
     <vaadin.plugin.version>${vaadinVersion}</vaadin.plugin.version>
-    <vaadinExtenderVersion>1.0.0-SNAPSHOT</vaadinExtenderVersion>
+    <vaadinExtenderVersion>1.0.0</vaadinExtenderVersion>
 
   </properties>
 
