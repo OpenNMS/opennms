@@ -588,7 +588,7 @@ public class JRobinRrdStrategy implements RrdStrategy<RrdDef,RrdDb> {
                 String[] def = splitDef(definition);
                 String[] ds = def[0].split("=");
                 // LOG.debug("ds = {}", Arrays.toString(ds));
-                final String replaced = ds[1].replaceAll("\\\\(.)", "$1");
+                final String replaced = ds[1]; // ds[1].replaceAll("\\\\(.)", "$1");
                 // LOG.debug("replaced = {}", replaced);
 
                 final File dsFile;
@@ -600,7 +600,7 @@ public class JRobinRrdStrategy implements RrdStrategy<RrdDef,RrdDb> {
                 }
                 // LOG.debug("dsFile = {}, ds[1] = {}", dsFile, ds[1]);
 
-                final String absolutePath = (File.separatorChar == '\\')? dsFile.getAbsolutePath().replace("\\", "\\\\") : dsFile.getAbsolutePath();
+                final String absolutePath = dsFile.getAbsolutePath(); // (File.separatorChar == '\\')? dsFile.getAbsolutePath().replace("\\", "\\\\") : dsFile.getAbsolutePath();
                 // LOG.debug("absolutePath = {}", absolutePath);
                 graphDef.datasource(ds[0], absolutePath, def[1], def[2]);
 
