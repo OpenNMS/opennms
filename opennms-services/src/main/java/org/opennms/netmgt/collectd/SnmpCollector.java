@@ -336,6 +336,8 @@ public class SnmpCollector implements ServiceCollector {
                  * is no longer needed.  My gut thinks this should be investigated.
                  */
                 forceRescanState.rescanIndicated();
+            } else {
+                collectionSet.checkForSystemRestart();
             }
             return collectionSet;
         } catch (CollectionException e) {

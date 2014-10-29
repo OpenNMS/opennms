@@ -231,6 +231,18 @@ public class Main implements Runnable {
 				m_password = "";
 			}
 		}
+
+		// If we cannot obtain the username/password from the command line, attempt
+		// to optionally get it from system properties
+		if (m_username == null) {
+			m_username = System.getProperty("opennms.poller.server.username");
+			if (m_username != null) {
+				m_password = System.getProperty("opennms.poller.server.password");
+				if (m_password == null) {
+					m_password = "";
+				}
+			}
+		}
 	}
 
 	private static void usage(Options o) {
