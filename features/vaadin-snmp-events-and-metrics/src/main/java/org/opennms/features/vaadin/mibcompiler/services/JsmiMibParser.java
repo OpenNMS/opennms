@@ -127,7 +127,7 @@ public class JsmiMibParser implements MibParser, Serializable {
     @Override
     public boolean parseMib(File mibFile) {
         // Validate MIB Directory
-        if (mibDirectory == null) {
+        if (mibDirectory == null || !mibDirectory.isDirectory()) {
             errorHandler.addError("MIB directory has not been set.");
             return false;
         }
