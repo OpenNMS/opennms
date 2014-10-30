@@ -554,7 +554,10 @@ public abstract class Util extends Object {
      *   the model code.
      */
     public static final String formatDateToUIString(final Date date) {
-        return DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM).format(date);
+        if (date != null) {
+            return DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM).format(date);
+        }
+        return "";
     }
     
     /**

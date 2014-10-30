@@ -66,6 +66,7 @@ import org.opennms.netmgt.model.IsIsLink.IsisISAdjNeighSysType;
 import org.opennms.netmgt.model.IsIsLink.IsisISAdjState;
 import org.opennms.netmgt.model.LldpElement.LldpChassisIdSubType;
 import org.opennms.netmgt.model.LldpLink.LldpPortIdSubType;
+import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OspfElement.Status;
 import org.opennms.netmgt.model.BridgeMacLink;
 import org.opennms.netmgt.model.IpNetToMedia;
@@ -348,9 +349,7 @@ public class EnLinkdElementFactory implements InitializingBean, EnLinkdElementFa
 				}
 
 			} else {
-				linknode.setLldpRemChassisIdString(getRemChassisIdString(link.getLldpRemSysname(),
-														 link.getLldpRemChassisId(),
-														 link.getLldpRemChassisIdSubType()));
+				linknode.setLldpRemChassisIdString(getRemChassisIdString(link.getLldpRemSysname(), link.getLldpRemChassisId(), link.getLldpRemChassisIdSubType()));
 			}
 			linknodes.add(linknode);
 		}
@@ -533,16 +532,12 @@ public class EnLinkdElementFactory implements InitializingBean, EnLinkdElementFa
 	
 		remlinknode.setBridgeRemoteNode(link.getDesignatedNode().getLabel());
 		remlinknode.setBridgeRemoteUrl(getNodeUrl(link.getDesignatedNode().getId()));
-		
-                OnmsSnmpInterface remiface = m_snmpInterfaceDao.findByNodeIdAndIfIndex(link.getNode().getId(), link.getBridgePortIfIndex());
-                if (remiface != null)
-                    remlinknode.setBridgeRemotePort(getPortString(remiface));
-                else 
-                    remlinknode.setBridgeRemotePort(getPortString(link.getBridgePortIfIndex(),null));
-		remlinknode.setBridgeRemotePortUrl(getSnmpInterfaceUrl(link.getDesignatedNode().getId(), link.getDesignatedPortIfIndex()));
+
+        OnmsSnmpInterface remiface = getSnmpInterface(link.getDesignatedNode(), link.getDesignatedPortIfIndex());
+        remlinknode.setBridgeRemotePort(getPortString(remiface));
+        remlinknode.setBridgeRemotePortUrl(getSnmpInterfaceUrl(remiface));
 		
 		remlinknode.setBridgeRemoteVlan(link.getDesignatedVlan());
-		
 		linknode.getBridgeLinkRemoteNodes().add(remlinknode);
 	}
 	
@@ -645,19 +640,31 @@ public class EnLinkdElementFactory implements InitializingBean, EnLinkdElementFa
 		return "bridge port: "+ bridgePort;
 	}
 
-        private String getPortString(OnmsSnmpInterface iface) {
-            if (iface != null)
-               return getPortString(iface.getIfIndex(),iface.getIfName());
-            return "(no interface found in db)";
-        }	        
+    private OnmsSnmpInterface getSnmpInterface(OnmsNode node, Integer ifIndex) {
+        if (node != null && node.getId() != null && ifIndex != null) {
+            OnmsSnmpInterface snmpInterface = m_snmpInterfaceDao.findByNodeIdAndIfIndex(node.getId(), ifIndex);
+            return snmpInterface;
+        }
+        return null;
+    }
+
+    private String getPortString(OnmsSnmpInterface iface) {
+        if (iface != null) {
+            return getPortString(iface.getIfIndex(), iface.getIfName());
+        }
+        return getPortString((Integer) null, (String) null);
+    }
 
 	private String getPortString(Integer ifindex, String portName) {
-	    if (ifindex != null && portName != null)
-		return portName + "(ifindex:"+ ifindex+")";
-	    if (portName != null )
-	        return portName;
-	    if (ifindex != null)
-	        return "(ifindex:"+ ifindex+")";
+	    if (ifindex != null && portName != null) {
+            return portName + "(ifindex:" + ifindex + ")";
+        }
+	    if (portName != null ) {
+            return portName;
+        }
+	    if (ifindex != null) {
+            return "(ifindex:" + ifindex + ")";
+        }
 	    return "(no interface found in db)";
 	}
 	
@@ -668,7 +675,14 @@ public class EnLinkdElementFactory implements InitializingBean, EnLinkdElementFa
 	private String getNodeUrl(Integer nodeid) {
 			return "element/node.jsp?node="+nodeid;
 	}	
-	
+
+    private String getSnmpInterfaceUrl(OnmsSnmpInterface iface) {
+        if (iface != null) {
+            return getSnmpInterfaceUrl(iface.getNode().getId(), iface.getIfIndex());
+        }
+        return null;
+    }
+
 	private String getSnmpInterfaceUrl(Integer nodeid,Integer ifindex) {
 		if (ifindex != null && nodeid != null )
 			return "element/snmpinterface.jsp?node="+nodeid+"&ifindex="+ifindex;

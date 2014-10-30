@@ -544,7 +544,7 @@
            <% if (remlink.getBridgeRemotePortUrl() != null) { %>
             	<a href="<%=remlink.getBridgeRemotePortUrl()%>"><%=remlink.getBridgeRemotePort()%></a>
             <% } else { %> 
-				<%=remlink.getBridgeRemotePort()%>
+				<%=remlink.getBridgeRemotePort() != null ? remlink.getBridgeRemotePort() : "" %>
     			<% } %> 
             </td>
 		    <td class="standard">
