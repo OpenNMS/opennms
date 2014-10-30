@@ -34,6 +34,7 @@ import java.util.Collection;
 import java.util.Date;
 
 import org.opennms.netmgt.poller.PollStatus;
+import org.opennms.netmgt.poller.remote.support.DefaultPollerFrontEnd.PollerFrontEndStates;
 import org.quartz.Scheduler;
 import org.quartz.Trigger;
 import org.slf4j.Logger;
@@ -197,17 +198,21 @@ public class Poller implements InitializingBean, PollObserver, ConfigurationChan
     public void propertyChange(PropertyChangeEvent evt) {
         try {
             if (Boolean.TRUE.equals(evt.getNewValue())) {
-                if ("paused".equals(evt.getPropertyName())) {
-                    unschedulePolls();
-                } else if ("disconnected".equals(evt.getPropertyName())) {
+                // If the poller is paused, disconnected, or exiting then unschedule all of the
+                // polling tasks so that the scheduler can shut down cleanly
+                if (
+                    PollerFrontEndStates.paused.toString().equals(evt.getPropertyName()) ||
+                    PollerFrontEndStates.disconnected.toString().equals(evt.getPropertyName()) ||
+                    PollerFrontEndStates.exitNecessary.toString().equals(evt.getPropertyName())
+                ) {
                     unschedulePolls();
                 }
             } else {
-                if ("paused".equals(evt.getPropertyName()) ) {
+                if (PollerFrontEndStates.paused.toString().equals(evt.getPropertyName()) ) {
                     schedulePolls();
-                } else if ("disconnected".equals(evt.getPropertyName())) {
+                } else if (PollerFrontEndStates.disconnected.toString().equals(evt.getPropertyName())) {
                     schedulePolls();
-                } else if ("started".equals(evt.getPropertyName())) {
+                } else if (PollerFrontEndStates.started.toString().equals(evt.getPropertyName())) {
                     unschedulePolls();
                 }
             }
