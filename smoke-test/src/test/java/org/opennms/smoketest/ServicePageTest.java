@@ -115,7 +115,7 @@ public class ServicePageTest extends OpenNMSSeleniumTestCase {
 
         selenium.type("css=form[name=takeAction] > div > input[name=groupName]", REQUISITION_NAME);
         clickAndWait("css=input[type=submit]");
-        clickAndWait("//a[contains(@href, 'editForeignSource(\""+ REQUISITION_NAME+"\")')]");
+        clickAndWait("//button[contains(@onclick, 'editForeignSource(\""+ REQUISITION_NAME+"\")')]");
         clickAndWait("//input[@value='Add Detector']");
 
         String detectorNode = setTreeFieldsAndSave("foreignSourceEditForm", type("name", "HTTP-8080"), select("pluginClass", "HTTP"));
