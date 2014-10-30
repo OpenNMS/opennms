@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,38 +26,22 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.ncs.northbounder;
+/**
+ * @author <a mailto:seth@opennms.org>Seth Leger</a>
+ */
+package org.opennms.core.web;
 
-import java.io.IOException;
+import java.security.Provider;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.io.IOUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+public final class EmptyKeyRelaxedTrustProvider extends Provider {
+    private static final long serialVersionUID = 6114330142093179790L;
 
-@SuppressWarnings("serial")
-public class TestServlet extends HttpServlet {
-    private static final Logger LOG = LoggerFactory.getLogger(TestServlet.class);
-    private static String m_posted = null;
-
-    @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        m_posted = IOUtils.toString(req.getReader());
-        LOG.debug("POST:");
-        LOG.debug(m_posted);
+    public EmptyKeyRelaxedTrustProvider() {
+        super(EmptyKeyRelaxedTrustSSLContext.ALGORITHM + "Provider", 1.0, null);
+        put(
+            "SSLContext." + EmptyKeyRelaxedTrustSSLContext.ALGORITHM,
+            EmptyKeyRelaxedTrustSSLContext.class.getName()
+        );
     }
-
-    public static void reset() {
-        m_posted = null;
-    }
-
-    public static String getPosted() {
-        return m_posted;
-    }
-
-
 }

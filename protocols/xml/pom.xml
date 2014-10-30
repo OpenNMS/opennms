@@ -96,6 +96,11 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
+      <groupId>org.opennms.core</groupId>
+      <artifactId>org.opennms.core.web</artifactId>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-services</artifactId>
       <scope>compile</scope>

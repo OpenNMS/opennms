@@ -35,7 +35,8 @@ import java.net.InetAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.UnknownHostException;
-import java.security.NoSuchAlgorithmException;
+import java.nio.charset.Charset;
+import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -45,41 +46,27 @@ import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.net.ssl.SSLContext;
-
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.http.Header;
 import org.apache.http.HttpHost;
-import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
-import org.apache.http.auth.AuthScope;
-import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.client.params.ClientPNames;
-import org.apache.http.client.params.CookiePolicy;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.client.utils.URLEncodedUtils;
-import org.apache.http.conn.scheme.Scheme;
-import org.apache.http.conn.scheme.SchemeRegistry;
-import org.apache.http.conn.ssl.SSLSocketFactory;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.impl.client.DefaultHttpRequestRetryHandler;
 import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.params.BasicHttpParams;
-import org.apache.http.params.CoreConnectionPNames;
-import org.apache.http.params.CoreProtocolPNames;
-import org.apache.http.params.HttpParams;
 import org.apache.http.util.EntityUtils;
 import org.opennms.core.utils.EmptyKeyRelaxedTrustProvider;
-import org.opennms.core.utils.EmptyKeyRelaxedTrustSSLContext;
 import org.opennms.core.utils.HttpResponseRange;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.MatchTable;
 import org.opennms.core.utils.PropertiesUtils;
 import org.opennms.core.utils.TimeoutTracker;
+import org.opennms.core.web.HttpClientWrapper;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.pagesequence.Page;
 import org.opennms.netmgt.config.pagesequence.PageSequence;
@@ -191,7 +178,7 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
             return m_pages;
         }
 
-        private void execute(DefaultHttpClient client, MonitoredService svc, Map<String,Number> responseTimes) {
+        private void execute(HttpClientWrapper clientWrapper, MonitoredService svc, Map<String,Number> responseTimes) {
             // Clear the sequence properties before each run
             clearSequenceProperties();
 
@@ -204,7 +191,7 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
 
             for (HttpPage page : getPages()) {
                 LOG.debug("Executing HttpPage: {}", page.toString());
-                page.execute(client, svc, m_sequenceProperties);
+                page.execute(clientWrapper, svc, m_sequenceProperties);
                 if (page.getDsName() != null) {
                     LOG.debug("Recording response time {} for ds {}", page.getResponseTime(), page.getDsName());
                     responseTimes.put(page.getDsName(), page.getResponseTime());
@@ -260,7 +247,8 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
             try {
                 String query = URLEncodedUtils.format(parms, "UTF-8");
                 URIBuilder ub = new URIBuilder(uri);
-                ub.setQuery(query);
+                final List<NameValuePair> params = URLEncodedUtils.parse(query, Charset.forName("UTF-8"));
+                ub.setParameters(params);
                 uriWithQueryString = ub.build();
                 this.setURI(uriWithQueryString);
             } catch (URISyntaxException e) {
@@ -311,7 +299,7 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
             return retval.toString();
         }
 
-        void execute(DefaultHttpClient client, MonitoredService svc, Properties sequenceProperties) {
+        void execute(final HttpClientWrapper clientWrapper, final MonitoredService svc, final Properties sequenceProperties) {
             try {
                 URI uri = getURI(svc);
                 PageSequenceHttpUriRequest method = getMethod(uri);
@@ -326,27 +314,22 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
                     } else {  // Add the port if it is non-standard
                         host = new HttpHost(getVirtualHost(svc), uri.getPort());
                     }
-                    // method.getParams().setParameter(ClientPNames.VIRTUAL_HOST, host);
-                    method.setHeader("Host", host.toHostString()); // This will override the Host header as the HttpClient always going to add it even if it is not specified.
+                    clientWrapper.setVirtualHost(host.toHostString());
                 }
 
-                if (getUserAgent() != null) {
-                    method.getParams().setParameter(CoreProtocolPNames.USER_AGENT, getUserAgent());
+                if (getUserAgent() != null && !getUserAgent().trim().isEmpty()) {
+                    clientWrapper.setUserAgent(getUserAgent());
                 } else {
-                    method.getParams().setParameter(CoreProtocolPNames.USER_AGENT, "OpenNMS PageSequenceMonitor (Service name: " + svc.getSvcName() + ")");
+                    clientWrapper.setUserAgent("OpenNMS PageSequenceMonitor (Service name: " + svc.getSvcName() + ")");
                 }
 
                 if ("https".equals(uri.getScheme())) {
                     if (Boolean.parseBoolean(m_page.getDisableSslVerification())) {
-                        final SchemeRegistry registry = client.getConnectionManager().getSchemeRegistry();
-                        final Scheme https = registry.getScheme("https");
-
-                        // Override the trust validation with a lenient implementation
-                        final SSLSocketFactory factory = new SSLSocketFactory(SSLContext.getInstance(EmptyKeyRelaxedTrustSSLContext.ALGORITHM), SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
-
-                        final Scheme lenient = new Scheme(https.getName(), https.getDefaultPort(), factory);
-                        // This will replace the existing "https" schema
-                        registry.register(lenient);
+                        try {
+                            clientWrapper.useRelaxedSSL("https");
+                        } catch (final GeneralSecurityException e) {
+                            LOG.warn("Failed configure relaxed SSL for PageSequence {}", svc.getSvcName(), e);
+                        }
                     }
                 }
 
@@ -358,14 +341,14 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
                     String userInfo = getUserInfo();
                     String[] streetCred = userInfo.split(":", 2);
                     if (streetCred.length == 2) {
-                        client.getCredentialsProvider().setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(streetCred[0], streetCred[1]));
+                        clientWrapper.addBasicCredentials(streetCred[0], streetCred[1]);
                     } else { 
                         LOG.warn("Illegal value found for username/password HTTP credentials: {}", userInfo);
                     }
                 }
 
                 long startTime = System.nanoTime();
-                HttpResponse response = client.execute(method);
+                CloseableHttpResponse response = clientWrapper.execute(method);
                 long endTime = System.nanoTime();
                 m_responseTime = (endTime - startTime)/1000000.0;
 
@@ -405,14 +388,15 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
                     updateSequenceProperties(sequenceProperties, matcher);
                 }
 
-            } catch (NoSuchAlgorithmException e) {
-                // Should never happen
-                throw new PageSequenceMonitorException("Could not find appropriate SSL context provider", e);
             } catch (URISyntaxException e) {
                 throw new IllegalArgumentException("unable to construct URL for page", e);
             } catch (IOException e) {
                 LOG.debug("I/O Error", e);
                 throw new PageSequenceMonitorException("I/O Error", e);
+            } finally {
+                if (clientWrapper != null) {
+                    clientWrapper.closeResponse();
+                }
             }
         }
 
@@ -484,7 +468,8 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
             ub.setHost(host);
             ub.setPort(getPort());
             ub.setPath(getPath(seqProps, svcProps));
-            ub.setQuery(getQuery(seqProps, svcProps));
+            final List<NameValuePair> params = URLEncodedUtils.parse(getQuery(seqProps, svcProps), Charset.forName("UTF-8"));
+            ub.setParameters(params);
             ub.setFragment(getFragment(seqProps, svcProps));
             return ub.build();
         }
@@ -585,7 +570,6 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
         }
 
         private final Map<String, Object> m_parameterMap;
-        private final HttpParams m_clientParams;
         private final HttpPageSequence m_pageSequence;
 
         @SuppressWarnings("unchecked")
@@ -615,8 +599,6 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
             PageSequence sequence = parsePageSequence((String)pageSequence);
             m_pageSequence = new HttpPageSequence(sequence);
             m_pageSequence.setParameters(m_parameterMap);
-
-            m_clientParams = createClientParams();
         }
 
         Map<String, Object> getParameterMap() {
@@ -632,16 +614,6 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
 
         }
 
-        private HttpParams createClientParams() {
-            HttpParams clientParams = new BasicHttpParams();
-            clientParams.setIntParameter(CoreConnectionPNames.CONNECTION_TIMEOUT, getTimeout());
-            clientParams.setIntParameter(CoreConnectionPNames.SO_TIMEOUT, getTimeout());
-            clientParams.setParameter(ClientPNames.COOKIE_POLICY, CookiePolicy.BROWSER_COMPATIBILITY);
-            // Not sure if this flag has any effect under the new httpcomponents-client code
-            clientParams.setBooleanParameter("http.protocol.single-cookie-header", true);
-            return clientParams;
-        }
-
         public int getRetries() {
             return getKeyedInteger(m_parameterMap, "retry", DEFAULT_RETRY);
         }
@@ -650,37 +622,34 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
             return getKeyedInteger(m_parameterMap, "timeout", DEFAULT_TIMEOUT);
         }
 
-        public HttpParams getClientParams() {
-            return m_clientParams;
-        }
-
-        DefaultHttpClient createHttpClient() {
-            DefaultHttpClient client = new DefaultHttpClient(getClientParams());
-
-            client.setHttpRequestRetryHandler(new DefaultHttpRequestRetryHandler(getRetries(), false));
-
-            return client;
+        HttpClientWrapper createHttpClient() {
+            HttpClientWrapper clientWrapper = HttpClientWrapper.create()
+                    .setConnectionTimeout(getTimeout())
+                    .setSocketTimeout(getTimeout())
+                    .setRetries(getRetries())
+                    .useBrowserCompatibleCookies();
+            return clientWrapper;
         }
     }
 
     /** {@inheritDoc} */
     @Override
     public PollStatus poll(final MonitoredService svc, final Map<String, Object> parameterMap) {
-        DefaultHttpClient client = null;
         PollStatus serviceStatus = PollStatus.unavailable("Poll not completed yet");
 
         Map<String,Number> responseTimes = new LinkedHashMap<String,Number>();
         
         SequenceTracker tracker = new SequenceTracker(parameterMap, DEFAULT_SEQUENCE_RETRY, DEFAULT_TIMEOUT);
         for(tracker.reset(); tracker.shouldRetry() && !serviceStatus.isAvailable(); tracker.nextAttempt() ) {
+            HttpClientWrapper clientWrapper = null;
             try {
                 PageSequenceMonitorParameters parms = PageSequenceMonitorParameters.get(parameterMap);
     
-                client = parms.createHttpClient();
-                
+                clientWrapper = parms.createHttpClient();
+
                 tracker.startAttempt();
                 responseTimes.put("response-time", Double.NaN);
-                parms.getPageSequence().execute(client, svc, responseTimes);
+                parms.getPageSequence().execute(clientWrapper, svc, responseTimes);
     
                 double responseTime = tracker.elapsedTimeInMillis();
                 serviceStatus = PollStatus.available();
@@ -695,9 +664,7 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
                 serviceStatus = PollStatus.unavailable("Invalid parameter to monitor: " + e.getMessage() + ".  See log for details.");
                 serviceStatus.setProperties(responseTimes);
             } finally {
-                if (client != null) {
-                    client.getConnectionManager().shutdown();
-                }
+                IOUtils.closeQuietly(clientWrapper);
             }
         }
         

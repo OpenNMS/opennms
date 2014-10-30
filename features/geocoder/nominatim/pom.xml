@@ -45,12 +45,8 @@
       <artifactId>org.opennms.features.geocoder.api</artifactId>
     </dependency>
     <dependency>
-      <groupId>commons-io</groupId>
-      <artifactId>commons-io</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.httpcomponents</groupId>
-      <artifactId>httpclient</artifactId>
+      <groupId>org.opennms.core</groupId>
+      <artifactId>org.opennms.core.web</artifactId>
     </dependency>
     <dependency>
       <groupId>net.simon04.jelementtree</groupId>

@@ -35,25 +35,18 @@ import java.util.List;
 
 import net.simon04.jelementtree.ElementTree;
 
-import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.impl.client.HttpClientBuilder;
+import org.opennms.core.web.HttpClientWrapper;
 import org.opennms.features.poller.remote.gwt.client.GWTLatLng;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * <p>NominatimGeocoder class.</p>
- *
- * @author ranger
- * @version $Id: $
- * @since 1.8.1
- */
 public class NominatimGeocoder implements Geocoder {
     private static final Logger LOG = LoggerFactory.getLogger(NominatimGeocoder.class);
 	private static final String GEOCODE_URL = "http://open.mapquestapi.com/nominatim/v1/search?format=xml";
-	private static final HttpClient m_httpClient = HttpClientBuilder.create().build();
+	private final HttpClientWrapper m_clientWrapper;
+
 	private String m_emailAddress;
 	private String m_referer = null;
 
@@ -79,6 +72,10 @@ public class NominatimGeocoder implements Geocoder {
 		if (m_emailAddress == null || m_emailAddress.equals("")) {
 			throw new GeocoderException("you must configure gwt.geocoder.email to comply with the Nominatim terms of service (see http://wiki.openstreetmap.org/wiki/Nominatim)");
 		}
+
+		m_clientWrapper = HttpClientWrapper.create()
+	                .dontReuseConnections()
+	                .useSystemProxySettings();
 	}
 
 	/** {@inheritDoc} */
@@ -91,7 +88,7 @@ public class NominatimGeocoder implements Geocoder {
 		}
 
 		try {
-			InputStream responseStream = m_httpClient.execute(method).getEntity().getContent();
+			InputStream responseStream = m_clientWrapper.execute(method).getEntity().getContent();
 			final ElementTree tree = ElementTree.fromStream(responseStream);
 			if (tree == null) {
 				throw new GeocoderException("an error occurred connecting to the Nominatim geocoding service (no XML tree was found)");
@@ -112,6 +109,8 @@ public class NominatimGeocoder implements Geocoder {
 			throw e;
 		} catch (Throwable e) {
 			throw new GeocoderException("unable to get lat/lng from Nominatim", e);
+		} finally {
+		        m_clientWrapper.closeResponse();
 		}
 	}
 
