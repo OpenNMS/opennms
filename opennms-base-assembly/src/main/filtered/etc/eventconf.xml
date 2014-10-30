@@ -2107,6 +2107,8 @@
   <event-file>events/Fortinet-FortiManager-Analyzer.events.xml</event-file>
   <event-file>events/Fortinet-FortiRecorder.events.xml</event-file>
   <event-file>events/Fortinet-FortiVoice.events.xml</event-file>
+  <event-file>events/Fortinet-FortiCore-v4.events.xml</event-file>
+  <event-file>events/Fortinet-FortiGate-v4.events.xml</event-file>
   <event-file>events/FoundryNetworks.events.xml</event-file>
   <event-file>events/FoundryNetworks2.events.xml</event-file>
   <event-file>events/FujitsuSiemens.events.xml</event-file>
