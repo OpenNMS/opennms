@@ -53,6 +53,7 @@ public class CollectorThresholdingSet extends ThresholdingSet {
 
     // CollectionSpecification parameters
     boolean storeByIfAlias = false;
+    boolean counterReset = false;
     ServiceParameters svcParams;
 
     /**
@@ -70,7 +71,11 @@ public class CollectorThresholdingSet extends ThresholdingSet {
         storeByIfAlias = storeByIfAliasString != null && "true".equalsIgnoreCase(storeByIfAliasString);
         this.svcParams = svcParams;
     }
-    
+
+    public void setCounterReset(boolean counterReset) {
+        this.counterReset = counterReset;
+    }
+
     /*
      * Returns true if the specified attribute is involved in any of defined thresholds for node/address/service
      */
@@ -102,6 +107,7 @@ public class CollectorThresholdingSet extends ThresholdingSet {
 		CollectionResourceWrapper resourceWrapper = new CollectionResourceWrapper(
 				collectionTimestamp, m_nodeId, m_hostAddress, m_serviceName,
 				m_repository, resource, attributesMap);
+		resourceWrapper.setCounterReset(counterReset);
         return applyThresholds(resourceWrapper, attributesMap);
     }
 

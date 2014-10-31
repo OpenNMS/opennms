@@ -140,23 +140,34 @@
 				&& input !== "" && input !== false;
 	}
 
+    function getVersion(id) {
+        var element = document.getElementById(id);
+        if (element == null || element.options == null || element.selectedIndex == null) {
+            return "v2c";
+        }
+
+        return element.options[element.selectedIndex].value;
+    }
+
 	/*
 	 * On Version change only the specificy section is shown.
 	 */
 	function onVersionChange() {
 		var versionElements = new Array(document.getElementById("v1v2"), document.getElementById("v3"));
 		var selectedElement = null;
+        var version = getVersion("version");
+
 		//  determine selected element
-		if (document.getElementById("version").value == "v1" || document.getElementById("version").value == "v2c")
-			selectedElement = document.getElementById("v1v2");
-		if (document.getElementById("version").value == "v3")
-			selectedElement = document.getElementById("v3");
+        if (version == "v1" || version == "v2c")
+            selectedElement = document.getElementById("v1v2");
+        if (version == "v3")
+            selectedElement = document.getElementById("v3");
 
 		// hide all not selected elements and show selected Element
 		for ( var elementIndex in versionElements) {
 			var element = versionElements[elementIndex];
 			if (element == selectedElement) { // show
-				element.style.visibility = null;
+				element.style.visibility = "visible";
 				element.style.display = "block";
 			} else { // hide
 				element.style.visibility = "hidden";

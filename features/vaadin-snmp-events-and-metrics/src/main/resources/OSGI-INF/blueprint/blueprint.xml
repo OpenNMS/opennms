@@ -35,19 +35,19 @@
         <property name="name" value="SNMP MIB Compiler" />
     </bean>
 
-    <service id="mibCompilerService" interface="org.ops4j.pax.vaadin.ApplicationFactory" ref="mibCompilerApplicationFactory">
+    <service id="mibCompilerService" interface="org.opennms.vaadin.extender.ApplicationFactory" ref="mibCompilerApplicationFactory">
         <service-properties>
             <entry key="alias" value="/mib-compiler" />
         </service-properties>
     </service>
 
-    <service id="eventsAdminService" interface="org.ops4j.pax.vaadin.ApplicationFactory" ref="eventAdminApplicationFactory">
+    <service id="eventsAdminService" interface="org.opennms.vaadin.extender.ApplicationFactory" ref="eventAdminApplicationFactory">
         <service-properties>
             <entry key="alias" value="/admin-events" />
         </service-properties>
     </service>
 
-    <service id="snmpCollectionsService" interface="org.ops4j.pax.vaadin.ApplicationFactory" ref="snmpCollectionAdminApplicationFactory">
+    <service id="snmpCollectionsService" interface="org.opennms.vaadin.extender.ApplicationFactory" ref="snmpCollectionAdminApplicationFactory">
         <service-properties>
             <entry key="alias" value="/admin-snmp-collections" />
         </service-properties>

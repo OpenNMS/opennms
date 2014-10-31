@@ -51,6 +51,7 @@ import org.opennms.netmgt.icmp.NullPinger;
 import org.opennms.netmgt.icmp.Pinger;
 import org.opennms.netmgt.icmp.PingerFactory;
 import org.opennms.netmgt.poller.remote.PollerFrontEnd;
+import org.opennms.netmgt.poller.remote.support.DefaultPollerFrontEnd.PollerFrontEndStates;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.slf4j.Logger;
@@ -75,7 +76,6 @@ public class Main implements Runnable {
 	protected String m_locationName;
 	protected String m_username = null;
 	protected String m_password = null;
-	protected static boolean m_shuttingDown = false;
 	protected boolean m_gui = false;
 	protected boolean m_disableIcmp = false;
 
@@ -151,9 +151,19 @@ public class Main implements Runnable {
 	public void run() {
 
 		try {
+			// Parse arguments to initialize the configuration fields.
 			parseArguments(m_args);
-	                initializePinger();
+
+			// Test to make sure that we can use ICMP. If not, replace the ICMP
+			// implementation with NullPinger.
+			initializePinger();
+
+			// If we didn't get authentication information from the command line or
+			// system properties, then use an AWT window to prompt the user.
+			// Initialize a Spring {@link SecurityContext} that contains the
+			// credentials.
 			getAuthenticationInfo();
+
 			AbstractApplicationContext context = createAppContext();
 			PollerFrontEnd frontEnd = getPollerFrontEnd(context);
 
@@ -200,7 +210,7 @@ public class Main implements Runnable {
 		}
 
 		if (cl.hasOption("i")) {
-		        m_disableIcmp = true;
+			m_disableIcmp = true;
 		}
 
 		if (cl.hasOption("l")) {
@@ -229,6 +239,18 @@ public class Main implements Runnable {
 			m_password = cl.getOptionValue("p");
 			if (m_password == null) {
 				m_password = "";
+			}
+		}
+
+		// If we cannot obtain the username/password from the command line, attempt
+		// to optionally get it from system properties
+		if (m_username == null) {
+			m_username = System.getProperty("opennms.poller.server.username");
+			if (m_username != null) {
+				m_password = System.getProperty("opennms.poller.server.password");
+				if (m_password == null) {
+					m_password = "";
+				}
 			}
 		}
 	}
@@ -273,24 +295,13 @@ public class Main implements Runnable {
 		Runtime.getRuntime().addShutdownHook(new Thread() {
 			@Override
 			public void run() {
-				m_shuttingDown = true;
-
-                // MVR: gracefully shutdown scheduler, otherwise context.close will raise an exception
-                // See #NMS-6966 for more details.
-                try {
-                    ((Scheduler)context.getBean("scheduler")).shutdown(true);
-                } catch (SchedulerException e) {
-                    LOG.warn("Scheduler shutdown failed.", e);
-                }
-
-                // now close the application context
-                context.close();
+				// TODO: Call the same shutdown routine as the PropertyChangeListener below
 			}
 		});
 		return context;
 	}
 
-	private static PollerFrontEnd getPollerFrontEnd(AbstractApplicationContext context) {
+	private PollerFrontEnd getPollerFrontEnd(final AbstractApplicationContext context) {
 		PollerFrontEnd frontEnd = (PollerFrontEnd) context.getBean("pollerFrontEnd");
 
 		frontEnd.addPropertyChangeListener(new PropertyChangeListener() {
@@ -301,13 +312,13 @@ public class Main implements Runnable {
 				Object newValue = e.getNewValue();
 
 				// if exitNecessary becomes true.. then return true
-				if ("exitNecessary".equals(propName) && Boolean.TRUE.equals(newValue)) {
+				if (PollerFrontEndStates.exitNecessary.toString().equals(propName) && Boolean.TRUE.equals(newValue)) {
 					LOG.info("shouldExit: Exiting because exitNecessary is TRUE");
 					return true;
 				}
 
 				// if started becomes false the we should exit
-				if ("started".equals(propName) && Boolean.FALSE.equals(newValue)) {
+				if (PollerFrontEndStates.started.toString().equals(propName) && Boolean.FALSE.equals(newValue)) {
 					LOG.info("shouldExit: Exiting because started is now false");
 					return true;
 				}
@@ -318,8 +329,30 @@ public class Main implements Runnable {
 
 			@Override
 			public void propertyChange(PropertyChangeEvent e) {
-				if (!m_shuttingDown && shouldExit(e)) {
-					System.exit(10);
+				if (shouldExit(e)) {
+					// MVR: gracefully shutdown scheduler, otherwise context.close() will raise 
+					// an exception. See #NMS-6966 for more details.
+					if (context.isActive()) {
+						try {
+							LOG.info("Shutting down PollerFrontEnd scheduler");
+							((Scheduler)context.getBean("scheduler")).shutdown();
+						} catch (SchedulerException ex) {
+							LOG.warn("Shutting down PollerFrontEnd scheduler failed", ex);
+						}
+						LOG.info("PollerFrontEnd scheduler shutdown complete");
+
+						// now close the application context
+						context.close();
+					}
+
+					new Thread() {
+						public void run() {
+							// Sleep for a couple of seconds so that the other
+							// PropertyChangeListeners get a chance to fire
+							try { Thread.sleep(5000); } catch (InterruptedException e) {}
+							System.exit(10);
+						}
+					}.start();
 				}
 			}
 		});

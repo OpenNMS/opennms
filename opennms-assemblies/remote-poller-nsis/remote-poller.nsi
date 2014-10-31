@@ -38,10 +38,13 @@ Var ServiceDomain
 Var ComputerName
 
 Var JavaHome
+
 Var OnmsWebappProtocol
 Var OnmsWebappServer
 Var OnmsWebappPort
 Var OnmsWebappPath
+Var OnmsWebappUsername
+Var OnmsWebappPassword
 
 Var POLLER_SERVICE_FILE_NAME
 Var POLLER_TRAY_FILE_NAME
@@ -53,10 +56,14 @@ Var GUI_POLLER_SVC_NAME
 Var POLLER_SVC_DISP_NAME
 Var POLLER_SVC_DESCRIPTION
 Var POLLER_PROPS_FILE
+
 Var DEFAULT_WEBUI_PROTOCOL
 Var DEFAULT_WEBUI_HOST
 Var DEFAULT_WEBUI_PORT
 Var DEFAULT_WEBUI_PATH
+Var DEFAULT_WEBUI_USERNAME
+Var DEFAULT_WEBUI_PASSWORD
+
 Var KILL_SWITCH_FILE_NAME
 Var VBS_KILL_SCRIPT
 
@@ -74,15 +81,6 @@ Function .onInit
   StrCmp $R0 0 +3
   MessageBox MB_OK|MB_ICONEXCLAMATION "The installer is already running."
   Abort
-
-# Same as DEFAULT_WEBUI_PROTOCOL
-  StrCpy $OnmsWebappProtocol "http"
-# Same as DEFAULT_WEBUI_HOST
-  StrCpy $OnmsWebappServer "<IP Address or Hostname>"
-# Same as DEFAULT_WEBUI_PORT
-  StrCpy $OnmsWebappPort "8980"
-# Same as DEFAULT_WEBUI_PATH
-  StrCpy $OnmsWebappPath "/opennms"
 
   ReadEnvStr $ServiceUser "USERNAME"
   ReadEnvStr $ServiceDomain "USERDOMAIN"
@@ -128,16 +126,26 @@ GotJava:
   StrCpy $POLLER_SVC_DISP_NAME "${PROJECT_NAME}"
   StrCpy $POLLER_SVC_DESCRIPTION "Measures uptime and latency of services from remote locations, sending the data back to an OpenNMS server"
   StrCpy $POLLER_PROPS_FILE "$PROFILE\.opennms\remote-poller.properties"
+  StrCpy $KILL_SWITCH_FILE_NAME "remote-poller.run"
+  StrCpy $VBS_KILL_SCRIPT "pollkill.vbs"
+
   StrCpy $DEFAULT_WEBUI_PROTOCOL "http"
   StrCpy $DEFAULT_WEBUI_HOST "<IP Address or Hostname>"
   StrCpy $DEFAULT_WEBUI_PORT "8980"
   StrCpy $DEFAULT_WEBUI_PATH "/opennms"
-  StrCpy $KILL_SWITCH_FILE_NAME "remote-poller.run"
-  StrCpy $VBS_KILL_SCRIPT "pollkill.vbs"
+  StrCpy $DEFAULT_WEBUI_USERNAME "admin"
+  StrCpy $DEFAULT_WEBUI_PASSWORD "admin"
+
+  StrCpy $OnmsWebappProtocol "$DEFAULT_WEBUI_PROTOCOL"
+  StrCpy $OnmsWebappServer "$DEFAULT_WEBUI_HOST"
+  StrCpy $OnmsWebappPort "$DEFAULT_WEBUI_PORT"
+  StrCpy $OnmsWebappPath "$DEFAULT_WEBUI_PATH"
+  StrCpy $OnmsWebappUsername "$DEFAULT_WEBUI_USERNAME"
+  StrCpy $OnmsWebappPassword "$DEFAULT_WEBUI_PASSWORD"
+
 FunctionEnd
 
-
-
+# Uninstall init method
 Function un.onInit
   # First, prevent multiple instances of this installer.
   System::Call 'kernel32::CreateMutexA(i 0, i 0, t "onmsRpMutex") i .r1 ?e'
@@ -169,12 +177,15 @@ Function un.onInit
   StrCpy $POLLER_SVC_DISP_NAME "${PROJECT_NAME}"
   StrCpy $POLLER_SVC_DESCRIPTION "Measures uptime and latency of services from remote locations, sending the data back to an OpenNMS server"
   ReadRegStr $POLLER_PROPS_FILE HKLM "Software\The OpenNMS Group\${PROJECT_NAME}" "PollerPropsFile"
+  StrCpy $KILL_SWITCH_FILE_NAME "remote-poller.run"
 
   StrCpy $DEFAULT_WEBUI_PROTOCOL "http"
   StrCpy $DEFAULT_WEBUI_HOST "<IP Address or Hostname>"
   StrCpy $DEFAULT_WEBUI_PORT "8980"
   StrCpy $DEFAULT_WEBUI_PATH "/opennms"
-  StrCpy $KILL_SWITCH_FILE_NAME "remote-poller.run"
+  StrCpy $DEFAULT_WEBUI_USERNAME "admin"
+  StrCpy $DEFAULT_WEBUI_PASSWORD "admin"
+
 FunctionEnd
 
 
@@ -192,11 +203,11 @@ PageEx instfiles
   CompletedText "Click Next to configure the ${PROJECT_NAME} on your system."
 PageExEnd
 
-Page custom onmsSvcUserPage onmsSvcUserPageLeave
-
 Page custom removeOldRegFilePage removeOldRegFilePageLeave
 
 Page custom onmsServerInfoPage onmsServerInfoPageLeave
+
+Page custom onmsSvcUserPage onmsSvcUserPageLeave
 
 Page custom launchGuiPollerPage launchGuiPollerPageLeave
 
@@ -263,12 +274,12 @@ LicenseData resources\agpl-3.0.txt
 #----------------------
 # Variables used in our custom dialogs
 Var Dialog
-Var UserLabel
-Var UserText
-Var PasswordLabel
-Var PasswordText
-Var PasswordRepLabel
-Var PasswordRepText
+Var ServiceUserLabel
+Var ServiceUserText
+Var ServicePasswordLabel
+Var ServicePasswordText
+Var ServicePasswordRepeatLabel
+Var ServicePasswordRepeatText
 
 Var TopLabel
 Var ServerLabel
@@ -277,6 +288,10 @@ Var PortLabel
 Var PortText
 Var AppPathLabel
 Var AppPathText
+Var UsernameLabel
+Var UsernameText
+Var PasswordLabel
+Var PasswordText
 Var HttpsCheckbox
 
 Var LaunchGuiLabel
@@ -441,7 +456,19 @@ Function onmsServerInfoPage
   ${NSD_CreateText} 126u 59u 50u 12u "$OnmsWebappPath"
   Pop $AppPathText
 
-  ${NSD_CreateCheckBox} 0 79u 100% 12u " Use &secure connection (HTTPS)"
+  ${NSD_CreateLabel} 0 80u 125u 12u "Web UI username:"
+  Pop $UsernameLabel
+
+  ${NSD_CreateText} 126u 79u 100u 12u "$OnmsWebappUsername"
+  Pop $UsernameText
+
+  ${NSD_CreateLabel} 0 100u 125u 12u "Web UI password:"
+  Pop $PasswordLabel
+
+  ${NSD_CreatePassword} 126u 99u 100u 12u "$OnmsWebappPassword"
+  Pop $PasswordText
+
+  ${NSD_CreateCheckBox} 0 119u 100% 12u " Use &secure connection (HTTPS)"
   Pop $HttpsCheckbox
   StrCmp $OnmsWebappProtocol "https" SetHttps SetHttp
 SetHttps:
@@ -532,23 +559,23 @@ Function onmsSvcUserPage
   Pop $TopLabel
 
   ${NSD_CreateLabel} 0 40u 40u 12u "Username:"
-  Pop $UserLabel
+  Pop $ServiceUserLabel
 
   ${NSD_CreateText} 61u 39u 70u 12u "$ServiceUser"
-  Pop $UserText
-  SendMessage $UserText ${EM_SETREADONLY} 1 0
+  Pop $ServiceUserText
+  SendMessage $ServiceUserText ${EM_SETREADONLY} 1 0
 
   ${NSD_CreateLabel} 0 60u 40u 12u "Password:"
-  Pop $PasswordLabel
+  Pop $ServicePasswordLabel
 
   ${NSD_CreatePassword} 61u 59u 70u 12u "$ServicePassword"
-  Pop $PasswordText
+  Pop $ServicePasswordText
 
   ${NSD_CreateLabel} 0 80u 60u 12u "Repeat Password:"
-  Pop $PasswordRepLabel
+  Pop $ServicePasswordRepeatLabel
 
   ${NSD_CreatePassword} 61u 79u 70u 12u "$ServicePassword"
-  Pop $PasswordRepText
+  Pop $ServicePasswordRepeatText
 
   nsDialogs::Show
 FunctionEnd
@@ -557,8 +584,8 @@ Function onmsSvcUserPageLeave
   Push $0
   Push $1
   Push $2
-  ${NSD_GetText} $PasswordText $1
-  ${NSD_GetText} $PasswordRepText $2
+  ${NSD_GetText} $ServicePasswordText $1
+  ${NSD_GetText} $ServicePasswordRepeatText $2
   StrCmp $1 $2 PasswordsMatch
   MessageBox MB_OK "The password fields must match.  Please try again."
   Abort
@@ -704,7 +731,7 @@ Function javaCheckPage
   ${EndIf}
 
   ${NSD_CreateLabel} 0 10u 100% 30u "The installer has identified multiple Java installations on this system, but could not$\r$\ndetermine the best one to use.  Please select the Java installation to use for$\r$\n$POLLER_SVC_DISP_NAME."
-  Pop $UserLabel
+  Pop $ServiceUserLabel
 
   ${NSD_CreateListBox} 0 40u 100% 80u "List of suitable Java installations"
   Pop $JavaListBox
@@ -748,7 +775,7 @@ Function removeOldRegFilePage
     Abort
   ${EndIf}
   ${NSD_CreateLabel} 0 10u 100% 36u "The remote poller on this system has previously registered with an OpenNMS server.  Do you want to keep the existing registratrion or remove it and create a new one?  If you remove it, the continuity of data gathered by the poller on this system will be interrupted."
-  Pop $UserLabel
+  Pop $ServiceUserLabel
   ${NSD_CreateRadioButton} 0 50u 100% 12u "&Keep existing registration"
   Pop $TEMP1
   ${NSD_SetState} $TEMP1 ${BST_CHECKED}
@@ -782,7 +809,7 @@ Function un.OptionsPage
     Abort
   ${EndIf}
   ${NSD_CreateLabel} 0 10u 100% 30u "Do you want to remove the remote poller registration file?  If you remove this file and later reinstall $POLLER_SVC_DISP_NAME on this system, the continuity of data gathered by the poller on this system will be interrupted."
-  Pop $UserLabel
+  Pop $ServiceUserLabel
   ${NSD_CreateCheckBox} 0 50u 100% 12u "Remove remote poller &registration file"
   Pop $ShouldRemovePollerProps
   nsDialogs::Show
@@ -912,7 +939,7 @@ FunctionEnd
 # Function that sets JAVAWS_VM_ARGS in the service
 # user's environment
 Function SetJWSUserEnv
-  WriteRegExpandStr HKCU "Environment" "JAVAWS_VM_ARGS" "-Dopennms.poller.killSwitch.resource=$PROFILEJAVA/.opennms/remote-poller.run -Dlog4j.configurationFile=file:///$INSTDIRJAVA/etc/log4j2.xml"
+  WriteRegExpandStr HKCU "Environment" "JAVAWS_VM_ARGS" "-Dopennms.poller.killSwitch.resource=$PROFILEJAVA/.opennms/remote-poller.run -Dlog4j.configurationFile=file:///$INSTDIRJAVA/etc/log4j2.xml -J-Dopennms.poller.server.username=$OnmsWebappUsername -J-Dopennms.poller.server.password=$OnmsWebappPassword "
   # Now broadcast a message informing all windows in the system
   # of the change to the environment
   # This hangs on some systems, disabling as it doesn't have the desired effect anyway
@@ -928,7 +955,12 @@ Function LaunchGUIPoller
   Call GetJWSBaseURL
   Pop $1
   StrCpy $JnlpUrl "$1/$GUI_POLLER_JNLP"
-  Exec '"$JWSEXE" -J-Dlog4j.configurationFile=file:///$INSTDIRJAVA/etc/log4j2.xml -J-Dopennms.poller.killSwitch.resource=$PROFILEJAVA/.opennms/$KILL_SWITCH_FILE_NAME $JnlpUrl'
+  Exec '"$JWSEXE" -J-Dopennms.poller.killSwitch.resource=$PROFILEJAVA/.opennms/$KILL_SWITCH_FILE_NAME -J-Dlog4j.configurationFile=file:///$INSTDIRJAVA/etc/log4j2.xml -J-Dopennms.poller.server.username=$OnmsWebappUsername -J-Dopennms.poller.server.password=$OnmsWebappPassword $JnlpUrl'
+  # Not sure if this works yet
+  #IntCmp $1 0 GuiInstallOk GuiInstallFailed GuiInstallFailed
+  #GuiInstallFailed:
+  #MessageBox MB_OK|MB_ICONEXCLAMATION "The GUI installer did not complete successfully. Please check the configuration parameters and try to launch it again."
+  #GuiInstallOk:
 FunctionEnd
 
 
@@ -940,7 +972,7 @@ Function CreateOrUpdatePollerSvc
   Call GetJWSBaseURL
   Pop $1
   StrCpy $JnlpUrl "$1/$HEADLESS_POLLER_JNLP"
-  StrCpy $ExtraJWSOpts "-J-Dopennms.poller.killSwitch.resource=$PROFILEJAVA/.opennms/$KILL_SWITCH_FILE_NAME#-J-Dlog4j.configurationFile=file:///$INSTDIRJAVA/etc/log4j2.xml#"
+  StrCpy $ExtraJWSOpts "-J-Dopennms.poller.killSwitch.resource=$PROFILEJAVA/.opennms/$KILL_SWITCH_FILE_NAME#-J-Dlog4j.configurationFile=file:///$INSTDIRJAVA/etc/log4j2.xml#-J-Dopennms.poller.server.username=$OnmsWebappUsername#-J-Dopennms.poller.server.password=$OnmsWebappPassword#"
 
   # Check whether the service exists, decide on our verb (install / update) accordingly
   Push $POLLER_SVC_NAME

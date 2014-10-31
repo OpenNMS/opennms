@@ -71,7 +71,7 @@
     </dependency>
     
     <dependency>
-      <groupId>org.ops4j.pax.vaadin</groupId>
+      <groupId>org.opennms.vaadin-extender</groupId>
       <artifactId>service</artifactId>
     </dependency>
     <dependency>
@@ -106,6 +106,13 @@
     <repository>
        <id>vaadin-addons</id>
        <url>http://maven.opennms.org/content/groups/vaadin.com-addons/</url>
+    </repository>
+    <repository>
+      <snapshots><enabled>false</enabled></snapshots>
+      <releases><enabled>true</enabled></releases>
+      <id>opennms-repo</id>
+      <name>OpenNMS Repository</name>
+      <url>http://maven.opennms.org/content/groups/opennms.org-release</url>
     </repository>
     <repository>
       <snapshots><enabled>true</enabled></snapshots>

@@ -49,14 +49,15 @@
 <!-- NMS-7099: Add custom javascripts AFTER the header was included -->
 <script type="text/javascript">
     function toggleClassDisplay(clazz, displayA, displayB) {
-        var targetElems = document.getElementsByClassName(clazz);
-        Array.prototype.filter.call(targetElems, function(e) {
+        var targetElems = document.querySelectorAll("." + clazz);
+        for (var i = 0; i < targetElems.length; i++) {
+            var e = targetElems[i];
             if (e.style.display == displayA) {
                 e.style.display = displayB;
             } else {
                 e.style.display = displayA;
             }
-        });
+        }
     }
 </script>
 

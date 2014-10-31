@@ -174,6 +174,9 @@ public class D3 extends JavaScriptObject {
 		  function transform(p) {
 		    var k = width / p[2];
 		    var retVal = "translate(" + (center[0] - p[0] * k) + "," + (center[1] - p[1] * k) + ")scale(" + k + ")";
+		    if (retVal.indexOf('NaN') > 0) {
+		      return "translate(0,0)scale(1)";
+		    }
 		    return retVal;
 		  }
 		}

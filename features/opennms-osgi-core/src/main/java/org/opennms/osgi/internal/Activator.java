@@ -30,7 +30,7 @@ package org.opennms.osgi.internal;
 
 import org.opennms.osgi.EventRegistry;
 import org.opennms.osgi.OnmsServiceManager;
-import org.ops4j.pax.vaadin.SessionListener;
+import org.opennms.vaadin.extender.SessionListener;
 import org.osgi.framework.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

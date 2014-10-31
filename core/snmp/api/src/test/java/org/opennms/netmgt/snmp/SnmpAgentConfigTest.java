@@ -1,10 +1,10 @@
 package org.opennms.netmgt.snmp;
 
-import org.junit.Assert;
-import org.junit.Test;
-
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+
+import org.junit.Assert;
+import org.junit.Test;
 
 public class SnmpAgentConfigTest {
 
@@ -51,6 +51,12 @@ public class SnmpAgentConfigTest {
         config.setAuthPassPhrase(null);
         config.setPrivPassPhrase(null);
         config2 = SnmpAgentConfig.parseProtocolConfigurationString(config.toProtocolConfigString());
+        // config2 will have the default PrivPassphrase and such, so these will *not* actually equal each other
+        Assert.assertFalse(config.equals(config2));
+        Assert.assertFalse(config.hashCode() == config2.hashCode());
+        config2.setAuthPassPhrase(null);
+        config2.setPrivPassPhrase(null);
+        // now they should match
         Assert.assertEquals(config, config2);
         Assert.assertEquals(config.hashCode(), config2.hashCode());
 
