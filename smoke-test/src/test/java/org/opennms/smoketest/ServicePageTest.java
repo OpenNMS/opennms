@@ -75,31 +75,35 @@ public class ServicePageTest extends OpenNMSSeleniumTestCase {
 
     @After
     public void tearDown() throws Exception {
-        goToMainPage();
+        // if selenium is not initialized, do not clean up
+        if (selenium != null) {
+            goToMainPage();
 
-        clickAndWait("link=Admin");
-        clickAndWait("link=Manage Provisioning Requisitions");
+            clickAndWait("link=Admin");
+            clickAndWait("link=Manage Provisioning Requisitions");
 
-        if (selenium.isElementPresent("//input[@value='Delete Nodes']")) {
-            clickAndWait("//input[@value='Delete Nodes']");
-            clickAndWait("//input[@value='Synchronize']");
-        }
-
-        int loop = 0;
-        while (loop < 20) {
-            clickAndWait("link=Provisioning Requisitions");
-            Thread.sleep(1000);
-            if (selenium.isTextPresent("0 nodes defined, 0 nodes in database")) {
-                break;
+            if (selenium.isElementPresent("//input[@value='Delete Nodes']")) {
+                clickAndWait("//input[@value='Delete Nodes']");
+                clickAndWait("//input[@value='Synchronize']");
             }
-            loop++;
+
+            int loop = 0;
+            while (loop < 20) {
+                clickAndWait("link=Provisioning Requisitions");
+                Thread.sleep(1000);
+                if (selenium.isTextPresent("0 nodes defined, 0 nodes in database")) {
+                    break;
+                }
+                loop++;
+            }
+
+            clickAndWait("//input[@value='Delete Requisition']");
+
+            deleteTestRequisition();
+            deleteTestUser();
+            deleteTestGroup();
+
         }
-
-        clickAndWait("//input[@value='Delete Requisition']");
-
-        deleteTestRequisition();
-        deleteTestUser();
-        deleteTestGroup();
 
         super.tearDown();
     }
@@ -115,7 +119,7 @@ public class ServicePageTest extends OpenNMSSeleniumTestCase {
 
         selenium.type("css=form[name=takeAction] > div > input[name=groupName]", REQUISITION_NAME);
         clickAndWait("css=input[type=submit]");
-        clickAndWait("//a[contains(@href, 'editForeignSource(\""+ REQUISITION_NAME+"\")')]");
+        clickAndWait("//button[contains(@onclick, 'editForeignSource(\""+ REQUISITION_NAME+"\")')]");
         clickAndWait("//input[@value='Add Detector']");
 
         String detectorNode = setTreeFieldsAndSave("foreignSourceEditForm", type("name", "HTTP-8080"), select("pluginClass", "HTTP"));
