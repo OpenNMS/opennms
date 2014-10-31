@@ -301,7 +301,7 @@ public final class SmtpMonitor extends AbstractServiceMonitor {
             // chars of the response line are the return code.
             // The last line of the response will start with
             // return code followed by a space.
-            String multiLineRC = new String(response.getBytes("ASCII"), 0, 3, "ASCII");
+            String multiLineRC = new String(response.getBytes("ASCII"), 0, 3, "ASCII") + " ";
 
             // Create new regExp to look for last line
             // of this multi line response

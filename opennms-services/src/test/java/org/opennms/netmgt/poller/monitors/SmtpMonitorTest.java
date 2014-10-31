@@ -139,6 +139,8 @@ public class SmtpMonitorTest {
                     Socket s = m_serverSocket.accept();
                     System.out.println("S: 220-localhost.localdomain ESMTP bogon");
                     s.getOutputStream().write("220-localhost.localdomain ESMTP bogon\r\n".getBytes());
+                    System.out.println("S: 220-send me mail soon!");
+                    s.getOutputStream().write("220-send me mail soon!\r\n".getBytes());
                     System.out.println("S: 220 send me mail now!");
                     s.getOutputStream().write("220 send me mail now!\r\n".getBytes());
                     BufferedReader r = new BufferedReader(new InputStreamReader(s.getInputStream()));

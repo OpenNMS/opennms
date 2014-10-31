@@ -373,7 +373,7 @@ public class GWTVertex extends JavaScriptObject {
                 final int width = iconRect.getWidth();
                 final int height = iconRect.getHeight();
                 double primeLength = width >= height ? width : height;
-                double scaleFactor = 48 / primeLength;
+                double scaleFactor = primeLength == 0? 0.001 : (48 / primeLength);
                 double newX = (scaleFactor * width) / 2;
                 double newY = (scaleFactor * height) / 2;
                 double iconHeight = scaleFactor * height;
@@ -386,7 +386,6 @@ public class GWTVertex extends JavaScriptObject {
             }
         };
     }
-
 
     static native SVGRect getHiddenIconElement(String iconId) /*-{
         var existingUseElem = $wnd.d3.select("#hiddenIconContainer #" + iconId + "-icon");

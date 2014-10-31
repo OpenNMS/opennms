@@ -44,6 +44,7 @@ import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventProxy;
 import org.opennms.netmgt.xml.eventconf.AlarmData;
 import org.opennms.netmgt.xml.eventconf.Events;
+import org.opennms.netmgt.xml.eventconf.Mask;
 import org.vaadin.dialogs.ConfirmDialog;
 
 import com.vaadin.data.Property;
@@ -80,6 +81,12 @@ public abstract class EventPanel extends Panel {
     /** The selected Event ID. */
     private Object selectedEventId;
 
+    /** The event table. */
+    final EventTable eventTable;
+
+    /** The base event object. */
+    final Events baseEventsObject = new Events();
+
     /**
      * Instantiates a new event panel.
      *
@@ -106,11 +113,14 @@ public abstract class EventPanel extends Panel {
         setCaption("Events");
         addStyleName("light");
 
+        baseEventsObject.setGlobal(events.getGlobal());
+        baseEventsObject.setEventFileCollection(events.getEventFileCollection());
+
         final HorizontalLayout topToolbar = new HorizontalLayout();
         topToolbar.addComponent(new Button("Save Events File", new Button.ClickListener() {
             @Override
             public void buttonClick(ClickEvent event) {
-                processEvents(events, logger);
+                processEvents(logger);
             }
         }));
         topToolbar.addComponent(new Button("Cancel", new Button.ClickListener() {
@@ -121,7 +131,7 @@ public abstract class EventPanel extends Panel {
             }
         }));
 
-        final EventTable eventTable = new EventTable(events.getEventCollection());
+        eventTable = new EventTable(events.getEventCollection());
 
         final EventForm eventForm = new EventForm();
         eventForm.setVisible(false);
@@ -242,10 +252,9 @@ public abstract class EventPanel extends Panel {
     /**
      * Process events.
      *
-     * @param events the OpenNMS Events
      * @param logger the logger
      */
-    public void processEvents(final Events events, final Logger logger) {
+    public void processEvents(final Logger logger) {
         if (eventFile.exists()) {
             ConfirmDialog.show(getUI(),
                                "Are you sure?",
@@ -255,12 +264,12 @@ public abstract class EventPanel extends Panel {
                                new ConfirmDialog.Listener() {
                 public void onClose(ConfirmDialog dialog) {
                     if (dialog.isConfirmed()) {
-                        validateFile(eventFile, events, logger);
+                        validateFile(eventFile, logger);
                     }
                 }
             });
         } else {
-            validateFile(eventFile, events, logger);
+            validateFile(eventFile, logger);
         }
     }
 
@@ -268,17 +277,16 @@ public abstract class EventPanel extends Panel {
      * Validate file.
      *
      * @param file the file
-     * @param events the events
      * @param logger the logger
      */
-    private void validateFile(final File file, final Events events, final Logger logger) {
+    private void validateFile(final File file, final Logger logger) {
         int eventCount = 0;
-        for (org.opennms.netmgt.xml.eventconf.Event e : events.getEventCollection()) {
+        for (org.opennms.netmgt.xml.eventconf.Event e : eventTable.getOnmsEvents()) {
             if (eventConfDao.findByUei(e.getUei()) != null)
                 eventCount++;
         }
         if (eventCount == 0) {
-            saveFile(file, events, logger);
+            saveFile(file, logger);
         } else {
             ConfirmDialog.show(getUI(),
                                "Are you sure?",
@@ -288,7 +296,7 @@ public abstract class EventPanel extends Panel {
                                new ConfirmDialog.Listener() {
                 public void onClose(ConfirmDialog dialog) {
                     if (dialog.isConfirmed()) {
-                        saveFile(file, events, logger);
+                        saveFile(file, logger);
                     }
                 }
             });
@@ -299,27 +307,32 @@ public abstract class EventPanel extends Panel {
      * Save file.
      *
      * @param file the file
-     * @param events the events
      * @param logger the logger
      */
-    private void saveFile(final File file, final Events events, final Logger logger) {
+    private void saveFile(final File file, final Logger logger) {
         try {
+            // Updating the base events object with the new events set.
+            baseEventsObject.setEventCollection(eventTable.getOnmsEvents());
             // Normalize the Event Content (required to avoid marshaling problems)
             // TODO Are other normalizations required ?
-            for (org.opennms.netmgt.xml.eventconf.Event event : events.getEventCollection()) {
+            for (org.opennms.netmgt.xml.eventconf.Event event : baseEventsObject.getEventCollection()) {
                 logger.debug("Normalizing event " + event.getUei());
                 AlarmData ad = event.getAlarmData();
                 if (ad != null && (ad.getReductionKey() == null || ad.getReductionKey().trim().isEmpty())) {
                     event.setAlarmData(null);
                 }
+                Mask m = event.getMask();
+                if (m.getMaskelementCollection().isEmpty()) {
+                    event.setMask(null);
+                }
             }
             // Save the XML of the new events
-            saveEvents(events, file, logger);
+            saveEvents(baseEventsObject, file, logger);
             // Add a reference to the new file into eventconf.xml if there are events
             String fileName = file.getAbsolutePath().replaceFirst(".*\\" + File.separatorChar + "events\\" + File.separatorChar + "(.*)", "events" + File.separatorChar + "$1");
             final Events rootEvents = eventConfDao.getRootEvents();
             final File rootFile = ConfigFileConstants.getFile(ConfigFileConstants.EVENT_CONF_FILE_NAME);
-            if (events.getEventCount() > 0) {
+            if (baseEventsObject.getEventCount() > 0) {
                 if (!rootEvents.getEventFileCollection().contains(fileName)) {
                     logger.info("Adding a reference to " + fileName + " inside eventconf.xml.");
                     rootEvents.getEventFileCollection().add(0, fileName);

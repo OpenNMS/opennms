@@ -143,8 +143,8 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
 
     private long m_minimumConfigurationReloadInterval;
     
-    AtomicReference<Date> m_configurationTimestamp = new AtomicReference<Date>();
-    AtomicReference<ConcurrentHashMap<String, SimplePollerConfiguration>> m_configCache = new AtomicReference<ConcurrentHashMap<String,SimplePollerConfiguration>>();
+    private final AtomicReference<Date> m_configurationTimestamp = new AtomicReference<Date>();
+    private final AtomicReference<ConcurrentHashMap<String, SimplePollerConfiguration>> m_configCache = new AtomicReference<ConcurrentHashMap<String,SimplePollerConfiguration>>();
 
     /**
      * <p>afterPropertiesSet</p>
@@ -152,7 +152,7 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
      * @throws java.lang.Exception if any.
      */
     @Override
-    public void afterPropertiesSet() throws Exception {
+    public void afterPropertiesSet() {
         Assert.notNull(m_locMonDao, "The LocationMonitorDao must be set");
         Assert.notNull(m_monSvcDao, "The MonitoredServiceDao must be set");
         Assert.notNull(m_pollerConfig, "The PollerConfig must be set");
@@ -171,7 +171,7 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
      * @throws java.lang.Exception if any.
      */
     @Override
-    public void start() throws Exception {
+    public void start() {
         // Nothing to do: job scheduling and RMI export is done externally
     }
 
@@ -409,7 +409,7 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
 			}
 
 			return updateMonitorState(mon, currentConfigurationVersion);
-		} catch (final Exception e) {
+		} catch (final Throwable e) {
 			LOG.warn("An error occurred while checking in.", e);
 			return MonitorStatus.DISCONNECTED;
 		}
@@ -436,7 +436,9 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
 
     protected void updateConnectionHostDetails(final OnmsLocationMonitor mon, final Map<String, String> pollerDetails) {
         final Map<String,String> allDetails = new HashMap<String,String>();
-        if (pollerDetails != null) allDetails.putAll(pollerDetails);
+        if (pollerDetails != null) {
+            allDetails.putAll(pollerDetails);
+        }
 
         String oldConnectionHostAddress = allDetails.get(PollerBackEnd.CONNECTION_HOST_ADDRESS_KEY);
         String newConnectionHostAddress = null;
