@@ -88,6 +88,7 @@ public class DataCollectionWindow extends Window {
                         if (dialog.isConfirmed()) {
                             generateGraphTemplates(parser, logger);
                         }
+                        close();
                     }
                 });
             }
