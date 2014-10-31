@@ -80,7 +80,6 @@ import com.vaadin.client.MouseEventDetailsBuilder;
 import com.vaadin.shared.MouseEventDetails;
 
 public class VTopologyComponent extends Composite implements SVGTopologyMap, TopologyView.Presenter<VTopologyComponent.TopologyViewRenderer> {
-
     private HandlerRegistration m_windowResizeRegistration;
 
     public interface TopologyViewRenderer{
@@ -250,7 +249,12 @@ public class VTopologyComponent extends Composite implements SVGTopologyMap, Top
             int width = topologyView.getPhysicalWidth();
             int height = topologyView.getPhysicalHeight();
             D3 selection = D3.d3().select(topologyView.getSVGViewPort());
-            D3Transform tform = D3.getTransform(selection.attr("transform"));
+            String attr = selection.attr("transform");
+            // Ugly hack; what is going on here?  Can't figure out how the viewport is ending up with NaN
+            if (attr.contains("NaN")) {
+                attr = "translate(0,0)";
+            }
+            D3Transform tform = D3.getTransform(attr);
 
             JsArrayInteger p0 = (JsArrayInteger) JsArrayInteger.createArray();
             int x = tform.getX();
