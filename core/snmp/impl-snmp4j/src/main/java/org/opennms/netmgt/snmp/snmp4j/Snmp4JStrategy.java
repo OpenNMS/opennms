@@ -111,6 +111,9 @@ public class Snmp4JStrategy implements SnmpStrategy {
         	SNMP4JSettings.setForwardRuntimeExceptions(true);
         }
         
+        SNMP4JSettings.setAllowSNMPv2InV1(Boolean.getBoolean("org.opennms.snmp.snmp4j.allowSNMPv2InV1"));
+        SNMP4JSettings.setAllowSNMPv2InV1(Boolean.getBoolean("org.opennms.snmp.snmp4j.noGetBulk"));
+        
         s_initialized = true;
     }
     
