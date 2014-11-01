@@ -280,22 +280,5 @@
                 </tr>
             </table>
         </div>
-
-        <!-- chrome frame -->
-        <!--[if IE]>
-            <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/chrome-frame/1/CFInstall.min.js"></script>
-            <div id="prompt"></div>
-            <script>
-                // The conditional ensures that this code will only execute in IE,
-                // Therefore we can use the IE-specific attachEvent without worry
-                window.attachEvent("onload", function() {
-                    CFInstall.check({
-                        mode: "inline", // the default
-                        node: "prompt"
-                    });
-                });
-            </script>
-        <![endif]-->
-
     </body>
 </html>
