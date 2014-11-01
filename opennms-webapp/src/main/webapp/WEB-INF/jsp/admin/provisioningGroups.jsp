@@ -70,8 +70,8 @@
 </h3>
 <p>Defines scanning and policy behavior for auto-provisioned nodes</p>
 <div>
-<input type="button" value="Edit Default Foreign Source Definition" onclick="javascript:editForeignSource('default')" />
-<input type="button" value="Reset Default Foreign Source Definition" onclick="javascript:resetDefaultForeignSource()" />
+<input type="button" value="Edit Default Foreign Source Definition" onclick="editForeignSource('default')" />
+<input type="button" value="Reset Default Foreign Source Definition" onclick="resetDefaultForeignSource()" />
 </div>
 </form>
 
@@ -83,14 +83,14 @@
   <span style="font-size: large; text-align: right">
     <c:choose>
       <c:when test="${dbNodeCounts[foreignSourceName] > 0}">
-        <input type="button" value="Delete Nodes" onclick="javascript:confirmAction(<js:quote value="${foreignSourceName}"/>, 'deleteNodes', <js:quote value="Are you sure you want to delete all the nodes from group ${fn:escapeXml(foreignSourceName)}? This CANNOT be undone."/>)" />
+        <input type="button" value="Delete Nodes" onclick="confirmAction(<js:quote value="${foreignSourceName}"/>, 'deleteNodes', <js:quote value="Are you sure you want to delete all the nodes from group ${fn:escapeXml(foreignSourceName)}? This CANNOT be undone."/>)" />
       </c:when>
       <c:otherwise>
-        <input type="button" value="Delete Requisition" onclick="javascript:doAction(<js:quote value="${foreignSourceName}"/>, 'deleteGroup')" />
+        <input type="button" value="Delete Requisition" onclick="doAction(<js:quote value="${foreignSourceName}"/>, 'deleteGroup')" />
       </c:otherwise>
     </c:choose>
     <c:if test="${!empty groups[foreignSourceName]}">
-      <input type="button" value="Synchronize" onclick="javascript:doAction(<js:quote value="${foreignSourceName}"/>, 'import')" />
+      <input type="button" value="Synchronize" onclick="doAction(<js:quote value="${foreignSourceName}"/>, 'import')" />
     </c:if>
   </span>
   <br />
@@ -102,7 +102,7 @@
   	  	<span style="font-size: smaller">Defines nodes, interfaces, and services for synchronization.</span>
   	  </td>
   	  <td>
-  	  	<a id="edit_req_anchor_${foreignSourceName}" href="javascript:editRequisition(<js:quote value="${foreignSourceName}"/>)"><button>Edit</button></a>
+        <button id="edit_req_anchor_${foreignSourceName}" onclick="editRequisition(<js:quote value="${foreignSourceName}"/>)">Edit</button>
   	  	<br />
         <span style="font-size: smaller">
           <c:choose>
@@ -136,8 +136,7 @@
   	  <td>
   	    <c:choose>
   	  	<c:when test="${!empty foreignSources[foreignSourceName]}">
-  	  	<a href="javascript:editForeignSource(<js:quote value="${foreignSourceName}"/>)"><button>Edit</button></a> |
-  	  	<a href="javascript:cloneForeignSource(<js:quote value="${foreignSourceName}"/>)"><button>Clone</button></a>
+        <button onclick="editForeignSource(<js:quote value="${foreignSourceName}"/>)">Edit</button> | <button onclick="cloneForeignSource(<js:quote value="${foreignSourceName}"/>)">Clone</button>
   	  	<br />
           <span style="font-size: smaller">
             Last Modified:
@@ -148,7 +147,7 @@
   	      </span>
   	    </c:when>
   	    <c:otherwise>
-        <a href="javascript:editForeignSource(<js:quote value="${foreignSourceName}"/>)"><button>Fork and Edit</button></a>
+        <button onclick="editForeignSource(<js:quote value="${foreignSourceName}"/>)">Fork and Edit</button>
   	  	<br />
           <span style="font-size: smaller">
             The default foreign-source definition is currently in effect for this requisition.

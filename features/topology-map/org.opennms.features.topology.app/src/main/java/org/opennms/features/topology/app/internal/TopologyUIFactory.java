@@ -31,8 +31,6 @@ package org.opennms.features.topology.app.internal;
 import org.opennms.osgi.OnmsVaadinUIFactory;
 import org.osgi.service.blueprint.container.BlueprintContainer;
 
-import java.util.HashMap;
-import java.util.Map;
 
 public class TopologyUIFactory extends OnmsVaadinUIFactory {
     
@@ -41,14 +39,5 @@ public class TopologyUIFactory extends OnmsVaadinUIFactory {
 	public TopologyUIFactory(BlueprintContainer container, String uiBeanName) {
         super(TopologyUI.class, container, uiBeanName);
 	}
-
-    @Override
-    public Map<String, String> getAdditionalHeaders() {
-        final Map<String,String> headers = new HashMap<String,String>();
-        headers.put("X-UA-Compatible", "chrome=1");
-        //headers.put("X-Frame-Options", "ALLOW-FROM http://cdn.leafletjs.com/");
-        //headers.put("X-Frame-Options", "ALLOW-FROM http://maps.google.com/");
-        return headers;
-    }
 
 }

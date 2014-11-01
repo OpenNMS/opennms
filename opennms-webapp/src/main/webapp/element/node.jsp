@@ -290,14 +290,13 @@ function confirmAssetEdit() {
 </script>
 
 <div class="onms">
-<h2>Node: ${model.label} <span class="NPdbid" title="Database ID: ${model.id}">${model.id}</span>
+<h2>Node: ${model.label} (ID: ${model.id})</h2>
 <c:if test="${model.foreignSource != null}">
-<span class="NPfs" title="Created via requisition: ${model.foreignSource}">${model.foreignSource}</span>&nbsp;<span class="NPfid" title="Foreign-ID: ${model.foreignId}">${model.foreignId}</span>
+<h2><em>Created via provisioning requisition <strong>${model.foreignSource} (foreignId: ${model.foreignId})</strong></em></h2>
 </c:if>
 <c:if test="${model.foreignSource == null}">
-Auto-provisioned node (Not a member of any requisition)
+<h2><em>Not a member of any provisioning requisition</em></h2>
 </c:if>
-</h2>
 <div id="linkbar">
   <ul class="o-menu">
     <c:url var="eventLink" value="event/list">
@@ -334,7 +333,16 @@ Auto-provisioned node (Not a member of any requisition)
     <li class="o-menuitem">
       <a href="<c:out value="${hardwareLink}"/>">Hardware Info</a>
     </li>
- 
+
+    <c:if test="${fn:length( model.intfs ) >= 10}">
+      <c:url var="intfAvailabilityLink" value="element/availability.jsp">
+        <c:param name="node" value="${model.id}"/>
+      </c:url>
+      <li class="o-menuitem">
+        <a href="<c:out value="${intfAvailabilityLink}"/>">Availability</a>
+      </li>
+    </c:if>
+
     <c:if test="${! empty model.statusSite}">
       <c:url var="siteLink" value="siteStatusView.htm">
         <c:param name="statusSite" value="${model.statusSite}"/>
@@ -641,12 +649,12 @@ Auto-provisioned node (Not a member of any requisition)
     </div>    
   </c:if>
 	
-	<!-- Availability box -->
-	<c:if test="${fn:length( model.intfs ) < 10}">
+  <!-- Availability box -->
+  <c:if test="${fn:length( model.intfs ) < 10}">
     <jsp:include page="/includes/nodeAvailability-box.jsp" flush="false" >
       <jsp:param name="node" value="${model.id}" />
     </jsp:include>
-    </c:if> 
+  </c:if>
 
   <script type="text/javascript">
     var nodeId = ${model.id}
