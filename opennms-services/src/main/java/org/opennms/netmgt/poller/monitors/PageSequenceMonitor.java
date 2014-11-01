@@ -299,7 +299,9 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
             return retval.toString();
         }
 
-        void execute(final HttpClientWrapper clientWrapper, final MonitoredService svc, final Properties sequenceProperties) {
+        void execute(final HttpClientWrapper parentClientWrapper, final MonitoredService svc, final Properties sequenceProperties) {
+            final HttpClientWrapper clientWrapper = parentClientWrapper.duplicate();
+            CloseableHttpResponse response = null;
             try {
                 URI uri = getURI(svc);
                 PageSequenceHttpUriRequest method = getMethod(uri);
@@ -348,7 +350,7 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
                 }
 
                 long startTime = System.nanoTime();
-                CloseableHttpResponse response = clientWrapper.execute(method);
+                response = clientWrapper.execute(method);
                 long endTime = System.nanoTime();
                 m_responseTime = (endTime - startTime)/1000000.0;
 
@@ -395,7 +397,7 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
                 throw new PageSequenceMonitorException("I/O Error", e);
             } finally {
                 if (clientWrapper != null) {
-                    clientWrapper.closeResponse();
+                    clientWrapper.close(response);
                 }
             }
         }

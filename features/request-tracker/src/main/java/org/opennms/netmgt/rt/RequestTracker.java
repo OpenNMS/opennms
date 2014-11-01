@@ -127,7 +127,7 @@ public class RequestTracker {
             LOG.error("Failure attempting to update ticket.", e);
             throw new RequestTrackerException(e);
         } finally {
-            getClientWrapper().closeResponse();
+            getClientWrapper().close(response);
         }
 
         if (rtTicketNumber == null) {
@@ -159,7 +159,7 @@ public class RequestTracker {
             LOG.error("An exception occurred while getting user info for {}", username, e);
             return null;
         } finally {
-            getClientWrapper().closeResponse();
+            getClientWrapper().close(response);
         }
 
         final String id = attributes.get("id");
@@ -281,7 +281,7 @@ public class RequestTracker {
             LOG.error("An exception occurred while getting tickets for queue {}", queueName, e);
             return null;
         } finally {
-            getClientWrapper().closeResponse();
+            getClientWrapper().close(response);
         }
 
         for (final Long id : ticketIds) {
@@ -362,7 +362,7 @@ public class RequestTracker {
             LOG.error("An exception occurred while getting queue #{}", id, e);
             return null;
         } finally {
-            getClientWrapper().closeResponse();
+            getClientWrapper().close(response);
         }
 
         if (attributes.containsKey("id") && attributes.containsKey("name")) {
@@ -413,7 +413,7 @@ public class RequestTracker {
         } catch (final Exception e) {
             LOG.error("HTTP exception attempting to get ticket.", e);
         } finally {
-            getClientWrapper().closeResponse();
+            getClientWrapper().close(response);
         }
 
         if (ticketAttributes.size() == 0) {
@@ -474,12 +474,13 @@ public class RequestTracker {
             final List<NameValuePair> params = new ArrayList<NameValuePair>();
             params.add(new BasicNameValuePair("user", m_user));
             params.add(new BasicNameValuePair("pass", m_password));
+            CloseableHttpResponse response = null;
 
             try {
                 UrlEncodedFormEntity entity = new UrlEncodedFormEntity(params, "UTF-8");
                 post.setEntity(entity);
 
-                final CloseableHttpResponse response = m_clientWrapper.execute(post);
+                response = m_clientWrapper.execute(post);
                 int responseCode = response.getStatusLine().getStatusCode();
                 if (responseCode != HttpStatus.SC_OK) {
                     throw new RequestTrackerException("Received a non-200 response code from the server: " + responseCode);
@@ -494,7 +495,7 @@ public class RequestTracker {
             } catch (final Exception e) {
                 LOG.warn("Unable to get session (by requesting user details)", e);
             } finally {
-                m_clientWrapper.closeResponse();
+                m_clientWrapper.close(response);
             }
         }
         return m_clientWrapper;

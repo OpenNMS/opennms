@@ -35,6 +35,7 @@ import java.util.List;
 
 import net.simon04.jelementtree.ElementTree;
 
+import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.opennms.core.web.HttpClientWrapper;
@@ -87,8 +88,10 @@ public class NominatimGeocoder implements Geocoder {
 			method.addHeader("Referer", m_referer);
 		}
 
+		CloseableHttpResponse response = null;
 		try {
-			InputStream responseStream = m_clientWrapper.execute(method).getEntity().getContent();
+			response = m_clientWrapper.execute(method);
+			InputStream responseStream = response.getEntity().getContent();
 			final ElementTree tree = ElementTree.fromStream(responseStream);
 			if (tree == null) {
 				throw new GeocoderException("an error occurred connecting to the Nominatim geocoding service (no XML tree was found)");
@@ -110,7 +113,7 @@ public class NominatimGeocoder implements Geocoder {
 		} catch (Throwable e) {
 			throw new GeocoderException("unable to get lat/lng from Nominatim", e);
 		} finally {
-		        m_clientWrapper.closeResponse();
+		        m_clientWrapper.close(response);
 		}
 	}
 

@@ -61,20 +61,20 @@ public class WebClient implements Client<WebRequest, WebResponse> {
 
     private HttpClientWrapper m_httpClientWrapper = null;
     private HttpGet m_httpMethod;
+
     private HttpVersion m_version = HttpVersion.HTTP_1_1;
     private String m_schema;
     private String m_path;
     private String m_queryString;
+    private String m_userAgent;
+    private String m_virtualHost;
+    private String m_userName;
+    private String m_password;
+    private boolean m_overrideSSL = false;
+    private boolean m_authPreemptive = false;
 
     public WebClient(boolean override) {
-        m_httpClientWrapper = HttpClientWrapper.create();
-        if (override) {
-            try {
-                m_httpClientWrapper.trustSelfSigned("https");
-            } catch (final Exception e) {
-                LOG.warn("Failed to create relaxed SSL client.", e);
-            }
-        }
+        m_overrideSSL = override;
     }
 
     @Override
@@ -91,12 +91,37 @@ public class WebClient implements Client<WebRequest, WebResponse> {
 
         m_httpMethod = new HttpGet(ub.build());
         m_httpMethod.setProtocolVersion(m_version);
-        setTimeout(timeout);
+
+        m_httpClientWrapper = HttpClientWrapper.create();
+        if (m_overrideSSL) {
+            try {
+                m_httpClientWrapper.trustSelfSigned("https");
+            } catch (final Exception e) {
+                LOG.warn("Failed to create relaxed SSL client.", e);
+            }
+        }
+        if (m_userAgent != null && !m_userAgent.trim().isEmpty()) {
+            m_httpClientWrapper.setUserAgent(m_userAgent);
+        }
+        if (timeout > 0) {
+            m_httpClientWrapper.setConnectionTimeout(timeout);
+            m_httpClientWrapper.setSocketTimeout(timeout);
+        }
+        if (m_virtualHost != null && !m_virtualHost.trim().isEmpty()) {
+            m_httpClientWrapper.setVirtualHost(m_virtualHost);
+        }
+        if (m_userName != null && !m_userName.trim().isEmpty()) {
+            m_httpClientWrapper.addBasicCredentials(m_userName, m_password);
+        }
+        if (m_authPreemptive) {
+            m_httpClientWrapper.usePreemptiveAuth();
+        }
     }
 
     @Override
     public void close() {
         IOUtils.closeQuietly(m_httpClientWrapper);
+        m_httpClientWrapper = null;
     }
 
     @Override
@@ -105,19 +130,17 @@ public class WebClient implements Client<WebRequest, WebResponse> {
     }
 
     @Override
-    public WebResponse sendRequest(WebRequest request) throws IOException, Exception {
-        for (Entry<String,String> entry : request.getHeaders().entrySet()) {
+    public WebResponse sendRequest(final WebRequest request) throws IOException, Exception {
+        for (final Entry<String,String> entry : request.getHeaders().entrySet()) {
             m_httpMethod.addHeader(entry.getKey(), entry.getValue());
         }
         CloseableHttpResponse response = null;
         try {
             response = m_httpClientWrapper.execute(m_httpMethod);
             return new WebResponse(request, response);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             LOG.info(e.getMessage(), e);
             return new WebResponse(request, null);
-        } finally {
-            m_httpClientWrapper.closeResponse();
         }
     }
 
@@ -133,19 +156,12 @@ public class WebClient implements Client<WebRequest, WebResponse> {
         m_schema = schema;        
     }
 
-    public void setTimeout(final int timeout) {
-        if (timeout > 0) {
-            m_httpClientWrapper.setConnectionTimeout(timeout);
-            m_httpClientWrapper.setSocketTimeout(timeout);
-        }
-    }
-
     public void setUserAgent(final String userAgent) {
-        m_httpClientWrapper.setUserAgent(userAgent);
+        m_userAgent = userAgent;
     }
 
     public void setVirtualHost(final String virtualHost) {
-        m_httpClientWrapper.setVirtualHost(virtualHost);
+        m_virtualHost = virtualHost;
     }
 
     public void setUseHttpV1(boolean useHttpV1) {
@@ -156,13 +172,12 @@ public class WebClient implements Client<WebRequest, WebResponse> {
 
     public void setAuth(final String userName, final String password) {
         LOG.debug("enabling user authentication using credentials for {}", userName);
-        m_httpClientWrapper.addBasicCredentials(userName, password);
+        m_userName = userName;
+        m_password = password;
     }
 
     public void setAuthPreemtive(final boolean authPreemtive) {
-        if (authPreemtive) {
-            m_httpClientWrapper.usePreemptiveAuth();
-        }
+        m_authPreemptive = authPreemtive;
     }
 
 }

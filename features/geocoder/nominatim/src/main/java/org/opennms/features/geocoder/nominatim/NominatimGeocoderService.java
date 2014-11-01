@@ -77,8 +77,9 @@ public class NominatimGeocoderService implements GeocoderService {
         }
 
         InputStream responseStream = null;
+        CloseableHttpResponse response = null;
         try {
-            final CloseableHttpResponse response = m_clientWrapper.execute(method);
+            response = m_clientWrapper.execute(method);
             final StatusLine statusLine = response.getStatusLine();
             if (statusLine.getStatusCode() != 200) {
                 throw new GeocoderException("Nominatim returned a non-OK response code: " + statusLine.getStatusCode() + " " + statusLine.getReasonPhrase());
@@ -106,7 +107,7 @@ public class NominatimGeocoderService implements GeocoderService {
             throw new GeocoderException("unable to get lon/lat from Nominatim", e);
         } finally {
             IOUtils.closeQuietly(responseStream);
-            m_clientWrapper.closeResponse();
+            m_clientWrapper.close(response);
         }
     }
 
