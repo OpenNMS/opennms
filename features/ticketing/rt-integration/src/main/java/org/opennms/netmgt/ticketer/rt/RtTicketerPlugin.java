@@ -279,7 +279,7 @@ public class RtTicketerPlugin implements Plugin {
      * @param user a {@link java.lang.String} object.
      */
     public void setUser(final String user) {
-        m_requestTracker.setUser(user);
+        m_requestTracker.setUsername(user);
     }
 
 
