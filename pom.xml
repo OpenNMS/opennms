@@ -1445,6 +1445,11 @@
       </dependency>
       <dependency>
         <groupId>org.opennms.core</groupId>
+        <artifactId>org.opennms.core.web</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.core</groupId>
         <artifactId>org.opennms.core.xml</artifactId>
         <version>${project.version}</version>
       </dependency>

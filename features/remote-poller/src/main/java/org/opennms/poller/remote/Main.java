@@ -292,12 +292,16 @@ public class Main implements Runnable {
 		}
 
 		final ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext(configs.toArray(new String[0]));
+
+		// Add a shutdown hook so that even if the user CTRL-Cs the app or closes its JNLP GUI window,
+		// it will still perform the same clean shutdown as stopping the poller via messaging.
 		Runtime.getRuntime().addShutdownHook(new Thread() {
 			@Override
 			public void run() {
-				// TODO: Call the same shutdown routine as the PropertyChangeListener below
+				shutdownContextAndExit(context);
 			}
 		});
+
 		return context;
 	}
 
@@ -330,34 +334,45 @@ public class Main implements Runnable {
 			@Override
 			public void propertyChange(PropertyChangeEvent e) {
 				if (shouldExit(e)) {
-					// MVR: gracefully shutdown scheduler, otherwise context.close() will raise 
-					// an exception. See #NMS-6966 for more details.
-					if (context.isActive()) {
-						try {
-							LOG.info("Shutting down PollerFrontEnd scheduler");
-							((Scheduler)context.getBean("scheduler")).shutdown();
-						} catch (SchedulerException ex) {
-							LOG.warn("Shutting down PollerFrontEnd scheduler failed", ex);
-						}
-						LOG.info("PollerFrontEnd scheduler shutdown complete");
-
-						// now close the application context
-						context.close();
-					}
-
-					new Thread() {
-						public void run() {
-							// Sleep for a couple of seconds so that the other
-							// PropertyChangeListeners get a chance to fire
-							try { Thread.sleep(5000); } catch (InterruptedException e) {}
-							System.exit(10);
-						}
-					}.start();
+					shutdownContextAndExit(context);
 				}
 			}
 		});
 
 		return frontEnd;
+	}
+
+	private static void shutdownContextAndExit(AbstractApplicationContext context) {
+		int returnCode = 0;
+
+		// MVR: gracefully shutdown scheduler, otherwise context.close() will raise 
+		// an exception. See #NMS-6966 for more details.
+		if (context.isActive()) {
+			try {
+				LOG.info("Shutting down PollerFrontEnd scheduler");
+				((Scheduler)context.getBean("scheduler")).shutdown();
+			} catch (SchedulerException ex) {
+				LOG.warn("Shutting down PollerFrontEnd scheduler failed", ex);
+				returnCode = 10;
+			}
+			LOG.info("PollerFrontEnd scheduler shutdown complete");
+
+			// Now close the application context. This will invoke 
+			// {@link DefaultPollerFrontEnd#destroy()} which will mark the
+			// remote poller as "Stopped" during shutdown instead of letting
+			// it remain in the "Disconnected" state.
+			context.close();
+		}
+
+		final int returnCodeValue = returnCode;
+		new Thread() {
+			public void run() {
+				// Sleep for a couple of seconds so that the other
+				// PropertyChangeListeners get a chance to fire
+				try { Thread.sleep(5000); } catch (InterruptedException e) {}
+				System.exit(returnCodeValue);
+			}
+		}.start();
 	}
 
 	/**
