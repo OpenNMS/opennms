@@ -39,8 +39,6 @@ import org.slf4j.LoggerFactory;
 /**
  * Convenience class for looking up string and integer values in a parameter
  * map.
- * 
- * @deprecated This class *modifies* the maps that are passed in, we should really do it another way.
  */
 public abstract class ParameterMap {
 	

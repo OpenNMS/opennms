@@ -45,12 +45,11 @@ import org.springframework.test.context.ContextConfiguration;
  * @author <a mailto:david@opennms.org>David Hustace</a>
  */
 @RunWith(OpenNMSJUnit4ClassRunner.class)
-// context not used but we this annotation is mandator
 @ContextConfiguration(locations="classpath:/test-context.xml")
-@JUnitHttpServer(port=10342)
 public class HttpNorthBounderTest {
 
     @Test
+    @JUnitHttpServer(port=10342)
     public void testForwardAlarms() throws InterruptedException {
         
         HttpNorthbounder nb = new HttpNorthbounder();
@@ -66,14 +65,7 @@ public class HttpNorthBounderTest {
         alarm.setUei("uei.opennms.org/test/httpNorthBounder");
         
         NorthboundAlarm a = new NorthboundAlarm(alarm);
-//        List<Alarm> alarms = Arrays.asList(a);
-//        
-//        nb.forwardAlarms(alarms);
-        
         nb.onAlarm(a);
-        
-        Thread.sleep(10000);
-        
     }
 
 }
