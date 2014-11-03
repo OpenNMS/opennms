@@ -47,7 +47,7 @@ import java.util.*;
 import java.util.concurrent.CopyOnWriteArraySet;
 import org.slf4j.LoggerFactory;
 
-@JavaScript({"gwt/public/topologywidget/js/d3.v3.js", "gwt/public/topologywidget/js/d3.interpolate-zoom.v0.js"})
+@JavaScript({"gwt/public/topologywidget/js/d3.v3.4.13.js"})
 public class TopologyComponent extends AbstractComponent implements ChangeListener, ValueChangeListener, MapViewManagerListener {
 
     TopologyComponentServerRpc m_rpc = new TopologyComponentServerRpc(){
