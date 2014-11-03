@@ -430,7 +430,7 @@ public class TimelineRestService extends OnmsRestService {
         htmlBuffer.append(end);
         htmlBuffer.append("/");
         htmlBuffer.append(width);
-        htmlBuffer.append("\" usemap=\"");
+        htmlBuffer.append("\" usemap=\"#");
         htmlBuffer.append(nodeId);
         htmlBuffer.append("-");
         htmlBuffer.append(ipAddress);
