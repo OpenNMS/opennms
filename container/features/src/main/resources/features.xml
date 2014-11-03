@@ -98,6 +98,7 @@
       <bundle>mvn:org.opennms.core/org.opennms.core.logging/${project.version}</bundle>
       <bundle>mvn:org.opennms.core/org.opennms.core.soa/${project.version}</bundle>
       <bundle>mvn:org.opennms.core/org.opennms.core.spring/${project.version}</bundle>
+      <bundle>mvn:org.opennms.core/org.opennms.core.web/${project.version}</bundle>
       <bundle>mvn:org.opennms.core/org.opennms.core.xml/${project.version}</bundle>
       <bundle>mvn:org.opennms/opennms-util/${project.version}</bundle>
     </feature>
