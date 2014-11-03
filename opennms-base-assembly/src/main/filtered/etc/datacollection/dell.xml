@@ -70,7 +70,6 @@
         <collect>
           <includeGroup>mib2-interfaces</includeGroup>
           <includeGroup>mib2-tcp</includeGroup>
-          <includeGroup>mib2-icmp</includeGroup>
           <includeGroup>dell-rac-chassis</includeGroup>
           <includeGroup>dell-rac-psu</includeGroup>
         </collect>

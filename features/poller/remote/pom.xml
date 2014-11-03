@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms.features</groupId>
     <artifactId>org.opennms.features.poller</artifactId>
-    <version>1.13.5-SNAPSHOT</version>
+    <version>14.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features.poller</groupId>
@@ -30,10 +30,12 @@
       <artifactId>quartz-dependencies</artifactId>
       <type>pom</type>
     </dependency>
+    <!-- MVR: We do not use servlet-dependencies here, because that would
+    pull in a bunch of other dependencies like jetty-jsp we do not want here.
+    See issue #NMS-6945 for more details -->
     <dependency>
-      <groupId>org.opennms.dependencies</groupId>
-      <artifactId>servlet-dependencies</artifactId>
-      <type>pom</type>
+      <groupId>javax.servlet</groupId>
+      <artifactId>servlet-api</artifactId>
     </dependency>
     <dependency>
       <groupId>org.opennms.dependencies</groupId>

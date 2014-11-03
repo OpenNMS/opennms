@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -25,6 +25,7 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
+
 package org.opennms.features.vaadin.mibcompiler.services;
 
 import java.io.File;
@@ -127,7 +128,7 @@ public class JsmiMibParser implements MibParser, Serializable {
     @Override
     public boolean parseMib(File mibFile) {
         // Validate MIB Directory
-        if (mibDirectory == null) {
+        if (mibDirectory == null || !mibDirectory.isDirectory()) {
             errorHandler.addError("MIB directory has not been set.");
             return false;
         }
@@ -302,7 +303,7 @@ public class JsmiMibParser implements MibParser, Serializable {
                     sb.append(" LINE1:var#0000ff:\"").append(v.getId()).append("\" \\\n");
                     sb.append(" GPRINT:var:AVERAGE:\"Avg\\\\: %8.2lf %s\" \\\n");
                     sb.append(" GPRINT:var:MIN:\"Min\\\\: %8.2lf %s\" \\\n");
-                    sb.append(" GPRINT:var:MAX:\"Max\\\\: %8.2lf %s\\n\"");
+                    sb.append(" GPRINT:var:MAX:\"Max\\\\: %8.2lf %s\\\\n\"");
                     sb.append("\n\n");
                     PrefabGraph graph = new PrefabGraph(name, descr, new String[] { alias }, sb.toString(), new String[0], new String[0], order++, new String[] { resourceType }, descr, null, null, new String[0]);
                     graphs.add(graph);
@@ -388,7 +389,6 @@ public class JsmiMibParser implements MibParser, Serializable {
                         break;
                     }
                 }
-                LOG.debug("Dependency file {} doesn't exist", fileName);
             }
             if (!found) {
                 LOG.warn("Couldn't find dependency {} on {}", dependency, mibDirectory);
@@ -407,10 +407,20 @@ public class JsmiMibParser implements MibParser, Serializable {
      */
     private SmiModule getModule(SmiMib mibObject, File mibFile) {
         for (SmiModule m : mibObject.getModules()) {
-            if (m.getIdToken().getLocation().getSource().contains(mibFile.getAbsolutePath())) {
-                return m;
+            URL source = null;
+            try {
+                source = new URL(m.getIdToken().getLocation().getSource());
+            } catch (Exception e) {}
+            if (source != null) {
+                try {
+                    File srcFile = new File(source.toURI());
+                    if (srcFile.getAbsolutePath().equals(mibFile.getAbsolutePath())) {
+                        return m;
+                    }
+                } catch (Exception e) {}
             }
         }
+        LOG.error("Can't find the MIB module for " + mibFile);
         errorHandler.addError("Can't find the MIB module for " + mibFile);
         return null;
     }

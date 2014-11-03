@@ -7,16 +7,16 @@
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -31,6 +31,7 @@ package org.opennms.netmgt.model.events;
 import static org.opennms.core.utils.InetAddressUtils.str;
 import static org.opennms.netmgt.EventConstants.INTERFACE_DELETED_EVENT_UEI;
 import static org.opennms.netmgt.EventConstants.NODE_ADDED_EVENT_UEI;
+import static org.opennms.netmgt.EventConstants.NODE_CATEGORY_MEMBERSHIP_CHANGED_EVENT_UEI;
 import static org.opennms.netmgt.EventConstants.NODE_DELETED_EVENT_UEI;
 import static org.opennms.netmgt.EventConstants.NODE_GAINED_INTERFACE_EVENT_UEI;
 import static org.opennms.netmgt.EventConstants.NODE_GAINED_SERVICE_EVENT_UEI;
@@ -48,8 +49,8 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
 
-import org.opennms.netmgt.model.OnmsNode.NodeLabelSource;
 import org.opennms.core.utils.WebSecurityUtils;
+import org.opennms.netmgt.model.OnmsNode.NodeLabelSource;
 import org.opennms.netmgt.xml.event.Autoaction;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Forward;
@@ -343,10 +344,10 @@ public abstract class EventUtils {
      * @param nodeId a {@link java.lang.Integer} object.
      * @param nodeLabel a {@link java.lang.String} object.
      * @param labelSource a {@link java.lang.String} object.
-     * @param rescanExisting a {@link java.lang.Boolean} object.
+     * @param rescanExisting a {@link java.lang.String} object.
      * @return a {@link org.opennms.netmgt.xml.event.Event} object.
      */
-    public static Event createNodeUpdatedEvent(String source, Integer nodeId, String nodeLabel, NodeLabelSource labelSource, boolean rescanExisting) {
+    public static Event createNodeUpdatedEvent(String source, Integer nodeId, String nodeLabel, NodeLabelSource labelSource, String rescanExisting) {
         debug("CreateNodeUpdatedEvent: nodedId: %d", nodeId);
         EventBuilder bldr = new EventBuilder(NODE_UPDATED_EVENT_UEI, source);
         bldr.setNodeid(nodeId);
@@ -354,7 +355,17 @@ public abstract class EventUtils {
         if (labelSource != null) {
             bldr.addParam(PARM_NODE_LABEL_SOURCE, labelSource.toString());
         }
-        bldr.addParam(PARM_RESCAN_EXISTING, Boolean.toString(rescanExisting));
+        if (rescanExisting != null) {
+            bldr.addParam(PARM_RESCAN_EXISTING, rescanExisting);
+        }
+        return bldr.getEvent();
+    }
+
+
+    public static Event createNodeCategoryMembershipChangedEvent(final String source, final Integer nodeId, final String nodeLabel) {
+        EventBuilder bldr = new EventBuilder(NODE_CATEGORY_MEMBERSHIP_CHANGED_EVENT_UEI, source);
+        bldr.setNodeid(nodeId);
+        bldr.addParam(PARM_NODE_LABEL, nodeLabel);
         return bldr.getEvent();
     }
 

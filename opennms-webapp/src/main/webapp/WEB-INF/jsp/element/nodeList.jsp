@@ -2,22 +2,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -46,13 +46,28 @@
   <jsp:param name="breadcrumb" value="Node List"/>
 </jsp:include>
 
+<!-- NMS-7099: Add custom javascripts AFTER the header was included -->
+<script type="text/javascript">
+    function toggleClassDisplay(clazz, displayA, displayB) {
+        var targetElems = document.querySelectorAll("." + clazz);
+        for (var i = 0; i < targetElems.length; i++) {
+            var e = targetElems[i];
+            if (e.style.display == displayA) {
+                e.style.display = displayB;
+            } else {
+                e.style.display = displayA;
+            }
+        }
+    }
+</script>
+
 <c:choose>
   <c:when test="${command.listInterfaces}">
     <h3>Nodes and their interfaces</h3>
   </c:when>
   
   <c:otherwise>
-    <h3>Nodes</h3>
+    <h3><span>Nodes</span><span style="padding-left: 32px;"><a href="javascript:toggleClassDisplay('NLdbid', '', 'inline');"><img src="images/nodelist/dbid-16.png" title="Toggle database IDs" width="16" height="16"/></a>&nbsp;<a href="javascript:toggleClassDisplay('NLfs', '', 'inline');"><img src="images/nodelist/foreignsource-16.png" title="Toggle requisition names" width="16" height="16"/></a>&nbsp;<a href="javascript:toggleClassDisplay('NLfid', '', 'inline');"><img src="images/nodelist/foreignid-16.png" title="Toggle foreign-IDs" width="16" height="16"/></a></span></h3>
   </c:otherwise>
 </c:choose>
 <div class="boxWrapper">

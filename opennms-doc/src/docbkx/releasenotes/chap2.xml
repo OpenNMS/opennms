@@ -4,6 +4,244 @@
 
 	<subtitle>Changes in This OpenNMS</subtitle>
 
+	<!-- Start 14.0 -->
+
+	<section id="opennms-14.0.0">
+		<title>Changes in OpenNMS 14.0.0</title>
+
+		<section id="opennms-14.0.0-sub-task">
+			<title>Sub-task</title>
+
+			<itemizedlist>
+				<listitem><para>Test installer for Windows 8.1 (Issue <ulink url='http://issues.opennms.org/browse/NMS-7021'>NMS-7021</ulink>)</para></listitem>
+				<listitem><para>Replace GPL&#39;d images of Ops Panel and Vmware Topology Provider (Issue <ulink url='http://issues.opennms.org/browse/NMS-7034'>NMS-7034</ulink>)</para></listitem>
+				<listitem><para>Test installer for Ubuntu 14.04 (Issue <ulink url='http://issues.opennms.org/browse/NMS-7071'>NMS-7071</ulink>)</para></listitem>
+			</itemizedlist>
+		</section>
+		<section id="opennms-14.0.0-bug">
+			<title>Bug</title>
+
+			<itemizedlist>
+				<listitem><para>Convert EventsArchiver to use Hibernate (Issue <ulink url='http://issues.opennms.org/browse/NMS-3034'>NMS-3034</ulink>)</para></listitem>
+				<listitem><para>linkd not showing links between nodes and cisco switches (Issue <ulink url='http://issues.opennms.org/browse/NMS-3913'>NMS-3913</ulink>)</para></listitem>
+				<listitem><para>Postgres database upgrade fails in InstallerDb.databaseSetUser on Windows (Issue <ulink url='http://issues.opennms.org/browse/NMS-4041'>NMS-4041</ulink>)</para></listitem>
+				<listitem><para>Sending notifications causes exception in javamailer if user is missing smtp adress (Issue <ulink url='http://issues.opennms.org/browse/NMS-4367'>NMS-4367</ulink>)</para></listitem>
+				<listitem><para>Provisiond temporarily deletes policy-based surveillance categories from existing nodes when synchronizing (Issue <ulink url='http://issues.opennms.org/browse/NMS-5059'>NMS-5059</ulink>)</para></listitem>
+				<listitem><para>install_iplike.sh needs explicit DROP FUNCTION if PL/PGSQL sproc already exists / PostgreSQL 9.1 / Ubuntu 11.10+ / Fedora 16+ (Issue <ulink url='http://issues.opennms.org/browse/NMS-5212'>NMS-5212</ulink>)</para></listitem>
+				<listitem><para>Threshold expressions for node-level metrics doesn&#39;t work on non SNMP Collectors (Issue <ulink url='http://issues.opennms.org/browse/NMS-5219'>NMS-5219</ulink>)</para></listitem>
+				<listitem><para>File based Provisioning Groups nodes lose historic Service Outage information after manual Synchronization for services added with detectors. (Issue <ulink url='http://issues.opennms.org/browse/NMS-5266'>NMS-5266</ulink>)</para></listitem>
+				<listitem><para>config-tester does not run on a standard Debian install (Issue <ulink url='http://issues.opennms.org/browse/NMS-5603'>NMS-5603</ulink>)</para></listitem>
+				<listitem><para>Adding a node through &quot;Add Node&quot; when filling in the hostname/IP but not Node Name results in a null node name (Issue <ulink url='http://issues.opennms.org/browse/NMS-5847'>NMS-5847</ulink>)</para></listitem>
+				<listitem><para>Collectd is still collecting data from each duplicate IPs after removing the duplicates (Issue <ulink url='http://issues.opennms.org/browse/NMS-6226'>NMS-6226</ulink>)</para></listitem>
+				<listitem><para>Small font size in JRobin graphs after upgrade to 1.12.2  (Issue <ulink url='http://issues.opennms.org/browse/NMS-6303'>NMS-6303</ulink>)</para></listitem>
+				<listitem><para>OpenNMS not starting because of dataSource bean NPE (Issue <ulink url='http://issues.opennms.org/browse/NMS-6312'>NMS-6312</ulink>)</para></listitem>
+				<listitem><para>Remote polling does not work (Issue <ulink url='http://issues.opennms.org/browse/NMS-6326'>NMS-6326</ulink>)</para></listitem>
+				<listitem><para>OpenNMS tested 1.12.1 and 1.12.3-Cannot start OpenNMS with a configured Selenium-Monitor (Issue <ulink url='http://issues.opennms.org/browse/NMS-6371'>NMS-6371</ulink>)</para></listitem>
+				<listitem><para>There&#39;s no way to rediscover SNMP properties on a discovered node handled by Provisiond (Issue <ulink url='http://issues.opennms.org/browse/NMS-6380'>NMS-6380</ulink>)</para></listitem>
+				<listitem><para>Missing dependency for provision.pl (Issue <ulink url='http://issues.opennms.org/browse/NMS-6395'>NMS-6395</ulink>)</para></listitem>
+				<listitem><para>Topology Map Internal Error (Issue <ulink url='http://issues.opennms.org/browse/NMS-6441'>NMS-6441</ulink>)</para></listitem>
+				<listitem><para>build failures on master  (Issue <ulink url='http://issues.opennms.org/browse/NMS-6476'>NMS-6476</ulink>)</para></listitem>
+				<listitem><para>Graph´s legend size is too small after upgrading (Issue <ulink url='http://issues.opennms.org/browse/NMS-6501'>NMS-6501</ulink>)</para></listitem>
+				<listitem><para>Drop-down list for nodes and interfaces on Scheduled Outages UI is not responding when having thousands of nodes. (Issue <ulink url='http://issues.opennms.org/browse/NMS-6502'>NMS-6502</ulink>)</para></listitem>
+				<listitem><para>Topology Page failed to laod in IE browser (Issue <ulink url='http://issues.opennms.org/browse/NMS-6505'>NMS-6505</ulink>)</para></listitem>
+				<listitem><para>Logging messages from several daemons appear on uncategorized.log (Issue <ulink url='http://issues.opennms.org/browse/NMS-6527'>NMS-6527</ulink>)</para></listitem>
+				<listitem><para>NRTG is throwing ConcurrentModificationException (Issue <ulink url='http://issues.opennms.org/browse/NMS-6536'>NMS-6536</ulink>)</para></listitem>
+				<listitem><para>Compile needs 5 to 6 runs to get 1.12/master compiled (Issue <ulink url='http://issues.opennms.org/browse/NMS-6573'>NMS-6573</ulink>)</para></listitem>
+				<listitem><para>Linkd Nms17216Test success is order dependent on its tests. (Issue <ulink url='http://issues.opennms.org/browse/NMS-6602'>NMS-6602</ulink>)</para></listitem>
+				<listitem><para>When a node doesn&#39;t have a primary IP address, the Geo Map displays &quot;null&quot; for the IP (Issue <ulink url='http://issues.opennms.org/browse/NMS-6627'>NMS-6627</ulink>)</para></listitem>
+				<listitem><para>Remote Poller will not start because of asterisk-java.jar in JNLP JAR list (Issue <ulink url='http://issues.opennms.org/browse/NMS-6628'>NMS-6628</ulink>)</para></listitem>
+				<listitem><para>Topology map crashes (Issue <ulink url='http://issues.opennms.org/browse/NMS-6728'>NMS-6728</ulink>)</para></listitem>
+				<listitem><para>The rescanExisting flag in Provisiond is not working as expected (Issue <ulink url='http://issues.opennms.org/browse/NMS-6759'>NMS-6759</ulink>)</para></listitem>
+				<listitem><para>Exception thrown while running CDP discovery on Enhanced Linkd (Issue <ulink url='http://issues.opennms.org/browse/NMS-6774'>NMS-6774</ulink>)</para></listitem>
+				<listitem><para>Upgrading from 1.8 to 1.12 breaks the scheduled reports generated through the WebUI (Issue <ulink url='http://issues.opennms.org/browse/NMS-6775'>NMS-6775</ulink>)</para></listitem>
+				<listitem><para>RemotePollerAvailabilityRestServiceTest has midnight timing isses (Issue <ulink url='http://issues.opennms.org/browse/NMS-6779'>NMS-6779</ulink>)</para></listitem>
+				<listitem><para>NoClassDefFoundError: Could not initialize class sun.reflect.misc.Trampoline (Issue <ulink url='http://issues.opennms.org/browse/NMS-6784'>NMS-6784</ulink>)</para></listitem>
+				<listitem><para>Large values of snmpifspeed come out negative when used in resource-filter (Issue <ulink url='http://issues.opennms.org/browse/NMS-6788'>NMS-6788</ulink>)</para></listitem>
+				<listitem><para>Unmanaged IP interfaces colored as down in IP Interface component of node page (Issue <ulink url='http://issues.opennms.org/browse/NMS-6791'>NMS-6791</ulink>)</para></listitem>
+				<listitem><para>Potential OpenNMS Web GUI XSS Vulnerability (Issue <ulink url='http://issues.opennms.org/browse/NMS-6793'>NMS-6793</ulink>)</para></listitem>
+				<listitem><para>HTTPDetector does not work with Go programs (http request is invalid) (Issue <ulink url='http://issues.opennms.org/browse/NMS-6800'>NMS-6800</ulink>)</para></listitem>
+				<listitem><para>Notification wizard should hide events with donotpersist or auto-clean=true  (Issue <ulink url='http://issues.opennms.org/browse/NMS-6821'>NMS-6821</ulink>)</para></listitem>
+				<listitem><para>test failure: org.opennms.web.rest.RemotePollerAvailabilityRestServiceTest (Issue <ulink url='http://issues.opennms.org/browse/NMS-6824'>NMS-6824</ulink>)</para></listitem>
+				<listitem><para>test failure: org.opennms.netmgt.poller.monitors.DnsMonitorTest (Issue <ulink url='http://issues.opennms.org/browse/NMS-6825'>NMS-6825</ulink>)</para></listitem>
+				<listitem><para>org.opennms.netmgt.linkd.Nms10205aTest.testNetwork10205Links (Issue <ulink url='http://issues.opennms.org/browse/NMS-6832'>NMS-6832</ulink>)</para></listitem>
+				<listitem><para>test failure: org.opennms.netmgt.provision.detector.NtpDetectorTest.testDetectorSuccess (Issue <ulink url='http://issues.opennms.org/browse/NMS-6834'>NMS-6834</ulink>)</para></listitem>
+				<listitem><para>test failure: org.opennms.netmgt.rrd.model.RrdConvertUtilsTest (Issue <ulink url='http://issues.opennms.org/browse/NMS-6835'>NMS-6835</ulink>)</para></listitem>
+				<listitem><para>Java Null Pointer exceptions seen more than 3K+ times in output.log (Issue <ulink url='http://issues.opennms.org/browse/NMS-6837'>NMS-6837</ulink>)</para></listitem>
+				<listitem><para>Read-only user should not be able to delete reports (Issue <ulink url='http://issues.opennms.org/browse/NMS-6839'>NMS-6839</ulink>)</para></listitem>
+				<listitem><para>Move XML Collector 3GPP Sample configuration to etc/examples (Issue <ulink url='http://issues.opennms.org/browse/NMS-6843'>NMS-6843</ulink>)</para></listitem>
+				<listitem><para>audit and fix systemd support on modern linuxues (Issue <ulink url='http://issues.opennms.org/browse/NMS-6845'>NMS-6845</ulink>)</para></listitem>
+				<listitem><para>Update Code Signing Cert so 1.14 is signed with new cert (Issue <ulink url='http://issues.opennms.org/browse/NMS-6846'>NMS-6846</ulink>)</para></listitem>
+				<listitem><para>smoke test failure: AddNodePageTest &amp; ServicePageTest (Issue <ulink url='http://issues.opennms.org/browse/NMS-6847'>NMS-6847</ulink>)</para></listitem>
+				<listitem><para>NodeCategorySettingPolicy hit momentarily resolves open outages (Issue <ulink url='http://issues.opennms.org/browse/NMS-6848'>NMS-6848</ulink>)</para></listitem>
+				<listitem><para>Can&#39;t modify an existing systemDef through Vaddin UI for Data Collection Groups (Issue <ulink url='http://issues.opennms.org/browse/NMS-6855'>NMS-6855</ulink>)</para></listitem>
+				<listitem><para>Error when stopping opennms during normal operation (Issue <ulink url='http://issues.opennms.org/browse/NMS-6857'>NMS-6857</ulink>)</para></listitem>
+				<listitem><para>Geo Maps are not working (everything is on the Antarctic) (Issue <ulink url='http://issues.opennms.org/browse/NMS-6859'>NMS-6859</ulink>)</para></listitem>
+				<listitem><para>NRTG feature does not work with SNMPv3 (Issue <ulink url='http://issues.opennms.org/browse/NMS-6860'>NMS-6860</ulink>)</para></listitem>
+				<listitem><para>Bad Marker in Geo Maps (Issue <ulink url='http://issues.opennms.org/browse/NMS-6861'>NMS-6861</ulink>)</para></listitem>
+				<listitem><para>Geo Maps are not rendered on Internet Explorer 11 (Issue <ulink url='http://issues.opennms.org/browse/NMS-6862'>NMS-6862</ulink>)</para></listitem>
+				<listitem><para>Increase size of asset fields (Issue <ulink url='http://issues.opennms.org/browse/NMS-6864'>NMS-6864</ulink>)</para></listitem>
+				<listitem><para>&quot;Interface Availability Report&quot; &amp; &quot;Snmp Interface Availability Report&quot; of Database Reports are not working  (Issue <ulink url='http://issues.opennms.org/browse/NMS-6868'>NMS-6868</ulink>)</para></listitem>
+				<listitem><para>Create gitflow release document  (Issue <ulink url='http://issues.opennms.org/browse/NMS-6871'>NMS-6871</ulink>)</para></listitem>
+				<listitem><para>Bamboo: OutOfMemoryException during compile phase (Issue <ulink url='http://issues.opennms.org/browse/NMS-6872'>NMS-6872</ulink>)</para></listitem>
+				<listitem><para>Copyright in created reports (PDF) is outdated (2002-2011) (Issue <ulink url='http://issues.opennms.org/browse/NMS-6875'>NMS-6875</ulink>)</para></listitem>
+				<listitem><para>Log4j2 configuration breaks the instrumentation logger (Issue <ulink url='http://issues.opennms.org/browse/NMS-6876'>NMS-6876</ulink>)</para></listitem>
+				<listitem><para>New Enhanced Topology no longer shows topology (Issue <ulink url='http://issues.opennms.org/browse/NMS-6877'>NMS-6877</ulink>)</para></listitem>
+				<listitem><para>Link the rpm and deb repos for 1.14.0 to snapshot (Issue <ulink url='http://issues.opennms.org/browse/NMS-6879'>NMS-6879</ulink>)</para></listitem>
+				<listitem><para>Make sure the InstrumentationLogReader works with the new log4j2 output (Issue <ulink url='http://issues.opennms.org/browse/NMS-6881'>NMS-6881</ulink>)</para></listitem>
+				<listitem><para>Confirm 1.14 Runs on JDK 8 (Issue <ulink url='http://issues.opennms.org/browse/NMS-6882'>NMS-6882</ulink>)</para></listitem>
+				<listitem><para>test failure: org.opennms.netmgt.linkd.LinkdSnmpTest (Issue <ulink url='http://issues.opennms.org/browse/NMS-6885'>NMS-6885</ulink>)</para></listitem>
+				<listitem><para>test failure: org.opennms.netmgt.poller.monitors.HttpMonitorTest.testPollStatusReason (Issue <ulink url='http://issues.opennms.org/browse/NMS-6886'>NMS-6886</ulink>)</para></listitem>
+				<listitem><para>Set up bamboo auto-merges (Issue <ulink url='http://issues.opennms.org/browse/NMS-6888'>NMS-6888</ulink>)</para></listitem>
+				<listitem><para>Deprecate sms-reflector, move to opennms-tools (Issue <ulink url='http://issues.opennms.org/browse/NMS-6890'>NMS-6890</ulink>)</para></listitem>
+				<listitem><para>Deprecate access-point-monitor, move to opennms-tools (Issue <ulink url='http://issues.opennms.org/browse/NMS-6891'>NMS-6891</ulink>)</para></listitem>
+				<listitem><para>The XML Collector can&#39;t save counter metrics on RRDs (using RRDtool) (Issue <ulink url='http://issues.opennms.org/browse/NMS-6895'>NMS-6895</ulink>)</para></listitem>
+				<listitem><para>A node is listed twice on the search box of the Topology UI (Issue <ulink url='http://issues.opennms.org/browse/NMS-6896'>NMS-6896</ulink>)</para></listitem>
+				<listitem><para>Increase timeout for Selenium smoke tests to avoid failures (Issue <ulink url='http://issues.opennms.org/browse/NMS-6897'>NMS-6897</ulink>)</para></listitem>
+				<listitem><para>UserRestServiceTest.testWriteALotOfUsers() fails fairly often (Issue <ulink url='http://issues.opennms.org/browse/NMS-6898'>NMS-6898</ulink>)</para></listitem>
+				<listitem><para>Node Page-&gt;View Node Link Detailed Info, creates an exception when no links are available (Issue <ulink url='http://issues.opennms.org/browse/NMS-6900'>NMS-6900</ulink>)</para></listitem>
+				<listitem><para>Geographical Node Map shows no nodes (Issue <ulink url='http://issues.opennms.org/browse/NMS-6901'>NMS-6901</ulink>)</para></listitem>
+				<listitem><para>test failure: org.opennms.mock.snmp.MockSnmpAgentTest (Issue <ulink url='http://issues.opennms.org/browse/NMS-6903'>NMS-6903</ulink>)</para></listitem>
+				<listitem><para>HttpCollector is broken (Issue <ulink url='http://issues.opennms.org/browse/NMS-6904'>NMS-6904</ulink>)</para></listitem>
+				<listitem><para>NullPointerException EnhancedLinkd Bridgediscovery (Issue <ulink url='http://issues.opennms.org/browse/NMS-6908'>NMS-6908</ulink>)</para></listitem>
+				<listitem><para>query did not return a unique result: 12 Exception in EnhancedLink bridge discovery (Issue <ulink url='http://issues.opennms.org/browse/NMS-6909'>NMS-6909</ulink>)</para></listitem>
+				<listitem><para>PSQLException in EnhancedLinkd Cdp discovery (Issue <ulink url='http://issues.opennms.org/browse/NMS-6910'>NMS-6910</ulink>)</para></listitem>
+				<listitem><para>Illegal Argument Exception in EnhancedLink Ospf Node Discovery (Issue <ulink url='http://issues.opennms.org/browse/NMS-6911'>NMS-6911</ulink>)</para></listitem>
+				<listitem><para>test failure: org.opennms.web.springframework.security.SecurityAuthenticationEventOnmsEventBuilderTest (Issue <ulink url='http://issues.opennms.org/browse/NMS-6913'>NMS-6913</ulink>)</para></listitem>
+				<listitem><para>Verify that JRobin font handling is fixed (Issue <ulink url='http://issues.opennms.org/browse/NMS-6915'>NMS-6915</ulink>)</para></listitem>
+				<listitem><para>Events API returning invalid XML (Issue <ulink url='http://issues.opennms.org/browse/NMS-6918'>NMS-6918</ulink>)</para></listitem>
+				<listitem><para>test failure: org.opennms.netmgt.provision.adapters.link.LinkMonitoringSnmpTest (Issue <ulink url='http://issues.opennms.org/browse/NMS-6921'>NMS-6921</ulink>)</para></listitem>
+				<listitem><para>Show CDP Information on &quot;Node Link Detailed Info&quot; page (Issue <ulink url='http://issues.opennms.org/browse/NMS-6923'>NMS-6923</ulink>)</para></listitem>
+				<listitem><para>&quot;Loading&quot; spinner in Vaadin apps moves (Issue <ulink url='http://issues.opennms.org/browse/NMS-6929'>NMS-6929</ulink>)</para></listitem>
+				<listitem><para>test failure: org.opennms.netmgt.xmlrpcd.XmlrpcdTest (Issue <ulink url='http://issues.opennms.org/browse/NMS-6935'>NMS-6935</ulink>)</para></listitem>
+				<listitem><para>Upgrade Embedded Karaf to 2.4.0 (Issue <ulink url='http://issues.opennms.org/browse/NMS-6937'>NMS-6937</ulink>)</para></listitem>
+				<listitem><para>test failure: org.opennms.netmgt.collectd.SnmpCollectorTest (Issue <ulink url='http://issues.opennms.org/browse/NMS-6940'>NMS-6940</ulink>)</para></listitem>
+				<listitem><para>test failure: org.opennms.netmgt.poller.monitors.HttpMonitorTest (Issue <ulink url='http://issues.opennms.org/browse/NMS-6941'>NMS-6941</ulink>)</para></listitem>
+				<listitem><para>Error invoking remote poller via Java WebStart (Invalid signature file digest for Manifest main attributes) (Issue <ulink url='http://issues.opennms.org/browse/NMS-6945'>NMS-6945</ulink>)</para></listitem>
+				<listitem><para>snmp-request utility broken from Log4J 2 changeover (Issue <ulink url='http://issues.opennms.org/browse/NMS-6949'>NMS-6949</ulink>)</para></listitem>
+				<listitem><para>DAO context exception (Issue <ulink url='http://issues.opennms.org/browse/NMS-6950'>NMS-6950</ulink>)</para></listitem>
+				<listitem><para>Front page resource graphs combo box always pops up error on enter (Issue <ulink url='http://issues.opennms.org/browse/NMS-6953'>NMS-6953</ulink>)</para></listitem>
+				<listitem><para>test failure: org.opennms.netmgt.collectd.DuplicatePrimaryAddressTest (Issue <ulink url='http://issues.opennms.org/browse/NMS-6959'>NMS-6959</ulink>)</para></listitem>
+				<listitem><para>bin/functions.pl line 153 fails if build directory has a space on it (Issue <ulink url='http://issues.opennms.org/browse/NMS-6964'>NMS-6964</ulink>)</para></listitem>
+				<listitem><para>Remote-Poller Client does not startup without exception. (Issue <ulink url='http://issues.opennms.org/browse/NMS-6965'>NMS-6965</ulink>)</para></listitem>
+				<listitem><para>Remote-Poller started via Java Webstart sometimes freezes when closing (Issue <ulink url='http://issues.opennms.org/browse/NMS-6966'>NMS-6966</ulink>)</para></listitem>
+				<listitem><para>Upgrade Needed for service-configuration.xml (Issue <ulink url='http://issues.opennms.org/browse/NMS-6970'>NMS-6970</ulink>)</para></listitem>
+				<listitem><para>Stop collecting mib2-icmp group by default (Issue <ulink url='http://issues.opennms.org/browse/NMS-6973'>NMS-6973</ulink>)</para></listitem>
+				<listitem><para>vtd xml jar should not be included opennms-base-assembly due to licening (Issue <ulink url='http://issues.opennms.org/browse/NMS-6992'>NMS-6992</ulink>)</para></listitem>
+				<listitem><para>Review include of GPL&#39;d images and other things (Issue <ulink url='http://issues.opennms.org/browse/NMS-6993'>NMS-6993</ulink>)</para></listitem>
+				<listitem><para>Replace Icons with licensed version server.png and group.png (Issue <ulink url='http://issues.opennms.org/browse/NMS-6994'>NMS-6994</ulink>)</para></listitem>
+				<listitem><para>Replace JournalMemo.png with a non GPL2.0 version (Issue <ulink url='http://issues.opennms.org/browse/NMS-6995'>NMS-6995</ulink>)</para></listitem>
+				<listitem><para>Do we really need pngfix.js?  What license do iit have? (Issue <ulink url='http://issues.opennms.org/browse/NMS-6997'>NMS-6997</ulink>)</para></listitem>
+				<listitem><para>UP DOG (Issue <ulink url='http://issues.opennms.org/browse/NMS-6998'>NMS-6998</ulink>)</para></listitem>
+				<listitem><para>Installing the Remote Poller on Windows using the .exe file doesn&#39;t register Windows Service successfully (Issue <ulink url='http://issues.opennms.org/browse/NMS-6999'>NMS-6999</ulink>)</para></listitem>
+				<listitem><para>&quot;Undefined&quot; dashlet in the Ops Board (Issue <ulink url='http://issues.opennms.org/browse/NMS-7002'>NMS-7002</ulink>)</para></listitem>
+				<listitem><para>The default logging in OpenNMS is DEBUG/TRACE (Issue <ulink url='http://issues.opennms.org/browse/NMS-7008'>NMS-7008</ulink>)</para></listitem>
+				<listitem><para>Configure Discovery throws FileNotFoundException (Issue <ulink url='http://issues.opennms.org/browse/NMS-7009'>NMS-7009</ulink>)</para></listitem>
+				<listitem><para>Ping Window is broken in TopologyMap (Issue <ulink url='http://issues.opennms.org/browse/NMS-7010'>NMS-7010</ulink>)</para></listitem>
+				<listitem><para>Events/Alarms popup shows two scroll bars (Issue <ulink url='http://issues.opennms.org/browse/NMS-7011'>NMS-7011</ulink>)</para></listitem>
+				<listitem><para>Topology Map throws a bunch of exceptions in the browser console (Issue <ulink url='http://issues.opennms.org/browse/NMS-7013'>NMS-7013</ulink>)</para></listitem>
+				<listitem><para>Maps dropdown and Maps Overview mismatch (Issue <ulink url='http://issues.opennms.org/browse/NMS-7014'>NMS-7014</ulink>)</para></listitem>
+				<listitem><para>Missing supported application on about page (Issue <ulink url='http://issues.opennms.org/browse/NMS-7016'>NMS-7016</ulink>)</para></listitem>
+				<listitem><para>Wrong License reference on about page (Issue <ulink url='http://issues.opennms.org/browse/NMS-7017'>NMS-7017</ulink>)</para></listitem>
+				<listitem><para>Removing the focus of a category does not work in firefox (Issue <ulink url='http://issues.opennms.org/browse/NMS-7018'>NMS-7018</ulink>)</para></listitem>
+				<listitem><para>When node was added to Focus due to search the context menu &quot;Add To Focus&quot; is still available (Issue <ulink url='http://issues.opennms.org/browse/NMS-7019'>NMS-7019</ulink>)</para></listitem>
+				<listitem><para>Sometimes I get an Exception when clicking on &quot;Ops Panel&quot; in the Ops Dashboard (Issue <ulink url='http://issues.opennms.org/browse/NMS-7022'>NMS-7022</ulink>)</para></listitem>
+				<listitem><para>Installation on Ubuntu 14.04 failes for unmet dependencies (Issue <ulink url='http://issues.opennms.org/browse/NMS-7023'>NMS-7023</ulink>)</para></listitem>
+				<listitem><para>Lots of &quot;Unable to obtain lock for PollableNode before timeout&quot; on Pollerd (Issue <ulink url='http://issues.opennms.org/browse/NMS-7025'>NMS-7025</ulink>)</para></listitem>
+				<listitem><para>Poodle exploit: exclude  SSLv3 in example Jetty HTTPS configuration (thanks to David Gerdes, University of Illinois) (Issue <ulink url='http://issues.opennms.org/browse/NMS-7026'>NMS-7026</ulink>)</para></listitem>
+				<listitem><para>The VMWare Monitor is throwing exceptions related with nodeDao (Issue <ulink url='http://issues.opennms.org/browse/NMS-7032'>NMS-7032</ulink>)</para></listitem>
+				<listitem><para>Unknown NullPointerException on Pollerd related with Category Membership events (Issue <ulink url='http://issues.opennms.org/browse/NMS-7033'>NMS-7033</ulink>)</para></listitem>
+				<listitem><para>NRTG does not work using SNMP v3 (Issue <ulink url='http://issues.opennms.org/browse/NMS-7049'>NMS-7049</ulink>)</para></listitem>
+				<listitem><para>Installer is not working under Windows 8.1 (Issue <ulink url='http://issues.opennms.org/browse/NMS-7050'>NMS-7050</ulink>)</para></listitem>
+				<listitem><para>License Agreement in Windows Installer seems to be wrong. (Issue <ulink url='http://issues.opennms.org/browse/NMS-7051'>NMS-7051</ulink>)</para></listitem>
+				<listitem><para>Installer does not provide a port setting for Database Configuration (Issue <ulink url='http://issues.opennms.org/browse/NMS-7052'>NMS-7052</ulink>)</para></listitem>
+				<listitem><para>Installer does not run install -dis correctly on Windows (Issue <ulink url='http://issues.opennms.org/browse/NMS-7053'>NMS-7053</ulink>)</para></listitem>
+				<listitem><para>FileNotFoundException org.apache.felix.framework-4.0.3.jar (Issue <ulink url='http://issues.opennms.org/browse/NMS-7054'>NMS-7054</ulink>)</para></listitem>
+				<listitem><para>Webapp needs to include source download (Issue <ulink url='http://issues.opennms.org/browse/NMS-7055'>NMS-7055</ulink>)</para></listitem>
+				<listitem><para>Remote poller crashes with no feedback if polled nodes have non-distributable services (Issue <ulink url='http://issues.opennms.org/browse/NMS-7057'>NMS-7057</ulink>)</para></listitem>
+				<listitem><para>Log SNMP request-ID more consistently in Snmp4JStrategy.processResponse (Issue <ulink url='http://issues.opennms.org/browse/NMS-7058'>NMS-7058</ulink>)</para></listitem>
+				<listitem><para>NRTG is broken for passwords containing special characters (Issue <ulink url='http://issues.opennms.org/browse/NMS-7064'>NMS-7064</ulink>)</para></listitem>
+				<listitem><para>SNMP4J logs going to output.log (Issue <ulink url='http://issues.opennms.org/browse/NMS-7068'>NMS-7068</ulink>)</para></listitem>
+				<listitem><para>Installer does not show AGPL license (Issue <ulink url='http://issues.opennms.org/browse/NMS-7069'>NMS-7069</ulink>)</para></listitem>
+				<listitem><para>Installing OpenNMS with the installer under Ubuntu fails due to chmod a+x issue (Issue <ulink url='http://issues.opennms.org/browse/NMS-7072'>NMS-7072</ulink>)</para></listitem>
+				<listitem><para>ICMP availability with custom packet size doesn&#39;t work with JNI (Issue <ulink url='http://issues.opennms.org/browse/NMS-7073'>NMS-7073</ulink>)</para></listitem>
+				<listitem><para>OpenNMS does not start on Windows (Issue <ulink url='http://issues.opennms.org/browse/NMS-7076'>NMS-7076</ulink>)</para></listitem>
+				<listitem><para>Not all placeholder get substituted correctly (Issue <ulink url='http://issues.opennms.org/browse/NMS-7077'>NMS-7077</ulink>)</para></listitem>
+				<listitem><para>Unable to resolve missing requirement while navigating to the web frontend (Issue <ulink url='http://issues.opennms.org/browse/NMS-7080'>NMS-7080</ulink>)</para></listitem>
+				<listitem><para>Installer does not run install -dis on *nix systems (Issue <ulink url='http://issues.opennms.org/browse/NMS-7082'>NMS-7082</ulink>)</para></listitem>
+				<listitem><para>IllegalArgumentException on Node Link Detailed Info Page (Issue <ulink url='http://issues.opennms.org/browse/NMS-7083'>NMS-7083</ulink>)</para></listitem>
+				<listitem><para>Logs are spammed with Atomikos warnings (Issue <ulink url='http://issues.opennms.org/browse/NMS-7084'>NMS-7084</ulink>)</para></listitem>
+				<listitem><para>Lower half of Node Link Detailed Info Page is missing (Issue <ulink url='http://issues.opennms.org/browse/NMS-7085'>NMS-7085</ulink>)</para></listitem>
+				<listitem><para>OpenNMS depends on JRobin 1.6.0-SNAPSHOT (Issue <ulink url='http://issues.opennms.org/browse/NMS-7087'>NMS-7087</ulink>)</para></listitem>
+				<listitem><para>Topology Map shows Google Chrome Frame Notice Popup (IE only) (Issue <ulink url='http://issues.opennms.org/browse/NMS-7093'>NMS-7093</ulink>)</para></listitem>
+				<listitem><para>Topology Map does not show Icons on IE (Issue <ulink url='http://issues.opennms.org/browse/NMS-7094'>NMS-7094</ulink>)</para></listitem>
+				<listitem><para>Ping Command in Topology Map causes &quot;Vaadin Communication Problem&quot; (Issue <ulink url='http://issues.opennms.org/browse/NMS-7097'>NMS-7097</ulink>)</para></listitem>
+				<listitem><para>Device Menu items are disabled all the time (Issue <ulink url='http://issues.opennms.org/browse/NMS-7098'>NMS-7098</ulink>)</para></listitem>
+				<listitem><para>Navbar is broken on node list in Internet Explorer (Issue <ulink url='http://issues.opennms.org/browse/NMS-7099'>NMS-7099</ulink>)</para></listitem>
+				<listitem><para>Close button in ping window on topology map does not work (Issue <ulink url='http://issues.opennms.org/browse/NMS-7101'>NMS-7101</ulink>)</para></listitem>
+				<listitem><para>make ops4j pax ours (Issue <ulink url='http://issues.opennms.org/browse/NMS-7102'>NMS-7102</ulink>)</para></listitem>
+				<listitem><para>If a target node is rebooted the RRD/JRB files contains spikes because the sysUpTime check is not working (Issue <ulink url='http://issues.opennms.org/browse/NMS-7106'>NMS-7106</ulink>)</para></listitem>
+				<listitem><para>SMTP with reason code: NumberFormatException (Issue <ulink url='http://issues.opennms.org/browse/NMS-7107'>NMS-7107</ulink>)</para></listitem>
+				<listitem><para>Resource Graphs not working on Windows 2008 R2 install (Issue <ulink url='http://issues.opennms.org/browse/NMS-7109'>NMS-7109</ulink>)</para></listitem>
+				<listitem><para>Configure SNMP by IP ui does not work in IE when changing snmp versions (Issue <ulink url='http://issues.opennms.org/browse/NMS-7111'>NMS-7111</ulink>)</para></listitem>
+				<listitem><para>The opennms.bat doesn&#39;t work for stopping OpenNMS and the Temp directory is not quoted (Issue <ulink url='http://issues.opennms.org/browse/NMS-7114'>NMS-7114</ulink>)</para></listitem>
+				<listitem><para>The MIB Compiler is not working when OpenNMS is running on Windows (Issue <ulink url='http://issues.opennms.org/browse/NMS-7116'>NMS-7116</ulink>)</para></listitem>
+				<listitem><para>Requisistions cannot be edit when using IE (Issue <ulink url='http://issues.opennms.org/browse/NMS-7118'>NMS-7118</ulink>)</para></listitem>
+				<listitem><para>Legend Icons not clickable on Node List Page in IE (Issue <ulink url='http://issues.opennms.org/browse/NMS-7119'>NMS-7119</ulink>)</para></listitem>
+				<listitem><para>Exception in the Alarm Detail View (Issue <ulink url='http://issues.opennms.org/browse/NMS-7121'>NMS-7121</ulink>)</para></listitem>
+				<listitem><para>Audit HttpClient usage to make sure connections are being closed properly (Issue <ulink url='http://issues.opennms.org/browse/NMS-7122'>NMS-7122</ulink>)</para></listitem>
+				<listitem><para>Outage timeline link from image map for outages does not work with Firefox (Issue <ulink url='http://issues.opennms.org/browse/NMS-7128'>NMS-7128</ulink>)</para></listitem>
+			</itemizedlist>
+		</section>
+		<section id="opennms-14.0.0-enhancement">
+			<title>Enhancement</title>
+
+			<itemizedlist>
+				<listitem><para>RESTful API doesn&#39;t support SNMP v3 (Issue <ulink url='http://issues.opennms.org/browse/NMS-3269'>NMS-3269</ulink>)</para></listitem>
+				<listitem><para>Create event to trigger linkd to start link scan (Issue <ulink url='http://issues.opennms.org/browse/NMS-4177'>NMS-4177</ulink>)</para></listitem>
+				<listitem><para>Move linkd to his own project (Issue <ulink url='http://issues.opennms.org/browse/NMS-5572'>NMS-5572</ulink>)</para></listitem>
+				<listitem><para>How to delete alert message &quot;The text is too long; the maximum length is&quot; in asset page (Issue <ulink url='http://issues.opennms.org/browse/NMS-5625'>NMS-5625</ulink>)</para></listitem>
+				<listitem><para>Event definitions: Fortinet (Issue <ulink url='http://issues.opennms.org/browse/NMS-6508'>NMS-6508</ulink>)</para></listitem>
+				<listitem><para>Upgrade Selenium libraries to their latest version (Issue <ulink url='http://issues.opennms.org/browse/NMS-6766'>NMS-6766</ulink>)</para></listitem>
+				<listitem><para>SNMP collection systemDefs for ASA5585-SSP10, ASA5585-SSP20, ASA5585-SSP40, ASA5585-SSP60, and Cisco Nexus 7009 (Issue <ulink url='http://issues.opennms.org/browse/NMS-6785'>NMS-6785</ulink>)</para></listitem>
+				<listitem><para>Provide a way to selectively detect services on requisitions (Issue <ulink url='http://issues.opennms.org/browse/NMS-6829'>NMS-6829</ulink>)</para></listitem>
+				<listitem><para>Can&#39;t monitor JBoss EAP 6.1.0 or later with the JMXMonitor/JMXCollector (using Jsr160Collector) (Issue <ulink url='http://issues.opennms.org/browse/NMS-6830'>NMS-6830</ulink>)</para></listitem>
+				<listitem><para>Make Topology Provider for CDP (Issue <ulink url='http://issues.opennms.org/browse/NMS-6842'>NMS-6842</ulink>)</para></listitem>
+				<listitem><para>Enable appropriate Linkd topology provider (Issue <ulink url='http://issues.opennms.org/browse/NMS-6844'>NMS-6844</ulink>)</para></listitem>
+				<listitem><para>Upgrade to SNM4J2 (Issue <ulink url='http://issues.opennms.org/browse/NMS-6883'>NMS-6883</ulink>)</para></listitem>
+				<listitem><para>After upgrading HttpClient, the host header always contains the port which is a problem for Microsoft IIS (Issue <ulink url='http://issues.opennms.org/browse/NMS-6916'>NMS-6916</ulink>)</para></listitem>
+				<listitem><para>Warn when the remote poller does not support ICMP (Issue <ulink url='http://issues.opennms.org/browse/NMS-6971'>NMS-6971</ulink>)</para></listitem>
+				<listitem><para>Make default statsd config do little? (Issue <ulink url='http://issues.opennms.org/browse/NMS-6985'>NMS-6985</ulink>)</para></listitem>
+				<listitem><para>Add and collect JMX attribute for OpenNMS uptime (Issue <ulink url='http://issues.opennms.org/browse/NMS-7066'>NMS-7066</ulink>)</para></listitem>
+				<listitem><para>Improve node list presentation of node DBIDs, foreign-source names, and foreign-IDs (Issue <ulink url='http://issues.opennms.org/browse/NMS-7088'>NMS-7088</ulink>)</para></listitem>
+				<listitem><para>Add page for standalone node availability box (Issue <ulink url='http://issues.opennms.org/browse/NMS-7117'>NMS-7117</ulink>)</para></listitem>
+			</itemizedlist>
+		</section>
+		<section id="opennms-14.0.0-task">
+			<title>Task</title>
+
+			<itemizedlist>
+				<listitem><para>Change the OpenNMS license to the AGPL (Issue <ulink url='http://issues.opennms.org/browse/NMS-6930'>NMS-6930</ulink>)</para></listitem>
+				<listitem><para>Rename OpenNMS 1.14.0 to OpenNMS 14.0.0 (Issue <ulink url='http://issues.opennms.org/browse/NMS-6931'>NMS-6931</ulink>)</para></listitem>
+				<listitem><para>audit `git diff` vs. 1.12 (Issue <ulink url='http://issues.opennms.org/browse/NMS-6936'>NMS-6936</ulink>)</para></listitem>
+				<listitem><para>Test Migration from 1.12 (Issue <ulink url='http://issues.opennms.org/browse/NMS-6975'>NMS-6975</ulink>)</para></listitem>
+				<listitem><para>Test Polling (Issue <ulink url='http://issues.opennms.org/browse/NMS-6976'>NMS-6976</ulink>)</para></listitem>
+				<listitem><para>Test Data Collection - JMX (Issue <ulink url='http://issues.opennms.org/browse/NMS-6977'>NMS-6977</ulink>)</para></listitem>
+				<listitem><para>Test Data Collection - HTTP (Issue <ulink url='http://issues.opennms.org/browse/NMS-6978'>NMS-6978</ulink>)</para></listitem>
+				<listitem><para>Test Datacollection - Vmware (Issue <ulink url='http://issues.opennms.org/browse/NMS-6979'>NMS-6979</ulink>)</para></listitem>
+				<listitem><para>Test DataCollection - WMI (Issue <ulink url='http://issues.opennms.org/browse/NMS-6980'>NMS-6980</ulink>)</para></listitem>
+				<listitem><para>Test NRTG on SNMPv2 and v3 (Issue <ulink url='http://issues.opennms.org/browse/NMS-6981'>NMS-6981</ulink>)</para></listitem>
+				<listitem><para>Test that Notifications still work (Issue <ulink url='http://issues.opennms.org/browse/NMS-6982'>NMS-6982</ulink>)</para></listitem>
+				<listitem><para>Web UI testing for OpenNMS 14 (Issue <ulink url='http://issues.opennms.org/browse/NMS-6983'>NMS-6983</ulink>)</para></listitem>
+				<listitem><para>Test Reporting (Issue <ulink url='http://issues.opennms.org/browse/NMS-6984'>NMS-6984</ulink>)</para></listitem>
+				<listitem><para>Test package installs (Issue <ulink url='http://issues.opennms.org/browse/NMS-6986'>NMS-6986</ulink>)</para></listitem>
+				<listitem><para>Test Thresholding (Issue <ulink url='http://issues.opennms.org/browse/NMS-6987'>NMS-6987</ulink>)</para></listitem>
+				<listitem><para>Test Enhanced Linkd (Issue <ulink url='http://issues.opennms.org/browse/NMS-6989'>NMS-6989</ulink>)</para></listitem>
+				<listitem><para>Test Topology GUI (Issue <ulink url='http://issues.opennms.org/browse/NMS-6990'>NMS-6990</ulink>)</para></listitem>
+				<listitem><para>Test Remote Polling (Issue <ulink url='http://issues.opennms.org/browse/NMS-6991'>NMS-6991</ulink>)</para></listitem>
+			</itemizedlist>
+		</section>
+	</section>
+
 	<!-- Start 1.13 -->
 
 	<section id="opennms-1.13.4">

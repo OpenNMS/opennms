@@ -15,10 +15,8 @@
 
     <context:component-scan base-package="org.opennms.netmgt.provision.detector.smb"
       name-generator="org.opennms.netmgt.provision.support.DetectorBeanNameGenerator"/>
-      
+
     <context:component-scan base-package="org.opennms.netmgt.provision.detector.loop"
       name-generator="org.opennms.netmgt.provision.support.DetectorBeanNameGenerator"/>
-	
-    <context:component-scan base-package="org.opennms.netmgt.provision.detector.sms"
-      name-generator="org.opennms.netmgt.provision.support.DetectorBeanNameGenerator"/>
+
 </beans>

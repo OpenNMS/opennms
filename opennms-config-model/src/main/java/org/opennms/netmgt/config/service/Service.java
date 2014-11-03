@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
+ * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -38,22 +38,25 @@ import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
 import org.opennms.core.xml.JaxbUtils;
 
 /**
  * Service to be launched by the manager.
- * 
- * @version $Revision$ $Date$
  */
+@XmlRootElement(name = "service")
 public class Service implements Serializable {
-    private static final long serialVersionUID = -2554947387909986065L;
+    private static final long serialVersionUID = -3812929848708891094L;
 
-    // --------------------------/
-    // - Class/Member Variables -/
-    // --------------------------/
+    /**
+     * Field _enabled
+     */
+    @XmlAttribute(name = "enabled")
+    private Boolean _enabled;
 
     /**
      * Field _name.
@@ -71,7 +74,7 @@ public class Service implements Serializable {
      * Field _attributeList.
      */
     @XmlElement(name = "attribute")
-    private List<Attribute> _attributeList = new ArrayList<Attribute>(0);;
+    private List<Attribute> _attributeList = new ArrayList<Attribute>(0);
 
     /**
      * Field _invokeList.
@@ -349,6 +352,16 @@ public class Service implements Serializable {
     }
 
     /**
+     * Returns the value of field 'enabled'.
+     * 
+     * @return true if the service is enabled
+     */
+    @XmlTransient
+    public Boolean isEnabled() {
+        return this._enabled == null? Boolean.TRUE : this._enabled;
+    }
+
+    /**
      * Overrides the java.lang.Object.hashCode method.
      * <p>
      * The following steps came from <b>Effective Java Programming Language
@@ -569,4 +582,15 @@ public class Service implements Serializable {
     public void setName(final java.lang.String name) {
         this._name = name;
     }
+
+    /**
+     * Sets the value of field 'enabled'.
+     * 
+     * @param name
+     *            the value of field 'enabled'.
+     */
+    public void setEnabled(final java.lang.Boolean enabled) {
+        this._enabled = enabled;
+    }
+
 }

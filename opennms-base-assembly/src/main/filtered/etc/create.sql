@@ -35,6 +35,7 @@
 
 drop table accessLocks cascade;
 drop table accesspoints cascade;
+drop table requisitioned_categories cascade;
 drop table category_node cascade;
 drop table categories cascade;
 drop table assets cascade;
@@ -1153,76 +1154,76 @@ CREATE UNIQUE INDEX alarm_attributes_aan_idx ON alarm_attributes(alarmID, attrib
 create table assets (
         id              INTEGER DEFAULT nextval('opennmsNxtId') NOT NULL,
         nodeID          integer,
-        category        varchar(64) not null,
-        manufacturer    varchar(64),
-        vendor          varchar(64),
-        modelNumber     varchar(64),
-        serialNumber    varchar(64),
-        description     varchar(128),
-        circuitId       varchar(64),
-        assetNumber     varchar(64),
-        operatingSystem varchar(64),
-        rack            varchar(64),
-        slot            varchar(64),
-        port            varchar(64),
-        region          varchar(64),
-        division        varchar(64),
-        department      varchar(64),
-        address1        varchar(256),
-        address2        varchar(256),
-        city            varchar(64),
-        state           varchar(64),
-        zip             varchar(64),
-        country         varchar(64),
-        building        varchar(64),
-        floor           varchar(64),
-        room            varchar(64),
-        vendorPhone     varchar(64),
-        vendorFax       varchar(64),
-        vendorAssetNumber varchar(64),
-        username		varchar(32),
-        password		varchar(32),
-        enable			varchar(32),
+        category        text not null,
+        manufacturer    text,
+        vendor          text,
+        modelNumber     text,
+        serialNumber    text,
+        description     text,
+        circuitId       text,
+        assetNumber     text,
+        operatingSystem text,
+        rack            text,
+        slot            text,
+        port            text,
+        region          text,
+        division        text,
+        department      text,
+        address1        text,
+        address2        text,
+        city            text,
+        state           text,
+        zip             text,
+        country         text,
+        building        text,
+        floor           text,
+        room            text,
+        vendorPhone     text,
+        vendorFax       text,
+        vendorAssetNumber text,
+        username		text,
+        password		text,
+        enable			text,
         autoenable		char(1),
         connection		varchar(32),
         userLastModified char(20) not null,
         lastModifiedDate timestamp with time zone not null,
         dateInstalled   varchar(64),
-        lease           varchar(64),
+        lease           text,
         leaseExpires    varchar(64),
-        supportPhone    varchar(64),
-        maintContract   varchar(64),
+        supportPhone    text,
+        maintContract   text,
         maintContractExpires varchar(64),
-        displayCategory   varchar(64),
-        notifyCategory   varchar(64),
-        pollerCategory   varchar(64),
-        thresholdCategory   varchar(64),
+        displayCategory   text,
+        notifyCategory   text,
+        pollerCategory   text,
+        thresholdCategory   text,
         comment         text,
-        managedObjectInstance varchar(512),
-        managedObjectType varchar(512),
-        cpu		varchar(32),
-        ram		varchar(10),
-        storagectrl	varchar(32),
-        hdd1		varchar(32),
-        hdd2		varchar(32),
-        hdd3		varchar(32),
-        hdd4		varchar(32),
-        hdd5		varchar(32),
-        hdd6		varchar(32),
+        managedObjectInstance text,
+        managedObjectType text,
+        cpu		text,
+        ram		text,
+        storagectrl	text,
+        hdd1		text,
+        hdd2		text,
+        hdd3		text,
+        hdd4		text,
+        hdd5		text,
+        hdd6		text,
         numpowersupplies		varchar(1),
         inputpower		varchar(6),
-        additionalhardware		varchar(64),
-        admin		varchar(32),
+        additionalhardware		text,
+        admin		text,
         snmpcommunity		varchar(32),
         rackunitheight		varchar(2),
         longitude		float,
         latitude		float,
-        vmwaremanagedobjectid	varchar(70),
-        vmwaremanagedentitytype	varchar(70),
-        vmwaremanagementserver	varchar(70),
+        vmwaremanagedobjectid	text,
+        vmwaremanagedentitytype	text,
+        vmwaremanagementserver	text,
         vmwaretopologyinfo	text,
-        vmwarestate	varchar(255),
-        
+        vmwarestate	text,
+
     constraint pk_assetID primary key (id),
 	constraint fk_nodeID5 foreign key (nodeID) references node ON DELETE CASCADE
 );
@@ -1288,6 +1289,28 @@ create table category_node (
 CREATE INDEX catid_idx on category_node(categoryId);
 CREATE INDEX catnode_idx on category_node(nodeId);
 CREATE UNIQUE INDEX catenode_unique_idx on category_node(categoryId, nodeId);
+
+--########################################################################
+--# requisitioned_categories table - Many-to-Many mapping table of
+--# requisition categories to nodes
+--#
+--# This table contains the following fields:
+--#
+--# id           : The ID of the association
+--# categoryId   : The category ID from categories table
+--# nodeId       : The node ID from the node table.
+--########################################################################
+
+create table requisitioned_categories (
+                id                      integer default nextval('opennmsNxtId') not null,
+                categoryId              integer not null,
+                nodeId                  integer not null,
+
+                constraint requisitioned_nodeid_fkey foreign key (nodeId) references node ON DELETE CASCADE,
+                constraint requisitioned_categoryid_fkey foreign key (categoryId) references categories (categoryId) ON DELETE CASCADE
+);
+
+CREATE UNIQUE INDEX requisitioned_category_node_unique_idx on requisitioned_categories(nodeId, categoryId);
 
 --########################################################################
 --# pathOutage Table - Contains the critical path IP address and service
@@ -2313,7 +2336,7 @@ create table cdpLink (
       cdpInterfaceName varchar(96) not null,
       cdpCacheAddressType integer not null,
       cdpCacheAddress varchar(64) not null,
-      cdpCacheVersion varchar(255) not null,
+      cdpCacheVersion text not null,
       cdpCacheDeviceId varchar(64) not null,
       cdpCacheDevicePort varchar(96) not null,
       cdpCacheDevicePlatform varchar(96) not null,

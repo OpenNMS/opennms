@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -376,29 +376,6 @@ public class CiscoPingMibMonitor extends SnmpMonitorStrategy {
     }
 
     /**
-     * <P>
-     * Called by the poller framework when an interface is being added to the
-     * scheduler. Here we perform any necessary initialization to prepare the
-     * NetworkInterface object for polling.
-     * </P>
-     *
-     * @exception RuntimeException
-     *                Thrown if an unrecoverable error occurs that prevents the
-     *                interface from being monitored.
-     * @param svc a {@link org.opennms.netmgt.poller.MonitoredService} object.
-     */
-    @Override
-    public void initialize(MonitoredService svc) {
-    	// Get the NodeDao from the common context so we can look up nodes in poll()
-    	// Cannot use the pollerdContext because it creates a circular reference
-    	// Cannot do this in the one-time initialize for the same reason, so do it here instead.
-    	if (s_nodeDao == null) s_nodeDao = (NodeDao) BeanUtils.getFactory("commonContext", ClassPathXmlApplicationContext.class).getBean("nodeDao");
-    	
-        super.initialize(svc);
-        return;
-    }
-
-    /**
      * {@inheritDoc}
      *
      * <P>
@@ -411,6 +388,16 @@ public class CiscoPingMibMonitor extends SnmpMonitorStrategy {
      */
     @Override
     public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
+
+        if (s_nodeDao == null) {
+            s_nodeDao = BeanUtils.getBean("daoContext", "nodeDao", NodeDao.class);
+
+            if (s_nodeDao == null) {
+                LOG.error("Node dao should be a non-null value.");
+                return PollStatus.unknown();
+            }
+        }
+
         InetAddress targetIpAddr = (InetAddress) determineTargetAddress(svc, parameters);
     	
         int pingProtocol = 0;

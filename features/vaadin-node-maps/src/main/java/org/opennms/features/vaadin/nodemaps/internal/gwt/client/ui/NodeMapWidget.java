@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2013 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
+ * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -44,17 +44,21 @@ import org.discotools.gwt.leaflet.client.map.MapOptions;
 import org.discotools.gwt.leaflet.client.types.LatLng;
 import org.discotools.gwt.leaflet.client.types.LatLngBounds;
 import org.opennms.features.geocoder.Coordinates;
+import org.opennms.features.vaadin.nodemaps.internal.gwt.client.AlarmSeverity;
+import org.opennms.features.vaadin.nodemaps.internal.gwt.client.ComponentTracker;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.JSNodeMarker;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.Map;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.NodeMarker;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.OpenNMSEventManager;
-import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.ComponentInitializedEvent;
+import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.ApplicationInitializedEvent;
+import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.ApplicationInitializedEventHandler;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.FilteredMarkersUpdatedEvent;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.FilteredMarkersUpdatedEventHandler;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.IconCreateCallback;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.NodeMarkerClusterCallback;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.ui.controls.alarm.AlarmControl;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.ui.controls.search.SearchControl;
+import org.opennms.features.vaadin.nodemaps.internal.gwt.client.ui.controls.search.SearchStateManager;
 
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.RepeatingCommand;
@@ -69,8 +73,8 @@ import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.SimplePanel;
 
-public class NodeMapWidget extends AbsolutePanel implements MarkerProvider, FilteredMarkersUpdatedEventHandler {
-    private static final Logger LOG = Logger.getLogger(NodeMapWidget.class.getName());
+public class NodeMapWidget extends AbsolutePanel implements MarkerProvider, FilteredMarkersUpdatedEventHandler, ApplicationInitializedEventHandler {
+    private final Logger LOG = Logger.getLogger(getClass().getName());
 
     private final DivElement m_div;
     private Map m_map;
@@ -81,17 +85,28 @@ public class NodeMapWidget extends AbsolutePanel implements MarkerProvider, Filt
 
     private boolean m_firstUpdate = true;
     private SearchControl m_searchControl;
+    private AlarmControl m_alarmControl;
     private MarkerFilterImpl m_filter;
     private NodeIdSelectionRpc m_clientToServerRpc;
     private boolean m_groupByState;
 
     private OpenNMSEventManager m_eventManager;
+    private ComponentTracker m_componentTracker;
 
     private SimplePanel m_mapPanel = new SimplePanel();
 
     public NodeMapWidget() {
         m_eventManager = new OpenNMSEventManager();
         m_eventManager.addHandler(FilteredMarkersUpdatedEvent.TYPE, this);
+        m_eventManager.addHandler(ApplicationInitializedEvent.TYPE, this);
+
+        m_componentTracker = new ComponentTracker(m_eventManager);
+
+        m_componentTracker.track(MarkerContainer.class);
+        m_componentTracker.track(MarkerFilterImpl.class);
+        m_componentTracker.track(AlarmControl.class);
+        m_componentTracker.track(SearchControl.class);
+        m_componentTracker.track(SearchStateManager.class);
 
         m_mapPanel.setWidth("100%");
         m_mapPanel.setHeight("100%");
@@ -118,8 +133,8 @@ public class NodeMapWidget extends AbsolutePanel implements MarkerProvider, Filt
                 if (event.isAttached()) {
                     LOG.info("NodeMapWidget.onAttach()");
 
-                    m_filter = new MarkerFilterImpl("", 0, m_eventManager);
-                    m_markerContainer = new MarkerContainer(m_filter, m_eventManager);
+                    m_filter = new MarkerFilterImpl("", AlarmSeverity.NORMAL, m_eventManager, m_componentTracker);
+                    m_markerContainer = new MarkerContainer(m_filter, m_eventManager, m_componentTracker);
 
                     m_filter.onLoad();
                     m_markerContainer.onLoad();
@@ -154,7 +169,7 @@ public class NodeMapWidget extends AbsolutePanel implements MarkerProvider, Filt
         addZoomControl();
 
         m_searchControl.focusInput();
-        m_eventManager.fireEvent(new ComponentInitializedEvent(NodeMapConnector.class.getName()));
+        m_componentTracker.ready(getClass());
         LOG.info("NodeMapWidget.initializeMap(): finished");
     }
 
@@ -226,7 +241,7 @@ public class NodeMapWidget extends AbsolutePanel implements MarkerProvider, Filt
 
     private void addSearchControl() {
         LOG.info("NodeMapWidget.addSearchControl()");
-        m_searchControl = new SearchControl(m_markerContainer, this, m_eventManager);
+        m_searchControl = new SearchControl(m_markerContainer, this, m_eventManager, m_componentTracker);
         final String id = m_searchControl.getElement().getId();
         if (id == null || "".equals(id)) {
             m_searchControl.getElement().setId("search-control");
@@ -245,21 +260,21 @@ public class NodeMapWidget extends AbsolutePanel implements MarkerProvider, Filt
     private void addAlarmControl() {
         LOG.info("NodeMapWidget.addAlarmControl()");
 
-        final AlarmControl alarmControl = new AlarmControl(m_eventManager);
-        final String id = alarmControl.getElement().getId();
+        m_alarmControl = new AlarmControl(m_eventManager, m_componentTracker);
+        final String id = m_alarmControl.getElement().getId();
         if (id == null || "".equals(id)) {
-            alarmControl.getElement().setId("alarm-control");
+            m_alarmControl.getElement().setId("alarm-control");
         } else {
             LOG.info("NodeMapWidget.addAlarmControl(): id = " + id);
         }
 
         final HTMLPanel mapParent = HTMLPanel.wrap(m_mapPanel.getParent().getElement());
-        final Style searchStyle = alarmControl.getElement().getStyle();
+        final Style searchStyle = m_alarmControl.getElement().getStyle();
         searchStyle.setPosition(Position.ABSOLUTE);
         searchStyle.setTop(5, Unit.PX);
         searchStyle.setRight(5, Unit.PX);
         searchStyle.setZIndex(2000);
-        mapParent.add(alarmControl);
+        mapParent.add(m_alarmControl);
     }
 
     private void addZoomControl() {
@@ -276,12 +291,12 @@ public class NodeMapWidget extends AbsolutePanel implements MarkerProvider, Filt
     public void updateMarkerClusterLayer() {
         if (m_markerContainer == null || m_markerClusterGroup == null) {
             LOG.info("NodeMapWidget.updateMarkerClusterLayout(): markers or marker clusters not initialized yet, deferring refresh");
-            Scheduler.get().scheduleFixedDelay(new RepeatingCommand() {
-                @Override public boolean execute() {
+            // try again in 1 second
+            Scheduler.get().scheduleDeferred(new ScheduledCommand() {
+                @Override public void execute() {
                     updateMarkerClusterLayer();
-                    return false;
                 }
-            }, 1000);
+            });
             return;
         }
 
@@ -447,6 +462,18 @@ public class NodeMapWidget extends AbsolutePanel implements MarkerProvider, Filt
     @Override public void onFilteredMarkersUpdatedEvent(final FilteredMarkersUpdatedEvent event) {
         LOG.info("NodeMapWidget.onFilteredMarkersUpdated(), refreshing node map widgets");
         updateMarkerClusterLayer();
+    }
+
+    @Override
+    public void onApplicationInitialized(final ApplicationInitializedEvent event) {
+        LOG.info("NodeMapWidget.onApplicationInitialized(): triggering a backend refresh");
+        Scheduler.get().scheduleFixedDelay(new RepeatingCommand() {
+            @Override public boolean execute() {
+                LOG.info("NodeMapWidget.onApplicationInitialized(): refreshing");
+                m_clientToServerRpc.refresh();
+                return false;
+            }
+        }, 5000);
     }
 
     public OpenNMSEventManager getEventManager() {

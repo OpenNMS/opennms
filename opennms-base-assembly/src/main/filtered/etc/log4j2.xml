@@ -50,31 +50,56 @@
             <DefaultRolloverStrategy max="4" fileIndex="min" />
           </RollingFile>
         </Route>
+          <!--
+	      This route in configured specifically for the instrumentation log so it can be parsed
+              by the instrumentation log reader.  It does not compress the logs and has modified
+              pattern.
+	  -->
+        <Route key="instrumentation">
+          <RollingFile name="Rolling-instrumentation" fileName="\${logdir}/instrumentation.log"
+                       filePattern="\${logdir}/instrumentation.%i.log">
+            <PatternLayout>
+              <!-- the logging class is not included here since its is verbose and always the same -->
+              <pattern>%d %-5p [%t] %m%n</pattern>
+            </PatternLayout>
+
+            <!-- Rotate logs at 100MB-->
+            <SizeBasedTriggeringPolicy size="100MB" />
+
+            <!-- Rotate through 4 logs -->
+            <DefaultRolloverStrategy max="4" fileIndex="min" />
+          </RollingFile>
+        </Route>
       </Routes>
     </Routing>
   </appenders>
 
   <loggers>
+
+    <!-- we always want this at info for the instrumentation log reader -->
+    <logger name="org.opennms.netmgt.collectd.DefaultCollectdInstrumentation" additivity="false" level="INFO">
+      <appender-ref ref="RoutingAppender"/>
+    </logger>
     <!-- 
       Set the threshold for individual loggers that may be too chatty at the default 
       level for their prefix.
     -->
-    <logger name="com.google.gwt.user.server" additivity="false" level="INFO">
+    <logger name="com.google.gwt.user.server" additivity="false" level="WARN">
       <appender-ref ref="RoutingAppender"/>
     </logger>
-    <logger name="com.mchange" additivity="false" level="INFO">
+    <logger name="com.mchange" additivity="false" level="WARN">
       <appender-ref ref="RoutingAppender"/>
     </logger>
-    <logger name="httpclient" additivity="false" level="INFO">
+    <logger name="httpclient" additivity="false" level="WARN">
       <appender-ref ref="RoutingAppender"/>
     </logger>
-    <logger name="mx4j" additivity="false" level="INFO">
+    <logger name="mx4j" additivity="false" level="WARN">
       <appender-ref ref="RoutingAppender"/>
     </logger>
-    <logger name="net.sf.jasperreports" additivity="false" level="INFO">
+    <logger name="net.sf.jasperreports" additivity="false" level="WARN">
       <appender-ref ref="RoutingAppender"/>
     </logger>
-    <logger name="org.apache.bsf" additivity="false" level="INFO">
+    <logger name="org.apache.bsf" additivity="false" level="WARN">
       <appender-ref ref="RoutingAppender"/>
     </logger>
     <logger name="org.apache.commons" additivity="false" level="WARN">
@@ -86,39 +111,39 @@
     <logger name="org.asteriskjava" additivity="false" level="WARN">
       <appender-ref ref="RoutingAppender"/>
     </logger>
-    <logger name="org.eclipse.jetty.webapp" additivity="false" level="INFO">
+    <logger name="org.eclipse.jetty.webapp" additivity="false" level="WARN">
       <appender-ref ref="RoutingAppender"/>
     </logger>
-    <logger name="org.exolab.castor" additivity="false" level="INFO">
+    <logger name="org.exolab.castor" additivity="false" level="WARN">
       <appender-ref ref="RoutingAppender"/>
     </logger>
-    <logger name="org.gwtwidgets" additivity="false" level="INFO">
+    <logger name="org.gwtwidgets" additivity="false" level="WARN">
       <appender-ref ref="RoutingAppender"/>
     </logger>
-    <logger name="org.hibernate" additivity="false" level="INFO">
+    <logger name="org.hibernate" additivity="false" level="WARN">
       <appender-ref ref="RoutingAppender"/>
     </logger>
-    <logger name="org.hibernate.sql" additivity="false" level="INFO">
+    <logger name="org.hibernate.sql" additivity="false" level="WARN">
       <appender-ref ref="RoutingAppender"/>
     </logger>
     <logger name="org.hibernate.cfg.annotations.EntityBinder" additivity="false" level="WARN">
       <appender-ref ref="RoutingAppender"/>
     </logger>
-    <logger name="org.mortbay" additivity="false" level="INFO">
+    <logger name="org.mortbay" additivity="false" level="WARN">
       <appender-ref ref="RoutingAppender"/>
     </logger>
-    <logger name="org.quartz" additivity="false" level="INFO">
+    <logger name="org.quartz" additivity="false" level="WARN">
       <appender-ref ref="RoutingAppender"/>
     </logger>
-    <logger name="org.springframework" additivity="false" level="INFO">
+    <logger name="org.springframework" additivity="false" level="WARN">
       <appender-ref ref="RoutingAppender"/>
     </logger>
-    <logger name="snaq.db" additivity="false" level="INFO">
+    <logger name="snaq.db" additivity="false" level="WARN">
       <appender-ref ref="RoutingAppender"/>
     </logger>
     
     <!-- Allow any message to pass through the root logger -->
-    <root level="TRACE">
+    <root level="DEBUG">
       <!-- 
         Each category/log can be set to one of TRACE, INFO, DEBUG, WARN, ERROR
 
@@ -132,48 +157,51 @@
         None of the below of the KeyValuePairs are actually necessary but are just to indicate
         some well known prefixes in the log or to override the defaultThreshold for a given prefix.
       -->
-      <DynamicThresholdFilter key="prefix" defaultThreshold="TRACE">
-        <KeyValuePair key="access-point-monitor" value="DEBUG" />
-        <KeyValuePair key="ackd"                 value="DEBUG" />
-        <KeyValuePair key="actiond"              value="DEBUG" />
-        <KeyValuePair key="alarmd"               value="DEBUG" />
-        <KeyValuePair key="asterisk-gateway"     value="DEBUG" />
-        <KeyValuePair key="archiver"             value="DEBUG" />
-        <KeyValuePair key="capsd"                value="DEBUG" />
-        <KeyValuePair key="collectd"             value="DEBUG" />
-        <KeyValuePair key="correlator"           value="DEBUG" />
-        <KeyValuePair key="dhcpd"                value="DEBUG" />
-        <KeyValuePair key="discovery"            value="DEBUG" />
-        <KeyValuePair key="eventd"               value="DEBUG" />
-        <KeyValuePair key="event-translator"     value="DEBUG" />
-        <KeyValuePair key="icmp"                 value="DEBUG" />
-        <KeyValuePair key="instrumentation"      value="DEBUG" />
-        <KeyValuePair key="jetty-server"         value="DEBUG" />
-        <KeyValuePair key="linkd"                value="DEBUG" />
-        <KeyValuePair key="enlinkd"              value="DEBUG" />
+      <DynamicThresholdFilter key="prefix" defaultThreshold="DEBUG">
+        <!-- always leave instrumentation logging at INFO -->
+        <KeyValuePair key="instrumentation"      value="INFO" />
+        <KeyValuePair key="access-point-monitor" value="WARN" />
+        <KeyValuePair key="ackd"                 value="WARN" />
+        <KeyValuePair key="actiond"              value="WARN" />
+        <KeyValuePair key="alarmd"               value="WARN" />
+        <KeyValuePair key="asterisk-gateway"     value="WARN" />
+        <KeyValuePair key="archiver"             value="WARN" />
+        <KeyValuePair key="capsd"                value="WARN" />
+        <KeyValuePair key="collectd"             value="WARN" />
+        <KeyValuePair key="correlator"           value="WARN" />
+        <KeyValuePair key="dhcpd"                value="WARN" />
+        <KeyValuePair key="discover"             value="WARN" />
+        <KeyValuePair key="eventd"               value="WARN" />
+        <KeyValuePair key="event-translator"     value="WARN" />
+        <KeyValuePair key="icmp"                 value="WARN" />
+        <KeyValuePair key="jetty-server"         value="WARN" />
+        <KeyValuePair key="linkd"                value="WARN" />
+        <KeyValuePair key="enlinkd"              value="WARN" />
         <KeyValuePair key="manager"              value="DEBUG" />
-        <KeyValuePair key="map"                  value="DEBUG" />
-        <KeyValuePair key="model-importer"       value="DEBUG" />
-        <KeyValuePair key="notifd"               value="DEBUG" />
-        <KeyValuePair key="oss-qosd"             value="DEBUG" />
-        <KeyValuePair key="oss-qosdrx"           value="DEBUG" />
-        <KeyValuePair key="passive"              value="DEBUG" />
-        <KeyValuePair key="poller"               value="DEBUG" />
-        <KeyValuePair key="provisiond"           value="DEBUG" />
-        <KeyValuePair key="queued"               value="DEBUG" />
-        <KeyValuePair key="reportd"              value="DEBUG" />
-        <KeyValuePair key="reports"              value="DEBUG" />
-        <KeyValuePair key="rtc"                  value="DEBUG" />
-        <KeyValuePair key="syslogd"              value="DEBUG" />
-        <KeyValuePair key="scriptd"              value="DEBUG" />
-        <KeyValuePair key="snmp-poller"          value="DEBUG" />
-        <KeyValuePair key="syslogd"              value="DEBUG" />
-        <KeyValuePair key="threshd"              value="DEBUG" />
-        <KeyValuePair key="tl1d"                 value="DEBUG" />
-        <KeyValuePair key="trapd"                value="DEBUG" />
-        <KeyValuePair key="vacuumd"              value="DEBUG" />
-        <KeyValuePair key="web"                  value="DEBUG" />
-        <KeyValuePair key="xmlrpcd"              value="DEBUG" />
+        <KeyValuePair key="map"                  value="WARN" />
+        <KeyValuePair key="model-importer"       value="WARN" />
+        <KeyValuePair key="notifd"               value="WARN" />
+        <KeyValuePair key="oss-qosd"             value="WARN" />
+        <KeyValuePair key="oss-qosdrx"           value="WARN" />
+        <KeyValuePair key="passive"              value="WARN" />
+        <KeyValuePair key="poller"               value="WARN" />
+        <KeyValuePair key="provisiond"           value="WARN" />
+        <KeyValuePair key="queued"               value="WARN" />
+        <KeyValuePair key="reportd"              value="WARN" />
+        <KeyValuePair key="reports"              value="WARN" />
+        <KeyValuePair key="rtc"                  value="WARN" />
+        <KeyValuePair key="statsd"               value="WARN" />
+        <KeyValuePair key="syslogd"              value="WARN" />
+        <KeyValuePair key="scriptd"              value="WARN" />
+        <KeyValuePair key="snmp-poller"          value="WARN" />
+        <KeyValuePair key="syslogd"              value="WARN" />
+        <KeyValuePair key="threshd"              value="WARN" />
+        <KeyValuePair key="tl1d"                 value="WARN" />
+        <KeyValuePair key="trapd"                value="WARN" />
+        <KeyValuePair key="trouble-ticketer"     value="WARN" />
+        <KeyValuePair key="vacuumd"              value="WARN" />
+        <KeyValuePair key="web"                  value="WARN" />
+        <KeyValuePair key="xmlrpcd"              value="WARN" />
       </DynamicThresholdFilter>
 
       <appender-ref ref="RoutingAppender"/>

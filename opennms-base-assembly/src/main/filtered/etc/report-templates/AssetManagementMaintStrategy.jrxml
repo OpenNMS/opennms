@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="assetMgmtStrategic" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
-	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.zoom" value="1.2100000000000002"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
-	<template><![CDATA["${install.dir}/etc/report-templates/assets/styles/defaultStyles.jrtx"]]></template>
+	<template><![CDATA[$P{ONMS_REPORT_DIR} + "/assets/styles/defaultStyles.jrtx"]]></template>
 	<subDataset name="summaryNodeAge">
 		<parameter name="DS_DATE_FORMAT" class="java.lang.String" isForPrompting="false">
 			<parameterDescription><![CDATA[]]></parameterDescription>
@@ -69,11 +69,10 @@ ORDER BY
 		<queryString>
 			<![CDATA[SELECT
 	to_char(dates, 'YYYY-MM') AS yearmonth,
-	*
+	dates
 FROM
 	(SELECT
-		mytimequery.mytime::DATE
-		AS dates
+		mytimequery.mytime::DATE AS dates
 	FROM
 		(SELECT
 			(now() + myintervalquery.myinterval::INTERVAL)::DATE AS mytime
@@ -98,71 +97,6 @@ ORDER BY
 		</queryString>
 		<field name="yearmonth" class="java.lang.String"/>
 		<field name="dates" class="java.sql.Date"/>
-		<field name="id" class="java.lang.Integer"/>
-		<field name="nodeid" class="java.lang.Integer"/>
-		<field name="category" class="java.lang.String"/>
-		<field name="manufacturer" class="java.lang.String"/>
-		<field name="vendor" class="java.lang.String"/>
-		<field name="modelnumber" class="java.lang.String"/>
-		<field name="serialnumber" class="java.lang.String"/>
-		<field name="description" class="java.lang.String"/>
-		<field name="circuitid" class="java.lang.String"/>
-		<field name="assetnumber" class="java.lang.String"/>
-		<field name="operatingsystem" class="java.lang.String"/>
-		<field name="rack" class="java.lang.String"/>
-		<field name="slot" class="java.lang.String"/>
-		<field name="port" class="java.lang.String"/>
-		<field name="region" class="java.lang.String"/>
-		<field name="division" class="java.lang.String"/>
-		<field name="department" class="java.lang.String"/>
-		<field name="address1" class="java.lang.String"/>
-		<field name="address2" class="java.lang.String"/>
-		<field name="city" class="java.lang.String"/>
-		<field name="state" class="java.lang.String"/>
-		<field name="zip" class="java.lang.String"/>
-		<field name="country" class="java.lang.String"/>
-		<field name="geolocation" class="java.lang.String"/>
-		<field name="building" class="java.lang.String"/>
-		<field name="floor" class="java.lang.String"/>
-		<field name="room" class="java.lang.String"/>
-		<field name="vendorphone" class="java.lang.String"/>
-		<field name="vendorfax" class="java.lang.String"/>
-		<field name="vendorassetnumber" class="java.lang.String"/>
-		<field name="userlastmodified" class="java.lang.String"/>
-		<field name="lastmodifieddate" class="java.sql.Timestamp"/>
-		<field name="dateinstalled" class="java.lang.String"/>
-		<field name="lease" class="java.lang.String"/>
-		<field name="leaseexpires" class="java.lang.String"/>
-		<field name="supportphone" class="java.lang.String"/>
-		<field name="maintcontract" class="java.lang.String"/>
-		<field name="maintcontractexpires" class="java.lang.String"/>
-		<field name="displaycategory" class="java.lang.String"/>
-		<field name="notifycategory" class="java.lang.String"/>
-		<field name="pollercategory" class="java.lang.String"/>
-		<field name="thresholdcategory" class="java.lang.String"/>
-		<field name="comment" class="java.lang.String"/>
-		<field name="managedobjectinstance" class="java.lang.String"/>
-		<field name="managedobjecttype" class="java.lang.String"/>
-		<field name="username" class="java.lang.String"/>
-		<field name="password" class="java.lang.String"/>
-		<field name="enable" class="java.lang.String"/>
-		<field name="autoenable" class="java.lang.String"/>
-		<field name="connection" class="java.lang.String"/>
-		<field name="cpu" class="java.lang.String"/>
-		<field name="ram" class="java.lang.String"/>
-		<field name="storagectrl" class="java.lang.String"/>
-		<field name="hdd1" class="java.lang.String"/>
-		<field name="hdd2" class="java.lang.String"/>
-		<field name="hdd3" class="java.lang.String"/>
-		<field name="hdd4" class="java.lang.String"/>
-		<field name="hdd5" class="java.lang.String"/>
-		<field name="hdd6" class="java.lang.String"/>
-		<field name="numpowersupplies" class="java.lang.String"/>
-		<field name="inputpower" class="java.lang.String"/>
-		<field name="additionalhardware" class="java.lang.String"/>
-		<field name="admin" class="java.lang.String"/>
-		<field name="snmpcommunity" class="java.lang.String"/>
-		<field name="rackunitheight" class="java.lang.String"/>
 		<group name="yearmonth">
 			<groupExpression><![CDATA[$F{yearmonth}]]></groupExpression>
 		</group>
@@ -215,13 +149,17 @@ ORDER BY
 		<field name="contractstatus" class="java.lang.String"/>
 		<field name="tally" class="java.lang.Long"/>
 	</subDataset>
+  <parameter name="ONMS_REPORT_DIR" class="java.lang.String" isForPrompting="false">
+    <parameterDescription><![CDATA[The directory where all reports can be found]]></parameterDescription>
+    <defaultValueExpression><![CDATA["${install.dir}/etc/report-templates"]]></defaultValueExpression>
+  </parameter>
 	<parameter name="DATE_FORMAT" class="java.lang.String">
 		<parameterDescription><![CDATA[Your date format in maintenance contracts. Default is "YYYY-MM-DD"]]></parameterDescription>
 		<defaultValueExpression><![CDATA["YYYY-MM-DD"]]></defaultValueExpression>
 	</parameter>
-	<parameter name="COMPANY_LOGO" class="java.lang.String">
+	<parameter name="COMPANY_LOGO" class="java.lang.String" isForPrompting="false">
 		<parameterDescription><![CDATA[Company logo]]></parameterDescription>
-		<defaultValueExpression><![CDATA["${install.dir}/etc/report-templates/assets/images/company-logo.png"]]></defaultValueExpression>
+		<defaultValueExpression><![CDATA[$P{ONMS_REPORT_DIR} + "/assets/images/company-logo.png"]]></defaultValueExpression>
 	</parameter>
 	<queryString>
 		<![CDATA[select now()]]>
@@ -234,23 +172,31 @@ ORDER BY
 		<band splitType="Stretch"/>
 	</title>
 	<pageHeader>
-		<band height="52" splitType="Stretch">
-			<staticText>
-				<reportElement style="Header" x="0" y="0" width="391" height="49"/>
-				<textElement textAlignment="Center"/>
-				<text><![CDATA[Strategy report - Maintenance contracts]]></text>
-			</staticText>
+		<band height="57" splitType="Stretch">
 			<image>
 				<reportElement x="391" y="0" width="164" height="49"/>
 				<imageExpression class="java.lang.String"><![CDATA[$P{COMPANY_LOGO}]]></imageExpression>
 			</image>
+			<staticText>
+				<reportElement style="Title" x="0" y="0" width="452" height="29"/>
+				<textElement/>
+				<text><![CDATA[Maintenance contracts Report]]></text>
+			</staticText>
+			<textField pattern="dd/MM/yyyy h.mm a">
+				<reportElement style="Body" x="0" y="29" width="391" height="20"/>
+				<textElement/>
+				<textFieldExpression class="java.util.Date"><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement x="0" y="49" width="555" height="1"/>
+			</line>
 		</band>
 	</pageHeader>
 	<columnHeader>
 		<band splitType="Stretch"/>
 	</columnHeader>
 	<detail>
-		<band height="728" splitType="Stretch">
+		<band height="723" splitType="Stretch">
 			<stackedBarChart>
 				<chart evaluationTime="Report">
 					<reportElement x="0" y="245" width="555" height="215"/>
@@ -316,7 +262,7 @@ ORDER BY
 			</stackedBarChart>
 			<stackedBarChart>
 				<chart isShowLegend="false">
-					<reportElement x="0" y="513" width="555" height="215"/>
+					<reportElement x="0" y="478" width="555" height="215"/>
 					<chartTitle>
 						<font size="12" isBold="true"/>
 						<titleExpression><![CDATA["12 month forecast"]]></titleExpression>
@@ -425,10 +371,10 @@ ORDER BY
 			<staticText>
 				<reportElement style="Body" x="296" y="52" width="254" height="155"/>
 				<textElement verticalAlignment="Middle"/>
-				<text><![CDATA[This report shows an overview about maintenance contracts. The Maintenance contracts" shows contracts over all active nodes and if they have a running contract, expired or no contract. With age and maintenance contract you can see how old are your devices and have this devices a maintenance contract. Additionally you can see how many devices in a age class have contracts, expired or no contracts. The last diagramm give you an forecast how many maintenance contracts will be expire in the next 12 month.]]></text>
+				<text><![CDATA[This report shows an overview about maintenance contracts. The report shows contracts over all active nodes and if they have a running contract, expired or no contract. With age and maintenance contract you can see how old your devices are and if the devices have a maintenance contract. Additionally you can see how many devices in a age class have contracts, expired or no contracts. The last diagramm gives an forecast of how many maintenance contracts will expire in the next 12 month.]]></text>
 			</staticText>
 			<line>
-				<reportElement x="0" y="-1" width="555" height="1"/>
+				<reportElement x="0" y="722" width="555" height="1"/>
 			</line>
 		</band>
 	</detail>
@@ -436,10 +382,17 @@ ORDER BY
 		<band splitType="Stretch"/>
 	</columnFooter>
 	<pageFooter>
-		<band height="4" splitType="Stretch">
-			<line>
-				<reportElement x="0" y="3" width="555" height="1"/>
-			</line>
+		<band height="22" splitType="Stretch">
+			<textField>
+				<reportElement x="436" y="2" width="80" height="20"/>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression class="java.lang.String"><![CDATA["Page "+$V{PAGE_NUMBER}+" of"]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Report">
+				<reportElement x="516" y="2" width="40" height="20"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[" " + $V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
 		</band>
 	</pageFooter>
 	<summary>

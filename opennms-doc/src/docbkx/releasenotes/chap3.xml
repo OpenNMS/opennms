@@ -4,15 +4,20 @@
 
 	<para>Here is the list of known issues in this release of OpenNMS.</para>
 
-	<!--
 	<section id="issues-current-release">
 		<title>Current Release</title>
 		<para>
-			The simple topology provider (and by extension, the VMware provider) for the topology
-			UI currently do not work.  They will return in a future 1.13 release.
+			While an attempt was made to test the UI with Internet Explorer, there may be
+			some lingering issues with IE.  It is recommended that you use Chrome or Firefox
+			with the OpenNMS UI.
 		</para>
+
+		<para>
+			Additionally, there has been significant refactoring of the remote pollers, and
+			you should upgrade all remote pollers to 14.0.0.
+		</para>
+
 	</section>
-	-->
 
 	<section id="issues-1.12.7">
 		<title>OpenNMS 1.12.7/1.13.2</title>
@@ -32,15 +37,6 @@
 		<para>
 			The majority of users will have to change nothing, but if you have done any
 			configuration changes relating to Jetty, you may need to review them.
-		</para>
-	</section>
-
-	<section id="issues-1.8.5">
-		<title>OpenNMS 1.8.5/1.9.2</title>
-		<para>
-			When upgrading OpenNMS to version 1.8.5 or later, it is important to upgrade your
-			remote pollers to 1.8.5 as well.  The remote poller wire protocol has changed
-			since 1.8.4.
 		</para>
 	</section>
 
