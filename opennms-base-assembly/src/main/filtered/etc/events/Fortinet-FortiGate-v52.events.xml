@@ -958,8 +958,8 @@
                 <mevalue>1000</mevalue>
             </maskelement>
         </mask>
-        <uei>uei.opennms.org/vendor/fortinet/traps/fortigate/fgFmTrapDeployComplete</uei>
-        <event-label>FORTINET-FORTIGATE-MIB defined trap event: fgFmTrapDeployComplete</event-label>
+        <uei>uei.opennms.org/vendor/fortinet/traps/fortigate/fgTrapDeployComplete</uei>
+        <event-label>FORTINET-FORTIGATE-MIB defined trap event: fgTrapDeployComplete</event-label>
         <descr>
 &lt;p&gt;Indicates when deployment of a new configuration has been completed. Used for verification by FortiManager.&lt;/p&gt;&lt;table&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
@@ -968,7 +968,7 @@
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
         <logmsg dest="logndisplay">&lt;p&gt;
-	fgFmTrapDeployComplete trap received
+	fgTrapDeployComplete trap received
 	fnSysSerial=%parm[#1]%&lt;/p&gt;
 	</logmsg>
         <severity>Indeterminate</severity>
@@ -988,8 +988,8 @@
                 <mevalue>1002</mevalue>
             </maskelement>
         </mask>
-        <uei>uei.opennms.org/vendor/fortinet/traps/fortigate/fgFmTrapDeployInProgress</uei>
-        <event-label>FORTINET-FORTIGATE-MIB defined trap event: fgFmTrapDeployInProgress</event-label>
+        <uei>uei.opennms.org/vendor/fortinet/traps/fortigate/fgTrapDeployInProgress</uei>
+        <event-label>FORTINET-FORTIGATE-MIB defined trap event: fgTrapDeployInProgress</event-label>
         <descr>
 &lt;p&gt;Indicates that a configuration change was not immediate and that the change is currently in progress. Used for verification by FortiManager.&lt;/p&gt;&lt;table&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
@@ -998,7 +998,7 @@
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
         <logmsg dest="logndisplay">&lt;p&gt;
-	fgFmTrapDeployInProgress trap received
+	fgTrapDeployInProgress trap received
 	fnSysSerial=%parm[#1]%&lt;/p&gt;
 	</logmsg>
         <severity>Indeterminate</severity>
@@ -1018,8 +1018,8 @@
                 <mevalue>1003</mevalue>
             </maskelement>
         </mask>
-        <uei>uei.opennms.org/vendor/fortinet/traps/fortigate/fgFmTrapConfChange</uei>
-        <event-label>FORTINET-FORTIGATE-MIB defined trap event: fgFmTrapConfChange</event-label>
+        <uei>uei.opennms.org/vendor/fortinet/traps/fortigate/fgTrapConfChange</uei>
+        <event-label>FORTINET-FORTIGATE-MIB defined trap event: fgTrapConfChange</event-label>
         <descr>
 &lt;p&gt;The device configuration has been changed by something other than the managing FortiManager device.&lt;/p&gt;&lt;table&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
@@ -1028,7 +1028,7 @@
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
         <logmsg dest="logndisplay">&lt;p&gt;
-	fgFmTrapConfChange trap received
+	fgTrapConfChange trap received
 	fnSysSerial=%parm[#1]%&lt;/p&gt;
 	</logmsg>
         <severity>Indeterminate</severity>
@@ -1048,8 +1048,8 @@
                 <mevalue>1004</mevalue>
             </maskelement>
         </mask>
-        <uei>uei.opennms.org/vendor/fortinet/traps/fortigate/fgFmTrapIfChange</uei>
-        <event-label>FORTINET-FORTIGATE-MIB defined trap event: fgFmTrapIfChange</event-label>
+        <uei>uei.opennms.org/vendor/fortinet/traps/fortigate/fgTrapIfChange</uei>
+        <event-label>FORTINET-FORTIGATE-MIB defined trap event: fgTrapIfChange</event-label>
         <descr>
 &lt;p&gt;Trap is sent to the managing FortiManager if an interface IP is changed&lt;/p&gt;&lt;table&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
@@ -1074,7 +1074,7 @@
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
         <logmsg dest="logndisplay">&lt;p&gt;
-	fgFmTrapIfChange trap received
+	fgTrapIfChange trap received
 	fnSysSerial=%parm[#1]%
 	ifName=%parm[#2]%
 	fgManIfIp=%parm[#3]%
