@@ -4,6 +4,25 @@
 
 	<subtitle>About This Release</subtitle>
 
+	<!-- Start 14.0 -->
+
+	<section id="introduction-14.0.0">
+		<title>Release 14.0.0</title>
+
+		<para>
+			Release 14.0.0 is the latest stable release of OpenNMS.  It would
+			have been 1.14.0, but we have changed versioning conventions.  There
+			are a huge number of bug fixes and changes in this release since the
+			last unstable version, 1.13.4.  For an overview of the major changes
+			since OpenNMS 1.12.x, see the <ulink
+			url='https://github.com/OpenNMS/opennms/tree/opennms-14.0.0-1/WHATSNEW.md'>What's
+			New in OpenNMS 14</ulink> page.
+		</para>
+		<para>
+			The codename for 14.0.0 is <emphasis>Cheerwine</emphasis>
+		</para>
+	</section>
+
 	<!-- Start 1.13 -->
 
 	<section id="introduction-1.13.4">
