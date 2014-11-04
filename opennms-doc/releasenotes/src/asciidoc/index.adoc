@@ -31,6 +31,7 @@ include::common/preface.adoc[]
 [releasenotes-changelog]
 == Changelog
 :numbered!:
+include::releasenotes/changelog-14.adoc[]
 include::releasenotes/changelog-1.13.adoc[]
 include::releasenotes/changelog-1.12.adoc[]
 include::releasenotes/changelog-1.11.adoc[]
@@ -38,7 +39,7 @@ include::releasenotes/changelog-1.10.adoc[]
 include::releasenotes/changelog-1.9.adoc[]
 
 :numbered:
-// Supported systems
+include::releasenotes/known-issues.adoc[]
 include::releasenotes/supported-systems.adoc[]
 
 // <xi:include href="releasenotes/chap1.xml" />

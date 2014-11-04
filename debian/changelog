@@ -1,3 +1,9 @@
+opennms (14.0.0-1) stable; urgency=high
+
+  * New upstream release.  Major stable release 14.0.0.
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Mon, 03 Nov 2014 15:08:00 -0400
+
 opennms (1.13.3-1) stable; urgency=high
 
   * New upstream release.  This is the 4th unstable release for the eventual
