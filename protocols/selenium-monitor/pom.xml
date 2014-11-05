@@ -101,6 +101,12 @@
         <groupId>com.github.detro.ghostdriver</groupId>
         <artifactId>phantomjsdriver</artifactId>
         <version>1.1.0</version>
+        <exclusions>
+            <exclusion>
+                <groupId>commons-logging</groupId>
+                <artifactId>commons-logging</artifactId>
+            </exclusion>
+        </exclusions>
     </dependency>
     
     <dependency>
