@@ -28,8 +28,8 @@
 
 package org.opennms.netmgt.model;
 
-import java.util.LinkedHashSet;
-import java.util.Set;
+import org.codehaus.jackson.annotate.JsonBackReference;
+import org.springframework.core.style.ToStringCreator;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -39,14 +39,17 @@ import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
-
-import org.springframework.core.style.ToStringCreator;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlIDREF;
+import javax.xml.bind.annotation.XmlRootElement;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 @Entity
-/**
- * <p>OnmsApplication class.</p>
- */
 @Table(name = "applications")
+@XmlRootElement(name="application")
 public class OnmsApplication implements Comparable<OnmsApplication> {
 
     private Integer m_id;
@@ -64,6 +67,7 @@ public class OnmsApplication implements Comparable<OnmsApplication> {
     @Column(nullable=false)
     @SequenceGenerator(name = "opennmsSequence", sequenceName = "opennmsNxtId")
     @GeneratedValue(generator = "opennmsSequence")
+    @XmlAttribute
     public Integer getId() {
         return m_id;
     }
@@ -106,6 +110,10 @@ public class OnmsApplication implements Comparable<OnmsApplication> {
                 mappedBy="applications",
                 cascade={CascadeType.PERSIST, CascadeType.MERGE}
     )
+    @XmlIDREF
+    @XmlElement(name="monitoredServiceId")
+    @XmlElementWrapper(name="monitoredServices")
+    @JsonBackReference
     public Set<OnmsMonitoredService> getMonitoredServices() {
         return m_monitoredServices;
     }

@@ -50,6 +50,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.hibernate.annotations.Filter;
 import org.hibernate.annotations.Type;
@@ -211,7 +212,6 @@ public class OnmsOutage implements Serializable {
         m_ifLostService = ifLostService;
     }
 
-    // @XmlTransient
     /**
      * <p>getServiceLostEvent</p>
      *
@@ -253,7 +253,6 @@ public class OnmsOutage implements Serializable {
         m_ifRegainedService = ifRegainedService;
     }
 
-    // @XmlTransient
     /**
      * <p>getServiceRegainedEvent</p>
      *
@@ -346,6 +345,7 @@ public class OnmsOutage implements Serializable {
      */
     @Transient
     @XmlTransient
+    @JsonIgnore
     public String getIpAddressAsString() {
         return getMonitoredService().getIpAddressAsString();
     }

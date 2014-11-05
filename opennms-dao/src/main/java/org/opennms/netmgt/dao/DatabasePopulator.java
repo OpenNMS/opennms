@@ -543,7 +543,7 @@ public class DatabasePopulator {
         return builder.getCurrentNode();
     }
 
-    private OnmsEvent buildEvent(final OnmsDistPoller distPoller) {
+    public OnmsEvent buildEvent(final OnmsDistPoller distPoller) {
         final OnmsEvent event = new OnmsEvent();
         event.setDistPoller(distPoller);
         event.setEventUei("uei.opennms.org/test");
@@ -596,7 +596,7 @@ public class DatabasePopulator {
         return alarm;
     }
 
-    private OnmsDistPoller getDistPoller(final String localhost, final String localhostIp) {
+    public OnmsDistPoller getDistPoller(final String localhost, final String localhostIp) {
     	final OnmsDistPoller distPoller = getDistPollerDao().get(localhost);
         if (distPoller == null) {
             final OnmsDistPoller newDp = new OnmsDistPoller(localhost, localhostIp);
