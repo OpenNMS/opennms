@@ -57,12 +57,15 @@ import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlIDREF;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+import org.codehaus.jackson.annotate.JsonManagedReference;
 import org.hibernate.annotations.Where;
 import org.springframework.core.style.ToStringCreator;
 
@@ -151,9 +154,9 @@ Comparable<OnmsMonitoredService> {
      */
     @Id
     @Column(nullable=false)
-    @XmlAttribute(name="id")
     @SequenceGenerator(name="opennmsSequence", sequenceName="opennmsNxtId")
-    @GeneratedValue(generator="opennmsSequence")    
+    @GeneratedValue(generator="opennmsSequence")
+    @XmlTransient
     public Integer getId() {
         return m_id;
     }
@@ -168,12 +171,28 @@ Comparable<OnmsMonitoredService> {
     }
 
     /**
+     * This id is used for the serialized representation such as json, xml etc.
+     */
+    @XmlID
+    @XmlAttribute(name="id")
+    @Transient
+    @JsonIgnore
+    public String getXmlId() {
+        return getId() == null? null : getId().toString();
+    }
+
+    public void setXmlId(final String id) {
+        setId(Integer.valueOf(id));
+    }
+
+    /**
      * <p>getIpAddress</p>
      *
      * @return a {@link java.lang.String} object.
      */
     @XmlTransient
     @Transient
+    @JsonIgnore
     public InetAddress getIpAddress() {
         return m_ipInterface.getIpAddress();
     }
@@ -187,6 +206,7 @@ Comparable<OnmsMonitoredService> {
      */
     @XmlTransient
     @Transient
+    @JsonIgnore
     public String getIpAddressAsString() {
         return m_ipInterface.getIpAddressAsString();
     }
@@ -198,6 +218,7 @@ Comparable<OnmsMonitoredService> {
      */
     @XmlTransient
     @Transient
+    @JsonIgnore
     public Integer getIfIndex() {
         return m_ipInterface.getIfIndex();
     }
@@ -356,6 +377,7 @@ Comparable<OnmsMonitoredService> {
      */
     @XmlTransient
     @Transient
+    @JsonIgnore
     public Integer getNodeId() {
         return m_ipInterface.getNode().getId();
     }
@@ -409,11 +431,10 @@ Comparable<OnmsMonitoredService> {
      * @return a {@link java.lang.Integer} object.
      */
     @Transient
+    @JsonIgnore
     public Integer getServiceId() {
         return getServiceType().getId();
     }
-
-
 
     /** {@inheritDoc} */
     @Override
@@ -428,6 +449,7 @@ Comparable<OnmsMonitoredService> {
      * @return a {@link java.lang.String} object.
      */
     @Transient
+    @JsonIgnore
     public String getServiceName() {
         return getServiceType().getName();
     }
@@ -438,7 +460,7 @@ Comparable<OnmsMonitoredService> {
      * @return a boolean.
      */
     @Transient
-    @XmlAttribute
+    @XmlAttribute(name="down")
     public boolean isDown() {
         boolean down = true;
         if (!"A".equals(getStatus()) || m_currentOutages.isEmpty()) {
@@ -456,6 +478,7 @@ Comparable<OnmsMonitoredService> {
     @XmlTransient
     @OneToMany(mappedBy="monitoredService", fetch=FetchType.LAZY)
     @Where(clause="ifRegainedService is null")
+    @JsonIgnore
     public Set<OnmsOutage> getCurrentOutages() {
         return m_currentOutages;
     }
@@ -482,6 +505,9 @@ Comparable<OnmsMonitoredService> {
                joinColumns={@JoinColumn(name="ifserviceid")},
                inverseJoinColumns={@JoinColumn(name="appid")}
     )
+    @XmlElementWrapper(name="applications")
+    @XmlElement(name="application")
+    @JsonManagedReference
     public Set<OnmsApplication> getApplications() {
         return m_applications;
     }

@@ -86,6 +86,18 @@ import org.xml.sax.XMLFilter;
 abstract public class XmlTest<T> {
     private static final Logger LOG = LoggerFactory.getLogger(XmlTest.class);
 
+    static {
+        initXmlUnit();
+    }
+
+    private static void initXmlUnit() {
+        XMLUnit.setIgnoreWhitespace(true);
+        XMLUnit.setIgnoreAttributeOrder(true);
+        XMLUnit.setIgnoreComments(true);
+        XMLUnit.setIgnoreDiffBetweenTextAndCDATA(true);
+        XMLUnit.setNormalize(true);
+    }
+
     private T m_sampleObject;
     private Object m_sampleXml;
     private String m_schemaFile;
@@ -99,11 +111,7 @@ abstract public class XmlTest<T> {
     @Before
     public void setUp() {
         MockLogAppender.setupLogging(true);
-        XMLUnit.setIgnoreWhitespace(true);
-        XMLUnit.setIgnoreAttributeOrder(true);
-        XMLUnit.setIgnoreComments(true);
-        XMLUnit.setIgnoreDiffBetweenTextAndCDATA(true);
-        XMLUnit.setNormalize(true);
+        initXmlUnit();
     }
 
     protected T getSampleObject() {
@@ -192,13 +200,7 @@ abstract public class XmlTest<T> {
     }
 
     protected String marshalToXmlWithJaxb() {
-        LOG.debug("Reference Object: {}", getSampleObject());
-
-        final StringWriter writer = new StringWriter();
-        JaxbUtils.marshal(getSampleObject(), writer);
-        final String xml = writer.toString();
-        LOG.debug("JAXB XML: {}", xml);
-        return xml;
+        return marshalToXmlWithJaxb(getSampleObject());
     }
 
     @Test
@@ -312,6 +314,16 @@ abstract public class XmlTest<T> {
         } finally {
             unmarshaller.setSchema(null);
         }
+    }
+
+    public static <T> String marshalToXmlWithJaxb(T sampleObject) {
+        LOG.debug("Reference Object: {}", sampleObject);
+
+        final StringWriter writer = new StringWriter();
+        JaxbUtils.marshal(sampleObject, writer);
+        final String xml = writer.toString();
+        LOG.debug("JAXB XML: {}", xml);
+        return xml;
     }
 
     public static void assertXmlEquals(final String expectedXml, final String actualXml) {
