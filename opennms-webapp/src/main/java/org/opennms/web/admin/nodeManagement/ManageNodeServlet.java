@@ -41,6 +41,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -109,10 +110,12 @@ public class ManageNodeServlet extends HttpServlet {
         List<ManagedInterface> allNodes = getManagedInterfacesFromSession(userSession);
 
         // the list of all interfaces marked as managed
-        List<String> interfaceList = Arrays.asList(request.getParameterValues("interfaceCheck"));
+        String[] parameters = request.getParameterValues("interfaceCheck");
+        List<String> interfaceList = (parameters == null ? Collections.<String>emptyList() : Arrays.asList(parameters));
 
         // the list of all services marked as managed
-        List<String> serviceList = Arrays.asList(request.getParameterValues("serviceCheck"));
+        parameters = request.getParameterValues("serviceCheck");
+        List<String> serviceList = (parameters == null ? Collections.<String>emptyList() : Arrays.asList(parameters));
 
         // the list of interfaces that need to be put into the URL file
         List<String> addToURL = new ArrayList<String>();
