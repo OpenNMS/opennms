@@ -8,7 +8,7 @@ This monitor is used to monitor the availability and functionality of http://en.
 [options="autowidth"]
 |===
 | Class Name     | `org.opennms.protocols.dhcp.monitor.DhcpMonitor`
-| Remote Enabled | dont' know
+| Remote Enabled | false
 |===
 
 ==== Configuration and Usage
@@ -38,9 +38,8 @@ Some example configuration how to configure the monitor in the 'poller-configura
  <parameter key="ds-name" value="dhcp" />
 </service>
 
-<monitor service="DCHP" class-name="org.opennms.protocols.dhcp.monitor.DhcpMonitor"/>
+<monitor service="DHCP" class-name="org.opennms.protocols.dhcp.monitor.DhcpMonitor"/>
 ----
-
 
 ==== Required additional configuration
 
