@@ -8,8 +8,10 @@
 :numbered!:
 
 = OpenNMS Release Notes
-OpenNMS Release v{opennms-version}
-The OpenNMS Group, Inc. 220 Chatham Business Drive, Suite 220 Pittsboro, NC 27312
+:author: Copyright (c) 2014 The OpenNMS Group, Inc.
+:revnumber: OpenNMS v{opennms-version}
+:revdate: {last-update-label} {docdatetime}
+:version-label!:
 
 == OpenNMS Development Team
 [options="header"]
