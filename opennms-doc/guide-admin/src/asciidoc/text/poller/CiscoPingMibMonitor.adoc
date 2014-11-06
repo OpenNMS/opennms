@@ -1,7 +1,7 @@
 
 === CiscoPingMibMonitor
 This poller monitor's purpose is to create conceptual rows (entries) in the _ciscoPingTable_ on _Cisco IOS_ devices that support the link:http://tools.cisco.com/Support/SNMP/do/BrowseMIB.do?local=en&mibName=CISCO-PING-MIB[CISCO-PING-MIB].
-These entries direct the remote IOS device to ping an IPv4 or IPv6 address with a configurable set of parameters.
+These entries direct the remote _IOS_ device to ping an IPv4 or IPv6 address with a configurable set of parameters.
 After the _IOS_ device has completed the requested ping operations, the poller monitor queries the _IOS_ device to determine the results.
 If the results indicate success according to the configured parameters in the service configuration, then the monitored service is reported as available and the results are available for optional time-series (RRD) storage.
 If the results indicate failure, the monitored service is reported unavailable with a descriptive reason code.
@@ -41,7 +41,7 @@ Even very low-end devices appear to support the CISCO-PING-MIB.
 * The corresponding _SNMP write community_ string must be specified in the `write-community` attribute of either the top-level `<snmp-config>` element of 'snmp-config.xml' or a `<definition>` child element that applies to the _SNMP-primary_ interface of the _IOS_ device(s) that will perform the remote pings.
 
 ==== Scalability concerns
-This monitor spends a fair amount of time sleeping while it waits for the remote IOS device to complete the requested ping operations.
+This monitor spends a fair amount of time sleeping while it waits for the remote _IOS_ device to complete the requested ping operations.
 The monitor is pessimistic in calculating the delay between creation of the _ciscoPingTable_ entry and its first attempt to retrieve the results of that entry's ping operations -- it will always wait at least (`packet-count * (packet-timeout + packet-delay)`) milliseconds before even checking whether the remote pings have completed.
 It's therefore prone to hogging poller threads if used with large values for the `packet-count`, `packet-timeout`, and/or `packet-delay` parameters.
 Keep these values as small as practical to avoid tying up poller threads unnecessarily.
@@ -66,18 +66,18 @@ _IOS_ seems to clean up entries in this table within a manner of minutes after t
 |===
 | Parameter                     | Description                                                                           | Required | Default value
 | `timeout`                     | A timeout, in milliseconds, that should override the SNMP timeout specified in
-                                  'snmp-config.xml'. Do not use without a very good reason to do so.                    | optional | `from snmp-config.xml`
+                                  'snmp-config.xml'. Do not use without a very good reason to do so.                    | optional | from 'snmp-config.xml'
 | `retry`                       | Number of retries to attempt if the initial attempt times out. Overrides the
-                                  equivalent value from 'snmp-config.xml'. Do not use unless really needed.             | optional | `from snmp-config.xml`
+                                  equivalent value from 'snmp-config.xml'. Do not use unless really needed.             | optional | from 'snmp-config.xml'
 | `version`                     | SNMP protocol version (1, 2c, or 3) to use for operations performed by this service
-                                  monitor. Do not use with out a very good reason to do so.                             | optional | `from snmp-config.xml`
-| `packet-count`                | Number of ping packets that the remote IOS device should send.                        | optional | `5`
-| `packet-size`                 | Size, in bytes, of each ping packet that the remote IOS device should send.           | optional | `100`
-| `packet-timeout`              | Timeout, in milliseconds, of each ping packet sent by the remote IOS device.          | optional | `2000`
-| `packet-delay`                | Delay, in milliseconds, between ping packets sent by the remote IOS device.           | optional | `0`
+                                  monitor. Do not use with out a very good reason to do so.                             | optional | from 'snmp-config.xml'
+| `packet-count`                | Number of ping packets that the remote _IOS_ device should send.                      | optional | `5`
+| `packet-size`                 | Size, in bytes, of each ping packet that the remote _IOS_ device should send.         | optional | `100`
+| `packet-timeout`              | Timeout, in milliseconds, of each ping packet sent by the remote _IOS_ device.        | optional | `2000`
+| `packet-delay`                | Delay, in milliseconds, between ping packets sent by the remote _IOS_ device.         | optional | `0`
 | `entry-owner`                 | String value to set as the value of ciscoPingEntryOwner of entries created for this
                                   service.                                                                              | optional | `OpenNMS CiscoPingMibMonitor`
-| `vrf-name`                    | String value to set as the VRF (VLAN) name in whose context the remote IOS device
+| `vrf-name`                    | String value to set as the VRF (VLAN) name in whose context the remote _IOS_ device
                                   should perform the pings for this service.                                            | optional | _empty String_
 | `proxy-node-id`               | Numeric database identifier of the node whose primary SNMP interface should be used
                                   as the _proxy_ for this service. If specified along with the related
@@ -93,7 +93,7 @@ _IOS_ seems to clean up entries in this table within a manner of minutes after t
                                   `proxy-node-foreign-id` appears alongside this parameter. A value of `${ipaddr}` will
                                   be substituted with the IP address of the interface on which the monitored service
                                   appears.                                                                              | optional | `-`
-| `target-ip-addr`              | IP address that the remote IOS device should ping. A value of `${ipaddr}` will be
+| `target-ip-addr`              | IP address that the remote _IOS_ device should ping. A value of `${ipaddr}` will be
                                   substituted with the IP address of the interface on which the monitored service
                                   appears.                                                                              | optional | `-`
 | `success-percent`             | A whole-number percentage of pings that must succeed (from the perspective of the
@@ -160,12 +160,12 @@ Since we want each Foo CPE router to ping the same IP address 192.168.255.1, we 
 
 ==== Example: Ping from a single IOS device routable address of each router of customer Bar
 A service provider's client, Bar Limited, has network service at multiple locations.
-While OpenNMS' world-class service assurance is generally sufficient, Bar also wants to be notified any time a premise router at one of their locations unreachable from the perspective of an IOS device in Bar's main data center.
+While OpenNMS' world-class service assurance is generally sufficient, Bar also wants to be notified any time a premise router at one of their locations unreachable from the perspective of an _IOS_ device in Bar's main data center.
 Some or all of the Bar Limited CPE routers may be non-Cisco devices in this scenario.
 
 To meet this requirement, our approach is to configure Bar Limited's premise routers to be in the surveillance categories Customer_Bar, CPE, and Routers, and to use a filter to create a poller package that applies only to those routers.
 This time, though, we will use the special value `${ipaddr}` not in the `proxy-ip-addr` parameter but in the `target-ip-addr` parameter so that the remote pings will be performed for each Bar CPE router.
-Since we want the same IOS device 20.11.5.11 to ping the CPE routers, we statically list that value for the `proxy-ip-addr` address.
+Since we want the same _IOS_ device 20.11.5.11 to ping the CPE routers, we statically list that value for the `proxy-ip-addr` address.
 Example 'poller-configuration.xml' additions
 
 [source, xml]
