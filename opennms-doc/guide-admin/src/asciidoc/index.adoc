@@ -14,6 +14,10 @@ The OpenNMS Group, Inc. 220 Chatham Business Drive, Suite 220 Pittsboro, NC 2731
 // Include your documentation sections here
 // include::text/myFile.adoc[]
 
+= Configuration files
+// Include configuration file documenration here
+include::text/configuration-files/c3p0.properties.adoc[]
+
 // Include monitor documentation here
 = Service Assurance
 

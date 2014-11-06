@@ -1,0 +1,19 @@
+
+=== c3p0.properties
+
+C3P0 is the database connection pooling technology used by OpenNMS.
+
+In most cases you should never have to change this file.
+
+==== Configuration file facts
+
+[options="autowidth"]
+|===
+| Automatically reloaded  | unknown.
+| Link to XML schema      | Not applicable.
+|===
+
+.This section is optional and give some specific hints
+==== Additional informations
+
+For details on configuration options, see the link:http://www.mchange.com/projects/c3p0/index.html#configuration_properties[c3p0 configuration properties appendix] in their documentation. 
