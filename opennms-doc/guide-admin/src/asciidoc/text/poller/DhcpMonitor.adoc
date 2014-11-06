@@ -1,0 +1,122 @@
+
+=== DhcpMonitor
+
+This monitor is used to monitor the availability and functionality of http://en.wikipedia.org/wiki/Dynamic_Host_Configuration_Protocol[DHCP servers].
+
+==== Monitor facts
+
+[options="autowidth"]
+|===
+| Class Name     | `org.opennms.protocols.dhcp.monitor.DhcpMonitor`
+| Remote Enabled | dont' know
+|===
+
+==== Configuration and Usage
+
+.Monitor specific parameters for the DhcpMonitor
+[options="header, autowidth"]
+|===
+| Parameter        | Description                                                                                    | Required | Default value
+| `retry`          | Number of retries before the service is marked as down                                         | optional | `0`
+| `timeout`        | Time in milliseconds to wait for the DHCP response from the server                             | optional | `3000`
+| `rrd-repository` | The location to write RRD data. Generally, you will not want to change this from default       | required | `$OPENNMS_HOME/share/rrd/response`
+| `rrd-base-name`  | The name of the RRD file to write (minus the extension, +.rrd+ or +.jrb+)                      | required | `dhcp`
+| `ds-name`        | This is the name as reference for this particular data source in the RRD file                  | required | `dhcp`
+
+|===
+
+==== Examples
+Some example configuration how to configure the monitor in the 'poller-configuration.xml'.
+
+[source, xml]
+----
+<service name="DHCP" interval="300000" user-defined="false" status="on">
+ <parameter key="retry" value="2" />
+ <parameter key="timeout" value="3000" />
+ <parameter key="rrd-repository" value="/opt/opennms/share/rrd/response" />
+ <parameter key="rrd-base-name" value="dhcp" />
+ <parameter key="ds-name" value="dhcp" />
+</service>
+
+<monitor service="DCHP" class-name="org.opennms.protocols.dhcp.monitor.DhcpMonitor"/>
+----
+
+
+==== Required additional configuration
+
+===== service-configuration.xml
+
+Some example configuration how to configure the 'service-configuration.xml'.
+
+[source, xml]
+----
+<service>
+    <name>OpenNMS:Name=Dhcpd</name>
+    <class-name>org.opennms.netmgt.dhcpd.jmx.Dhcpd</class-name>
+    <invoke at="start" pass="1" method="start"/>
+    <invoke at="status" pass="0" method="status"/>
+    <invoke at="stop" pass="0" method="stop"/>
+  </service>
+----
+
+
+===== dhcp-configuration.xml
+
+Some example configuration how to configure the 'dhcp-configuration.xml'.
+
+[source, xml]
+----
+<DhcpdConfiguration
+       port="5818"
+       macAddress="00:06:0D:BE:9C:B2"
+       myIpAddress="broadcast
+       extendedMode="false"
+       requestIpAddress="10.2.1.56">
+</DhcpdConfiguration>
+
+<DhcpdConfiguration
+       port="5818"
+       macAddress="00:06:0D:BE:9C:B2"
+       myIpAddress="10.4.1.234"
+       extendedMode="true"
+       requestIpAddress="targetSubnet">
+</DhcpdConfiguration>
+----
+
+[options="autowidth"]
+|===
+| Parameter          | Description                                                                       | Required           | Default value
+| `port`             | Defines the port your dhcp server is using                                        | required           | `5818`                   
+| `macAddress`       | The MAC address which OpenNMS uses for a dhcp request                             | required           | `don't know`
+| `myIpAddress`      | This parameter will usually be set to the ip address of the OpenNMS server,
+                       which puts the DHCP poller in `relay` mode as opposed to `broadcast` mode.
+                       In `relay` mode, the DHCP server being polled will unicast its responses directly
+                       back to the ip address specified by `myIpAddress` rather than broadcasting its
+                       responses. This allows DHCP servers to be polled even though they are not on the
+                       same subnet as the OpenNMS server, and without the aid of an external relay.
+                       _Usage:_ `myIpAddress="10.11.12.13"` or `myIpAddress="broadcast"`                 | required           | `broadcast`
+| `extendedMode`     | When extendedMode is false, the DHCP poller will send a DISCOVER and expect an
+                       OFFER in return. When extendedMode is true, the DHCP poller will first send a
+                       DISCOVER. If no valid response is received it will send an INFORM. If no valid
+                       response is received it will then send a REQUEST. OFFER, ACK, and NAK are all
+                       considered valid responses in extendedMode.
+                       _Usage:_ `extendedMode="true"` or `extendedMode="false"`                          | required           | `false`
+| `requestIpAddress` | This parameter only applies to REQUEST queries sent to the DHCP server when
+                       extendedMode is true. If an ip address is specified, that ip address will be
+                       requested in the query. If `targetHost` is specified, the DHCP server's own ip
+                       address will be requested. Since a well-managed server will probably not respond
+                       to a request for its own ip, this parameter can also be set to `targetSubnet`.
+                       This is similar to `targetHost` except the DHCP server's ip address is
+                       incremented or decremented by 1 to obtain an ip address that is on the same
+                       subnet.
+                       (The resulting address will not be on the same subnet if the DHCP server's
+                       subnet is a /32 or /31. Otherwise, the algorithm used should be reliable.)
+                       _Usage:_ `requestIpAddress="10.77.88.99"` or `requestIpAddress="targetHost"`
+                       or `requestIpAddress="targetSubnet"`                                              | required           | `false`
+|===
+
+
+==== Hint
+
+*Caution on usage:* If in `extendedMode`, the time required to complete the poll for an unresponsive node is increased by a factor of 3.
+                    Thus it is a good idea to limit the number of retries to a small number. 
