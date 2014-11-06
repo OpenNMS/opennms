@@ -3,6 +3,16 @@
 OPENNMS_HOME="${install.dir}"
 RUNAS="root"
 
+ULIMIT=`which ulimit 2>/dev/null`
+if [ -n $ULIMIT ]; then
+	for SIZE in 1024 2048 4096 8192 unlimited; do
+		ulimit -n "$SIZE" >/dev/null 2>&1
+		if [ $? -gt 0 ]; then
+			break
+		fi
+	done
+fi
+
 myuser="`id | sed -e 's/uid=[0-9][0-9]*(//' -e 's/).*//'`"
 if [ x"$myuser" = x"$RUNAS" ]; then
 	true # all is well
