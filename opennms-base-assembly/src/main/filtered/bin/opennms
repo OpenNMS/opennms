@@ -111,7 +111,7 @@ fi
 show_help () {
 	cat <<END
 
-Usage: $0 [-n] [-t] [-p] [-o] [-c timeout] [-v] [-Q] <command> [<service>]
+Usage: $0 [-f] [-n] [-t] [-p] [-o] [-c timeout] [-v] [-Q] <command> [<service>]
  
   command options: start|stop|restart|status|check|pause|resume|kill
 
@@ -120,6 +120,7 @@ Usage: $0 [-n] [-t] [-p] [-o] [-c timeout] [-v] [-Q] <command> [<service>]
 
   The following options are available:
 
+      -f  Foreground mode. Don't fork & execute.
       -n  "No execute" mode.  Don't call Java to do anything.
       -t  Test mode.  Enable JPDA on port 8001.
       -p  Enable TIJMP profiling
@@ -344,17 +345,24 @@ doStart(){
 	fi
 
 	if [ -z "$NOEXECUTE" ]; then
-		echo "------------------------------------------------------------------------------" >> "$REDIRECT"
-		date >> "$REDIRECT"
-		echo "begin ulimit settings:" >> "$REDIRECT"
-		ulimit -a >> "$REDIRECT"
-		echo "end ulimit settings" >> "$REDIRECT"
 		CMD="$JAVA_CMD -Djava.endorsed.dirs=$OPENNMS_HOME/lib/endorsed $APP_VM_PARMS -jar $BOOTSTRAP $APP_PARMS_CONTROLLER $APP_PARMS_BEFORE "$@" $APP_PARMS_AFTER"
-		echo "Executing command: $CMD" >> "$REDIRECT"
-		$CMD >>"$REDIRECT" 2>&1 &
-		OPENNMS_PID=$!
-		echo $OPENNMS_PID > "$OPENNMS_PIDFILE"
-		# disown # XXX specific to bash
+		if [ $BACKGROUND = 1 ]; then
+			echo "------------------------------------------------------------------------------" >> "$REDIRECT"
+			date >> "$REDIRECT"
+			echo "begin ulimit settings:" >> "$REDIRECT"
+			ulimit -a >> "$REDIRECT"
+			echo "end ulimit settings" >> "$REDIRECT"
+			echo "Executing command: $CMD" >> "$REDIRECT"
+			$CMD >>"$REDIRECT" 2>&1 &
+			OPENNMS_PID=$!
+			echo $OPENNMS_PID > "$OPENNMS_PIDFILE"
+		else
+			echo "running ulimit -a"
+			ulimit -a
+			echo "Executing command: $CMD"
+			$CMD
+			exit $?
+		fi
 	fi
 
 	if [ $START_TIMEOUT -eq 0 ]; then
@@ -588,19 +596,23 @@ TPROFILE=0
 OPROFILE=0
 NOEXECUTE=""
 VERBOSE=0
+BACKGROUND=1
 
 NAME="opennms"
 
-while getopts c:ntvpoQ c; do
+while getopts c:fntvpoQ c; do
 	case $c in
 		c)
 			APP_PARMS_CONTROLLER="$APP_PARMS_CONTROLLER -t $OPTARG"
+			;;
+		f)
+			BACKGROUND=0
 			;;
 		n)
 			NOEXECUTE="foo"
 			;;
 		Q)
-				START_TIMEOUT=0
+			START_TIMEOUT=0
 			;;
 		t)
 			TEST=1
