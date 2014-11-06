@@ -247,7 +247,7 @@ public class ManageNodeServlet extends HttpServlet {
     }
 
     @SuppressWarnings("unchecked")
-    private List<ManagedInterface> getManagedInterfacesFromSession(HttpSession userSession) {
+    private static List<ManagedInterface> getManagedInterfacesFromSession(HttpSession userSession) {
         if (userSession == null) {
             return null;
         } else {
@@ -257,7 +257,7 @@ public class ManageNodeServlet extends HttpServlet {
 
     /**
      */
-    private void manageInterfaces(List<String> interfaces, Connection connection) throws SQLException {
+    private static void manageInterfaces(List<String> interfaces, Connection connection) throws SQLException {
         StringBuffer query = new StringBuffer("UPDATE ipinterface SET isManaged = ");
         query.append("'M'").append(" WHERE ipaddr IN (");
 
@@ -277,7 +277,7 @@ public class ManageNodeServlet extends HttpServlet {
 
     /**
      */
-    private void unmanageInterfaces(List<String> interfaces, Connection connection) throws SQLException {
+    private static void unmanageInterfaces(List<String> interfaces, Connection connection) throws SQLException {
         StringBuffer query = new StringBuffer("UPDATE ipinterface SET isManaged = ");
         query.append("'F'").append(" WHERE ipaddr IN (");
 
@@ -297,7 +297,7 @@ public class ManageNodeServlet extends HttpServlet {
 
     /**
      */
-    private void sendSCMRestartEvent() throws ServletException {
+    private static void sendSCMRestartEvent() throws ServletException {
         EventBuilder bldr = new EventBuilder("uei.opennms.org/internal/restartSCM", "web ui");
 
         sendEvent(bldr.getEvent());
@@ -306,7 +306,7 @@ public class ManageNodeServlet extends HttpServlet {
     /**
      * FIXME: This is totally the wrong place to be doing this.
      */
-    private void writeURLFile(List<String> interfaceList) throws ServletException {
+    private static void writeURLFile(List<String> interfaceList) throws ServletException {
         String path = System.getProperty("opennms.home") + File.separator + "etc" + File.separator;
 
         String fileName = path + INCLUDE_FILE_NAME;

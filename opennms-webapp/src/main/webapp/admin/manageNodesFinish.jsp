@@ -61,18 +61,22 @@
 	}
 %>
 
-<h3>Finished updating the database for the manage/unmanaged changes</h3>
+<h3>Database Update Complete After Management Changes</h3>
 
 <p>
-  OpenNMS should not need to be restarted for the changes to take effect.
+  These changes take effect immediately. OpenNMS does not need to be restarted.
 </p>
 
 <p>
   Changes for a specific node will become effective upon execution of
-  a forced rescan on that node (node must not be down when rescanned).
+  a forced rescan on that node. The node must be up when rescanned for the
+  inventory information to be updated.
 </p>
 
 <% if (node != null) { %>
+<p>
+  <a href="element/rescan.jsp?node=<%= node.getId() %>">Rescan this node</a>
+</p>
 <p>
   <a href="element/node.jsp?node=<%= node.getId() %>">Return to node page</a>
 </p>
