@@ -98,7 +98,6 @@
       <bundle>mvn:org.opennms.core/org.opennms.core.logging/${project.version}</bundle>
       <bundle>mvn:org.opennms.core/org.opennms.core.soa/${project.version}</bundle>
       <bundle>mvn:org.opennms.core/org.opennms.core.spring/${project.version}</bundle>
-      <bundle>mvn:org.opennms.core/org.opennms.core.web/${project.version}</bundle>
       <bundle>mvn:org.opennms.core/org.opennms.core.xml/${project.version}</bundle>
       <bundle>mvn:org.opennms/opennms-util/${project.version}</bundle>
     </feature>
@@ -107,6 +106,13 @@
       <feature>atomikos</feature>
       <feature>postgresql</feature>
       <bundle>mvn:org.opennms.core/org.opennms.core.db/${project.version}</bundle>
+    </feature>
+
+    <feature name="opennms-core-web" description="OpenNMS :: Core :: Web" version="${project.version}">
+      <feature>opennms-core</feature>
+      <bundle>mvn:org.apache.httpcomponents/httpcore/${httpcoreVersion}</bundle>
+      <bundle>mvn:org.apache.httpcomponents/httpclient/${httpclientVersion}</bundle>
+      <bundle>mvn:org.opennms.core/org.opennms.core.web/${project.version}</bundle>
     </feature>
 
     <feature name="opennms-model" description="OpenNMS :: Model" version="${project.version}">

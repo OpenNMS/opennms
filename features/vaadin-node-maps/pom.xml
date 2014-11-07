@@ -106,8 +106,12 @@
 						<bundle>mvn:org.opennms.features.geocoder/org.opennms.features.geocoder.nominatim/${project.version}</bundle>
 					</bundles>
 					<features>
+						<feature>opennms-core-web</feature>
 						<feature>vaadin</feature>
 					</features>
+					<repositories>
+						<repository>mvn:org.opennms.karaf/opennms/${project.version}/xml/features</repository>
+					</repositories>
 				</configuration>
 			</plugin>
 		</plugins>
