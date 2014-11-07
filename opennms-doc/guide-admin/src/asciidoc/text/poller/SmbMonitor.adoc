@@ -18,7 +18,7 @@ WARNING: Microsoft deprecated the usage of _NetBIOS_.
 [options="autowidth"]
 |===
 | Class Name     | `org.opennms.netmgt.poller.monitors.SmbMonitor`
-| Remote Enabled | `false`
+| Remote Enabled | false
 |===
 
 ==== Configuration and Usage
