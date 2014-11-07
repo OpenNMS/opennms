@@ -28,6 +28,9 @@
 
 package org.opennms.netmgt.dao.api;
 
+import java.net.InetAddress;
+import java.util.List;
+
 import org.opennms.netmgt.model.OnmsPathOutage;
 
 /**
@@ -38,5 +41,7 @@ import org.opennms.netmgt.model.OnmsPathOutage;
  */
 public interface PathOutageDao extends OnmsDao<OnmsPathOutage, Integer> {
 
-	
+	List<Integer> getNodesForPathOutage(InetAddress ipAddress, String serviceName);
+
+	List<Integer> getNodesForPathOutage(OnmsPathOutage pathOutage);
 }

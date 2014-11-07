@@ -32,13 +32,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.opennms.core.utils.InetAddressUtils.addr;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 
-import org.hibernate.criterion.Restrictions;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -50,21 +45,14 @@ import org.opennms.netmgt.dao.api.EventDao;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
-import org.opennms.netmgt.dao.api.OutageDao;
 import org.opennms.netmgt.dao.api.PathOutageDao;
 import org.opennms.netmgt.dao.api.ServiceTypeDao;
-import org.opennms.netmgt.dao.hibernate.AbstractDaoHibernate;
-import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsDistPoller;
-import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.model.OnmsOutage;
 import org.opennms.netmgt.model.OnmsPathOutage;
 import org.opennms.netmgt.model.OnmsServiceType;
-import org.opennms.netmgt.model.ServiceSelector;
-import org.opennms.netmgt.model.outage.OutageSummary;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -104,7 +92,7 @@ public class PathOutageDaoTest implements InitializingBean {
     private MonitoredServiceDao m_monitoredServiceDao;
 
     @Autowired
-    private PathOutageDao m_outageDao;
+    private PathOutageDao m_pathOutageDao;
 
     @Autowired
     private ServiceTypeDao m_serviceTypeDao;
@@ -137,30 +125,60 @@ public class PathOutageDaoTest implements InitializingBean {
         OnmsNode node = new OnmsNode(getLocalHostDistPoller());
         node.setLabel("localhost");
         m_nodeDao.save(node);
+        OnmsNode newNode = new OnmsNode(getLocalHostDistPoller());
+        newNode.setLabel("newnode");
+        m_nodeDao.save(newNode);
 
         OnmsIpInterface ipInterface = new OnmsIpInterface(addr("172.16.1.1"), node);
+        ipInterface.setIsManaged("M");
+        OnmsIpInterface newIpInterface = new OnmsIpInterface(addr("172.16.1.2"), newNode);
+        newIpInterface.setIsManaged("D");
 
         OnmsServiceType serviceType = m_serviceTypeDao.findByName("ICMP");
         assertNotNull(serviceType);
 
         OnmsMonitoredService monitoredService = new OnmsMonitoredService(ipInterface, serviceType);
+        OnmsMonitoredService newMonitoredService = new OnmsMonitoredService(newIpInterface, serviceType);
 
-        OnmsPathOutage outage = new OnmsPathOutage(node,ipInterface.getIpAddress(), monitoredService.getServiceName());
+        OnmsPathOutage outage = new OnmsPathOutage(node, ipInterface.getIpAddress(), monitoredService.getServiceName());
+        m_pathOutageDao.save(outage);
 
-        //outage.setNode(node);
-        
-        m_outageDao.save(outage);
-        //m_outageDao.flush();
-        //((AbstractDaoHibernate)m_nodeDao).refresh(outage);
-        
         //it works we're so smart! hehe
-        OnmsPathOutage temp = m_outageDao.load(outage.getNode().getId());
-        //((AbstractDaoHibernate)m_nodeDao).refresh(temp);
+        OnmsPathOutage temp = m_pathOutageDao.get(outage.getNode().getId());
+
         assertEquals("ICMP", outage.getCriticalPathServiceName());
-//        outage.setEventBySvcRegainedEvent();
-        
-        assertEquals("localhost",temp.getNode().getLabel());
-        
+        assertEquals(addr("172.16.1.1"), outage.getCriticalPathIp());
+        assertEquals("localhost", temp.getNode().getLabel());
+
+        List<Integer> nodes = m_pathOutageDao.getNodesForPathOutage(temp);
+        assertEquals(1, nodes.size());
+        assertEquals(node.getId(), nodes.get(0));
+
+        nodes = m_pathOutageDao.getNodesForPathOutage(addr("172.16.1.1"), "ICMP");
+        assertEquals(1, nodes.size());
+        assertEquals(node.getId(), nodes.get(0));
+
+        nodes = m_pathOutageDao.getNodesForPathOutage(addr("172.16.1.2"), "ICMP");
+        assertEquals(0, nodes.size());
+
+        assertEquals(1, m_pathOutageDao.countAll());
+
+        OnmsPathOutage newOutage = new OnmsPathOutage(newNode, newIpInterface.getIpAddress(), newMonitoredService.getServiceName());
+        m_pathOutageDao.save(newOutage);
+
+        assertEquals(2, m_pathOutageDao.countAll());
+
+        // Should return zero results because the interface is marked as 'D' for deleted
+        nodes = m_pathOutageDao.getNodesForPathOutage(addr("172.16.1.2"), "ICMP");
+        assertEquals(0, nodes.size());
+
+        // After we mark it as managed, the node should appear in the path outage list
+        newIpInterface.setIsManaged("M");
+        nodes = m_pathOutageDao.getNodesForPathOutage(addr("172.16.1.2"), "ICMP");
+        assertEquals(1, nodes.size());
+        assertEquals(newNode.getId(), nodes.get(0));
+
+        assertEquals(2, m_pathOutageDao.countAll());
     }
     
     private OnmsDistPoller getLocalHostDistPoller() {
