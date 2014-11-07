@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.dao.mock;
 
+import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -229,6 +230,11 @@ public class MockNodeDao extends AbstractMockDao<OnmsNode, Integer> implements N
             }
         }
         return nodes;
+    }
+
+    @Override
+    public List<OnmsNode> findByIpAddressAndService(InetAddress ipAddress, String serviceName) {
+        return null;
     }
 
     @Override

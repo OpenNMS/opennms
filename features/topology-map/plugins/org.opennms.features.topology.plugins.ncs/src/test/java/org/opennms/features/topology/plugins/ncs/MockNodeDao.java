@@ -28,6 +28,7 @@
 
 package org.opennms.features.topology.plugins.ncs;
 
+import java.net.InetAddress;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -220,6 +221,12 @@ public class MockNodeDao implements NodeDao {
 
     @Override
     public List<OnmsNode> findByForeignSource(String foreignSource) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public List<OnmsNode> findByIpAddressAndService(InetAddress ipAddress, String serviceName) {
         // TODO Auto-generated method stub
         return null;
     }
