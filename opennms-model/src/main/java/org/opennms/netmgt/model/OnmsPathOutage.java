@@ -38,6 +38,8 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
+
 import org.hibernate.annotations.Type;
 
 /**
@@ -96,7 +98,7 @@ public class OnmsPathOutage implements Serializable{
 	 * 
 	 * @return an int
 	 */
-	@Column(name="nodeid", nullable = false)
+ 	@Transient
 	public int getNodeId() {
 		return m_node.getId();
 	}

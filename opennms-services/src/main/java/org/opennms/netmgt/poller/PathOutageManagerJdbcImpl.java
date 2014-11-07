@@ -133,46 +133,38 @@ public class PathOutageManagerJdbcImpl implements PathOutageManager{
      */
     @Override
     public String getPrettyCriticalPath(int nodeID) throws SQLException {
-        final DBUtils d = new DBUtils(PathOutageManagerJdbcImpl.class);
-        String result = NO_CRITICAL_PATH;
-
-        try {
-            Connection conn = DataSourceFactory.getInstance().getConnection();
-            d.watch(conn);
-            PreparedStatement stmt = conn.prepareStatement(GET_CRITICAL_PATH_BY_NODEID);
-            d.watch(stmt);
-            stmt.setInt(1, nodeID);
-            ResultSet rs = stmt.executeQuery();
-            d.watch(rs);
-            while (rs.next()) {
-                result = (rs.getString(1) + " " + rs.getString(2));
-            }
-        } finally {
-            d.cleanUp();
+        String[] path = queryForCriticalPath(nodeID);
+        if (path[0] == null) {
+            return NO_CRITICAL_PATH;
+        } else {
+            return path[0] + " " + path[1];
         }
-
-        return result;
     }
 
-    @Override
-    public String[] getCriticalPath(int nodeId) {
+    private final String[] queryForCriticalPath(int nodeId) {
         final String[] cpath = new String[2];
         Querier querier = new Querier(DataSourceFactory.getInstance(), GET_CRITICAL_PATH_BY_NODEID) {
-    
+
             @Override
             public void processRow(ResultSet rs) throws SQLException {
                 cpath[0] = rs.getString(1);
                 cpath[1] = rs.getString(2);
             }
-    
+
         };
         querier.execute(Integer.valueOf(nodeId));
-    
-        if (cpath[0] == null || cpath[0].equals("")) {
+        return cpath;
+    }
+
+    @Override
+    public String[] getCriticalPath(int nodeId) {
+        final String[] cpath = queryForCriticalPath(nodeId);
+        if (cpath[0] == null || "".equals(cpath[0].trim())) {
+            // If no critical path was located in the table, then use the default critical path
             cpath[0] = OpennmsServerConfigFactory.getInstance().getDefaultCriticalPathIp();
             cpath[1] = "ICMP";
-        }
-        if (cpath[1] == null || cpath[1].equals("")) {
+        } else if (cpath[1] == null || "".equals(cpath[1].trim())) {
+            // If there was no service name in the table, then use the default of ICMP
             cpath[1] = "ICMP";
         }
         return cpath;

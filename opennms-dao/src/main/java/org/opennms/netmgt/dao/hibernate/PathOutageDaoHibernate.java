@@ -69,7 +69,7 @@ public class PathOutageDaoHibernate extends AbstractDaoHibernate<OnmsPathOutage,
         return getHibernateTemplate().execute(new HibernateCallback<List<Integer>>() {
             @Override
             public List<Integer> doInHibernate(Session session) throws HibernateException, SQLException {
-                Query query = session.createQuery("select distinct pathOutage.node.id from OnmsPathOutage as pathOutage left join pathOutage.node as node left join node.ipInterfaces as ipInterfaces where pathOutage.criticalPathIp = :ipAddress and pathOutage.criticalPathServiceName = :serviceName and ipInterfaces.isManaged <> 'D'");
+                Query query = session.createQuery("select distinct pathOutage.node.id from OnmsPathOutage as pathOutage left join pathOutage.node as node left join node.ipInterfaces as ipInterfaces left join ipInterfaces.monitoredServices as monitoredServices where pathOutage.criticalPathIp = :ipAddress and pathOutage.criticalPathServiceName = :serviceName and ipInterfaces.isManaged <> 'D' and monitoredServices.status = 'A'");
                 query.setParameter("ipAddress", InetAddressUtils.str(ipAddress));
                 query.setParameter("serviceName", serviceName);
                 List<Integer> result = (List<Integer>)query.list();
