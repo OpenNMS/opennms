@@ -9,21 +9,21 @@ set -e
 
 case "$1" in
     configure)
-        # Invoke runjava to setup java.conf
-        if [ -x /usr/lib/jvm/java-6-sun/bin/java ]; then
-                /usr/share/opennms/bin/runjava -q -S /usr/lib/jvm/java-6-sun/bin/java || :
-                (grep -v ^JAVA_HOME /etc/default/opennms || : ; echo 'JAVA_HOME=/usr/lib/jvm/java-6-sun') > /etc/default/opennms.new
-                mv /etc/default/opennms.new /etc/default/opennms || :
-        else
-                /usr/share/opennms/bin/runjava -q -S /usr/lib/jvm/java-1.5.0-sun/bin/java || :
-                (grep -v ^JAVA_HOME /etc/default/opennms || : ; echo 'JAVA_HOME=/usr/lib/jvm/java-1.5.0-sun') > /etc/default/opennms.new
-                mv /etc/default/opennms.new /etc/default/opennms || :
-        fi
+        for version in 7 8; do
+            for postfix in oracle sun openjdk; do
+                dir="/usr/lib/jvm/java-$version-$postfix"
+                if [ -x "$dir"/bin/java ]; then
+                    /usr/share/opennms/bin/runjava -q -S "$dir"/bin/java
+                    (grep -v ^JAVA_HOME /etc/default/opennms || : ; echo "JAVA_HOME='$dir'") > /etc/default/opennms.new
+                    mv /etc/default/opennms.new /etc/default/opennms
+                    break 2
+                fi
+            done
+        done
 
-        # clean up the karaf data cache
         if [ -d "/usr/share/opennms/data" ]; then
-		find /usr/share/opennms/data/* -maxdepth 0 -name tmp -prune -o -print | xargs rm -rf
-		find /usr/share/opennms/data/tmp/* -maxdepth 0 -name README -prune -o -print | xargs rm -rf
+            find /usr/share/opennms/data/* -maxdepth 0 -name tmp -prune -o -print | xargs rm -rf
+            find /usr/share/opennms/data/tmp/* -maxdepth 0 -name README -prune -o -print | xargs rm -rf
         fi
 
         echo ""
@@ -33,14 +33,13 @@ case "$1" in
         echo " *** http://www.opennms.org/wiki/Installation:Debian and the"
         echo " *** release notes for details."
         echo ""
-    ;;
+        ;;
     abort-upgrade|abort-remove|abort-deconfigure)
-
-    ;;
+        ;;
     *)
         echo "postinst called with unknown argument \`$1'" >&2
         exit 0
-    ;;
+        ;;
 esac
 
 # dh_installdeb will replace this with shell code automatically

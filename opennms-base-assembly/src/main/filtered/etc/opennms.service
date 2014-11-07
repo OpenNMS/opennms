@@ -1,8 +1,8 @@
 [Unit]
 Description=OpenNMS server
-
-Requires=${install.postgresql.service}.service
-
+Wants=${install.postgresql.service}.service
+Requires=network.target network-online.target
+After=${install.postgresql.service}.service network.target network-online.target
 
 [Service]
 User=root
