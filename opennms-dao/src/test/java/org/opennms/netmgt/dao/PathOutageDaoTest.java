@@ -138,7 +138,9 @@ public class PathOutageDaoTest implements InitializingBean {
         assertNotNull(serviceType);
 
         OnmsMonitoredService monitoredService = new OnmsMonitoredService(ipInterface, serviceType);
+        monitoredService.setStatus("A");
         OnmsMonitoredService newMonitoredService = new OnmsMonitoredService(newIpInterface, serviceType);
+        newMonitoredService.setStatus("A");
 
         OnmsPathOutage outage = new OnmsPathOutage(node, ipInterface.getIpAddress(), monitoredService.getServiceName());
         m_pathOutageDao.save(outage);
