@@ -110,8 +110,8 @@
 
     <feature name="opennms-core-web" description="OpenNMS :: Core :: Web" version="${project.version}">
       <feature>opennms-core</feature>
-      <bundle>mvn:org.apache.httpcomponents/httpcore/${httpcoreVersion}</bundle>
-      <bundle>mvn:org.apache.httpcomponents/httpclient/${httpclientVersion}</bundle>
+      <bundle>mvn:org.apache.httpcomponents/httpcore-osgi/${httpcoreVersion}</bundle>
+      <bundle>mvn:org.apache.httpcomponents/httpclient-osgi/${httpclientVersion}</bundle>
       <bundle>mvn:org.opennms.core/org.opennms.core.web/${project.version}</bundle>
     </feature>
 

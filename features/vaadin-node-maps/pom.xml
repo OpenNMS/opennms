@@ -101,6 +101,8 @@
 				<configuration>
 					<bundles>
 						<bundle>mvn:org.opennms.features/vaadin-node-maps/${project.version}</bundle>
+						<bundle>mvn:org.apache.httpcomponents/httpcore-osgi/${httpcoreVersion}</bundle>
+						<bundle>mvn:org.apache.httpcomponents/httpclient-osgi/${httpclientVersion}</bundle>
 						<bundle>mvn:org.opennms.core/org.opennms.core.web/${project.version}</bundle>
 						<bundle>mvn:org.opennms.features.geocoder/org.opennms.features.geocoder.google/${project.version}</bundle>
 						<bundle>mvn:org.opennms.features.geocoder/org.opennms.features.geocoder.nominatim/${project.version}</bundle>
