@@ -249,12 +249,11 @@ public class DefaultReportService implements ReportService,InitializingBean {
     }
     
     
-    private Map<String,String> paramListToMap(List<Parameter> parameters){
-        Map<String,String> parmMap = new HashMap<String, String>();
-
-        for(Parameter parm : parameters)
+    private Map<String, Object> paramListToMap(List<Parameter> parameters){
+        Map<String,Object> parmMap = new HashMap<>();
+        for(Parameter parm : parameters) {
             parmMap.put(parm.getName(), parm.getValue());
-        
+        }
         return parmMap;
     }
 

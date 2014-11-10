@@ -34,11 +34,12 @@ import java.util.Map;
 import net.sf.jasperreports.engine.JRDataSource;
 import net.sf.jasperreports.engine.JRDataset;
 import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JRValueParameter;
 import net.sf.jasperreports.engine.query.JRAbstractQueryExecuter;
 
 public class JRobinQueryExecutor extends JRAbstractQueryExecuter {
 
-    protected JRobinQueryExecutor(JRDataset dataset, Map<?,?> parametersMap) {
+    protected JRobinQueryExecutor(JRDataset dataset, Map<String, ? extends JRValueParameter> parametersMap) {
         super(dataset, parametersMap);
         parseQuery();
     }

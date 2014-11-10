@@ -30,6 +30,7 @@ package org.opennms.netmgt.jasper.rrdtool;
 
 import java.util.Map;
 
+import net.sf.jasperreports.engine.JRValueParameter;
 import org.opennms.netmgt.jasper.jrobin.JRobinQueryExecutor;
 
 import net.sf.jasperreports.engine.JRDataSource;
@@ -38,7 +39,7 @@ import net.sf.jasperreports.engine.JRException;
 
 public class RrdtoolQueryExecutor extends JRobinQueryExecutor {
 
-	protected RrdtoolQueryExecutor(JRDataset dataset, Map<?,?> parametersMap) {
+	protected RrdtoolQueryExecutor(JRDataset dataset, Map<String, ? extends JRValueParameter> parametersMap) {
 		super(dataset, parametersMap);
 	}
 
