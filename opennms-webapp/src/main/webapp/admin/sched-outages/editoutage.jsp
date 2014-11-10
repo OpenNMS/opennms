@@ -130,13 +130,13 @@
 
     private static final String GET_NODES_IN_PATH = "SELECT DISTINCT pathoutage.nodeid FROM pathoutage, ipinterface WHERE pathoutage.criticalpathip=? AND pathoutage.nodeid=ipinterface.nodeid AND ipinterface.ismanaged!='D' ORDER BY nodeid";
 
-    private static Set<Integer> getDependencyNodesByCriticalPath(String criticalpathip) throws SQLException {
-	    return PathOutageManagerJdbcImpl.getInstance().getDependencyNodesByCriticalPath(criticalpathip);
+    private static Set<Integer> getAllNodesDependentOnAnyServiceOnInterface(String criticalpathip) throws SQLException {
+	    return PathOutageManagerJdbcImpl.getInstance().getAllNodesDependentOnAnyServiceOnInterface(criticalpathip);
         
     }
 	
-	private static Set<Integer> getDependencyNodesByNodeId(int nodeid) throws SQLException {
-	    return PathOutageManagerJdbcImpl.getInstance().getDependencyNodesByNodeId(nodeid);
+	private static Set<Integer> getAllNodesDependentOnAnyServiceOnNode(int nodeid) throws SQLException {
+	    return PathOutageManagerJdbcImpl.getInstance().getAllNodesDependentOnAnyServiceOnNode(nodeid);
 	}
 	
 	public void sendOutagesChangedEvent() throws ServletException {
@@ -457,7 +457,7 @@ Could not find an outage to edit because no outage name parameter was specified 
 					int newNodeId = WebSecurityUtils.safeParseInt(newNode);
 					addNode(theOutage, newNodeId);
 					if (request.getParameter("addPathOutageNodeRadio") != null) {
-						for (Integer pathOutageNodeid: getDependencyNodesByNodeId(newNodeId)) {
+						for (Integer pathOutageNodeid: getAllNodesDependentOnAnyServiceOnNode(newNodeId)) {
 						    addNode(theOutage,pathOutageNodeid.intValue());
 						}
 					}
@@ -472,7 +472,7 @@ Could not find an outage to edit because no outage name parameter was specified 
 					newInterface.setAddress(newIface);
 					addInterface(theOutage, newInterface);
 					if (request.getParameter("addPathOutageInterfaceRadio") != null) {
-						for (Integer pathOutageNodeid: getDependencyNodesByCriticalPath(newIface)) {
+						for (Integer pathOutageNodeid: getAllNodesDependentOnAnyServiceOnInterface(newIface)) {
 						    addNode(theOutage,pathOutageNodeid.intValue());
 						}
 					}

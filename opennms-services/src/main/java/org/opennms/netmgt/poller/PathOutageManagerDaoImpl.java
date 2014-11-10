@@ -291,7 +291,7 @@ public class PathOutageManagerDaoImpl implements PathOutageManager{
     }
 
     @Override
-    public Set<Integer> getDependencyNodesByCriticalPath(String criticalPathip) {
+    public Set<Integer> getAllNodesDependentOnAnyServiceOnInterface(String criticalPathip) {
        	Set<Integer> depNodes = new TreeSet<Integer>();
     	    	
     	final org.opennms.core.criteria.Criteria crit = new org.opennms.core.criteria.Criteria(OnmsPathOutage.class)
@@ -314,7 +314,7 @@ public class PathOutageManagerDaoImpl implements PathOutageManager{
     }
 
     @Override
-    public Set<Integer> getDependencyNodesByNodeId(int nodeId) {
+    public Set<Integer> getAllNodesDependentOnAnyServiceOnNode(int nodeId) {
     	Set<Integer> depNodes = new TreeSet<Integer>();
     	
     	final org.opennms.core.criteria.Criteria crit = new org.opennms.core.criteria.Criteria(OnmsPathOutage.class) 
