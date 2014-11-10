@@ -2,22 +2,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -140,23 +140,34 @@
 				&& input !== "" && input !== false;
 	}
 
+    function getVersion(id) {
+        var element = document.getElementById(id);
+        if (element == null || element.options == null || element.selectedIndex == null) {
+            return "v2c";
+        }
+
+        return element.options[element.selectedIndex].value;
+    }
+
 	/*
 	 * On Version change only the specificy section is shown.
 	 */
 	function onVersionChange() {
 		var versionElements = new Array(document.getElementById("v1v2"), document.getElementById("v3"));
 		var selectedElement = null;
+        var version = getVersion("version");
+
 		//  determine selected element
-		if (document.getElementById("version").value == "v1" || document.getElementById("version").value == "v2c")
-			selectedElement = document.getElementById("v1v2");
-		if (document.getElementById("version").value == "v3")
-			selectedElement = document.getElementById("v3");
+        if (version == "v1" || version == "v2c")
+            selectedElement = document.getElementById("v1v2");
+        if (version == "v3")
+            selectedElement = document.getElementById("v3");
 
 		// hide all not selected elements and show selected Element
 		for ( var elementIndex in versionElements) {
 			var element = versionElements[elementIndex];
 			if (element == selectedElement) { // show
-				element.style.visibility = null;
+				element.style.visibility = "visible";
 				element.style.display = "block";
 			} else { // hide
 				element.style.visibility = "hidden";

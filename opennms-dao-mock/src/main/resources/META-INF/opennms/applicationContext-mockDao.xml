@@ -158,6 +158,9 @@
     <bean id="nodeDao" class="org.opennms.netmgt.dao.mock.MockNodeDao" />
     <onmsgi:service interface="org.opennms.netmgt.dao.api.NodeDao" ref="nodeDao" />
 
+    <bean id="requisitionedCategoryAssociationDao" class="org.opennms.netmgt.dao.mock.MockRequisitionedCategoryAssociationDao" />
+    <onmsgi:service interface="org.opennms.netmgt.dao.api.RequisitionedCategoryAssociationDao" ref="requisitionedCategoryAssociationDao" />
+
     <bean id="vlanDao" class="org.opennms.netmgt.dao.mock.MockVlanDao" />
     <onmsgi:service interface="org.opennms.netmgt.dao.api.VlanDao" ref="vlanDao" />
 

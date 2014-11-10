@@ -49,7 +49,7 @@ Name:			opennms
 Summary:		Enterprise-grade Network Management Platform (Easy Install)
 Release:		%releasenumber
 Version:		%version
-License:		LGPL/GPL
+License:		LGPL/AGPL
 Group:			Applications/System
 BuildArch:		noarch
 
@@ -223,6 +223,8 @@ Requires(pre):	opennms-plugin-protocol-xml
 Requires:	opennms-plugin-protocol-xml
 Requires(pre):	opennms-plugin-protocol-xmp
 Requires:	opennms-plugin-protocol-xmp
+Requires(pre):	opennms-plugin-collector-vtdxml-handler
+Requires:	opennms-plugin-collector-vtdxml-handler
 
 %description plugins
 This installs all optional plugins for OpenNMS.
@@ -455,6 +457,7 @@ The Juniper JCA collector provides a collector plugin for Collectd to collect da
 %package plugin-collector-vtdxml-handler
 Summary:	VTD-XML Collection Handler for OpenNMS
 Group:		Applications/System
+License:	GPL
 Requires(pre):	opennms-plugin-protocol-xml = %{version}-%{release}
 Requires:	opennms-plugin-protocol-xml = %{version}-%{release}
 
@@ -555,7 +558,7 @@ END
 %if %{with_docs}
 
 mkdir -p $RPM_BUILD_ROOT%{_docdir}/%{name}-%{version}
-cp -pr $RPM_BUILD_DIR/%{name}-%{version}-%{release}/opennms-doc/target/docbkx/html/* $RPM_BUILD_ROOT%{_docdir}/%{name}-%{version}/
+tar -xvzf $RPM_BUILD_DIR/%{name}-%{version}-%{release}/opennms-doc/guide-all/target/*.tar.gz -C $RPM_BUILD_ROOT%{_docdir}/%{name}-%{version}/
 rm -rf $RPM_BUILD_ROOT%{instprefix}/docs
 cp README* $RPM_BUILD_ROOT%{instprefix}/etc/
 rm -rf $RPM_BUILD_ROOT%{instprefix}/etc/README
@@ -579,9 +582,6 @@ install -m 640 $RPM_BUILD_ROOT%{instprefix}/contrib/remote-poller/remote-poller.
 rm -rf $RPM_BUILD_ROOT%{instprefix}/contrib/remote-poller
 
 rm -rf $RPM_BUILD_ROOT%{instprefix}/lib/*.tar.gz
-
-install -d -m 755 $RPM_BUILD_ROOT%{_libdir}/systemd/system
-install -m 655 $RPM_BUILD_ROOT%{instprefix}/etc/opennms.service $RPM_BUILD_ROOT%{_libdir}/systemd/system/
 
 cd $RPM_BUILD_ROOT
 
@@ -717,7 +717,6 @@ rm -rf $RPM_BUILD_ROOT
 %files core -f %{_tmppath}/files.main
 %defattr(664 root root 775)
 %attr(755,root,root)	%{profiledir}/%{name}.sh
-%attr(755,root,root)	%{_libdir}/systemd/system/opennms.service
 %attr(755,root,root) %{logdir}
 			%{instprefix}/data
 			%{instprefix}/deploy
@@ -841,13 +840,13 @@ rm -rf $RPM_BUILD_ROOT
 %files plugin-protocol-xml
 %defattr(664 root root 775)
 %config(noreplace) %{instprefix}/etc/xml-*.xml
-%config(noreplace) %{instprefix}/etc/*datacollection*/3gpp*
-%config(noreplace) %{instprefix}/etc/snmp-graph.properties.d/3gpp*
+%config(noreplace) %{instprefix}/etc/examples/3gpp-juniper/xml-*.xml
+%config(noreplace) %{instprefix}/etc/examples/3gpp-juniper/*datacollection*/3gpp*
+%config(noreplace) %{instprefix}/etc/examples/3gpp-juniper/snmp-graph.properties.d/3gpp*
+%config(noreplace) %{instprefix}/etc/examples/opennms-mx4j/*
 %{instprefix}/lib/org.opennms.protocols.xml-*.jar
-%attr(755,root,root) %{instprefix}/contrib/xml-collector/*.pl
+%attr(755,root,root) %{instprefix}/contrib/xml-collector/3gpp*
 %{sharedir}/etc-pristine/xml-*.xml
-%{sharedir}/etc-pristine/*datacollection*/3gpp*
-%{sharedir}/etc-pristine/snmp-graph.properties.d/3gpp*
 
 %files plugin-protocol-xmp
 %defattr(664 root root 775)
@@ -894,6 +893,16 @@ fi
 if [ -n "$DEBUG" ]; then
 	env | grep RPM_INSTALL_PREFIX | sort -u
 fi
+
+for prefix in lib lib64; do
+	if [ -d "/usr/$prefix/systemd" ]; then
+		SYSTEMDDIR="/usr/$prefix/systemd/system"
+		printf -- "- installing opennms.service into $SYSTEMDDIR... "
+		install -d -m 755 "$SYSTEMDDIR"
+		install -m 655 "%{instprefix}/etc/opennms.service" "$SYSTEMDDIR"/
+		echo "done"
+	fi
+done
 
 if [ "$RPM_INSTALL_PREFIX0/logs" != "$RPM_INSTALL_PREFIX2" ]; then
 	printf -- "- making symlink for $RPM_INSTALL_PREFIX0/logs... "

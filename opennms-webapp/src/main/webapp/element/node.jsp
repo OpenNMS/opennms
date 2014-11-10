@@ -2,22 +2,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -30,6 +30,7 @@
 --%>
 
 <%@page import="org.opennms.web.enlinkd.LldpElementNode"%>
+<%@page import="org.opennms.web.enlinkd.CdpElementNode"%>
 <%@page import="org.opennms.web.enlinkd.OspfElementNode"%>
 <%@page import="org.opennms.web.enlinkd.IsisElementNode"%>
 <%@page import="org.opennms.web.enlinkd.BridgeElementNode"%>
@@ -169,6 +170,7 @@
     }
     
     nodeModel.put("lldp",    EnLinkdElementFactory.getInstance(getServletContext()).getLldpElement(nodeId));
+    nodeModel.put("cdp",    EnLinkdElementFactory.getInstance(getServletContext()).getCdpElement(nodeId));
     nodeModel.put("ospf",    EnLinkdElementFactory.getInstance(getServletContext()).getOspfElement(nodeId));
     nodeModel.put("isis",    EnLinkdElementFactory.getInstance(getServletContext()).getIsisElement(nodeId));
     nodeModel.put("bridges", EnLinkdElementFactory.getInstance(getServletContext()).getBridgeElements(nodeId));
@@ -331,7 +333,16 @@ function confirmAssetEdit() {
     <li class="o-menuitem">
       <a href="<c:out value="${hardwareLink}"/>">Hardware Info</a>
     </li>
- 
+
+    <c:if test="${fn:length( model.intfs ) >= 10}">
+      <c:url var="intfAvailabilityLink" value="element/availability.jsp">
+        <c:param name="node" value="${model.id}"/>
+      </c:url>
+      <li class="o-menuitem">
+        <a href="<c:out value="${intfAvailabilityLink}"/>">Availability</a>
+      </li>
+    </c:if>
+
     <c:if test="${! empty model.statusSite}">
       <c:url var="siteLink" value="siteStatusView.htm">
         <c:param name="statusSite" value="${model.statusSite}"/>
@@ -487,6 +498,29 @@ function confirmAssetEdit() {
     </table>
   </c:if>
 
+  <!-- Cdp box, if info available --> 
+  <c:if test="${! empty model.cdp }">
+    <h3 class="o-box">Cdp Information</h3>
+    <table class="o-box">
+      <tr>
+        <th>global device id</th>
+        <td>${model.cdp.cdpGlobalDeviceId}</td>
+      </tr>
+      <tr>
+        <th>global run</th>
+        <td>${model.cdp.cdpGlobalRun}</td>
+      </tr>
+      <tr>
+        <th>create time</th>
+        <td>${model.cdp.cdpCreateTime}</td>
+      </tr>
+      <tr>
+        <th>last poll time</th>
+        <td>${model.cdp.cdpLastPollTime}</td>
+      </tr>
+    </table>
+  </c:if>
+
   <!-- Bridge box if available -->
   <c:if test="${! empty model.bridges}">
     <c:forEach items="${model.bridges}" var="bridge">
@@ -615,12 +649,12 @@ function confirmAssetEdit() {
     </div>    
   </c:if>
 	
-	<!-- Availability box -->
-	<c:if test="${fn:length( model.intfs ) < 10}">
+  <!-- Availability box -->
+  <c:if test="${fn:length( model.intfs ) < 10}">
     <jsp:include page="/includes/nodeAvailability-box.jsp" flush="false" >
       <jsp:param name="node" value="${model.id}" />
     </jsp:include>
-    </c:if> 
+  </c:if>
 
   <script type="text/javascript">
     var nodeId = ${model.id}

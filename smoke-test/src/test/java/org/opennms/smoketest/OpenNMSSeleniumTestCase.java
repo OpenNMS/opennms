@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2013 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -29,10 +29,32 @@
 package org.opennms.smoketest;
 
 import java.io.File;
+import java.io.IOException;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
 
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpHost;
+import org.apache.http.HttpResponse;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.AuthCache;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.CredentialsProvider;
+import org.apache.http.client.ResponseHandler;
+import org.apache.http.client.methods.HttpDelete;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpRequestBase;
+import org.apache.http.client.protocol.HttpClientContext;
+import org.apache.http.impl.auth.BasicScheme;
+import org.apache.http.impl.client.BasicAuthCache;
+import org.apache.http.impl.client.BasicCredentialsProvider;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.openqa.selenium.WebDriver;
@@ -51,6 +73,10 @@ public class OpenNMSSeleniumTestCase extends SeleneseTestBase {
     protected static final Logger LOG = LoggerFactory.getLogger(OpenNMSSeleniumTestCase.class);
     protected static final long LOAD_TIMEOUT = 60000;
     protected static final String BASE_URL = "http://localhost:8980/";
+    protected static final String REQUISITION_NAME = "SeleniumTestGroup";
+    protected static final String USER_NAME = "SmokeTestUser";
+    protected static final String GROUP_NAME = "SmokeTestGroup";
+
     private WebDriver m_driver = null;
     private static final boolean usePhantomJS = Boolean.getBoolean("smoketest.usePhantomJS");
 
@@ -87,6 +113,11 @@ public class OpenNMSSeleniumTestCase extends SeleneseTestBase {
         LOG.debug("Using driver: {}", m_driver);
 
         selenium = new WebDriverBackedSelenium(m_driver, BASE_URL);
+        // Change the timeout from the default of 30 seconds to 60 seconds
+        // since we have to launch the browser and visit the front page of
+        // the OpenNMS web UI in this amount of time and on the Bamboo
+        // machines, 30 seconds is cutting it close. :)
+        selenium.setTimeout("60000");
         selenium.open("/opennms/login.jsp");
         selenium.type("name=j_username", "admin");
         selenium.type("name=j_password", "admin");
@@ -153,6 +184,11 @@ public class OpenNMSSeleniumTestCase extends SeleneseTestBase {
         LOG.debug("clickAndVerifyText({}, {})", pattern, expectedText);
         clickAndWait(pattern);
         assertTrue("'" + expectedText + "' must exist in page text: " + selenium.getHtmlSource(), selenium.isTextPresent(expectedText));
+    }
+
+    protected void goToMainPage() {
+        selenium.open("/opennms");
+        waitForPageToLoad();
     }
 
     protected void goBack() {
@@ -245,5 +281,62 @@ public class OpenNMSSeleniumTestCase extends SeleneseTestBase {
         } else if (selenium.isElementPresent("//button[contains(text(), 'OK')]")) {
             selenium.click("//button[contains(text(), 'OK')]");
         }
+    }
+
+    private void doRequest(final HttpRequestBase request) throws ClientProtocolException, IOException, InterruptedException {
+        final CountDownLatch waitForCompletion = new CountDownLatch(1);
+
+        final URI uri = request.getURI();
+        final HttpHost targetHost = new HttpHost(uri.getHost(), uri.getPort(), uri.getScheme());
+        CredentialsProvider credsProvider = new BasicCredentialsProvider();
+        credsProvider.setCredentials(new AuthScope(targetHost.getHostName(), targetHost.getPort()), new UsernamePasswordCredentials("admin", "admin"));
+        AuthCache authCache = new BasicAuthCache();
+        // Generate BASIC scheme object and add it to the local auth cache
+        BasicScheme basicAuth = new BasicScheme();
+        authCache.put(targetHost, basicAuth);
+
+        // Add AuthCache to the execution context
+        HttpClientContext context = HttpClientContext.create();
+        context.setCredentialsProvider(credsProvider);
+        context.setAuthCache(authCache);
+
+        final CloseableHttpClient client = HttpClients.createDefault();
+
+        final ResponseHandler<String> responseHandler = new ResponseHandler<String>() {
+            @Override
+            public String handleResponse(final HttpResponse response) throws ClientProtocolException, IOException {
+                try {
+                    final int status = response.getStatusLine().getStatusCode();
+                    // 404 because it's OK if it's already not there
+                    if (status >= 200 && status < 300 || status == 404) {
+                        final HttpEntity entity = response.getEntity();
+                        return entity != null ? EntityUtils.toString(entity) : null;
+                    } else {
+                        throw new ClientProtocolException("Unexpected response status: " + status);
+                    }
+                } finally {
+                    waitForCompletion.countDown();
+                }
+            }
+        };
+
+        client.execute(targetHost, request, responseHandler, context);
+
+        waitForCompletion.await();
+        client.close();
+    }
+
+    protected void deleteTestRequisition() throws Exception {
+        doRequest(new HttpDelete(BASE_URL + "/opennms/rest/requisitions/" + REQUISITION_NAME));
+        doRequest(new HttpDelete(BASE_URL + "/opennms/rest/requisitions/deployed/" + REQUISITION_NAME));
+        doRequest(new HttpGet(BASE_URL + "/opennms/rest/requisitions"));
+    }
+
+    protected void deleteTestUser() throws Exception {
+        doRequest(new HttpDelete(BASE_URL + "/opennms/rest/users/" + USER_NAME));
+    }
+    
+    protected void deleteTestGroup() throws Exception {
+        doRequest(new HttpDelete(BASE_URL + "/opennms/rest/groups/" + GROUP_NAME));
     }
 }

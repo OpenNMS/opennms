@@ -1981,7 +1981,14 @@
       &lt;p&gt;Reason: %parm[reason]%.&lt;/p&gt;
     </logmsg>
     <severity>Minor</severity>
+    <!--
+    If there are several equipments that don't support the ENTITY-MIB, this event could be very noisy
+    in terms of alarms, considering that it can be triggered every time the node is updated.
+    For this reason, the alarm-data should not be used.
+    -->
+    <!-- 
     <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="true" />
+    -->
   </event>
   <event>
     <uei>uei.opennms.org/internal/discovery/hardwareInventorySuccessful</uei>
@@ -1993,8 +2000,15 @@
       &lt;p&gt;The hardware discovery on node %nodelabel% (IP address %interface%) has been completed successfuly.&lt;/p&gt;
     </logmsg>
     <severity>Normal</severity>
+    <!--
+    If there are several equipments that don't support the ENTITY-MIB, this event could be very noisy
+    in terms of alarms, considering that it can be triggered every time the node is updated.
+    For this reason, the alarm-data should not be used.
+    -->
+    <!--
     <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false"
                 clear-key="uei.opennms.org/internal/discovery/hardwareInventoryFailed:%dpname%:%nodeid%:%interface%"/>
+    -->
   </event>
 
   <event-file>events/Translator.default.events.xml</event-file>
@@ -2087,7 +2101,14 @@
   <event-file>events/F5.events.xml</event-file>
   <event-file>events/fcmgmt.events.xml</event-file>
   <event-file>events/Fore.events.xml</event-file>
-  <event-file>events/Fortinet.events.xml</event-file>
+  <event-file>events/Fortinet-FortiCore-v52.events.xml</event-file>
+  <event-file>events/Fortinet-FortiGate-v52.events.xml</event-file>
+  <event-file>events/Fortinet-FortiMail.events.xml</event-file>
+  <event-file>events/Fortinet-FortiManager-Analyzer.events.xml</event-file>
+  <event-file>events/Fortinet-FortiRecorder.events.xml</event-file>
+  <event-file>events/Fortinet-FortiVoice.events.xml</event-file>
+  <event-file>events/Fortinet-FortiCore-v4.events.xml</event-file>
+  <event-file>events/Fortinet-FortiGate-v4.events.xml</event-file>
   <event-file>events/FoundryNetworks.events.xml</event-file>
   <event-file>events/FoundryNetworks2.events.xml</event-file>
   <event-file>events/FujitsuSiemens.events.xml</event-file>

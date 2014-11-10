@@ -2,22 +2,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -29,6 +29,7 @@
 
 --%>
 
+<%@ page import="org.opennms.web.api.Authentication" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
@@ -55,11 +56,15 @@
 
 <c:choose>
 	<c:when test="${empty pagedListHolder.pageList}">
-		<p>The database report schedule is empty.</p>
+        <h3>Report Schedule List</h3>
+        <div class="boxWrapper">
+            <p>The database report schedule is empty.</p>
+        </div>
+
 	</c:when>
 
 	<c:otherwise>
-		<form:form commandName="ManageReportScheduleCommand">
+		<form:form commandName="command">
 		<element:pagedList pagedListHolder="${pagedListHolder}"
 			pagedLink="${pagedLink}" />
 
@@ -70,7 +75,9 @@
 					<th>Trigger Name</th>
 					<th>Next fire time</th>
 					<th>Report Parameters</th>
+                    <% if (!request.isUserInRole(Authentication.ROLE_READONLY)) { %>
 					<th>Select</th>
+                    <% } %>
 				</tr>
 			</thead>
 			<%-- // show only current page worth of data --%>
@@ -92,11 +99,36 @@
 							<tr><th>${entry.key}</th><td>${entry.value}</td></tr>
 						</c:forEach>
 					</table></td>
+                    <% if (!request.isUserInRole(Authentication.ROLE_READONLY)) { %>
 					<td><form:checkbox path="triggerNames" value="${trigger.triggerName}"/></td>
+                    <% } %>
 				</tr>
 			</c:forEach>
 		</table>
-		<input type="submit" value="unschedule selected jobs"/>
+        <% if (!request.isUserInRole(Authentication.ROLE_READONLY)) { %>
+            <div class="pagination">
+                <a onClick="toggle(true, 'triggerNames')">Select all</a> /
+                <a onClick="toggle(false, 'triggerNames')">Deselect all</a>
+            </div>
+        <% } %>
+
+        <% // if deletion was successful %>
+        <c:if test="${not empty success}">
+            <div class="alert-success" style="clear:both">
+                    ${success}
+            </div>
+        </c:if>
+
+        <% // If user is not allowed to delete %>
+        <c:if test="${not empty error}">
+            <div class="alert-error" style="clear:both">
+                    ${error}
+            </div>
+        </c:if>
+        <% if (!request.isUserInRole(Authentication.ROLE_READONLY)) { %>
+            <input type="submit" value="unschedule selected jobs"/>
+        <% } %>
+
 	</form:form>
 	</c:otherwise>
 </c:choose>

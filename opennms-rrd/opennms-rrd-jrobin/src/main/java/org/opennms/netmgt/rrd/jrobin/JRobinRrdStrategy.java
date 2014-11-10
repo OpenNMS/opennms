@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2004-2014 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -745,9 +745,9 @@ public class JRobinRrdStrategy implements RrdStrategy<RrdDef,RrdDb> {
             if (argValue.length > 3) {
                 LOG.debug("Argument '{}' includes extra data, ignoring the extra data.", argParm);
             }
-	    int newPointSize = 0;
+	    float newPointSize = 0f;
 	    try {
-	        newPointSize = Integer.parseInt(argValue[1]);
+	        newPointSize = Integer.parseInt(argValue[1]) * 1.5f;
 	    } catch (final NumberFormatException e) {
 	        LOG.warn("Failed to parse {} as an integer: {}", argValue[1], e.getMessage(), e);
 	    }
@@ -776,7 +776,7 @@ public class JRobinRrdStrategy implements RrdStrategy<RrdDef,RrdDb> {
 
 	        // If we have a font specified, try to get a font object for it.
 	        if (argValue.length == 3 && argValue[2] != null && argValue[2].length() > 0) {
-	            final int origPointSize = font.getSize();
+	            final float origPointSize = font.getSize2D();
 
                     // Get our new font
 	            font = Font.decode(argValue[2]);
@@ -784,13 +784,13 @@ public class JRobinRrdStrategy implements RrdStrategy<RrdDef,RrdDb> {
 	            // Font.decode() returns a 12 px font size, by default unless you specify
 	            // a font size in the font name pattern.
 	            if (newPointSize > 0) {
-	                font = font.deriveFont((float) newPointSize);
+	                font = font.deriveFont(newPointSize);
 	            } else {
-	                font = font.deriveFont((float) origPointSize);
+	                font = font.deriveFont(origPointSize);
 	            }
 	        } else {
 	            // If we don't have a font name specified, then we just adjust the font size.
-	            font = font.deriveFont((float) newPointSize);
+	            font = font.deriveFont(newPointSize);
 	        }
 
 	        if (fontTag == RrdGraphDef.FONTTAG_DEFAULT) {

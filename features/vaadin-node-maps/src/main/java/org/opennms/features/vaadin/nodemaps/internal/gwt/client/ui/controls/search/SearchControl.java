@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2013 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
+ * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -35,10 +35,10 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
 
+import org.opennms.features.vaadin.nodemaps.internal.gwt.client.ComponentTracker;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.JSNodeMarker;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.NodeMarker;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.OpenNMSEventManager;
-import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.ComponentInitializedEvent;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.CutEvent;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.FilteredMarkersUpdatedEvent;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.FilteredMarkersUpdatedEventHandler;
@@ -48,7 +48,6 @@ import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.SearchEven
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.SearchStringSetEvent;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.SearchStringSetEventHandler;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.ui.MarkerContainer;
-import org.opennms.features.vaadin.nodemaps.internal.gwt.client.ui.controls.alarm.AlarmControl;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.shared.Util;
 
 import com.google.gwt.cell.client.AbstractSafeHtmlCell;
@@ -102,13 +101,15 @@ public class SearchControl extends AbsolutePanel implements FilteredMarkersUpdat
     private SingleSelectionModel<NodeMarker> m_selectionModel;
     private Set<Widget> m_updated = new HashSet<Widget>();
 
-    private OpenNMSEventManager m_eventManager;
+    private final OpenNMSEventManager m_eventManager;
+    private final ComponentTracker m_componentTracker;
 
-    public SearchControl(final MarkerContainer markerContainer, final Widget root, final OpenNMSEventManager eventManager) {
+    public SearchControl(final MarkerContainer markerContainer, final Widget root, final OpenNMSEventManager eventManager, final ComponentTracker componentTracker) {
         super();
         LOG.info("new SearchControl()");
 
         m_eventManager = eventManager;
+        m_componentTracker = componentTracker;
 
         m_markerContainer = markerContainer;
         m_selectionModel = new SingleSelectionModel<NodeMarker>();
@@ -166,8 +167,7 @@ public class SearchControl extends AbsolutePanel implements FilteredMarkersUpdat
         m_inputBox.addHandler(searchEventHandler, PasteEvent.getType());
         m_inputBox.addHandler(searchEventHandler, SearchEvent.getType());
 
-        //refresh();
-        m_eventManager.fireEvent(new ComponentInitializedEvent(AlarmControl.class.getName()));
+        m_componentTracker.ready(getClass());
 
         return this.getElement();
     }
@@ -198,7 +198,7 @@ public class SearchControl extends AbsolutePanel implements FilteredMarkersUpdat
     }
 
     private void initializeSearchStateManager() {
-        m_stateManager = new SearchStateManager(m_inputBox, m_historyWrapper, m_eventManager) {
+        m_stateManager = new SearchStateManager(m_inputBox, m_historyWrapper, m_eventManager, m_componentTracker) {
             @Override
             public void refresh() {
                 LOG.info("SearchControl.SearchStateManager.refresh()");
@@ -404,6 +404,10 @@ public class SearchControl extends AbsolutePanel implements FilteredMarkersUpdat
             }
         }
         LOG.info("SearchControl.replaceSearchWith(" + newSearchString + "): unmodified.");
+    }
+
+    public String getSearchString() {
+        return m_inputBox.getValue();
     }
 
     @Override public void onFilteredMarkersUpdatedEvent(final FilteredMarkersUpdatedEvent event) {

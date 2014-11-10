@@ -13,6 +13,7 @@
     <collect>
       <includeGroup>foundry-sys</includeGroup>
       <includeGroup>mib2-X-interfaces</includeGroup>
+      <includeGroup>mib2-X-interfaces-pkts</includeGroup>
     </collect>
   </systemDef>
   <systemDef name="Foundry Networks BigIron 4000">
@@ -20,6 +21,7 @@
     <collect>
       <includeGroup>foundry-sys</includeGroup>
       <includeGroup>mib2-X-interfaces</includeGroup>
+      <includeGroup>mib2-X-interfaces-pkts</includeGroup>
       <includeGroup>ietf-bgp4-peer-stats</includeGroup>
     </collect>
   </systemDef>
@@ -28,6 +30,7 @@
     <collect>
       <includeGroup>foundry-sys</includeGroup>
       <includeGroup>mib2-X-interfaces</includeGroup>
+      <includeGroup>mib2-X-interfaces-pkts</includeGroup>
       <includeGroup>ietf-bgp4-peer-stats</includeGroup>
     </collect>
   </systemDef>
@@ -36,6 +39,7 @@
     <collect>
       <includeGroup>foundry-sys</includeGroup>
       <includeGroup>mib2-X-interfaces</includeGroup>
+      <includeGroup>mib2-X-interfaces-pkts</includeGroup>
       <includeGroup>ietf-bgp4-peer-stats</includeGroup>
     </collect>
   </systemDef>

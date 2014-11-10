@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -96,28 +96,28 @@ public class DefaultPluginRegistry implements PluginRegistry, InitializingBean {
     }
     
     private static void debug(String format, Object... args) {
-        LOG.debug(String.format(format, args));
+        LOG.debug(format, args);
     }
     
     private static void info(String format, Object... args) {
-        LOG.info(String.format(format, args));
+        LOG.info(format, args);
     }
     
     private static void error(Throwable cause, String format, Object... args) {
         if (cause == null) {
-            LOG.error(String.format(format, args));
+            LOG.error(format, args);
         } else {
-            LOG.error(String.format(format, args), cause);
+            LOG.error(format, args, cause);
         }
     }
     
     private <T> void addAllExtensions(Collection<T> extensions, Class<?>... extensionPoints) {
         if (extensions == null || extensions.isEmpty()) {
-            info("Found NO Extensions for ExtensionPoints %s", Arrays.toString(extensionPoints));
+            info("Found NO Extensions for ExtensionPoints {}", Arrays.toString(extensionPoints));
             return;
         }
         for(T extension : extensions) {
-            info("Register Extension %s for ExtensionPoints %s", extension, Arrays.toString(extensionPoints));
+            info("Register Extension {} for ExtensionPoints {}", extension, Arrays.toString(extensionPoints));
             m_serviceRegistry.register(extension, extensionPoints);
         }
     }
@@ -143,7 +143,7 @@ public class DefaultPluginRegistry implements PluginRegistry, InitializingBean {
         try {
             wrapper.setPropertyValues(parameters);
         } catch (BeansException e) {
-            error(e, "Could not set properties on report definition: %s", e.getMessage());
+            error(e, "Could not set properties on report definition: {}", e.getMessage());
         }
         
         return pluginInstance;
@@ -156,7 +156,7 @@ public class DefaultPluginRegistry implements PluginRegistry, InitializingBean {
     private <T> T beanWithNameOfType(String beanName, Class<T> pluginClass) {
         Map<String, T> beans = beansOfType(pluginClass);
         T bean = beans.get(beanName);
-        if (bean != null) debug("Found bean %s with name %s of type %s", bean, beanName, pluginClass);
+        if (bean != null) debug("Found bean {} with name {} of type {}", bean, beanName, pluginClass);
         return bean;
     }
     

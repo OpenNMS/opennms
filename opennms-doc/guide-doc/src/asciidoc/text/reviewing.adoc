@@ -1,0 +1,60 @@
+
+[[doc-guidelines-reviewing]]
+== Reviewing a Documentation Contribution
+
+Reviews help to improve the quality of code or documentation.
+As a reviewer keep in mind, you are looking in a result, somebody spent free time and effort in the contribution.
+Treat contributions with respect.
+Open _Pull Requests_ in the OpenNMS repository can be found here: https://github.com/OpenNMS/opennms/pulls.
+
+To merge a _Pull Request_ you need commit permissions to the OpenNMS repository, i.e. _OGP_ or members of the OpenNMS Group.
+
+You have basically the following possibilities reviewing a contribution:
+
+* Everything is perfect and you there is no change necessary you can just merge the pull request and set the JIRA issue to status closed.
+* There are changes necessary, in this case comment the lines in the pull request directly and follow up the conversation there.
+* Bigger conceptual changes necessary or information out of reach for the contributor, you can provide a pull request back and give
+  the contributor a change working your additional information in.
+* Reject the pull request, cause it is not possible for any reason to get the code in the official code base.
+
+The following sections describe the workflow for reviewing a pull request for documentation.
+
+=== Step 1: Formal check, is everything there
+
+Every Pull Request should have in the first comment the following content:
+
+* Comment with the backlink to the JIRA issue and a Todo list for the review, see below
+
+[source]
+----
+JIRA: http://issues.opennms.org/browse/NMS-6698
+
+ - This is optional, if you migrate from an existing Wiki, the link to the Wiki page you migrate
+
+Todo Review:
+- [ ] Typo and grammar
+- [ ] Formatting and conventions
+- [ ] Content
+----
+
+* The JIRA issue should be in status "Resolved"
+
+=== Step 2: Review criterias
+
+. Check for typos and grammar
+. Check <<doc-guidelines-conventions, Conventions for text formatting>>
+. Check if the contribution is complete and technical correct
+
+Check the marks for the steps you were able to finish.
+
+NOTE: You can't know everything.
+It will happen, somebody documents a behavior somebody doesn't know.
+Don't hesitate to ask in the OpenNMS mailing list or IRC channels to clarify issues.
+If nobody knows the correct behavior don't get blocked, make a warning note and merge it.
+A bug can be created if the described behavior doesn't work.
+
+=== Step 3: Merge contribution to official code base
+
+. Merge the pull request
+. Change JIRA status from _Resolved_ to _Closed_
+. Check if the build in Bamboo and the deployment was ok

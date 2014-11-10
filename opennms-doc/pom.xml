@@ -1,92 +1,110 @@
 <?xml version="1.0"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>opennms</artifactId>
-    <version>1.13.5-SNAPSHOT</version>
+    <version>15.0.0-SNAPSHOT</version>
   </parent>
-  <artifactId>opennms-doc</artifactId>
+  <groupId>org.opennms.doc</groupId>
+  <artifactId>parent</artifactId>
   <packaging>pom</packaging>
-  <name>OpenNMS Documentation</name>
-  <description>Various Guides for using OpenNMS</description>
+  <name>OpenNMS :: Documentation</name>
+  <description>Official documentation</description>
+  <modules>
+    <module>guide-doc</module>
+    <module>guide-install</module>
+    <module>guide-user</module>
+    <module>guide-development</module>
+    <module>guide-admin</module>
+    <module>releasenotes</module>
+    <module>guide-all</module>
+  </modules>
+  <properties>
+    <asciidoc.source.directory>${basedir}/src/asciidoc</asciidoc.source.directory>
+    <asciidoc.output.directory>${basedir}/target/generated-docs</asciidoc.output.directory>
+    <asciidoc.images.directory>images</asciidoc.images.directory>
+  </properties>
+
   <build>
     <plugins>
+      <!-- we need this to copy the images to the generated-docs output directory,
+      otherwise images would not be part of the generated-docs -->
       <plugin>
-        <groupId>com.agilejava.docbkx</groupId>
-        <artifactId>docbkx-maven-plugin</artifactId>
-        <version>2.0.8-onms</version>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-resources-plugin</artifactId>
         <executions>
           <execution>
+            <id>copy-resources</id>
+            <phase>generate-resources</phase>
             <goals>
-              <goal>generate-html</goal>
-              <goal>generate-pdf</goal>
+              <goal>copy-resources</goal>
             </goals>
-            <phase>compile</phase>
+            <configuration>
+              <outputDirectory>${asciidoc.output.directory}/${asciidoc.images.directory}</outputDirectory>
+              <resources>
+                <resource>
+                  <directory>${asciidoc.source.directory}/${asciidoc.images.directory}</directory>
+                  <filtering>false</filtering>
+                </resource>
+              </resources>
+            </configuration>
           </execution>
         </executions>
-        <dependencies>
-          <dependency>
-            <groupId>org.docbook</groupId>
-            <artifactId>docbook-xml</artifactId>
-            <version>4.4</version>
-            <scope>runtime</scope>
-          </dependency>
-        </dependencies>
-        <configuration>
-          <chunkedOutput>false</chunkedOutput>
-          <htmlStylesheet>common/html.css</htmlStylesheet>
-          <xincludeSupported>true</xincludeSupported>
-          <foCustomization>${basedir}/src/docbkx/common/fopdf.xsl</foCustomization>
-          <draftWatermarkImage>${basedir}/src/docbkx/images/draft.png</draftWatermarkImage>
-          <entities>
-            <entity>
-              <name>version</name>
-              <value>${project.version}</value>
-            </entity>
-          </entities>
-          <postProcess>
-            <copy todir="target/docbkx/html/common">
-              <fileset dir="src/docbkx/common">
-                <include name="*.css"/>
-              </fileset>
-              <fileset dir="src/docbkx/images">
-                <include name="*.gif"/>
-                <include name="*.png"/>
-              </fileset>
-            </copy>
-            <!--
-            <copy todir="target/site/reference">
-              <fileset dir="target/docbkx">
-                <include name="**/*.css" />
-                <include name="**/*.png" />
-                <include name="**/*.gif" />
-                <include name="**/*.jpg" />
-                <include name="**/*.html" />
-                <include name="**/*.pdf" />
-              </fileset>
-            </copy>
-            -->
-          </postProcess>
-        </configuration>
       </plugin>
       <plugin>
-        <artifactId>maven-assembly-plugin</artifactId>
-        <configuration>
-          <descriptors>
-            <descriptor>src/assembly/doc.xml</descriptor>
-          </descriptors>
-        </configuration>
+        <groupId>org.asciidoctor</groupId>
+        <artifactId>asciidoctor-maven-plugin</artifactId>
         <executions>
           <execution>
-            <phase>package</phase>
+            <id>output-html</id>
+            <phase>generate-resources</phase>
             <goals>
-              <goal>single</goal>
+              <goal>process-asciidoc</goal>
             </goals>
+            <configuration>
+              <sourceHighlighter>prettify</sourceHighlighter>
+              <backend>html5</backend>
+              <doctype>book</doctype>
+            </configuration>
           </execution>
         </executions>
+        <configuration>
+          <headerFooter>true</headerFooter>
+          <sourceDirectory>${asciidoc.source.directory}</sourceDirectory>
+          <outputDirectory>${asciidoc.output.directory}</outputDirectory>
+          <imagesDir>images</imagesDir>
+          <attributes>
+            <opennms-version>${project.version}</opennms-version>
+          </attributes>
+        </configuration>
       </plugin>
     </plugins>
+
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-assembly-plugin</artifactId>
+          <executions>
+            <execution>
+              <id>package</id>
+              <phase>package</phase>
+              <goals>
+                <goal>single</goal>
+              </goals>
+            </execution>
+          </executions>
+          <configuration>
+            <skipAssembly>true</skipAssembly>
+	    <descriptors>
+              <descriptor>${basedir}/../src/assembly/doc.xml</descriptor>
+            </descriptors>
+          </configuration>
+        </plugin>
+      </plugins>
+    </pluginManagement>
   </build>
 
   <pluginRepositories>

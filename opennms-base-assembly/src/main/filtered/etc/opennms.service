@@ -1,13 +1,18 @@
 [Unit]
 Description=OpenNMS server
-After=postgresql.target
+Wants=${install.postgresql.service}.service
+Requires=network.target network-online.target
+After=${install.postgresql.service}.service network.target network-online.target
 
 [Service]
-Type=forking
 User=root
-PIDFile=${install.daemonlogs.dir}/opennms.pid
-ExecStart=${install.dir}/bin/opennms -Q start
-ExecStop=${install.dir}/bin/opennms stop
+
+Type=forking
+PIDFile=${install.pid.file}
+
+ExecStart=${install.init.dir}/opennms -Q start
+ExecStop=${install.init.dir}/opennms stop
+
 
 [Install]
 WantedBy=multi-user.target
