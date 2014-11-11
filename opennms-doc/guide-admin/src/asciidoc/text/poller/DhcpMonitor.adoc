@@ -53,7 +53,7 @@ CAUTION: Make sure no DHCP client is running on the OpenNMS server and use port 
 |===
 | Parameter          | Description                                                                       | Required           | Default value
 | `port`             | Defines the port your dhcp server is using                                        | required           | `5818`
-| `macAddress`       | The MAC address which OpenNMS uses for a dhcp request                             | required           | `don't know`
+| `macAddress`       | The MAC address which OpenNMS uses for a dhcp request                             | required           | `00:06:0D:BE:9C:B2`
 | `myIpAddress`      | This parameter will usually be set to the ip address of the OpenNMS server,
                        which puts the DHCP poller in `relay` mode as opposed to `broadcast` mode.
                        In `relay` mode, the DHCP server being polled will unicast its responses directly
