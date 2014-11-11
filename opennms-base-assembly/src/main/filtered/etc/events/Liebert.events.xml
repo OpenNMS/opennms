@@ -1162,12 +1162,5 @@ in the LIEBERT-GP-AGENT-MIB document.&lt;/p&gt;&lt;table&gt;
         </logmsg>
         <severity>Indeterminate</severity>
     </event>
-
-
-
-
-
-
-  
 <!-- End of auto generated data from MIB: LIEBERT-GP-NOTIFICATIONS-MIB -->
 </events>
