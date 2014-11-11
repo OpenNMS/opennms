@@ -2,9 +2,9 @@
 === DhcpMonitor
 
 This monitor is used to monitor the availability and functionality of http://en.wikipedia.org/wiki/Dynamic_Host_Configuration_Protocol[DHCP servers].
-This monitor has two parts, the first one is the monitor _DHCP_ executed by _Pollerd_ and the second part is a background daemon _Dhcpd_ listening for DHCP responses.
-A DHCP server is tested by sending a _DISCOVER_ message, if the DHCP server responds with an _OFFER_ the service is marked as up.
-The _Dhcpd_ background daemon is disabled by default and has to be activated in the 'service-configuration.xml' in OpenNMS by changing `service enabled="true"`.
+This monitor has two parts, the first one is the monitor class _DhcpMonitor_ executed by _Pollerd_ and the second part is a background daemon _Dhcpd_ running inside the OpenNMS JVM and listening for DHCP responses.
+A DHCP server is tested by sending a _DISCOVER_ message. If the DHCP server responds with an _OFFER_ the service is marked as up.
+The _Dhcpd_ background daemon is disabled by default and has to be activated in 'service-configuration.xml' in OpenNMS by setting `service enabled="true"`.
 The behavior for testing the DHCP server can be modified in the 'dhcp-configuration.xml' configuration file.
 
 IMPORTANT: It is required to install the `opennms-plugin-protocol-dhcp` before you can use this feature.
@@ -21,7 +21,7 @@ An error occurred while attempting to start the "OpenNMS:Name=Dhcpd" service (cl
 java.lang.ClassNotFoundException: org.opennms.netmgt.dhcpd.jmx.Dhcpd
 ----
 
-CAUTION: Make sure no DHCP client is running on the OpenNMS server and use port UDP/68.
+CAUTION: Make sure no DHCP client is running on the OpenNMS server and using port UDP/68.
          If UDP/68 is already in use, you will find an error message in the manager.log.
          You can test if a process is listening on udp/68 with `sudo ss -lnpu sport = :68`.
 
@@ -35,7 +35,7 @@ CAUTION: Make sure no DHCP client is running on the OpenNMS server and use port 
 | Remote Enabled | false
 |===
 
-.Service monitor parameter configured in 'poller-configuration.xml'
+.Service monitor parameters configured in 'poller-configuration.xml'
 [options="header, autowidth"]
 |===
 | Parameter        | Description                                                                                    | Required | Default value
@@ -48,16 +48,16 @@ CAUTION: Make sure no DHCP client is running on the OpenNMS server and use port 
 
 ===== _Dhcpd_ configuration
 
-._Dhcpd_ parameter in 'dhcp-configuration.xml'.
+._Dhcpd_ parameters in 'dhcp-configuration.xml'.
 [options="autowidth"]
 |===
 | Parameter          | Description                                                                       | Required           | Default value
 | `port`             | Defines the port your dhcp server is using                                        | required           | `5818`
 | `macAddress`       | The MAC address which OpenNMS uses for a dhcp request                             | required           | `00:06:0D:BE:9C:B2`
-| `myIpAddress`      | This parameter will usually be set to the ip address of the OpenNMS server,
+| `myIpAddress`      | This parameter will usually be set to the IP address of the OpenNMS server,
                        which puts the DHCP poller in `relay` mode as opposed to `broadcast` mode.
                        In `relay` mode, the DHCP server being polled will unicast its responses directly
-                       back to the ip address specified by `myIpAddress` rather than broadcasting its
+                       back to the IP address specified by `myIpAddress` rather than broadcasting its
                        responses. This allows DHCP servers to be polled even though they are not on the
                        same subnet as the OpenNMS server, and without the aid of an external relay.
                        _Usage:_ `myIpAddress="10.11.12.13"` or `myIpAddress="broadcast"`                 | required           | `broadcast`
@@ -68,11 +68,11 @@ CAUTION: Make sure no DHCP client is running on the OpenNMS server and use port 
                        considered valid responses in extendedMode.
                        _Usage:_ `extendedMode="true"` or `extendedMode="false"`                          | required           | `false`
 | `requestIpAddress` | This parameter only applies to REQUEST queries sent to the DHCP server when
-                       extendedMode is true. If an ip address is specified, that ip address will be
-                       requested in the query. If `targetHost` is specified, the DHCP server's own ip
+                       extendedMode is true. If an IP address is specified, that IP address will be
+                       requested in the query. If `targetHost` is specified, the DHCP server's own IP
                        address will be requested. Since a well-managed server will probably not respond
-                       to a request for its own ip, this parameter can also be set to `targetSubnet`.
-                       This is similar to `targetHost` except the DHCP server's ip address is
+                       to a request for its own IP, this parameter can also be set to `targetSubnet`.
+                       This is similar to `targetHost` except the DHCP server's IP address is
                        incremented or decremented by 1 to obtain an ip address that is on the same
                        subnet.
                        (The resulting address will not be on the same subnet if the DHCP server's
@@ -105,7 +105,7 @@ The monitor will try to send in maximum 3 _DISCOVER_ messages and waits 3 second
 <monitor service="DHCP" class-name="org.opennms.protocols.dhcp.monitor.DhcpMonitor"/>
 ----
 
-.Step 2: Enable the OpenNMS _Dhcpd_ background daemon in 'service-configuration.xml'
+.Step 2: Enable the OpenNMS _Dhcpd_ daemon in 'service-configuration.xml'
 [source, xml]
 ----
 <service enabled="true">
