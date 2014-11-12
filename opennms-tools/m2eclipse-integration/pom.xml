@@ -10,7 +10,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>opennms-tools</artifactId>
-    <version>14.0.1-SNAPSHOT</version>
+    <version>1.0.0-PRIME-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.m2e.extensions</groupId>
