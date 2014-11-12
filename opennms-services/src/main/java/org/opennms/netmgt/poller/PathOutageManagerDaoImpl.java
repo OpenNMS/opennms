@@ -38,7 +38,6 @@ import java.util.TreeSet;
 
 import org.opennms.core.criteria.Alias;
 import org.opennms.core.criteria.Alias.JoinType;
-import org.opennms.core.criteria.Order;
 import org.opennms.core.criteria.restrictions.EqRestriction;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.WebSecurityUtils;
@@ -48,8 +47,6 @@ import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.OutageDao;
 import org.opennms.netmgt.dao.api.PathOutageDao;
-import org.opennms.netmgt.model.OnmsArpInterface.StatusType;
-import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsOutage;
@@ -65,7 +62,8 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @version $Id: $
  * @since 1.8.1
  */
-public class PathOutageManagerDaoImpl implements PathOutageManager{
+public class PathOutageManagerDaoImpl implements PathOutageManager {
+
 	@Autowired
 	private NodeDao nodeDao;
 	
@@ -292,44 +290,15 @@ public class PathOutageManagerDaoImpl implements PathOutageManager{
 
     @Override
     public Set<Integer> getAllNodesDependentOnAnyServiceOnInterface(String criticalPathip) {
-       	Set<Integer> depNodes = new TreeSet<Integer>();
-    	    	
-    	final org.opennms.core.criteria.Criteria crit = new org.opennms.core.criteria.Criteria(OnmsPathOutage.class)
-    	.addRestriction(new EqRestriction("criticalPathIp", criticalPathip))
-        .setOrders(Arrays.asList(new Order[] {
-        		Order.asc("node.id")
-        }));
-    	
-    	List<OnmsPathOutage> l = pathOutageDao.findMatching(crit);
-       	for (OnmsPathOutage cur : l) {
-       		List<OnmsIpInterface> iface = ipInterfaceDao.findByNodeId(cur.getNodeId());
-       		for (OnmsIpInterface one : iface) {
-       			if (one.getIsManaged() != "D") {
-       				depNodes.add(cur.getNodeId());
-       			}
-       		}
-    	}
-    	
-    	return depNodes;
+        final Set<Integer> pathNodes = new TreeSet<Integer>();
+        pathNodes.addAll(pathOutageDao.getAllNodesDependentOnAnyServiceOnInterface(InetAddressUtils.addr(criticalPathip)));
+        return pathNodes;
     }
 
     @Override
     public Set<Integer> getAllNodesDependentOnAnyServiceOnNode(int nodeId) {
-    	Set<Integer> depNodes = new TreeSet<Integer>();
-    	
-    	final org.opennms.core.criteria.Criteria crit = new org.opennms.core.criteria.Criteria(OnmsPathOutage.class) 
-    	.addRestriction(new EqRestriction("node.id", nodeId));
-    	
-    	List<OnmsPathOutage> l = pathOutageDao.findMatching(crit);
-    	for (OnmsPathOutage cur: l) {
-    		List<OnmsIpInterface> iface = ipInterfaceDao.findByNodeId(cur.getNodeId());
-    		for (OnmsIpInterface one: iface) {
-    			if (one.getIpAddress().equals(cur.getCriticalPathIp())) {
-    				depNodes.add(cur.getNodeId());
-    			}
-    		}
-    	}    	
-    	
-    	return depNodes;
+        final Set<Integer> pathNodes = new TreeSet<Integer>();
+        pathNodes.addAll(pathOutageDao.getAllNodesDependentOnAnyServiceOnNode(nodeId));
+        return pathNodes;
     }
 }
