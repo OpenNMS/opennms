@@ -27,7 +27,7 @@ Bug fixes should be made by making the appropriate fix and applying it to the `O
 New Upstream+Prime Shared Features
 ----------------------------------
 
-If there is a feature being developed that can't wait for a major Prime revision and is deemed low-impact (ie, a new Detector), it should be made in a feature branch based on `OpenNMS:foundation`.  When the feature is complete and tested, it should be merged to `OpenNMS:foundation`, which will merge inte OpenNMS upstream's `OpenNMS:develop` branch as well as Prime's `Prime:develop` branch.
+If there is a feature being developed that can't wait for a major Prime revision and is deemed low-impact (ie, a new Detector), it should be made in a feature branch based on `OpenNMS:foundation`.  When the feature is complete and tested, it should be merged to `OpenNMS:foundation`, which will merge into OpenNMS upstream's `OpenNMS:develop` branch as well as Prime's `Prime:develop` branch.
 
 New Prime-Only Features
 -----------------------
