@@ -165,6 +165,7 @@ public class NodeLabelDaoImpl implements NodeLabel{
      *
      * @return node label
      */
+    @Override
     public String getLabel() {
         return m_nodeLabel;
     }
@@ -174,6 +175,7 @@ public class NodeLabelDaoImpl implements NodeLabel{
      *
      * @return node label source flag
      */
+    @Override
     public NodeLabelSource getSource() {
         return m_nodeLabelSource;
     }
@@ -194,7 +196,8 @@ public class NodeLabelDaoImpl implements NodeLabel{
      * 
      * @deprecated Use a {@link NodeDao#load(Integer)} method call instead
      */
-    public NodeLabelJDBCImpl retrieveLabel(final int nodeID) throws SQLException {
+    @Override
+    public NodeLabel retrieveLabel(final int nodeID) throws SQLException {
     	return retrieveLabel(nodeID, null);
         
     }
@@ -213,7 +216,8 @@ public class NodeLabelDaoImpl implements NodeLabel{
      * 
      * @deprecated Use a {@link NodeDao#load(Integer)} method call instead
      */
-    public NodeLabelJDBCImpl retrieveLabel(int nodeID, Connection dbConnection) throws SQLException {
+    @Override
+    public NodeLabel retrieveLabel(int nodeID, Connection dbConnection) throws SQLException {
     	OnmsNode node = nodeDao.get(nodeID);
     	
         String nodeLabel = node.getLabel();
@@ -241,7 +245,8 @@ public class NodeLabelDaoImpl implements NodeLabel{
      * 
      * @deprecated Use a {@link NodeDao#update(org.opennms.netmgt.model.OnmsNode)} method call instead
      */
-    public void assignLabel(final int nodeID, final NodeLabelJDBCImpl nodeLabel) throws SQLException {
+    @Override
+    public void assignLabel(final int nodeID, final NodeLabel nodeLabel) throws SQLException {
         assignLabel(nodeID, nodeLabel, null);
     }
 
@@ -262,7 +267,8 @@ public class NodeLabelDaoImpl implements NodeLabel{
      * 
      * @deprecated Use a {@link NodeDao#update(org.opennms.netmgt.model.OnmsNode)} method call instead
      */
-    public void assignLabel(final int nodeID, NodeLabelJDBCImpl nodeLabel, final Connection dbConnection) throws SQLException {
+    @Override
+    public void assignLabel(final int nodeID, NodeLabel nodeLabel, final Connection dbConnection) throws SQLException {
         if (nodeLabel == null) {
             nodeLabel = computeLabel(nodeID, dbConnection);
         }
@@ -302,7 +308,8 @@ public class NodeLabelDaoImpl implements NodeLabel{
      * 
      * @deprecated Update this to use modern DAO methods instead of raw SQL
      */
-    public NodeLabelJDBCImpl computeLabel(final int nodeID) throws SQLException {
+    @Override
+    public NodeLabel computeLabel(final int nodeID) throws SQLException {
         return computeLabel(nodeID, null);
     }
 
@@ -335,7 +342,8 @@ public class NodeLabelDaoImpl implements NodeLabel{
      * 
      * @deprecated Update this to use modern DAO methods instead of raw SQL
      */
-    public NodeLabelJDBCImpl computeLabel(final int nodeID, final Connection dbConnection) throws SQLException {
+    @Override
+    public NodeLabel computeLabel(final int nodeID, final Connection dbConnection) throws SQLException {
         // Issue SQL query to retrieve NetBIOS name associated with the node
         String netbiosName = null;
         
