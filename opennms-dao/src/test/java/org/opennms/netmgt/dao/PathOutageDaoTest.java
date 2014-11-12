@@ -30,6 +30,7 @@ package org.opennms.netmgt.dao;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.opennms.core.utils.InetAddressUtils.addr;
 
 import java.util.List;
@@ -122,63 +123,82 @@ public class PathOutageDaoTest implements InitializingBean {
     @Test
     @Transactional
     public void testSave() {
+        final OnmsServiceType serviceType = m_serviceTypeDao.findByName("ICMP");
+        assertNotNull(serviceType);
+
+        // This will be our router with one IP address
+        OnmsNode router = new OnmsNode(getLocalHostDistPoller());
+        router.setLabel("router");
+        m_nodeDao.save(router);
+        OnmsIpInterface routerIpInterface = new OnmsIpInterface(addr("172.16.1.1"), router);
+        routerIpInterface.setIsManaged("M");
+        OnmsMonitoredService routerService = new OnmsMonitoredService(routerIpInterface, serviceType);
+        routerService.setStatus("A");
+
+        // Add a node that will be routed through the router
         OnmsNode node = new OnmsNode(getLocalHostDistPoller());
         node.setLabel("localhost");
         m_nodeDao.save(node);
+        OnmsIpInterface nodeIpInterface = new OnmsIpInterface(addr("172.16.1.2"), node);
+        nodeIpInterface.setIsManaged("M");
+        OnmsMonitoredService nodeMonitoredService = new OnmsMonitoredService(nodeIpInterface, serviceType);
+        nodeMonitoredService.setStatus("A");
+
+        // Make another node with an interface that is initially marked as deleted
         OnmsNode newNode = new OnmsNode(getLocalHostDistPoller());
         newNode.setLabel("newnode");
         m_nodeDao.save(newNode);
-
-        OnmsIpInterface ipInterface = new OnmsIpInterface(addr("172.16.1.1"), node);
-        ipInterface.setIsManaged("M");
-        OnmsIpInterface newIpInterface = new OnmsIpInterface(addr("172.16.1.2"), newNode);
+        OnmsIpInterface newIpInterface = new OnmsIpInterface(addr("172.16.1.3"), newNode);
         newIpInterface.setIsManaged("D");
-
-        OnmsServiceType serviceType = m_serviceTypeDao.findByName("ICMP");
-        assertNotNull(serviceType);
-
-        OnmsMonitoredService monitoredService = new OnmsMonitoredService(ipInterface, serviceType);
-        monitoredService.setStatus("A");
         OnmsMonitoredService newMonitoredService = new OnmsMonitoredService(newIpInterface, serviceType);
         newMonitoredService.setStatus("A");
 
-        OnmsPathOutage outage = new OnmsPathOutage(node, ipInterface.getIpAddress(), monitoredService.getServiceName());
+        OnmsPathOutage outage = new OnmsPathOutage(node, routerIpInterface.getIpAddress(), routerService.getServiceName());
         m_pathOutageDao.save(outage);
 
         //it works we're so smart! hehe
         OnmsPathOutage temp = m_pathOutageDao.get(outage.getNode().getId());
 
-        assertEquals("ICMP", outage.getCriticalPathServiceName());
-        assertEquals(addr("172.16.1.1"), outage.getCriticalPathIp());
-        assertEquals("localhost", temp.getNode().getLabel());
+        assertEquals(1, m_pathOutageDao.countAll());
+
+        // Make sure that the path outage points from the node to the router interface/service
+        assertEquals(node.getLabel(), temp.getNode().getLabel());
+        assertEquals(routerIpInterface.getIpAddress(), temp.getCriticalPathIp());
+        assertEquals(routerService.getServiceName(), temp.getCriticalPathServiceName());
 
         List<Integer> nodes = m_pathOutageDao.getNodesForPathOutage(temp);
         assertEquals(1, nodes.size());
         assertEquals(node.getId(), nodes.get(0));
 
-        nodes = m_pathOutageDao.getNodesForPathOutage(addr("172.16.1.1"), "ICMP");
+        nodes = m_pathOutageDao.getNodesForPathOutage(routerIpInterface.getIpAddress(), routerService.getServiceName());
         assertEquals(1, nodes.size());
         assertEquals(node.getId(), nodes.get(0));
 
-        nodes = m_pathOutageDao.getNodesForPathOutage(addr("172.16.1.2"), "ICMP");
+        // Make sure that nothing is using either node as a path outage
+        nodes = m_pathOutageDao.getNodesForPathOutage(nodeIpInterface.getIpAddress(), nodeMonitoredService.getServiceName());
+        assertEquals(0, nodes.size());
+        nodes = m_pathOutageDao.getNodesForPathOutage(newIpInterface.getIpAddress(), newMonitoredService.getServiceName());
         assertEquals(0, nodes.size());
 
         assertEquals(1, m_pathOutageDao.countAll());
 
-        OnmsPathOutage newOutage = new OnmsPathOutage(newNode, newIpInterface.getIpAddress(), newMonitoredService.getServiceName());
+        OnmsPathOutage newOutage = new OnmsPathOutage(newNode, routerIpInterface.getIpAddress(), routerService.getServiceName());
         m_pathOutageDao.save(newOutage);
 
         assertEquals(2, m_pathOutageDao.countAll());
 
         // Should return zero results because the interface is marked as 'D' for deleted
-        nodes = m_pathOutageDao.getNodesForPathOutage(addr("172.16.1.2"), "ICMP");
-        assertEquals(0, nodes.size());
+        nodes = m_pathOutageDao.getNodesForPathOutage(routerIpInterface.getIpAddress(), routerService.getServiceName());
+        assertEquals(2, nodes.size());
+        nodes = m_pathOutageDao.getAllNodesDependentOnAnyServiceOnInterface(routerIpInterface.getIpAddress());
+        assertEquals(2, nodes.size());
 
         // After we mark it as managed, the node should appear in the path outage list
         newIpInterface.setIsManaged("M");
-        nodes = m_pathOutageDao.getNodesForPathOutage(addr("172.16.1.2"), "ICMP");
-        assertEquals(1, nodes.size());
-        assertEquals(newNode.getId(), nodes.get(0));
+        nodes = m_pathOutageDao.getNodesForPathOutage(routerIpInterface.getIpAddress(), routerService.getServiceName());
+        assertEquals(2, nodes.size());
+        assertTrue(nodes.contains(node.getId()));
+        assertTrue(nodes.contains(newNode.getId()));
 
         assertEquals(2, m_pathOutageDao.countAll());
     }

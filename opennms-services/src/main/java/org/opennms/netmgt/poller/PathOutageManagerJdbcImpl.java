@@ -409,7 +409,7 @@ public class PathOutageManagerJdbcImpl implements PathOutageManager{
     }
   
     @Override
-    public Set<Integer> getDependencyNodesByCriticalPath(String criticalpathip) throws SQLException {
+    public Set<Integer> getAllNodesDependentOnAnyServiceOnInterface(String criticalpathip) throws SQLException {
 	    final Connection conn = DataSourceFactory.getInstance().getConnection();
 	    final DBUtils d = new DBUtils(PathOutageManagerJdbcImpl.class, conn);
 	    Set<Integer> pathNodes = new TreeSet<Integer>();
@@ -431,7 +431,7 @@ public class PathOutageManagerJdbcImpl implements PathOutageManager{
     }
     
     @Override
-	public Set<Integer> getDependencyNodesByNodeId(int nodeid) throws SQLException {
+	public Set<Integer> getAllNodesDependentOnAnyServiceOnNode(int nodeid) throws SQLException {
 	    final Connection conn = DataSourceFactory.getInstance().getConnection();
 	    final DBUtils d = new DBUtils(PathOutageManagerJdbcImpl.class, conn);
 

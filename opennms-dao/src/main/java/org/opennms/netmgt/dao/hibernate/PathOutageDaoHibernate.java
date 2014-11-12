@@ -69,7 +69,15 @@ public class PathOutageDaoHibernate extends AbstractDaoHibernate<OnmsPathOutage,
         return getHibernateTemplate().execute(new HibernateCallback<List<Integer>>() {
             @Override
             public List<Integer> doInHibernate(Session session) throws HibernateException, SQLException {
-                Query query = session.createQuery("select distinct pathOutage.node.id from OnmsPathOutage as pathOutage left join pathOutage.node as node left join node.ipInterfaces as ipInterfaces left join ipInterfaces.monitoredServices as monitoredServices where pathOutage.criticalPathIp = :ipAddress and pathOutage.criticalPathServiceName = :serviceName and ipInterfaces.isManaged <> 'D' and monitoredServices.status = 'A'");
+                Query query = session.createQuery(
+                    "select distinct node.id from OnmsPathOutage as pathOutage, OnmsIpInterface as ipInterface left join pathOutage.node as node left join ipInterface.monitoredServices as monitoredServices left join monitoredServices.serviceType as serviceType " +
+                    // Select the path outage
+                    "where pathOutage.criticalPathIp = :ipAddress and pathOutage.criticalPathServiceName = :serviceName and " +
+                    // Make sure that the path outage is on a managed interface
+                    "pathOutage.criticalPathIp = ipInterface.ipAddress and ipInterface.isManaged <> 'D' and " +
+                    // And that the service is marked as active
+                    "pathOutage.criticalPathServiceName = serviceType.name and monitoredServices.status = 'A'" 
+                );
                 query.setParameter("ipAddress", InetAddressUtils.str(ipAddress));
                 query.setParameter("serviceName", serviceName);
                 List<Integer> result = (List<Integer>)query.list();
@@ -82,31 +90,55 @@ public class PathOutageDaoHibernate extends AbstractDaoHibernate<OnmsPathOutage,
         });
     }
 
-    /*
-    final org.opennms.core.criteria.Criteria pathOutageCrit = new org.opennms.core.criteria.Criteria(OnmsPathOutage.class)
-    .setAliases(Arrays.asList(new Alias[] {
-            new Alias("node", "node", JoinType.FULL_JOIN)//,
-            //new Alias("node.ipInterfaces","ipInterfaces", JoinType.FULL_JOIN)
-    }))
-    .addRestriction(new EqRestriction("criticalPathIp", InetAddressUtils.addr(criticalPathIp)))
-    .addRestriction(new EqRestriction("criticalPathServiceName", criticalPathServiceName))
-    .addRestriction(new EqRestriction("node.id", Integer.valueOf(result[1])))
-    //.addRestriction(new NeRestriction("ipInterfaces.isManaged", "D"))
-    ;
+    @Override
+    public List<Integer> getAllNodesDependentOnAnyServiceOnInterface(final InetAddress ipAddress) {
+        return getHibernateTemplate().execute(new HibernateCallback<List<Integer>>() {
+            @Override
+            public List<Integer> doInHibernate(Session session) throws HibernateException, SQLException {
+                //Query query = session.createQuery("select distinct node.id from OnmsPathOutage as pathOutage left join pathOutage.node as node left join node.ipInterfaces as ipInterfaces left join ipInterfaces.monitoredServices as monitoredServices where pathOutage.criticalPathIp = :ipAddress and ipInterfaces.isManaged <> 'D' and monitoredServices.status = 'A'");
+                Query query = session.createQuery(
+                    "select distinct node.id from OnmsPathOutage as pathOutage, OnmsIpInterface as ipInterface left join pathOutage.node as node left join ipInterface.monitoredServices as monitoredServices " +
+                    // Select the path outage
+                    "where pathOutage.criticalPathIp = :ipAddress and " +
+                    // Make sure that the path outage is on a managed interface
+                    "pathOutage.criticalPathIp = ipInterface.ipAddress and ipInterface.isManaged <> 'D' and " +
+                    // And that any service is marked as active
+                    "monitoredServices.status = 'A'" 
+                );
+                query.setParameter("ipAddress", InetAddressUtils.str(ipAddress));
+                List<Integer> result = (List<Integer>)query.list();
+                if (result == null) {
+                    return Collections.emptyList();
+                } else {
+                    return result;
+                }
+            }
+        });
+    }
 
-    result[2] = Integer.toString(pathOutageDao.countMatching(pathOutageCrit));
-    /*
-	    return getHibernateTemplate().execute(new HibernateCallback<OnmsNode>() {
-	        @Override
-	        public OnmsFilterFavorite doInHibernate(Session session) throws HibernateException, SQLException {
-	            Query query = session.createQuery("from OnmsFilterFavorite f where f.username = :userName and f.filterName = :filterName");
-	            query.setParameter("filterName", filterName);
-	            query.setParameter("userName", userName);
-	            Object result = query.uniqueResult();
-	            if (result == null) return null;
-	            return (OnmsFilterFavorite)result;
-	        }
-	    });
-	}
-     */
+    @Override
+    public List<Integer> getAllNodesDependentOnAnyServiceOnNode(final int nodeId) {
+        return getHibernateTemplate().execute(new HibernateCallback<List<Integer>>() {
+            @Override
+            public List<Integer> doInHibernate(Session session) throws HibernateException, SQLException {
+                //Query query = session.createQuery("select distinct node.id from OnmsPathOutage as pathOutage, OnmsIpInterface as ipInterface left join pathOutage.node as node where pathOutage.criticalPathIp = ipInterface.ipAddress and ipInterface.node.id = :nodeId and ipInterface.isManaged <> 'D'");
+                Query query = session.createQuery(
+                    "select distinct node.id from OnmsPathOutage as pathOutage, OnmsIpInterface as ipInterface left join pathOutage.node as node left join ipInterface.monitoredServices as monitoredServices " +
+                    // Select the node from the path outage's IP interface
+                    "where ipInterface.node.id = :nodeId and " +
+                    // Make sure that the path outage is on a managed interface
+                    "pathOutage.criticalPathIp = ipInterface.ipAddress and ipInterface.isManaged <> 'D' and " +
+                    // And that any service is marked as active
+                    "monitoredServices.status = 'A'"
+                );
+                query.setParameter("nodeId", nodeId);
+                List<Integer> result = (List<Integer>)query.list();
+                if (result == null) {
+                    return Collections.emptyList();
+                } else {
+                    return result;
+                }
+            }
+        });
+    }
 }

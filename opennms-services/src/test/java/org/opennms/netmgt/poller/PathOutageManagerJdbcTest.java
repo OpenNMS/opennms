@@ -280,10 +280,10 @@ public class PathOutageManagerJdbcTest implements TemporaryDatabaseAware<MockDat
 		assertEquals("192.168.1.4", nc[0]);
 		assertEquals("SMTP", nc[1]);
 		
-		Set<Integer> test = getPathOutageManager().getDependencyNodesByCriticalPath("192.168.1.1");
+		Set<Integer> test = getPathOutageManager().getAllNodesDependentOnAnyServiceOnInterface("192.168.1.1");
 		assertEquals(1, test.size());
 		
-		Set<Integer> less = getPathOutageManager().getDependencyNodesByNodeId(3);
+		Set<Integer> less = getPathOutageManager().getAllNodesDependentOnAnyServiceOnNode(3);
 		assertEquals(1, less.size());
 
 		conn.close();
