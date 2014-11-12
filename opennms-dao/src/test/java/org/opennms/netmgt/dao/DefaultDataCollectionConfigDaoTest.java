@@ -103,15 +103,12 @@ public class DefaultDataCollectionConfigDaoTest {
 
     @Test
     public void testReload() throws Exception {
-        Date now = new Date();
-
         File source = new File("src/test/opennms-home/etc");
         File dest = new File("src/target/opennms-home-test/etc");
         dest.mkdirs();
         FileUtils.copyDirectory(source, dest, true);
         File target = new File(dest, "datacollection-config.xml");
         Date currentDate = new Date(target.lastModified());
-        Assert.assertTrue(currentDate.before(now));
 
         // Initialize the DAO with auto-reload
         DefaultDataCollectionConfigDao dao = new DefaultDataCollectionConfigDao();
@@ -121,7 +118,6 @@ public class DefaultDataCollectionConfigDaoTest {
         dao.afterPropertiesSet();
 
         // Verify that it has not been reloaded
-        Assert.assertNotNull(dao.getContainer().getObject());
         Assert.assertTrue(currentDate.after(dao.getLastUpdate()));
 
         // Modify the file to trigger the reload.
@@ -129,7 +125,6 @@ public class DefaultDataCollectionConfigDaoTest {
         w.write("<!-- Adding a comment to make it different. -->");
         w.close();
         currentDate = new Date(target.lastModified());
-        Assert.assertFalse(currentDate.before(now));
 
         // Wait and check if the data was changed.
         Thread.sleep(2000l);
