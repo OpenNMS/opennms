@@ -387,7 +387,7 @@ public class NodeLabelJDBCImpl implements NodeLabel {
         final DBUtils d = new DBUtils(NodeLabelJDBCImpl.class, dbConnection);
 
         try {
-            return computeLabel(nodeID, null);
+            return computeLabel(nodeID, dbConnection);
         } finally {
             d.cleanUp();
         }
