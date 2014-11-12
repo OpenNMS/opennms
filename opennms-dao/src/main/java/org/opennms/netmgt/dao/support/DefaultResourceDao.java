@@ -320,6 +320,7 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
     public Collection<OnmsResourceType> getResourceTypes() {
         if (isDataCollectionConfigChanged()) {
             try {
+                LOG.debug("The data collection configuration has been changed, reloading resource types.");
                 initResourceTypes();
             } catch (IOException e) {
                 LOG.error("Can't reload resource types.", e);
