@@ -93,8 +93,8 @@ public class JmxDataCollectionConfigResourceTest extends AbstractSpringJerseyRes
         assertEquals(4, config.getJmxCollection(0).getMbeanCount());
         assertEquals(config.getJmxCollection(1).getRrd().getStep(), 300);
         assertEquals("jsr160", config.getJmxCollection(1).getName());
-        assertEquals(22, config.getJmxCollection("jsr160").getMbeanCount());
-        assertEquals(22, config.getJmxCollection(1).getMbeanCount());
+        assertEquals(23, config.getJmxCollection("jsr160").getMbeanCount());
+        assertEquals(23, config.getJmxCollection(1).getMbeanCount());
     }
 
 }
