@@ -80,10 +80,6 @@ public class PathOutageManagerJdbcImpl implements PathOutageManager{
 
     private static final String GET_NODES_IN_PATHS = "SELECT DISTINCT pathoutage.nodeid FROM pathoutage, ipinterface WHERE pathoutage.criticalpathip=? AND pathoutage.nodeid=ipinterface.nodeid AND ipinterface.ismanaged!='D' ORDER BY nodeid";
 
-    
-    /** Constant <code>NO_CRITICAL_PATH="Not Configured"</code> */
-    public static final String NO_CRITICAL_PATH = "Not Configured";
-
     public static PathOutageManager getInstance() {
         return new PathOutageManagerJdbcImpl();
     }

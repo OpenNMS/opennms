@@ -41,7 +41,7 @@
         org.opennms.core.utils.DBUtils,
         org.opennms.core.utils.WebSecurityUtils,
         org.opennms.web.element.*,
-        org.opennms.netmgt.poller.PathOutageManagerJdbcImpl,
+        org.opennms.netmgt.poller.PathOutageManagerDaoImpl,
         org.opennms.netmgt.model.OnmsNode,
         org.opennms.netmgt.EventConstants,
         org.opennms.netmgt.xml.event.Event,
@@ -131,12 +131,12 @@
     private static final String GET_NODES_IN_PATH = "SELECT DISTINCT pathoutage.nodeid FROM pathoutage, ipinterface WHERE pathoutage.criticalpathip=? AND pathoutage.nodeid=ipinterface.nodeid AND ipinterface.ismanaged!='D' ORDER BY nodeid";
 
     private static Set<Integer> getAllNodesDependentOnAnyServiceOnInterface(String criticalpathip) throws SQLException {
-	    return PathOutageManagerJdbcImpl.getInstance().getAllNodesDependentOnAnyServiceOnInterface(criticalpathip);
+	    return PathOutageManagerDaoImpl.getInstance().getAllNodesDependentOnAnyServiceOnInterface(criticalpathip);
         
     }
 	
 	private static Set<Integer> getAllNodesDependentOnAnyServiceOnNode(int nodeid) throws SQLException {
-	    return PathOutageManagerJdbcImpl.getInstance().getAllNodesDependentOnAnyServiceOnNode(nodeid);
+	    return PathOutageManagerDaoImpl.getInstance().getAllNodesDependentOnAnyServiceOnNode(nodeid);
 	}
 	
 	public void sendOutagesChangedEvent() throws ServletException {

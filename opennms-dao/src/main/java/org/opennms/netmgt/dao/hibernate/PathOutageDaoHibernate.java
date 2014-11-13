@@ -30,6 +30,7 @@ package org.opennms.netmgt.dao.hibernate;
 
 import java.net.InetAddress;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -70,21 +71,28 @@ public class PathOutageDaoHibernate extends AbstractDaoHibernate<OnmsPathOutage,
             @Override
             public List<Integer> doInHibernate(Session session) throws HibernateException, SQLException {
                 Query query = session.createQuery(
-                    "select distinct node.id from OnmsPathOutage as pathOutage, OnmsIpInterface as ipInterface left join pathOutage.node as node left join ipInterface.monitoredServices as monitoredServices left join monitoredServices.serviceType as serviceType " +
+                    "select distinct node.id, node.label from OnmsPathOutage as pathOutage, OnmsIpInterface as ipInterface left join pathOutage.node as node left join ipInterface.monitoredServices as monitoredServices left join monitoredServices.serviceType as serviceType " +
                     // Select the path outage
                     "where pathOutage.criticalPathIp = :ipAddress and pathOutage.criticalPathServiceName = :serviceName and " +
                     // Make sure that the path outage is on a managed interface
                     "pathOutage.criticalPathIp = ipInterface.ipAddress and ipInterface.isManaged <> 'D' and " +
                     // And that the service is marked as active
-                    "pathOutage.criticalPathServiceName = serviceType.name and monitoredServices.status = 'A'" 
+                    "pathOutage.criticalPathServiceName = serviceType.name and monitoredServices.status = 'A' " +
+                    // Sort by node label so that the lists are easy to read
+                    "order by node.label" 
                 );
                 query.setParameter("ipAddress", InetAddressUtils.str(ipAddress));
                 query.setParameter("serviceName", serviceName);
-                List<Integer> result = (List<Integer>)query.list();
-                if (result == null) {
+                List<Object[]> queryResults = query.list();
+                if (queryResults == null || queryResults.size() == 0) {
                     return Collections.emptyList();
                 } else {
-                    return result;
+                    List<Integer> retval = new ArrayList<Integer>(queryResults.size());
+                    for (Object[] row : queryResults) {
+                        // Only add the ID to the return value
+                        retval.add((Integer)row[0]);
+                    }
+                    return retval;
                 }
             }
         });
