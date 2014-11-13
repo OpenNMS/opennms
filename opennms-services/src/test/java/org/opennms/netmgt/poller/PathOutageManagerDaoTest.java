@@ -30,6 +30,7 @@ package org.opennms.netmgt.poller;
 
 import java.sql.SQLException;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -50,6 +51,7 @@ public class PathOutageManagerDaoTest extends PathOutageManagerJdbcTest {
 		super.test();
 	}
 
+	@Ignore
 	@Test
 	@Transactional
 	public void testMethod500Times() throws SQLException {

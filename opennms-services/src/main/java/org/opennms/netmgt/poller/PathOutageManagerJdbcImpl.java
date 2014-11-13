@@ -54,7 +54,7 @@ import org.opennms.netmgt.config.OpennmsServerConfigFactory;
  */
 public class PathOutageManagerJdbcImpl implements PathOutageManager{
 
-    private static final String GET_CRITICAL_PATHS = "SELECT DISTINCT criticalpathip, criticalpathservicename FROM pathoutage ORDER BY criticalpathip, criticalpathservicename";
+    private static final String GET_CRITICAL_PATHS = "SELECT DISTINCT node.nodelabel, pathoutage.criticalpathip, pathoutage.criticalpathservicename FROM pathoutage, ipinterface, node WHERE pathoutage.nodeid = node.nodeid ORDER BY node.nodelabel, pathoutage.criticalpathip, pathoutage.criticalpathservicename";
 
     private static final String GET_CRITICAL_PATH_BY_NODEID = "SELECT criticalpathip, criticalpathservicename FROM pathoutage WHERE nodeid=?";
 
@@ -107,9 +107,10 @@ public class PathOutageManagerJdbcImpl implements PathOutageManager{
             d.watch(rs);
 
             while (rs.next()) {
-                String[] path = new String[2];
+                String[] path = new String[3];
                 path[0] = rs.getString(1);
                 path[1] = rs.getString(2);
+                path[2] = rs.getString(3);
                 paths.add(path);
             }
             return paths;

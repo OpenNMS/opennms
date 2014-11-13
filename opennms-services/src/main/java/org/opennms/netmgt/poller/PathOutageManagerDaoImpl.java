@@ -96,56 +96,7 @@ public class PathOutageManagerDaoImpl implements PathOutageManager {
      */
     @Override
     public List<String[]> getAllCriticalPaths() throws SQLException {
-        final Set<String[]> paths = new TreeSet<String[]>(new Comparator<String[]>() {
-            @Override
-            public int compare(String[] o1, String[] o2) {
-                if (o1 == null) {
-                    if (o2 == null) {
-                        return 0;
-                    } else {
-                        return -1;
-                    }
-                } else {
-                    if (o2 == null) {
-                        return 1;
-                    } else {
-                        for (int i = 0; i < 2; i++) {
-                            if (o1[i] == null) {
-                                if (o2[i] == null) {
-                                    continue;
-                                } else {
-                                    return -1;
-                                }
-                            } else {
-                                if (o2[i] == null) {
-                                    return 1;
-                                } else {
-                                    int comparison = o1[i].compareTo(o2[i]);
-                                    if (comparison == 0) {
-                                        continue;
-                                    } else {
-                                        return comparison;
-                                    }
-                                }
-                            }
-                        }
-                        return 0;
-                    }
-                }
-            }
-        });
-
-        List<OnmsPathOutage> outs = pathOutageDao.findAll();
-
-        for (OnmsPathOutage out : outs) {
-            String[] path = new String[2];
-            path[0] = InetAddressUtils.str(out.getCriticalPathIp());
-            path[1] = out.getCriticalPathServiceName();
-            paths.add(path);
-        }
-
-        return new ArrayList<String[]>(paths);
-
+        return pathOutageDao.getAllCriticalPaths();
     }
 
     /**

@@ -61,6 +61,38 @@ public class PathOutageDaoHibernate extends AbstractDaoHibernate<OnmsPathOutage,
     public List<Integer> getNodesForPathOutage(final OnmsPathOutage pathOutage) {
         return getNodesForPathOutage(pathOutage.getCriticalPathIp(), pathOutage.getCriticalPathServiceName());
     }
+    
+    /**
+     * This method returns the unique list of critical paths (node label, IP address, and service name)
+     */
+    @Override
+    public List<String[]> getAllCriticalPaths() {
+        return getHibernateTemplate().execute(new HibernateCallback<List<String[]>>() {
+            @Override
+            public List<String[]> doInHibernate(Session session) throws HibernateException, SQLException {
+                Query query = session.createQuery(
+                    "select distinct node.label, pathOutage.criticalPathIp, pathOutage.criticalPathServiceName from OnmsPathOutage as pathOutage, OnmsIpInterface as ipInterface join ipInterface.node as node join ipInterface.monitoredServices as monitoredServices join monitoredServices.serviceType as serviceType " +
+                    // Make sure that the path outage is on a managed interface
+                    "where pathOutage.criticalPathIp = ipInterface.ipAddress and ipInterface.isManaged <> 'D' and " +
+                    // And that the service is marked as active
+                    "pathOutage.criticalPathServiceName = serviceType.name and monitoredServices.status = 'A' " +
+                    // Sort by node label so that the lists are easy to read
+                    "order by node.label, pathOutage.criticalPathIp, pathOutage.criticalPathServiceName"
+                );
+                List<Object[]> queryResults = (List<Object[]>)query.list();
+                if (queryResults == null || queryResults.size() == 0) {
+                    return Collections.emptyList();
+                } else {
+                    List<String[]> retval = new ArrayList<String[]>(queryResults.size());
+                    for (Object[] row : queryResults) {
+                        // Only add the ID to the return value
+                        retval.add(new String[] { (String)row[0], InetAddressUtils.str((InetAddress)row[1]), (String)row[2]});
+                    }
+                    return retval;
+                }
+            }
+        });
+    }
 
     @Override
     public List<Integer> getNodesForPathOutage(final InetAddress ipAddress, final String serviceName) {

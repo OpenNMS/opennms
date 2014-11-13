@@ -260,12 +260,17 @@ public class PathOutageManagerJdbcTest implements TemporaryDatabaseAware<MockDat
 		Set<Integer> vno = getPathOutageManager().getNodesInPath("192.168.1.4", "SMTP");
 		assertEquals(new Integer(3), vno.iterator().next());
 
+		// This list should order by node label so Firewall should precede Router
 		List<String[]> all = getPathOutageManager().getAllCriticalPaths();
 		assertEquals(2, all.size());
-		assertEquals("192.168.1.1",all.get(0)[0]);
-		assertEquals("ICMP", all.get(0)[1]);
-		assertEquals("192.168.1.4",all.get(1)[0]);
-		assertEquals("SMTP",all.get(1)[1]);
+
+		assertEquals("Firewall",all.get(0)[0]);
+		assertEquals("192.168.1.4",all.get(0)[1]);
+		assertEquals("SMTP",all.get(0)[2]);
+
+		assertEquals("Router",all.get(1)[0]);
+		assertEquals("192.168.1.1",all.get(1)[1]);
+		assertEquals("ICMP", all.get(1)[2]);
 
 		String[] dat = getPathOutageManager().getCriticalPathData("192.168.1.1", "ICMP");
 		assertEquals("Router", dat[0]);

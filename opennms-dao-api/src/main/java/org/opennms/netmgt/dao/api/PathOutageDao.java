@@ -48,4 +48,6 @@ public interface PathOutageDao extends OnmsDao<OnmsPathOutage, Integer> {
 	List<Integer> getAllNodesDependentOnAnyServiceOnInterface(InetAddress ipAddress);
 
 	List<Integer> getAllNodesDependentOnAnyServiceOnNode(int nodeId);
+
+	List<String[]> getAllCriticalPaths();
 }
