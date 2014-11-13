@@ -156,6 +156,8 @@
         <attrib name="onmsUptime" alias="Uptime" type="gauge"/>
       </mbean>
       <mbean name="JVM Memory" objectname="java.lang:type=OperatingSystem">
+        <attrib name="MaxFileDescriptorCount" alias="MaxFileDescriptors" type="gauge"/>
+        <attrib name="OpenFileDescriptorCount" alias="OpenFileDescriptors" type="gauge"/>
         <attrib name="FreePhysicalMemorySize" alias="FreeMemory" type="gauge"/>
         <attrib name="TotalPhysicalMemorySize" alias="TotalMemory" type="gauge"/>
         <attrib name="FreeSwapSpaceSize" alias="FreeSwapSpace" type="gauge"/>
