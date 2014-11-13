@@ -43,9 +43,9 @@ public class PathOutagesPageTest extends OpenNMSSeleniumTestCase {
 
     @Test
     public void a_testPathOutagesPage() throws Exception {
-        waitForText("All path outages");
+        waitForText("All Path Outages");
         waitForText("Critical Path IP");
-        waitForText("# of Nodes");
+        waitForText("Number of Nodes");
     }
 
 }
