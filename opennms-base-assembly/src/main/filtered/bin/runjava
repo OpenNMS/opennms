@@ -1,8 +1,5 @@
 #!/bin/sh -
 #
-#  $Id$
-#
-#
 # Wrapper script for starting a JRE within OpenNMS.
 # DJ Gregor
 # Copyright (c) Daniel J. Gregor, Jr.
