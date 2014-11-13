@@ -239,8 +239,7 @@ public class PathOutageManagerDaoImpl implements PathOutageManager {
 
         final org.opennms.core.criteria.Criteria crit = new org.opennms.core.criteria.Criteria(OnmsMonitoredService.class)
         .setAliases(Arrays.asList(new Alias[] {
-            //new Alias("monitoredService","monitoredService", JoinType.LEFT_JOIN),
-            new Alias("ipInterface","ipInterface", JoinType.LEFT_JOIN)
+            new Alias("ipInterface","ipInterface", JoinType.INNER_JOIN)
         }))
         .addRestriction(new EqRestriction("status", "A"))
         .addRestriction(new EqRestriction("ipInterface.node", node));

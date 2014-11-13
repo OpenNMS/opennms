@@ -71,7 +71,7 @@ public class PathOutageDaoHibernate extends AbstractDaoHibernate<OnmsPathOutage,
             @Override
             public List<Integer> doInHibernate(Session session) throws HibernateException, SQLException {
                 Query query = session.createQuery(
-                    "select distinct node.id, node.label from OnmsPathOutage as pathOutage, OnmsIpInterface as ipInterface left join pathOutage.node as node left join ipInterface.monitoredServices as monitoredServices left join monitoredServices.serviceType as serviceType " +
+                    "select distinct node.id, node.label from OnmsPathOutage as pathOutage, OnmsIpInterface as ipInterface join pathOutage.node as node join ipInterface.monitoredServices as monitoredServices join monitoredServices.serviceType as serviceType " +
                     // Select the path outage
                     "where pathOutage.criticalPathIp = :ipAddress and pathOutage.criticalPathServiceName = :serviceName and " +
                     // Make sure that the path outage is on a managed interface
@@ -105,7 +105,7 @@ public class PathOutageDaoHibernate extends AbstractDaoHibernate<OnmsPathOutage,
             public List<Integer> doInHibernate(Session session) throws HibernateException, SQLException {
                 //Query query = session.createQuery("select distinct node.id from OnmsPathOutage as pathOutage left join pathOutage.node as node left join node.ipInterfaces as ipInterfaces left join ipInterfaces.monitoredServices as monitoredServices where pathOutage.criticalPathIp = :ipAddress and ipInterfaces.isManaged <> 'D' and monitoredServices.status = 'A'");
                 Query query = session.createQuery(
-                    "select distinct node.id from OnmsPathOutage as pathOutage, OnmsIpInterface as ipInterface left join pathOutage.node as node left join ipInterface.monitoredServices as monitoredServices " +
+                    "select distinct node.id from OnmsPathOutage as pathOutage, OnmsIpInterface as ipInterface join pathOutage.node as node join ipInterface.monitoredServices as monitoredServices " +
                     // Select the path outage
                     "where pathOutage.criticalPathIp = :ipAddress and " +
                     // Make sure that the path outage is on a managed interface
@@ -131,7 +131,7 @@ public class PathOutageDaoHibernate extends AbstractDaoHibernate<OnmsPathOutage,
             public List<Integer> doInHibernate(Session session) throws HibernateException, SQLException {
                 //Query query = session.createQuery("select distinct node.id from OnmsPathOutage as pathOutage, OnmsIpInterface as ipInterface left join pathOutage.node as node where pathOutage.criticalPathIp = ipInterface.ipAddress and ipInterface.node.id = :nodeId and ipInterface.isManaged <> 'D'");
                 Query query = session.createQuery(
-                    "select distinct node.id from OnmsPathOutage as pathOutage, OnmsIpInterface as ipInterface left join pathOutage.node as node left join ipInterface.monitoredServices as monitoredServices " +
+                    "select distinct node.id from OnmsPathOutage as pathOutage, OnmsIpInterface as ipInterface join pathOutage.node as node join ipInterface.monitoredServices as monitoredServices " +
                     // Select the node from the path outage's IP interface
                     "where ipInterface.node.id = :nodeId and " +
                     // Make sure that the path outage is on a managed interface
