@@ -185,10 +185,6 @@ public class NodeLabelDaoImpl implements NodeLabel{
      * 'nodelabelsource' fields for the node with the provided nodeID. A
      * NodeLabel object is returned initialized with the retrieved values.
      *
-     * WARNING: A properly instantiated and initialized Vault class object is
-     * required prior to calling this method. This method will initially only be
-     * called from the WEB UI.
-     *
      * @param nodeID
      *            Unique identifier of the node to be updated.
      * @return Object containing label and source values.
@@ -230,13 +226,8 @@ public class NodeLabelDaoImpl implements NodeLabel{
 
     /**
      * This method updates the 'nodelabel' and 'nodelabelsource' fields of the
-     * 'node' table for the specified nodeID. A database connection is retrieved
-     * from the Vault.
-     *
-     * WARNING: A properly instantiated and initialized Vault class object is
-     * required prior to calling this method. This method will initially only be
-     * called from the WEB UI.
-     *
+     * 'node' table for the specified nodeID.
+     * 
      * @param nodeID
      *            Unique identifier of the node to be updated.
      * @param nodeLabel
@@ -295,11 +286,7 @@ public class NodeLabelDaoImpl implements NodeLabel{
 
     /**
      * This method determines what label should be associated with a particular
-     * node. A database connection is retrieved from the Vault.
-     *
-     * WARNING: A properly instantiated and initialized Vault class object is
-     * required prior to calling this method. This method will initially only be
-     * called from the WEB UI.
+     * node.
      *
      * @param nodeID
      *            Unique identifier of the node to be updated.
