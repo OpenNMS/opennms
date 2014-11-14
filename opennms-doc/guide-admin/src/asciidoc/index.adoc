@@ -55,6 +55,7 @@ include::text/poller/SnmpMonitor.adoc[]
 include::text/poller/SshMonitor.adoc[]
 include::text/poller/SSLCertMonitor.adoc[]
 include::text/poller/StrafePingMonitor.adoc[]
+include::text/poller/TcpMonitor.adoc[]
 include::text/poller/SystemExecuteMonitor.adoc[]
 include::text/poller/Win32ServiceMonitor.adoc[]
 
