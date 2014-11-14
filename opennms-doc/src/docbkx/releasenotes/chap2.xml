@@ -6,6 +6,26 @@
 
 	<!-- Start 14.0 -->
 
+	<section id="opennms-14.0.1">
+		<title>Changes in OpenNMS 14.0.1</title>
+
+		<section id="opennms-14.0.1-bug">
+			<title>Bug</title>
+
+			<itemizedlist>
+				<listitem><para>WMI collector does not support persistence selectors (Issue <ulink url='http://issues.opennms.org/browse/NMS-6924'>NMS-6924</ulink>)</para></listitem>
+				<listitem><para>&quot;Dashboard&quot; &amp; &quot;Add Node&quot; tabs in the navigation bar doesn&#39;t change style when being selected. (Issue <ulink url='http://issues.opennms.org/browse/NMS-7150'>NMS-7150</ulink>)</para></listitem>
+				<listitem><para>debian packages still try to use java 1.5 by default (Issue <ulink url='http://issues.opennms.org/browse/NMS-7154'>NMS-7154</ulink>)</para></listitem>
+				<listitem><para>OpenNMS on Debian Jessie Fails to Install if PostgreSQL is Not Already Configured (Issue <ulink url='http://issues.opennms.org/browse/NMS-7155'>NMS-7155</ulink>)</para></listitem>
+				<listitem><para>When I clicked on &quot;Change Node Label&quot; for modifying node lable it giving the error below. (Issue <ulink url='http://issues.opennms.org/browse/NMS-7156'>NMS-7156</ulink>)</para></listitem>
+				<listitem><para>$OPENNMS_HOME/bin/system-report throws a ClassNotFoundException (Issue <ulink url='http://issues.opennms.org/browse/NMS-7163'>NMS-7163</ulink>)</para></listitem>
+				<listitem><para>The WebUI is not showing the resources associated with new resource types added on the fly. (Issue <ulink url='http://issues.opennms.org/browse/NMS-7168'>NMS-7168</ulink>)</para></listitem>
+				<listitem><para>command-line scripts should output to the console (Issue <ulink url='http://issues.opennms.org/browse/NMS-7174'>NMS-7174</ulink>)</para></listitem>
+				<listitem><para>&quot;OpenNMS Disconnect -- is the OpenNMS daemon running?&quot; is confusing (Issue <ulink url='http://issues.opennms.org/browse/NMS-7177'>NMS-7177</ulink>)</para></listitem>
+			</itemizedlist>
+		</section>
+	</section>
+
 	<section id="opennms-14.0.0">
 		<title>Changes in OpenNMS 14.0.0</title>
 
