@@ -1,0 +1,59 @@
+
+=== VmwareCimMonitor
+
+This monitor is part of the VMware integration provided in Provisiond.
+The monitor is specialized to test the health status provided from all Host System (Host) sensor data.
+
+IMPORTANT: This monitor is only executed if the Host is in power state _on_.
+
+IMPORTANT: This monitor requires to import Hosts with Provisiond and the VMware import.
+           OpenNMS requires network access to VMware vCenter and the Hosts systems.
+           To get the sensor data the credentials from 'vmware-config.xml' against the responsible vCenter is used.
+           The following asset fields are required provided by the Provisiond VMware import feature: 
+           VMware Management Server, VMware Managed Entity Type and the foreignId which contains an internal VMware vCenter Identifier.
+
+The global health status is evaluated by testing all available Host sensors and evaluating the state of each sensor.
+A sensor state could be represented as the following:
+
+ - _Unknown(0)_
+ - _OK(5)_
+ - _Degraded/Warning(10)_
+ - _Minor failure(15)_
+ - _Major failure(20)_
+ - _Critical failure(25)_
+ - _Non-recoverable error(30)_
+
+The service is _up_ if *all* sensors have the status _OK(5)_.
+If any sensor gives another status then _OK(5)_ the service is marked as _down_.
+The monitor error reason contains a list of all sensors which not returned status _OK(5)_.
+
+==== Monitor facts
+
+[options="autowidth"]
+|===
+| Class Name     | `org.opennms.netmgt.poller.monitors.VmwareCimMonitor`
+| Remote Enabled | false
+|===
+
+==== Configuration and Usage
+
+.Monitor specific parameters for the <MONITORNAME-HERE>
+[options="header, autowidth"]
+|===
+| Parameter | Description                                                  | Required | Default value
+| `retry`   | Number of retries before the service is marked as down.      | optional | `0`
+| `timeout` | Time in milliseconds to wait collecting the CIM sensor data. | optional | `3000`
+|===
+
+==== Examples
+Some example configuration how to configure the monitor in the 'poller-configuration.xml'.
+
+[source, xml]
+----
+<service name="VMwareCim-HostSystem" interval="300000" user-defined="false" status="on">
+  <parameter key="retry" value="2"/>
+  <parameter key="timeout" value="3000"/>
+</service>
+
+<monitor service="VMwareCim-HostSystem" class-name="org.opennms.netmgt.poller.monitors.VmwareCimMonitor"/>
+----
