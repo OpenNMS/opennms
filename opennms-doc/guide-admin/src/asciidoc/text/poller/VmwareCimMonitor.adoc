@@ -37,7 +37,7 @@ The monitor error reason contains a list of all sensors which not returned statu
 
 ==== Configuration and Usage
 
-.Monitor specific parameters for the <MONITORNAME-HERE>
+.Monitor specific parameters for the VmwareCimMonitor
 [options="header, autowidth"]
 |===
 | Parameter | Description                                                  | Required | Default value
