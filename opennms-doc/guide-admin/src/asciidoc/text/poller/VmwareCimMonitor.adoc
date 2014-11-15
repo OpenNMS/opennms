@@ -1,18 +1,18 @@
 
 === VmwareCimMonitor
 
-This monitor is part of the VMware integration provided in Provisiond.
-The monitor is specialized to test the health status provided from all Host System (Host) sensor data.
+This monitor is part of the VMware integration provided in _Provisiond_.
+The monitor is specialized to test the health status provided from all _Host System_ (host) sensor data.
 
-IMPORTANT: This monitor is only executed if the Host is in power state _on_.
+IMPORTANT: This monitor is only executed if the host is in power state _on_.
 
-IMPORTANT: This monitor requires to import Hosts with Provisiond and the VMware import.
-           OpenNMS requires network access to VMware vCenter and the Hosts systems.
-           To get the sensor data the credentials from 'vmware-config.xml' against the responsible vCenter is used.
-           The following asset fields are required provided by the Provisiond VMware import feature: 
-           VMware Management Server, VMware Managed Entity Type and the foreignId which contains an internal VMware vCenter Identifier.
+IMPORTANT: This monitor requires to import hosts with _Provisiond_ and the _VMware_ import.
+           OpenNMS requires network access to _VMware vCenter_ and the hosts.
+           To get the sensor data the credentials from 'vmware-config.xml' for the responsible _vCenter_ is used.
+           The following asset fields are filled from _Provisiond_ and is provided by _VMware_ import feature: 
+           _VMware Management Server_, _VMware Managed Entity Type_ and the _foreignId_ which contains an internal _VMware vCenter Identifier_.
 
-The global health status is evaluated by testing all available Host sensors and evaluating the state of each sensor.
+The global health status is evaluated by testing all available host sensors and evaluating the state of each sensor.
 A sensor state could be represented as the following:
 
  - _Unknown(0)_
@@ -40,9 +40,9 @@ The monitor error reason contains a list of all sensors which not returned statu
 .Monitor specific parameters for the VmwareCimMonitor
 [options="header, autowidth"]
 |===
-| Parameter | Description                                                  | Required | Default value
-| `retry`   | Number of retries before the service is marked as down.      | optional | `0`
-| `timeout` | Time in milliseconds to wait collecting the CIM sensor data. | optional | `3000`
+| Parameter | Description                                                    | Required | Default value
+| `retry`   | Number of retries before the service is marked as down.        | optional | `0`
+| `timeout` | Time in milliseconds to wait collecting the _CIM_ sensor data. | optional | `3000`
 |===
 
 ==== Examples
