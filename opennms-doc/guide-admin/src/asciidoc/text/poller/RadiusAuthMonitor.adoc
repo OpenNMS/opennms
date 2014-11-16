@@ -2,7 +2,7 @@
 === RadiusAuthMonitor
 
 This monitor allows to test the functionality of the link:http://freeradius.org/rfc/rfc2865.html[RADIUS] service.
-The availability is tested by sending a _AUTH_ packet to the host.
+The availability is tested by sending an _AUTH_ packet to the host.
 If a valid _ACCEPT_ response is received, then the _RADIUS_ service is _up_ and considered as available.
 
 IMPORTANT: To use this monitor it is required to install the _RADIUS_ protocol for OpenNMS.
