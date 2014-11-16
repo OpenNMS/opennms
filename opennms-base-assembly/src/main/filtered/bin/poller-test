@@ -1,30 +1,15 @@
 #!/bin/sh - 
 
 JAVA_OPTIONS="-Xmx256m"
-opennms_home="${install.dir}"
+OPENNMS_HOME="${install.dir}"
+OPENNMS_BINDIR="${install.bin.dir}"
 
-app_class=org.opennms.netmgt.poller.MonitorTester
+APP_CLASS=org.opennms.netmgt.poller.MonitorTester
 
-# If you want to enable DEBUG, include the following line right before the -jar line:
-#
-# -Dlog4j.configurationFile=$opennms_home/bin/test-commands-log4j2.xml \
-#
-# Then, create the file test-commands-log4j2.xml with:
-#
-#<Configuration status="WARN">
-#  <Appenders>
-#    <Console name="Console" target="SYSTEM_OUT">
-#      <PatternLayout pattern="%d %-5p [%t] %c{1}: %m%n"/>
-#    </Console>
-#  </Appenders>
-#  <Loggers>
-#    <Root level="DEBUG">
-#      <AppenderRef ref="Console"/>
-#    </Root>
-#  </Loggers>
-#</Configuration>
+# If you want to enable DEBUG, edit $OPENNMS_HOME/etc/log4j2-tools.xml
 
-exec $opennms_home/bin/runjava -r -- $JAVA_OPTIONS \
-    -Dopennms.home=$opennms_home \
-    -Dopennms.manager.class=$app_class \
-    -jar $opennms_home/lib/opennms_bootstrap.jar $@
+exec "$OPENNMS_BINDIR"/runjava -r -- $JAVA_OPTIONS \
+	-Dopennms.home="$OPENNMS_HOME" \
+	-Dlog4j.configurationFile="$OPENNMS_HOME"/etc/log4j2-tools.xml \
+	-Dopennms.manager.class="$APP_CLASS" \
+	-jar $OPENNMS_HOME/lib/opennms_bootstrap.jar $@

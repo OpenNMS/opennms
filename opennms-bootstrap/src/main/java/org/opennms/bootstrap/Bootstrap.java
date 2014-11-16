@@ -315,7 +315,7 @@ public abstract class Bootstrap {
         loadDefaultProperties();
         
         final String classToExec = System.getProperty("opennms.manager.class", "org.opennms.netmgt.vmmgr.Controller");
-        final String classToExecMethod = "main";
+        final String classToExecMethod = System.getProperty("opennms.manager.method", "main");
         final String[] classToExecArgs = args;
 
         executeClass(classToExec, classToExecMethod, classToExecArgs, false);
@@ -350,7 +350,7 @@ public abstract class Bootstrap {
             System.err.println("dir = " + dir);
         }
 
-        final ClassLoader cl = Bootstrap.loadClasses(dir, recurse, false);
+        final ClassLoader cl = Bootstrap.loadClasses(dir, recurse, appendClasspath);
 
         if (classToExec != null) {
             final String className = classToExec;

@@ -1,6 +1,7 @@
 #!/bin/sh -
 
 OPENNMS_HOME="${install.dir}"
+OPENNMS_BINDIR="${install.bin.dir}"
 
 if [ -f "$OPENNMS_HOME/etc/opennms.conf" ]; then
 	. "$OPENNMS_HOME/etc/opennms.conf"
@@ -22,13 +23,14 @@ ADMIN_DATABASE_USER=`grep 'user-name='     $OPENNMS_HOME/etc/opennms-datasources
 ADMIN_DATABASE_PASS=`grep 'password='      $OPENNMS_HOME/etc/opennms-datasources.xml | tail -n 1 | sed -e 's,^[^"]*",,' -e 's,".*$,,'`
 ADMIN_DATABASE_URL=`grep 'url='            $OPENNMS_HOME/etc/opennms-datasources.xml | tail -n 1 | sed -e 's,^[^"]*",,' -e 's,".*$,,'`
 
-exec $OPENNMS_HOME/bin/runjava -r -- \
+exec "$OPENNMS_BINDIR"/runjava -r -- \
 	-Dopennms.home="$OPENNMS_HOME" \
+	-Dlog4j.configurationFile="$OPENNMS_HOME"/etc/log4j2-tools.xml \
 	-Dinstall.database.admin.user="$ADMIN_DATABASE_USER" \
 	-Dinstall.database.admin.password="$ADMIN_DATABASE_PASS" \
 	-Dinstall.database.user="$DATABASE_USER" \
 	-Dinstall.database.name="$DATABASE_PASS" \
-	-jar $OPENNMS_HOME/lib/liquibase*.jar \
+	-jar "$OPENNMS_HOME"/lib/liquibase*.jar \
 		--classpath="$CLASSPATH" \
 		--url="$DATABASE_URL" \
 		--username="$DATABASE_USER" \
