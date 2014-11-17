@@ -1,0 +1,38 @@
+
+=== MemcachedMonitor
+
+
+==== Monitor facts
+
+[options="autowidth"]
+|===
+| Class Name     | `org.opennms.netmgt.poller.monitors.MemcachedMonitor`
+| Remote Enabled | true
+|===
+
+==== Configuration and Usage
+
+.Monitor specific parameters for the MemcachedMonitor
+[options="header, autowidth"]
+|===
+| Parameter       | Description                                                                    | Required | Default value
+| `timeout`       | Timeout in milliseconds for Memcached connection establishment.                | optional | `3000`
+| `retry`         | Number of attempts to establish the Memcached connnection.                     | optional | `0`
+| `port`          | TCP port connecting to Memcached.                                              | optional | `11211`
+|===
+
+==== Examples
+
+[source, xml]
+----
+<service name="SSH" interval="300000" user-defined="false" status="on">
+  <parameter key="retry" value="1"/>
+  <parameter key="banner" value="SSH"/>
+  <parameter key="client-banner" value="OpenNMS poller"/>
+  <parameter key="timeout" value="5000"/>
+  <parameter key="rrd-repository" value="/var/lib/opennms/rrd/response"/>
+  <parameter key="rrd-base-name" value="ssh"/>
+  <parameter key="ds-name" value="ssh"/>
+</service>
+<monitor service="SSH" class-name="org.opennms.netmgt.poller.monitors.SshMonitor"/>
+----
