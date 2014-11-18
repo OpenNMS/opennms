@@ -321,7 +321,7 @@ public abstract class EventPanel extends Panel {
                     event.setAlarmData(null);
                 }
                 Mask m = event.getMask();
-                if (m.getMaskelementCollection().isEmpty()) {
+                if (m != null && m.getMaskelementCollection().isEmpty()) {
                     event.setMask(null);
                 }
             }
