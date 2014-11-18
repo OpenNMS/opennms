@@ -48,6 +48,7 @@ import org.opennms.netmgt.eventd.BroadcastEventProcessor;
 import org.opennms.netmgt.eventd.DefaultEventHandlerImpl;
 import org.opennms.netmgt.eventd.EventExpander;
 import org.opennms.netmgt.eventd.EventIpcManagerDefaultImpl;
+import org.opennms.netmgt.eventd.EventUtilJdbcImpl;
 import org.opennms.netmgt.eventd.Eventd;
 import org.opennms.netmgt.eventd.JdbcEventdServiceManager;
 import org.opennms.netmgt.eventd.adaptors.EventHandler;
@@ -172,6 +173,7 @@ public class OpenNMSTestCase {
 
                 JdbcEventWriter jdbcEventWriter = new JdbcEventWriter();
                 jdbcEventWriter.setEventdServiceManager(eventdServiceManager);
+                jdbcEventWriter.setEventUtil(new EventUtilJdbcImpl());
                 jdbcEventWriter.setDataSource(m_db);
                 jdbcEventWriter.setGetNextIdString("select nextVal('eventsNxtId')"); // for HSQL: "SELECT max(eventId)+1 from events"
                 jdbcEventWriter.afterPropertiesSet();
