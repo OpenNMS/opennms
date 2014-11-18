@@ -137,7 +137,7 @@ public class AlarmRestService extends AlarmRestServiceBase {
             final OnmsAlarmCollection coll = new OnmsAlarmCollection(m_alarmDao.findMatching(builder.toCriteria()));
 
             // For getting totalCount
-            coll.setTotalCount(m_alarmDao.countMatching(builder.clearOrder().limit(0).offset(0).toCriteria()));
+            coll.setTotalCount(m_alarmDao.countMatching(builder.count().toCriteria()));
 
             return coll;
         } finally {
