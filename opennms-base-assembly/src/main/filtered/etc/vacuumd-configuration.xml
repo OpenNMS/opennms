@@ -415,7 +415,7 @@
            SET severity=2, firstautomationtime = COALESCE(firstautomationtime, ${_ts}), lastautomationtime = ${_ts}
          WHERE alarmType=1 
            AND severity &gt; 2 
-           AND lastEventTime &lt;  ${lastEventTime} 
+           AND lastEventTime &lt;=  ${lastEventTime} 
            AND reductionKey = ${clearKey} 
       </statement> 
     </action>
