@@ -34,9 +34,8 @@ package org.opennms.netmgt.eventd;
  *
  * @author <A HREF="mailto:weave@oculan.com">Sowmya Nataraj </A>
  * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
- * @author <A HREF="mailto:weave@oculan.com">Sowmya Nataraj </A>
- * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
- * @version $Id: $
+ * 
+ * @deprecated Use standard DAO calls instead of using JDBC statements
  */
 public abstract class EventdConstants {
     /**
@@ -52,7 +51,7 @@ public abstract class EventdConstants {
     		"eventHost, ipAddr, eventDpName, eventSnmpHost, serviceID, eventSnmp, eventParms, eventCreateTime, eventDescr, " +
     		"eventLoggroup, eventLogmsg, eventLog, eventDisplay, eventSeverity, eventPathOutage, eventCorrelation, eventSuppressedCount, " +
     		"eventOperInstruct, eventAutoAction, eventOperAction, eventOperActionMenuText, eventNotification, eventTticket, eventTticketState, " +
-    		"eventForward, eventMouseOverText, eventAckUser, eventAckTime, eventSource,ifIndex) " +
+    		"eventForward, eventMouseOverText, eventAckUser, eventAckTime, eventSource, ifIndex) " +
     		"values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
     /**
