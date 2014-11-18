@@ -38,6 +38,8 @@ import org.opennms.netmgt.capsd.DbIpInterfaceEntry;
 import org.opennms.netmgt.capsd.DbSnmpInterfaceEntry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.JdbcTemplate;
 
 /**
  * EventUtil is used primarily for the event parm expansion - has methods used
@@ -60,7 +62,7 @@ public final class EventUtilJdbcImpl extends AbstractEventUtil {
 	 * @param nodeId
 	 *            Node identifier
 	 * 
-	 * @return nodeLabel Retreived nodeLabel
+	 * @return nodeLabel Retrieved nodeLabel
 	 * 
 	 * @throws SQLException
 	 *             if database error encountered
@@ -297,4 +299,33 @@ public final class EventUtilJdbcImpl extends AbstractEventUtil {
         }
         return retParmVal;
     }
+
+    /**
+     * This method is used to convert the event host into a hostname id by
+     * performing a lookup in the database. If the conversion is successful then
+     * the corresponding hosname will be returned to the caller.
+     * @param nodeId TODO
+     * @param hostip
+     *            The event host
+     * 
+     * @return The hostname
+     * 
+     * @exception java.sql.SQLException
+     *                Thrown if there is an error accessing the stored data or
+     *                the SQL text is malformed.
+     * 
+     * @see EventdConstants#SQL_DB_HOSTIP_TO_HOSTNAME
+     * 
+     * @deprecated Replace with standard DAO calls instead of using JDBC
+     */
+    @Override
+    public String getHostName(final int nodeId, final String hostip) throws SQLException {
+        try {
+            final String hostname = new JdbcTemplate(DataSourceFactory.getInstance()).queryForObject(EventdConstants.SQL_DB_HOSTIP_TO_HOSTNAME, String.class, new Object[] { nodeId, hostip });
+            return (hostname != null) ? hostname : hostip;
+        } catch (final EmptyResultDataAccessException e) {
+            return hostip;
+        }
+    }
+
 }

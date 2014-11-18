@@ -37,6 +37,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.opennms.core.utils.DBUtils;
+import org.opennms.netmgt.capsd.EventUtils;
 import org.opennms.netmgt.dao.util.AutoAction;
 import org.opennms.netmgt.dao.util.OperatorAction;
 import org.opennms.netmgt.dao.util.SnmpInfo;
@@ -316,7 +317,7 @@ public final class JdbcEventWriter extends AbstractJdbcPersister implements Even
             // eventForward
             set(insStmt, 29, (event.getForwardCount() > 0) ? org.opennms.netmgt.dao.util.Forward.format(event.getForward(), EVENT_FORWARD_FIELD_SIZE) : null);
 
-            // event mouseOverText
+            // eventmouseOverText
             set(insStmt, 30, Constants.format(event.getMouseovertext(), EVENT_MOUSEOVERTEXT_FIELD_SIZE));
 
             // eventAckUser
@@ -350,34 +351,6 @@ public final class JdbcEventWriter extends AbstractJdbcPersister implements Even
         LOG.debug("SUCCESSFULLY added {} related  data into the EVENTS table.", event.getUei());
     }
 
-
-    /**
-     * This method is used to convert the event host into a hostname id by
-     * performing a lookup in the database. If the conversion is successful then
-     * the corresponding hosname will be returned to the caller.
-     * @param nodeId TODO
-     * @param hostip
-     *            The event host
-     * 
-     * @return The hostname
-     * 
-     * @exception java.sql.SQLException
-     *                Thrown if there is an error accessing the stored data or
-     *                the SQL text is malformed.
-     * 
-     * @see EventdConstants#SQL_DB_HOSTIP_TO_HOSTNAME
-     * 
-     */
-    
-    String getHostName(final int nodeId, final String hostip) throws SQLException {
-        try {
-            final String hostname = new JdbcTemplate(getDataSource()).queryForObject(EventdConstants.SQL_DB_HOSTIP_TO_HOSTNAME, String.class, new Object[] { nodeId, hostip });
-            return (hostname != null) ? hostname : hostip;
-        } catch (final EmptyResultDataAccessException e) {
-            return hostip;
-        }
-    }
-
     /**
      * @param event
      * @param log
@@ -403,7 +376,7 @@ public final class JdbcEventWriter extends AbstractJdbcPersister implements Even
      * @param connection a {@link java.sql.Connection} object.
      * @return a {@link java.lang.String} object.
      */
-    protected String getEventHost(final Event event) {
+    private String getEventHost(final Event event) {
         if (event.getHost() == null) {
             return null;
         }
@@ -414,7 +387,7 @@ public final class JdbcEventWriter extends AbstractJdbcPersister implements Even
         }
         
         try {
-            return getHostName(event.getNodeid().intValue(), event.getHost());
+            return getEventUtil().getHostName(event.getNodeid().intValue(), event.getHost());
         } catch (final Throwable t) {
             LOG.warn("Error converting host IP \"{}\" to a hostname, storing the IP.", event.getHost(), t);
             return event.getHost();

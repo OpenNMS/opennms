@@ -964,6 +964,32 @@ public abstract class AbstractEventUtil implements EventUtil {
 	}
 
 	/**
+	 * <p>getEventHost</p>
+	 *
+	 * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
+	 * @param connection a {@link java.sql.Connection} object.
+	 * @return a {@link java.lang.String} object.
+	 */
+	@Override
+	public String getEventHost(final Event event) {
+		if (event.getHost() == null) {
+			return null;
+		}
+
+		// If the event doesn't have a node ID, we can't lookup the IP address and be sure we have the right one since we don't know what node it is on
+		if (!event.hasNodeid()) {
+			return event.getHost();
+		}
+
+		try {
+			return getHostName(event.getNodeid().intValue(), event.getHost());
+		} catch (final Throwable t) {
+			LOG.warn("Error converting host IP \"{}\" to a hostname, storing the IP.", event.getHost(), t);
+			return event.getHost();
+		}
+	}
+
+	/**
 	 * Retrieve nodeLabel from the node table of the database given a particular
 	 * nodeId.
 	 * 

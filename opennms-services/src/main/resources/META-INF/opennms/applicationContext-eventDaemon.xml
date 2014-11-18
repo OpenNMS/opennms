@@ -81,6 +81,7 @@
     <property name="getNextIdString" ref="getNextEventIdSql"/>
     <property name="dataSource" ref="dataSource"/>
     <property name="eventdServiceManager" ref="eventdServiceManager"/>
+    <property name="eventUtil" ref="eventUtil"/>
   </bean>
 
   <bean id="getNextEventIdSql" factory-bean="eventdConfigManager" factory-method="getGetNextEventID"/>
@@ -126,6 +127,6 @@
     <constructor-arg><ref bean="eventConfDao"/></constructor-arg>
   </bean>
 
-  <bean id="eventUtilDaoImpl" class="org.opennms.netmgt.eventd.EventUtilDaoImpl" />
+  <bean id="eventUtil" class="org.opennms.netmgt.eventd.EventUtilDaoImpl" />
 
 </beans>
