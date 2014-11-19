@@ -1,13 +1,19 @@
 
 === NetScalerGroupHealthMonitor
 
-This monitor is designed for Citrix NetScaler loadbalancing checks.
-It checks if more than x percent of the servers assigned to a loadbalanced service are active.
-The required data is gathered via SNMP from the NetScaler.
-The status of the servers is determined by the NetScaler.
+This monitor is designed for Citrix(R) NetScaler(R) loadbalancing checks.
+It checks if more than x percent of the servers assigned to a specific group on a loadbalanced service are active.
+The required data is gathered via SNMP from the NetScaler(R).
+The status of the servers is determined by the NetScaler(R).
 The provided service it self is not part of the check.
 The basis of this monitor is the SnmpMonitorStrategy.
-A valid SNMP configuration in OpenNMS for the NetScaler is required.
+A valid SNMP configuration in OpenNMS for the NetScaler(R) is required.
+
+NOTE: A NetScaler(R) can manage several groups of servers per application.
+This monitor just covers one group at a time.
+If there are multiple groups to check, define one monitor per group.
+
+CAUTION: This monitor is not checking the loadbalanced service it self.
 
 ==== Monitor facts
 
