@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -328,6 +328,7 @@ public class RemotePollerAvailabilityService extends OnmsRestService {
             String value = params.getFirst("endTime");
             return new Date(Long.valueOf(value));
         } else {
+            // If no end time is specified, then use the current time
             return new Date();
         }
     }
@@ -337,10 +338,24 @@ public class RemotePollerAvailabilityService extends OnmsRestService {
             String startTime = params.getFirst("startTime");
             return new Date(Long.valueOf(startTime));
         } else {
+            // If no start time is specified, then use the previous midnight as the start time
+
+            // Current time
             Calendar calendar = Calendar.getInstance();
-            return new GregorianCalendar(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH), 0, 0).getTime();
+
+            // Previous midnight
+            Calendar previousMidnight = new GregorianCalendar(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH), 0, 0);
+
+            // If midnight was less than 5 minutes ago, use midnight of the previous day so that we have
+            // enough samples to calculate at the given resolution
+            //
+            // @see http://issues.opennms.org/browse/NMS-6779
+            //
+            if (calendar.getTimeInMillis() - previousMidnight.getTimeInMillis() <= TimeChunker.MINUTE) {
+                previousMidnight.add(Calendar.DAY_OF_MONTH, -1);
+            }
+            return previousMidnight.getTime();
         }
-        
     }
     
     private Collection<OnmsNode> getSelectedNodes(MultivaluedMap<String, String> queryParameters) {

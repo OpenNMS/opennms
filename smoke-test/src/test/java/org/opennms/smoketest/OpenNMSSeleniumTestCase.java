@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2013 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -70,27 +70,33 @@ import com.thoughtworks.selenium.SeleniumException;
 import com.thoughtworks.selenium.webdriven.WebDriverBackedSelenium;
 
 public class OpenNMSSeleniumTestCase extends SeleneseTestBase {
-    protected static final Logger LOG = LoggerFactory.getLogger(OpenNMSSeleniumTestCase.class);
-    protected static final long LOAD_TIMEOUT = 60000;
-    protected static final String BASE_URL = "http://localhost:8980/";
+    private static final Logger LOG = LoggerFactory.getLogger(OpenNMSSeleniumTestCase.class);
+
+    protected static final long   LOAD_TIMEOUT       = Long.getLong("org.opennms.smoketest.web-timeout", 60000l);
+    protected static final String OPENNMS_WEB_HOST   = System.getProperty("org.opennms.smoketest.web-host", "localhost");
+    protected static final int    OPENNMS_WEB_PORT   = Integer.getInteger("org.opennms.smoketest.web-port", 8980);
+    protected static final String OPENNMS_EVENT_HOST = System.getProperty("org.opennms.smoketest.event-host", OPENNMS_WEB_HOST);
+    protected static final int    OPENNMS_EVENT_PORT = Integer.getInteger("org.opennms.smoketest.event-port", 5817);
+
+    protected static final String BASE_URL = "http://" + OPENNMS_WEB_HOST + ":" + OPENNMS_WEB_PORT + "/";
     protected static final String REQUISITION_NAME = "SeleniumTestGroup";
     protected static final String USER_NAME = "SmokeTestUser";
     protected static final String GROUP_NAME = "SmokeTestGroup";
 
+    protected static final boolean usePhantomJS = Boolean.getBoolean("org.opennms.smoketest.webdriver.use-phantomjs") || Boolean.getBoolean("smoketest.usePhantomJS");
+
     private WebDriver m_driver = null;
-    private static final boolean usePhantomJS = Boolean.getBoolean("smoketest.usePhantomJS");
 
     @Before
     public void setUp() throws Exception {
         final String logLevel = System.getProperty("org.opennms.smoketest.logLevel", "DEBUG");
-        //ch.qos.logback.classic.Logger root = (ch.qos.logback.classic.Logger) org.slf4j.LoggerFactory.getLogger(ch.qos.logback.classic.Logger.ROOT_LOGGER_NAME);
         final Logger logger = org.slf4j.LoggerFactory.getLogger(ch.qos.logback.classic.Logger.ROOT_LOGGER_NAME);
         if (logger instanceof ch.qos.logback.classic.Logger) {
             final ch.qos.logback.classic.Logger logbackLogger = (ch.qos.logback.classic.Logger) logger;
             logbackLogger.setLevel(ch.qos.logback.classic.Level.valueOf(logLevel));
         }
 
-        final String driverClass = System.getProperty("webdriver.class");
+        final String driverClass = System.getProperty("org.opennms.smoketest.webdriver.class", System.getProperty("webdriver.class"));
         if (driverClass != null) {
             m_driver = (WebDriver)Class.forName(driverClass).newInstance();
         }
@@ -113,6 +119,11 @@ public class OpenNMSSeleniumTestCase extends SeleneseTestBase {
         LOG.debug("Using driver: {}", m_driver);
 
         selenium = new WebDriverBackedSelenium(m_driver, BASE_URL);
+        // Change the timeout from the default of 30 seconds to 60 seconds
+        // since we have to launch the browser and visit the front page of
+        // the OpenNMS web UI in this amount of time and on the Bamboo
+        // machines, 30 seconds is cutting it close. :)
+        selenium.setTimeout("60000");
         selenium.open("/opennms/login.jsp");
         selenium.type("name=j_username", "admin");
         selenium.type("name=j_password", "admin");

@@ -267,6 +267,12 @@
   
   <onmsgi:service interface="org.opennms.netmgt.dao.api.NodeDao" ref="nodeDao" />
 
+  <bean id="requisitionedCategoryAssociationDao" class="org.opennms.netmgt.dao.hibernate.RequisitionedCategoryAssociationDaoHibernate">
+    <property name="sessionFactory" ref="sessionFactory" />
+  </bean>
+  
+  <onmsgi:service interface="org.opennms.netmgt.dao.api.RequisitionedCategoryAssociationDao" ref="requisitionedCategoryAssociationDao" />
+
   <bean id="linkStateDao" class="org.opennms.netmgt.dao.hibernate.LinkStateDaoHibernate">
     <property name="sessionFactory" ref="sessionFactory" />
   </bean>

@@ -1,0 +1,22 @@
+<assembly>
+  <id>source</id>
+  <formats>
+    <format>tar.gz</format>
+  </formats>
+  <fileSets>
+    <fileSet>
+      <directory>.</directory>
+      <outputDirectory>/</outputDirectory>
+      <excludes>
+        <exclude>**/.*.swp</exclude>
+        <exclude>**/.classpath</exclude>
+        <exclude>**/.project</exclude>
+        <exclude>**/.settings</exclude>
+        <exclude>**/.settings/**/*</exclude>
+        <exclude>**/.DS_Store</exclude>
+        <exclude>**/target</exclude>
+        <exclude>**/target/**/*</exclude>
+      </excludes>
+    </fileSet>
+  </fileSets>
+</assembly>

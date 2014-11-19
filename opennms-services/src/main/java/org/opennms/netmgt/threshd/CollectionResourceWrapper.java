@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -121,7 +121,12 @@ public class CollectionResourceWrapper {
 	 * Holds the timestamp of the collection being thresholded, for the calculation of counter rates
      */
     private final Date m_collectionTimestamp;
-        
+
+    /*
+     * true, if the sysUpTime wrap or abrupt reset has been detected.
+     */
+    private boolean m_counterReset = false;
+
     /**
      * <p>Constructor for CollectionResourceWrapper.</p>
      *
@@ -174,7 +179,11 @@ public class CollectionResourceWrapper {
             m_iflabel = null;
         }
     }
-    
+
+    public void setCounterReset(boolean counterReset) {
+        this.m_counterReset = counterReset;
+    }
+
     /**
      * <p>getNodeId</p>
      *
@@ -396,7 +405,8 @@ public class CollectionResourceWrapper {
 
         if (m_localCache.containsKey(id) == false) {
             // Atomically replace the CacheEntry with the new value
-            CacheEntry last = s_cache.put(id, new CacheEntry(m_collectionTimestamp, current));
+            // If the sysUpTime was changed, the "last" value must be null (to force update the cache).
+            CacheEntry last = m_counterReset ? null : s_cache.put(id, new CacheEntry(m_collectionTimestamp, current));
             LOG.debug("getCounterValue: id={}, last={}, current={}", id, (last==null ? last : last.m_value +"@"+ last.m_timestamp), current);
             if (last == null) {
                 m_localCache.put(id, Double.NaN);

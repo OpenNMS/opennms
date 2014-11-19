@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -30,15 +30,11 @@ package org.opennms.netmgt.dao;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.opennms.core.utils.InetAddressUtils.addr;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 
-import org.hibernate.criterion.Restrictions;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -50,21 +46,14 @@ import org.opennms.netmgt.dao.api.EventDao;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
-import org.opennms.netmgt.dao.api.OutageDao;
 import org.opennms.netmgt.dao.api.PathOutageDao;
 import org.opennms.netmgt.dao.api.ServiceTypeDao;
-import org.opennms.netmgt.dao.hibernate.AbstractDaoHibernate;
-import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsDistPoller;
-import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.model.OnmsOutage;
 import org.opennms.netmgt.model.OnmsPathOutage;
 import org.opennms.netmgt.model.OnmsServiceType;
-import org.opennms.netmgt.model.ServiceSelector;
-import org.opennms.netmgt.model.outage.OutageSummary;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -104,7 +93,7 @@ public class PathOutageDaoTest implements InitializingBean {
     private MonitoredServiceDao m_monitoredServiceDao;
 
     @Autowired
-    private PathOutageDao m_outageDao;
+    private PathOutageDao m_pathOutageDao;
 
     @Autowired
     private ServiceTypeDao m_serviceTypeDao;
@@ -134,33 +123,84 @@ public class PathOutageDaoTest implements InitializingBean {
     @Test
     @Transactional
     public void testSave() {
+        final OnmsServiceType serviceType = m_serviceTypeDao.findByName("ICMP");
+        assertNotNull(serviceType);
+
+        // This will be our router with one IP address
+        OnmsNode router = new OnmsNode(getLocalHostDistPoller());
+        router.setLabel("router");
+        m_nodeDao.save(router);
+        OnmsIpInterface routerIpInterface = new OnmsIpInterface(addr("172.16.1.1"), router);
+        routerIpInterface.setIsManaged("M");
+        OnmsMonitoredService routerService = new OnmsMonitoredService(routerIpInterface, serviceType);
+        routerService.setStatus("A");
+
+        // Add a node that will be routed through the router
         OnmsNode node = new OnmsNode(getLocalHostDistPoller());
         node.setLabel("localhost");
         m_nodeDao.save(node);
+        OnmsIpInterface nodeIpInterface = new OnmsIpInterface(addr("172.16.1.2"), node);
+        nodeIpInterface.setIsManaged("M");
+        OnmsMonitoredService nodeMonitoredService = new OnmsMonitoredService(nodeIpInterface, serviceType);
+        nodeMonitoredService.setStatus("A");
 
-        OnmsIpInterface ipInterface = new OnmsIpInterface(addr("172.16.1.1"), node);
+        // Make another node with an interface that is initially marked as deleted
+        OnmsNode newNode = new OnmsNode(getLocalHostDistPoller());
+        newNode.setLabel("newnode");
+        m_nodeDao.save(newNode);
+        OnmsIpInterface newIpInterface = new OnmsIpInterface(addr("172.16.1.3"), newNode);
+        newIpInterface.setIsManaged("D");
+        OnmsMonitoredService newMonitoredService = new OnmsMonitoredService(newIpInterface, serviceType);
+        newMonitoredService.setStatus("A");
 
-        OnmsServiceType serviceType = m_serviceTypeDao.findByName("ICMP");
-        assertNotNull(serviceType);
+        OnmsPathOutage outage = new OnmsPathOutage(node, routerIpInterface.getIpAddress(), routerService.getServiceName());
+        m_pathOutageDao.save(outage);
 
-        OnmsMonitoredService monitoredService = new OnmsMonitoredService(ipInterface, serviceType);
-
-        OnmsPathOutage outage = new OnmsPathOutage(node,ipInterface.getIpAddress(), monitoredService.getServiceName());
-
-        //outage.setNode(node);
-        
-        m_outageDao.save(outage);
-        //m_outageDao.flush();
-        //((AbstractDaoHibernate)m_nodeDao).refresh(outage);
-        
         //it works we're so smart! hehe
-        OnmsPathOutage temp = m_outageDao.load(outage.getNode().getId());
-        //((AbstractDaoHibernate)m_nodeDao).refresh(temp);
-        assertEquals("ICMP", outage.getCriticalPathServiceName());
-//        outage.setEventBySvcRegainedEvent();
-        
-        assertEquals("localhost",temp.getNode().getLabel());
-        
+        OnmsPathOutage temp = m_pathOutageDao.get(outage.getNode().getId());
+
+        assertEquals(1, m_pathOutageDao.countAll());
+
+        // Make sure that the path outage points from the node to the router interface/service
+        assertEquals(node.getLabel(), temp.getNode().getLabel());
+        assertEquals(routerIpInterface.getIpAddress(), temp.getCriticalPathIp());
+        assertEquals(routerService.getServiceName(), temp.getCriticalPathServiceName());
+
+        List<Integer> nodes = m_pathOutageDao.getNodesForPathOutage(temp);
+        assertEquals(1, nodes.size());
+        assertEquals(node.getId(), nodes.get(0));
+
+        nodes = m_pathOutageDao.getNodesForPathOutage(routerIpInterface.getIpAddress(), routerService.getServiceName());
+        assertEquals(1, nodes.size());
+        assertEquals(node.getId(), nodes.get(0));
+
+        // Make sure that nothing is using either node as a path outage
+        nodes = m_pathOutageDao.getNodesForPathOutage(nodeIpInterface.getIpAddress(), nodeMonitoredService.getServiceName());
+        assertEquals(0, nodes.size());
+        nodes = m_pathOutageDao.getNodesForPathOutage(newIpInterface.getIpAddress(), newMonitoredService.getServiceName());
+        assertEquals(0, nodes.size());
+
+        assertEquals(1, m_pathOutageDao.countAll());
+
+        OnmsPathOutage newOutage = new OnmsPathOutage(newNode, routerIpInterface.getIpAddress(), routerService.getServiceName());
+        m_pathOutageDao.save(newOutage);
+
+        assertEquals(2, m_pathOutageDao.countAll());
+
+        // Should return zero results because the interface is marked as 'D' for deleted
+        nodes = m_pathOutageDao.getNodesForPathOutage(routerIpInterface.getIpAddress(), routerService.getServiceName());
+        assertEquals(2, nodes.size());
+        nodes = m_pathOutageDao.getAllNodesDependentOnAnyServiceOnInterface(routerIpInterface.getIpAddress());
+        assertEquals(2, nodes.size());
+
+        // After we mark it as managed, the node should appear in the path outage list
+        newIpInterface.setIsManaged("M");
+        nodes = m_pathOutageDao.getNodesForPathOutage(routerIpInterface.getIpAddress(), routerService.getServiceName());
+        assertEquals(2, nodes.size());
+        assertTrue(nodes.contains(node.getId()));
+        assertTrue(nodes.contains(newNode.getId()));
+
+        assertEquals(2, m_pathOutageDao.countAll());
     }
     
     private OnmsDistPoller getLocalHostDistPoller() {

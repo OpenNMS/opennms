@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -189,6 +189,7 @@ public class NodeLabelJDBCImpl implements NodeLabel {
      *
      * @return node label
      */
+    @Override
     public String getLabel() {
         return m_nodeLabel;
     }
@@ -198,6 +199,7 @@ public class NodeLabelJDBCImpl implements NodeLabel {
      *
      * @return node label source flag
      */
+    @Override
     public NodeLabelSource getSource() {
         return m_nodeLabelSource;
     }
@@ -218,7 +220,8 @@ public class NodeLabelJDBCImpl implements NodeLabel {
      * 
      * @deprecated Use a {@link NodeDao#load(Integer)} method call instead
      */
-    public NodeLabelJDBCImpl retrieveLabel(final int nodeID) throws SQLException {
+    @Override
+    public NodeLabel retrieveLabel(final int nodeID) throws SQLException {
         final Connection dbConnection = DataSourceFactory.getInstance().getConnection();
         final DBUtils d = new DBUtils(NodeLabelJDBCImpl.class, dbConnection);
 
@@ -243,7 +246,8 @@ public class NodeLabelJDBCImpl implements NodeLabel {
      * 
      * @deprecated Use a {@link NodeDao#load(Integer)} method call instead
      */
-    public NodeLabelJDBCImpl retrieveLabel(int nodeID, Connection dbConnection) throws SQLException {
+    @Override
+    public NodeLabel retrieveLabel(int nodeID, Connection dbConnection) throws SQLException {
         String nodeLabel = null;
         String nodeLabelSource = null;
         PreparedStatement stmt = null;
@@ -304,7 +308,8 @@ public class NodeLabelJDBCImpl implements NodeLabel {
      * 
      * @deprecated Use a {@link NodeDao#update(org.opennms.netmgt.model.OnmsNode)} method call instead
      */
-    public void assignLabel(final int nodeID, final NodeLabelJDBCImpl nodeLabel) throws SQLException {
+    @Override
+    public void assignLabel(final int nodeID, final NodeLabel nodeLabel) throws SQLException {
         final Connection dbConnection = DataSourceFactory.getInstance().getConnection();
         final DBUtils d = new DBUtils(NodeLabelJDBCImpl.class, dbConnection);
 
@@ -332,7 +337,8 @@ public class NodeLabelJDBCImpl implements NodeLabel {
      * 
      * @deprecated Use a {@link NodeDao#update(org.opennms.netmgt.model.OnmsNode)} method call instead
      */
-    public void assignLabel(final int nodeID, NodeLabelJDBCImpl nodeLabel, final Connection dbConnection) throws SQLException {
+    @Override
+    public void assignLabel(final int nodeID, NodeLabel nodeLabel, final Connection dbConnection) throws SQLException {
         final DBUtils d = new DBUtils(NodeLabelJDBCImpl.class);
 
         try {
@@ -382,12 +388,13 @@ public class NodeLabelJDBCImpl implements NodeLabel {
      * 
      * @deprecated Update this to use modern DAO methods instead of raw SQL
      */
-    public NodeLabelJDBCImpl computeLabel(final int nodeID) throws SQLException {
+    @Override
+    public NodeLabel computeLabel(final int nodeID) throws SQLException {
         final Connection dbConnection = DataSourceFactory.getInstance().getConnection();
         final DBUtils d = new DBUtils(NodeLabelJDBCImpl.class, dbConnection);
 
         try {
-            return computeLabel(nodeID, null);
+            return computeLabel(nodeID, dbConnection);
         } finally {
             d.cleanUp();
         }
@@ -423,7 +430,8 @@ public class NodeLabelJDBCImpl implements NodeLabel {
      * 
      * @deprecated Update this to use modern DAO methods instead of raw SQL
      */
-    public NodeLabelJDBCImpl computeLabel(final int nodeID, final Connection dbConnection) throws SQLException {
+    @Override
+    public NodeLabel computeLabel(final int nodeID, final Connection dbConnection) throws SQLException {
         String netbiosName = null;
         PreparedStatement stmt = null;
         ResultSet rs = null;
@@ -590,7 +598,7 @@ public class NodeLabelJDBCImpl implements NodeLabel {
      *             if there is any problem processing the information in the
      *             result set.
      */
-    private void loadAddressList(ResultSet rs, List<InetAddress> ipv4AddrList, List<String> ipHostNameList) throws SQLException {
+    private static void loadAddressList(ResultSet rs, List<InetAddress> ipv4AddrList, List<String> ipHostNameList) throws SQLException {
 
         // Process result set, store retrieved addresses/host names in lists
         while (rs.next()) {
@@ -626,7 +634,7 @@ public class NodeLabelJDBCImpl implements NodeLabel {
      * @return The InetAddress object from the address list which has been
      *         selected as the primary interface.
      */
-    private InetAddress selectPrimaryAddress(List<InetAddress> ipv4AddrList, String method) {
+    private static InetAddress selectPrimaryAddress(List<InetAddress> ipv4AddrList, String method) {
         // Determine which interface is the primary interface
         // (ie, the interface whose IP address when converted to an
         // integer is the smallest or largest depending upon the

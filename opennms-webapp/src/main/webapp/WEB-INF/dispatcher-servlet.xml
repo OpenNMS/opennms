@@ -655,26 +655,6 @@
         <property name="commandName" value="parameters"/>
     </bean>
 
-    <bean name="/report/database/manage.htm"
-          class="org.opennms.web.controller.ManageDatabaseReportController">
-        <property name="bindOnNewForm" value="true"/>
-        <property name="reportStoreService" ref="reportStoreService"/>
-        <property name="commandName" value="ManageDatabaseReportCommand"/>
-        <property name="commandClass" value="org.opennms.web.command.ManageDatabaseReportCommand"/>
-        <property name="pageSize" value="20"/>
-        <property name="successView" value="redirect:/report/database/manage.htm"/>
-    </bean>
-
-    <bean name="/report/database/manageSchedule.htm"
-          class="org.opennms.web.controller.ManageReportScheduleController">
-        <property name="bindOnNewForm" value="true"/>
-        <property name="reportSchedulerService" ref="reportSchedulerService"/>
-        <property name="commandName" value="ManageReportScheduleCommand"/>
-        <property name="commandClass" value="org.opennms.web.command.ManageReportScheduleCommand"/>
-        <property name="pageSize" value="10"/>
-        <property name="successView" value="redirect:/report/database/manageSchedule.htm"/>
-    </bean>
-
     <bean name="/report/database/downloadReport.htm"
           class="org.opennms.web.controller.DownloadReportController">
         <property name="reportStoreService" ref="reportStoreService"/>

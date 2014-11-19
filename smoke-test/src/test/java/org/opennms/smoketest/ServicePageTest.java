@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -75,31 +75,35 @@ public class ServicePageTest extends OpenNMSSeleniumTestCase {
 
     @After
     public void tearDown() throws Exception {
-        goToMainPage();
+        // if selenium is not initialized, do not clean up
+        if (selenium != null) {
+            goToMainPage();
 
-        clickAndWait("link=Admin");
-        clickAndWait("link=Manage Provisioning Requisitions");
+            clickAndWait("link=Admin");
+            clickAndWait("link=Manage Provisioning Requisitions");
 
-        if (selenium.isElementPresent("//input[@value='Delete Nodes']")) {
-            clickAndWait("//input[@value='Delete Nodes']");
-            clickAndWait("//input[@value='Synchronize']");
-        }
-
-        int loop = 0;
-        while (loop < 20) {
-            clickAndWait("link=Provisioning Requisitions");
-            Thread.sleep(1000);
-            if (selenium.isTextPresent("0 nodes defined, 0 nodes in database")) {
-                break;
+            if (selenium.isElementPresent("//input[@value='Delete Nodes']")) {
+                clickAndWait("//input[@value='Delete Nodes']");
+                clickAndWait("//input[@value='Synchronize']");
             }
-            loop++;
+
+            int loop = 0;
+            while (loop < 20) {
+                clickAndWait("link=Provisioning Requisitions");
+                Thread.sleep(1000);
+                if (selenium.isTextPresent("0 nodes defined, 0 nodes in database")) {
+                    break;
+                }
+                loop++;
+            }
+
+            clickAndWait("//input[@value='Delete Requisition']");
+
+            deleteTestRequisition();
+            deleteTestUser();
+            deleteTestGroup();
+
         }
-
-        clickAndWait("//input[@value='Delete Requisition']");
-
-        deleteTestRequisition();
-        deleteTestUser();
-        deleteTestGroup();
 
         super.tearDown();
     }
@@ -113,9 +117,9 @@ public class ServicePageTest extends OpenNMSSeleniumTestCase {
         clickAndWait("link=Manage Provisioning Requisitions");
         waitForPageToLoad();
 
-        selenium.type("css=form[name=takeAction] > input[name=groupName]", REQUISITION_NAME);
+        selenium.type("css=form[name=takeAction] > div > input[name=groupName]", REQUISITION_NAME);
         clickAndWait("css=input[type=submit]");
-        clickAndWait("//a[contains(@href, 'editForeignSource(\""+ REQUISITION_NAME+"\")')]");
+        clickAndWait("//button[contains(@onclick, 'editForeignSource(\""+ REQUISITION_NAME+"\")')]");
         clickAndWait("//input[@value='Add Detector']");
 
         String detectorNode = setTreeFieldsAndSave("foreignSourceEditForm", type("name", "HTTP-8080"), select("pluginClass", "HTTP"));
@@ -127,7 +131,8 @@ public class ServicePageTest extends OpenNMSSeleniumTestCase {
         waitForPageToLoad();
 
         clickAndWait("//input[@value='Done']");
-        clickAndWait("//a[contains(@href, '" + REQUISITION_NAME + "') and contains(@href, 'editRequisition') and text() = 'Edit']");
+        String rcOfEditAnchor = "id=edit_req_anchor_" + REQUISITION_NAME;
+        clickAndWait(rcOfEditAnchor);
         clickAndWait("//input[@value='Add Node']");
         String nodeForNode = setTreeFieldsAndSave("nodeEditForm", type("nodeLabel", "localNode"));
         waitForPageToLoad();

@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -139,7 +139,7 @@ public class LLDPMibTest  {
         m_usm = new USM(SecurityProtocols.getInstance(), new OctetString(MPv3.createLocalEngineID()), 0);
         SecurityModels.getInstance().addSecurityModel(m_usm);
 
-        m_agent = MockSnmpAgent.createAgentAndRun(classPathResource("penrose-lldp-mib.properties"), "127.0.0.1/1691");	
+        m_agent = MockSnmpAgent.createAgentAndRun(classPathResource("penrose-lldp-mib.properties"), "127.0.0.1/0");	
         
         m_requestedVarbinds = new ArrayList<AnticipatedRequest>();
     }
@@ -276,7 +276,7 @@ public class LLDPMibTest  {
 		PDU response;
 		CommunityTarget target = new CommunityTarget();
         target.setCommunity(new OctetString("public"));
-        target.setAddress(new UdpAddress(InetAddress.getByName("127.0.0.1"), 1691));
+        target.setAddress(new UdpAddress(InetAddress.getByName("127.0.0.1"), m_agent.getPort()));
 		target.setVersion(version);
 		if (m_timeout > 0) { 
 			target.setTimeout(m_timeout);
@@ -307,7 +307,7 @@ public class LLDPMibTest  {
         UserTarget target = new UserTarget();
         target.setSecurityLevel(SecurityLevel.AUTH_PRIV);
         target.setSecurityName(userId);
-        target.setAddress(new UdpAddress(InetAddress.getByName("127.0.0.1"), 1691));
+        target.setAddress(new UdpAddress(InetAddress.getByName("127.0.0.1"), m_agent.getPort()));
         target.setVersion(SnmpConstants.version3);
 		if (m_timeout > 0) { 
 			target.setTimeout(m_timeout);

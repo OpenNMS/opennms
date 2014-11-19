@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -32,11 +32,14 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import javax.swing.JOptionPane;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -44,7 +47,13 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
+import org.opennms.netmgt.icmp.NullPinger;
+import org.opennms.netmgt.icmp.Pinger;
+import org.opennms.netmgt.icmp.PingerFactory;
 import org.opennms.netmgt.poller.remote.PollerFrontEnd;
+import org.opennms.netmgt.poller.remote.support.DefaultPollerFrontEnd.PollerFrontEndStates;
+import org.quartz.Scheduler;
+import org.quartz.SchedulerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.support.AbstractApplicationContext;
@@ -67,22 +76,45 @@ public class Main implements Runnable {
 	protected String m_locationName;
 	protected String m_username = null;
 	protected String m_password = null;
-	protected static boolean m_shuttingDown = false;
 	protected boolean m_gui = false;
+	protected boolean m_disableIcmp = false;
 
 	private Main(String[] args) {
 		// Give us some time to attach a debugger if necessary
 		//try { Thread.sleep(20000); } catch (InterruptedException e) {}        
 
 		m_args = Arrays.copyOf(args, args.length);
-
-		final String pingerClass = System.getProperty("org.opennms.netmgt.icmp.pingerClass");
-		if (pingerClass == null) {
-			LOG.info("System property org.opennms.netmgt.icmp.pingerClass is not set; using JnaPinger by default");
-			System.setProperty("org.opennms.netmgt.icmp.pingerClass", "org.opennms.netmgt.icmp.jna.JnaPinger");
-		}
-		LOG.info("Pinger class: {}", System.getProperty("org.opennms.netmgt.icmp.pingerClass"));
 	}
+
+        public void initializePinger() {
+                if (m_disableIcmp) {
+                        LOG.info("Disabling ICMP by user request.");
+                        System.setProperty("org.opennms.netmgt.icmp.pingerClass", "org.opennms.netmgt.icmp.NullPinger");
+                        PingerFactory.setInstance(new NullPinger());
+                        return;
+                }
+
+                final String pingerClass = System.getProperty("org.opennms.netmgt.icmp.pingerClass");
+    		if (pingerClass == null) {
+    			LOG.info("System property org.opennms.netmgt.icmp.pingerClass is not set; using JnaPinger by default");
+    			System.setProperty("org.opennms.netmgt.icmp.pingerClass", "org.opennms.netmgt.icmp.jna.JnaPinger");
+    		}
+    		LOG.info("Pinger class: {}", System.getProperty("org.opennms.netmgt.icmp.pingerClass"));
+    		try {
+    		        final Pinger pinger = PingerFactory.getInstance();
+    		        pinger.ping(InetAddress.getLoopbackAddress());
+    		} catch (final Throwable t) {
+    		        LOG.warn("Unable to get pinger instance.  Setting pingerClass to NullPinger.  For details, see: http://www.opennms.org/wiki/ICMP_could_not_be_initialized");
+    		        System.setProperty("org.opennms.netmgt.icmp.pingerClass", "org.opennms.netmgt.icmp.NullPinger");
+    		        PingerFactory.setInstance(new NullPinger());
+    		        if (m_gui) {
+            		        final String message = "ICMP (ping) could not be initialized: " + t.getMessage()
+            		                + "\nDisabling ICMP and using the NullPinger instead."
+            		                + "\nFor details, see: http://www.opennms.org/wiki/ICMP_could_not_be_initialized";
+            		        JOptionPane.showMessageDialog(null, message, "ICMP Not Available", JOptionPane.WARNING_MESSAGE);
+    		        }
+    		}
+        }
 
 	private void getAuthenticationInfo() {
 		if (m_uri == null || m_uri.getScheme() == null) {
@@ -119,8 +151,19 @@ public class Main implements Runnable {
 	public void run() {
 
 		try {
+			// Parse arguments to initialize the configuration fields.
 			parseArguments(m_args);
+
+			// Test to make sure that we can use ICMP. If not, replace the ICMP
+			// implementation with NullPinger.
+			initializePinger();
+
+			// If we didn't get authentication information from the command line or
+			// system properties, then use an AWT window to prompt the user.
+			// Initialize a Spring {@link SecurityContext} that contains the
+			// credentials.
 			getAuthenticationInfo();
+
 			AbstractApplicationContext context = createAppContext();
 			PollerFrontEnd frontEnd = getPollerFrontEnd(context);
 
@@ -149,6 +192,7 @@ public class Main implements Runnable {
 
 		options.addOption("d", "debug", false, "write debug messages to the log");
 		options.addOption("g", "gui", false, "start a GUI (default: false)");
+		options.addOption("i", "disable-icmp", false, "disable ICMP/ping (overrides -Dorg.opennms.netmgt.icmp.pingerClass=)");
 		options.addOption("l", "location", true, "the location name of this remote poller");
 		options.addOption("u", "url", true, "the URL for OpenNMS (example: https://server-name/opennms-remoting)");
 		options.addOption("n", "name", true, "the name of the user to connect as");
@@ -163,6 +207,10 @@ public class Main implements Runnable {
 		}
 
 		if (cl.hasOption("d")) {
+		}
+
+		if (cl.hasOption("i")) {
+			m_disableIcmp = true;
 		}
 
 		if (cl.hasOption("l")) {
@@ -191,6 +239,18 @@ public class Main implements Runnable {
 			m_password = cl.getOptionValue("p");
 			if (m_password == null) {
 				m_password = "";
+			}
+		}
+
+		// If we cannot obtain the username/password from the command line, attempt
+		// to optionally get it from system properties
+		if (m_username == null) {
+			m_username = System.getProperty("opennms.poller.server.username");
+			if (m_username != null) {
+				m_password = System.getProperty("opennms.poller.server.password");
+				if (m_password == null) {
+					m_password = "";
+				}
 			}
 		}
 	}
@@ -232,17 +292,20 @@ public class Main implements Runnable {
 		}
 
 		final ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext(configs.toArray(new String[0]));
+
+		// Add a shutdown hook so that even if the user CTRL-Cs the app or closes its JNLP GUI window,
+		// it will still perform the same clean shutdown as stopping the poller via messaging.
 		Runtime.getRuntime().addShutdownHook(new Thread() {
 			@Override
 			public void run() {
-				m_shuttingDown = true;
-				context.close();
+				shutdownContextAndExit(context);
 			}
 		});
+
 		return context;
 	}
 
-	private static PollerFrontEnd getPollerFrontEnd(AbstractApplicationContext context) {
+	private PollerFrontEnd getPollerFrontEnd(final AbstractApplicationContext context) {
 		PollerFrontEnd frontEnd = (PollerFrontEnd) context.getBean("pollerFrontEnd");
 
 		frontEnd.addPropertyChangeListener(new PropertyChangeListener() {
@@ -253,13 +316,13 @@ public class Main implements Runnable {
 				Object newValue = e.getNewValue();
 
 				// if exitNecessary becomes true.. then return true
-				if ("exitNecessary".equals(propName) && Boolean.TRUE.equals(newValue)) {
+				if (PollerFrontEndStates.exitNecessary.toString().equals(propName) && Boolean.TRUE.equals(newValue)) {
 					LOG.info("shouldExit: Exiting because exitNecessary is TRUE");
 					return true;
 				}
 
 				// if started becomes false the we should exit
-				if ("started".equals(propName) && Boolean.FALSE.equals(newValue)) {
+				if (PollerFrontEndStates.started.toString().equals(propName) && Boolean.FALSE.equals(newValue)) {
 					LOG.info("shouldExit: Exiting because started is now false");
 					return true;
 				}
@@ -270,13 +333,46 @@ public class Main implements Runnable {
 
 			@Override
 			public void propertyChange(PropertyChangeEvent e) {
-				if (!m_shuttingDown && shouldExit(e)) {
-					System.exit(10);
+				if (shouldExit(e)) {
+					shutdownContextAndExit(context);
 				}
 			}
 		});
 
 		return frontEnd;
+	}
+
+	private static void shutdownContextAndExit(AbstractApplicationContext context) {
+		int returnCode = 0;
+
+		// MVR: gracefully shutdown scheduler, otherwise context.close() will raise 
+		// an exception. See #NMS-6966 for more details.
+		if (context.isActive()) {
+			try {
+				LOG.info("Shutting down PollerFrontEnd scheduler");
+				((Scheduler)context.getBean("scheduler")).shutdown();
+			} catch (SchedulerException ex) {
+				LOG.warn("Shutting down PollerFrontEnd scheduler failed", ex);
+				returnCode = 10;
+			}
+			LOG.info("PollerFrontEnd scheduler shutdown complete");
+
+			// Now close the application context. This will invoke 
+			// {@link DefaultPollerFrontEnd#destroy()} which will mark the
+			// remote poller as "Stopped" during shutdown instead of letting
+			// it remain in the "Disconnected" state.
+			context.close();
+		}
+
+		final int returnCodeValue = returnCode;
+		new Thread() {
+			public void run() {
+				// Sleep for a couple of seconds so that the other
+				// PropertyChangeListeners get a chance to fire
+				try { Thread.sleep(5000); } catch (InterruptedException e) {}
+				System.exit(returnCodeValue);
+			}
+		}.start();
 	}
 
 	/**

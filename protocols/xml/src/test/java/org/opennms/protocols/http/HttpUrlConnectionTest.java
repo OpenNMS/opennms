@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -25,30 +25,27 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
+
 package org.opennms.protocols.http;
 
 import java.net.URL;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
-
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
 import org.opennms.core.test.http.JUnitHttpServerExecutionListener;
 import org.opennms.core.test.http.annotations.JUnitHttpServer;
 import org.opennms.core.test.http.annotations.Webapp;
+import org.opennms.core.web.HttpClientWrapper;
 import org.opennms.core.xml.JaxbUtils;
-import org.opennms.protocols.http.HttpUrlConnection;
 import org.opennms.protocols.xml.config.Content;
 import org.opennms.protocols.xml.config.Request;
-
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -74,13 +71,17 @@ public class HttpUrlConnectionTest {
     })
     public void testServlet() throws Exception {
         String xml = "<person><firstName>Alejandro</firstName></person>";
-        DefaultHttpClient client = new DefaultHttpClient();
-        StringEntity entity = new StringEntity(xml, ContentType.APPLICATION_XML);
-        HttpPost method = new HttpPost("http://localhost:10342/junit/test/sample");
-        method.setEntity(entity);
-        HttpResponse response = client.execute(method);
-        Assert.assertEquals(200, response.getStatusLine().getStatusCode());
-        Assert.assertEquals("OK!", EntityUtils.toString(response.getEntity()));
+        final HttpClientWrapper clientWrapper = HttpClientWrapper.create();
+        try {
+            StringEntity entity = new StringEntity(xml, ContentType.APPLICATION_XML);
+            HttpPost method = new HttpPost("http://localhost:10342/junit/test/sample");
+            method.setEntity(entity);
+            CloseableHttpResponse response = clientWrapper.execute(method);
+            Assert.assertEquals(200, response.getStatusLine().getStatusCode());
+            Assert.assertEquals("OK!", EntityUtils.toString(response.getEntity()));
+        } finally {
+            IOUtils.closeQuietly(clientWrapper);
+        }
     }
 
     /**

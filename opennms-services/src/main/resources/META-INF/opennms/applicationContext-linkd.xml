@@ -48,5 +48,12 @@
       <property name="linkdConfig"    ref="linkdConfig" />
       <property name="scheduler"      ref="scheduler" />
     </bean>
+    
+        <onmsgi:service interface="org.opennms.netmgt.model.ServiceDaemon" ref="daemon">
+    	<onmsgi:service-properties>
+    		<entry key="name" value="linkd" />
+    	</onmsgi:service-properties>
+    </onmsgi:service>
+    
 
 </beans>

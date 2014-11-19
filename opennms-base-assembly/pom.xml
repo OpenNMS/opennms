@@ -3,7 +3,7 @@
   <parent>
     <artifactId>opennms</artifactId>
     <groupId>org.opennms</groupId>
-    <version>1.15.0-SNAPSHOT</version>
+    <version>15.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-base-assembly</artifactId>
@@ -363,15 +363,21 @@
       <version>${project.version}</version>
       <scope>compile</scope>
     </dependency>
+    <!--
     <dependency>
       <groupId>org.opennms.features</groupId>
       <artifactId>org.opennms.features.access-point-monitor</artifactId>
       <version>${project.version}</version>
       <scope>compile</scope>
     </dependency>
+    -->
     <dependency>
       <groupId>org.opennms.core</groupId>
       <artifactId>org.opennms.core.logging</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.core</groupId>
+      <artifactId>org.opennms.core.soa</artifactId>
     </dependency>
     <!-- webapp dependencies -->
     <dependency>
@@ -590,6 +596,7 @@
       <artifactId>struts</artifactId>
     </dependency>
     <!-- dependencies for SMS monitors -->
+    <!--
     <dependency>
       <groupId>org.opennms.features.sms-reflector</groupId>
       <artifactId>sms-gateway</artifactId>
@@ -607,10 +614,6 @@
       <artifactId>sms-monitor</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.opennms.core</groupId>
-      <artifactId>org.opennms.core.soa</artifactId>
-    </dependency>
-    <dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>smslib-dependencies</artifactId>
       <type>pom</type>
@@ -620,6 +623,7 @@
       <artifactId>rxtx-dependencies</artifactId>
       <type>pom</type>
     </dependency>
+    -->
     <!-- dependencies for XML/JSON collector -->
     <dependency>
       <groupId>commons-jxpath</groupId>
@@ -628,10 +632,6 @@
     <dependency>
       <groupId>org.jsoup</groupId>
       <artifactId>jsoup</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.ximpleware</groupId>
-      <artifactId>vtd-xml</artifactId>
     </dependency>
     <!-- this is a runtime dependency we need at install time -->
     <dependency>

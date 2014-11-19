@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -277,6 +277,17 @@ public class Provisioner implements SpringServiceDaemon {
         return new NewSuspectScan(ipAddress, m_provisionService, m_eventForwarder, m_agentConfigFactory, m_taskCoordinator, foreignSource);
     }
 
+    /**
+     * <p>createForceRescanScan</p>
+     *
+     * @param ipAddress a {@link java.net.InetAddress} object.
+     * @return a {@link org.opennms.netmgt.provision.service.ForceRescanScan} object.
+     */
+    public ForceRescanScan createForceRescanScan(Integer nodeId) {
+        LOG.info("createForceRescanScan called with nodeId: "+nodeId);
+        return new ForceRescanScan(nodeId, m_provisionService, m_eventForwarder, m_agentConfigFactory, m_taskCoordinator);
+    }
+
     //Helper functions for the schedule
     /**
      * <p>addToScheduleQueue</p>
@@ -390,7 +401,7 @@ public class Provisioner implements SpringServiceDaemon {
      * @param rescanExisting TODO
      * @throws java.lang.Exception if any.
      */
-    protected void importModelFromResource(final Resource resource, final Boolean rescanExisting) throws Exception {
+    protected void importModelFromResource(final Resource resource, final String rescanExisting) throws Exception {
     	importModelFromResource(resource, rescanExisting, new NoOpProvisionMonitor());
     }
 
@@ -402,10 +413,10 @@ public class Provisioner implements SpringServiceDaemon {
      * @param monitor a {@link org.opennms.netmgt.provision.service.operations.ProvisionMonitor} object.
      * @throws java.lang.Exception if any.
      */
-    protected void importModelFromResource(final Resource resource, final Boolean rescanExisting, final ProvisionMonitor monitor) throws Exception {
+    protected void importModelFromResource(final Resource resource, final String rescanExisting, final ProvisionMonitor monitor) throws Exception {
         final LifeCycleInstance doImport = m_lifeCycleRepository.createLifeCycleInstance("import", m_importActivities);
         doImport.setAttribute("resource", resource);
-        doImport.setAttribute("rescanExisting", Boolean.valueOf(rescanExisting));
+        doImport.setAttribute("rescanExisting", rescanExisting);
         doImport.trigger();
         doImport.waitFor();
         final RequisitionImport ri = doImport.findAttributeByType(RequisitionImport.class);
@@ -451,7 +462,7 @@ public class Provisioner implements SpringServiceDaemon {
     @EventHandler(uei = EventConstants.RELOAD_IMPORT_UEI)
     public void doImport(final Event event) {
         final String url = getEventUrl(event);
-        final boolean rescanExistingOnImport = getEventRescanExistingOnImport(event);
+        final String rescanExistingOnImport = getEventRescanExistingOnImport(event);
 
         if (url != null) {
             doImport(url, rescanExistingOnImport);
@@ -469,7 +480,7 @@ public class Provisioner implements SpringServiceDaemon {
      * @param url a {@link java.lang.String} object.
      * @param rescanExisting TODO
      */
-    public void doImport(final String url, final boolean rescanExisting) {
+    public void doImport(final String url, final String rescanExisting) {
         
         try {
             
@@ -526,12 +537,28 @@ public class Provisioner implements SpringServiceDaemon {
      */
     @EventHandler(uei = EventConstants.FORCE_RESCAN_EVENT_UEI)
     public void handleForceRescan(Event e) {
-        removeNodeFromScheduleQueue(new Long(e.getNodeid()).intValue());
-        NodeScanSchedule scheduleForNode = getProvisionService().getScheduleForNode(e.getNodeid().intValue(), true);
-        if (scheduleForNode != null) {
-            addToScheduleQueue(scheduleForNode);
-        }
-
+        final Integer nodeId = new Integer(e.getNodeid().intValue());
+        removeNodeFromScheduleQueue(nodeId);
+        Runnable r = new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    ForceRescanScan scan = createForceRescanScan(nodeId);
+                    Task t = scan.createTask();
+                    t.schedule();
+                    t.waitFor();
+                    NodeScanSchedule scheduleForNode = getProvisionService().getScheduleForNode(nodeId, false); // It has 'false' because a node scan was already executed by ForceRescanScan.
+                    if (scheduleForNode != null) {
+                        addToScheduleQueue(scheduleForNode);
+                    }
+                } catch (InterruptedException ex) {
+                    LOG.error("Task interrupted waiting for rescan of nodeId {} to finish", nodeId, ex);
+                } catch (ExecutionException ex) {
+                    LOG.error("An expected execution occurred waiting for rescan of nodeId {} to finish", nodeId, ex);
+                }
+            }
+        };
+        m_scheduledExecutor.execute(r);
     }
     
     /**
@@ -604,13 +631,13 @@ public class Provisioner implements SpringServiceDaemon {
         	LOG.debug("Rescanning updated nodes is disabled via property: {}", SCHEDULE_RESCAN_FOR_UPDATED_NODES);
         	return;
         }
-        boolean rescanExisting = true; // Default
+        String rescanExisting = Boolean.TRUE.toString(); // Default
         for (Parm parm : e.getParmCollection()) {
-            if (EventConstants.PARM_RESCAN_EXISTING.equals(parm.getParmName()) && "false".equalsIgnoreCase(parm.getValue().getContent())) {
-                rescanExisting = false;
+            if (EventConstants.PARM_RESCAN_EXISTING.equals(parm.getParmName()) && ("false".equalsIgnoreCase(parm.getValue().getContent()) || "dbonly".equalsIgnoreCase(parm.getValue().getContent()))) {
+                rescanExisting = Boolean.FALSE.toString();
             }
         }
-        if (!rescanExisting) {
+        if (!Boolean.valueOf(rescanExisting)) {
             LOG.debug("Rescanning updated nodes is disabled via event parameter: {}", EventConstants.PARM_RESCAN_EXISTING);
             return;
         }
@@ -866,15 +893,15 @@ public class Provisioner implements SpringServiceDaemon {
         return EventUtils.getParm(event, EventConstants.PARM_URL);
     }
 
-    private boolean getEventRescanExistingOnImport(final Event event) {
+    private String getEventRescanExistingOnImport(final Event event) {
         final String rescanExisting = EventUtils.getParm(event, EventConstants.PARM_IMPORT_RESCAN_EXISTING);
         
         if (rescanExisting == null) {
-            String enabled = System.getProperty(SCHEDULE_RESCAN_FOR_UPDATED_NODES, "true");
-            return Boolean.valueOf(enabled);
+            final String enabled = System.getProperty(SCHEDULE_RESCAN_FOR_UPDATED_NODES, "true");
+            return enabled;
         }
         
-        return Boolean.parseBoolean(rescanExisting);
+        return rescanExisting;
     }
     
     /**

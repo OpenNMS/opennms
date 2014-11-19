@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="AvailabilitySummaryReport" pageWidth="700" pageHeight="842" whenNoDataType="NoDataSection" columnWidth="620" leftMargin="40" rightMargin="40" topMargin="50" bottomMargin="50">
-	<property name="ireport.zoom" value="1.5"/>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="AvailabilitySummaryReport" pageWidth="595" pageHeight="842" whenNoDataType="NoDataSection" columnWidth="515" leftMargin="40" rightMargin="40" topMargin="50" bottomMargin="50">
+	<property name="ireport.zoom" value="1.024520183047607"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
-	<template><![CDATA["${install.dir}/etc/report-templates/assets/styles/defaultStyles.jrtx"]]></template>
+	<template><![CDATA[$P{ONMS_REPORT_DIR} + "/assets/styles/defaultStyles.jrtx"]]></template>
 	<style name="Sans_Normal" isDefault="true" fontName="SansSerif" fontSize="12" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
 	<style name="Sans_Bold" fontName="SansSerif" fontSize="12" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
 	<style name="Sans_Italic" fontName="SansSerif" fontSize="12" isBold="false" isItalic="true" isUnderline="false" isStrikeThrough="false"/>
@@ -35,7 +35,7 @@
 		</conditionalStyle>
 	</style>
 	<style name="Page_Footer" fontSize="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
-	<style name="Table_Header" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
+	<style name="Table_Header" forecolor="#002142" backcolor="#F2F2F2" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
 	<style name="Table_Header_BG" mode="Opaque" backcolor="#CCFFCC"/>
 	<style name="Table_Surveillance_Cat" forecolor="#000000" vAlign="Middle" fontSize="10" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
 	<style name="Table_Surveillance_Cat_BG" mode="Opaque" backcolor="#DFDFDF"/>
@@ -52,14 +52,19 @@
 			<bottomPen lineWidth="2.0" lineStyle="Double" lineColor="#000000"/>
 		</box>
 	</style>
-	<parameter name="DS_SURVEILLANCE_CATEGORY" class="java.lang.String" isForPrompting="true">
+	<subDataset name="Table Dataset 1"/>
+  <parameter name="ONMS_REPORT_DIR" class="java.lang.String" isForPrompting="false">
+    <parameterDescription><![CDATA[The directory where all reports can be found]]></parameterDescription>
+    <defaultValueExpression><![CDATA["${install.dir}/etc/report-templates"]]></defaultValueExpression>
+  </parameter>
+	<parameter name="DS_SURVEILLANCE_CATEGORY" class="java.lang.String">
 		<parameterDescription><![CDATA[Surveillance Category]]></parameterDescription>
 		<defaultValueExpression><![CDATA["%"]]></defaultValueExpression>
 	</parameter>
 	<parameter name="DS_AVAILABILITY_WARNING" class="java.lang.Double" isForPrompting="false"/>
 	<parameter name="DS_AVAILABILITY_CRITICAL" class="java.lang.Double" isForPrompting="false"/>
 	<parameter name="COMPANY_LOGO" class="java.lang.String" isForPrompting="false">
-		<defaultValueExpression><![CDATA["${install.dir}/etc/report-templates/assets/images/company-logo.png"]]></defaultValueExpression>
+		<defaultValueExpression><![CDATA[$P{ONMS_REPORT_DIR} + "/assets/images/company-logo.png"]]></defaultValueExpression>
 	</parameter>
 	<parameter name="START_TIME" class="java.util.Date">
 		<parameterDescription><![CDATA[Report Start Date]]></parameterDescription>
@@ -72,10 +77,10 @@ new GregorianCalendar(new GregorianCalendar().get(Calendar.YEAR), new GregorianC
 		<defaultValueExpression><![CDATA[7]]></defaultValueExpression>
 	</parameter>
 	<parameter name="TIME_RANGE_DESCRIPTION" class="java.lang.String" isForPrompting="false">
-		<defaultValueExpression><![CDATA[$P{TIME_RANGE} + " from " + $P{START_TIME}]]></defaultValueExpression>
+		<defaultValueExpression><![CDATA[$P{TIME_RANGE} + " days from " + $P{START_TIME}]]></defaultValueExpression>
 	</parameter>
 	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
-		<defaultValueExpression><![CDATA["${install.dir}/etc/report-templates/subreports/"]]></defaultValueExpression>
+		<defaultValueExpression><![CDATA[$P{ONMS_REPORT_DIR} + "/subreports/"]]></defaultValueExpression>
 	</parameter>
 	<parameter name="END_TIME" class="java.util.Date" isForPrompting="false">
 		<parameterDescription><![CDATA[Report End Date]]></parameterDescription>
@@ -260,130 +265,157 @@ ORDER BY
 	<group name="SURVEILLANCE_CAT" minHeightToStartNewPage="60">
 		<groupExpression><![CDATA[$F{categoryname}]]></groupExpression>
 		<groupFooter>
-			<band height="587">
+			<band height="539">
 				<textField>
-					<reportElement style="Sub-sub-sub-header" x="0" y="0" width="252" height="30"/>
-					<textElement textAlignment="Left" verticalAlignment="Middle"/>
+					<reportElement style="Section" mode="Opaque" x="0" y="0" width="515" height="20"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font size="16"/>
+					</textElement>
 					<textFieldExpression class="java.lang.String"><![CDATA["Summary for category: "+$F{categoryname}]]></textFieldExpression>
 				</textField>
 				<textField>
-					<reportElement style="Table_Surveillance_Cat_Footer" x="0" y="31" width="252" height="20"/>
-					<textElement textAlignment="Left"/>
+					<reportElement style="Table_Header" x="0" y="50" width="68" height="19"/>
+					<textElement textAlignment="Left">
+						<font size="9" isBold="true"/>
+					</textElement>
 					<textFieldExpression class="java.lang.String"><![CDATA["Average"]]></textFieldExpression>
 				</textField>
 				<textField>
-					<reportElement style="Table_Surveillance_Cat_Footer" x="0" y="51" width="252" height="20"/>
-					<textElement textAlignment="Left"/>
+					<reportElement style="Table_Header" x="0" y="71" width="68" height="17"/>
+					<textElement textAlignment="Left">
+						<font size="9" isBold="true"/>
+					</textElement>
 					<textFieldExpression class="java.lang.String"><![CDATA["Maximum"]]></textFieldExpression>
 				</textField>
 				<textField>
-					<reportElement style="Table_Surveillance_Cat_Footer_Line" x="0" y="71" width="252" height="20"/>
-					<textElement textAlignment="Left"/>
+					<reportElement style="Table_Header" x="0" y="91" width="68" height="18"/>
+					<textElement textAlignment="Left">
+						<font size="9" isBold="true"/>
+					</textElement>
 					<textFieldExpression class="java.lang.String"><![CDATA["Minimum"]]></textFieldExpression>
 				</textField>
 				<textField pattern="###0.00">
-					<reportElement style="Table_Surveillance_Cat_Footer" x="257" y="31" width="64" height="20"/>
-					<textElement/>
+					<reportElement style="Table_Detail" x="68" y="50" width="75" height="19"/>
+					<textElement textAlignment="Right">
+						<font size="9"/>
+					</textElement>
 					<textFieldExpression class="java.lang.Long"><![CDATA[$V{SURVEILLANCE_CAT_CNT_AVG}]]></textFieldExpression>
 				</textField>
 				<textField pattern="###0.00">
-					<reportElement style="Table_Surveillance_Cat_Footer" x="326" y="31" width="65" height="20"/>
-					<textElement/>
+					<reportElement style="Table_Detail" x="154" y="50" width="89" height="19"/>
+					<textElement textAlignment="Right">
+						<font size="9"/>
+					</textElement>
 					<textFieldExpression class="java.lang.Double"><![CDATA[$V{SURVEILLANCE_CAT_MTTR_AVG}]]></textFieldExpression>
 				</textField>
 				<textField pattern="###0.00">
-					<reportElement style="Table_Surveillance_Cat_Footer" x="396" y="31" width="55" height="20"/>
-					<textElement/>
+					<reportElement style="Table_Detail" x="253" y="49" width="74" height="19"/>
+					<textElement textAlignment="Right">
+						<font size="9"/>
+					</textElement>
 					<textFieldExpression class="java.lang.Double"><![CDATA[$V{SURVEILLANCE_CAT_TOTAL_AVG}]]></textFieldExpression>
 				</textField>
 				<textField pattern="###0.000">
-					<reportElement style="Table_Surveillance_Cat_Footer" x="456" y="31" width="47" height="20"/>
-					<textElement/>
+					<reportElement style="Table_Detail" x="336" y="48" width="72" height="20"/>
+					<textElement textAlignment="Right">
+						<font size="9"/>
+					</textElement>
 					<textFieldExpression class="java.lang.Double"><![CDATA[$V{SURVEILLANCE_CAT_OUTAGES_AVG}]]></textFieldExpression>
 				</textField>
 				<textField pattern="###0.000">
-					<reportElement style="Table_Surveillance_Cat_Footer" x="508" y="31" width="60" height="20"/>
-					<textElement/>
+					<reportElement style="Table_Detail" x="421" y="49" width="94" height="20"/>
+					<textElement textAlignment="Right">
+						<font size="9"/>
+					</textElement>
 					<textFieldExpression class="java.lang.Double"><![CDATA[$V{SURVEILLANCE_CAT_AVAILABILITY_AVG}]]></textFieldExpression>
 				</textField>
 				<textField pattern="###0.00">
-					<reportElement style="Table_Surveillance_Cat_Footer" x="257" y="51" width="64" height="20"/>
-					<textElement/>
+					<reportElement style="Table_Detail" x="68" y="71" width="75" height="17"/>
+					<textElement textAlignment="Right">
+						<font size="9"/>
+					</textElement>
 					<textFieldExpression class="java.lang.Long"><![CDATA[$V{SURVEILLANCE_CAT_CNT_MAX}]]></textFieldExpression>
 				</textField>
 				<textField pattern="###0.00">
-					<reportElement style="Table_Surveillance_Cat_Footer" x="326" y="51" width="65" height="20"/>
-					<textElement/>
+					<reportElement style="Table_Detail" x="154" y="71" width="89" height="17"/>
+					<textElement textAlignment="Right">
+						<font size="9"/>
+					</textElement>
 					<textFieldExpression class="java.lang.Double"><![CDATA[$V{SURVEILLANCE_CAT_MTTR_MAX}]]></textFieldExpression>
 				</textField>
 				<textField pattern="###0.00">
-					<reportElement style="Table_Surveillance_Cat_Footer" x="396" y="51" width="55" height="20"/>
-					<textElement/>
+					<reportElement style="Table_Detail" x="253" y="71" width="74" height="17"/>
+					<textElement textAlignment="Right">
+						<font size="9"/>
+					</textElement>
 					<textFieldExpression class="java.lang.Double"><![CDATA[$V{SURVEILLANCE_CAT_TOTAL_MAX}]]></textFieldExpression>
 				</textField>
 				<textField pattern="###0.000">
-					<reportElement style="Table_Surveillance_Cat_Footer" x="456" y="51" width="47" height="20"/>
-					<textElement/>
+					<reportElement style="Table_Detail" x="336" y="68" width="72" height="20"/>
+					<textElement textAlignment="Right">
+						<font size="9"/>
+					</textElement>
 					<textFieldExpression class="java.lang.Double"><![CDATA[$V{SURVEILLANCE_CAT_OUTAGES_MAX}]]></textFieldExpression>
 				</textField>
 				<textField pattern="###0.000">
-					<reportElement style="Table_Surveillance_Cat_Footer" x="508" y="51" width="60" height="20"/>
-					<textElement/>
+					<reportElement style="Table_Detail" x="421" y="69" width="94" height="20"/>
+					<textElement textAlignment="Right">
+						<font size="9"/>
+					</textElement>
 					<textFieldExpression class="java.lang.Double"><![CDATA[$V{SURVEILLANCE_CAT_AVAILABILITY_MAX}]]></textFieldExpression>
 				</textField>
 				<textField pattern="###0.00">
-					<reportElement style="Table_Surveillance_Cat_Footer_Line" x="257" y="71" width="64" height="20"/>
-					<textElement/>
+					<reportElement style="Table_Detail" x="68" y="91" width="75" height="18"/>
+					<textElement textAlignment="Right">
+						<font size="9"/>
+					</textElement>
 					<textFieldExpression class="java.lang.Long"><![CDATA[$V{SURVEILLANCE_CAT_CNT_MIN}]]></textFieldExpression>
 				</textField>
 				<textField pattern="###0.00">
-					<reportElement style="Table_Surveillance_Cat_Footer_Line" x="326" y="71" width="65" height="20"/>
-					<textElement/>
+					<reportElement style="Table_Detail" x="154" y="91" width="89" height="18"/>
+					<textElement textAlignment="Right">
+						<font size="9"/>
+					</textElement>
 					<textFieldExpression class="java.lang.Double"><![CDATA[$V{SURVEILLANCE_CAT_MTTR_MIN}]]></textFieldExpression>
 				</textField>
 				<textField pattern="###0.00">
-					<reportElement style="Table_Surveillance_Cat_Footer_Line" x="396" y="71" width="56" height="20"/>
-					<textElement/>
+					<reportElement style="Table_Detail" x="253" y="90" width="74" height="20"/>
+					<textElement textAlignment="Right">
+						<font size="9"/>
+					</textElement>
 					<textFieldExpression class="java.lang.Double"><![CDATA[$V{SURVEILLANCE_CAT_TOTAL_MIN}]]></textFieldExpression>
 				</textField>
-				<textField pattern="###0.000">
-					<reportElement style="Table_Surveillance_Cat_Footer_Line" x="457" y="71" width="47" height="20"/>
-					<textElement/>
-					<textFieldExpression class="java.lang.Double"><![CDATA[$V{SURVEILLANCE_CAT_OUTAGES_MIN}]]></textFieldExpression>
-				</textField>
-				<textField pattern="###0.000">
-					<reportElement style="Table_Surveillance_Cat_Footer_Line" x="509" y="71" width="60" height="20"/>
-					<textElement/>
-					<textFieldExpression class="java.lang.Double"><![CDATA[$V{SURVEILLANCE_CAT_AVAILABILITY_MIN}]]></textFieldExpression>
-				</textField>
 				<staticText>
-					<reportElement style="Table_Header" x="257" y="0" width="64" height="30"/>
-					<textElement textAlignment="Center" verticalAlignment="Middle"/>
-					<text><![CDATA[Outage Count]]></text>
-				</staticText>
-				<staticText>
-					<reportElement style="Table_Header" x="326" y="0" width="65" height="30"/>
-					<textElement textAlignment="Center" verticalAlignment="Middle"/>
+					<reportElement style="Table_Header" x="154" y="28" width="89" height="19"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="9" isBold="true"/>
+					</textElement>
 					<text><![CDATA[MTTR (hours)]]></text>
 				</staticText>
 				<staticText>
-					<reportElement style="Table_Header" x="396" y="0" width="55" height="30"/>
-					<textElement textAlignment="Center" verticalAlignment="Middle"/>
-					<text><![CDATA[Outage Hours]]></text>
+					<reportElement style="Table_Header" x="253" y="29" width="74" height="19"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="9" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Outage (hours)]]></text>
 				</staticText>
 				<staticText>
-					<reportElement style="Table_Header" x="456" y="0" width="47" height="30"/>
-					<textElement textAlignment="Center" verticalAlignment="Middle"/>
-					<text><![CDATA[Outage Percent]]></text>
+					<reportElement style="Table_Header" x="336" y="28" width="72" height="20"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="9" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Outage (%)]]></text>
 				</staticText>
 				<staticText>
-					<reportElement style="Table_Header" x="508" y="0" width="72" height="30"/>
-					<textElement textAlignment="Center" verticalAlignment="Middle"/>
-					<text><![CDATA[Availability Percent]]></text>
+					<reportElement style="Table_Header" x="421" y="29" width="94" height="20"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="9" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Availability (%)]]></text>
 				</staticText>
 				<pie3DChart>
-					<chart>
-						<reportElement x="0" y="103" width="304" height="208"/>
+					<chart isShowLegend="true">
+						<reportElement x="143" y="121" width="227" height="169"/>
 						<chartTitle>
 							<titleExpression><![CDATA["% Available Time to Outage Time"]]></titleExpression>
 						</chartTitle>
@@ -407,7 +439,7 @@ ORDER BY
 					</pie3DPlot>
 				</pie3DChart>
 				<subreport>
-					<reportElement x="0" y="323" width="620" height="252"/>
+					<reportElement x="0" y="301" width="515" height="212"/>
 					<subreportParameter name="DS_SURVEILLANCE_CAT">
 						<subreportParameterExpression><![CDATA[$P{DS_SURVEILLANCE_CATEGORY}]]></subreportParameterExpression>
 					</subreportParameter>
@@ -423,10 +455,37 @@ ORDER BY
 					<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
 					<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "AvailabilitySummaryChart_subreport.jasper"]]></subreportExpression>
 				</subreport>
+				<textField pattern="###0.000">
+					<reportElement style="Table_Detail" x="336" y="89" width="72" height="20"/>
+					<textElement textAlignment="Right">
+						<font size="9"/>
+					</textElement>
+					<textFieldExpression class="java.lang.Double"><![CDATA[$V{SURVEILLANCE_CAT_OUTAGES_MIN}]]></textFieldExpression>
+				</textField>
+				<textField pattern="###0.000">
+					<reportElement style="Table_Detail" x="421" y="90" width="94" height="20"/>
+					<textElement textAlignment="Right">
+						<font size="9"/>
+					</textElement>
+					<textFieldExpression class="java.lang.Double"><![CDATA[$V{SURVEILLANCE_CAT_AVAILABILITY_MIN}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement style="Table_Header" x="68" y="28" width="75" height="19"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="9" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Outage Count]]></text>
+				</staticText>
+				<break>
+					<reportElement x="0" y="527" width="100" height="1"/>
+				</break>
 			</band>
 			<band height="68">
 				<subreport>
-					<reportElement x="1" y="0" width="619" height="61"/>
+					<reportElement x="0" y="0" width="514" height="61"/>
+					<subreportParameter name="ONMS_REPORT_DIR">
+						<subreportParameterExpression><![CDATA[$P{ONMS_REPORT_DIR}]]></subreportParameterExpression>
+					</subreportParameter>
 					<subreportParameter name="CATEGORY_NAME">
 						<subreportParameterExpression><![CDATA[$F{categoryname}]]></subreportParameterExpression>
 					</subreportParameter>
@@ -449,44 +508,90 @@ ORDER BY
 		</groupFooter>
 	</group>
 	<pageHeader>
-		<band height="115">
+		<band height="76">
 			<image>
-				<reportElement x="228" y="0" width="164" height="49"/>
+				<reportElement x="351" y="0" width="164" height="49"/>
 				<imageExpression class="java.lang.String"><![CDATA[$P{COMPANY_LOGO}]]></imageExpression>
 			</image>
 			<staticText>
-				<reportElement style="Title" x="0" y="60" width="391" height="34"/>
+				<reportElement style="Title" x="0" y="0" width="350" height="29"/>
 				<textElement verticalAlignment="Middle">
 					<font size="20" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Availability Summary Report ]]></text>
 			</staticText>
 			<line>
-				<reportElement x="0" y="113" width="558" height="1"/>
+				<reportElement x="0" y="69" width="515" height="1"/>
 				<graphicElement>
 					<pen lineWidth="1.5"/>
 				</graphicElement>
 			</line>
+			<textField pattern="dd/MM/yyyy h.mm a">
+				<reportElement style="Body" x="0" y="49" width="350" height="20"/>
+				<textElement/>
+				<textFieldExpression class="java.util.Date"><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
 			<textField>
-				<reportElement style="Sub-sub-header" x="0" y="93" width="355" height="20"/>
+				<reportElement style="Sub-sub-header" x="0" y="29" width="351" height="20"/>
 				<textElement/>
 				<textFieldExpression class="java.lang.String"><![CDATA[$P{TIME_RANGE_DESCRIPTION}]]></textFieldExpression>
 			</textField>
 		</band>
 	</pageHeader>
 	<pageFooter>
-		<band height="40"/>
+		<band height="25">
+			<textField evaluationTime="Report">
+				<reportElement x="475" y="1" width="40" height="20"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[" " + $V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="395" y="1" width="80" height="20"/>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression class="java.lang.String"><![CDATA["Page "+$V{PAGE_NUMBER}+" of"]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement x="0" y="0" width="514" height="1"/>
+			</line>
+		</band>
 	</pageFooter>
 	<lastPageFooter>
 		<band height="60"/>
 	</lastPageFooter>
 	<noData>
-		<band height="50">
+		<band height="143">
 			<staticText>
-				<reportElement x="213" y="15" width="195" height="20"/>
+				<reportElement x="0" y="84" width="516" height="59"/>
 				<textElement/>
-				<text><![CDATA[There Is No Data For this Report]]></text>
+				<text><![CDATA[There is no data for this report.]]></text>
 			</staticText>
+			<image>
+				<reportElement x="351" y="0" width="164" height="49"/>
+				<imageExpression class="java.lang.String"><![CDATA[$P{COMPANY_LOGO}]]></imageExpression>
+			</image>
+			<staticText>
+				<reportElement style="Title" x="0" y="0" width="350" height="29"/>
+				<textElement verticalAlignment="Middle">
+					<font size="20" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Availability Summary Report ]]></text>
+			</staticText>
+			<line>
+				<reportElement x="0" y="69" width="515" height="1"/>
+				<graphicElement>
+					<pen lineWidth="1.5"/>
+				</graphicElement>
+			</line>
+			<textField pattern="dd/MM/yyyy h.mm a">
+				<reportElement style="Body" x="0" y="49" width="350" height="20"/>
+				<textElement/>
+				<textFieldExpression class="java.util.Date"><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement style="Sub-sub-header" x="0" y="29" width="351" height="20"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{TIME_RANGE_DESCRIPTION}]]></textFieldExpression>
+			</textField>
 		</band>
 	</noData>
 </jasperReport>

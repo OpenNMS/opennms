@@ -9,21 +9,23 @@ set -e
 
 case "$1" in
     configure)
-        if [ -x /usr/lib/jvm/java-6-sun/bin/java ]; then
-                (grep -v ^JAVA_HOME /etc/default/opennms-remote-poller || : ; echo 'JAVA_HOME=/usr/lib/jvm/java-6-sun') > /etc/default/opennms-remote-poller.new
-                mv /etc/default/opennms-remote-poller.new /etc/default/opennms-remote-poller || :
-        else
-                (grep -v ^JAVA_HOME /etc/default/opennms || : ; echo 'JAVA_HOME=/usr/lib/jvm/java-1.5.0-sun') > /etc/default/opennms-remote-poller.new
-                mv /etc/default/opennms-remote-poller.new /etc/default/opennms-remote-poller || :
-        fi
-    ;;
+        for version in 7 8; do
+            for postfix in oracle sun openjdk; do
+                dir="/usr/lib/jvm/java-$version-$postfix"
+                if [ -x "$dir"/bin/java ]; then
+                    (grep -v ^JAVA_HOME /etc/default/opennms-remote-poller || : ; echo "JAVA_HOME='$dir'") > /etc/default/opennms-remote-poller.new
+                    mv /etc/default/opennms-remote-poller.new /etc/default/opennms-remote-poller || :
+                    break 2
+                fi
+            done
+        done
+        ;;
     abort-upgrade|abort-remove|abort-deconfigure)
-
-    ;;
+        ;;
     *)
         echo "postinst called with unknown argument \`$1'" >&2
         exit 0
-    ;;
+        ;;
 esac
 
 # dh_installdeb will replace this with shell code automatically

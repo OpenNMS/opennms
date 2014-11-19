@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="node_availability" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="node_availability" pageWidth="595" pageHeight="842" whenNoDataType="NoDataSection" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
 	<property name="ireport.zoom" value="1.5"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
-	<template><![CDATA["${install.dir}/etc/report-templates/assets/styles/defaultStyles.jrtx"]]></template>
+	<template><![CDATA[$P{ONMS_REPORT_DIR} + "/assets/styles/defaultStyles.jrtx"]]></template>
 	<style name="Table_Grid" mode="Transparent" forecolor="#FFFFFF" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false">
 		<pen lineWidth="0.0" lineColor="#FFFFFF"/>
 		<box>
@@ -144,8 +144,7 @@ GROUP BY
   node_outages.avail_total
 ORDER BY
   node_outages.categoryname ASC,
-  node_outages.nodelabel
-]]>
+  node_outages.nodelabel]]>
 		</queryString>
 		<field name="categoryname" class="java.lang.String"/>
 		<field name="nodelabel" class="java.lang.String"/>
@@ -211,9 +210,13 @@ ORDER BY
 			<groupExpression><![CDATA[$F{categoryname}]]></groupExpression>
 		</group>
 	</subDataset>
-	<parameter name="COMPANY_LOGO" class="java.lang.String">
+	<parameter name="ONMS_REPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<parameterDescription><![CDATA[The directory where all reports can be found]]></parameterDescription>
+		<defaultValueExpression><![CDATA["${install.dir}/etc/report-templates"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="COMPANY_LOGO" class="java.lang.String" isForPrompting="false">
 		<parameterDescription><![CDATA[Company logo]]></parameterDescription>
-		<defaultValueExpression><![CDATA["${install.dir}/etc/report-templates/assets/images/company-logo.png"]]></defaultValueExpression>
+		<defaultValueExpression><![CDATA[$P{ONMS_REPORT_DIR} + "/assets/images/company-logo.png"]]></defaultValueExpression>
 	</parameter>
 	<parameter name="SURVEILLANCE_CATEGORY" class="java.lang.String">
 		<parameterDescription><![CDATA[Surveillance Category]]></parameterDescription>
@@ -275,28 +278,33 @@ ORDER BY
 		<band height="4" splitType="Stretch"/>
 	</title>
 	<pageHeader>
-		<band height="104" splitType="Stretch">
+		<band height="80" splitType="Stretch">
 			<staticText>
-				<reportElement style="Title" x="0" y="49" width="555" height="34"/>
+				<reportElement style="Title" x="0" y="0" width="391" height="34"/>
 				<textElement verticalAlignment="Middle">
 					<font size="20" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Node Availability Report]]></text>
 			</staticText>
 			<image>
-				<reportElement x="195" y="0" width="164" height="49"/>
+				<reportElement x="391" y="0" width="164" height="49"/>
 				<imageExpression class="java.lang.String"><![CDATA[$P{COMPANY_LOGO}]]></imageExpression>
 			</image>
 			<line>
-				<reportElement x="0" y="103" width="555" height="1"/>
+				<reportElement x="0" y="74" width="555" height="1"/>
 				<graphicElement>
 					<pen lineWidth="1.5"/>
 				</graphicElement>
 			</line>
 			<textField>
-				<reportElement style="Sub-sub-header" x="0" y="83" width="555" height="20"/>
+				<reportElement style="Sub-sub-header" x="0" y="34" width="392" height="20"/>
 				<textElement/>
 				<textFieldExpression class="java.lang.String"><![CDATA[$P{TIME_RANGE_DESCRIPTION}]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd/MM/yyyy h.mm a">
+				<reportElement style="Body" x="0" y="54" width="392" height="20"/>
+				<textElement/>
+				<textFieldExpression class="java.util.Date"><![CDATA[new java.util.Date()]]></textFieldExpression>
 			</textField>
 		</band>
 	</pageHeader>
@@ -306,7 +314,7 @@ ORDER BY
 	<detail>
 		<band height="20" splitType="Stretch">
 			<componentElement>
-				<reportElement key="table 1" x="0" y="0" width="555" height="20"/>
+				<reportElement key="table 1" x="0" y="0" width="555" height="20" isRemoveLineWhenBlank="true"/>
 				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
 					<datasetRun subDataset="node_availability">
 						<datasetParameter name="DS_SURVEILLANCE_CATEGORY">
@@ -608,22 +616,22 @@ ORDER BY
 				<textFieldExpression class="java.lang.String"><![CDATA[" " + $V{PAGE_NUMBER}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement style="Body" x="0" y="15" width="67" height="15"/>
+				<reportElement style="Body" x="0" y="15" width="75" height="15"/>
 				<textElement/>
 				<text><![CDATA[Report begin: ]]></text>
 			</staticText>
 			<staticText>
-				<reportElement style="Body" x="193" y="15" width="60" height="14"/>
+				<reportElement style="Body" x="200" y="15" width="60" height="14"/>
 				<textElement/>
 				<text><![CDATA[Report end: ]]></text>
 			</staticText>
 			<textField evaluationTime="Page">
-				<reportElement style="Body" x="68" y="16" width="126" height="14"/>
+				<reportElement style="Body" x="75" y="16" width="126" height="14"/>
 				<textElement/>
 				<textFieldExpression class="java.util.Date"><![CDATA[$P{START_TIME}]]></textFieldExpression>
 			</textField>
 			<textField evaluationTime="Page">
-				<reportElement style="Body" x="254" y="16" width="131" height="14"/>
+				<reportElement style="Body" x="261" y="16" width="131" height="14"/>
 				<textElement/>
 				<textFieldExpression class="java.util.Date"><![CDATA[new Date($P{START_TIME}.getTime() + (86400000L * $P{TIME_RANGE_NUMBER}))]]></textFieldExpression>
 			</textField>
@@ -633,12 +641,39 @@ ORDER BY
 		<band splitType="Stretch"/>
 	</summary>
 	<noData>
-		<band height="50">
+		<band height="151">
 			<staticText>
-				<reportElement x="196" y="15" width="163" height="20"/>
+				<reportElement x="0" y="95" width="555" height="39"/>
 				<textElement/>
-				<text><![CDATA[There is No Data for this Report]]></text>
+				<text><![CDATA[There is no data for this Report]]></text>
 			</staticText>
+			<staticText>
+				<reportElement style="Title" x="0" y="0" width="391" height="34"/>
+				<textElement verticalAlignment="Middle">
+					<font size="20" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Node Availability Report]]></text>
+			</staticText>
+			<textField>
+				<reportElement style="Sub-sub-header" x="0" y="34" width="392" height="20"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{TIME_RANGE_DESCRIPTION}]]></textFieldExpression>
+			</textField>
+			<image>
+				<reportElement x="391" y="0" width="164" height="49"/>
+				<imageExpression class="java.lang.String"><![CDATA[$P{COMPANY_LOGO}]]></imageExpression>
+			</image>
+			<textField pattern="dd/MM/yyyy h.mm a">
+				<reportElement style="Body" x="0" y="54" width="392" height="20"/>
+				<textElement/>
+				<textFieldExpression class="java.util.Date"><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement x="0" y="74" width="555" height="1"/>
+				<graphicElement>
+					<pen lineWidth="1.5"/>
+				</graphicElement>
+			</line>
 		</band>
 	</noData>
 </jasperReport>

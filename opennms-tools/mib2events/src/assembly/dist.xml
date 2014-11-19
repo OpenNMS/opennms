@@ -16,7 +16,7 @@
     </moduleSet>
     <moduleSet>
       <includes>
-        <include>org.opennms:opennms-doc</include>
+        <include>org.opennms.doc:guide-all</include>
       </includes>
       <binaries>
         <outputDirectory>/</outputDirectory>
