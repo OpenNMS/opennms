@@ -1,0 +1,53 @@
+
+=== NetScalerGroupHealthMonitor
+
+This monitor is designed for Citrix NetScaler loadbalancing checks.
+It checks if more than x percent of the servers assigned to a loadbalanced service are active.
+The required data is gathered via SNMP from the NetScaler.
+The status of the servers is determined by the NetScaler.
+The provided service it self is not part of the check.
+The basis of this monitor is the SnmpMonitorStrategy.
+A valid SNMP configuration in OpenNMS for the NetScaler is required.
+
+==== Monitor facts
+
+[options="autowidth"]
+|===
+| Class Name     | `org.opennms.netmgt.poller.monitors.NetScalerGroupHealthMonitor.java`
+| Remote Enabled | false
+|===
+
+==== Configuration and Usage
+
+.Monitor specific parameters for the NetScalerGroupHealthMonitor
+[options="header, autowidth"]
+|===
+| Parameter     | Description                                                                  | Required | Default value
+| `group-name`  | The name of the server group to check                                        | required | `-`
+| `group-health`| The percentage of active servers vs total server of the group as an integer  | optional | `60`
+|===
+
+==== Examples
+The following example checks a server group called "central_webfront_http".
+If at least 70% of the servers are active, the service is up.
+If less then 70% of the servers are active the service is down.
+A configuration like the following can be used for the example in the 'poller-configuration.xml'.
+
+[source, xml]
+----
+<service name="NetScaler_Health" interval="300000" user-defined="false" status="on">
+   <parameter key="group-name" value="central_webfront_http" />
+   <parameter key="group-health" value="70" />
+</service>
+
+<monitor service="NetScaler_Health" class-name="org.opennms.netmgt.poller.monitors.NetScalerGroupHealthMonitor” />
+----
+
+==== Details about the used SNMP checks
+The monitor checks the status of the server group based on the `NS-ROOT-MIB` using the `svcGrpMemberState`.
+`svcGrpMemberState` is part of the `serviceGroupMemberTable`.
+The `serviceGroupMemberTable` is indexed by `svcGrpMemberGroupName` and `svcGrpMemberName`.
+A initial lookup for the `group name` is performed.
+Based on the lookup the `serviceGroupMemberTable` is walked with the numeric representation of the server group.
+The monitor interprets just the server status code `7-up` as active server.
+Other status codes like `2-unknown` or `3-busy` are counted for total amount of servers.
