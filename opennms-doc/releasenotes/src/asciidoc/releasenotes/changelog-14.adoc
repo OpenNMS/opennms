@@ -1,6 +1,27 @@
 [releasenotes-14]
 === OpenNMS 14
 
+[releasenotes-changelog-14.0.1]
+==== Release 14.0.1
+
+Release 14.0.1 is the latest stable release of OpenNMS.  It provides a few small fixes and enhancements over OpenNMS 14.0.0. For an overview of the major changes since OpenNMS 1.12.x, see the https://github.com/OpenNMS/opennms/blob/release-14.0.0/WHATSNEW.md[What's New in OpenNMS 14] page.
+
+The codename for 14.0.1 is _Big Red_.
+
+==== Release 14.0.1
+
+===== Bug
+
+* WMI collector does not support persistence selectors (Issue http://issues.opennms.org/browse/NMS-6924[NMS-6924])
+* "Dashboard" & "Add Node" tabs in the navigation bar doesn't change style when being selected. (Issue http://issues.opennms.org/browse/NMS-7150[NMS-7150])
+* debian packages still try to use java 1.5 by default (Issue http://issues.opennms.org/browse/NMS-7154[NMS-7154])
+* OpenNMS on Debian Jessie Fails to Install if PostgreSQL is Not Already Configured (Issue http://issues.opennms.org/browse/NMS-7155[NMS-7155])
+* When I clicked on "Change Node Label" for modifying node lable it giving the error below. (Issue http://issues.opennms.org/browse/NMS-7156[NMS-7156])
+* $OPENNMS_HOME/bin/system-report throws a ClassNotFoundException (Issue http://issues.opennms.org/browse/NMS-7163[NMS-7163])
+* The WebUI is not showing the resources associated with new resource types added on the fly. (Issue http://issues.opennms.org/browse/NMS-7168[NMS-7168])
+* command-line scripts should output to the console (Issue http://issues.opennms.org/browse/NMS-7174[NMS-7174])
+* "OpenNMS Disconnect -- is the OpenNMS daemon running?" is confusing (Issue http://issues.opennms.org/browse/NMS-7177[NMS-7177])
+
 [releasenotes-changelog-14.0.0]
 ==== Release 14.0.0
 
