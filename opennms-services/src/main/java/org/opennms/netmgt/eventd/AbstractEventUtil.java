@@ -394,33 +394,21 @@ public abstract class AbstractEventUtil implements EventUtil {
 			else
 				retParmVal = "Unknown";
 		} else if (parm.equals(TAG_TIME)) {
-			String eventTime = event.getTime(); //This will be in GMT
-			try {
-				Date actualDate = org.opennms.netmgt.EventConstants.parseToDate(eventTime);
-				DateFormat df = DateFormat.getDateTimeInstance(DateFormat.FULL,
-					DateFormat.FULL);
-				retParmVal = df.format(actualDate);
-			} catch (java.text.ParseException e) {
-				LOG.error("could not parse event date '{}'", eventTime, e);
-
-				//Give up and just use the original string - don't bother with
-				// messing around
-				retParmVal = eventTime; 
+			Date eventTime = event.getTime(); //This will be in GMT
+			if (eventTime == null) {
+				retParmVal = null;
+			} else {
+				DateFormat df = DateFormat.getDateTimeInstance(DateFormat.FULL, DateFormat.FULL);
+				retParmVal = df.format(eventTime);
 			} 
 		} else if (parm.equals(TAG_SHORT_TIME)) {
-			String eventTime = event.getTime(); //This will be in GMT
-			try {
-				Date actualDate = org.opennms.netmgt.EventConstants.parseToDate(eventTime);
-				DateFormat df = DateFormat.getDateTimeInstance(DateFormat.SHORT,
-							DateFormat.SHORT);
-				retParmVal = df.format(actualDate);
-			} catch (java.text.ParseException e) {
-				LOG.error("could not parse event date '{}'", eventTime, e);
-				
-				//Give up and just use the original string - don't bother with
-				// messing around
-				retParmVal = eventTime;
-				}
+			Date eventTime = event.getTime(); //This will be in GMT
+			if (eventTime == null) {
+				retParmVal = null;
+			} else {
+				DateFormat df = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
+				retParmVal = df.format(eventTime);
+			}
 		} else if (parm.equals(TAG_HOST)) {
 			retParmVal = event.getHost();
 		} else if (parm.equals(TAG_INTERFACE)) {

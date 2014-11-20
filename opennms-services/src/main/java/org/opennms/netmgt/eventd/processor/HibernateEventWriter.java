@@ -28,12 +28,10 @@
 
 package org.opennms.netmgt.eventd.processor;
 
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.dao.api.EventDao;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
@@ -173,7 +171,7 @@ public final class HibernateEventWriter implements EventWriter {
         }
 
         // eventTime
-        ovent.setEventTime(getEventTime(event));
+        ovent.setEventTime(event.getTime());
 
         // eventHost
         // Resolve the event host to a hostname using the ipInterface table
@@ -322,14 +320,4 @@ public final class HibernateEventWriter implements EventWriter {
 
         eventDao.saveOrUpdate(ovent);
     }
-
-    private static Date getEventTime(Event event) {
-        try {
-            return new Date(EventConstants.parseToDate(event.getTime()).getTime());
-        } catch (ParseException e) {
-            LOG.warn("Failed to convert time {} to Timestamp, setting current time instead.", event.getTime(), e);
-            return new Date();
-        }
-    }
-
 }

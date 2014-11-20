@@ -339,7 +339,7 @@ public class NotifdTest extends NotificationsTestCase {
 
         Event event = MockEventUtil.createServiceEvent("Test", "uei.opennms.org/tests/nodeTimeTest", svc, null);
         
-        Date date = EventConstants.parseToDate(event.getTime());
+        Date date = event.getTime();
         String dateString = DateFormat.getDateTimeInstance(DateFormat.FULL,
                        DateFormat.FULL).format(date);
         long endTime = anticipateNotificationsForGroup("time " + dateString + ".", "Timestamp: " + dateString + ".", "InitialGroup", date, interval);

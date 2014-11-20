@@ -63,12 +63,7 @@ public class PendingPollEvent extends PollEvent {
     public PendingPollEvent(final Event event) {
         super(Scope.fromUei(event.getUei()));
         m_event = event;
-        try {
-            m_date = EventConstants.parseToDate(m_event.getTime());
-        } catch (final ParseException e) {
-            LOG.error("Unable to convert event time to date", e);
-            m_date = new Date();
-        }
+        m_date = m_event.getTime();
         m_expirationTimeInMillis = m_date.getTime() + PENDING_EVENT_TIMEOUT;
     }
 

@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,41 +26,24 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.model.events;
-
-import static org.junit.Assert.assertEquals;
+package org.opennms.netmgt;
 
 import java.util.Date;
 
-import org.junit.Test;
-import org.opennms.netmgt.xml.event.Event;
+import javax.xml.bind.annotation.adapters.XmlAdapter;
 
+public class DateTimeAdapter extends XmlAdapter<String, Date> {
 
-/**
- * @author <a href="mailto:david@opennms.org">David Hustace</a>
- */
-public class EventBuilderTest {
+    /** {@inheritDoc} */
+    @Override
+    public String marshal(final Date date) throws Exception {
+        return date == null ? null : EventConstants.formatToString(date);
+    }
 
-	/**
-	 * Test method for {@link org.opennms.netmgt.model.events.EventBuilder#getEvent()}.
-	 */
-    @Test
-	public final void testGetEvent() {
-		EventBuilder builder = new EventBuilder("uei.opennms.org/test", "test");
-		builder.setSeverity("Warning");
-		assertEquals("Warning", builder.getEvent().getSeverity());
-		
-		builder.setSeverity("Waning");
-		assertEquals("Indeterminate", builder.getEvent().getSeverity());
-	}
-    
-    @Test
-    public final void testUsingPassedInDate() throws Exception {
-        Date date = new Date(12345);
-        
-        EventBuilder builder = new EventBuilder("uei.opennms.org/test", "test", date);
-        Event ifEvent = builder.getEvent();
-        assertEquals(date, ifEvent.getTime());
+    /** {@inheritDoc} */
+    @Override
+    public Date unmarshal(final String string) throws Exception {
+        return (string == null || string.isEmpty()) ? null : EventConstants.parseToDate(string);
     }
 
 }

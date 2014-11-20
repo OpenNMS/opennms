@@ -347,12 +347,7 @@ final class PollerEventProcessor implements EventListener {
             }
         }
 
-        Date closeDate;
-        try {
-            closeDate = EventConstants.parseToDate(event.getTime());
-        } catch (ParseException e) {
-            closeDate = new Date();
-        }
+        Date closeDate = event.getTime();
 
         getPoller().getQueryManager().closeOutagesForNode(closeDate, event.getDbid(), nodeId.intValue());
 
@@ -427,12 +422,7 @@ final class PollerEventProcessor implements EventListener {
             }
         }
 
-        Date closeDate;
-        try {
-            closeDate = EventConstants.parseToDate(event.getTime());
-        } catch (ParseException e) {
-            closeDate = new Date();
-        }
+        Date closeDate = event.getTime();
 
         getPoller().getQueryManager().closeOutagesForInterface(closeDate, event.getDbid(), nodeId.intValue(), str(ipAddr));
 
@@ -461,12 +451,7 @@ final class PollerEventProcessor implements EventListener {
         InetAddress ipAddr = event.getInterfaceAddress();
         String service = event.getService();
 
-        Date closeDate;
-        try {
-            closeDate = EventConstants.parseToDate(event.getTime());
-        } catch (ParseException e) {
-            closeDate = new Date();
-        }
+        Date closeDate = event.getTime();
 
         getPoller().getQueryManager().closeOutagesForService(closeDate, event.getDbid(), nodeId.intValue(), str(ipAddr), service);
 
@@ -611,12 +596,7 @@ final class PollerEventProcessor implements EventListener {
 
         String nodeLabel = EventUtils.getParm(event, EventConstants.PARM_NODE_LABEL);
 
-        Date closeDate;
-        try {
-            closeDate = EventConstants.parseToDate(event.getTime());
-        } catch (final ParseException e) {
-            closeDate = new Date();
-        }
+        Date closeDate = event.getTime();
 
         final Set<Service> databaseServices = new HashSet<>();
 

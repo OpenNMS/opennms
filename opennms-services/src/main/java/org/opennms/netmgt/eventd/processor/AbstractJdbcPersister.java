@@ -221,12 +221,7 @@ public abstract class AbstractJdbcPersister implements InitializingBean, EventWr
      * @return a {@link java.sql.Timestamp} object.
      */
     protected static Timestamp getEventTime(Event event) {
-        try {
-            return new Timestamp(EventConstants.parseToDate(event.getTime()).getTime());
-        } catch (ParseException e) {
-            LOG.warn("Failed to convert time {} to Timestamp, setting current time instead.", event.getTime(), e);
-            return new Timestamp(System.currentTimeMillis());
-        }
+        return new Timestamp(event.getTime().getTime());
     }
     
     /**

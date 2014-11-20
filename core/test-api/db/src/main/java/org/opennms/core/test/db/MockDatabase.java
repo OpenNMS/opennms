@@ -30,7 +30,6 @@ package org.opennms.core.test.db;
 
 import static org.opennms.core.utils.InetAddressUtils.str;
 
-import java.net.InetAddress;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
@@ -217,7 +216,7 @@ public class MockDatabase extends TemporaryDatabasePostgreSQL implements EventWr
     }
 
     public void createOutage(MockService svc, Event svcLostEvent) {
-        createOutage(svc, svcLostEvent.getDbid(), convertEventTimeToTimeStamp(svcLostEvent.getTime()));
+        createOutage(svc, svcLostEvent.getDbid(), new Timestamp(svcLostEvent.getTime().getTime()));
     }
 
     public void createOutage(MockService svc, int eventId, Timestamp time) {
@@ -235,7 +234,7 @@ public class MockDatabase extends TemporaryDatabasePostgreSQL implements EventWr
     }
     
     public void resolveOutage(MockService svc, Event svcRegainEvent) {
-        resolveOutage(svc, svcRegainEvent.getDbid(), convertEventTimeToTimeStamp(svcRegainEvent.getTime()));
+        resolveOutage(svc, svcRegainEvent.getDbid(), new Timestamp(svcRegainEvent.getTime().getTime()));
     }        
 
     public void resolveOutage(MockService svc, int eventId, Timestamp timestamp) {
@@ -249,17 +248,6 @@ public class MockDatabase extends TemporaryDatabasePostgreSQL implements EventWr
                };
         
         update("UPDATE outages set svcRegainedEventID=?, ifRegainedService=? where (nodeid = ? AND ipAddr = ? AND serviceID = ? and (ifRegainedService IS NULL));", values);
-    }
-    
-
-    
-    public Timestamp convertEventTimeToTimeStamp(String time) {
-        try {
-            Date date = EventConstants.parseToDate(time);
-            return new Timestamp(date.getTime());
-        } catch (ParseException e) {
-            throw new RuntimeException("Invalid date format "+time, e);
-        }
     }
 
     /**
@@ -276,8 +264,8 @@ public class MockDatabase extends TemporaryDatabasePostgreSQL implements EventWr
                 eventId,
                 e.getSource(),
                 e.getUei(),
-                convertEventTimeToTimeStamp(e.getCreationTime()),
-                convertEventTimeToTimeStamp(e.getTime()),
+                new Timestamp(e.getCreationTime().getTime()),
+                new Timestamp(e.getTime().getTime()),
                 Integer.valueOf(OnmsSeverity.get(e.getSeverity()).getId()),
                 (e.hasNodeid() ? new Long(e.getNodeid()) : null),
                 e.getInterface(),

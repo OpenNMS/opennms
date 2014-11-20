@@ -129,7 +129,7 @@ public class EventBuilder {
      * @return a {@link org.opennms.netmgt.model.events.EventBuilder} object.
      */
     public EventBuilder setTime(final Date date) {
-       m_event.setTime(EventConstants.formatToString(date));
+       m_event.setTime(date);
        return this;
     }
     
@@ -140,7 +140,7 @@ public class EventBuilder {
      * @return a {@link org.opennms.netmgt.model.events.EventBuilder} object.
      */
     public EventBuilder setCreationTime(final Date date) {
-        m_event.setCreationTime(EventConstants.formatToString(date));
+        m_event.setCreationTime(date);
         return this;
     }
 

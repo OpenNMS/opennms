@@ -39,7 +39,6 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.net.InetAddress;
 import java.net.Socket;
-import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -303,19 +302,8 @@ final class TcpStreamHandler implements Runnable {
                         return 0;
                     }
 
-                    final DateFormat fmt = DateFormat.getDateTimeInstance(DateFormat.FULL, DateFormat.FULL);
-
-                    Date de1 = null;
-                    try {
-                        de1 = fmt.parse(e1.getTime());
-                    } catch (final Throwable t) {
-                    }
-
-                    Date de2 = null;
-                    try {
-                        de2 = fmt.parse(e2.getTime());
-                    } catch (final Throwable t) {
-                    }
+                    Date de1 = e1.getTime();
+                    Date de2 = e2.getTime();
 
                     if (de1 != null && de2 != null) {
                         return (int) (de1.getTime() - de2.getTime());

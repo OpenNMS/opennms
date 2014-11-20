@@ -38,7 +38,6 @@ import static org.opennms.core.utils.InetAddressUtils.str;
 import java.io.Serializable;
 import java.net.InetAddress;
 import java.text.DateFormat;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -57,7 +56,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.opennms.core.network.InetAddressXmlAdapter;
-import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.DateTimeAdapter;
 
 @XmlRootElement(name = "event")
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -84,7 +83,8 @@ public class Event implements Serializable {
 	 * from header
 	 */
 	@XmlElement(name = "creation-time")
-	private String _creationTime;
+	@XmlJavaTypeAdapter(DateTimeAdapter.class)
+	private Date _creationTime;
 
 	/**
 	 * from header
@@ -123,7 +123,8 @@ public class Event implements Serializable {
 	 * "Monday, February 18, 2002 3:01:58 PM EST"
 	 */
 	@XmlElement(name = "time")
-	private String _time;
+	@XmlJavaTypeAdapter(DateTimeAdapter.class)
+	private Date _time;
 
 	/**
 	 * The host at which the event is generated
@@ -559,7 +560,7 @@ public class Event implements Serializable {
 	 * 
 	 * @return the value of field 'CreationTime'.
 	 */
-	public String getCreationTime() {
+	public Date getCreationTime() {
 		return _creationTime;
 	}
 
@@ -1001,12 +1002,8 @@ public class Event implements Serializable {
 	 * 
 	 * @return the value of field 'Time'.
 	 */
-	public String getTime() {
+	public Date getTime() {
 		return _time;
-	}
-
-	public Date getDate() throws ParseException {
-	    return _time == null? null : EventConstants.parseToDate(_time);
 	}
 
 	/**
@@ -1339,7 +1336,7 @@ public class Event implements Serializable {
 	 * @param creationTime
 	 *            the value of field 'creationTime'.
 	 */
-	public void setCreationTime(final String creationTime) {
+	public void setCreationTime(final Date creationTime) {
 		_creationTime = creationTime;
 	}
 
@@ -1799,7 +1796,7 @@ public class Event implements Serializable {
 	 * @param time
 	 *            the value of field 'time'.
 	 */
-	public void setTime(final String time) {
+	public void setTime(final Date time) {
 		_time = time;
 	}
 

@@ -1278,12 +1278,12 @@ public abstract class NotificationManager {
                 event.setDbid(rs.getInt("eventid"));
                 event.setUei(rs.getString("eventuei"));
                 event.setNodeid(rs.getLong("nodeid"));
-                event.setTime(rs.getString("eventtime"));
+                event.setTime(rs.getDate("eventtime"));
                 event.setHost(rs.getString("eventhost"));
                 event.setInterface(rs.getString("ipaddr"));
                 event.setSnmphost(rs.getString("eventsnmphost"));
                 event.setService(getServiceName(rs.getInt("serviceid")));
-                event.setCreationTime(rs.getString("eventcreatetime"));
+                event.setCreationTime(rs.getDate("eventcreatetime"));
                 event.setSeverity(rs.getString("eventseverity"));
                 event.setPathoutage(rs.getString("eventpathoutage"));
                 Tticket tticket = new Tticket();

@@ -54,7 +54,7 @@
     Event event = new Event();
     event.setSource("Web UI");
     event.setUei(uei);
-    event.setTime(EventConstants.formatToString(new java.util.Date()));
+    event.setTime(new java.util.Date());
 
     String nodeID = StringUtils.trimToEmpty(request.getParameter("nodeid"));
     if (StringUtils.isNotBlank(nodeID)) {
