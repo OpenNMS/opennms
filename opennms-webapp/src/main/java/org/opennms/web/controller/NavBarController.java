@@ -45,16 +45,10 @@ import org.springframework.util.Assert;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
 
-/**
- * <p>NavBarController class.</p>
- *
- * @author ranger
- * @version $Id: $
- * @since 1.8.1
- */
 public class NavBarController extends AbstractController implements InitializingBean, OnmsHeaderProvider {
+    private String m_viewName = "navBar";
     private List<NavBarEntry> m_navBarItems;
-    
+
     /**
      * <p>afterPropertiesSet</p>
      */
@@ -66,7 +60,7 @@ public class NavBarController extends AbstractController implements Initializing
     /** {@inheritDoc} */
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        return new ModelAndView("navBar", "model", createNavBarModel(request));
+        return new ModelAndView(m_viewName, "model", createNavBarModel(request));
     }
 
     private NavBarModel createNavBarModel(HttpServletRequest request) {
@@ -159,5 +153,9 @@ public class NavBarController extends AbstractController implements Initializing
 
         strBuilder.append("</ul>");
         return strBuilder.toString();
+    }
+    
+    public void setViewName(final String viewName) {
+        m_viewName = viewName;
     }
 }

@@ -60,22 +60,27 @@
 	Map<String, List<Category>> categoryData = m_category_list.getCategoryData();
 
 	long earliestUpdate = m_category_list.getEarliestUpdate(categoryData);
-	boolean opennmsDisconnect =
-		m_category_list.isDisconnected(earliestUpdate);
+	boolean opennmsDisconnect = m_category_list.isDisconnected(earliestUpdate);
+
+	String titleName = "Availability Over the Past 24 Hours";
+	if (opennmsDisconnect) {
+		titleName = "OpenNMS Disconnect -- is the OpenNMS daemon running? - Last update: ";
+		if (earliestUpdate > 0) {
+			titleName += new Date(earliestUpdate).toString();
+		} else {
+			titleName += "one or more categories have never been updated.";
+		}
+	}
 %>
-<%	if (opennmsDisconnect) { %>
-	    <h3 class="o-box">OpenNMS Disconnect -- is the OpenNMS daemon running? - 
-		Last update:
-<%=		(earliestUpdate > 0 ?
-			 new Date(earliestUpdate).toString() :
-			 "one or more categories have never been updated.") %>
-	      </h3>
-<%	} else { %>
-	    <h3 class="o-box">Availability Over the Past 24 Hours</h3>
-<%	} %>
+
+<div class="panel panel-success">
+  <div class="panel-heading">
+    <h3 class="panel-title"><%= titleName %>
+  </div>
+  <div class="panel-body">
 
 
-<table class="o-box onms-table">
+<table class="table">
 <%
 	for (Iterator<String> i = categoryData.keySet().iterator(); i.hasNext(); ) {
 	    String sectionName = i.next();
@@ -120,3 +125,5 @@
 	}
 %>
 </table>
+</div>
+</div>

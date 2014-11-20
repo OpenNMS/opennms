@@ -46,8 +46,11 @@
 
 <!-- outage/servicesdown-box.htm -->
 <c:url var="headingLink" value="outage/list.htm"/>
-<h3 class="o-box"><a href="${headingLink}">Nodes with Outages</a></h3>
-<div class="boxWrapper">
+<div class="panel panel-success">
+  <div class="panel-heading">
+    <h3 class="panel-title"><a href="${headingLink}">Nodes with Outages</a></h3>
+  </div>
+  <div class="panel-body">
   <c:choose>
     <c:when test="${empty summaries}">
       <p class="noBottomMargin">
@@ -73,4 +76,5 @@
       </c:if>
     </c:otherwise>
   </c:choose>
+  </div>
 </div>

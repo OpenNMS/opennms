@@ -32,21 +32,40 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 
-<div class="navbar">
-  <ul>
-    <c:forEach var="entry" items="${model.entries}">
-      <c:if test="${entry.value.display}">
-        <li>
-          <c:choose>
-            <c:when test="${entry.value.displayLink}">
-              <a href="${entry.key.url}">${entry.key.name}</a>
-            </c:when>
-            <c:otherwise>
-              ${entry.key.name}
-            </c:otherwise>
-          </c:choose>
+<c:choose>
+	<c:when test="${param.bootstrap == 'true'}">
+      <ul class="nav navbar-nav navbar-right">
+        <li><a href="#">Link</a></li>
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Dropdown <span class="caret"></span></a>
+          <ul class="dropdown-menu" role="menu">
+            <li><a href="#">Action</a></li>
+            <li><a href="#">Another action</a></li>
+            <li><a href="#">Something else here</a></li>
+            <li class="divider"></li>
+            <li><a href="#">Separated link</a></li>
+          </ul>
         </li>
-      </c:if>
-    </c:forEach>
-  </ul>
-</div>
+      </ul>
+	</c:when>
+	<c:otherwise>
+		<div class="navbar">
+		  <ul>
+		    <c:forEach var="entry" items="${model.entries}">
+		      <c:if test="${entry.value.display}">
+		        <li>
+		          <c:choose>
+		            <c:when test="${entry.value.displayLink}">
+		              <a href="${entry.key.url}">${entry.key.name}</a>
+		            </c:when>
+		            <c:otherwise>
+		              ${entry.key.name}
+		            </c:otherwise>
+		          </c:choose>
+		        </li>
+		      </c:if>
+		    </c:forEach>
+		  </ul>
+		</div>
+    </c:otherwise>
+</c:choose>

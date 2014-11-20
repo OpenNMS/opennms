@@ -489,8 +489,8 @@
     </bean>
 
     <!--  "includes" -->
-    <bean id="headerProvider" name="/navBar.htm" class="org.opennms.web.controller.NavBarController">
-        <property name="navBarItems">
+    <bean id="navBarEntries" class="java.util.ArrayList">
+    	<constructor-arg>
             <list>
                 <bean class="org.opennms.web.navigate.LocationBasedNavBarEntry">
                     <property name="name" value="Node List"/>
@@ -596,7 +596,12 @@
                     <property name="locationMatch" value="support"/>
                 </bean>
             </list>
-        </property>
+        </constructor-arg>
+    </bean>
+
+    <bean id="headerProvider" name="/navBar.htm" class="org.opennms.web.controller.NavBarController">
+    	<property name="viewName" value="navBar" />
+        <property name="navBarItems" ref="navBarEntries" />
     </bean>
     
   <onmsgi:service interface="org.opennms.web.api.OnmsHeaderProvider" ref="headerProvider"/>
