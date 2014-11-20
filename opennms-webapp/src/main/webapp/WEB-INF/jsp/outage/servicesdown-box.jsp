@@ -59,7 +59,7 @@
     </c:when>
 
     <c:otherwise>
-      <ul class="o-box plain">
+      <ul class="list-unstyled">
         <c:forEach var="summary" items="${summaries}">
           <c:url var="nodeLink" value="element/node.jsp">
             <c:param name="node" value="${summary.nodeId}"/>

@@ -24,8 +24,9 @@ Bootstrap Theme Specific Stylesheet
 ----------------------------------------------- */
 
 body {
-	background:url(../images/textures/debut_dark.png);
-	font:15px 'Open Sans', Arial, sans-serif;
+	//background:url(../images/textures/debut_dark.png);
+	background-color: $color_gallery_approx;
+	font:12px 'Open Sans', Arial, sans-serif;
 }
 body.fixed-nav {
 	padding-top: 85px;
@@ -45,7 +46,7 @@ body.fixed-nav {
 	left:0px;
 }
 a {
-	color:#17C14F;
+	color:$color_green_leaf_approx;
 }
 a:hover,
 a:focus {
@@ -135,7 +136,7 @@ a:focus {
 }
 .btn-success {
 	border-color: #328F4C;
-	background-color: #309E3D;
+	background-color: $color_green_leaf_approx;
 }
 .btn-success:hover, 
 .btn-success:focus, 
@@ -186,7 +187,7 @@ a:focus {
 	color:#000;
 }
 .text-success { 
-	color:#309E3D;
+	color:$color_green_leaf_approx;
 }
 .text-info { 
 	color:#5BDBC7;
@@ -214,7 +215,7 @@ a:focus {
 	margin-top:-15px;
 }
 .alert-success {
-	background: #309E3D;
+	background: $color_green_leaf_approx;
 }
 .alert-info {
 	background: #5BDBC7;
@@ -246,7 +247,7 @@ a:focus {
 	background-image: -moz-linear-gradient(top, rgba(255,255,255,0.35) 0%, rgba(170,170,170,0.15) 66%, rgba(0,0,0,0.05) 100%);
 	background-image: -webkit-linear-gradient(top, rgba(255,255,255,0.35) 0%,rgba(170,170,170,0.15) 66%,rgba(0,0,0,0.05) 100%);
 	background-image: linear-gradient(to bottom, rgba(255,255,255,0.35) 0%,rgba(170,170,170,0.15) 66%,rgba(0,0,0,0.05) 100%);
-	color:#309E3D;
+	color:$color_green_leaf_approx;
 	font-size: 17px;
 	line-height: 30px;
 	border-bottom:1px solid #ccc;
@@ -266,13 +267,13 @@ a:focus {
 .has-success .checkbox, 
 .has-success .radio-inline, 
 .has-success .checkbox-inline {
-	color: #309E3D;
+	color: $color_green_leaf_approx;
 }
 .has-success .form-control {
-	border-color: #309E3D;
+	border-color: $color_green_leaf_approx;
 }
 .has-success .form-control-feedback {
-	color: #309E3D;
+	color: $color_green_leaf_approx;
 }
 .has-warning .help-block, 
 .has-warning .control-label, 
@@ -310,7 +311,7 @@ a:focus {
 	background-color: #444;
 }
 .progress-bar-success {
-	background-color: #309E3D;
+	background-color: $color_green_leaf_approx;
 }
 .progress-bar-info {
 	background-color: #5BDBC7;
@@ -360,7 +361,7 @@ a.list-group-item.active:focus {
 .nav-pills>li.active>a:hover, 
 .nav-pills>li.active>a:focus {
 	color: #fff;
-	background-color: #309E3D;
+	background-color: $color_green_leaf_approx;
 }
 
 
@@ -376,12 +377,12 @@ a.list-group-item.active:focus {
 	border-color: #444;
 }
 .panel-success {
-	border-color: #309E3D;
+	border-color: $color_green_leaf_approx;
 }
 .panel-success > .panel-heading {
 	color: #fff;
-	background-color: #309E3D;
-	border-color: #309E3D;
+	background-color: $color_green_leaf_approx;
+	border-color: $color_green_leaf_approx;
 }
 .panel-warning {
 	border-color: #FFBF00;
@@ -421,7 +422,7 @@ a.list-group-item.active:focus {
 	border:none;
 }
 .modal-title {
-	color:#309E3D;
+	color:$color_green_leaf_approx;
 }
 .modal-header .close {
 	margin-top: -10px;
@@ -434,7 +435,7 @@ a.list-group-item.active:focus {
 
 .table>thead>tr>td.success, .table>tbody>tr>td.success, .table>tfoot>tr>td.success, .table>thead>tr>th.success, .table>tbody>tr>th.success, .table>tfoot>tr>th.success, .table>thead>tr.success>td, .table>tbody>tr.success>td, .table>tfoot>tr.success>td, .table>thead>tr.success>th, .table>tbody>tr.success>th, .table>tfoot>tr.success>th {
 	color: #fff;
-	background-color: #309E3D;
+	background-color: $color_green_leaf_approx;
 }
 .table>thead>tr>td.info, .table>tbody>tr>td.info, .table>tfoot>tr>td.info, .table>thead>tr>th.info, .table>tbody>tr>th.info, .table>tfoot>tr>th.info, .table>thead>tr.info>td, .table>tbody>tr.info>td, .table>tfoot>tr.info>td, .table>thead>tr.info>th, .table>tbody>tr.info>th, .table>tfoot>tr.info>th {
 	color: #fff;
@@ -447,4 +448,16 @@ a.list-group-item.active:focus {
 .table>thead>tr>td.danger, .table>tbody>tr>td.danger, .table>tfoot>tr>td.danger, .table>thead>tr>th.danger, .table>tbody>tr>th.danger, .table>tfoot>tr>th.danger, .table>thead>tr.danger>td, .table>tbody>tr.danger>td, .table>tfoot>tr.danger>td, .table>thead>tr.danger>th, .table>tbody>tr.danger>th, .table>tfoot>tr.danger>th {
 	color: #fff;
 	background-color: #F45C31;
+}
+
+.table > thead > tr > th,
+.table > thead > tr,
+.table > thead {
+  vertical-align: bottom;
+  border-bottom: 2px solid #ddd;
+}
+.table>thead, .table>thead>tr, .table>thead>tr>th {
+	color: white;
+	background-color: $color_tundora_approx;
+	border-bottom: 0;
 }

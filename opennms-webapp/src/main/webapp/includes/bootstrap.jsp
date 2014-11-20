@@ -105,7 +105,7 @@ final String baseHref = Util.calculateUrlBase( request );
   <!--  ${nostyles} -->
   <c:choose>
     <c:when test="${param.nostyles != 'true' }">
-        <link rel="stylesheet" type="text/css" href="<%= baseHref %>lib/bootstrap/dist/css/bootstrap.min.css" media="screen" />
+        <link rel="stylesheet" type="text/css" href="<%= baseHref %>lib/bootstrap/dist/css/bootstrap.css" media="screen" />
         <link rel="stylesheet" type="text/css" href="<%= baseHref %>css/opennms-theme.css" media="screen" />
         <!-- <link rel="stylesheet" type="text/css" href="<%= baseHref %>css/styles.css" media="screen" />
         <link rel="stylesheet" type="text/css" href="<%= baseHref %>css/gwt-asset.css" media="screen" />

@@ -1,35 +1,76 @@
 @import "properties.scss";
 
-$severity-alarm-critical-color: black;
+$severity-alarm-critical-text: black;
 $severity-alarm-critical-bg: #f5cdcd;
 $severity-alarm-critical-border: #cc0000;
 
-$severity-alarm-major-color: black;
+$severity-alarm-major-text: black;
 $severity-alarm-major-bg: #ffd7cd;
 $severity-alarm-major-border: #ff3300;
 
-$severity-alarm-minor-color: black;
+$severity-alarm-minor-text: black;
 $severity-alarm-minor-bg: #ffebcd;
 $severity-alarm-minor-border: #ff9900;
 
-$severity-alarm-warning-color: black;
+$severity-alarm-warning-text: black;
 $severity-alarm-warning-bg: #fff5cd;
 $severity-alarm-warning-border: #ffcc00;
 
-$severity-alarm-indeterminate-color: black;
+$severity-alarm-indeterminate-text: black;
 $severity-alarm-indeterminate-bg: #ebebcd;
 $severity-alarm-indeterminate-border: $color_olive_approx;
 
-$severity-alarm-normal-color: black;
+$severity-alarm-normal-text: black;
 $severity-alarm-normal-bg: #d7e1cd;
 $severity-alarm-normal-border: $color_dell_approx;
 
-$severity-alarm-cleared-color: black;
+$severity-alarm-cleared-text: black;
 $severity-alarm-cleared-bg: #eeeeee;
 $severity-alarm-cleared-border: $color_mountain_mist_approx;
 
-.severity {
-	&.critical {
-		background-color: $severity-alarm-critical-color;
+@mixin severity-variant($text-color, $bg-color, $border-color, $type) {
+	.severity & {
+		color: $text-color;
+		background-color: $bg-color;
+		border-top: 2px solid $border-color;
+		background-image: url(../images/bg#{$type}.png);
+		background-repeat: no-repeat;
+		background-position: left center;
+		padding-left: 18px;
 	}
+	.severity & > td {
+		padding-left: 18px;
+	}
+	thead.severity {
+		color: white;
+		background-color: $color_mine_shaft_approx;
+	}
+}
+
+.severity-critical, .severity-Critical {
+	@include severity-variant($severity-alarm-critical-text, $severity-alarm-critical-bg, $severity-alarm-critical-border, 'Critical');
+}
+
+.severity-major, .severity-Major {
+	@include severity-variant($severity-alarm-major-text, $severity-alarm-major-bg, $severity-alarm-major-border, 'Major');
+}
+
+.severity-minor, .severity-Minor {
+	@include severity-variant($severity-alarm-minor-text, $severity-alarm-minor-bg, $severity-alarm-minor-border, 'Minor');
+}
+
+.severity-warning, .severity-Warning {
+	@include severity-variant($severity-alarm-warning-text, $severity-alarm-warning-bg, $severity-alarm-warning-border, 'Warning');
+}
+
+.severity-indeterminate, .severity-Indeterminate {
+	@include severity-variant($severity-alarm-indeterminate-text, $severity-alarm-indeterminate-bg, $severity-alarm-indeterminate-border, 'Indeterminate');
+}
+
+.severity-normal, .severity-Normal {
+	@include severity-variant($severity-alarm-normal-text, $severity-alarm-normal-bg, $severity-alarm-normal-border, 'Normal');
+}
+
+.severity-cleared, .severity-Cleared {
+	@include severity-variant($severity-alarm-cleared-text, $severity-alarm-cleared-bg, $severity-alarm-cleared-border, 'Cleared');
 }

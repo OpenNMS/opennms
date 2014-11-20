@@ -77,15 +77,15 @@
   <div class="panel-heading">
     <h3 class="panel-title"><%= titleName %>
   </div>
-  <div class="panel-body">
+  <!-- <div class="panel-body"> -->
 
 
-<table class="table">
+<table class="table table-condensed severity">
 <%
 	for (Iterator<String> i = categoryData.keySet().iterator(); i.hasNext(); ) {
 	    String sectionName = i.next();
 %>
-	<thead>
+	<thead class="dark">
 		<tr>
 			<th><%= sectionName %></th>
 			<th align="right">Outages</th>
@@ -99,7 +99,7 @@
 		Category category = j.next();
 		String categoryName = category.getName();
 %>
-	<tr class="CellStatus">
+	<tr>
 		<td>
           <% if (category.getLastUpdated() != null) { %>
 		    <a href="<%= response.encodeURL("rtc/category.jsp?category=" + Util.encode(categoryName)) %>"
@@ -110,11 +110,11 @@
             <%= categoryName %>
           <% } %>
 		</td>
-		<td class="<%= (opennmsDisconnect ? "Indeterminate" : category.getOutageClass()) %>"
+		<td class="severity-<%= (opennmsDisconnect ? "indeterminate" : category.getOutageClass().toString().toLowerCase()) %>"
 	        align="right"
 		    title="Updated: <%= category.getLastUpdated() %>"><%= category.getOutageText() %>
 		</td>
-		<td class="<%= (opennmsDisconnect ? "Indeterminate" : category.getAvailClass()) %>"
+		<td class="severity-<%= (opennmsDisconnect ? "indeterminate" : category.getAvailClass().toString().toLowerCase()) %>"
 		    align="right" 
 		    title="Updated: <%= category.getLastUpdated() %>"><%= category.getAvailText() %>
 		</td>
@@ -125,5 +125,5 @@
 	}
 %>
 </table>
-</div>
+<!-- </div> -->
 </div>
