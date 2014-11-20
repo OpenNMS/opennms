@@ -1131,7 +1131,7 @@
     <jasperreportsVersion>5.6.1</jasperreportsVersion>
     <jettyVersion>8.1.10.v20130312</jettyVersion>
     <karafVersion>2.4.0</karafVersion>
-    <karafPaxExamVersion>2.3.8</karafPaxExamVersion>
+    <karafPaxExamVersion>2.3.9</karafPaxExamVersion>
     <felixVersion>2.3.0</felixVersion>
     <liquibaseVersion>2.0.5</liquibaseVersion>
     <log4jVersion>99.99.99-use-log4j2</log4jVersion>
