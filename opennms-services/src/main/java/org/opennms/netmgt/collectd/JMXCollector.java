@@ -316,7 +316,7 @@ public abstract class JMXCollector implements ServiceCollector {
         
         ConnectionWrapper connection = null;
 
-        LOG.debug("collecting {} on node ID {}", InetAddressUtils.str(ipaddr), nodeInfo.getNodeId());
+        LOG.debug("connecting to {} on node ID {}", InetAddressUtils.str(ipaddr), nodeInfo.getNodeId());
 
         try {
             connection = getMBeanServerConnection(map, ipaddr);
@@ -329,6 +329,7 @@ public abstract class JMXCollector implements ServiceCollector {
 
             int retry = ParameterMap.getKeyedInteger(map, ParameterName.RETRY.toString(), 3);
             for (int attempts = 0; attempts <= retry; attempts++) {
+                LOG.debug("collecting {} on node ID {}, attempt number {}", InetAddressUtils.str(ipaddr), nodeInfo.getNodeId(), attempts + 1);
                 try {
                     /*
                      * Iterate over the mbeans, for each object name perform a
