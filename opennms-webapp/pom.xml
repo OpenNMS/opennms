@@ -20,6 +20,20 @@
   <build>
     <plugins>
       <plugin>
+        <groupId>org.jasig.maven</groupId>
+        <artifactId>sass-maven-plugin</artifactId>
+        <version>1.1.2-ONMS-20131018-1</version>
+        <executions>
+          <execution>
+            <goals><goal>update-stylesheets</goal></goals>
+          </execution>
+        </executions>
+        <configuration>
+          <sassSourceDirectory>${basedir}/src/main/scss</sassSourceDirectory>
+          <destination>${project.build.directory}/${project.build.finalName}/css</destination>
+        </configuration>
+      </plugin>
+      <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-dependency-plugin</artifactId>
         <executions>

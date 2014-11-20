@@ -1,0 +1,6 @@
+{
+  "name": "OpenNMS",
+  "dependencies": {
+    "bootstrap": "~3.3.1"
+  }
+}
