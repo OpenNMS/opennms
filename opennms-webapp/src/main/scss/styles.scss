@@ -575,38 +575,38 @@ tr {
 		background-position: top left;
 		background-repeat: repeat-y;
 		&.Critical {
-			background-color: $color_alarm_critical_background;
-			border-top: 2px solid $color_alarm_critical_border !important;
+			background-color: $severity-alarm-critical-bg;
+			border-top: 2px solid $severity-alarm-critical-border !important;
 			background-image: url(../images/bgCritical.png);
 		}
 		&.Major {
-			background-color: $color_alarm_major_background;
-			border-top: 2px solid $color_alarm_major_border !important;
+			background-color: $severity-alarm-major-bg;
+			border-top: 2px solid $severity-alarm-major-border !important;
 			background-image: url(../images/bgMajor.png);
 		}
 		&.Minor {
-			background-color: $color_alarm_minor_background;
-			border-top: 2px solid $color_alarm_minor_border !important;
+			background-color: $severity-alarm-minor-bg;
+			border-top: 2px solid $severity-alarm-minor-border !important;
 			background-image: url(../images/bgMinor.png);
 		}
 		&.Warning {
-			background-color: $color_alarm_warning_background;
-			border-top: 2px solid $color_alarm_wardning_border !important;
+			background-color: $severity-alarm-warning-bg;
+			border-top: 2px solid $severity-alarm-warning-border !important;
 			background-image: url(../images/bgWarning.png);
 		}
 		&.Indeterminate {
-			background-color: $color_alarm_indeterminate_background;
-			border-top: 2px solid $color_alarm_indeterminate_border !important;
+			background-color: $severity-alarm-indeterminate-bg;
+			border-top: 2px solid $severity-alarm-indeterminate-border !important;
 			background-image: url(../images/bgIndeterminate.png);
 		}
 		&.Normal {
-			background-color: $color_alarm_normal_background;
-			border-top: 2px solid $color_alarm_normal_border !important;
+			background-color: $severity-alarm-normal-bg;
+			border-top: 2px solid $severity-alarm-normal-border !important;
 			background-image: url(../images/bgNormal.png);
 		}
 		&.Cleared {
-			background-color: $color_alarm_cleared_background;
-			border-top: 2px solid $color_alarm_cleared_border !important;
+			background-color: $severity-alarm-cleared-bg;
+			border-top: 2px solid $severity-alarm-cleared-border !important;
 			background-image: url(../images/bgCleared.png);
 		}
 		&.nobright {
@@ -614,63 +614,63 @@ tr {
 		}
 	}
 	&.Critical td {
-		background-color: $color_alarm_critical_background;
+		background-color: $severity-alarm-critical-bg;
 		&.divider {
-			border-top: 2px solid $color_alarm_critical_border !important;
+			border-top: 2px solid $severity-alarm-critical-border !important;
 		}
 		&.bright {
 			background-image: url(../images/bgCritical.png);
 		}
 	}
 	&.Major td {
-		background-color: $color_alarm_major_background;
+		background-color: $severity-alarm-major-bg;
 		&.divider {
-			border-top: 2px solid $color_alarm_major_border !important;
+			border-top: 2px solid $severity-alarm-major-border !important;
 		}
 		&.bright {
 			background-image: url(../images/bgMajor.png);
 		}
 	}
 	&.Minor td {
-		background-color: $color_alarm_minor_background;
+		background-color: $severity-alarm-minor-bg;
 		&.divider {
-			border-top: 2px solid $color_alarm_minor_border !important;
+			border-top: 2px solid $severity-alarm-minor-border !important;
 		}
 		&.bright {
 			background-image: url(../images/bgMinor.png);
 		}
 	}
 	&.Warning td {
-		background-color: $color_alarm_warning_background;
+		background-color: $severity-alarm-warning-bg;
 		&.divider {
-			border-top: 2px solid $color_alarm_wardning_border !important;
+			border-top: 2px solid $severity-alarm-warning-border !important;
 		}
 		&.bright {
 			background-image: url(../images/bgWarning.png);
 		}
 	}
 	&.Indeterminate td {
-		background-color: $color_alarm_indeterminate_background;
+		background-color: $severity-alarm-indeterminate-bg;
 		&.divider {
-			border-top: 2px solid $color_alarm_indeterminate_border !important;
+			border-top: 2px solid $severity-alarm-indeterminate-border !important;
 		}
 		&.bright {
 			background-image: url(../images/bgIndeterminate.png);
 		}
 	}
 	&.Normal td {
-		background-color: $color_alarm_normal_background;
+		background-color: $severity-alarm-normal-bg;
 		&.divider {
-			border-top: 2px solid $color_alarm_normal_border !important;
+			border-top: 2px solid $severity-alarm-normal-border !important;
 		}
 		&.bright {
 			background-image: url(../images/bgNormal.png);
 		}
 	}
 	&.Cleared td {
-		background-color: $color_alarm_cleared_background;
+		background-color: $severity-alarm-cleared-bg;
 		&.divider {
-			border-top: 2px solid $color_alarm_cleared_border !important;
+			border-top: 2px solid $severity-alarm-cleared-border !important;
 		}
 		&.bright {
 			background-image: url(../images/bgCleared.png);

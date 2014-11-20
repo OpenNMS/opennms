@@ -28,3 +28,8 @@ $severity-alarm-cleared-color: black;
 $severity-alarm-cleared-bg: #eeeeee;
 $severity-alarm-cleared-border: $color_mountain_mist_approx;
 
+.severity {
+	&.critical {
+		background-color: $severity-alarm-critical-color;
+	}
+}
