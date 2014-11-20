@@ -7,16 +7,16 @@
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -35,6 +35,8 @@ import java.util.Map;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.config.SnmpPeerFactory;
+import org.opennms.netmgt.poller.Distributable;
+import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.NetworkInterface;
 import org.opennms.netmgt.poller.PollStatus;
@@ -56,6 +58,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
+@Distributable(DistributionContext.DAEMON)
 public class NetScalerGroupHealthMonitor extends SnmpMonitorStrategy {
     private static final String SVC_GRP_MEMBER_STATE = ".1.3.6.1.4.1.5951.4.1.2.7.1.6";
     private static final Logger LOG = LoggerFactory.getLogger(NetScalerGroupHealthMonitor.class);

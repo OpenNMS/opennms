@@ -2,22 +2,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -29,6 +29,7 @@
 
 --%>
 
+<%@ page import="org.opennms.web.api.Authentication" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
@@ -54,47 +55,77 @@
 
 
 <c:choose>
-	<c:when test="${empty pagedListHolder.pageList}">
-		<p>None found.</p>
-	</c:when>
 
-	<c:otherwise>
-		<form:form commandName="ManageDatabaseReportCommand">
-		<element:pagedList pagedListHolder="${pagedListHolder}"
-			pagedLink="${pagedLink}" />
+    <c:when test="${empty pagedListHolder.pageList}">
+        <h3>Database Report List</h3>
+        <div class="boxWrapper">
+            <p>None found.</p>
+        </div>
+    </c:when>
 
-		<div class="spacer"><!--  --></div>
-		<table>
-			<thead>
-				<tr>
-					<th>title</th>
-					<th>report ID</th>
-					<th>run date</th>
-					<th>view report</th>
-					<th>select</th>
-				</tr>
-			</thead>
-			<%-- // show only current page worth of data --%>
-			<c:forEach items="${pagedListHolder.pageList}" var="report">
-				<tr>
-					<td>${report.title}</td>
-					<td>${report.reportId}</td>
-					<td>${report.date}</td>
-					<td>
-                    <c:if test="${empty formatMap[report.reportId]}">
-                        <a href="report/database/downloadReport.htm?fileName=${report.location}">Download</a>
-                    </c:if>
-					<c:forEach items='${formatMap[report.reportId]}' var="format">
-						<a href="report/database/downloadReport.htm?locatorId=${report.id}&format=${format}">${format}</a>
-					</c:forEach>
-					</td>
-					<td><form:checkbox path="ids" value="${report.id}"/></td>
-				</tr>
-			</c:forEach>
-		</table>
-		<input type="submit" value="delete checked reports"/>
-	</form:form>
-	</c:otherwise>
+    <c:otherwise>
+        <form:form commandName="command">
+            <element:pagedList pagedListHolder="${pagedListHolder}" pagedLink="${pagedLink}" />
+
+            <div class="spacer"><!--  --></div>
+            <table>
+                <thead>
+                <tr>
+                    <th>title</th>
+                    <th>report ID</th>
+                    <th>run date</th>
+                    <th>view report</th>
+                    <% if (!request.isUserInRole(Authentication.ROLE_READONLY)) { %>
+                    <th>select</th>
+                    <% } %>
+                </tr>
+                </thead>
+                    <%-- // show only current page worth of data --%>
+                <c:forEach items="${pagedListHolder.pageList}" var="report">
+                    <tr>
+                        <td>${report.title}</td>
+                        <td>${report.reportId}</td>
+                        <td>${report.date}</td>
+                        <td>
+                            <c:if test="${empty formatMap[report.reportId]}">
+                                <a href="report/database/downloadReport.htm?fileName=${report.location}">Download</a>
+                            </c:if>
+                            <c:forEach items='${formatMap[report.reportId]}' var="format">
+                                <a href="report/database/downloadReport.htm?locatorId=${report.id}&format=${format}">${format}</a>
+                            </c:forEach>
+                        </td>
+                        <% if (!request.isUserInRole(Authentication.ROLE_READONLY)) { %>
+                        <td><form:checkbox path="ids" value="${report.id}"/></td>
+                        <% } %>
+                    </tr>
+                </c:forEach>
+            </table>
+            <% if (!request.isUserInRole(Authentication.ROLE_READONLY)) { %>
+                <div class="pagination">
+                    <a onClick="toggle(true, 'ids')">Select all</a> /
+                    <a onClick="toggle(false, 'ids')">Deselect all</a>
+                </div>
+            <% } %>
+
+            <% // if deletion was successful %>
+            <c:if test="${not empty success}">
+                <div class="alert-success" style="clear:both">
+                        ${success}
+                </div>
+            </c:if>
+
+            <% // If user is not allowed to delete %>
+            <c:if test="${not empty error}">
+                <div class="alert-error" style="clear:both">
+                        ${error}
+                </div>
+            </c:if>
+            <% if (!request.isUserInRole(Authentication.ROLE_READONLY)) { %>
+            <input type="submit" value="delete checked reports"/>
+            <% } %>
+
+        </form:form>
+    </c:otherwise>
 </c:choose>
 
 

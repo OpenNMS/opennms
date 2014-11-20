@@ -1,0 +1,15 @@
+<xml-groups>
+    <xml-group name="opennms-notifd" resource-type="node"
+        resource-xpath="/MBean" >
+        <xml-object name="NotificTasksQueued" type="counter" xpath="Attribute[@name='NotificationTasksQueued']/@value" />
+        <xml-object name="BinaryNoticeAttemp" type="counter" xpath="Attribute[@name='BinaryNoticesAttempted']/@value" />
+        <xml-object name="JavaNoticesAttempt" type="counter" xpath="Attribute[@name='JavaNoticesAttempted']/@value" />
+        <xml-object name="BinaryNoticeSuccee" type="counter" xpath="Attribute[@name='BinaryNoticesSucceeded']/@value" />
+        <xml-object name="JavaNoticesSucceed" type="counter" xpath="Attribute[@name='JavaNoticesSucceeded']/@value" />
+        <xml-object name="BinaryNoticeFailed" type="counter" xpath="Attribute[@name='BinaryNoticesFailed']/@value" />
+        <xml-object name="JavaNoticesFailed" type="counter" xpath="Attribute[@name='JavaNoticesFailed']/@value" />
+        <xml-object name="BinaryNoticeInterr" type="counter" xpath="Attribute[@name='BinaryNoticesInterrupted']/@value" />
+        <xml-object name="JavaNoticesInterru" type="counter" xpath="Attribute[@name='JavaNoticesInterrupted']/@value" />
+        <xml-object name="UnknowNoticeInterr" type="counter" xpath="Attribute[@name='UnknownNoticesInterrupted']/@value" />
+    </xml-group>
+</xml-groups>

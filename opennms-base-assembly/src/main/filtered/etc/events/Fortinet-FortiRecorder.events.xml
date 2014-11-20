@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.12356.114</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>100</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/fortinet/traps/fortirecorder/frcTrapVideoDiskHighThreshold</uei>
+        <event-label>FORTINET-FORTIRECORDER-MIB defined trap event: frcTrapVideoDiskHighThreshold</event-label>
+        <descr>
+&lt;p&gt;Trap being sent if video disk usage becomes too high&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	frcSysSerial&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+	frcTrapVideoDiskHighThreshold trap received
+	frcSysSerial=%parm[#1]%&lt;/p&gt;
+	</logmsg>
+        <severity>Indeterminate</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.12356.114</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>201</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/fortinet/traps/fortirecorder/frcTrapSystemEvent</uei>
+        <event-label>FORTINET-FORTIRECORDER-MIB defined trap event: frcTrapSystemEvent</event-label>
+        <descr>
+&lt;p&gt;Trap being sent when system component halt, reboot, upgrade etc.,&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	frcSysSerial&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	frcSysEventCode&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		systemHalt(1)
+		systemReboot(2)
+		systemReload(3)
+		systemUpgrade(4)
+		guiUpgrade(5)
+		logdiskFormat(6)
+		videodiskFormat(7)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+	frcTrapSystemEvent trap received
+	frcSysSerial=%parm[#1]%
+	frcSysEventCode=%parm[#2]%&lt;/p&gt;
+	</logmsg>
+        <severity>Indeterminate</severity>
+        <varbindsdecode>
+            <parmid>parm[#2]</parmid>
+            <decode varbindvalue="1" varbinddecodedstring="systemHalt"/>
+            <decode varbindvalue="2" varbinddecodedstring="systemReboot"/>
+            <decode varbindvalue="3" varbinddecodedstring="systemReload"/>
+            <decode varbindvalue="4" varbinddecodedstring="systemUpgrade"/>
+            <decode varbindvalue="5" varbinddecodedstring="guiUpgrade"/>
+            <decode varbindvalue="6" varbinddecodedstring="logdiskFormat"/>
+            <decode varbindvalue="7" varbinddecodedstring="videodiskFormat"/>
+        </varbindsdecode>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.12356.114</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>202</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/fortinet/traps/fortirecorder/frcTrapRemoteStorage</uei>
+        <event-label>FORTINET-FORTIRECORDER-MIB defined trap event: frcTrapRemoteStorage</event-label>
+        <descr>
+&lt;p&gt;Trap being sent when status of the remote storage changes&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	frcSysSerial&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	frcRemoteStorageStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		false(0)
+		true(1)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+	frcTrapRemoteStorage trap received
+	frcSysSerial=%parm[#1]%
+	frcRemoteStorageStatus=%parm[#2]%&lt;/p&gt;
+	</logmsg>
+        <severity>Indeterminate</severity>
+        <varbindsdecode>
+            <parmid>parm[#2]</parmid>
+            <decode varbindvalue="0" varbinddecodedstring="false"/>
+            <decode varbindvalue="1" varbinddecodedstring="true"/>
+        </varbindsdecode>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.12356.114</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>203</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/fortinet/traps/fortirecorder/frcTrapCameraEvent</uei>
+        <event-label>FORTINET-FORTIRECORDER-MIB defined trap event: frcTrapCameraEvent</event-label>
+        <descr>
+&lt;p&gt;Trap being sent when status of a camera changes&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	frcSysSerial&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	frcCameraName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	frcCameraEventCode&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		enable(1)
+		disable(2)
+		communicationFail(3)
+		recordingFail(4)
+		ipChange(5)
+		reboot(6)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+	frcTrapCameraEvent trap received
+	frcSysSerial=%parm[#1]%
+	frcCameraName=%parm[#2]%
+	frcCameraEventCode=%parm[#3]%&lt;/p&gt;
+	</logmsg>
+        <severity>Indeterminate</severity>
+        <varbindsdecode>
+            <parmid>parm[#3]</parmid>
+            <decode varbindvalue="1" varbinddecodedstring="enable"/>
+            <decode varbindvalue="2" varbinddecodedstring="disable"/>
+            <decode varbindvalue="3" varbinddecodedstring="communicationFail"/>
+            <decode varbindvalue="4" varbinddecodedstring="recordingFail"/>
+            <decode varbindvalue="5" varbinddecodedstring="ipChange"/>
+            <decode varbindvalue="6" varbinddecodedstring="reboot"/>
+        </varbindsdecode>
+    </event>
+</events>

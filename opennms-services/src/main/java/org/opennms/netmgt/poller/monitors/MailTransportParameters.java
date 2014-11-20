@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -28,15 +28,11 @@
 
 package org.opennms.netmgt.poller.monitors;
 
-import java.io.ByteArrayInputStream;
-import java.io.UnsupportedEncodingException;
 import java.util.Map;
 import java.util.Properties;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ParameterMap;
-import org.opennms.core.xml.CastorUtils;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.mailtransporttest.MailTransportTest;
 import org.opennms.netmgt.config.mailtransporttest.ReadmailHost;
 import org.opennms.netmgt.config.mailtransporttest.ReadmailTest;
@@ -62,11 +58,17 @@ public class MailTransportParameters {
 
     MailTransportParameters(Map<String,Object> parameterMap) {
         m_parameterMap = parameterMap;
-        String test = getStringParm("mail-transport-test", null);
-        if (test == null) {
+        Object mailTransportTest = AbstractServiceMonitor.getKeyedObject(m_parameterMap, "mail-transport-test", null);
+        if (mailTransportTest == null) {
             throw new IllegalArgumentException("mail-transport-test must be set in monitor parameters");
         }
-        m_transportTest = parseMailTransportTest(test);
+        if (mailTransportTest instanceof MailTransportTest) {
+            m_transportTest = (MailTransportTest) mailTransportTest;
+        } else if (mailTransportTest instanceof String) {
+            m_transportTest = JaxbUtils.unmarshal(MailTransportTest.class, (String)mailTransportTest);
+        } else {
+            throw new IllegalArgumentException("Unsure how to deal with Mail Transport Test of type " + mailTransportTest.getClass());
+        }
     }
     
     static synchronized MailTransportParameters get(Map<String,Object> parameterMap) {
@@ -84,19 +86,6 @@ public class MailTransportParameters {
 
     MailTransportTest getTransportTest() {
         return m_transportTest;
-    }
-
-    MailTransportTest parseMailTransportTest(String test) {
-        try {
-            return CastorUtils.unmarshal(MailTransportTest.class, new ByteArrayInputStream(test.getBytes("UTF-8")));
-        } catch (MarshalException e) {
-            throw new IllegalArgumentException("Unable to parse mail-test-sequence for MailTransportMonitor: "+test, e);
-        } catch (ValidationException e) {
-            throw new IllegalArgumentException("Unable to parse mail-test-sequence for MailTransportMonitor: "+test, e);
-        } catch (UnsupportedEncodingException e) {
-            throw new IllegalArgumentException("Unable to parse mail-test-sequence for MailTransportMonitor: "+test, e);
-        }
-    
     }
 
     private String getStringParm(String key, String deflt) {

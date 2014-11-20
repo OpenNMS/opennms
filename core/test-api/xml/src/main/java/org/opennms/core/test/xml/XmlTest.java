@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -86,6 +86,18 @@ import org.xml.sax.XMLFilter;
 abstract public class XmlTest<T> {
     private static final Logger LOG = LoggerFactory.getLogger(XmlTest.class);
 
+    static {
+        initXmlUnit();
+    }
+
+    private static void initXmlUnit() {
+        XMLUnit.setIgnoreWhitespace(true);
+        XMLUnit.setIgnoreAttributeOrder(true);
+        XMLUnit.setIgnoreComments(true);
+        XMLUnit.setIgnoreDiffBetweenTextAndCDATA(true);
+        XMLUnit.setNormalize(true);
+    }
+
     private T m_sampleObject;
     private Object m_sampleXml;
     private String m_schemaFile;
@@ -99,11 +111,7 @@ abstract public class XmlTest<T> {
     @Before
     public void setUp() {
         MockLogAppender.setupLogging(true);
-        XMLUnit.setIgnoreWhitespace(true);
-        XMLUnit.setIgnoreAttributeOrder(true);
-        XMLUnit.setIgnoreComments(true);
-        XMLUnit.setIgnoreDiffBetweenTextAndCDATA(true);
-        XMLUnit.setNormalize(true);
+        initXmlUnit();
     }
 
     protected T getSampleObject() {
@@ -192,13 +200,7 @@ abstract public class XmlTest<T> {
     }
 
     protected String marshalToXmlWithJaxb() {
-        LOG.debug("Reference Object: {}", getSampleObject());
-
-        final StringWriter writer = new StringWriter();
-        JaxbUtils.marshal(getSampleObject(), writer);
-        final String xml = writer.toString();
-        LOG.debug("JAXB XML: {}", xml);
-        return xml;
+        return marshalToXmlWithJaxb(getSampleObject());
     }
 
     @Test
@@ -312,6 +314,16 @@ abstract public class XmlTest<T> {
         } finally {
             unmarshaller.setSchema(null);
         }
+    }
+
+    public static <T> String marshalToXmlWithJaxb(T sampleObject) {
+        LOG.debug("Reference Object: {}", sampleObject);
+
+        final StringWriter writer = new StringWriter();
+        JaxbUtils.marshal(sampleObject, writer);
+        final String xml = writer.toString();
+        LOG.debug("JAXB XML: {}", xml);
+        return xml;
     }
 
     public static void assertXmlEquals(final String expectedXml, final String actualXml) {

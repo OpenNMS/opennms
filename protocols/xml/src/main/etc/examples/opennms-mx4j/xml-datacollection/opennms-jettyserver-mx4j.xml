@@ -1,0 +1,11 @@
+<xml-groups>
+    <xml-group name="opennms-jettyserver" resource-type="node"
+        resource-xpath="/MBean" >
+        <xml-object name="HttpsConnectionsTotal" type="counter" xpath="Attribute[@name='HttpsConnTotal']/@value" />
+        <xml-object name="HttpsConnectionsOpen" type="GAUGE" xpath="Attribute[@name='HttpsConnOpen']/@value" />
+        <xml-object name="HttpsConnectionsOpenMax" type="GAUGE" xpath="Attribute[@name='HttpsConnOpenMax']/@value" />
+        <xml-object name="HttpConnectionsTotal" type="counter" xpath="Attribute[@name='HttpConnTotal']/@value" />
+        <xml-object name="HttpConnectionsOpen" type="GAUGE" xpath="Attribute[@name='HttpConnOpen']/@value" />
+        <xml-object name="HttpConnectionsOpenMax" type="GAUGE" xpath="Attribute[@name='HttpConnOpenMax']/@value" />
+    </xml-group>
+</xml-groups>
