@@ -35,6 +35,9 @@ import java.util.Set;
 
 public interface PathOutageManager {
 
+	/** Constant <code>NO_CRITICAL_PATH="Not Configured"</code> */
+	static final String NO_CRITICAL_PATH = "Not Configured";
+
 	List<String[]> getAllCriticalPaths() throws SQLException;
 
 	String getPrettyCriticalPath(int nodeID) throws SQLException;

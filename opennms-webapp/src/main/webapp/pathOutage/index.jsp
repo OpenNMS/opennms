@@ -33,11 +33,9 @@
 	import="
 		java.util.List,
 		org.opennms.netmgt.config.OpennmsServerConfigFactory,
-		org.opennms.netmgt.poller.PathOutageManagerJdbcImpl
+		org.opennms.netmgt.poller.PathOutageManagerDaoImpl
 	"
 %>
-
-
 
 <jsp:include page="/includes/header.jsp" flush="false">
   <jsp:param name="title" value="Path Outages" />
@@ -47,41 +45,38 @@
 </jsp:include>
 
 <% OpennmsServerConfigFactory.init(); %>
-    
 
 <%
-        List<String[]> testPaths = PathOutageManagerJdbcImpl.getInstance().getAllCriticalPaths();
+        List<String[]> testPaths = PathOutageManagerDaoImpl.getInstance().getAllCriticalPaths();
         String dcpip = OpennmsServerConfigFactory.getInstance().getDefaultCriticalPathIp();
-        String[] pthData = PathOutageManagerJdbcImpl.getInstance().getCriticalPathData(dcpip, "ICMP");
+        String[] pthData = PathOutageManagerDaoImpl.getInstance().getCriticalPathData(dcpip, "ICMP");
 %>
-<% if (dcpip != null && !dcpip.equals("")) { %>
-	<p>Default Critical Path = <%= dcpip %> ICMP</p>
+<% if (dcpip != null && !"".equals(dcpip)) { %>
+	<p>The default critical path is service ICMP on interface <%= dcpip %>.</p>
 <% } %>
-	<h3>All path outages</h3>
+	<h3>All Path Outages</h3>
 	<table>
 		<tr>
 			<th>Critical Path Node</th>
-			<th><%= "Critical Path IP" %></th>
-			<th><%= "Critical Path Service" %></th>
-			<th># of Nodes</th>
+			<th>Critical Path IP</th>
+			<th>Critical Path Service</th>
+			<th>Number of Nodes</th>
 		</tr>
 		<% for (String[] pth : testPaths) {
-			pthData = PathOutageManagerJdbcImpl.getInstance().getCriticalPathData(pth[0], pth[1]); %>
+			pthData = PathOutageManagerDaoImpl.getInstance().getCriticalPathData(pth[1], pth[2]); %>
 			<tr class="CellStatus">
 				<% if((pthData[0] == null) || (pthData[0].equals(""))) { %>
-					<td>(interface not in DB)</td>
-					<% } else if (pthData[0].indexOf("nodes have this IP") > -1) { %>
-						<td><a href="element/nodeList.htm?iplike=<%= pth[0] %>"><%= pthData[0] %></a></td>
-						<% } else { %>
-							<td><a href="element/node.jsp?node=<%= pthData[1] %>"><%= pthData[0] %></a></td>
-							<% } %>
-							<td><%= pth[0] %></td>
-							<td class="<%= pthData[3] %>" align="center"><%= pth[1] %></td>
-							<td><a href="pathOutage/showNodes.jsp?critIp=<%= pth[0] %>&critSvc=<%= pth[1] %>"><%= pthData[2] %></a></td>
-						</tr>
-						<% } %>
+					<td>(Interface not in database)</td>
+				<% } else if (pthData[0].indexOf("nodes have this IP") > -1) { %>
+					<td><a href="element/nodeList.htm?iplike=<%= pth[1] %>"><%= pthData[0] %></a></td>
+				<% } else { %>
+					<td><a href="element/node.jsp?node=<%= pthData[1] %>"><%= pthData[0] %></a></td>
+				<% } %>
+				<td><%= pth[1] %></td>
+				<td class="<%= pthData[3] %>"><%= pth[2] %></td>
+				<td><a href="pathOutage/showNodes.jsp?critIp=<%= pth[1] %>&critSvc=<%= pth[2] %>"><%= pthData[2] %></a></td>
+			</tr>
+		<% } %>
 </table>
-
-
 
 <jsp:include page="/includes/footer.jsp" flush="false" />

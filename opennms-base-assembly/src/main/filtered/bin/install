@@ -1,6 +1,8 @@
 #!/bin/sh -
 
 OPENNMS_HOME="${install.dir}"
+OPENNMS_BINDIR="${install.bin.dir}"
+
 RUNAS="root"
 
 ULIMIT=`which ulimit 2>/dev/null`
@@ -25,5 +27,10 @@ if [ -f "$OPENNMS_HOME/etc/opennms.conf" ]; then
 	. "$OPENNMS_HOME/etc/opennms.conf"
 fi
 
-exec ${install.bin.dir}/runjava -r -- \
-     $ADDITIONAL_MANAGER_OPTIONS -Dopennms.home="$OPENNMS_HOME" -cp "$OPENNMS_HOME/lib/opennms_bootstrap.jar" org.opennms.bootstrap.InstallerBootstrap "$@"
+exec "$OPENNMS_BINDIR"/runjava -r -- \
+	$ADDITIONAL_MANAGER_OPTIONS \
+	-Dopennms.home="$OPENNMS_HOME" \
+	-Dlog4j.configurationFile="$OPENNMS_HOME"/etc/log4j2-tools.xml \
+	-cp "$OPENNMS_HOME/lib/opennms_bootstrap.jar" \
+	org.opennms.bootstrap.InstallerBootstrap \
+	"$@"

@@ -161,9 +161,10 @@ public abstract class AbstractXmlCollectorTest {
      *
      * @param parameters the parameters
      * @param expectedFiles the expected amount of JRB files
+     * @return the collection set
      * @throws Exception the exception
      */
-    public void executeCollectorTest(Map<String, Object> parameters, int expectedFiles) throws Exception {
+    public CollectionSet executeCollectorTest(Map<String, Object> parameters, int expectedFiles) throws Exception {
         XmlCollector collector = new XmlCollector();
         collector.setXmlCollectionDao(m_xmlCollectionDao);
         collector.initialize(m_collectionAgent, parameters);
@@ -176,6 +177,7 @@ public abstract class AbstractXmlCollectorTest {
         collectionSet.visit(persister);
 
         Assert.assertEquals(expectedFiles, FileUtils.listFiles(new File(TEST_SNMP_DIRECTORY), new String[] { getRrdExtension() }, true).size());
+        return collectionSet;
     }
 
     /**

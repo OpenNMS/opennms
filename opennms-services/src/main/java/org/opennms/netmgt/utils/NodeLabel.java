@@ -39,17 +39,17 @@ public interface NodeLabel {
 	
 	NodeLabelSource getSource();
 	
-	NodeLabelJDBCImpl retrieveLabel(final int nodeID) throws SQLException;
+	NodeLabel retrieveLabel(final int nodeID) throws SQLException;
 	
-	NodeLabelJDBCImpl retrieveLabel(int nodeID, Connection dbConnection) throws SQLException;
+	NodeLabel retrieveLabel(int nodeID, Connection dbConnection) throws SQLException;
 	
-	void assignLabel(final int nodeID, final NodeLabelJDBCImpl nodeLabel) throws SQLException;
+	void assignLabel(final int nodeID, final NodeLabel nodeLabel) throws SQLException;
 	
-	void assignLabel(final int nodeID, NodeLabelJDBCImpl nodeLabel, final Connection dbConnection) throws SQLException;
+	void assignLabel(final int nodeID, NodeLabel nodeLabel, final Connection dbConnection) throws SQLException;
 	
-	NodeLabelJDBCImpl computeLabel(final int nodeID) throws SQLException;
+	NodeLabel computeLabel(final int nodeID) throws SQLException;
 	
-	NodeLabelJDBCImpl computeLabel(final int nodeID, final Connection dbConnection) throws SQLException;
+	NodeLabel computeLabel(final int nodeID, final Connection dbConnection) throws SQLException;
 	
 	String toString();
 }
