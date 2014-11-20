@@ -131,9 +131,7 @@ public class AlarmStatsRestService extends AlarmRestServiceBase {
         final CriteriaBuilder builder = getCriteriaBuilder(m_uriInfo.getQueryParameters(), false);
 
         // note: this is just the *total count* criteria, so no ordering, and count everything
-        builder.clearOrder();
-        builder.limit(null);
-        builder.offset(0);
+        builder.count();
 
         if (severity != null) {
             builder.eq("severity", severity);

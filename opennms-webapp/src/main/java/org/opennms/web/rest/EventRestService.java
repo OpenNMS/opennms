@@ -139,7 +139,7 @@ public class EventRestService extends OnmsRestService {
             builder.orderBy("eventTime").asc();
 
             final OnmsEventCollection coll = new OnmsEventCollection(m_eventDao.findMatching(builder.toCriteria()));
-            coll.setTotalCount(m_eventDao.countMatching(builder.clearOrder().toCriteria()));
+            coll.setTotalCount(m_eventDao.countMatching(builder.count().toCriteria()));
 
             return coll;
         } finally {
@@ -204,7 +204,7 @@ public class EventRestService extends OnmsRestService {
             }
 
             final OnmsEventCollection coll = new OnmsEventCollection(m_eventDao.findMatching(builder.toCriteria()));
-            coll.setTotalCount(m_eventDao.countMatching(builder.clearOrder().toCriteria()));
+            coll.setTotalCount(m_eventDao.countMatching(builder.count().toCriteria()));
 
             return coll;
         } finally {
