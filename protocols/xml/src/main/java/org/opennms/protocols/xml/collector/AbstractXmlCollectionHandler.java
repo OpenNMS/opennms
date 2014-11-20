@@ -40,7 +40,6 @@ import java.net.URLConnection;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -113,10 +112,7 @@ public abstract class AbstractXmlCollectionHandler implements XmlCollectionHandl
     /** The RRD Repository. */
     private RrdRepository m_rrdRepository;
 
-    /** The XML resource type Map. */
-    private Map<String, XmlResourceType> m_resourceTypeList = new HashMap<String, XmlResourceType>();
-
-    /** The Node Level Resource. */
+    /** The Node Level Resource (temporary variable). It is initialized on each collection attempt. */
     private XmlSingleInstanceCollectionResource m_nodeResource;
 
     /* (non-Javadoc)
@@ -217,6 +213,7 @@ public abstract class AbstractXmlCollectionHandler implements XmlCollectionHandl
      * @throws ParseException the parse exception
      */
     protected void fillCollectionSet(CollectionAgent agent, XmlCollectionSet collectionSet, XmlSource source, Document doc) throws XPathExpressionException, ParseException {
+        m_nodeResource = null; // Be sure that the temporary resource for node level data is clean before processing a new document.
         NamespaceContext nc = new DocumentNamespaceResolver(doc);
         XPath xpath = XPathFactory.newInstance().newXPath();
         xpath.setNamespaceContext(nc);
@@ -304,6 +301,7 @@ public abstract class AbstractXmlCollectionHandler implements XmlCollectionHandl
         XmlCollectionResource resource = null;
         if (resourceType.equalsIgnoreCase("node")) {
             if (m_nodeResource == null) {
+                LOG.debug("getCollectionResource: initializing node-level resource.");
                 m_nodeResource = new XmlSingleInstanceCollectionResource(agent);
             }
             resource = m_nodeResource;
@@ -557,21 +555,17 @@ public abstract class AbstractXmlCollectionHandler implements XmlCollectionHandl
      * @return the XML resource type
      */
     protected XmlResourceType getXmlResourceType(CollectionAgent agent, String resourceType) {
-        if (!m_resourceTypeList.containsKey(resourceType)) {
-            ResourceType rt = DataCollectionConfigFactory.getInstance().getConfiguredResourceTypes().get(resourceType);
-            if (rt == null) {
-                LOG.debug("getXmlResourceType: using default XML resource type strategy.");
-                rt = new ResourceType();
-                rt.setName(resourceType);
-                rt.setStorageStrategy(new StorageStrategy());
-                rt.getStorageStrategy().setClazz(XmlStorageStrategy.class.getName());
-                rt.setPersistenceSelectorStrategy(new PersistenceSelectorStrategy());
-                rt.getPersistenceSelectorStrategy().setClazz(PersistAllSelectorStrategy.class.getName());
-            }
-            XmlResourceType type = new XmlResourceType(agent, rt);
-            m_resourceTypeList.put(resourceType, type);
+        ResourceType rt = DataCollectionConfigFactory.getInstance().getConfiguredResourceTypes().get(resourceType);
+        if (rt == null) {
+            LOG.debug("getXmlResourceType: using default XML resource type strategy.");
+            rt = new ResourceType();
+            rt.setName(resourceType);
+            rt.setStorageStrategy(new StorageStrategy());
+            rt.getStorageStrategy().setClazz(XmlStorageStrategy.class.getName());
+            rt.setPersistenceSelectorStrategy(new PersistenceSelectorStrategy());
+            rt.getPersistenceSelectorStrategy().setClazz(PersistAllSelectorStrategy.class.getName());
         }
-        return m_resourceTypeList.get(resourceType);
+        return new XmlResourceType(agent, rt);
     }
 
 }
