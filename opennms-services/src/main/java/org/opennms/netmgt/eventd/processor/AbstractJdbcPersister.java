@@ -32,11 +32,9 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.sql.Types;
-import java.text.ParseException;
 
 import javax.sql.DataSource;
 
-import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.dao.api.EventdServiceManager;
 import org.opennms.netmgt.eventd.EventUtil;
 import org.opennms.netmgt.eventd.EventdConstants;
