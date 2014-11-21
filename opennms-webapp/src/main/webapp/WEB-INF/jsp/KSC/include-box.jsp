@@ -43,8 +43,11 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 
-<h3 class="o-box"><a href="KSC/index.htm">KSC Reports</a></h3>
-<div class="boxWrapper">
+<div class="panel panel-success">
+  <div class="panel-heading">
+    <h3 class="panel-title"><a href="KSC/index.htm">KSC Reports</a></h3>
+  </div>
+  <div class="panel-body">
   <c:choose>
     <c:when test="${fn:length(reports) == 0}">
       <p class="noBottomMargin">
@@ -74,4 +77,5 @@
   </c:choose>
   <opennms:kscReportCombobox id="kscReportCombobox"></opennms:kscReportCombobox>
   <div name="opennms-kscReportCombobox" id="kscReportCombobox-ie"></div>
+  </div>
 </div>
