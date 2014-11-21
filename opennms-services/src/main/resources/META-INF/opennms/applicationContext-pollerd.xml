@@ -19,10 +19,8 @@
     <aop:aspectj-autoproxy proxy-target-class="true"/>
     <context:annotation-config />
 
-    <bean name="pollerQueryManager" class="org.opennms.netmgt.poller.DefaultQueryManager">
-        <property name="dataSource" ref="dataSource" />
-    </bean>
-    
+    <bean name="pollerQueryManager" class="org.opennms.netmgt.poller.QueryManagerDaoImpl"/>
+
     <bean name="pollContext" class="org.opennms.netmgt.poller.DefaultPollContext">
       <property name="eventManager" ref="eventIpcManager" />
       <property name="localHostName" ref="localHostName" />

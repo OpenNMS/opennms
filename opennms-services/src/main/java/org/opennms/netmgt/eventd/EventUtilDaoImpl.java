@@ -34,6 +34,7 @@ import org.opennms.netmgt.dao.api.AssetRecordDao;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
+import org.opennms.netmgt.model.OnmsIpInterface;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,8 +70,33 @@ public class EventUtilDaoImpl extends AbstractEventUtil {
         return assetRecordDao.findByNodeId((int)nodeId).getNode().getLabel();
     }
 
+    /**
+     * TODO: Reimplement this using DAO calls
+     */
     @Override
     public String getHardwareFieldValue(String parm, long nodeId) {
-	return "Unknown-Not-Implemented-Yet"; // FIXME
+        return new EventUtilJdbcImpl().getHardwareFieldValue(parm, nodeId);
+    }
+
+    /**
+     * This method is used to convert the event host into a hostname id by
+     * performing a lookup in the database. If the conversion is successful then
+     * the corresponding hostname will be returned to the caller.
+     * 
+     * @param nodeId Node ID
+     * @param hostip The event host
+     * 
+     * @return The hostname
+     */
+    @Override
+    public String getHostName(final int nodeId, final String hostip) {
+
+        OnmsIpInterface ints = ipInterfaceDao.findByNodeIdAndIpAddress(nodeId, hostip);
+        if (ints == null) {
+            return hostip;
+        } else {
+            final String hostname = ints.getIpHostName();
+            return (hostname == null) ? hostip : hostname;
+        }
     }
 }

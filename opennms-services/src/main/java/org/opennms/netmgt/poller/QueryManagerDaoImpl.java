@@ -30,6 +30,7 @@ package org.opennms.netmgt.poller;
 
 import static org.opennms.core.utils.InetAddressUtils.addr;
 
+import java.sql.Timestamp;
 import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Date;
@@ -105,20 +106,20 @@ public class QueryManagerDaoImpl implements QueryManager {
     }
     
     @Override
-    public void openOutage(String outageIdSQL, int nodeId, String ipAddr, String svcName, int serviceLostEventId, String time) {
+    public void openOutage(String outageIdSQL, int nodeId, String ipAddr, String svcName, int serviceLostEventId, Date time) {
         openOutage(nodeId, ipAddr, svcName, serviceLostEventId, time);
     }
 
-    private void openOutage(int nodeId, String ipAddr, String svcName, int serviceLostEventId, String time) {
+    private void openOutage(int nodeId, String ipAddr, String svcName, int serviceLostEventId, Date time) {
         OnmsEvent event = m_eventDao.get(serviceLostEventId);
         OnmsMonitoredService service = m_monitoredServiceDao.get(nodeId, InetAddressUtils.addr(ipAddr), svcName);
-        OnmsOutage outage = new OnmsOutage(convertEventTimeToTimeStamp(time), event, service);
+        OnmsOutage outage = new OnmsOutage(new Timestamp(time.getTime()), event, service);
         m_outageDao.saveOrUpdate(outage);
     }
 
     /** {@inheritDoc} */
     @Override
-    public void resolveOutage(int nodeId, String ipAddr, String svcName, int regainedEventId, String time) {
+    public void resolveOutage(int nodeId, String ipAddr, String svcName, int regainedEventId, Date time) {
         LOG.info("resolving outage for {}:{}:{} with resolution {}:{}", nodeId, ipAddr, svcName, regainedEventId, time);
         int serviceId = m_serviceTypeDao.findByName(svcName).getId();
         
@@ -131,7 +132,7 @@ public class QueryManagerDaoImpl implements QueryManager {
             LOG.warn("Cannot find outage for service: {}", service);
         } else {
             outage.setServiceRegainedEvent(event);
-            outage.setIfRegainedService(convertEventTimeToTimeStamp(time));
+            outage.setIfRegainedService(new Timestamp(time.getTime()));
             m_outageDao.saveOrUpdate(outage);
         }
     }

@@ -96,7 +96,7 @@ public class SecurityAuthenticationEventOnmsEventBuilderTest extends TestCase {
         
         Event expectedEvent = eventBuilder.getEvent();
         // Make sure the timestamps are synchronized
-        expectedEvent.setTime(EventConstants.formatToString(new Date(authEvent.getTimestamp())));
+        expectedEvent.setTime(new Date(authEvent.getTimestamp()));
         m_eventProxy.send(EventEquals.eqEvent(eventBuilder.getEvent()));
         
         m_mocks.replayAll();

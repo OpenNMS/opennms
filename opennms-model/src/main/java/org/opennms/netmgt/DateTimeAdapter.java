@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,38 +26,24 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.dao.hibernate;
+package org.opennms.netmgt;
 
-import org.opennms.netmgt.dao.api.ServiceTypeDao;
-import org.opennms.netmgt.model.OnmsServiceType;
+import java.util.Date;
 
-public class ServiceTypeDaoHibernate extends AbstractCachingDaoHibernate<OnmsServiceType, Integer, String> implements ServiceTypeDao {
+import javax.xml.bind.annotation.adapters.XmlAdapter;
 
-    /**
-     * <p>Constructor for ServiceTypeDaoHibernate.</p>
-     */
-    public ServiceTypeDaoHibernate() {
-		super(OnmsServiceType.class, false);
-	}
-    
+public class DateTimeAdapter extends XmlAdapter<String, Date> {
 
     /** {@inheritDoc} */
     @Override
-    protected String getKey(OnmsServiceType serviceType) {
-        return serviceType.getName();
+    public String marshal(final Date date) throws Exception {
+        return date == null ? null : EventConstants.formatToString(date);
     }
-
-
 
     /** {@inheritDoc} */
     @Override
-    public OnmsServiceType findByName(final String name) {
-        if (name == null) {
-            return null;
-        } else {
-            return findByCacheKey("from OnmsServiceType as svcType where svcType.name = ?", name);
-        }
+    public Date unmarshal(final String string) throws Exception {
+        return (string == null || string.isEmpty()) ? null : EventConstants.parseToDate(string);
     }
-    
-    
+
 }

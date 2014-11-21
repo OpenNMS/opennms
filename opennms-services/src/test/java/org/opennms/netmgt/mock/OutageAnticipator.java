@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.mock;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -210,11 +211,17 @@ public class OutageAnticipator implements EventListener {
         int openCount = m_db.countOpenOutages();
         int outageCount = m_db.countOutages();
         
-        if (openCount != m_expectedOpenCount || outageCount != m_expectedOutageCount) {
+        if (openCount != m_expectedOpenCount) {
+            LOG.warn("Open outage count does not match expected: {} != {}", openCount, m_expectedOpenCount);
             return false;
-        } 
-        
-        if (m_pendingOpens.size() != 0 || m_pendingCloses.size() != 0) {
+        } else if (outageCount != m_expectedOutageCount) {
+            LOG.warn("Outage count does not match expected: {} != {}", outageCount, m_expectedOutageCount);
+            return false;
+        } else if (m_pendingOpens.size() != 0) {
+            LOG.warn("There are pending outage open events: {}", m_pendingOpens.size());
+            return false;
+        } else if (m_pendingCloses.size() != 0) {
+            LOG.warn("There are pending outage close events: {}", m_pendingOpens.size());
             return false;
         }
         
@@ -249,7 +256,7 @@ public class OutageAnticipator implements EventListener {
     @Override
     public synchronized void onEvent(Event e) {
         for (Outage outage : getOutageList(m_pendingOpens, e)) {
-            outage.setLostEvent(e.getDbid(), MockEventUtil.convertEventTimeIntoTimestamp(e.getTime()));
+            outage.setLostEvent(e.getDbid(), new Timestamp(e.getTime().getTime()));
             m_expectedOutages.add(outage);
         }
         clearOutageList(m_pendingOpens, e);
@@ -263,7 +270,7 @@ public class OutageAnticipator implements EventListener {
     private synchronized void closeExpectedOutages(Event e, Outage pendingOutage) {
         for (Outage outage : m_expectedOutages) {
             if (pendingOutage.equals(outage)) {
-                outage.setRegainedEvent(e.getDbid(), MockEventUtil.convertEventTimeIntoTimestamp(e.getTime()));
+                outage.setRegainedEvent(e.getDbid(), new Timestamp(e.getTime().getTime()));
             }
         }
     }

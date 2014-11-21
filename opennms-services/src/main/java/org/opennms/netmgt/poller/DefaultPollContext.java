@@ -310,7 +310,7 @@ public class DefaultPollContext implements PollContext, EventListener {
 
                 final int eventId = svcLostEvent.getEventId();
                 if (eventId > 0) {
-                    getQueryManager().openOutage(getPollerConfig().getNextOutageIdSql(), nodeId, ipAddr, svcName, eventId, EventConstants.formatToString(svcLostEvent.getDate()));
+                    getQueryManager().openOutage(getPollerConfig().getNextOutageIdSql(), nodeId, ipAddr, svcName, eventId, svcLostEvent.getDate());
                 } else {
                     LOG.warn("run: Failed to determine an eventId for service outage for: {} with event: {}", svc, svcLostEvent);
                 }
@@ -340,7 +340,7 @@ public class DefaultPollContext implements PollContext, EventListener {
             public void run() {
                 final int eventId = svcRegainEvent.getEventId();
                 if (eventId > 0) {
-                    getQueryManager().resolveOutage(nodeId, ipAddr, svcName, eventId, EventConstants.formatToString(svcRegainEvent.getDate()));
+                    getQueryManager().resolveOutage(nodeId, ipAddr, svcName, eventId, svcRegainEvent.getDate());
                 } else {
                     LOG.warn("run: Failed to determine an eventId for service regained for: {} with event: {}", svc, svcRegainEvent);
                 }

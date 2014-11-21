@@ -51,7 +51,7 @@
         snmpRestart.setNodeid(Long.valueOf(nodeid));
         snmpRestart.setInterface(primeInt);
         snmpRestart.setSource("web ui");
-        snmpRestart.setTime(EventConstants.formatToString(new java.util.Date()));
+        snmpRestart.setTime(new java.util.Date());
 
         try {
                 Util.createEventProxy().send(snmpRestart);

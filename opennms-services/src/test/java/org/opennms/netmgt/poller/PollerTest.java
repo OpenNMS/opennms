@@ -1324,10 +1324,11 @@ public class PollerTest implements TemporaryDatabaseAware<MockDatabase> {
 
             m_svc = svc;
             m_lostSvcEvent = lostSvcEvent;
-            m_lostSvcTime = m_db.convertEventTimeToTimeStamp(m_lostSvcEvent.getTime());
+            m_lostSvcTime = new Timestamp(m_lostSvcEvent.getTime().getTime());
             m_regainedSvcEvent = regainedSvcEvent;
-            if (m_regainedSvcEvent != null)
-                m_regainedSvcTime = m_db.convertEventTimeToTimeStamp(m_regainedSvcEvent.getTime());
+            if (m_regainedSvcEvent != null) {
+                m_regainedSvcTime = new Timestamp(m_regainedSvcEvent.getTime().getTime());
+            }
         }
 
         @Override

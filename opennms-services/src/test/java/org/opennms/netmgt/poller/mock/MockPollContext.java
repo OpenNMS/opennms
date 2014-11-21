@@ -139,7 +139,7 @@ public class MockPollContext implements PollContext, EventListener {
     
     private void writeOutage(PollableService pSvc, PollEvent svcLostEvent) {
         MockService mSvc = m_mockNetwork.getService(pSvc.getNodeId(), pSvc.getIpAddr(), pSvc.getSvcName());
-        Timestamp eventTime = m_db.convertEventTimeToTimeStamp(EventConstants.formatToString(svcLostEvent.getDate()));
+        Timestamp eventTime = new Timestamp(svcLostEvent.getDate().getTime());
         MockUtil.println("Opening Outage for "+mSvc);
         m_db.createOutage(mSvc, svcLostEvent.getEventId(), eventTime);
 
@@ -160,7 +160,7 @@ public class MockPollContext implements PollContext, EventListener {
     
     public void closeOutage(PollableService pSvc, PollEvent svcRegainEvent) {
         MockService mSvc = m_mockNetwork.getService(pSvc.getNodeId(), pSvc.getIpAddr(), pSvc.getSvcName());
-        Timestamp eventTime = m_db.convertEventTimeToTimeStamp(EventConstants.formatToString(svcRegainEvent.getDate()));
+        Timestamp eventTime = new Timestamp(svcRegainEvent.getDate().getTime());
         MockUtil.println("Resolving Outage for "+mSvc);
         m_db.resolveOutage(mSvc, svcRegainEvent.getEventId(), eventTime);
     }

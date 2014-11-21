@@ -32,14 +32,12 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.sql.Types;
-import java.text.ParseException;
 
 import javax.sql.DataSource;
 
-import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.dao.api.EventdServiceManager;
+import org.opennms.netmgt.eventd.EventUtil;
 import org.opennms.netmgt.eventd.EventdConstants;
-import org.opennms.netmgt.model.events.EventProcessor;
 import org.opennms.netmgt.xml.event.Event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -90,90 +88,16 @@ import org.springframework.util.Assert;
  *   in eventconf files.
  * @version $Id: $
  */
-public abstract class AbstractJdbcPersister implements InitializingBean, EventProcessor {
-    
+public abstract class AbstractJdbcPersister implements InitializingBean, EventWriter {
+
     private static final Logger LOG = LoggerFactory.getLogger(AbstractJdbcPersister.class);
-    
-    // Field sizes in the events table
-    /** Constant <code>EVENT_UEI_FIELD_SIZE=256</code> */
-    protected static final int EVENT_UEI_FIELD_SIZE = 256;
-
-    /** Constant <code>EVENT_HOST_FIELD_SIZE=256</code> */
-    protected static final int EVENT_HOST_FIELD_SIZE = 256;
-
-    /** 
-     * Constant <code>EVENT_INTERFACE_FIELD_SIZE=50</code>.
-     * This value must be long enough to accommodate an IPv6 address
-     * with scope identifier suffix (if present). Basic IPv6 addresses
-     * are 39 characters so this will accommodate a 10-digit scope
-     * identifier (any 32-bit decimal value). 
-     */
-    protected static final int EVENT_INTERFACE_FIELD_SIZE = 50;
-
-    /** Constant <code>EVENT_DPNAME_FIELD_SIZE=12</code> */
-    protected static final int EVENT_DPNAME_FIELD_SIZE = 12;
-
-    /** Constant <code>EVENT_SNMPHOST_FIELD_SIZE=256</code> */
-    protected static final int EVENT_SNMPHOST_FIELD_SIZE = 256;
-
-    /** Constant <code>EVENT_SNMP_FIELD_SIZE=256</code> */
-    protected static final int EVENT_SNMP_FIELD_SIZE = 256;
-
-    /** Constant <code>EVENT_LOGGRP_FIELD_SIZE=32</code> */
-    protected static final int EVENT_LOGGRP_FIELD_SIZE = 32;
-
-    /** Constant <code>EVENT_PATHOUTAGE_FIELD_SIZE=1024</code> */
-    protected static final int EVENT_PATHOUTAGE_FIELD_SIZE = 1024;
-
-    /** Constant <code>EVENT_CORRELATION_FIELD_SIZE=1024</code> */
-    protected static final int EVENT_CORRELATION_FIELD_SIZE = 1024;
-
-    /** Constant <code>EVENT_OPERINSTRUCT_FIELD_SIZE=1024</code> */
-    protected static final int EVENT_OPERINSTRUCT_FIELD_SIZE = 1024;
-
-    /** Constant <code>EVENT_AUTOACTION_FIELD_SIZE=256</code> */
-    protected static final int EVENT_AUTOACTION_FIELD_SIZE = 256;
-
-    /** Constant <code>EVENT_OPERACTION_FIELD_SIZE=256</code> */
-    protected static final int EVENT_OPERACTION_FIELD_SIZE = 256;
-
-    /** Constant <code>EVENT_OPERACTION_MENU_FIELD_SIZE=64</code> */
-    protected static final int EVENT_OPERACTION_MENU_FIELD_SIZE = 64;
-
-//    protected static final int EVENT_NOTIFICATION_FIELD_SIZE = 128;
-
-    /** Constant <code>EVENT_TTICKET_FIELD_SIZE=128</code> */
-    protected static final int EVENT_TTICKET_FIELD_SIZE = 128;
-
-    /** Constant <code>EVENT_FORWARD_FIELD_SIZE=256</code> */
-    protected static final int EVENT_FORWARD_FIELD_SIZE = 256;
-
-    /** Constant <code>EVENT_MOUSEOVERTEXT_FIELD_SIZE=64</code> */
-    protected static final int EVENT_MOUSEOVERTEXT_FIELD_SIZE = 64;
-
-    /** Constant <code>EVENT_ACKUSER_FIELD_SIZE=256</code> */
-    protected static final int EVENT_ACKUSER_FIELD_SIZE = 256;
-
-    /** Constant <code>EVENT_SOURCE_FIELD_SIZE=128</code> */
-    protected static final int EVENT_SOURCE_FIELD_SIZE = 128;
-    
-    /** Constant <code>EVENT_X733_ALARMTYPE_SIZE=31</code> */
-    protected static final int EVENT_X733_ALARMTYPE_SIZE = 31;
-
-    /**
-     * The character to put in if the log or display is to be set to yes
-     */
-    protected static final char MSG_YES = 'Y';
-
-    /**
-     * The character to put in if the log or display is to be set to no
-     */
-    protected static final char MSG_NO = 'N';
 
     private EventdServiceManager m_eventdServiceManager;
 
+    private EventUtil m_eventUtil;
+
     private DataSource m_dataSource;
-    
+
     private String m_getNextIdString;
 
     /**
@@ -196,7 +120,7 @@ public abstract class AbstractJdbcPersister implements InitializingBean, EventPr
      *                statement.
      * @throws java.sql.SQLException if any.
      */
-    protected void set(PreparedStatement stmt, int ndx, String value) throws SQLException {
+    protected static void set(PreparedStatement stmt, int ndx, String value) throws SQLException {
         if (value == null || value.length() == 0) {
             stmt.setNull(ndx, Types.VARCHAR);
         } else {
@@ -219,7 +143,7 @@ public abstract class AbstractJdbcPersister implements InitializingBean, EventPr
      *                statement.
      * @throws java.sql.SQLException if any.
      */
-    protected void set(PreparedStatement stmt, int ndx, int value) throws SQLException {
+    protected static void set(PreparedStatement stmt, int ndx, int value) throws SQLException {
         if (value < 0) {
             stmt.setNull(ndx, Types.INTEGER);
         } else {
@@ -241,7 +165,7 @@ public abstract class AbstractJdbcPersister implements InitializingBean, EventPr
      *                statement.
      * @throws java.sql.SQLException if any.
      */
-    protected void set(PreparedStatement stmt, int ndx, Timestamp value) throws SQLException {
+    protected static void set(PreparedStatement stmt, int ndx, Timestamp value) throws SQLException {
         if (value == null) {
             stmt.setNull(ndx, Types.TIMESTAMP);
         } else {
@@ -263,7 +187,7 @@ public abstract class AbstractJdbcPersister implements InitializingBean, EventPr
      *                statement.
      * @throws java.sql.SQLException if any.
      */
-    protected void set(PreparedStatement stmt, int ndx, char value) throws SQLException {
+    protected static void set(PreparedStatement stmt, int ndx, char value) throws SQLException {
         stmt.setString(ndx, String.valueOf(value));
     }
 
@@ -294,13 +218,8 @@ public abstract class AbstractJdbcPersister implements InitializingBean, EventPr
      * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
      * @return a {@link java.sql.Timestamp} object.
      */
-    protected Timestamp getEventTime(Event event) {
-        try {
-            return new Timestamp(EventConstants.parseToDate(event.getTime()).getTime());
-        } catch (ParseException e) {
-            LOG.warn("Failed to convert time {} to Timestamp, setting current time instead.", event.getTime(), e);
-            return new Timestamp(System.currentTimeMillis());
-        }
+    protected static Timestamp getEventTime(Event event) {
+        return new Timestamp(event.getTime().getTime());
     }
     
     /**
@@ -310,7 +229,7 @@ public abstract class AbstractJdbcPersister implements InitializingBean, EventPr
      * @throws java.sql.SQLException if any.
      */
     protected int getNextId() throws SQLException {
-        return new JdbcTemplate(getDataSource()).queryForInt(getGetNextIdString());
+        return new JdbcTemplate(getDataSource()).queryForObject(getGetNextIdString(), Integer.class);
     }
 
     /**
@@ -321,6 +240,7 @@ public abstract class AbstractJdbcPersister implements InitializingBean, EventPr
     @Override
     public void afterPropertiesSet() throws SQLException {
         Assert.state(m_eventdServiceManager != null, "property eventdServiceManager must be set");
+        Assert.state(m_eventUtil != null, "property eventUtil must be set");
         Assert.state(m_dataSource != null, "property dataSource must be set");
         Assert.state(m_getNextIdString != null, "property getNextIdString must be set");
     }
@@ -361,6 +281,14 @@ public abstract class AbstractJdbcPersister implements InitializingBean, EventPr
         m_dataSource = dataSource;
     }
 
+    public EventUtil getEventUtil() {
+        return m_eventUtil;
+    }
+
+    public void setEventUtil(EventUtil eventUtil) {
+        m_eventUtil = eventUtil;
+    }
+
     /**
      * <p>getGetNextIdString</p>
      *
@@ -386,16 +314,19 @@ public abstract class AbstractJdbcPersister implements InitializingBean, EventPr
      * @param logPrefix a {@link java.lang.String} object.
      * @return a boolean.
      */
-    protected boolean checkEventSanityAndDoWeProcess(Event event, String logPrefix) {
+    protected static boolean checkEventSanityAndDoWeProcess(Event event, String logPrefix) {
         Assert.notNull(event, "event argument must not be null");
-    
+
         /*
          * Check value of <logmsg> attribute 'dest', if set to
-         * "donotpersist" then simply return, the uei is not to be
+         * "donotpersist" or "suppress" then simply return, the UEI is not to be
          * persisted to the database
          */
         Assert.notNull(event.getLogmsg(), "event does not have a logmsg");
-        if ("donotpersist".equals(event.getLogmsg().getDest()) || "suppress".equals(event.getLogmsg().getDest())) {
+        if (
+            "donotpersist".equals(event.getLogmsg().getDest()) || 
+            "suppress".equals(event.getLogmsg().getDest())
+        ) {
             LOG.debug("{}: uei '{}' marked as '{}'; not processing event.", logPrefix, event.getUei(), event.getLogmsg().getDest());
             return false;
         }

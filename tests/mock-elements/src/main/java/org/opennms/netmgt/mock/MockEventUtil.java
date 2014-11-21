@@ -38,7 +38,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSeverity;
@@ -482,7 +481,7 @@ public abstract class MockEventUtil {
      * @param date a {@link java.util.Date} object.
      */
     public static void setEventTime(Event event, Date date) {
-        event.setTime(EventConstants.formatToString(date));
+        event.setTime(date);
     }
     
     /**
@@ -555,26 +554,6 @@ public abstract class MockEventUtil {
         event.addParam(EventConstants.PARM_NEW_NODEID, newNode);
         return event.getEvent();
     }
-    
-    /**
-     * <p>convertEventTimeIntoTimestamp</p>
-     *
-     * @param eventTime a {@link java.lang.String} object.
-     * @return a {@link java.sql.Timestamp} object.
-     */
-    public static Timestamp convertEventTimeIntoTimestamp(String eventTime) {
-        Timestamp timestamp = null;
-        try {
-            Date date = EventConstants.parseToDate(eventTime);
-            timestamp = new Timestamp(date.getTime());
-        } catch (ParseException e) {
-        	LOG.warn("Failed to convert event time {} to timestamp.", eventTime, e);
-    
-            timestamp = new Timestamp((new Date()).getTime());
-        }
-        return timestamp;
-    }
-
 
     /**
      * <p>eventsMatch</p>
@@ -613,17 +592,14 @@ public abstract class MockEventUtil {
             }
             
             if (toleratedTimestampOffset > 0) {
-                try {
-                    final long d1 = e1.getDate().getTime();
-                    final long d2 = e2.getDate().getTime();
-                    if ((d2 - toleratedTimestampOffset) < d1 && d1 < (d2 + toleratedTimestampOffset)) {
-                        // d1 is within [toleratedTimestampOffset] of d2
-                    } else if ((d1 - toleratedTimestampOffset) < d2 && d2 < (d1 + toleratedTimestampOffset)) {
-                        // d2 is within [toleratedTimestampOffset] of d1
-                    } else {
-                        return false;
-                    }
-                } catch (final ParseException e) {
+                final long d1 = e1.getTime().getTime();
+                final long d2 = e2.getTime().getTime();
+                if ((d2 - toleratedTimestampOffset) < d1 && d1 < (d2 + toleratedTimestampOffset)) {
+                    // d1 is within [toleratedTimestampOffset] of d2
+                } else if ((d1 - toleratedTimestampOffset) < d2 && d2 < (d1 + toleratedTimestampOffset)) {
+                    // d2 is within [toleratedTimestampOffset] of d1
+                } else {
+                    return false;
                 }
             } else if (!e1.getTime().equals(e2.getTime())) {
                 return false;

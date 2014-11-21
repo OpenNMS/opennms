@@ -28,26 +28,25 @@
 
 package org.opennms.netmgt.eventd.processor;
 
-import java.sql.Connection;
-import java.sql.Date;
-import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.dao.api.EventDao;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
+import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.api.ServiceTypeDao;
 import org.opennms.netmgt.dao.util.AutoAction;
+import org.opennms.netmgt.dao.util.Correlation;
+import org.opennms.netmgt.dao.util.Forward;
 import org.opennms.netmgt.dao.util.OperatorAction;
 import org.opennms.netmgt.dao.util.SnmpInfo;
-import org.opennms.netmgt.eventd.EventdConstants;
-import org.opennms.netmgt.model.OnmsDistPoller;
+import org.opennms.netmgt.eventd.EventUtil;
 import org.opennms.netmgt.model.OnmsEvent;
-import org.opennms.netmgt.model.OnmsIpInterface;
-import org.opennms.netmgt.model.OnmsServiceType;
+import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.events.Constants;
-import org.opennms.netmgt.model.events.EventProcessor;
 import org.opennms.netmgt.model.events.EventProcessorException;
 import org.opennms.netmgt.model.events.Parameter;
 import org.opennms.netmgt.xml.event.Event;
@@ -55,8 +54,8 @@ import org.opennms.netmgt.xml.event.Header;
 import org.opennms.netmgt.xml.event.Operaction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.Assert;
 
 /**
  * EventWriter loads the information in each 'Event' into the database.
@@ -80,8 +79,11 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Nataraj </A>
  * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
  */
-public final class HibernateEventWriter extends AbstractJdbcPersister implements EventProcessor, InitializingBean {
+public final class HibernateEventWriter implements EventWriter {
     private static final Logger LOG = LoggerFactory.getLogger(HibernateEventWriter.class);
+    
+    @Autowired
+    private NodeDao nodeDao;
     
     @Autowired
     private IpInterfaceDao ipInterfaceDao;
@@ -94,6 +96,39 @@ public final class HibernateEventWriter extends AbstractJdbcPersister implements
     
     @Autowired
     private EventDao eventDao;
+
+    @Autowired
+    private ServiceTypeDao serviceTypeDao;
+
+    @Autowired
+    private EventUtil eventUtil;
+
+    /**
+     * <p>checkEventSanityAndDoWeProcess</p>
+     *
+     * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
+     * @param logPrefix a {@link java.lang.String} object.
+     * @return a boolean.
+     */
+    private static boolean checkEventSanityAndDoWeProcess(Event event, String logPrefix) {
+        Assert.notNull(event, "event argument must not be null");
+
+        /*
+         * Check value of <logmsg> attribute 'dest', if set to
+         * "donotpersist" or "suppress" then simply return, the UEI is not to be
+         * persisted to the database
+         */
+        Assert.notNull(event.getLogmsg(), "event does not have a logmsg");
+        if (
+            "donotpersist".equals(event.getLogmsg().getDest()) || 
+            "suppress".equals(event.getLogmsg().getDest())
+        ) {
+            LOG.debug("{}: uei '{}' marked as '{}'; not processing event.", logPrefix, event.getUei(), event.getLogmsg().getDest());
+            return false;
+        }
+        return true;
+    }
+
     /**
      * {@inheritDoc}
      *
@@ -107,9 +142,8 @@ public final class HibernateEventWriter extends AbstractJdbcPersister implements
 
         LOG.debug("HibernateEventWriter: processing {} nodeid: {} ipaddr: {} serviceid: {} time: {}", event.getUei(), event.getNodeid(), event.getInterface(), event.getService(), event.getTime());
 
-       insertEvent(eventHeader, event, null);
-	
-}
+        insertEvent(eventHeader, event);
+    }
 
     /**
      * Insert values into the EVENTS table
@@ -121,163 +155,173 @@ public final class HibernateEventWriter extends AbstractJdbcPersister implements
      *                Thrown if a required resource cannot be found in the
      *                properties file.
      */
-    private void insertEvent(final Header eventHeader, final Event event, final Connection connection) {
-        OnmsDistPoller poll = distPollerDao.get(event.getDistPoller());
-        OnmsServiceType serve = new OnmsServiceType(event.getService());
-        
-        
+    private void insertEvent(final Header eventHeader, final Event event) {
+
         OnmsEvent ovent = new OnmsEvent();
-        ovent.setId(event.getDbid());
-        ovent.setEventUei(event.getUei());
-        ovent.setEventTime(Date.valueOf(event.getTime()));
-        ovent.setEventHost(event.getHost());
-        ovent.setEventSource(event.getSource());
+
+        // eventID
+        //ovent.setId(event.getDbid());
+
+        // eventUEI
+        ovent.setEventUei(Constants.format(event.getUei(), EVENT_UEI_FIELD_SIZE));
+
+        // nodeID
+        if (event.hasNodeid()) {
+            ovent.setNode(nodeDao.get(event.getNodeid().intValue()));
+        }
+
+        // eventTime
+        ovent.setEventTime(event.getTime());
+
+        // eventHost
+        // Resolve the event host to a hostname using the ipInterface table
+        ovent.setEventHost(Constants.format(eventUtil.getEventHost(event), EVENT_HOST_FIELD_SIZE));
+
+        // eventSource
+        ovent.setEventSource(Constants.format(event.getSource(), EVENT_SOURCE_FIELD_SIZE));
+
+        // ipAddr
         ovent.setIpAddr(event.getInterfaceAddress());
-        ovent.setDistPoller(poll);
-        ovent.setEventSnmpHost(event.getSnmphost());
-        ovent.setServiceType(serve);
-        ovent.setEventSnmp(SnmpInfo.format(event.getSnmp(), EVENT_SNMP_FIELD_SIZE));
-        final String parms = Parameter.format(event);
-        ovent.setEventParms(parms);
-        ovent.setEventCreateTime(Date.valueOf(event.getCreationTime()));
-        ovent.setEventDescr(event.getDescr());
-        ovent.setEventLogGroup(Integer.toString(event.getLoggroupCount()));
-        
-        ovent.setEventSeverity(Integer.valueOf(event.getSeverity()));
-        ovent.setEventPathOutage(event.getPathoutage());
-        ovent.setEventCorrelation((event.getCorrelation() != null) ? org.opennms.netmgt.dao.util.Correlation.format(event.getCorrelation(), EVENT_CORRELATION_FIELD_SIZE) : null);
-        ovent.setEventSuppressedCount(null);
-        ovent.setEventOperInstruct(event.getOperinstruct());
-        ovent.setEventAutoAction((event.getAutoactionCount() > 0) ? AutoAction.format(event.getAutoaction(), EVENT_AUTOACTION_FIELD_SIZE) : null);
-  
-        if (event.getOperactionCount() > 0) {
-        	final List<Operaction> a = new ArrayList<Operaction>();
-        	final List<String> b = new ArrayList<String>();
-        	
-        	for (final Operaction eoa : event.getOperactionCollection()) {
-        		a.add(eoa);
-        		b.add(eoa.getMenutext());
-        	}
-        	ovent.setEventOperAction(OperatorAction.format(a, EVENT_OPERACTION_FIELD_SIZE));
-        	ovent.setEventOperActionMenuText(Constants.format(b, EVENT_OPERACTION_FIELD_SIZE));
+
+        // ifindex
+        if (event.hasIfIndex()) {
+            ovent.setIfIndex(event.getIfIndex());
         } else {
-        	ovent.setEventOperAction(null);
-        	ovent.setEventOperActionMenuText(null);
+        	ovent.setIfIndex(null);
         }
-        ovent.setEventNotification(null);
-        if (event.getTticket() != null) {
-        	ovent.setEventTTicket(event.getTticket().getContent());
-        	ovent.setEventTTicketState(Integer.valueOf(event.getTticket().getState()));
+
+        // eventDpName
+        String dpName = event.getDistPoller();
+        if (eventHeader != null && eventHeader.getDpName() != null && !"".equals(eventHeader.getDpName())) {
+            dpName = Constants.format(eventHeader.getDpName(), EVENT_DPNAME_FIELD_SIZE);
+        } else if (event.getDistPoller() != null && !"".equals(event.getDistPoller())) {
+            dpName = Constants.format(event.getDistPoller(), EVENT_DPNAME_FIELD_SIZE);
         } else {
-        	ovent.setEventTTicket(null);
-        	ovent.setEventTTicketState(null);
+            dpName = "localhost";
         }
-        ovent.setEventForward(org.opennms.netmgt.dao.util.Forward.format(event.getForward(), EVENT_FORWARD_FIELD_SIZE));
-        ovent.setEventMouseOverText(event.getMouseovertext());
-        
+        ovent.setDistPoller(distPollerDao.get(dpName));
+
+        // eventSnmpHost
+        ovent.setEventSnmpHost(Constants.format(event.getSnmphost(), EVENT_SNMPHOST_FIELD_SIZE));
+
+        // service
+        ovent.setServiceType(serviceTypeDao.findByName(event.getService()));
+
+        // eventSnmp
+        ovent.setEventSnmp(event.getSnmp() == null ? null : SnmpInfo.format(event.getSnmp(), EVENT_SNMP_FIELD_SIZE));
+
+        // eventParms
+        // Replace any null bytes with a space, otherwise postgres will complain about encoding in UNICODE
+        final String parametersString = Parameter.format(event);
+        ovent.setEventParms(Constants.format(parametersString, 0));
+
+        // eventCreateTime
+        // TODO: Should we use event.getCreationTime() here?
+        ovent.setEventCreateTime(new Date());
+
+        // eventDescr
+        ovent.setEventDescr(Constants.format(event.getDescr(), 0));
+
+        // eventLoggroup
+        ovent.setEventLogGroup(event.getLoggroupCount() > 0 ? Constants.format(event.getLoggroup(), EVENT_LOGGRP_FIELD_SIZE) : null);
+
+        // eventLogMsg
+        // eventLog
+        // eventDisplay
         if (event.getLogmsg() != null) {
             // set log message
-        	ovent.setEventLogMsg(event.getLogmsg().getContent());
+            ovent.setEventLogMsg(Constants.format(event.getLogmsg().getContent(), 0));
             String logdest = event.getLogmsg().getDest();
-            if (logdest.equals("logndisplay")) {
+            if ("logndisplay".equals(logdest)) {
                 // if 'logndisplay' set both log and display column to yes
-                ovent.setEventLog("" + MSG_YES + "");
-                ovent.setEventDisplay("" + MSG_YES + "");
-            } else if (logdest.equals("logonly")) {
+                ovent.setEventLog(String.valueOf(MSG_YES));
+                ovent.setEventDisplay(String.valueOf(MSG_YES));
+            } else if ("logonly".equals(logdest)) {
                 // if 'logonly' set log column to true
-            	ovent.setEventLog("" + MSG_YES + "");
-                ovent.setEventDisplay("" + MSG_NO + "");
-            } else if (logdest.equals("displayonly")) {
+                ovent.setEventLog(String.valueOf(MSG_YES));
+                ovent.setEventDisplay(String.valueOf(MSG_NO));
+            } else if ("displayonly".equals(logdest)) {
                 // if 'displayonly' set display column to true
-            	ovent.setEventLog("" + MSG_NO + "");
-                ovent.setEventDisplay("" + MSG_YES + "");
-            } else if (logdest.equals("suppress")) {
+                ovent.setEventLog(String.valueOf(MSG_NO));
+                ovent.setEventDisplay(String.valueOf(MSG_YES));
+            } else if ("suppress".equals(logdest)) {
                 // if 'suppress' set both log and display to false
-            	ovent.setEventLog("" + MSG_NO + "");
-                ovent.setEventDisplay("" + MSG_NO + "");
+                ovent.setEventLog(String.valueOf(MSG_NO));
+                ovent.setEventDisplay(String.valueOf(MSG_NO));
             }
         } else {
             ovent.setEventLogMsg(null);
-            ovent.setEventLog("" + MSG_YES + "");
-            ovent.setEventDisplay("" + MSG_YES + "");
+            ovent.setEventLog(String.valueOf(MSG_YES));
+            ovent.setEventDisplay(String.valueOf(MSG_YES));
         }
-        
-        if (event.getAutoacknowledge() != null && event.getAutoacknowledge().getState().equals("on")) {
-            ovent.setEventAckUser(event.getAutoacknowledge().getContent());
+
+        // eventSeverity
+        ovent.setEventSeverity(OnmsSeverity.get(event.getSeverity()).getId());
+
+        // eventPathOutage
+        ovent.setEventPathOutage(event.getPathoutage() != null ? Constants.format(event.getPathoutage(), EVENT_PATHOUTAGE_FIELD_SIZE) : null);
+
+        // eventCorrelation
+        ovent.setEventCorrelation(event.getCorrelation() != null ? Correlation.format(event.getCorrelation(), EVENT_CORRELATION_FIELD_SIZE) : null);
+
+        // eventSuppressedCount
+        ovent.setEventSuppressedCount(null);
+
+        // eventOperInstruct
+        ovent.setEventOperInstruct(Constants.format(event.getOperinstruct(), EVENT_OPERINSTRUCT_FIELD_SIZE));
+
+        // eventAutoAction
+        ovent.setEventAutoAction(event.getAutoactionCount() > 0 ? AutoAction.format(event.getAutoaction(), EVENT_AUTOACTION_FIELD_SIZE) : null);
+
+        // eventOperAction / eventOperActionMenuText
+        if (event.getOperactionCount() > 0) {
+            final List<Operaction> a = new ArrayList<Operaction>();
+            final List<String> b = new ArrayList<String>();
+
+            for (final Operaction eoa : event.getOperactionCollection()) {
+                a.add(eoa);
+                b.add(eoa.getMenutext());
+            }
+            ovent.setEventOperAction(OperatorAction.format(a, EVENT_OPERACTION_FIELD_SIZE));
+            ovent.setEventOperActionMenuText(Constants.format(b, EVENT_OPERACTION_FIELD_SIZE));
+        } else {
+            ovent.setEventOperAction(null);
+            ovent.setEventOperActionMenuText(null);
+        }
+
+        // eventNotification, this column no longer needed
+        ovent.setEventNotification(null);
+
+        // eventTroubleTicket / eventTroubleTicket state
+        if (event.getTticket() != null) {
+            ovent.setEventTTicket(Constants.format(event.getTticket().getContent(), EVENT_TTICKET_FIELD_SIZE));
+            ovent.setEventTTicketState("on".equals(event.getTticket().getState()) ? 1 : 0);
+        } else {
+            ovent.setEventTTicket(null);
+            ovent.setEventTTicketState(null);
+        }
+
+        // eventForward
+        ovent.setEventForward(event.getForwardCount() > 0 ? Forward.format(event.getForward(), EVENT_FORWARD_FIELD_SIZE) : null);
+
+        // eventmouseOverText
+        ovent.setEventMouseOverText(Constants.format(event.getMouseovertext(), EVENT_MOUSEOVERTEXT_FIELD_SIZE));
+
+        // eventAckUser
+        if (event.getAutoacknowledge() != null && "on".equals(event.getAutoacknowledge().getState())) {
+            ovent.setEventAckUser(Constants.format(event.getAutoacknowledge().getContent(), EVENT_ACKUSER_FIELD_SIZE));
             // eventAckTime - if autoacknowledge is present,
             // set time to event create time
-            ovent.setEventAckTime(Date.valueOf(event.getCreationTime()));
+            ovent.setEventAckTime(ovent.getEventCreateTime());
         } else {
             ovent.setEventAckUser(null);
             ovent.setEventAckTime(null);
         }
-        
-        eventDao.update(ovent);
-    }
 
+        eventDao.save(ovent);
+        eventDao.flush();
 
-    /**
-     * This method is used to convert the event host into a hostname id by
-     * performing a lookup in the database. If the conversion is successful then
-     * the corresponding hosname will be returned to the caller.
-     * @param nodeId 
-     * @param hostip
-     *            The event host
-     * 
-     * @return The hostname
-     * 
-     * @exception java.sql.SQLException
-     *                Thrown if there is an error accessing the stored data or
-     *                the SQL text is malformed.
-     * 
-     * @see EventdConstants#SQL_DB_HOSTIP_TO_HOSTNAME
-     * 
-     */
-    
-    String getHostName(final int nodeId, final String hostip) throws SQLException {
-    	
-    	OnmsIpInterface ints = ipInterfaceDao.findByNodeIdAndIpAddress(nodeId, hostip);
-        
-        final String hostname = ints.getIpHostName();
-        return (hostname != null) ? hostname : hostip;
-        
-    }
-
-    /**
-     * @param event
-     * @param log
-     * @return
-     */
-    private int getEventServiceId(final Event event) {
-    	if (event.getService() == null) {
-            return -1;
-        } else {
-        	return Integer.valueOf(event.getService());
-        }
-    }
-
-    /**
-     * <p>getEventHost</p>
-     *
-     * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
-     * @param connection a {@link java.sql.Connection} object.
-     * @return a {@link java.lang.String} object.
-     */
-    protected String getEventHost(final Event event) {
-        if (event.getHost() == null) {
-            return null;
-        }
-        
-        // If the event doesn't have a node ID, we can't lookup the IP address and be sure we have the right one since we don't know what node it is on
-        if (!event.hasNodeid()) {
-            return event.getHost();
-        }
-        
-        try {
-            return getHostName(event.getNodeid().intValue(), event.getHost());
-        } catch (final Throwable t) {
-            LOG.warn("Error converting host IP \"{}\" to a hostname, storing the IP.", event.getHost(), t);
-            return event.getHost();
-        }
+        // Update the event with the database ID of the event stored in the database
+        event.setDbid(ovent.getId());
     }
 }

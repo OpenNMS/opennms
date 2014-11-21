@@ -1127,7 +1127,7 @@ public class SnmpTrapHelper {
         addVarBinding(trapBuilder, ".1.3.6.1.4.1.5813.20.1.8.0", // OPENNMS-MIB::openNMS-event-nodeid 
                       EventConstants.TYPE_SNMP_OCTET_STRING, Long.toString(event.getNodeid()));
         addVarBinding(trapBuilder, ".1.3.6.1.4.1.5813.20.1.9.0", // OPENNMS-MIB::openNMS-event-time
-                      EventConstants.TYPE_SNMP_OCTET_STRING, event.getTime());
+                      EventConstants.TYPE_SNMP_OCTET_STRING, EventConstants.formatToString(event.getTime()));
         addVarBinding(trapBuilder, ".1.3.6.1.4.1.5813.20.1.10.0", // OPENNMS-MIB::openNMS-event-host
                       EventConstants.TYPE_SNMP_OCTET_STRING, event.getHost());
         addVarBinding(trapBuilder, ".1.3.6.1.4.1.5813.20.1.11.0", // OPENNMS-MIB::openNMS-event-interface

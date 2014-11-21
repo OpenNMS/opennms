@@ -28,59 +28,63 @@
 
 package org.opennms.netmgt.eventd.processor;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 import java.sql.SQLException;
 
-import org.opennms.core.test.db.PopulatedTemporaryDatabaseTestCase;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.eventd.EventUtil;
-import org.opennms.netmgt.eventd.EventUtilJdbcImpl;
-import org.opennms.netmgt.eventd.JdbcEventdServiceManager;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.netmgt.xml.event.Event;
+import org.opennms.test.JUnitConfigurationEnvironment;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.context.ContextConfiguration;
 
 /**
  * This class tests some of the quirky behaviors of persisting events.
  * 
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  */
-@SuppressWarnings("deprecation")
-public class JdbcEventWriterTest extends PopulatedTemporaryDatabaseTestCase {
-    private JdbcEventWriter m_jdbcEventWriter;
+@RunWith(OpenNMSJUnit4ClassRunner.class)
+@ContextConfiguration(locations={
+        "classpath:/META-INF/opennms/applicationContext-soa.xml",
+        "classpath:/META-INF/opennms/applicationContext-dao.xml",
+        "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
+        "classpath*:/META-INF/opennms/component-dao.xml",
+        "classpath*:/META-INF/opennms/component-service.xml",
+        "classpath:/META-INF/opennms/applicationContext-daemon.xml",
+        "classpath:/META-INF/opennms/mockEventIpcManager.xml",
+        "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
+
+        "classpath:/META-INF/opennms/applicationContext-eventDaemon.xml"
+})
+@JUnitConfigurationEnvironment
+@JUnitTemporaryDatabase(reuseDatabase=false)
+public class HibernateEventWriterTest {
+
+    @Autowired
+    private EventWriter m_jdbcEventWriter;
+
+    @Autowired
     private EventUtil m_eventUtil;
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-        
-        JdbcEventdServiceManager eventdServiceManager = new JdbcEventdServiceManager();
-        eventdServiceManager.setDataSource(getDataSource());
-        eventdServiceManager.afterPropertiesSet();
-        m_eventUtil = new EventUtilJdbcImpl();
-        
-        m_jdbcEventWriter = new JdbcEventWriter();
-        m_jdbcEventWriter.setEventdServiceManager(eventdServiceManager);
-        m_jdbcEventWriter.setEventUtil(m_eventUtil);
-        m_jdbcEventWriter.setDataSource(getDataSource());
-        m_jdbcEventWriter.setGetNextIdString("SELECT nextval('eventsNxtId')");
-        m_jdbcEventWriter.afterPropertiesSet();
-    }
-
-    /**
-     * tests sequence of newly initialized db
-     */
-    public void testNextEventId() {
-        int nextId = getJdbcTemplate().queryForInt(m_jdbcEventWriter.getGetNextIdString());
-        
-        // an empty db should produce '1' here
-        assertEquals(1, nextId);
-    }
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
 
     /**
      * Tests writing nulls to postgres db and the db encoding.
      * @throws SQLException
      */
+    @Test
     public void testWriteEventWithNull() throws Exception {
         EventBuilder bldr = new EventBuilder("testUei", "testSource");
         bldr.setLogDest("logndisplay");
@@ -101,7 +105,11 @@ public class JdbcEventWriterTest extends PopulatedTemporaryDatabaseTestCase {
 
         bldr.addParam("test", b64);
 
-        m_jdbcEventWriter.process(null, bldr.getEvent());
+        Event event = bldr.getEvent();
+        assertEquals(new Integer(0), event.getDbid());
+        m_jdbcEventWriter.process(null, event);
+        assertTrue(event.getDbid() > 0);
+
         final String parms = jdbcTemplate.queryForObject("SELECT eventParms FROM events LIMIT 1", String.class);
         assertEquals("test=testVal(string,text);test2=valWith%0Null%0(string,text);test3=" + snmpVal.toString() + "(string,text);test=B9cECgEXBgArAAA%61(string,text)", parms);
     }
@@ -110,13 +118,18 @@ public class JdbcEventWriterTest extends PopulatedTemporaryDatabaseTestCase {
      * Tests writing nulls to postgres db and the db encoding.
      * @throws SQLException
      */
+    @Test
     public void testWriteEventDescrWithNull() throws Exception {
         EventBuilder bldr = new EventBuilder("testUei", "testSource");
         bldr.setLogDest("logndisplay");
 
         bldr.setDescription("abc\u0000def");
 
-        m_jdbcEventWriter.process(null, bldr.getEvent());
+        Event event = bldr.getEvent();
+        assertEquals(new Integer(0), event.getDbid());
+        m_jdbcEventWriter.process(null, event);
+        assertTrue(event.getDbid() > 0);
+
         final String descr = jdbcTemplate.queryForObject("SELECT eventDescr FROM events LIMIT 1", String.class);
         assertEquals("abc%0def", descr);
     }
@@ -125,17 +138,23 @@ public class JdbcEventWriterTest extends PopulatedTemporaryDatabaseTestCase {
      * Tests writing nulls to postgres db and the db encoding.
      * @throws SQLException
      */
+    @Test
 	public void testWriteEventLogmsgWithNull() throws Exception {
         EventBuilder bldr = new EventBuilder("testUei", "testSource");
         bldr.setLogDest("logndisplay");
 
         bldr.setLogMessage("abc\u0000def");
 
-        m_jdbcEventWriter.process(null, bldr.getEvent());
+        Event event = bldr.getEvent();
+        assertEquals(new Integer(0), event.getDbid());
+        m_jdbcEventWriter.process(null, event);
+        assertTrue(event.getDbid() > 0);
+
         final String logMessage = jdbcTemplate.queryForObject("SELECT eventLogmsg FROM events LIMIT 1", String.class);
         assertEquals("abc%0def", logMessage);
     }
     
+    @Test
     public void testGetEventHostWithNullHost() throws Exception {
         jdbcTemplate.update("INSERT INTO node (nodeId, nodeCreateTime) VALUES (nextVal('nodeNxtId'), now())");
         int nodeId = jdbcTemplate.queryForInt("SELECT nodeId FROM node LIMIT 1");
@@ -146,7 +165,8 @@ public class JdbcEventWriterTest extends PopulatedTemporaryDatabaseTestCase {
         
         assertEquals("getHostName should return the hostname for the IP address that was passed", null, m_eventUtil.getEventHost(event));
     }
-    
+
+    @Test
     public void testGetEventHostWithHostNoNodeId() throws Exception {
         jdbcTemplate.update("INSERT INTO node (nodeId, nodeCreateTime) VALUES (nextVal('nodeNxtId'), now())");
         int nodeId = jdbcTemplate.queryForInt("SELECT nodeId FROM node LIMIT 1");
@@ -159,6 +179,7 @@ public class JdbcEventWriterTest extends PopulatedTemporaryDatabaseTestCase {
         assertEquals("getHostName should return the hostname for the IP address that was passed", event.getHost(), m_eventUtil.getEventHost(event));
     }
     
+    @Test
     public void testGetEventHostWithOneMatch() throws Exception {
         jdbcTemplate.update("INSERT INTO node (nodeId, nodeCreateTime) VALUES (nextVal('nodeNxtId'), now())");
         long nodeId = jdbcTemplate.queryForLong("SELECT nodeId FROM node LIMIT 1");
@@ -172,6 +193,7 @@ public class JdbcEventWriterTest extends PopulatedTemporaryDatabaseTestCase {
         assertEquals("getHostName should return the hostname for the IP address that was passed", "First Interface", m_eventUtil.getEventHost(event));
     }
     
+    @Test
     public void testGetHostNameWithOneMatch() throws Exception {
         jdbcTemplate.update("INSERT INTO node (nodeId, nodeCreateTime) VALUES (nextVal('nodeNxtId'), now())");
         int nodeId = jdbcTemplate.queryForInt("SELECT nodeId FROM node LIMIT 1");
@@ -180,6 +202,7 @@ public class JdbcEventWriterTest extends PopulatedTemporaryDatabaseTestCase {
         assertEquals("getHostName should return the hostname for the IP address that was passed", "First Interface", m_eventUtil.getHostName(1, "192.168.1.1"));
     }
     
+    @Test
     public void testGetHostNameWithOneMatchNullHostname() throws Exception {
         jdbcTemplate.update("INSERT INTO node (nodeId, nodeCreateTime) VALUES (nextVal('nodeNxtId'), now())");
         int nodeId = jdbcTemplate.queryForInt("SELECT nodeId FROM node LIMIT 1");
@@ -188,6 +211,7 @@ public class JdbcEventWriterTest extends PopulatedTemporaryDatabaseTestCase {
         assertEquals("getHostName should return the IP address it was passed", "192.168.1.1", m_eventUtil.getHostName(1, "192.168.1.1"));
     }
     
+    @Test
     public void testGetHostNameWithTwoMatch() throws Exception {
         jdbcTemplate.update("INSERT INTO node (nodeId, nodeCreateTime, nodeLabel) VALUES (nextVal('nodeNxtId'), now(), ?)", "First Node");
         int nodeId1 = jdbcTemplate.queryForInt("SELECT nodeId FROM node WHERE nodeLabel = ?", "First Node");
@@ -200,24 +224,28 @@ public class JdbcEventWriterTest extends PopulatedTemporaryDatabaseTestCase {
         assertEquals("getHostName should return the IP address it was passed", "First Interface", m_eventUtil.getHostName(nodeId1, "192.168.1.1"));
     }
     
+    @Test
     public void testGetHostNameWithNoHostMatch() throws Exception {
             assertEquals("getHostName should return the IP address it was passed", "192.168.1.1", m_eventUtil.getHostName(1, "192.168.1.1"));
     }
 
+    @Test
     public void testSendEventWithService() throws Exception {
         int serviceId = 1;
         String serviceName = "some bogus service";
 
         jdbcTemplate.update("insert into service (serviceId, serviceName) values (?, ?)", new Object[] { serviceId, serviceName });
         
-        EventBuilder builder = new EventBuilder("uei.opennms.org/foo", "someSource");
-        builder.setLogMessage("logndisplay");
-        builder.setService(serviceName);
-        
+        EventBuilder bldr = new EventBuilder("uei.opennms.org/foo", "someSource");
+        bldr.setLogMessage("logndisplay");
+        bldr.setService(serviceName);
 
-        m_jdbcEventWriter.process(null, builder.getEvent());
+        Event event = bldr.getEvent();
+        assertEquals(new Integer(0), event.getDbid());
+        m_jdbcEventWriter.process(null, event);
+        assertTrue(event.getDbid() > 0);
         
-        assertEquals("event count", 1, getJdbcTemplate().queryForInt("select count(*) from events"));
-        assertEquals("event service ID", serviceId, getJdbcTemplate().queryForInt("select serviceID from events"));
+        assertEquals("event count", 1, jdbcTemplate.queryForInt("select count(*) from events"));
+        assertEquals("event service ID", serviceId, jdbcTemplate.queryForInt("select serviceID from events"));
     }
 }

@@ -394,33 +394,21 @@ public abstract class AbstractEventUtil implements EventUtil {
 			else
 				retParmVal = "Unknown";
 		} else if (parm.equals(TAG_TIME)) {
-			String eventTime = event.getTime(); //This will be in GMT
-			try {
-				Date actualDate = org.opennms.netmgt.EventConstants.parseToDate(eventTime);
-				DateFormat df = DateFormat.getDateTimeInstance(DateFormat.FULL,
-					DateFormat.FULL);
-				retParmVal = df.format(actualDate);
-			} catch (java.text.ParseException e) {
-				LOG.error("could not parse event date '{}'", eventTime, e);
-
-				//Give up and just use the original string - don't bother with
-				// messing around
-				retParmVal = eventTime; 
+			Date eventTime = event.getTime(); //This will be in GMT
+			if (eventTime == null) {
+				retParmVal = null;
+			} else {
+				DateFormat df = DateFormat.getDateTimeInstance(DateFormat.FULL, DateFormat.FULL);
+				retParmVal = df.format(eventTime);
 			} 
 		} else if (parm.equals(TAG_SHORT_TIME)) {
-			String eventTime = event.getTime(); //This will be in GMT
-			try {
-				Date actualDate = org.opennms.netmgt.EventConstants.parseToDate(eventTime);
-				DateFormat df = DateFormat.getDateTimeInstance(DateFormat.SHORT,
-							DateFormat.SHORT);
-				retParmVal = df.format(actualDate);
-			} catch (java.text.ParseException e) {
-				LOG.error("could not parse event date '{}'", eventTime, e);
-				
-				//Give up and just use the original string - don't bother with
-				// messing around
-				retParmVal = eventTime;
-				}
+			Date eventTime = event.getTime(); //This will be in GMT
+			if (eventTime == null) {
+				retParmVal = null;
+			} else {
+				DateFormat df = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
+				retParmVal = df.format(eventTime);
+			}
 		} else if (parm.equals(TAG_HOST)) {
 			retParmVal = event.getHost();
 		} else if (parm.equals(TAG_INTERFACE)) {
@@ -960,6 +948,32 @@ public abstract class AbstractEventUtil implements EventUtil {
 			return retStr;
 		} else {
 			return null;
+		}
+	}
+
+	/**
+	 * <p>getEventHost</p>
+	 *
+	 * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
+	 * @param connection a {@link java.sql.Connection} object.
+	 * @return a {@link java.lang.String} object.
+	 */
+	@Override
+	public String getEventHost(final Event event) {
+		if (event.getHost() == null) {
+			return null;
+		}
+
+		// If the event doesn't have a node ID, we can't lookup the IP address and be sure we have the right one since we don't know what node it is on
+		if (!event.hasNodeid()) {
+			return event.getHost();
+		}
+
+		try {
+			return getHostName(event.getNodeid().intValue(), event.getHost());
+		} catch (final Throwable t) {
+			LOG.warn("Error converting host IP \"{}\" to a hostname, storing the IP.", event.getHost(), t);
+			return event.getHost();
 		}
 	}
 

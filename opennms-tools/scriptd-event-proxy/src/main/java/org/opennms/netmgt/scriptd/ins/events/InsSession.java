@@ -266,7 +266,7 @@ class InsSession extends InsAbstractSession {
         final Date time = ev.getEventTime();
 		if (time != null) {
             LOG.debug("Setting event date timestamp to (GMT): {}", time);
-            e.setTime(EventConstants.formatToString(time));
+            e.setTime(time);
         } else {
         	LOG.info("No Event time found."); 
         }

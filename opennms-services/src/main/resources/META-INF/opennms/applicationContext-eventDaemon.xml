@@ -76,15 +76,9 @@
       </list>
     </property>
   </bean>
-  
-  <bean id="eventWriter" class="org.opennms.netmgt.eventd.processor.JdbcEventWriter">
-    <property name="getNextIdString" ref="getNextEventIdSql"/>
-    <property name="dataSource" ref="dataSource"/>
-    <property name="eventdServiceManager" ref="eventdServiceManager"/>
-  </bean>
 
-  <bean id="getNextEventIdSql" factory-bean="eventdConfigManager" factory-method="getGetNextEventID"/>
-  
+  <bean id="eventWriter" class="org.opennms.netmgt.eventd.processor.HibernateEventWriter"/>
+
   <bean id="eventIpcBroadcastProcessor" class="org.opennms.netmgt.eventd.processor.EventIpcBroadcastProcessor">
     <property name="eventIpcBroadcaster" ref="eventIpcManagerImpl"/>
   </bean>
@@ -126,6 +120,6 @@
     <constructor-arg><ref bean="eventConfDao"/></constructor-arg>
   </bean>
 
-  <bean id="eventUtilDaoImpl" class="org.opennms.netmgt.eventd.EventUtilDaoImpl" />
+  <bean id="eventUtil" class="org.opennms.netmgt.eventd.EventUtilDaoImpl" />
 
 </beans>

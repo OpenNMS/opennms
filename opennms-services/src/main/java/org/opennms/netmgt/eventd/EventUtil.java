@@ -96,4 +96,8 @@ public interface EventUtil {
 
 	String getValueOfParm(String tagUei, Event m_svcLostEvent);
 
+	String getHostName(int nodeId, String hostip) throws SQLException;
+
+	String getEventHost(Event event);
+
 }
