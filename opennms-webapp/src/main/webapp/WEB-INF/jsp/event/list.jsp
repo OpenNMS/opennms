@@ -96,7 +96,7 @@
 
 
 
-<jsp:include page="/includes/header.jsp" flush="false" >
+<jsp:include page="/includes/bootstrap.jsp" flush="false" >
   <jsp:param name="title" value="Event List" />
   <jsp:param name="headTitle" value="List" />
   <jsp:param name="headTitle" value="Events" />
@@ -188,8 +188,7 @@
   </script>
 
       <!-- menu -->
-      <div id="linkbar">
-      <ul>
+      <ul class="list-inline">
         <li><a href="<%=this.makeLink(callback, parms, new ArrayList<Filter>(), favorite)%>" title="Remove all search constraints" >View all events</a></li>
         <li><a href="<%=org.opennms.web.api.Util.calculateUrlBase(req, "event/advsearch.jsp")%>" title="More advanced searching and sorting options">Advanced Search</a></li>
         <li><a onclick="javascript:window.open('<%=Util.calculateUrlBase(req, "event/severity.jsp")%>','event_severity_legend', 'fullscreen=no,toolbar=no,status=no,menubar=no,scrollbars=no,resizable=yes,directories=no,location=no,width=525,height=330');" title="Open a window explaining the event severities">Severity Legend</a></li>
@@ -213,7 +212,6 @@
           <% } %>
         <% } %>
       </ul>
-      </div>
       <!-- end menu -->
 
 	  <!-- hidden form for adding a new Notification -->
@@ -294,7 +292,7 @@
 
     <% String acknowledgeEvent = System.getProperty("opennms.eventlist.acknowledge"); %>
 
-      <table>
+      <table class="table table-condensed severity">
         <thead>
         <tr>
           <% if( "true".equals(acknowledgeEvent) ) { %>
@@ -321,7 +319,7 @@
       	pageContext.setAttribute("event", event);
       %>
       
-        <tr valign="top" class="<%=events[i].getSeverity().getLabel()%>">
+        <tr valign="top" class="severity-<%=events[i].getSeverity().getLabel()%>">
           <% if( "true".equals(acknowledgeEvent) ) { %>
 						<% if( request.isUserInRole( Authentication.ROLE_ADMIN ) || !req.isUserInRole( Authentication.ROLE_READONLY ) ) { %>
 						<td valign="top" rowspan="3" class="divider">
@@ -415,7 +413,7 @@
           
         </tr>
         
-        <tr valign="top" class="<%= events[i].getSeverity().getLabel() %>">
+        <tr valign="top" class="severity-<%= events[i].getSeverity().getLabel() %>">
           <td colspan="4">
             <% if(events[i].getUei() != null) { %>
               <% Filter exactUEIFilter = new ExactUEIFilter(events[i].getUei()); %>
@@ -435,7 +433,7 @@
           </td>
         </tr>
        
-        <tr valign="top" class="<%= events[i].getSeverity().getLabel() %>">
+        <tr valign="top" class="severity-<%= events[i].getSeverity().getLabel() %>">
           <td colspan="5"><%=WebSecurityUtils.sanitizeString(events[i].getLogMessage(), true)%></td>
         </tr>
        
@@ -479,7 +477,7 @@
 
     <jsp:include page="/includes/bookmark.jsp" flush="false" />
 
-    <jsp:include page="/includes/footer.jsp" flush="false" />
+    <jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />
 
 <%!
     final String urlBase = "event/list";
