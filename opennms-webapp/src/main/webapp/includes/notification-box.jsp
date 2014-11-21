@@ -58,9 +58,12 @@
     }
 %>
 
-<h3 class="o-box"><a href="notification/index.jsp">Notification</a></h3>
-<div class="boxWrapper">
-	<ul class="plain o-box">
+<div class="panel panel-success">
+  <div class="panel-heading">
+    <h3 class="panel-title"><a href="notification/index.jsp">Notification</a></h3>
+  </div>
+  <div class="panel-body">
+	<ul class="list-unstyled">
 		<% if( nodeIdString == null ) { %>
 			<li><strong>You</strong>: <%
 				int count = this.model.getOutstandingNoticeCount(request.getRemoteUser());
@@ -82,4 +85,5 @@
 				(<a href="notification/browse?acktype=ack<%=nodeFilter%>&amp;filter=<%= java.net.URLEncoder.encode("user="+request.getRemoteUser()) %>">Check</a>)</li>
 		<% } %>
 	</ul>
+</div>
 </div>

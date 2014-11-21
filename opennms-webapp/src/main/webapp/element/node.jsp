@@ -258,7 +258,7 @@
 %>
 
 <%@page import="org.opennms.core.resource.Vault"%>
-<jsp:include page="/includes/header.jsp" flush="false" >
+<jsp:include page="/includes/bootstrap.jsp" flush="false" >
   <jsp:param name="title" value="Node" />
   <jsp:param name="headTitle" value="${model.label}" />
   <jsp:param name="headTitle" value="ID ${model.id}" />
@@ -289,48 +289,49 @@ function confirmAssetEdit() {
 }
 </script>
 
-<div class="onms">
-<h2>Node: ${model.label} (ID: ${model.id})</h2>
-<c:if test="${model.foreignSource != null}">
-<h2><em>Created via provisioning requisition <strong>${model.foreignSource} (foreignId: ${model.foreignId})</strong></em></h2>
-</c:if>
-<c:if test="${model.foreignSource == null}">
-<h2><em>Not a member of any provisioning requisition</em></h2>
-</c:if>
-<div id="linkbar">
-  <ul class="o-menu">
+<strong>
+  Node: ${model.label} (ID: ${model.id})<br>
+  <c:if test="${model.foreignSource != null}">
+    <em>Created via provisioning requisition <strong>${model.foreignSource} (foreignId: ${model.foreignId})</strong></em><br>
+  </c:if>
+  <c:if test="${model.foreignSource == null}">
+    <em>Not a member of any provisioning requisition</em>
+  </c:if>
+</strong>
+
+  <ul class="list-inline">
     <c:url var="eventLink" value="event/list">
       <c:param name="filter" value="node=${model.id}"/>
     </c:url>
-    <li class="o-menuitem">
+    <li>
       <a href="<c:out value="${eventLink}"/>">View Events</a>
     </li>
 
     <c:url var="alarmLink" value="alarm/list.htm">
       <c:param name="filter" value="node=${model.id}"/>
     </c:url>
-    <li class="o-menuitem">
+    <li>
       <a href="<c:out value="${alarmLink}"/>">View Alarms</a>
     </li>
     
     <c:url var="outageLink" value="outage/list.htm">
       <c:param name="filter" value="node=${model.id}"/>
     </c:url>
-    <li class="o-menuitem">
+    <li>
       <a href="<c:out value="${outageLink}"/>">View Outages</a>
     </li>
     
     <c:url var="assetLink" value="asset/modify.jsp">
       <c:param name="node" value="${model.id}"/>
     </c:url>
-    <li class="o-menuitem">
+    <li>
       <a href="<c:out value="${assetLink}"/>" onclick="return confirmAssetEdit()">Asset Info</a>
     </li>
 
     <c:url var="hardwareLink" value="hardware/list.jsp">
       <c:param name="node" value="${model.id}"/>
     </c:url>
-    <li class="o-menuitem">
+    <li>
       <a href="<c:out value="${hardwareLink}"/>">Hardware Info</a>
     </li>
 
@@ -338,7 +339,7 @@ function confirmAssetEdit() {
       <c:url var="intfAvailabilityLink" value="element/availability.jsp">
         <c:param name="node" value="${model.id}"/>
       </c:url>
-      <li class="o-menuitem">
+      <li>
         <a href="<c:out value="${intfAvailabilityLink}"/>">Availability</a>
       </li>
     </c:if>
@@ -347,13 +348,13 @@ function confirmAssetEdit() {
       <c:url var="siteLink" value="siteStatusView.htm">
         <c:param name="statusSite" value="${model.statusSite}"/>
       </c:url>
-      <li class="o-menuitem">
+      <li>
         <a href="<c:out value="${siteLink}"/>">Site Status</a>
       </li>
     </c:if>
 
     <c:forEach items="${model.links}" var="link">
-      <li class="o-menuitem">
+      <li>
         <a href="<c:out value="${link.url}"/>">${link.text}</a>
       </li>
     </c:forEach>
@@ -364,7 +365,7 @@ function confirmAssetEdit() {
         <c:param name="parentResource" value="${model.parentRes}"/>
         <c:param name="reports" value="all"/>
       </c:url>
-      <li class="o-menuitem">
+      <li>
         <a href="<c:out value="${resourceGraphsUrl}"/>">Resource Graphs</a>
       </li>
     </c:if>
@@ -373,14 +374,14 @@ function confirmAssetEdit() {
       <c:url var="rescanLink" value="element/rescan.jsp">
         <c:param name="node" value="${model.id}"/>
       </c:url>
-      <li class="o-menuitem">
+      <li>
         <a href="<c:out value="${rescanLink}"/>">Rescan</a>
       </li>
       
       <c:url var="adminLink" value="admin/nodemanagement/index.jsp">
         <c:param name="node" value="${model.id}"/>
       </c:url>
-      <li class="o-menuitem">
+      <li>
         <a href="<c:out value="${adminLink}"/>">Admin</a>
       </li>
 
@@ -389,7 +390,7 @@ function confirmAssetEdit() {
           <c:param name="node" value="${model.id}"/>
           <c:param name="ipaddr" value="${model.snmpPrimaryIntf.ipAddress}"/>
         </c:url>
-        <li class="o-menuitem">
+        <li>
           <a href="<c:out value="${updateSnmpLink}"/>">Update SNMP</a>
         </li>
       </c:if>
@@ -399,24 +400,23 @@ function confirmAssetEdit() {
 	<c:param name="addNew" value="true"/>
 	<c:param name="nodeID" value="${model.id}"/>
       </c:url>
-      <li class="o-menuitem">
+      <li>
         <a href="<c:out value="${createOutage}"/>">Schedule Outage</a>
       </li>
     </c:if>
     
     <c:forEach items="${navEntries}" var="entry">
-      <li class="o-menuitem">
+      <li>
       	<c:out value="${entry}" escapeXml="false" />
       </li>
     </c:forEach>
   </ul>
-</div>
-</div>
+
 
 <c:if test="${! empty schedOutages}">
-  <table class="o-box">
-    <tr class="CellStatus">
-      <td align="left" class="Critical">
+  <table class="table table-condensed severity">
+    <tr>
+      <td align="left" class="severity-critical">
         <b>This node is currently affected by the following scheduled outages: </b> ${schedOutages}
       </td>
     </tr>
@@ -428,15 +428,17 @@ function confirmAssetEdit() {
 <jsp:include page="/includes/nodeStatus-box.jsp?nodeId=${model.id}" flush="false" />
 <% } %>
 
-<div class="TwoColLeft">
+<div class="row">
+<div class="col-md-6">
   
-  
-
   <!-- Asset box, if info available --> 
   <c:if test="${! empty model.asset && (! empty model.asset.description || ! empty model.asset.comments)}">
-    <h3 class="o-box">Asset Information</h3>
-    <table class="o-box">
-      <tr>
+    <div class="panel panel-success">
+    <div class="panel-heading">
+      <h3 class="panel-title">Asset Information</h3>
+    </div>
+    <table class="table table-condensed">
+      <tr">
         <th>Description</th>
         <td>${model.asset.description}</td>
       </tr>
@@ -446,12 +448,17 @@ function confirmAssetEdit() {
         <td>${model.asset.comments}</td>
       </tr>
     </table>
+    </div>
   </c:if>
 
   <!-- SNMP box, if info available -->
   <c:if test="${! empty model.node.sysObjectId}">
-    <h3 class="o-box">SNMP Attributes</h3>
-    <table class="o-box">
+    <div class="panel panel-success">
+    <div class="panel-heading">
+      <h3 class="panel-title">SNMP Attributes</h3>
+    </div>
+    
+    <table class="table table-condensed">
       <tr>
         <th>Name</th>
         <td>${model.node.sysName}</td>
@@ -473,12 +480,16 @@ function confirmAssetEdit() {
         <td valign="top">${model.node.sysDescription}</td>
       </tr>
     </table>
+    </div>
   </c:if>
 
   <!-- Lldp box, if info available --> 
   <c:if test="${! empty model.lldp }">
-    <h3 class="o-box">Lldp Information</h3>
-    <table class="o-box">
+    <div class="panel panel-success">
+    <div class="panel-heading">
+      <h3 class="panel-title">Lldp Information</h3>
+    </div>
+    <table class="table table-condensed">
       <tr>
         <th>chassis id</th>
         <td>${model.lldp.lldpChassisIdString}</td>
@@ -496,12 +507,16 @@ function confirmAssetEdit() {
         <td>${model.lldp.lldpLastPollTime}</td>
       </tr>
     </table>
+    </div>
   </c:if>
 
   <!-- Cdp box, if info available --> 
   <c:if test="${! empty model.cdp }">
-    <h3 class="o-box">Cdp Information</h3>
-    <table class="o-box">
+    <div class="panel panel-success">
+    <div class="panel-heading">
+      <h3 class="panel-title">Cdp Information</h3>
+    </div>
+    <table class="table table-condensed">
       <tr>
         <th>global device id</th>
         <td>${model.cdp.cdpGlobalDeviceId}</td>
@@ -519,12 +534,15 @@ function confirmAssetEdit() {
         <td>${model.cdp.cdpLastPollTime}</td>
       </tr>
     </table>
+    </div>
   </c:if>
 
   <!-- Bridge box if available -->
   <c:if test="${! empty model.bridges}">
     <c:forEach items="${model.bridges}" var="bridge">
-    <h3 class="o-box">Bridge Information
+    <div class="panel panel-success">
+    <div class="panel-heading">
+      <h3 class="panel-title">Bridge Information
   		<c:if test="${! empty bridge.vlan}">
   		 vlanid ${bridge.vlan}
   		</c:if>
@@ -532,65 +550,70 @@ function confirmAssetEdit() {
   		  (${bridge.vlan})
   		</c:if>
     </h3>
-    <table class="o-box">
+    </div>
+    <table class="table table-condensed">
       <tr>
-        <th>base bridge address</th>
+        <th>Base Bridge Address</th>
         <td>${bridge.baseBridgeAddress}</td>
       </tr>
       <tr>
-        <th>base number of ports</th>
+        <th>Base Number of Ports</th>
         <td>${bridge.baseNumPorts}</td>
       </tr>
       <tr>
-        <th>base type</th>
+        <th>Base Type</th>
         <td>${bridge.baseType}</td>
       </tr>
  	<c:if test="${! empty bridge.stpProtocolSpecification}">
       <tr>
-        <th>stp protocol specification</th>
+        <th>STP Protocol Specification</th>
         <td>${bridge.stpProtocolSpecification}</td>
       </tr>
   	</c:if>
  	<c:if test="${! empty bridge.stpPriority}">
       <tr>
-        <th>stp priority</th>
+        <th>STP Priority</th>
         <td>${bridge.stpPriority}</td>
       </tr>
   	</c:if>
  	<c:if test="${! empty bridge.stpDesignatedRoot}">
       <tr>
-        <th>stp designated root</th>
+        <th>STP Designated Root</th>
         <td>${bridge.stpDesignatedRoot}</td>
       </tr>
   	</c:if>
  	<c:if test="${! empty bridge.stpRootCost}">
       <tr>
-        <th>stp root cost</th>
+        <th>STP Root Cost</th>
         <td>${bridge.stpRootCost}</td>
       </tr>
   	</c:if>
  	<c:if test="${! empty bridge.stpRootPort}">
       <tr>
-        <th>stp root port</th>
+        <th>STP Root Port</th>
         <td>${bridge.stpRootPort}</td>
       </tr>
   	</c:if>
       <tr>
-        <th>create time</th>
+        <th>Create Time</th>
         <td>${bridge.bridgeNodeCreateTime}</td>
       </tr>
       <tr>
-        <th>last poll time</th>
+        <th>Last Poll Time</th>
         <td>${bridge.bridgeNodeLastPollTime}</td>
       </tr>
     </table>
+    </div>
     </c:forEach>
   </c:if>
 
   <!-- Ospf box, if info available -->
   <c:if test="${! empty model.ospf }">
-    <h3 class="o-box">Ospf Information</h3>
-    <table class="o-box">
+    <div class="panel panel-success">
+    <div class="panel-heading">
+      <h3 class="panel-title">Ospf Information</h3>
+    </div>
+    <table class="table table-condensed">
       <tr>
         <th>Router Id</th>
         <td>${model.ospf.ospfRouterId}</td>
@@ -612,12 +635,16 @@ function confirmAssetEdit() {
         <td>${model.ospf.ospfLastPollTime}</td>
       </tr>
     </table>
+    </div>
   </c:if>
 
   <!-- IsIs box, if info available -->
   <c:if test="${! empty model.isis }">
-    <h3 class="o-box">Is-Is Information</h3>
-    <table class="o-box">
+    <div class="panel panel-success">
+    <div class="panel-heading">
+      <h3 class="panel-title">Is-Is Information</h3>
+    </div>
+    <table class="table table-condensed">
       <tr>
         <th>Sys ID</th>
         <td>${model.isis.isisSysID}</td>
@@ -635,13 +662,17 @@ function confirmAssetEdit() {
         <td>${model.isis.isisLastPollTime}</td>
       </tr>
     </table>
+    </div>
   </c:if>
 
   <!-- Critical Path info, if info available -->
   <c:if test="${model.criticalPath != model.noCriticalPath}">
-    <h3 class="o-box">Path Outage - Critical Path</h3>
-    <div class="boxWrapper">
-      <ul class="plain o-box">
+    <div class="panel panel-success">
+    <div class="panel-heading">
+      <h3 class="panel-title">Path Outage - Critical Path	</h3>
+    </div>
+    <div class="panel-body">
+      <ul class="list-unstyled">
         <li>
           ${model.criticalPath}
         </li>
@@ -659,17 +690,22 @@ function confirmAssetEdit() {
   <script type="text/javascript">
     var nodeId = ${model.id}
   </script>
-  <div id="interface-panel-gwt">
-    <h3 class="o-box">Node Interfaces</h3>
+  <div id="interface-panel-gwt" class="panel panel-success">
+    <div class="panel-heading">
+    	<h3 class="panel-title">Node Interfaces</h3>
+    </div>
     <opennms:interfacelist id="gwtnodeList"></opennms:interfacelist>
     <div name="opennms-interfacelist" id="gwtnodeList-ie"></div>
   </div>
 	
   <!-- Vlan box if available -->
   <c:if test="${! empty model.vlans}">
-    <h3 class="o-box">VLAN Information</h3>
-    <table class="o-box">
-      <thead>
+    <div class="panel panel-success">
+      <div class="panel-heading">
+    	<h3 class="panel-title">VLAN Information</h3>
+      </div>
+    <table class="table table-condensed">
+      <thead class="dark">
         <tr>
           <th>Vlan ID</th>
           <th>Vlan Name</th>
@@ -691,17 +727,21 @@ function confirmAssetEdit() {
         </tr>
       </c:forEach>
     </table>
+    </div>
   </c:if>
 
   
 </div>
 
-<div class="TwoColRight">
+<div class="col-md-6">
   
   <!-- general info box -->
-  <h3 class="o-box">General (Status: ${model.status})</h3>
-  <div class="boxWrapper">
-    <ul class="plain o-box">
+  <div class="panel panel-success">
+    <div class="panel-heading">
+  	<h3 class="panel-title">General (Status: ${model.status})</h3>
+    </div>
+  <div class="panel-body">
+    <ul class="list-unstyled">
       <c:if test="${model.showRancid}">
         <c:url var="rancidLink" value="inventory/rancid.htm">
           <c:param name="node" value="${model.id}"/>
@@ -735,7 +775,8 @@ function confirmAssetEdit() {
       <li>
         <a href="<c:out value="${detailLink}"/>">View Node Link Detailed Info</a>
       </li>
-    </ul>	     
+    </ul>
+    </div>	     
   </div>
   
   <!-- Category box -->
@@ -763,6 +804,8 @@ function confirmAssetEdit() {
   <jsp:include page="/outage/nodeOutages-box.htm" flush="false"> 
     <jsp:param name="node" value="${model.id}" />
   </jsp:include>
+</div>
+
 </div>
 
 <jsp:include page="/includes/footer.jsp" flush="false" />

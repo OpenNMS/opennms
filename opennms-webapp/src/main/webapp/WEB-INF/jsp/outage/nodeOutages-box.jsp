@@ -52,8 +52,11 @@
 <c:url var="outageLink" value="outage/list.htm">
   <c:param name="filter" value="node=${nodeId}"/>
 </c:url>
-<h3 class="o-box"><a href="${outageLink}">Recent&nbsp;Outages</a></h3>
-<table class="o-box">
+<div class="panel panel-success">
+<div class="panel-heading">
+<h3 class="panel-title"><a href="${outageLink}">Recent&nbsp;Outages</a></h3>
+</div>
+<table class="table table-condensed severity">
 <% if(outages.length == 0) { %>
   <tr>
     <td>There have been no outages on this node in the last 24 hours.</td>
@@ -73,9 +76,9 @@
      pageContext.setAttribute("outage", outage);
   %>
 		<% if( outages[i].getRegainedServiceTime() == null ) { %>
-      <tr class="Critical">
+      <tr class="severity-Critical">
     <% } else { %>
-      <tr class="Cleared">
+      <tr class="severity-Cleared">
     <% } %>
       <c:url var="interfaceLink" value="element/interface.jsp">
         <c:param name="node" value="<%=String.valueOf(nodeId)%>"/>
@@ -101,3 +104,4 @@
 <% } %>
 
 </table>
+</div>
