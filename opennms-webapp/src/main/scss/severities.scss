@@ -34,8 +34,9 @@ $severity-alarm-cleared-border: $color_mountain_mist_approx;
 		background-color: $bg-color;
 		border-top: 2px solid $border-color;
 		background-image: url(../images/bg#{$type}.png);
-		background-repeat: no-repeat;
-		background-position: left center;
+		background-repeat: repeat-y;
+		background-position: left top;
+		
 		padding-left: 18px;
 	}
 	.severity & > td {

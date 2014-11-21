@@ -73,14 +73,14 @@
 	}
 %>
 
-<div class="panel panel-success">
+<div class="panel panel-success severity">
   <div class="panel-heading">
     <h3 class="panel-title"><%= titleName %>
   </div>
   <!-- <div class="panel-body"> -->
 
 
-<table class="table table-condensed severity">
+<table class="table table-condensed">
 <%
 	for (Iterator<String> i = categoryData.keySet().iterator(); i.hasNext(); ) {
 	    String sectionName = i.next();

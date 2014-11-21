@@ -15,6 +15,7 @@ Bootstrap Theme Specific Stylesheet
  *  12.0 - Panels
  *  13.0 - Dialogs
  *  14.0 - Tables
+ *  15.0 - Workarounds
  */
 
 @import "properties.scss";
@@ -26,7 +27,7 @@ Bootstrap Theme Specific Stylesheet
 body {
 	//background:url(../images/textures/debut_dark.png);
 	background-color: $color_gallery_approx;
-	font:12px 'Open Sans', Arial, sans-serif;
+	font:11px 'Open Sans', Arial, sans-serif;
 }
 body.fixed-nav {
 	padding-top: 85px;
@@ -368,6 +369,30 @@ a.list-group-item.active:focus {
 /* =12.0 Panels
 ----------------------------------------------- */
 
+.panel {
+	border-radius: 0;
+}
+.panel-heading {
+	border-top-left-radius: 0;
+	border-top-right-radius: 0;
+	background-image: url(../images/headingbg.png);
+	background-repeat: repeat-x;
+	background-position: center center;
+	padding: $panel-heading-padding;
+}
+
+.panel-body {
+	padding: $panel-body-padding;
+	ul {
+		margin-bottom: 0;
+	}
+}
+
+.panel-title {
+	font-size: 12px;
+	font-weight: bold;
+}
+
 .panel-primary {
 	border-color: #444;
 }
@@ -456,8 +481,95 @@ a.list-group-item.active:focus {
   vertical-align: bottom;
   border-bottom: 2px solid #ddd;
 }
-.table>thead, .table>thead>tr, .table>thead>tr>th {
+
+.table>thead,
+.table>thead>tr,
+.table>thead>tr>th {
 	color: white;
 	background-color: $color_tundora_approx;
 	border-bottom: 0;
+}
+
+
+/* =15.0 Workarounds
+----------------------------------------------- */
+
+.panel.panel-success.severity {
+	background-color: $color_green_leaf_approx;
+	.table {
+		background-color: white;
+	}
+}
+
+.panel > .table:first-child,
+.panel > .table-responsive:first-child > .table:first-child {
+  border-top-left-radius: $panel-border-radius;
+  border-top-right-radius: $panel-border-radius;
+}
+.panel > .table:first-child > thead:first-child > tr:first-child,
+.panel > .table-responsive:first-child > .table:first-child > thead:first-child > tr:first-child,
+.panel > .table:first-child > tbody:first-child > tr:first-child,
+.panel > .table-responsive:first-child > .table:first-child > tbody:first-child > tr:first-child {
+  border-top-left-radius: $panel-border-radius;
+  border-top-right-radius: $panel-border-radius;
+}
+.panel > .table:first-child > thead:first-child > tr:first-child td:first-child,
+.panel > .table-responsive:first-child > .table:first-child > thead:first-child > tr:first-child td:first-child,
+.panel > .table:first-child > tbody:first-child > tr:first-child td:first-child,
+.panel > .table-responsive:first-child > .table:first-child > tbody:first-child > tr:first-child td:first-child,
+.panel > .table:first-child > thead:first-child > tr:first-child th:first-child,
+.panel > .table-responsive:first-child > .table:first-child > thead:first-child > tr:first-child th:first-child,
+.panel > .table:first-child > tbody:first-child > tr:first-child th:first-child,
+.panel > .table-responsive:first-child > .table:first-child > tbody:first-child > tr:first-child th:first-child {
+  border-top-left-radius: $panel-border-radius;
+}
+.panel > .table:first-child > thead:first-child > tr:first-child td:last-child,
+.panel > .table-responsive:first-child > .table:first-child > thead:first-child > tr:first-child td:last-child,
+.panel > .table:first-child > tbody:first-child > tr:first-child td:last-child,
+.panel > .table-responsive:first-child > .table:first-child > tbody:first-child > tr:first-child td:last-child,
+.panel > .table:first-child > thead:first-child > tr:first-child th:last-child,
+.panel > .table-responsive:first-child > .table:first-child > thead:first-child > tr:first-child th:last-child,
+.panel > .table:first-child > tbody:first-child > tr:first-child th:last-child,
+.panel > .table-responsive:first-child > .table:first-child > tbody:first-child > tr:first-child th:last-child {
+  border-top-right-radius: $panel-border-radius;
+}
+.panel > .table:last-child,
+.panel > .table-responsive:last-child > .table:last-child {
+  border-bottom-right-radius: $panel-border-radius;
+  border-bottom-left-radius: $panel-border-radius;
+}
+.panel > .table:last-child > tbody:last-child > tr:last-child,
+.panel > .table-responsive:last-child > .table:last-child > tbody:last-child > tr:last-child,
+.panel > .table:last-child > tfoot:last-child > tr:last-child,
+.panel > .table-responsive:last-child > .table:last-child > tfoot:last-child > tr:last-child {
+  border-bottom-right-radius: $panel-border-radius;
+  border-bottom-left-radius: $panel-border-radius;
+}
+.panel > .table:last-child > tbody:last-child > tr:last-child td:first-child,
+.panel > .table-responsive:last-child > .table:last-child > tbody:last-child > tr:last-child td:first-child,
+.panel > .table:last-child > tfoot:last-child > tr:last-child td:first-child,
+.panel > .table-responsive:last-child > .table:last-child > tfoot:last-child > tr:last-child td:first-child,
+.panel > .table:last-child > tbody:last-child > tr:last-child th:first-child,
+.panel > .table-responsive:last-child > .table:last-child > tbody:last-child > tr:last-child th:first-child,
+.panel > .table:last-child > tfoot:last-child > tr:last-child th:first-child,
+.panel > .table-responsive:last-child > .table:last-child > tfoot:last-child > tr:last-child th:first-child {
+  border-bottom-left-radius: $panel-border-radius;
+}
+.panel > .table:last-child > tbody:last-child > tr:last-child td:last-child,
+.panel > .table-responsive:last-child > .table:last-child > tbody:last-child > tr:last-child td:last-child,
+.panel > .table:last-child > tfoot:last-child > tr:last-child td:last-child,
+.panel > .table-responsive:last-child > .table:last-child > tfoot:last-child > tr:last-child td:last-child,
+.panel > .table:last-child > tbody:last-child > tr:last-child th:last-child,
+.panel > .table-responsive:last-child > .table:last-child > tbody:last-child > tr:last-child th:last-child,
+.panel > .table:last-child > tfoot:last-child > tr:last-child th:last-child,
+.panel > .table-responsive:last-child > .table:last-child > tfoot:last-child > tr:last-child th:last-child {
+  border-bottom-right-radius: $panel-border-radius;
+}
+
+.panel > .table:last-child > tbody:last-child > tr:last-child,
+.panel > .table-responsive:last-child > .table:last-child > tbody:last-child > tr:last-child,
+.panel > .table:last-child > tfoot:last-child > tr:last-child,
+.panel > .table-responsive:last-child > .table:last-child > tfoot:last-child > tr:last-child {
+	border-bottom-right-radius: $panel-border-radius;
+	border-bottom-left-radius: $panel-border-radius;
 }

@@ -46,7 +46,7 @@
 
 <!-- alarm/summary-box.htm -->
 <c:url var="headingLink" value="alarm/list.htm"/>
-<div class="panel panel-success">
+<div class="panel panel-success severity">
   <div class="panel-heading">
     <h3 class="panel-title"><a href="${headingLink}">Nodes with Pending Problems</a></h3>
   </div>
@@ -57,7 +57,7 @@
       </p>
     </c:when>
     <c:otherwise>
-      <table class="table table-condensed severity">
+      <table class="table table-condensed">
         <c:forEach var="summary" items="${summaries}">
           <c:url var="nodeLink" value="element/node.jsp">
             <c:param name="node" value="${summary.nodeId}"/>
