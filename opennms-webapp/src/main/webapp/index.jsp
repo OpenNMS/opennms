@@ -54,23 +54,22 @@
 	<div class="col-md-6" id="index-contentmiddle">
 		<% String centerUrl = System.getProperty("org.opennms.web.console.centerUrl", "/includes/categories-box.jsp"); %>
 		<jsp:include page="<%=centerUrl%>" flush="false" />
-		<hr />
 	</div>
 
 	<!-- Right Column -->
 	<div class="col-md-3" id="index-contentright">
 		<!-- notification box -->    
 		<jsp:include page="/includes/notification-box.jsp" flush="false" />
-		<hr />
+
 		<!-- Performance box -->    
 		<jsp:include page="/includes/resourceGraphs-box.jsp" flush="false" />
-		<hr />
+
 		<!-- KSC Reports box -->    
 		<jsp:include page="/KSC/include-box.htm" flush="false" />
-		<hr />
+
 		<!-- Quick Search box -->
 		<jsp:include page="/includes/quicksearch-box.jsp" flush="false" />
-		<hr />
+
 		<%--
 		<!-- security box -->    
 		Commenting out the security box include until it is functional
