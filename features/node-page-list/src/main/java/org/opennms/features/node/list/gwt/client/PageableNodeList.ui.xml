@@ -22,7 +22,7 @@
             <g:LayoutPanel>
                 <g:layer bottom="50px" top="0px" left="0" right="0">
                     <g:FlowPanel ui:field="m_ipInterfaceTableDiv">
-                        <opennms:IpInterfaceTable ui:field="m_ipInterfaceTable"/>
+                        <opennms:IpInterfaceTable ui:field="m_ipInterfaceTable" styleName="ipInterfaceTable"/>
                     </g:FlowPanel>
                 </g:layer>
                 <g:layer height="21px" bottom="27px" left="25%" right="20%">
@@ -44,7 +44,7 @@
             <g:LayoutPanel>
                 <g:layer bottom="50px" top="0px" left="0" right="0">
                     <g:FlowPanel ui:field="m_physicalTableDiv">
-                        <opennms:PhysicalInterfaceTable ui:field="m_physicalInterfaceTable"/>
+                        <opennms:PhysicalInterfaceTable ui:field="m_physicalInterfaceTable" styleName="snmpInterfaceTable"/>
                     </g:FlowPanel>
                 </g:layer>
                 <g:layer height="21px" bottom="27px" left="25%" right="20%">
