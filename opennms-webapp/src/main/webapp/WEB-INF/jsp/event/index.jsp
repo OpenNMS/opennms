@@ -38,7 +38,7 @@
 	session="true"
 %>
 
-<jsp:include page="/includes/header.jsp" flush="false" >
+<jsp:include page="/includes/bootstrap.jsp" flush="false" >
   <jsp:param name="title" value="Events" />
   <jsp:param name="headTitle" value="Events" />
   <jsp:param name="location" value="event" />  
@@ -49,9 +49,13 @@
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@taglib uri="../../taglib.tld" prefix="onms" %>
 
-  <div class="TwoColLeft">
-      <h3>Event Queries</h3>
-      <div class="boxWrapper">
+<div class="row">
+  <div class="col-md-6">
+      <div class="panel panel-success">
+      <div class="panel-heading">
+      	<h3 class="panel-title">Event Queries</h3>
+      </div>
+      <div class="panel-body">
         <%--<jsp:include page="/includes/event-querypanel.jsp" flush="false" />--%>
         <form action="event/detail.jsp" method="get">
             <p align="right">Event ID:
@@ -59,15 +63,19 @@
                 <input type="submit" value="Get details"/></p>
         </form>
 
-        <ul class="plain">
+        <ul class="list-unstyled">
             <li><a href="event/list" title="View all outstanding events">All events</a></li>
             <li><a href="event/advsearch.jsp" title="More advanced searching and sorting options">Advanced Search</a></li>
         </ul>
+      </div>
     </div>
-    <br/>
-    <h3>Event Filter Favorites</h3>
+
+    <div class="panel panel-success">
+    <div class="panel-heading">
+    	<h3 class="panel-title">Event Filter Favorites</h3>
+    </div>
+    <div class="panel-body">
     <onms:alert/>
-    <div class="boxWrapper">
         <c:choose>
             <c:when test="${!empty favorites}">
                 <!-- Filters -->
@@ -83,6 +91,7 @@
                 <p>No favorites available.</p>
             </c:otherwise>
         </c:choose>
+      </div>
       </div>
   </div>
 
@@ -110,9 +119,12 @@
     </div>
 </c:forEach>
 
-  <div class="TwoColRight">
-      <h3>Outstanding and acknowledged events</h3>
-		<div class="boxWrapper">
+  <div class="col-md-6">
+	<div class="panel panel-success">
+	<div class="panel-heading">
+      <h3 class="panel-title">Outstanding and acknowledged events</h3>
+ 	</div>
+ 	<div class="panel-body">
       <p>Events can be <em>acknowledged</em>, or removed from the view of other users, by
         selecting the event in the <em>Ack</em> check box and clicking the <em>Acknowledge
         Selected Events</em> at the bottom of the page.  Acknowledging an event gives
@@ -130,7 +142,8 @@
         description, type the identifier into the <em>Get details for Event ID</em> box and
         hit <b>[Enter]</b>.  You will then go to the appropriate details page.
       </p>
-		</div>
+    </div>
+	</div>
   </div>
-	<hr />
+</div>
 <jsp:include page="/includes/footer.jsp" flush="false"/>
