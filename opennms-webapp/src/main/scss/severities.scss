@@ -32,23 +32,24 @@ $severity-alarm-cleared-border: $color_mountain_mist_approx;
 	.severity & {
 		color: $text-color;
 		background-color: $bg-color;
-		border-top: 2px solid $border-color;
+		border: 1px solid $table-border-color;
+		td {
+			border: 1px solid $table-border-color;
+		}
+		&.divider {
+			border-top: 2px solid $border-color;
+		}
 		&.nodivider {
-			border-top: none;
+			border-top: 1px solid $table-border-color;
 		}
-	}
-
-	.severity & .bright, .severity &.bright {
-		background-image: url(../images/bg#{$type}.png);
-		background-repeat: repeat-y;
-		background-position: left top;
-		padding-left: 18px;
-		td: {
+		.bright, &.bright {
+			background-image: url(../images/bg#{$type}.png);
+			background-repeat: repeat-y;
+			background-position: left top;
 			padding-left: 18px;
-		}
-		.nobright {
-			background-image: none;
-			padding-left: 0;
+			td: {
+				padding-left: 18px;
+			}
 		}
 	}
 
