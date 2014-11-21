@@ -676,7 +676,8 @@ function confirmAssetEdit() {
         <li>
           ${model.criticalPath}
         </li>
-      </ul>           
+      </ul> 
+    </div>          
     </div>    
   </c:if>
 	
