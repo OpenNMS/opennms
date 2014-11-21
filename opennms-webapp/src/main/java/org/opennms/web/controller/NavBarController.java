@@ -59,18 +59,18 @@ public class NavBarController extends AbstractController implements Initializing
 
     /** {@inheritDoc} */
     @Override
-    protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    protected ModelAndView handleRequestInternal(final HttpServletRequest request, final HttpServletResponse response) throws Exception {
         return new ModelAndView(m_viewName, "model", createNavBarModel(request));
     }
 
-    private NavBarModel createNavBarModel(HttpServletRequest request) {
-        Map<NavBarEntry, DisplayStatus> navBar = new LinkedHashMap<NavBarEntry, DisplayStatus>();
-        
-        for (NavBarEntry entry : getNavBarItems()) {
+    private NavBarModel createNavBarModel(final HttpServletRequest request) {
+        final Map<NavBarEntry, DisplayStatus> navBar = new LinkedHashMap<NavBarEntry, DisplayStatus>();
+
+        for (final NavBarEntry entry : getNavBarItems()) {
             navBar.put(entry, entry.evaluate(request));
         }
 
-        return new NavBarModel(navBar);
+        return new NavBarModel(request, navBar);
     }
 
     /**
@@ -95,27 +95,27 @@ public class NavBarController extends AbstractController implements Initializing
     public String getHeaderHtml(HttpServletRequest request) {
         return createHeaderHtml(request);
     }
-    
+
     private String createHeaderHtml(HttpServletRequest request) {
         /**
          * Added javascript snippet to hide the header if not displayed in a toplevel window (iFrame).
          */
         return "<div id='header'>" +
-              "<h1 id='headerlogo'><a href='index.jsp'><img src=\"../images/logo.png\" alt='OpenNMS Web Console Home'></a></h1>" +
-          "<div id='headerinfo'>" +
-          "<h2>Topology Map</h2>" +
-          "<p align=\"right\" >" + 
-          "User: <a href=\"/opennms/account/selfService/index.jsp\" title=\"Account self-service\"><strong>" + request.getRemoteUser() + "</strong></a>" +
-          "&nbsp;(Notices " + getNoticeStatus() + " )" + 
-          " - <a href=\"opennms/j_spring_security_logout\">Log out</a><br></p>"+
-          "</div>" +
-          "<div id='headernavbarright'>" +
-          "<div class='navbar'>" +
-          createNavBarHtml(request) +
-          "</div>" +
-          "</div>" +
-          "<div class='spacer'><!-- --></div>" +
-          "</div><script type='text/javascript'>if (window.location != window.parent.location) { document.getElementById('header').style.display = 'none'; }</script>";
+        "<h1 id='headerlogo'><a href='index.jsp'><img src=\"../images/logo.png\" alt='OpenNMS Web Console Home'></a></h1>" +
+        "<div id='headerinfo'>" +
+        "<h2>Topology Map</h2>" +
+        "<p align=\"right\" >" + 
+        "User: <a href=\"/opennms/account/selfService/index.jsp\" title=\"Account self-service\"><strong>" + request.getRemoteUser() + "</strong></a>" +
+        "&nbsp;(Notices " + getNoticeStatus() + " )" + 
+        " - <a href=\"opennms/j_spring_security_logout\">Log out</a><br></p>"+
+        "</div>" +
+        "<div id='headernavbarright'>" +
+        "<div class='navbar'>" +
+        createNavBarHtml(request) +
+        "</div>" +
+        "</div>" +
+        "<div class='spacer'><!-- --></div>" +
+        "</div><script type='text/javascript'>if (window.location != window.parent.location) { document.getElementById('header').style.display = 'none'; }</script>";
     }
 
     private String getNoticeStatus() {
@@ -123,9 +123,9 @@ public class NavBarController extends AbstractController implements Initializing
         try {
             noticeStatus = NotifdConfigFactory.getPrettyStatus();
             if ("Off".equals(noticeStatus)) {
-              noticeStatus="<b id=\"notificationOff\">Off</b>";
+                noticeStatus="<b id=\"notificationOff\">Off</b>";
             } else {
-              noticeStatus="<b id=\"notificationOn\">On</b>";
+                noticeStatus="<b id=\"notificationOn\">On</b>";
             }
         } catch (Throwable t) {
             noticeStatus = "<b id=\"notificationOff\">Unknown</b>";
@@ -140,21 +140,21 @@ public class NavBarController extends AbstractController implements Initializing
         for (final NavBarEntry entry : getNavBarItems()) {
             final DisplayStatus displayStatus = entry.evaluate(request);
             switch(displayStatus) {
-                case DISPLAY_LINK:
-                    strBuilder.append("<li><a href=\"" + entry.getUrl() +  "\" >" + entry.getName() + "</a></li>");
-                    break;
-                case DISPLAY_NO_LINK:
-                    strBuilder.append("<li>" + entry.getName() + "</li>");
-                    break;
-                default:
-                    break;
+            case DISPLAY_LINK:
+                strBuilder.append("<li><a href=\"" + entry.getUrl() +  "\" >" + entry.getDisplayString() + "</a></li>");
+                break;
+            case DISPLAY_NO_LINK:
+                strBuilder.append("<li>" + entry.getDisplayString() + "</li>");
+                break;
+            default:
+                break;
             }
         }
 
         strBuilder.append("</ul>");
         return strBuilder.toString();
     }
-    
+
     public void setViewName(final String viewName) {
         m_viewName = viewName;
     }

@@ -43,10 +43,10 @@
 <c:forEach var="entry" items="${entries.entries}">
 	<c:choose>
 		<c:when test="${empty entry.url}">
-			<li>${entry.name}</li>
+			<li>${entry.displayString}</li>
 		</c:when>
 		<c:otherwise>
-			<li><a href="${entry.url}">${entry.name}</a></li>
+			<li><a href="${entry.url}">${entry.displayString}</a></li>
 		</c:otherwise>
 	</c:choose>
 </c:forEach>

@@ -337,10 +337,14 @@ a.list-group-item.active:focus {
 
 /* =10.0 Dropdowns
 ----------------------------------------------- */
+.dropdown-menu,
 .dropdown-menu>.active>a, 
 .dropdown-menu>.active>a:hover, 
 .dropdown-menu>.active>a:focus {
-	background-color: #444;
+	background-color: $color_tundora_approx;
+	border-color: $color_suva_gray_approx;
+	padding: 5px;
+	min-width: 50px;
 }
 
 
@@ -402,10 +406,19 @@ a.list-group-item.active:focus {
 	padding: 5px;
 	bottom: 0;
 	@include navbar-inverse-color(white);
+	border: 1px solid transparent;
 	a {
 		line-height: $line-height-computed;
 		padding: 0;
 		@include navbar-inverse-color(white);
+		background-color: transparent;
+	}
+
+	&.dropdown.open {
+		background-color: transparent;
+		a {
+			background-color: transparent;
+		}
 	}
 }
 
@@ -424,6 +437,10 @@ a.list-group-item.active:focus {
 
 #notificationOff {
 	color: $color_alizarin_crimson_approx;
+}
+
+#notificationOn {
+	color: $color_lima_approx;
 }
 
 /* =12.0 Panels

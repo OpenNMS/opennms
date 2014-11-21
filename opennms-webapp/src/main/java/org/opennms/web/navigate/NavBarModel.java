@@ -30,31 +30,21 @@ package org.opennms.web.navigate;
 
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
 
-/**
- * <p>NavBarModel class.</p>
- *
- * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
- * @version $Id: $
- * @since 1.8.1
- */
 public class NavBarModel {
-    private Map<NavBarEntry, DisplayStatus> m_entries;
+    private final HttpServletRequest m_request;
+    private final Map<NavBarEntry, DisplayStatus> m_entries;
 
-    /**
-     * <p>Constructor for NavBarModel.</p>
-     *
-     * @param entries a java$util$Map object.
-     */
-    public NavBarModel(Map<NavBarEntry, DisplayStatus> entries) {
+    public NavBarModel(final HttpServletRequest request, final Map<NavBarEntry, DisplayStatus> entries) {
+        m_request = request;
         m_entries = entries;
     }
 
-    /**
-     * <p>getEntries</p>
-     *
-     * @return a java$util$Map object.
-     */
+    public HttpServletRequest getRequest() {
+        return m_request;
+    }
+
     public Map<NavBarEntry, DisplayStatus> getEntries() {
         return m_entries;
     }

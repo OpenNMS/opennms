@@ -45,10 +45,10 @@
         <li>
           <c:choose>
             <c:when test="${entry.value.displayLink}">
-              <a href="${entry.key.url}">${entry.key.name}</a>
+              <a href="${entry.key.url}">${entry.key.displayString}</a>
             </c:when>
             <c:otherwise>
-              ${entry.key.name}
+              ${entry.key.displayString}
             </c:otherwise>
           </c:choose>
         </li>

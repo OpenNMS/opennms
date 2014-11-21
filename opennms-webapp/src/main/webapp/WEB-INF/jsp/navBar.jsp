@@ -29,43 +29,81 @@
 
 --%>
 
+<%@page import="org.opennms.web.navigate.*" %>
+
 <%@ page contentType="text/html;charset=UTF-8" language="java"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 
 <c:choose>
-	<c:when test="${param.bootstrap == 'true'}">
-      <ul class="nav navbar-nav navbar-right">
-        <li><a href="#">Link</a></li>
-        <li class="dropdown">
-          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Dropdown <span class="caret"></span></a>
-          <ul class="dropdown-menu" role="menu">
-            <li><a href="#">Action</a></li>
-            <li><a href="#">Another action</a></li>
-            <li><a href="#">Something else here</a></li>
-            <li class="divider"></li>
-            <li><a href="#">Separated link</a></li>
-          </ul>
-        </li>
+  <c:when test="${param.bootstrap == 'true'}">
+    <ul class="nav navbar-nav navbar-right">
+      <c:forEach var="entry" items="${model.entries}">
+        <!-- entry ${entry.key.name}, hasEntries=${not empty entry.key.entries}, display=${entry.value.display} -->
+        <c:if test="${entry.value.display}">
+          <c:choose>
+            <c:when test="${not empty entry.key.entries}">
+              <!-- has sub-entries, draw menu drop-downs -->
+              <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">${entry.key.name} <span class="caret"></span></a>
+              <ul class="dropdown-menu" role="menu">
+                <c:forEach var="subEntry" items="${entry.key.entries}">
+                  <%
+                    NavBarEntry subEntry = (NavBarEntry) pageContext.getAttribute("subEntry");
+                    DisplayStatus subEntryDisplayStatus = subEntry.evaluate(request);
+                    pageContext.setAttribute("subEntryDisplayStatus", subEntryDisplayStatus);
+                  %>
+                  <c:if test="${subEntryDisplayStatus.display}">
+                    <li>
+                    <c:choose>
+                      <c:when test="true">
+                        <a href="${subEntry.url}">${subEntry.name}</a>
+                      </c:when>
+                      <c:otherwise>
+                        ${subEntry.name}
+                      </c:otherwise>
+                    </c:choose>
+                    </li>
+                  </c:if>
+                </c:forEach>
+              </ul>
+            </c:when>
+            <c:otherwise>
+              <li>
+                <c:choose>
+                  <c:when test="${entry.value.displayLink}">
+                    <!-- entry.displayLink -->
+                    <a href="${entry.key.url}">${entry.key.name}</a>
+                  </c:when>
+                  <c:otherwise>
+                    <!-- entry.key.name -->
+                    ${entry.key.name}
+                  </c:otherwise>
+                </c:choose>
+              </li>
+            </c:otherwise>
+          </c:choose> <!-- has/doesn't have entries -->
+        </c:if> <!-- display -->
+      </c:forEach>
+    </ul>
+  </c:when>
+  <c:otherwise>
+    <div class="navbar">
+      <ul>
+        <c:forEach var="entry" items="${model.entries}">
+          <c:if test="${entry.value.display}">
+            <li>
+              <c:choose>
+                <c:when test="${entry.value.displayLink}">
+                  <a href="${entry.key.url}">${entry.key.displayString}</a>
+                </c:when>
+                <c:otherwise>
+                  ${entry.key.displayString}
+                </c:otherwise>
+              </c:choose>
+            </li>
+          </c:if>
+        </c:forEach>
       </ul>
-	</c:when>
-	<c:otherwise>
-		<div class="navbar">
-		  <ul>
-		    <c:forEach var="entry" items="${model.entries}">
-		      <c:if test="${entry.value.display}">
-		        <li>
-		          <c:choose>
-		            <c:when test="${entry.value.displayLink}">
-		              <a href="${entry.key.url}">${entry.key.name}</a>
-		            </c:when>
-		            <c:otherwise>
-		              ${entry.key.name}
-		            </c:otherwise>
-		          </c:choose>
-		        </li>
-		      </c:if>
-		    </c:forEach>
-		  </ul>
-		</div>
-    </c:otherwise>
+    </div>
+  </c:otherwise>
 </c:choose>
