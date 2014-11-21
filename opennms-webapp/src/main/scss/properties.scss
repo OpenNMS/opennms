@@ -26,6 +26,17 @@ $color_bright_red_approx: #a20200;
 $color_alizarin_crimson_approx: #ef2929;
 $color_lima_approx: #73d216;
 
+$font-size-base:  12px;
+$font-size-large: ceil(($font-size-base * 1.25)) !default;
+$font-size-small: ceil(($font-size-base * 0.85)) !default;
+
+$navbar-height: 50px;
+$navbar-margin-bottom: 0;
+
+$breadcrumb-bg: transparent;
+$breadcrumb-padding-horizontal: 0; /* container-fluid already gives us a good padding */
+$breadcrumb-padding-vertical: 0; /* container-fluid already gives us a good padding */
+
 $border-radius-base:  0;
 $border-radius-large: 0;
 $border-radius-small: 0;

@@ -15,7 +15,7 @@ Bootstrap Theme Specific Stylesheet
  *  12.0 - Panels
  *  13.0 - Dialogs
  *  14.0 - Tables
- *  15.0 - Workarounds
+ *  15.0 - Miscellaneous and Workarounds
  */
 
 @import "properties.scss";
@@ -27,10 +27,10 @@ Bootstrap Theme Specific Stylesheet
 body {
 	//background:url(../images/textures/debut_dark.png);
 	background-color: $color_gallery_approx;
-	font:11px 'Open Sans', Arial, sans-serif;
+	font: $font-size-small 'Open Sans', Arial, sans-serif;
 }
 body.fixed-nav {
-	padding-top: 85px;
+	padding-top: $navbar-height;
 }
 .wrapper {
 	width: 900px;
@@ -389,7 +389,7 @@ a.list-group-item.active:focus {
 }
 
 .panel-title {
-	font-size: 12px;
+	font-size: $font-size-base;
 	font-weight: bold;
 }
 
@@ -492,8 +492,30 @@ a.list-group-item.active:focus {
 }
 
 
-/* =15.0 Workarounds
+/* =15.0 Miscellaneous and Workarounds
 ----------------------------------------------- */
+
+#footer {
+	clear: both;
+	text-align: center;
+	padding: 30px 2px 2px 2px;
+	margin-left: -15px;
+	margin-right: -15px;
+	background-color: white;
+	background-image: url(../images/footerbg.png);
+	background-repeat: repeat-x;
+}
+
+.container, .container-fluid {
+	padding-top: 15px;
+	background-image: url(../images/mainbg.png);
+	background-repeat: repeat-x;
+}
+
+.breadcrumb {
+	font-size: $font-size-base;
+	font-weight: bold;
+}
 
 .panel.panel-success.fix-subpixel {
 	background-color: $color_green_leaf_approx;
