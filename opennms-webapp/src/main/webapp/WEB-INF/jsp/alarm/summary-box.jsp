@@ -52,7 +52,7 @@
   </div>
   <c:choose>
     <c:when test="${empty summaries}">
-      <p class="noBottomMargin">
+      <p class="clear">
         There are no pending problems.
       </p>
     </c:when>
@@ -67,7 +67,7 @@
         </c:forEach>
       </table>
       <c:if test="${moreCount > 0}">
-        <p class="noBottomMargin" align="right">
+        <p class="clear" align="right" >
           <c:url var="moreLink" value="alarm/list.htm"/>
           <a href="${moreLink}">All pending problems...</a>
         </p>
