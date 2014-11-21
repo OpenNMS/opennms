@@ -49,25 +49,25 @@
   <div class="panel-body">
   <div class="searchHost" style="position:relative; left: 0px;">
     <form action="element/nodeList.htm" method="get">
-      <font style="font-size: 70%; line-height: 1.25em; align=left">Node ID:</font><br />
+      <font style="align=left">Node ID:</font><br />
       <input type="hidden" name="listInterfaces" value="false"/>
       <input type="text" size="20" name="nodeId" />
       <input type="submit" value="Search"/>
     </form>
     <form action="element/nodeList.htm" method="get">
-      <font style="font-size: 70%; line-height: 1.25em; align=left">Node label like:</font><br />
+      <font style="align=left">Node label like:</font><br />
       <input type="hidden" name="listInterfaces" value="true"/>
       <input type="text" size="20" name="nodename" />
       <input type="submit" value="Search"/>
     </form>
     <form action="element/nodeList.htm" method="get">
-      <font style="font-size: 70%; line-height: 1.25em; align=left">TCP/IP Address like:</font><br />
+      <font style="align=left">TCP/IP Address like:</font><br />
       <input type="hidden" name="listInterfaces" value="false"/>
       <input type="text" name="iplike" value="" placeholder="*.*.*.*" />
       <input type="submit" value="Search"/>               
     </form>
     <form action="element/nodeList.htm" method="get">
-      <font style="font-size: 70%; line-height: 1.25em; align=left">Providing service:</font><br />
+      <font style="align=left">Providing service:</font><br />
       <input type="hidden" name="listInterfaces" value="false"/>
       <select name="service" size="1">
       <c:forEach var="serviceNameId" items="${serviceNameMap}">
