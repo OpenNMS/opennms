@@ -475,16 +475,16 @@ a.list-group-item.active:focus {
 	background-color: #F45C31;
 }
 
+.table > tbody > tr > th,
 .table > thead > tr > th,
-.table > thead > tr,
-.table > thead {
-  vertical-align: bottom;
+.table > tr > th {
+	vertical-align: bottom;
   border-bottom: 2px solid #ddd;
 }
 
-.table>thead,
-.table>thead>tr,
-.table>thead>tr>th {
+.table > tr > th,
+.table > tbody > tr > th,
+.table > thead > tr > th {
 	color: white;
 	background-color: $color_tundora_approx;
 	border-bottom: 0;
@@ -497,6 +497,9 @@ a.list-group-item.active:focus {
 .panel.panel-success.fix-subpixel {
 	background-color: $color_green_leaf_approx;
 	.table {
+		background-color: white;
+	}
+	.clear {
 		background-color: white;
 	}
 }
