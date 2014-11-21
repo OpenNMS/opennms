@@ -41,8 +41,12 @@
 <%
   pageContext.setAttribute("serviceNameMap", new TreeMap<String,Integer>(NetworkElementFactory.getInstance(getServletContext()).getServiceNameToIdMap()).entrySet());
 %>
-<h3 class="o-box">Quick Search</h3>
-<div class="boxWrapper">
+
+<div class="panel panel-success">
+  <div class="panel-heading">
+    <h3 class="panel-title">Quick Search</h3>
+  </div>
+  <div class="panel-body">
   <div class="searchHost" style="position:relative; left: 0px;">
     <form action="element/nodeList.htm" method="get">
       <font style="font-size: 70%; line-height: 1.25em; align=left">Node ID:</font><br />
@@ -72,5 +76,6 @@
       </select>
       <input type="submit" value="Search"/>               
     </form>
+  </div>
   </div>
 </div>
