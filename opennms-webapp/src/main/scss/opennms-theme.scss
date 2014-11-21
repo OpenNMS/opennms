@@ -26,7 +26,7 @@ Bootstrap Theme Specific Stylesheet
 
 body {
 	//background:url(../images/textures/debut_dark.png);
-	background-color: $color_gallery_approx;
+	background-color: white;
 	font: $font-size-small 'Open Sans', Arial, sans-serif;
 }
 body.fixed-nav {
@@ -508,6 +508,7 @@ a.list-group-item.active:focus {
 
 .container, .container-fluid {
 	padding-top: 15px;
+	background-color: $color_gallery_approx;
 	background-image: url(../images/mainbg.png);
 	background-repeat: repeat-x;
 }
