@@ -29,7 +29,7 @@ $severity-alarm-cleared-bg: #eeeeee;
 $severity-alarm-cleared-border: $color_mountain_mist_approx;
 
 @mixin severity-variant($text-color, $bg-color, $border-color, $type) {
-	.severity & {
+	.severity & .bright, .severity &.bright {
 		color: $text-color;
 		background-color: $bg-color;
 		border-top: 2px solid $border-color;
@@ -39,7 +39,7 @@ $severity-alarm-cleared-border: $color_mountain_mist_approx;
 		
 		padding-left: 18px;
 	}
-	.severity & > td {
+	.severity & .bright > td, .severity &.bright > td {
 		padding-left: 18px;
 	}
 	thead.severity {
