@@ -59,10 +59,10 @@
 %>
 
 <div class="panel panel-success">
-  <div class="panel-heading">
-    <h3 class="panel-title"><a href="notification/index.jsp">Notification</a></h3>
-  </div>
-  <div class="panel-body">
+	<div class="panel-heading">
+		<h3 class="panel-title"><a href="notification/index.jsp">Notification</a></h3>
+	</div>
+	<div class="panel-body">
 	<ul class="list-unstyled">
 		<% if( nodeIdString == null ) { %>
 			<li><strong>You</strong>: <%
@@ -85,5 +85,5 @@
 				(<a href="notification/browse?acktype=ack<%=nodeFilter%>&amp;filter=<%= java.net.URLEncoder.encode("user="+request.getRemoteUser()) %>">Check</a>)</li>
 		<% } %>
 	</ul>
-</div>
+	</div>
 </div>
