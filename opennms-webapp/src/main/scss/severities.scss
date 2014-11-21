@@ -29,19 +29,29 @@ $severity-alarm-cleared-bg: #eeeeee;
 $severity-alarm-cleared-border: $color_mountain_mist_approx;
 
 @mixin severity-variant($text-color, $bg-color, $border-color, $type) {
-	.severity & .bright, .severity &.bright {
+	.severity & {
 		color: $text-color;
 		background-color: $bg-color;
 		border-top: 2px solid $border-color;
+		&.nodivider {
+			border-top: none;
+		}
+	}
+
+	.severity & .bright, .severity &.bright {
 		background-image: url(../images/bg#{$type}.png);
 		background-repeat: repeat-y;
 		background-position: left top;
-		
 		padding-left: 18px;
+		td: {
+			padding-left: 18px;
+		}
+		.nobright {
+			background-image: none;
+			padding-left: 0;
+		}
 	}
-	.severity & .bright > td, .severity &.bright > td {
-		padding-left: 18px;
-	}
+
 	thead.severity {
 		color: white;
 		background-color: $color_mine_shaft_approx;
