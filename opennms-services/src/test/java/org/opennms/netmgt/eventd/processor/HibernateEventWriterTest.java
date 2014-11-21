@@ -30,6 +30,7 @@ package org.opennms.netmgt.eventd.processor;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.sql.SQLException;
 
@@ -104,7 +105,11 @@ public class HibernateEventWriterTest {
 
         bldr.addParam("test", b64);
 
-        m_jdbcEventWriter.process(null, bldr.getEvent());
+        Event event = bldr.getEvent();
+        assertEquals(new Integer(0), event.getDbid());
+        m_jdbcEventWriter.process(null, event);
+        assertTrue(event.getDbid() > 0);
+
         final String parms = jdbcTemplate.queryForObject("SELECT eventParms FROM events LIMIT 1", String.class);
         assertEquals("test=testVal(string,text);test2=valWith%0Null%0(string,text);test3=" + snmpVal.toString() + "(string,text);test=B9cECgEXBgArAAA%61(string,text)", parms);
     }
@@ -120,7 +125,11 @@ public class HibernateEventWriterTest {
 
         bldr.setDescription("abc\u0000def");
 
-        m_jdbcEventWriter.process(null, bldr.getEvent());
+        Event event = bldr.getEvent();
+        assertEquals(new Integer(0), event.getDbid());
+        m_jdbcEventWriter.process(null, event);
+        assertTrue(event.getDbid() > 0);
+
         final String descr = jdbcTemplate.queryForObject("SELECT eventDescr FROM events LIMIT 1", String.class);
         assertEquals("abc%0def", descr);
     }
@@ -136,7 +145,11 @@ public class HibernateEventWriterTest {
 
         bldr.setLogMessage("abc\u0000def");
 
-        m_jdbcEventWriter.process(null, bldr.getEvent());
+        Event event = bldr.getEvent();
+        assertEquals(new Integer(0), event.getDbid());
+        m_jdbcEventWriter.process(null, event);
+        assertTrue(event.getDbid() > 0);
+
         final String logMessage = jdbcTemplate.queryForObject("SELECT eventLogmsg FROM events LIMIT 1", String.class);
         assertEquals("abc%0def", logMessage);
     }
@@ -223,11 +236,14 @@ public class HibernateEventWriterTest {
 
         jdbcTemplate.update("insert into service (serviceId, serviceName) values (?, ?)", new Object[] { serviceId, serviceName });
         
-        EventBuilder builder = new EventBuilder("uei.opennms.org/foo", "someSource");
-        builder.setLogMessage("logndisplay");
-        builder.setService(serviceName);
+        EventBuilder bldr = new EventBuilder("uei.opennms.org/foo", "someSource");
+        bldr.setLogMessage("logndisplay");
+        bldr.setService(serviceName);
 
-        m_jdbcEventWriter.process(null, builder.getEvent());
+        Event event = bldr.getEvent();
+        assertEquals(new Integer(0), event.getDbid());
+        m_jdbcEventWriter.process(null, event);
+        assertTrue(event.getDbid() > 0);
         
         assertEquals("event count", 1, jdbcTemplate.queryForInt("select count(*) from events"));
         assertEquals("event service ID", serviceId, jdbcTemplate.queryForInt("select serviceID from events"));

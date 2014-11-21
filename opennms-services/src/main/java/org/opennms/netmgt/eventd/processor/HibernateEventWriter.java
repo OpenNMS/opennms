@@ -318,6 +318,10 @@ public final class HibernateEventWriter implements EventWriter {
             ovent.setEventAckTime(null);
         }
 
-        eventDao.saveOrUpdate(ovent);
+        eventDao.save(ovent);
+        eventDao.flush();
+
+        // Update the event with the database ID of the event stored in the database
+        event.setDbid(ovent.getId());
     }
 }

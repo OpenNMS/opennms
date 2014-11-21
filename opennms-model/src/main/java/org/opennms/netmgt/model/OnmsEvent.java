@@ -340,7 +340,7 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
     @XmlAttribute(name="id")
     @Column(name="eventId", nullable=false)
     @SequenceGenerator(name="eventSequence", sequenceName="eventsNxtId")
-    @GeneratedValue(generator="eventSequence")    
+    @GeneratedValue(generator="eventSequence")
 	public Integer getId() {
 		return m_eventId;
 	}
