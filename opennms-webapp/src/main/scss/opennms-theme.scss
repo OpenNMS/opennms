@@ -15,7 +15,7 @@ Bootstrap Theme Specific Stylesheet
  *  12.0 - Panels
  *  13.0 - Dialogs
  *  14.0 - Tables
- *  15.0 - Workarounds
+ *  15.0 - Miscellaneous and Workarounds
  */
 
 @import "properties.scss";
@@ -26,11 +26,11 @@ Bootstrap Theme Specific Stylesheet
 
 body {
 	//background:url(../images/textures/debut_dark.png);
-	background-color: $color_gallery_approx;
-	font:11px 'Open Sans', Arial, sans-serif;
+	background-color: white;
+	font: $font-size-small 'Open Sans', Arial, sans-serif;
 }
 body.fixed-nav {
-	padding-top: 85px;
+	padding-top: $navbar-height;
 }
 .wrapper {
 	width: 900px;
@@ -113,9 +113,7 @@ a:focus {
 	box-shadow:none;
 	cursor:default;
 }
-.navbar-inverse .navbar-collapse {
-	background: #444;
-}
+
 #access .navbar-text {
 	margin-top: 18px;
 	margin-bottom: 18px;
@@ -365,6 +363,68 @@ a.list-group-item.active:focus {
 	background-color: $color_green_leaf_approx;
 }
 
+.navbar-header {
+	height: $navbar-logo-height;
+}
+
+.navbar-brand {
+	line-height: $navbar-logo-height; /* same as the logo image */
+	height: $navbar-logo-height;
+	padding-left: 0;
+	padding-right: 0;
+	padding-top: 0;
+	padding-bottom: 0;
+	position: absolute;
+	top: 13px;
+	left: 15px;
+}
+
+#navbar {
+	height: $line-height-computed + 10px; /* padding top and bottom of link entries */
+	position: absolute;
+	bottom: 0;
+	right: 0;
+	background-image: none;
+	background-color: transparent;
+}
+
+@mixin navbar-inverse-color($text-color) {
+	color: $text-color;
+	text-shadow: rgba(0,0,0,0.5) 1px 1px 1px;
+}
+
+.navbar-inverse, .navbar-collapse {
+	background-image: url(../images/headerbg.png);
+	background-repeat: repeat-x;
+}
+
+.navbar-inverse .navbar-nav > li {
+	padding: 5px;
+	bottom: 0;
+	@include navbar-inverse-color(white);
+	a {
+		line-height: $line-height-computed;
+		padding: 0;
+		@include navbar-inverse-color(white);
+	}
+}
+
+.navbar-inverse .navbar-info {
+	padding: 5px;
+	@include navbar-inverse-color(white);
+	a {
+		@include navbar-inverse-color(white);
+	}
+	h3 {
+		margin: 0;
+		font-size: $font-size-large;
+		font-weight: bold;
+	}
+}
+
+#notificationOff {
+	color: $color_alizarin_crimson_approx;
+}
 
 /* =12.0 Panels
 ----------------------------------------------- */
@@ -389,7 +449,7 @@ a.list-group-item.active:focus {
 }
 
 .panel-title {
-	font-size: 12px;
+	font-size: $font-size-base;
 	font-weight: bold;
 }
 
@@ -475,101 +535,55 @@ a.list-group-item.active:focus {
 	background-color: #F45C31;
 }
 
+/* make all TH tags inside a .table dark like OpenNMS 14 */
+.table > tbody > tr > th,
 .table > thead > tr > th,
-.table > thead > tr,
-.table > thead {
-  vertical-align: bottom;
+.table > tr > th {
+	vertical-align: bottom;
   border-bottom: 2px solid #ddd;
 }
 
-.table>thead,
-.table>thead>tr,
-.table>thead>tr>th {
+.table > tr > th,
+.table > tbody > tr > th,
+.table > thead > tr > th {
 	color: white;
 	background-color: $color_tundora_approx;
 	border-bottom: 0;
 }
 
 
-/* =15.0 Workarounds
+/* =15.0 Miscellaneous and Workarounds
 ----------------------------------------------- */
+
+#footer {
+	clear: both;
+	text-align: center;
+	padding: 30px 2px 2px 2px;
+	margin-left: -15px;
+	margin-right: -15px;
+	background-color: white;
+	background-image: url(../images/footerbg.png);
+	background-repeat: repeat-x;
+}
+
+.container, .container-fluid {
+	padding-top: 15px;
+	background-color: $color_gallery_approx;
+	background-image: url(../images/mainbg.png);
+	background-repeat: repeat-x;
+}
+
+.breadcrumb {
+	font-size: $font-size-base;
+	font-weight: bold;
+}
 
 .panel.panel-success.fix-subpixel {
 	background-color: $color_green_leaf_approx;
 	.table {
 		background-color: white;
 	}
-}
-
-.panel > .table:first-child,
-.panel > .table-responsive:first-child > .table:first-child {
-  border-top-left-radius: $panel-border-radius;
-  border-top-right-radius: $panel-border-radius;
-}
-.panel > .table:first-child > thead:first-child > tr:first-child,
-.panel > .table-responsive:first-child > .table:first-child > thead:first-child > tr:first-child,
-.panel > .table:first-child > tbody:first-child > tr:first-child,
-.panel > .table-responsive:first-child > .table:first-child > tbody:first-child > tr:first-child {
-  border-top-left-radius: $panel-border-radius;
-  border-top-right-radius: $panel-border-radius;
-}
-.panel > .table:first-child > thead:first-child > tr:first-child td:first-child,
-.panel > .table-responsive:first-child > .table:first-child > thead:first-child > tr:first-child td:first-child,
-.panel > .table:first-child > tbody:first-child > tr:first-child td:first-child,
-.panel > .table-responsive:first-child > .table:first-child > tbody:first-child > tr:first-child td:first-child,
-.panel > .table:first-child > thead:first-child > tr:first-child th:first-child,
-.panel > .table-responsive:first-child > .table:first-child > thead:first-child > tr:first-child th:first-child,
-.panel > .table:first-child > tbody:first-child > tr:first-child th:first-child,
-.panel > .table-responsive:first-child > .table:first-child > tbody:first-child > tr:first-child th:first-child {
-  border-top-left-radius: $panel-border-radius;
-}
-.panel > .table:first-child > thead:first-child > tr:first-child td:last-child,
-.panel > .table-responsive:first-child > .table:first-child > thead:first-child > tr:first-child td:last-child,
-.panel > .table:first-child > tbody:first-child > tr:first-child td:last-child,
-.panel > .table-responsive:first-child > .table:first-child > tbody:first-child > tr:first-child td:last-child,
-.panel > .table:first-child > thead:first-child > tr:first-child th:last-child,
-.panel > .table-responsive:first-child > .table:first-child > thead:first-child > tr:first-child th:last-child,
-.panel > .table:first-child > tbody:first-child > tr:first-child th:last-child,
-.panel > .table-responsive:first-child > .table:first-child > tbody:first-child > tr:first-child th:last-child {
-  border-top-right-radius: $panel-border-radius;
-}
-.panel > .table:last-child,
-.panel > .table-responsive:last-child > .table:last-child {
-  border-bottom-right-radius: $panel-border-radius;
-  border-bottom-left-radius: $panel-border-radius;
-}
-.panel > .table:last-child > tbody:last-child > tr:last-child,
-.panel > .table-responsive:last-child > .table:last-child > tbody:last-child > tr:last-child,
-.panel > .table:last-child > tfoot:last-child > tr:last-child,
-.panel > .table-responsive:last-child > .table:last-child > tfoot:last-child > tr:last-child {
-  border-bottom-right-radius: $panel-border-radius;
-  border-bottom-left-radius: $panel-border-radius;
-}
-.panel > .table:last-child > tbody:last-child > tr:last-child td:first-child,
-.panel > .table-responsive:last-child > .table:last-child > tbody:last-child > tr:last-child td:first-child,
-.panel > .table:last-child > tfoot:last-child > tr:last-child td:first-child,
-.panel > .table-responsive:last-child > .table:last-child > tfoot:last-child > tr:last-child td:first-child,
-.panel > .table:last-child > tbody:last-child > tr:last-child th:first-child,
-.panel > .table-responsive:last-child > .table:last-child > tbody:last-child > tr:last-child th:first-child,
-.panel > .table:last-child > tfoot:last-child > tr:last-child th:first-child,
-.panel > .table-responsive:last-child > .table:last-child > tfoot:last-child > tr:last-child th:first-child {
-  border-bottom-left-radius: $panel-border-radius;
-}
-.panel > .table:last-child > tbody:last-child > tr:last-child td:last-child,
-.panel > .table-responsive:last-child > .table:last-child > tbody:last-child > tr:last-child td:last-child,
-.panel > .table:last-child > tfoot:last-child > tr:last-child td:last-child,
-.panel > .table-responsive:last-child > .table:last-child > tfoot:last-child > tr:last-child td:last-child,
-.panel > .table:last-child > tbody:last-child > tr:last-child th:last-child,
-.panel > .table-responsive:last-child > .table:last-child > tbody:last-child > tr:last-child th:last-child,
-.panel > .table:last-child > tfoot:last-child > tr:last-child th:last-child,
-.panel > .table-responsive:last-child > .table:last-child > tfoot:last-child > tr:last-child th:last-child {
-  border-bottom-right-radius: $panel-border-radius;
-}
-
-.panel > .table:last-child > tbody:last-child > tr:last-child,
-.panel > .table-responsive:last-child > .table:last-child > tbody:last-child > tr:last-child,
-.panel > .table:last-child > tfoot:last-child > tr:last-child,
-.panel > .table-responsive:last-child > .table:last-child > tfoot:last-child > tr:last-child {
-	border-bottom-right-radius: $panel-border-radius;
-	border-bottom-left-radius: $panel-border-radius;
+	.clear {
+		background-color: white;
+	}
 }

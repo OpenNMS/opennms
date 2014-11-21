@@ -676,7 +676,8 @@ function confirmAssetEdit() {
         <li>
           ${model.criticalPath}
         </li>
-      </ul>           
+      </ul> 
+    </div>          
     </div>    
   </c:if>
 	
@@ -808,4 +809,4 @@ function confirmAssetEdit() {
 
 </div>
 
-<jsp:include page="/includes/footer.jsp" flush="false" />
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />

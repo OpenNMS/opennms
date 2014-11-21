@@ -52,7 +52,7 @@
   </div>
   <c:choose>
     <c:when test="${empty summaries}">
-      <p class="noBottomMargin">
+      <p class="clear">
         There are no pending problems.
       </p>
     </c:when>
@@ -62,12 +62,12 @@
           <c:url var="nodeLink" value="element/node.jsp">
             <c:param name="node" value="${summary.nodeId}"/>
           </c:url>
-          <tr class="severity-${summary.maxSeverity.label}"><td class="bright"><a href="${nodeLink}">${summary.nodeLabel}</a> has 
+          <tr class="severity-${summary.maxSeverity.label} nodivider"><td class="bright"><a href="${nodeLink}">${summary.nodeLabel}</a> has 
               <a href="alarm/list.htm?sortby=id&acktype=unack&limit=20&display=short&filter=node%3D${summary.nodeId}">${summary.alarmCount} alarms</a> (${summary.fuzzyTimeDown})</td></tr>
         </c:forEach>
       </table>
       <c:if test="${moreCount > 0}">
-        <p class="noBottomMargin" align="right">
+        <p class="clear" align="right" >
           <c:url var="moreLink" value="alarm/list.htm"/>
           <a href="${moreLink}">All pending problems...</a>
         </p>

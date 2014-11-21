@@ -105,7 +105,7 @@ final String baseHref = Util.calculateUrlBase( request );
   <!--  ${nostyles} -->
   <c:choose>
     <c:when test="${param.nostyles != 'true' }">
-        <link rel="stylesheet" type="text/css" href="<%= baseHref %>lib/bootstrap/dist/css/bootstrap.css" media="screen" />
+        <link rel="stylesheet" type="text/css" href="<%= baseHref %>css/bootstrap.css" media="screen" />
         <link rel="stylesheet" type="text/css" href="<%= baseHref %>css/opennms-theme.css" media="screen" />
         <!-- <link rel="stylesheet" type="text/css" href="<%= baseHref %>css/styles.css" media="screen" />
         <link rel="stylesheet" type="text/css" href="<%= baseHref %>css/gwt-asset.css" media="screen" />
@@ -163,31 +163,45 @@ final String baseHref = Util.calculateUrlBase( request );
   </c:when>
   <c:otherwise>
     <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
-      <div class="container-fluid">
         <!-- Brand and toggle get grouped for better mobile display -->
         <div class="navbar-header">
-          <a class="navbar-brand" href="<%= baseHref %>index.jsp"><img src="<%= baseHref %>images/logo.png" alt="OpenNMS" style="width: 99px; height: 25px" /></a>
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="<%= baseHref %>index.jsp"><img src="<%= baseHref %>images/logo.png" alt="OpenNMS" /></a>
         </div>
 
-        <jsp:include page="/navBar.htm" flush="false">
-          <jsp:param name="bootstrap" value="true" />
-        </jsp:include>
-      </div>
+        <div id="headerinfo" style="margin-right: 0" class="nav navbar-nav navbar-right navbar-info">
+          <h3 align="right">${param.title}</h3>
+          <p align="right">
+            <c:choose>
+              <c:when test="${!empty pageContext.request.remoteUser}">
+                User: <a href="<%= baseHref %>account/selfService/index.jsp" title="Account self-service"><strong>${pageContext.request.remoteUser}</strong></a>&nbsp;(Notices <c:out value="${noticeStatus}" escapeXml="false"/>)
+                  - <a href="<%= baseHref %>j_spring_security_logout">Log out</a><br/>
+              </c:when>
+              <c:otherwise>
+                User: &hellip;<br/>
+              </c:otherwise>
+            </c:choose>
+            <jsp:useBean id="currentDate" class="java.util.Date" />
+            <fmt:formatDate value="${currentDate}" type="date" dateStyle="medium"/>
+            &nbsp;
+            <fmt:formatDate value="${currentDate}" type="time" pattern="HH:mm z"/> 
+          </p>
+        </div>
+
+        <div style="margin-right: 15px" id="navbar" class="navbar-collapse collapse">
+          <jsp:include page="/navBar.htm" flush="false">
+            <jsp:param name="bootstrap" value="true" />
+          </jsp:include>
+        </div>
     </nav>
   </c:otherwise>
 </c:choose>
 <!-- End bootstrap header -->
-
-<div class="container-fluid">
-<c:if test="${((param.nonavbar != 'true') && (!empty pageContext.request.remoteUser)) && param.nobreadcrumbs != 'true'}">
-   <a href="<%= baseHref %>index.jsp">Home</a>
-   <c:forEach var="breadcrumb" items="${paramValues.breadcrumb}">
-     <c:if test="${breadcrumb != ''}">
-           / <c:out value="${breadcrumb}" escapeXml="false"/>
-     </c:if>
-   </c:forEach>
-</c:if>
-</div>
 
 <%--
     Added javascript snippet to hide the header if not displayed in a toplevel window (iFrame).
@@ -202,10 +216,14 @@ final String baseHref = Util.calculateUrlBase( request );
 <%-- This <div> tag is unmatched in this file (its matching tag is in the
      footer), so we hide it in a JSP code fragment so the Eclipse HTML
      validator doesn't complain.  See bug #1728. --%>
-<%-- Internet Explorer gets miffed and refuses to display the page content
-     for certain pages if the following div is empty. (ie when the outer if
-     test fails.) Moving the <h2> tags outside the if statement makes it
-     happy again --%>
 <%= "<div id=\"content\" class=\"container-fluid\">" %>
-<h2>
-</h2>
+<c:if test="${((param.nonavbar != 'true') && (!empty pageContext.request.remoteUser)) && param.nobreadcrumbs != 'true'}">
+  <ol class="breadcrumb">
+    <li><a href="<%= baseHref %>index.jsp">Home</a></li>
+    <c:forEach var="breadcrumb" items="${paramValues.breadcrumb}">
+      <c:if test="${breadcrumb != ''}">
+        <li><c:out value="${breadcrumb}" escapeXml="false"/></li>
+      </c:if>
+    </c:forEach>
+  </ol>
+</c:if>
