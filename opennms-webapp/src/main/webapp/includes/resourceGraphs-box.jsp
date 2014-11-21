@@ -42,8 +42,12 @@
         session="true"
 %>
 
-<h3 class="o-box"><a href="graph/index.jsp">Resource Graphs</a></h3>
-<div class="boxWrapper">
-    	<opennms:nodeSuggestionCombobox id="combobox" ></opennms:nodeSuggestionCombobox>
-    	<div name="opennms-nodeSuggestionCombobox" id="nodeCombobox"></div>
+<div class="panel panel-success">
+	<div class="panel-heading">
+		<h3 class="panel-title"><a href="graph/index.jsp">Resource Graphs</a></h3>
+	</div>
+	<div class="panel-body">
+		<opennms:nodeSuggestionCombobox id="combobox" ></opennms:nodeSuggestionCombobox>
+		<div name="opennms-nodeSuggestionCombobox" id="nodeCombobox"></div>
+	</div>
 </div>
