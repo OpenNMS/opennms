@@ -165,10 +165,35 @@ final String baseHref = Util.calculateUrlBase( request );
     <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
         <!-- Brand and toggle get grouped for better mobile display -->
         <div class="navbar-header">
-          <a class="navbar-brand" href="<%= baseHref %>index.jsp"><img src="<%= baseHref %>images/logo.png" alt="OpenNMS" style="width: 99px; height: 25px" /></a>
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="<%= baseHref %>index.jsp"><img src="<%= baseHref %>images/logo.png" alt="OpenNMS" /></a>
         </div>
 
-        <div style="padding-right: 15px">
+        <div id="headerinfo" style="margin-right: 0" class="nav navbar-nav navbar-right navbar-info">
+          <h3 align="right">${param.title}</h3>
+          <p align="right">
+            <c:choose>
+              <c:when test="${!empty pageContext.request.remoteUser}">
+                User: <a href="<%= baseHref %>account/selfService/index.jsp" title="Account self-service"><strong>${pageContext.request.remoteUser}</strong></a>&nbsp;(Notices <c:out value="${noticeStatus}" escapeXml="false"/>)
+                  - <a href="<%= baseHref %>j_spring_security_logout">Log out</a><br/>
+              </c:when>
+              <c:otherwise>
+                User: &hellip;<br/>
+              </c:otherwise>
+            </c:choose>
+            <jsp:useBean id="currentDate" class="java.util.Date" />
+            <fmt:formatDate value="${currentDate}" type="date" dateStyle="medium"/>
+            &nbsp;
+            <fmt:formatDate value="${currentDate}" type="time" pattern="HH:mm z"/> 
+          </p>
+        </div>
+
+        <div style="margin-right: 15px" id="navbar" class="navbar-collapse collapse">
           <jsp:include page="/navBar.htm" flush="false">
             <jsp:param name="bootstrap" value="true" />
           </jsp:include>
