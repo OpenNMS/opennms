@@ -32,7 +32,8 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Date;
 
-import org.opennms.netmgt.EventConstants;
+import org.opennms.core.logging.Logging;
+import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.poller.InetNetworkInterface;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.NetworkInterface;

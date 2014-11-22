@@ -38,8 +38,7 @@
   <dependencies>
     <dependency>
       <groupId>org.opennms</groupId>
-      <artifactId>opennms-services</artifactId>
-      <scope>compile</scope>
+      <artifactId>opennms-dao-api</artifactId>
     </dependency>
   </dependencies>
 </project>

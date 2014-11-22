@@ -44,13 +44,13 @@ import org.opennms.core.test.db.MockDatabase;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.DefaultEventConfDao;
 import org.opennms.netmgt.config.SnmpPeerFactory;
+import org.opennms.netmgt.dao.mock.JdbcEventdServiceManager;
+import org.opennms.netmgt.eventd.AbstractEventUtil;
 import org.opennms.netmgt.eventd.BroadcastEventProcessor;
 import org.opennms.netmgt.eventd.DefaultEventHandlerImpl;
 import org.opennms.netmgt.eventd.EventExpander;
 import org.opennms.netmgt.eventd.EventIpcManagerDefaultImpl;
-import org.opennms.netmgt.eventd.EventUtilJdbcImpl;
 import org.opennms.netmgt.eventd.Eventd;
-import org.opennms.netmgt.eventd.JdbcEventdServiceManager;
 import org.opennms.netmgt.eventd.adaptors.EventHandler;
 import org.opennms.netmgt.eventd.adaptors.EventIpcManagerEventHandlerProxy;
 import org.opennms.netmgt.eventd.adaptors.EventReceiver;
@@ -58,10 +58,10 @@ import org.opennms.netmgt.eventd.adaptors.tcp.TcpEventReceiver;
 import org.opennms.netmgt.eventd.adaptors.udp.UdpEventReceiver;
 import org.opennms.netmgt.eventd.processor.EventIpcBroadcastProcessor;
 import org.opennms.netmgt.eventd.processor.JdbcEventWriter;
-import org.opennms.netmgt.model.events.EventIpcManager;
-import org.opennms.netmgt.model.events.EventIpcManagerFactory;
-import org.opennms.netmgt.model.events.EventProcessor;
-import org.opennms.netmgt.model.events.EventProxy;
+import org.opennms.netmgt.events.api.EventIpcManager;
+import org.opennms.netmgt.events.api.EventIpcManagerFactory;
+import org.opennms.netmgt.events.api.EventProcessor;
+import org.opennms.netmgt.events.api.EventProxy;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.test.mock.MockUtil;
@@ -71,6 +71,10 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
 
+/**
+ * @deprecated Please develop new unit tests by using the Spring unit test
+ * framework instead of this base class.
+ */
 public class OpenNMSTestCase {
     protected static MockDatabase m_db;
     protected static MockNetwork m_network;
@@ -153,6 +157,8 @@ public class OpenNMSTestCase {
             
             if (isStartEventd()) {
                 m_eventdIpcMgr = new EventIpcManagerDefaultImpl();
+
+                AbstractEventUtil.setInstance(new EventUtilJdbcImpl());
 
                 JdbcEventdServiceManager eventdServiceManager = new JdbcEventdServiceManager();
                 eventdServiceManager.setDataSource(m_db);

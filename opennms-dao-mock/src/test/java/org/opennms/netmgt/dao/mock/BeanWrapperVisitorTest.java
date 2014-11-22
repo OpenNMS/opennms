@@ -37,7 +37,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.CriteriaBuilder;
-import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.OnmsEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

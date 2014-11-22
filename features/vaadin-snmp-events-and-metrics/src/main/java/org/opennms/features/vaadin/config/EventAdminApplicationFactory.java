@@ -29,7 +29,7 @@
 package org.opennms.features.vaadin.config;
 
 import org.opennms.netmgt.config.api.EventConfDao;
-import org.opennms.netmgt.model.events.EventProxy;
+import org.opennms.netmgt.events.api.EventProxy;
 import org.opennms.vaadin.extender.AbstractApplicationFactory;
 
 import com.vaadin.ui.UI;

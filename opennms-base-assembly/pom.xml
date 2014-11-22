@@ -155,11 +155,6 @@
   <dependencies>
     <dependency>
       <groupId>org.opennms</groupId>
-      <artifactId>opennms-services</artifactId>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
       <artifactId>opennms-ackd</artifactId>
     </dependency>
     <dependency>
@@ -327,6 +322,14 @@
       <groupId>org.opennms</groupId>
       <artifactId>opennms-asterisk</artifactId>
       <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.events</groupId>
+      <artifactId>org.opennms.features.events.daemon</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.events</groupId>
+      <artifactId>org.opennms.features.events.traps</artifactId>
     </dependency>
     <dependency>
       <groupId>org.opennms.features.notifications</groupId>

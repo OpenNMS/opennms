@@ -16,7 +16,7 @@
          <!-- <value>META-INF/opennms/applicationContext-exportedPollerBackEnd-https.xml</value> -->
        </list>
      </constructor-arg>
-     <constructor-arg ref="daemonContext" />
+     <constructor-arg ref="daoContext" />
    </bean>
 
 </beans>

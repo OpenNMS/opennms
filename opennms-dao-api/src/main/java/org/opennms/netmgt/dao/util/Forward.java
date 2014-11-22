@@ -28,7 +28,7 @@
 
 package org.opennms.netmgt.dao.util;
 
-import org.opennms.netmgt.model.events.Constants;
+import org.opennms.netmgt.events.api.EventDatabaseConstants;
 
 /**
  * This is an utility class used to format the event forward info - to be
@@ -54,7 +54,7 @@ public abstract class Forward {
 
         String how = fwd.getMechanism();
 
-        return Constants.escape(text, Constants.DB_ATTRIB_DELIM) + Constants.DB_ATTRIB_DELIM + state + Constants.DB_ATTRIB_DELIM + how;
+        return EventDatabaseConstants.escape(text, EventDatabaseConstants.DB_ATTRIB_DELIM) + EventDatabaseConstants.DB_ATTRIB_DELIM + state + EventDatabaseConstants.DB_ATTRIB_DELIM + how;
 
     }
 
@@ -74,16 +74,16 @@ public abstract class Forward {
 
         for (int index = 0; index < forwards.length; index++) {
             if (!first)
-                buf.append(Constants.MULTIPLE_VAL_DELIM);
+                buf.append(EventDatabaseConstants.MULTIPLE_VAL_DELIM);
             else
                 first = false;
 
-            buf.append(Constants.escape(format(forwards[index]), Constants.MULTIPLE_VAL_DELIM));
+            buf.append(EventDatabaseConstants.escape(format(forwards[index]), EventDatabaseConstants.MULTIPLE_VAL_DELIM));
         }
 
         if (buf.length() >= sz) {
             buf.setLength(sz - 4);
-            buf.append(Constants.VALUE_TRUNCATE_INDICATOR);
+            buf.append(EventDatabaseConstants.VALUE_TRUNCATE_INDICATOR);
         }
 
         return buf.toString();

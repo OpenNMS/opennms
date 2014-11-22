@@ -43,7 +43,7 @@
         org.opennms.web.element.*,
         org.opennms.netmgt.poller.PathOutageManagerDaoImpl,
         org.opennms.netmgt.model.OnmsNode,
-        org.opennms.netmgt.EventConstants,
+        org.opennms.netmgt.events.api.EventConstants,
         org.opennms.netmgt.xml.event.Event,
         org.opennms.web.api.Util,
         org.exolab.castor.xml.ValidationException,
