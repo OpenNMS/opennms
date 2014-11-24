@@ -1,7 +1,7 @@
 
 === NrpeMonitor
 
-This monitor allows to test plugins and checks running on the link:http://exchange.nagios.org/directory/Addons/Monitoring-Agents/NRPE--2D-Nagios-Remote-Plugin-Executor/details[Nagios Remote Plugin Executor] (NRPE) framework.
+This monitor allows to test plugins and checks running on the link:http://exchange.nagios.org/directory/Addons/Monitoring-Agents/NRPE--2D-Nagios-Remote-Plugin-Executor/details[Nagios Remote Plugin Executor] (_NRPE_) framework.
 The monitor allows to test the status output of any available check command executed by _NRPE_.
 Between OpenNMS and _Nagios_ are some conceptional differences.
 In OpenNMS a service can only be available or not available and the response time for the service is measured.
