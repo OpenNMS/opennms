@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.utils;
+package org.opennms.netmgt.model.events;
 
 import java.io.BufferedOutputStream;
 import java.io.IOException;

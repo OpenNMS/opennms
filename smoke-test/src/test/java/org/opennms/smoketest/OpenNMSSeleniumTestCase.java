@@ -70,27 +70,33 @@ import com.thoughtworks.selenium.SeleniumException;
 import com.thoughtworks.selenium.webdriven.WebDriverBackedSelenium;
 
 public class OpenNMSSeleniumTestCase extends SeleneseTestBase {
-    protected static final Logger LOG = LoggerFactory.getLogger(OpenNMSSeleniumTestCase.class);
-    protected static final long LOAD_TIMEOUT = 60000;
-    protected static final String BASE_URL = "http://localhost:8980/";
-    protected static final String REQUISITION_NAME = "SeleniumTestGroup";
-    protected static final String USER_NAME = "SmokeTestUser";
-    protected static final String GROUP_NAME = "SmokeTestGroup";
+    private static final Logger LOG = LoggerFactory.getLogger(OpenNMSSeleniumTestCase.class);
 
-    private WebDriver m_driver = null;
-    private static final boolean usePhantomJS = Boolean.getBoolean("smoketest.usePhantomJS");
+    public static final long   LOAD_TIMEOUT       = Long.getLong("org.opennms.smoketest.web-timeout", 60000l);
+    public static final String OPENNMS_WEB_HOST   = System.getProperty("org.opennms.smoketest.web-host", "localhost");
+    public static final int    OPENNMS_WEB_PORT   = Integer.getInteger("org.opennms.smoketest.web-port", 8980);
+    public static final String OPENNMS_EVENT_HOST = System.getProperty("org.opennms.smoketest.event-host", OPENNMS_WEB_HOST);
+    public static final int    OPENNMS_EVENT_PORT = Integer.getInteger("org.opennms.smoketest.event-port", 5817);
+
+    public static final String BASE_URL           = "http://" + OPENNMS_WEB_HOST + ":" + OPENNMS_WEB_PORT + "/";
+    public static final String REQUISITION_NAME   = "SeleniumTestGroup";
+    public static final String USER_NAME          = "SmokeTestUser";
+    public static final String GROUP_NAME         = "SmokeTestGroup";
+
+    protected static final boolean usePhantomJS = Boolean.getBoolean("org.opennms.smoketest.webdriver.use-phantomjs") || Boolean.getBoolean("smoketest.usePhantomJS");
+
+    protected WebDriver m_driver = null;
 
     @Before
     public void setUp() throws Exception {
         final String logLevel = System.getProperty("org.opennms.smoketest.logLevel", "DEBUG");
-        //ch.qos.logback.classic.Logger root = (ch.qos.logback.classic.Logger) org.slf4j.LoggerFactory.getLogger(ch.qos.logback.classic.Logger.ROOT_LOGGER_NAME);
         final Logger logger = org.slf4j.LoggerFactory.getLogger(ch.qos.logback.classic.Logger.ROOT_LOGGER_NAME);
         if (logger instanceof ch.qos.logback.classic.Logger) {
             final ch.qos.logback.classic.Logger logbackLogger = (ch.qos.logback.classic.Logger) logger;
             logbackLogger.setLevel(ch.qos.logback.classic.Level.valueOf(logLevel));
         }
 
-        final String driverClass = System.getProperty("webdriver.class");
+        final String driverClass = System.getProperty("org.opennms.smoketest.webdriver.class", System.getProperty("webdriver.class"));
         if (driverClass != null) {
             m_driver = (WebDriver)Class.forName(driverClass).newInstance();
         }

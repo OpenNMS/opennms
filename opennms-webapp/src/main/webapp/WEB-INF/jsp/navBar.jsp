@@ -44,7 +44,7 @@
             <c:when test="${not empty entry.key.entries}">
               <!-- has sub-entries, draw menu drop-downs -->
               <li class="dropdown">
-              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">${entry.key.name} <span class="caret"></span></a>
+              <a href="${entry.key.url}" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">${entry.key.name} <span class="caret"></span></a>
               <ul class="dropdown-menu" role="menu">
                 <c:forEach var="subEntry" items="${entry.key.entries}">
                   <%
