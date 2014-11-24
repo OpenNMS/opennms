@@ -14,7 +14,9 @@
     <module>api</module>
     <module>drools-integration</module>
     <module>jira-integration</module>
+    <module>otrs-integration-common</module>
     <module>otrs-integration</module>
+    <module>otrs-integration-31</module>
     <module>rt-integration</module>
     <module>remedy-integration</module>
   </modules>

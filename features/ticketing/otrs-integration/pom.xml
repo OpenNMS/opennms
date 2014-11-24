@@ -71,6 +71,11 @@
 			<artifactId>org.opennms.features.ticketing.api</artifactId>
 		</dependency>
 		<dependency>
+			<groupId>org.opennms.features.ticketing</groupId>
+			<artifactId>opennms-integration-otrs-common</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
 			<groupId>org.opennms</groupId>
 			<artifactId>opennms-util</artifactId>
 		</dependency>
@@ -82,11 +87,19 @@
 			    <groupId>commons-logging</groupId>
 			    <artifactId>commons-logging</artifactId>
 			  </exclusion>
+			  <exclusion>
+			    <groupId>axis</groupId>
+			    <artifactId>axis-wsdl4j</artifactId>
+			  </exclusion>
 			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>commons-configuration</groupId>
 			<artifactId>commons-configuration</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>wsdl4j</groupId>
+			<artifactId>wsdl4j</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>commons-lang</groupId>

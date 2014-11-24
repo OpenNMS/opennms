@@ -42,6 +42,7 @@
         org.opennms.netmgt.model.OnmsAcknowledgment,
         org.opennms.netmgt.model.OnmsAlarm,
         org.opennms.netmgt.model.OnmsSeverity,
+        org.opennms.netmgt.model.TroubleTicketState,
         org.opennms.web.api.Authentication"
 %>
 
@@ -373,19 +374,19 @@
 <form method="post" action="alarm/ticket/create.htm">
     <input type="hidden" name="alarm" value="<%=alarm.getId()%>"/>
     <input type="hidden" name="redirect" value="<%="/alarm/detail.htm" + "?" + request.getQueryString()%>" />
-    <form:input type="submit" value="Create Ticket" disabled="${(!empty alarm.TTicketState) && (alarm.TTicketState != 'CREATE_FAILED')}" />
+    <form:input type="submit" value="Create Ticket" disabled="<%=((alarm.getTTicketState() != null) && (alarm.getTTicketState() != TroubleTicketState.CREATE_FAILED)) ? true : false %>" />
 </form>
 
 <form method="post" action="alarm/ticket/update.htm">
     <input type="hidden" name="alarm" value="<%=alarm.getId()%>"/>
     <input type="hidden" name="redirect" value="<%="/alarm/detail.htm" + "?" + request.getQueryString()%>" />
-    <form:input type="submit" value="Update Ticket" disabled="${(empty alarm.TTicketId)}"/>
+    <form:input type="submit" value="Update Ticket" disabled="<%=(alarm.getTTicketState() == null) ? true : false %>"/>
 </form>
 
 <form method="post" action="alarm/ticket/close.htm">
     <input type="hidden" name="alarm" value="<%=alarm.getId()%>"/>
     <input type="hidden" name="redirect" value="<%="/alarm/detail.htm" + "?" + request.getQueryString()%>" />
-    <form:input type="submit" value="Close Ticket" disabled="${(empty alarm.TTicketState) || ((alarm.TTicketState != 'OPEN') && (alarm.TTicketState != 'CLOSE_FAILED')) }" />
+    <form:input type="submit" value="Close Ticket" disabled="<%=((alarm.getTTicketState() == null) || ((alarm.getTTicketState() != TroubleTicketState.OPEN) && (alarm.getTTicketState() != TroubleTicketState.CLOSE_FAILED))) ? true : false %>" />
 </form>
 
 <% } // alarmTroubleTicketEnabled %>

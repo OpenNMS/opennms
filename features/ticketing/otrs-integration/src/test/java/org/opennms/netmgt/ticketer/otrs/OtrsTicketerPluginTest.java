@@ -37,6 +37,7 @@ import org.opennms.integration.otrs.ticketservice.TicketCore;
 import org.opennms.integration.otrs.ticketservice.TicketIDAndNumber;
 import org.opennms.integration.otrs.ticketservice.TicketServiceLocator;
 import org.opennms.integration.otrs.ticketservice.TicketServicePort_PortType;
+import org.opennms.netmgt.ticketer.otrs.common.DefaultOtrsConfigDao;
 import org.opennms.api.integration.ticketing.PluginException;
 import org.opennms.api.integration.ticketing.Ticket;
 import java.io.File;

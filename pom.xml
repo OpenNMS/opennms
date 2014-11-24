@@ -2122,6 +2122,11 @@
       </dependency>
       <dependency>
         <groupId>org.opennms.features</groupId>
+        <artifactId>opennms-integration-otrs-31</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.features</groupId>
         <artifactId>opennms-integration-rt</artifactId>
         <version>${project.version}</version>
       </dependency>
@@ -2478,6 +2483,12 @@
         <groupId>axis</groupId>
         <artifactId>axis</artifactId>
         <version>1.4</version>
+        <exclusions>
+          <exclusion>
+            <groupId>axis</groupId>
+            <artifactId>axis-wsdl4j</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>axis</groupId>
@@ -3263,6 +3274,11 @@
         <groupId>com.ximpleware</groupId>
         <artifactId>vtd-xml</artifactId>
         <version>2.11</version>
+      </dependency>
+      <dependency>
+        <groupId>wsdl4j</groupId>
+        <artifactId>wsdl4j</artifactId>
+        <version>1.6.3</version>
       </dependency>
       <dependency>
         <groupId>xalan</groupId>
