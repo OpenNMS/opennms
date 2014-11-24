@@ -37,8 +37,8 @@ import org.opennms.core.tasks.DefaultTaskCoordinator;
 import org.opennms.core.tasks.RunInBatch;
 import org.opennms.core.tasks.Task;
 import org.opennms.netmgt.config.api.SnmpAgentConfigFactory;
+import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.model.events.EventForwarder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -62,7 +62,7 @@ public class NewSuspectScan implements RunInBatch {
      *
      * @param ipAddress a {@link java.net.InetAddress} object.
      * @param provisionService a {@link org.opennms.netmgt.provision.service.ProvisionService} object.
-     * @param eventForwarder a {@link org.opennms.netmgt.model.events.EventForwarder} object.
+     * @param eventForwarder a {@link org.opennms.netmgt.events.api.EventForwarder} object.
      * @param agentConfigFactory a {@link org.opennms.netmgt.config.api.SnmpAgentConfigFactory} object.
      * @param taskCoordinator a {@link org.opennms.core.tasks.DefaultTaskCoordinator} object.
      */

@@ -47,16 +47,16 @@ import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.utils.DBUtils;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.DiscoveryConfigFactory;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
+import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.events.api.EventForwarder;
+import org.opennms.netmgt.events.api.EventIpcManagerFactory;
+import org.opennms.netmgt.events.api.annotations.EventHandler;
+import org.opennms.netmgt.events.api.annotations.EventListener;
 import org.opennms.netmgt.icmp.Pinger;
 import org.opennms.netmgt.model.discovery.IPPollAddress;
 import org.opennms.netmgt.model.events.EventBuilder;
-import org.opennms.netmgt.model.events.EventForwarder;
-import org.opennms.netmgt.model.events.EventIpcManagerFactory;
-import org.opennms.netmgt.model.events.annotations.EventHandler;
-import org.opennms.netmgt.model.events.annotations.EventListener;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 import org.slf4j.Logger;
@@ -112,7 +112,7 @@ public class Discovery extends AbstractServiceDaemon {
     /**
      * <p>setEventForwarder</p>
      *
-     * @param eventForwarder a {@link org.opennms.netmgt.model.events.EventForwarder} object.
+     * @param eventForwarder a {@link org.opennms.netmgt.events.api.EventForwarder} object.
      */
     public void setEventForwarder(EventForwarder eventForwarder) {
         m_eventForwarder = eventForwarder;
@@ -130,7 +130,7 @@ public class Discovery extends AbstractServiceDaemon {
     /**
      * <p>getEventForwarder</p>
      *
-     * @return a {@link org.opennms.netmgt.model.events.EventForwarder} object.
+     * @return a {@link org.opennms.netmgt.events.api.EventForwarder} object.
      */
     public EventForwarder getEventForwarder() {
         return m_eventForwarder;

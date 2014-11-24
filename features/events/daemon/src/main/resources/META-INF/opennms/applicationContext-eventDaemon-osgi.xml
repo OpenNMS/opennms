@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+  xmlns:osgi="http://www.springframework.org/schema/osgi"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="
+  http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+  http://www.springframework.org/schema/osgi http://www.springframework.org/schema/osgi/spring-osgi.xsd
+">
+
+  <!-- Use OSGi service references -->
+  <osgi:reference id="dataSource" interface="javax.sql.DataSource"/>
+  <osgi:reference id="eventConfDao" interface="org.opennms.netmgt.config.api.EventConfDao"/>
+  <osgi:reference id="eventUtil" interface="org.opennms.netmgt.eventd.EventUtil"/>
+  <osgi:reference id="eventdConfigManager" interface="org.opennms.netmgt.config.api.EventdConfig"/>
+  <osgi:reference id="eventdServiceManager" interface="org.opennms.netmgt.dao.api.EventdServiceManager"/>
+
+  <osgi:service ref="eventIpcManagerImpl">
+    <osgi:interfaces>
+      <value>org.opennms.netmgt.events.api.EventForwarder</value>
+      <value>org.opennms.netmgt.events.api.EventIpcBroadcaster</value>
+      <value>org.opennms.netmgt.events.api.EventIpcManager</value>
+      <value>org.opennms.netmgt.events.api.EventProxy</value>
+      <value>org.opennms.netmgt.events.api.EventSubscriptionService</value>
+    </osgi:interfaces>
+  </osgi:service>
+
+</beans>

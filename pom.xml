@@ -1121,7 +1121,7 @@
     <httpcoreVersion>4.3.2</httpcoreVersion>
     <httpclientVersion>4.3.4</httpclientVersion>
     <jacksonVersion>1.9.13</jacksonVersion>
-    <jasperreportsVersion>3.7.6</jasperreportsVersion>
+    <jasperreportsVersion>5.6.1</jasperreportsVersion>
     <jettyVersion>7.6.15.v20140411</jettyVersion>
     <karafVersion>2.4.0</karafVersion>
     <karafPaxExamVersion>2.3.8</karafPaxExamVersion>
@@ -1438,6 +1438,11 @@
       </dependency>
       <dependency>
         <groupId>org.opennms.core</groupId>
+        <artifactId>org.opennms.core.spring-web</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.core</groupId>
         <artifactId>org.opennms.core.tasks</artifactId>
         <version>${project.version}</version>
       </dependency>
@@ -1602,6 +1607,21 @@
       <dependency>
         <groupId>org.opennms.features</groupId>
         <artifactId>org.opennms.features.system-report</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.features.events</groupId>
+        <artifactId>org.opennms.features.events.api</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.features.events</groupId>
+        <artifactId>org.opennms.features.events.daemon</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.features.events</groupId>
+        <artifactId>org.opennms.features.events.traps</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
@@ -2002,13 +2022,6 @@
         <groupId>org.opennms</groupId>
         <artifactId>opennms-dao-mock</artifactId>
         <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms</groupId>
-        <artifactId>opennms-services</artifactId>
-        <type>test-jar</type>
-        <version>${project.version}</version>
-        <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>org.opennms</groupId>

@@ -43,7 +43,7 @@
         org.opennms.web.element.*,
         org.opennms.netmgt.poller.PathOutageManagerDaoImpl,
         org.opennms.netmgt.model.OnmsNode,
-        org.opennms.netmgt.EventConstants,
+        org.opennms.netmgt.events.api.EventConstants,
         org.opennms.netmgt.xml.event.Event,
         org.opennms.web.api.Util,
         org.exolab.castor.xml.ValidationException,
@@ -149,7 +149,7 @@
 			event.setHost("unresolved.host");
 		}
 
-		event.setTime(EventConstants.formatToString(new java.util.Date()));
+		event.setTime(new java.util.Date());
 		try {
 			Util.createEventProxy().send(event);
 		} catch (Throwable e) {
@@ -225,28 +225,37 @@
 		request.getSession().setAttribute("opennms.editoutage", theOutage);
 		request.getSession().setAttribute("opennms.editoutage.origname", nameParam);
 	} else if ("true".equals(request.getParameter("addNew"))) {
-		theOutage = new Outage();
-		String nodes[] = request.getParameterValues("nodeID");
-		String interfaces[] = request.getParameterValues("ipAddr");
+		nameParam = request.getParameter("newName");
+		Outage tempOutage = pollFactory.getOutage(nameParam);
+		if (tempOutage != null) { //there is an outage with that name, forcing edit existing
+			CharArrayWriter writer = new CharArrayWriter();
+			tempOutage.marshal(writer);
+			theOutage = (Outage) Outage.unmarshal(new CharArrayReader(writer.toCharArray()));
+			request.getSession().setAttribute("opennms.editoutage", theOutage);
+			request.getSession().setAttribute("opennms.editoutage.origname", nameParam);
+		} else {
+			theOutage = new Outage();
+			String nodes[] = request.getParameterValues("nodeID");
+			String interfaces[] = request.getParameterValues("ipAddr");
 
+			//Nuke whitespace - it messes with all sorts of things
+			theOutage.setName(nameParam.trim());
 
-		//Nuke whitespace - it messes with all sorts of things
-		theOutage.setName(request.getParameter("newName").trim());
-		
-		request.getSession().setAttribute("opennms.editoutage", theOutage);
-		request.getSession().removeAttribute("opennms.editoutage.origname");
-		if (nodes != null) {
-			for(int i = 0 ; i < nodes.length; i++ ) {
-				int node = WebSecurityUtils.safeParseInt(nodes[i]);
-				addNode(theOutage, node);
+			request.getSession().setAttribute("opennms.editoutage", theOutage);
+			request.getSession().removeAttribute("opennms.editoutage.origname");
+			if (nodes != null) {
+				for(int i = 0 ; i < nodes.length; i++ ) {
+					int node = WebSecurityUtils.safeParseInt(nodes[i]);
+					addNode(theOutage, node);
+				}
 			}
-		}
-		if (interfaces != null) {
-			for(int i = 0 ; i < interfaces.length; i++ ) {
-				org.opennms.netmgt.config.poller.outages.Interface newInterface = new org.opennms.netmgt.config.poller.outages.Interface();
-				// hope this has builtin safeParseStuff
-				newInterface.setAddress(interfaces[i]);
-				addInterface(theOutage, newInterface);
+			if (interfaces != null) {
+				for(int i = 0 ; i < interfaces.length; i++ ) {
+					org.opennms.netmgt.config.poller.outages.Interface newInterface = new org.opennms.netmgt.config.poller.outages.Interface();
+					// hope this has builtin safeParseStuff
+					newInterface.setAddress(interfaces[i]);
+					addInterface(theOutage, newInterface);
+				}
 			}
 		}
 	} else {

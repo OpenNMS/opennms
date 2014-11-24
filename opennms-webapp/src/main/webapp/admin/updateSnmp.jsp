@@ -32,8 +32,7 @@
 <%@page language="java"
 	contentType="text/html"
 	session="true"
-	import="
-		org.opennms.netmgt.EventConstants,
+	import="org.opennms.netmgt.events.api.EventConstants,
 		org.opennms.netmgt.xml.event.Event,
 		org.opennms.core.utils.WebSecurityUtils,
 		org.opennms.web.servlet.MissingParameterException,
@@ -51,7 +50,7 @@
         snmpRestart.setNodeid(Long.valueOf(nodeid));
         snmpRestart.setInterface(primeInt);
         snmpRestart.setSource("web ui");
-        snmpRestart.setTime(EventConstants.formatToString(new java.util.Date()));
+        snmpRestart.setTime(new java.util.Date());
 
         try {
                 Util.createEventProxy().send(snmpRestart);

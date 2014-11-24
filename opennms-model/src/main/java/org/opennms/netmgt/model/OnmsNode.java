@@ -78,11 +78,11 @@ import org.codehaus.jackson.annotate.JsonValue;
 import org.hibernate.annotations.Filter;
 import org.hibernate.annotations.Type;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.model.events.AddEventVisitor;
 import org.opennms.netmgt.model.events.DeleteEventVisitor;
 import org.opennms.netmgt.model.events.EventBuilder;
-import org.opennms.netmgt.model.events.EventForwarder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.style.ToStringCreator;
@@ -1478,7 +1478,7 @@ public class OnmsNode extends OnmsEntity implements Serializable, Comparable<Onm
      * <p>mergeIpInterfaces</p>
      *
      * @param scannedNode a {@link org.opennms.netmgt.model.OnmsNode} object.
-     * @param eventForwarder a {@link org.opennms.netmgt.model.events.EventForwarder} object.
+     * @param eventForwarder a {@link org.opennms.netmgt.events.api.EventForwarder} object.
      * @param deleteMissing a boolean.
      */
     public void mergeIpInterfaces(OnmsNode scannedNode, EventForwarder eventForwarder, boolean deleteMissing) {
@@ -1581,7 +1581,7 @@ public class OnmsNode extends OnmsEntity implements Serializable, Comparable<Onm
      * <p>mergeNode</p>
      *
      * @param scannedNode a {@link org.opennms.netmgt.model.OnmsNode} object.
-     * @param eventForwarder a {@link org.opennms.netmgt.model.events.EventForwarder} object.
+     * @param eventForwarder a {@link org.opennms.netmgt.events.api.EventForwarder} object.
      * @param deleteMissing a boolean.
      */
     public void mergeNode(OnmsNode scannedNode, EventForwarder eventForwarder, boolean deleteMissing) {

@@ -50,9 +50,9 @@ import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.rest.AbstractSpringJerseyRestTestCase;
-import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.dao.mock.EventAnticipator;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
+import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.ncs.NCSComponent;
 import org.opennms.netmgt.model.ncs.NCSComponentRepository;
@@ -78,7 +78,6 @@ import org.springframework.transaction.annotation.Transactional;
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
         "classpath*:/META-INF/opennms/component-service.xml",
         "classpath*:/META-INF/opennms/component-dao.xml",
-        "classpath:/META-INF/opennms/applicationContext-daemon.xml",
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
         "classpath:/META-INF/opennms/applicationContext-mockEventProxy.xml",
         "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml"
@@ -234,6 +233,7 @@ public class NCSRestServiceTest extends AbstractSpringJerseyRestTestCase {
 
 	@Override
 	protected void afterServletStart() throws Exception {
+		m_eventIpcManager = getWebAppContext().getBean("mockEventIpcManager", MockEventIpcManager.class);
 		m_eventAnticipator = m_eventIpcManager.getEventAnticipator();
 		m_ncsComponentService.setEventProxy(m_eventIpcManager);
 	}

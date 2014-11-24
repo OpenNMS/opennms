@@ -48,6 +48,8 @@
   -->
   <bean id="dataSource" class="org.opennms.core.db.DataSourceFactoryBean" />
 
+  <onmsgi:service interface="javax.sql.DataSource" ref="dataSource"/>
+
   <bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
     <property name="dataSource">
       <!-- Use a data source bean that will reuse existing thread-local Hibernate database connections -->
@@ -246,6 +248,12 @@
   </bean>
 
   <onmsgi:service interface="org.opennms.netmgt.dao.api.EventDao" ref="eventDao" />
+
+  <bean id="eventdServiceManager" class="org.opennms.netmgt.dao.hibernate.EventdServiceManagerHibernate">
+    <property name="serviceTypeDao" ref="serviceTypeDao"/>
+  </bean>
+
+  <onmsgi:service interface="org.opennms.netmgt.dao.api.EventdServiceManager" ref="eventdServiceManager" />
 
   <bean id="ipInterfaceDao" class="org.opennms.netmgt.dao.hibernate.IpInterfaceDaoHibernate">
     <property name="sessionFactory" ref="sessionFactory" />

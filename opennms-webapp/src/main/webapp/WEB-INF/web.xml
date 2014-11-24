@@ -1145,7 +1145,7 @@
     <location>/errors/statisticsreportidnotfound.jsp</location>
   </error-page>
   <error-page>
-    <exception-type>org.opennms.netmgt.model.events.EventProxyException</exception-type>
+    <exception-type>org.opennms.netmgt.events.api.EventProxyException</exception-type>
     <location>/errors/eventproxyexception.jsp</location>
   </error-page>  
   <error-page>

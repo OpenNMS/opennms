@@ -46,7 +46,6 @@ import java.util.Set;
 import org.apache.commons.lang.StringUtils;
 import org.opennms.core.logging.Logging;
 import org.opennms.core.utils.ConfigFileConstants;
-import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.capsd.EventUtils;
 import org.opennms.netmgt.capsd.InsufficientInformationException;
 import org.opennms.netmgt.collection.api.CollectionInitializationException;
@@ -64,14 +63,15 @@ import org.opennms.netmgt.config.collectd.Package;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.events.api.EventIpcManager;
+import org.opennms.netmgt.events.api.EventListener;
 import org.opennms.netmgt.filter.FilterDao;
 import org.opennms.netmgt.model.AbstractEntityVisitor;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.events.EventBuilder;
-import org.opennms.netmgt.model.events.EventIpcManager;
-import org.opennms.netmgt.model.events.EventListener;
 import org.opennms.netmgt.scheduler.LegacyScheduler;
 import org.opennms.netmgt.scheduler.ReadyRunnable;
 import org.opennms.netmgt.scheduler.Scheduler;
@@ -258,7 +258,7 @@ public class Collectd extends AbstractServiceDaemon implements
     /**
      * <p>setEventIpcManager</p>
      *
-     * @param eventIpcManager a {@link org.opennms.netmgt.model.events.EventIpcManager} object.
+     * @param eventIpcManager a {@link org.opennms.netmgt.events.api.EventIpcManager} object.
      */
     public void setEventIpcManager(EventIpcManager eventIpcManager) {
         m_eventIpcManager = eventIpcManager;
@@ -267,7 +267,7 @@ public class Collectd extends AbstractServiceDaemon implements
     /**
      * <p>getEventIpcManager</p>
      *
-     * @return a {@link org.opennms.netmgt.model.events.EventIpcManager} object.
+     * @return a {@link org.opennms.netmgt.events.api.EventIpcManager} object.
      */
     public EventIpcManager getEventIpcManager() {
         return m_eventIpcManager;

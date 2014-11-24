@@ -62,7 +62,7 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.opennms.core.xml.JaxbUtils;
-import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.snmp.SyntaxToEvent;
 import org.opennms.netmgt.snmp.SnmpObjId;

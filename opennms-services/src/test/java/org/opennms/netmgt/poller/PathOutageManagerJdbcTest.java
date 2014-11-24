@@ -319,10 +319,6 @@ public class PathOutageManagerJdbcTest implements TemporaryDatabaseAware<MockDat
 
 		private Timestamp m_regainedSvcTime;
 
-		OutageChecker(MockService svc, Event lostSvcEvent) throws Exception {
-			this(svc, lostSvcEvent, null);
-		}
-
 		OutageChecker(MockService svc, Event lostSvcEvent,
 				Event regainedSvcEvent) {
 			super(m_db,
@@ -330,13 +326,11 @@ public class PathOutageManagerJdbcTest implements TemporaryDatabaseAware<MockDat
 
 			m_svc = svc;
 			m_lostSvcEvent = lostSvcEvent;
-			m_lostSvcTime = m_db.convertEventTimeToTimeStamp(m_lostSvcEvent
-					.getTime());
+			m_lostSvcTime = new Timestamp(m_lostSvcEvent.getTime().getTime());
 			m_regainedSvcEvent = regainedSvcEvent;
-			if (m_regainedSvcEvent != null)
-				m_regainedSvcTime = m_db
-						.convertEventTimeToTimeStamp(m_regainedSvcEvent
-								.getTime());
+			if (m_regainedSvcEvent != null) {
+				m_regainedSvcTime = new Timestamp(m_regainedSvcEvent.getTime().getTime());
+			}
 		}
 
                 @Override

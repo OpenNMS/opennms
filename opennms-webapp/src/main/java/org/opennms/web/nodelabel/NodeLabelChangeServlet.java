@@ -37,12 +37,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.opennms.core.utils.WebSecurityUtils;
-import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.events.api.EventProxy;
+import org.opennms.netmgt.events.api.EventProxyException;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsNode.NodeLabelSource;
 import org.opennms.netmgt.model.events.EventBuilder;
-import org.opennms.netmgt.model.events.EventProxy;
-import org.opennms.netmgt.model.events.EventProxyException;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionNode;
 import org.opennms.netmgt.utils.NodeLabel;
 import org.opennms.netmgt.utils.NodeLabelJDBCImpl;
@@ -155,7 +155,7 @@ public class NodeLabelChangeServlet extends HttpServlet {
      * @param nodeId a int.
      * @param oldNodeLabel a {@link org.opennms.netmgt.utils.NodeLabelJDBCImpl} object.
      * @param newNodeLabel a {@link org.opennms.netmgt.utils.NodeLabelJDBCImpl} object.
-     * @throws org.opennms.netmgt.model.events.EventProxyException if any.
+     * @throws org.opennms.netmgt.events.api.EventProxyException if any.
      */
     protected void sendLabelChangeEvent(int nodeId, NodeLabel oldNodeLabel, NodeLabel newNodeLabel) throws EventProxyException {
         

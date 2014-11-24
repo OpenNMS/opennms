@@ -41,9 +41,9 @@ import org.junit.Test;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.db.MockDatabase;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.dao.mock.EventAnticipator;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
+import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.mock.MockNetwork;
 import org.opennms.netmgt.mock.MockPollerConfig;
 import org.opennms.netmgt.mock.MockService;
@@ -190,21 +190,21 @@ public class PollContextTest {
         assertEquals(Long.valueOf(1), nodeEvent.getNodeid());
         assertNull(nodeEvent.getInterface());
         assertNull(nodeEvent.getService());
-        assertEquals("Unexpected time for event",date.toString(), EventConstants.parseToDate(nodeEvent.getTime()).toString());
+        assertEquals("Unexpected time for event", date, nodeEvent.getTime());
         
         Event ifEvent = m_pollContext.createEvent(EventConstants.INTERFACE_UP_EVENT_UEI, 1, InetAddressUtils.addr("192.168.1.1"), null, date, null);
         assertEquals(EventConstants.INTERFACE_UP_EVENT_UEI, ifEvent.getUei());
         assertEquals(Long.valueOf(1), ifEvent.getNodeid());
         assertEquals("192.168.1.1", ifEvent.getInterface());
         assertNull(ifEvent.getService());
-        assertEquals("Unexpected time for event", date.toString(), EventConstants.parseToDate(ifEvent.getTime()).toString());
+        assertEquals("Unexpected time for event", date, ifEvent.getTime());
         
         Event svcEvent = m_pollContext.createEvent(EventConstants.NODE_GAINED_SERVICE_EVENT_UEI, 1, InetAddressUtils.addr("192.168.1.1"), "ICMP", date, null);
         assertEquals(EventConstants.NODE_GAINED_SERVICE_EVENT_UEI, svcEvent.getUei());
         assertEquals(Long.valueOf(1), svcEvent.getNodeid());
         assertEquals("192.168.1.1", svcEvent.getInterface());
         assertEquals("ICMP", svcEvent.getService());
-        assertEquals("Unexpected time for event", date.toString(), EventConstants.parseToDate(svcEvent.getTime()).toString());
+        assertEquals("Unexpected time for event", date, svcEvent.getTime());
         
     }
 

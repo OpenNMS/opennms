@@ -59,14 +59,14 @@ import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.AssetRecordDao;
 import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.events.api.EventIpcManager;
+import org.opennms.netmgt.events.api.EventListener;
 import org.opennms.netmgt.model.OnmsAlarm;
-import org.opennms.netmgt.model.events.EventIpcManager;
-import org.opennms.netmgt.model.events.EventListener;
 import org.opennms.netmgt.xml.event.Event;
 import org.openoss.opennms.spring.dao.OnmsAlarmOssjMapper;
 import org.openoss.opennms.spring.dao.OssDao;
@@ -199,7 +199,7 @@ public class QoSDimpl2 extends AbstractServiceDaemon implements EventListener, Q
 
 	/**
 	 * Used to register for opennms events
-	 * @see org.opennms.netmgt.model.events.EventIpcManager
+	 * @see org.opennms.netmgt.events.api.EventIpcManager
 	 */
 	private EventIpcManager eventIpcManager;
 

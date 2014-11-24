@@ -30,13 +30,13 @@ package org.opennms.web.svclayer.support;
 
 import java.util.Map;
 
-import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.dao.api.AlarmDao;
+import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.events.api.EventProxy;
+import org.opennms.netmgt.events.api.EventProxyException;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.TroubleTicketState;
 import org.opennms.netmgt.model.events.EventBuilder;
-import org.opennms.netmgt.model.events.EventProxy;
-import org.opennms.netmgt.model.events.EventProxyException;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.web.svclayer.TroubleTicketProxy;
 import org.springframework.jdbc.datasource.lookup.DataSourceLookupFailureException;
@@ -68,7 +68,7 @@ public class DefaultTroubleTicketProxy implements TroubleTicketProxy {
     /**
      * <p>setEventProxy</p>
      *
-     * @param eventProxy a {@link org.opennms.netmgt.model.events.EventProxy} object.
+     * @param eventProxy a {@link org.opennms.netmgt.events.api.EventProxy} object.
      */
     public void setEventProxy(EventProxy eventProxy) {
         m_eventProxy = eventProxy;

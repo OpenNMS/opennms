@@ -19,7 +19,7 @@
     <property name="staticMethod"><value>org.opennms.netmgt.config.RancidAdapterConfigFactory.getInstance</value></property>
   </bean>
   
-  <bean id="rancidEventListenerAdapter" class="org.opennms.netmgt.model.events.AnnotationBasedEventListenerAdapter">
+  <bean id="rancidEventListenerAdapter" class="org.opennms.netmgt.events.api.AnnotationBasedEventListenerAdapter">
   	<property name="annotatedListener" ref="rancidProvisioningAdapter" />
   	<property name="eventSubscriptionService" ref="eventSubscriptionService" />
   </bean>

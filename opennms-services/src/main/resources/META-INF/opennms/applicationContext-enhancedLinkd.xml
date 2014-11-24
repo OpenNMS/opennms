@@ -41,7 +41,7 @@
       <property name="linkd" ref="daemon"/>
     </bean>
 
-    <bean id="daemonListener" class="org.opennms.netmgt.model.events.AnnotationBasedEventListenerAdapter">
+    <bean id="daemonListener" class="org.opennms.netmgt.events.api.AnnotationBasedEventListenerAdapter">
       <property name="annotatedListener" ref="receiver" />
       <property name="eventSubscriptionService" ref="eventSubscriptionService" />
     </bean>

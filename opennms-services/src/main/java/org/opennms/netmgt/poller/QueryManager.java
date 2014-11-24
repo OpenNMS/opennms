@@ -55,10 +55,10 @@ public interface QueryManager {
      * @param ipAddr a {@link java.lang.String} object.
      * @param svcName TODO
      * @param dbid a int.
-     * @param time a {@link java.lang.String} object.
+     * @param date a {@link java.util.Date} object.
      * @param outageIdSQL a {@link java.lang.String} object.
      */
-    void openOutage(String outageIdSQL, int nodeId, String ipAddr, String svcName, int dbid, String time);
+    void openOutage(String outageIdSQL, int nodeId, String ipAddr, String svcName, int dbid, Date date);
 
     /**
      * <p>resolveOutage</p>
@@ -71,7 +71,7 @@ public interface QueryManager {
      * @param dbid a int.
      * @param time a {@link java.lang.String} object.
      */
-    void resolveOutage(int nodeId, String ipAddr, String svcName, int dbid, String time);
+    void resolveOutage(int nodeId, String ipAddr, String svcName, int dbid, Date time);
 
     /**
      * <p>reparentOutages</p>

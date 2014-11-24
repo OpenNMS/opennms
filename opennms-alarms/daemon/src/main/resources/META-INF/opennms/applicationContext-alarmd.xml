@@ -20,7 +20,7 @@
     <property name="northboundInterfaces" ref="northbounderList" />
   </bean>
 
-  <bean id="daemonListener" class="org.opennms.netmgt.model.events.AnnotationBasedEventListenerAdapter">
+  <bean id="daemonListener" class="org.opennms.netmgt.events.api.AnnotationBasedEventListenerAdapter">
     <property name="annotatedListener" ref="daemon" />
     <property name="eventSubscriptionService" ref="eventSubscriptionService" />
   </bean>

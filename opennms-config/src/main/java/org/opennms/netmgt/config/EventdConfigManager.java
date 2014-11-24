@@ -28,16 +28,13 @@
 
 package org.opennms.netmgt.config;
 
-import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import org.apache.commons.io.IOUtils;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ConfigFileConstants;
@@ -218,6 +215,10 @@ public class EventdConfigManager implements EventdConfig {
     /**
      * Return the SQL statement to get the next event ID.
      *
+     * @deprecated This is only used when using {@link JdbcEventWriter}
+     * so when we remove the JDBC implementation, we can get rid of this
+     * class.
+     * 
      * @return the SQL statement to get the next event ID
      */
     public String getGetNextEventID() {

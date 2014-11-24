@@ -55,9 +55,7 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.MockDatabase;
 import org.opennms.core.test.db.TemporaryDatabaseAware;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
-import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.Querier;
-import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.capsd.JdbcCapsdDbSyncer;
 import org.opennms.netmgt.config.CollectdConfigFactory;
 import org.opennms.netmgt.config.DatabaseSchemaConfigFactory;
@@ -68,6 +66,7 @@ import org.opennms.netmgt.dao.mock.EventAnticipator;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.dao.support.NullRrdStrategy;
 import org.opennms.netmgt.eventd.AbstractEventUtil;
+import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.mock.MockElement;
 import org.opennms.netmgt.mock.MockEventUtil;
 import org.opennms.netmgt.mock.MockInterface;
@@ -110,7 +109,8 @@ import org.springframework.transaction.support.TransactionTemplate;
         "classpath:/META-INF/opennms/applicationContext-pollerdTest.xml"
 })
 @JUnitConfigurationEnvironment
-@JUnitTemporaryDatabase(tempDbClass=MockDatabase.class,reuseDatabase=false)
+@JUnitTemporaryDatabase(dirtiesContext=false,tempDbClass=MockDatabase.class)
+@Transactional
 public class PollerQueryManagerDaoTest implements TemporaryDatabaseAware<MockDatabase> {
     private static final String CAPSD_CONFIG = "\n"
             + "<capsd-configuration max-suspect-thread-pool-size=\"2\" max-rescan-thread-pool-size=\"3\"\n"
@@ -261,7 +261,7 @@ public class PollerQueryManagerDaoTest implements TemporaryDatabaseAware<MockDat
 		m_eventMgr.finishProcessingEvents();
 		stopDaemons();
 		sleep(200);
-		m_db.drop();
+		//m_db.drop();
 		MockUtil.println("------------ End Test  --------------------------");
 	}
 
@@ -1362,13 +1362,11 @@ public class PollerQueryManagerDaoTest implements TemporaryDatabaseAware<MockDat
 
 			m_svc = svc;
 			m_lostSvcEvent = lostSvcEvent;
-			m_lostSvcTime = m_db.convertEventTimeToTimeStamp(m_lostSvcEvent
-					.getTime());
+			m_lostSvcTime = new Timestamp(m_lostSvcEvent.getTime().getTime());
 			m_regainedSvcEvent = regainedSvcEvent;
-			if (m_regainedSvcEvent != null)
-				m_regainedSvcTime = m_db
-						.convertEventTimeToTimeStamp(m_regainedSvcEvent
-								.getTime());
+			if (m_regainedSvcEvent != null) {
+				m_regainedSvcTime = new Timestamp(m_regainedSvcEvent.getTime().getTime());
+			}
 		}
 
                 @Override

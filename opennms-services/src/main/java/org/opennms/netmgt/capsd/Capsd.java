@@ -37,7 +37,7 @@ import org.opennms.core.logging.Logging;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
-import org.opennms.netmgt.model.events.StoppableEventListener;
+import org.opennms.netmgt.events.api.StoppableEventListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -319,7 +319,7 @@ public class Capsd extends AbstractServiceDaemon {
     /**
      * <p>setEventListener</p>
      *
-     * @param eventListener a {@link org.opennms.netmgt.model.events.StoppableEventListener} object.
+     * @param eventListener a {@link org.opennms.netmgt.events.api.StoppableEventListener} object.
      */
     public void setEventListener(StoppableEventListener eventListener) {
         m_eventListener = eventListener;

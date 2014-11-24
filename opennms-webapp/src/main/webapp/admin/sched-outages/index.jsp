@@ -38,8 +38,7 @@
 	org.opennms.netmgt.config.poller.outages.*,
 	org.opennms.web.element.*,
 	org.opennms.netmgt.model.OnmsNode,
-	org.opennms.netmgt.model.OnmsNode.NodeType,
-	org.opennms.netmgt.EventConstants,
+	org.opennms.netmgt.model.OnmsNode.NodeType,org.opennms.netmgt.events.api.EventConstants,
 	org.opennms.netmgt.xml.event.Event,
 	org.opennms.web.api.Util,
 	java.net.*
@@ -55,7 +54,7 @@
 			event.setHost("unresolved.host");
 		}
 
-		event.setTime(EventConstants.formatToString(new java.util.Date()));
+		event.setTime(new java.util.Date());
 		try {
 			Util.createEventProxy().send(event);
 		} catch (Throwable e) {
@@ -119,6 +118,14 @@ div.nodeintbox {
   overflow-x: hidden;
 }
 </style>
+
+<br/>
+<form action="admin/sched-outages/editoutage.jsp" method="post" >
+  <input type="text" value="New Name" size="40" name="newName" /> 
+  <input type="hidden" name="addNew" value="true" /> 
+  <input type="submit" name="newOutage" value="Add new outage" />
+</form>
+<br/>
 
 <table id="outages" border="1" cellpadding="5">
 	<tr>
@@ -271,10 +278,5 @@ div.nodeintbox {
 		}
 	%>
 </table>
-<form action="admin/sched-outages/editoutage.jsp" method="post" >
-  <input type="text" value="New Name" size="40" name="newName" /> 
-  <input type="hidden" name="addNew" value="true" /> 
-  <input type="submit" name="newOutage" value="Add new outage" />
-</form>
 
 <jsp:include page="/includes/footer.jsp" flush="true" />
