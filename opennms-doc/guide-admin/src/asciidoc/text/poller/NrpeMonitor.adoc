@@ -13,7 +13,7 @@ The full output of the check command output message is passed into the service d
 IMPORTANT: _NRPE_ configuration on the server is required and the check command has to be configured, e.g. `command[check_apt]=/usr/lib/nagios/plugins/check_apt`
 
 CAUTION: OpenNMS executes every _NRPE_ check in a Java thread without _fork()_ a process. You can monitor much more _NRPE_ agents from one OpenNMS instance.
-         It could be possible you consume a lot of file descriptors for TCP sockets with long running _NRPE_ check commands or connecting to a lot of NRPE agents.
+         It could be possible you consume a lot of file descriptors for TCP sockets with long running _NRPE_ check commands or connecting to a lot of _NRPE_ agents.
 
 ==== Monitor facts
 
