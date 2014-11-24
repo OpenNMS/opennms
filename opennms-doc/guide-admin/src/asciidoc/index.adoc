@@ -1,0 +1,66 @@
+// Global settings
+:ascii-ids:
+:encoding: UTF-8
+:lang: en
+:icons: font
+:toc: left
+:toclevels: 8
+:numbered:
+
+= Administrators Guide
+:author: Copyright (c) 2014 The OpenNMS Group, Inc.
+:revnumber: OpenNMS v{opennms-version}
+:revdate: {last-update-label} {docdatetime}
+:version-label!:
+
+// Include your documentation sections here
+// include::text/myFile.adoc[]
+
+// Include monitor documentation here
+= Service Assurance
+
+// Included in alphabetical order
+== Service monitors
+include::text/poller/AvailabilityMonitor.adoc[]
+include::text/poller/BgpSessionMonitor.adoc[]
+include::text/poller/BSFMonitor.adoc[]
+include::text/poller/CiscoIpSlaMonitor.adoc[]
+include::text/poller/CiscoPingMibMonitor.adoc[]
+include::text/poller/CitrixMonitor.adoc[]
+include::text/poller/DhcpMonitor.adoc[]
+include::text/poller/DiskUsageMonitor.adoc[]
+include::text/poller/DnsMonitor.adoc[]
+include::text/poller/DNSResolutionMonitor.adoc[]
+include::text/poller/FtpMonitor.adoc[]
+include::text/poller/HostResourceSwRunMonitor.adoc[]
+include::text/poller/HttpMonitor.adoc[]
+include::text/poller/HttpPostMonitor.adoc[]
+include::text/poller/HttpsMonitor.adoc[]
+include::text/poller/IcmpMonitor.adoc[]
+include::text/poller/ImapMonitor.adoc[]
+include::text/poller/JCifsMonitor.adoc[]
+include::text/poller/JDBCMonitor.adoc[]
+include::text/poller/JDBCStoredProcedureMonitor.adoc[]
+include::text/poller/JDBCQueryMonitor.adoc[]
+include::text/poller/JolokiaBeanMonitor.adoc[]
+include::text/poller/LdapMonitor.adoc[]
+include::text/poller/LdapsMonitor.adoc[]
+include::text/poller/NetScalerGroupHealthMonitor.adoc[]
+include::text/poller/NtpMonitor.adoc[]
+include::text/poller/OmsaStorageMonitor.adoc[]
+include::text/poller/OpenManageChassisMonitor.adoc[]
+include::text/poller/Pop3Monitor.adoc[]
+include::text/poller/PrTableMonitor.adoc[]
+include::text/poller/SmbMonitor.adoc[]
+include::text/poller/SnmpMonitor.adoc[]
+include::text/poller/SshMonitor.adoc[]
+include::text/poller/SSLCertMonitor.adoc[]
+include::text/poller/StrafePingMonitor.adoc[]
+include::text/poller/SystemExecuteMonitor.adoc[]
+include::text/poller/Win32ServiceMonitor.adoc[]
+
+// Event description
+include::text/events.adoc[]
+
+// Provisioning guide
+include::text/provisioning.adoc[]

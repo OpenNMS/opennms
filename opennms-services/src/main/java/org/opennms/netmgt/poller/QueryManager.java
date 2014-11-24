@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2004-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -55,10 +55,10 @@ public interface QueryManager {
      * @param ipAddr a {@link java.lang.String} object.
      * @param svcName TODO
      * @param dbid a int.
-     * @param time a {@link java.lang.String} object.
+     * @param date a {@link java.util.Date} object.
      * @param outageIdSQL a {@link java.lang.String} object.
      */
-    void openOutage(String outageIdSQL, int nodeId, String ipAddr, String svcName, int dbid, String time);
+    void openOutage(String outageIdSQL, int nodeId, String ipAddr, String svcName, int dbid, Date date);
 
     /**
      * <p>resolveOutage</p>
@@ -71,7 +71,7 @@ public interface QueryManager {
      * @param dbid a int.
      * @param time a {@link java.lang.String} object.
      */
-    void resolveOutage(int nodeId, String ipAddr, String svcName, int dbid, String time);
+    void resolveOutage(int nodeId, String ipAddr, String svcName, int dbid, Date time);
 
     /**
      * <p>reparentOutages</p>

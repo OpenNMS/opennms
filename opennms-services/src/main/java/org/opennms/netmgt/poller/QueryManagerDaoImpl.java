@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2004-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -30,6 +30,7 @@ package org.opennms.netmgt.poller;
 
 import static org.opennms.core.utils.InetAddressUtils.addr;
 
+import java.sql.Timestamp;
 import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Date;
@@ -43,13 +44,13 @@ import org.opennms.core.criteria.restrictions.AnyRestriction;
 import org.opennms.core.criteria.restrictions.EqRestriction;
 import org.opennms.core.criteria.restrictions.NullRestriction;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.dao.api.EventDao;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.OutageDao;
 import org.opennms.netmgt.dao.api.ServiceTypeDao;
+import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsOutage;
@@ -105,20 +106,20 @@ public class QueryManagerDaoImpl implements QueryManager {
     }
     
     @Override
-    public void openOutage(String outageIdSQL, int nodeId, String ipAddr, String svcName, int serviceLostEventId, String time) {
+    public void openOutage(String outageIdSQL, int nodeId, String ipAddr, String svcName, int serviceLostEventId, Date time) {
         openOutage(nodeId, ipAddr, svcName, serviceLostEventId, time);
     }
 
-    private void openOutage(int nodeId, String ipAddr, String svcName, int serviceLostEventId, String time) {
+    private void openOutage(int nodeId, String ipAddr, String svcName, int serviceLostEventId, Date time) {
         OnmsEvent event = m_eventDao.get(serviceLostEventId);
         OnmsMonitoredService service = m_monitoredServiceDao.get(nodeId, InetAddressUtils.addr(ipAddr), svcName);
-        OnmsOutage outage = new OnmsOutage(convertEventTimeToTimeStamp(time), event, service);
+        OnmsOutage outage = new OnmsOutage(new Timestamp(time.getTime()), event, service);
         m_outageDao.saveOrUpdate(outage);
     }
 
     /** {@inheritDoc} */
     @Override
-    public void resolveOutage(int nodeId, String ipAddr, String svcName, int regainedEventId, String time) {
+    public void resolveOutage(int nodeId, String ipAddr, String svcName, int regainedEventId, Date time) {
         LOG.info("resolving outage for {}:{}:{} with resolution {}:{}", nodeId, ipAddr, svcName, regainedEventId, time);
         int serviceId = m_serviceTypeDao.findByName(svcName).getId();
         
@@ -131,7 +132,7 @@ public class QueryManagerDaoImpl implements QueryManager {
             LOG.warn("Cannot find outage for service: {}", service);
         } else {
             outage.setServiceRegainedEvent(event);
-            outage.setIfRegainedService(convertEventTimeToTimeStamp(time));
+            outage.setIfRegainedService(new Timestamp(time.getTime()));
             m_outageDao.saveOrUpdate(outage);
         }
     }

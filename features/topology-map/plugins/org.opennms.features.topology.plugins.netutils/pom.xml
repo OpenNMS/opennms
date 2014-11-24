@@ -7,7 +7,7 @@
 		<relativePath>../../poms/compiled/</relativePath>
 		<groupId>org.opennms.features.topology.build</groupId>
 		<artifactId>compiled-bundle-settings</artifactId>
-		<version>1.15.0-SNAPSHOT</version>
+		<version>15.0.0-SNAPSHOT</version>
 	</parent>
 
 	<groupId>org.opennms.features.topology</groupId>
@@ -51,7 +51,7 @@
 						<version>${gwtPluginVersion}</version>
 						<configuration>
 							<webappDirectory>${project.build.directory}/${project.build.finalName}/VAADIN/widgetsets</webappDirectory>
-							<extraJvmArgs>-Xmx1g -Xss1024k</extraJvmArgs>
+							<extraJvmArgs>-XX:MaxPermSize=256m -Xmx1g -Xss1024k</extraJvmArgs>
 							<draftCompile>false</draftCompile>
 							<compileReport>false</compileReport>
 						</configuration>

@@ -2,22 +2,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2005-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -38,8 +38,7 @@
 	org.opennms.netmgt.config.poller.outages.*,
 	org.opennms.web.element.*,
 	org.opennms.netmgt.model.OnmsNode,
-	org.opennms.netmgt.model.OnmsNode.NodeType,
-	org.opennms.netmgt.EventConstants,
+	org.opennms.netmgt.model.OnmsNode.NodeType,org.opennms.netmgt.events.api.EventConstants,
 	org.opennms.netmgt.xml.event.Event,
 	org.opennms.web.api.Util,
 	java.net.*
@@ -55,7 +54,7 @@
 			event.setHost("unresolved.host");
 		}
 
-		event.setTime(EventConstants.formatToString(new java.util.Date()));
+		event.setTime(new java.util.Date());
 		try {
 			Util.createEventProxy().send(event);
 		} catch (Throwable e) {
@@ -119,6 +118,14 @@ div.nodeintbox {
   overflow-x: hidden;
 }
 </style>
+
+<br/>
+<form action="admin/sched-outages/editoutage.jsp" method="post" >
+  <input type="text" value="New Name" size="40" name="newName" /> 
+  <input type="hidden" name="addNew" value="true" /> 
+  <input type="submit" name="newOutage" value="Add new outage" />
+</form>
+<br/>
 
 <table id="outages" border="1" cellpadding="5">
 	<tr>
@@ -271,10 +278,5 @@ div.nodeintbox {
 		}
 	%>
 </table>
-<form action="admin/sched-outages/editoutage.jsp" method="post" >
-  <input type="text" value="New Name" size="40" name="newName" /> 
-  <input type="hidden" name="addNew" value="true" /> 
-  <input type="submit" name="newOutage" value="Add new outage" />
-</form>
 
 <jsp:include page="/includes/footer.jsp" flush="true" />

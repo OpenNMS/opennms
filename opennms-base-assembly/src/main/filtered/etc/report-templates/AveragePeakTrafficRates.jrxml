@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="node-response-time" pageWidth="668" pageHeight="842" whenNoDataType="NoDataSection" columnWidth="628" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
-	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.zoom" value="1.2100000000000006"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
+	<template><![CDATA[$P{ONMS_REPORT_DIR} + "/assets/styles/defaultStyles.jrtx"]]></template>
 	<style name="Report_Title" forecolor="#000000" fontSize="20"/>
 	<style name="Report_Subtitle" forecolor="#000000" vAlign="Middle" fontSize="10" isBold="false" isItalic="true" isUnderline="false" isStrikeThrough="false"/>
 	<style name="Table_Detail" hAlign="Left" vAlign="Middle" fontName="SansSerif" fontSize="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
@@ -66,8 +67,12 @@
 	</style>
 	<style name="style1"/>
 	<style name="Interface_Header" hAlign="Center" vAlign="Middle" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
+	<parameter name="ONMS_REPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<parameterDescription><![CDATA[The directory where all reports can be found]]></parameterDescription>
+		<defaultValueExpression><![CDATA["${install.dir}/etc/report-templates"]]></defaultValueExpression>
+	</parameter>
 	<parameter name="COMPANY_LOGO" class="java.lang.String" isForPrompting="false">
-		<defaultValueExpression><![CDATA["${install.dir}/etc/report-templates/opennms-logo.png"]]></defaultValueExpression>
+		<defaultValueExpression><![CDATA[$P{ONMS_REPORT_DIR} + "/assets/images/company-logo.png"]]></defaultValueExpression>
 	</parameter>
 	<parameter name="SURVEILLANCE_CATEGORY" class="java.lang.String">
 		<parameterDescription><![CDATA[Surveillance Category]]></parameterDescription>
@@ -89,7 +94,7 @@ new GregorianCalendar(new GregorianCalendar().get(Calendar.YEAR), new GregorianC
 		<defaultValueExpression><![CDATA["${install.dir}/share/rrd/snmp"]]></defaultValueExpression>
 	</parameter>
 	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
-		<defaultValueExpression><![CDATA["${install.dir}/etc/report-templates/subreports/"]]></defaultValueExpression>
+		<defaultValueExpression><![CDATA[$P{ONMS_REPORT_DIR} + "/subreports/"]]></defaultValueExpression>
 	</parameter>
 	<queryString>
 		<![CDATA[SELECT
@@ -138,7 +143,7 @@ ORDER BY
 		<groupHeader>
 			<band height="24">
 				<textField>
-					<reportElement style="Surveillance_Category_Group" x="0" y="0" width="628" height="22"/>
+					<reportElement style="Section" x="0" y="0" width="628" height="22"/>
 					<textElement/>
 					<textFieldExpression class="java.lang.String"><![CDATA["Surveillance category: " + $F{categoryname}]]></textFieldExpression>
 				</textField>
@@ -158,12 +163,12 @@ ORDER BY
 					<textFieldExpression class="java.lang.String"><![CDATA["Node " + $F{nodelabel}]]></textFieldExpression>
 				</textField>
 				<staticText>
-					<reportElement style="Interface_Header" x="1" y="21" width="155" height="36"/>
+					<reportElement style="Interface_Header" x="0" y="21" width="143" height="36"/>
 					<textElement textAlignment="Left"/>
 					<text><![CDATA[IP-Interface]]></text>
 				</staticText>
 				<staticText>
-					<reportElement style="Interface_Header" x="156" y="21" width="111" height="36"/>
+					<reportElement style="Interface_Header" x="144" y="21" width="123" height="36"/>
 					<textElement textAlignment="Right"/>
 					<text><![CDATA[Average Receive bps]]></text>
 				</staticText>
@@ -195,44 +200,29 @@ ORDER BY
 		<band height="4" splitType="Stretch"/>
 	</title>
 	<pageHeader>
-		<band height="104" splitType="Stretch">
+		<band height="58" splitType="Stretch">
 			<staticText>
-				<reportElement style="Report_Title" x="0" y="49" width="555" height="34"/>
+				<reportElement style="Title" x="0" y="0" width="460" height="34"/>
 				<textElement verticalAlignment="Middle">
 					<font size="20" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Average and Peak Traffic Rates]]></text>
 			</staticText>
 			<image>
-				<reportElement x="195" y="0" width="164" height="49"/>
+				<reportElement x="461" y="0" width="164" height="49"/>
 				<imageExpression class="java.lang.String"><![CDATA[$P{COMPANY_LOGO}]]></imageExpression>
 			</image>
+			<textField pattern="dd/MM/yyyy h.mm a">
+				<reportElement style="Body" x="0" y="34" width="393" height="20"/>
+				<textElement/>
+				<textFieldExpression class="java.util.Date"><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
 			<line>
-				<reportElement x="0" y="103" width="626" height="1"/>
+				<reportElement x="0" y="54" width="626" height="1"/>
 				<graphicElement>
 					<pen lineWidth="1.5"/>
 				</graphicElement>
 			</line>
-			<staticText>
-				<reportElement style="Report_Subtitle" x="2" y="83" width="67" height="15"/>
-				<textElement/>
-				<text><![CDATA[Report begin: ]]></text>
-			</staticText>
-			<textField evaluationTime="Page">
-				<reportElement style="Report_Subtitle" x="69" y="83" width="126" height="14"/>
-				<textElement/>
-				<textFieldExpression class="java.util.Date"><![CDATA[$P{startDate}]]></textFieldExpression>
-			</textField>
-			<textField evaluationTime="Page">
-				<reportElement style="Report_Subtitle" x="255" y="83" width="131" height="14"/>
-				<textElement/>
-				<textFieldExpression class="java.util.Date"><![CDATA[$P{endDate}]]></textFieldExpression>
-			</textField>
-			<staticText>
-				<reportElement style="Report_Subtitle" x="195" y="83" width="60" height="14"/>
-				<textElement/>
-				<text><![CDATA[Report end: ]]></text>
-			</staticText>
 		</band>
 	</pageHeader>
 	<columnHeader>
@@ -299,22 +289,22 @@ ORDER BY
 				<textFieldExpression class="java.lang.String"><![CDATA[" " + $V{PAGE_NUMBER}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement style="Page_Footer" x="0" y="13" width="67" height="15"/>
+				<reportElement style="Page_Footer" x="0" y="13" width="76" height="15"/>
 				<textElement/>
 				<text><![CDATA[Report begin: ]]></text>
 			</staticText>
 			<staticText>
-				<reportElement style="Page_Footer" x="193" y="13" width="60" height="14"/>
+				<reportElement style="Page_Footer" x="202" y="13" width="60" height="14"/>
 				<textElement/>
 				<text><![CDATA[Report end: ]]></text>
 			</staticText>
 			<textField evaluationTime="Page">
-				<reportElement style="Report_Subtitle" x="67" y="13" width="126" height="14"/>
+				<reportElement style="Report_Subtitle" x="76" y="13" width="126" height="14"/>
 				<textElement/>
 				<textFieldExpression class="java.util.Date"><![CDATA[$P{startDate}]]></textFieldExpression>
 			</textField>
 			<textField evaluationTime="Page">
-				<reportElement style="Report_Subtitle" x="253" y="13" width="131" height="14"/>
+				<reportElement style="Report_Subtitle" x="262" y="13" width="131" height="14"/>
 				<textElement/>
 				<textFieldExpression class="java.util.Date"><![CDATA[$P{endDate}]]></textFieldExpression>
 			</textField>
@@ -324,12 +314,36 @@ ORDER BY
 		<band height="42" splitType="Stretch"/>
 	</summary>
 	<noData>
-		<band height="50">
+		<band height="166">
+			<image>
+				<reportElement x="462" y="0" width="164" height="49"/>
+				<imageExpression class="java.lang.String"><![CDATA[$P{COMPANY_LOGO}]]></imageExpression>
+			</image>
+			<line>
+				<reportElement x="0" y="54" width="626" height="1"/>
+				<graphicElement>
+					<pen lineWidth="1.5"/>
+				</graphicElement>
+			</line>
 			<staticText>
-				<reportElement x="237" y="15" width="154" height="20"/>
-				<textElement/>
-				<text><![CDATA[There is no data for this report]]></text>
+				<reportElement style="Title" x="0" y="0" width="461" height="34"/>
+				<textElement verticalAlignment="Middle">
+					<font size="20" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Average and Peak Traffic Rates]]></text>
 			</staticText>
+			<textField pattern="dd/MM/yyyy h.mm a">
+				<reportElement style="Body" x="0" y="34" width="394" height="20"/>
+				<textElement/>
+				<textFieldExpression class="java.util.Date"><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="69" width="625" height="59"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA["There is no data for this report.\n\n" +
+"You can change the parameter SURVEILLANCE_CATEGORY (current value is " +
+$P{SURVEILLANCE_CATEGORY} + ")."]]></textFieldExpression>
+			</textField>
 		</band>
 	</noData>
 </jasperReport>

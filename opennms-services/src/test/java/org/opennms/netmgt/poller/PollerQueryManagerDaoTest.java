@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2004-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -55,9 +55,7 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.MockDatabase;
 import org.opennms.core.test.db.TemporaryDatabaseAware;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
-import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.Querier;
-import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.capsd.JdbcCapsdDbSyncer;
 import org.opennms.netmgt.config.CollectdConfigFactory;
 import org.opennms.netmgt.config.DatabaseSchemaConfigFactory;
@@ -68,6 +66,7 @@ import org.opennms.netmgt.dao.mock.EventAnticipator;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.dao.support.NullRrdStrategy;
 import org.opennms.netmgt.eventd.AbstractEventUtil;
+import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.mock.MockElement;
 import org.opennms.netmgt.mock.MockEventUtil;
 import org.opennms.netmgt.mock.MockInterface;
@@ -110,7 +109,8 @@ import org.springframework.transaction.support.TransactionTemplate;
         "classpath:/META-INF/opennms/applicationContext-pollerdTest.xml"
 })
 @JUnitConfigurationEnvironment
-@JUnitTemporaryDatabase(tempDbClass=MockDatabase.class,reuseDatabase=false)
+@JUnitTemporaryDatabase(dirtiesContext=false,tempDbClass=MockDatabase.class)
+@Transactional
 public class PollerQueryManagerDaoTest implements TemporaryDatabaseAware<MockDatabase> {
     private static final String CAPSD_CONFIG = "\n"
             + "<capsd-configuration max-suspect-thread-pool-size=\"2\" max-rescan-thread-pool-size=\"3\"\n"
@@ -261,7 +261,7 @@ public class PollerQueryManagerDaoTest implements TemporaryDatabaseAware<MockDat
 		m_eventMgr.finishProcessingEvents();
 		stopDaemons();
 		sleep(200);
-		m_db.drop();
+		//m_db.drop();
 		MockUtil.println("------------ End Test  --------------------------");
 	}
 
@@ -1362,13 +1362,11 @@ public class PollerQueryManagerDaoTest implements TemporaryDatabaseAware<MockDat
 
 			m_svc = svc;
 			m_lostSvcEvent = lostSvcEvent;
-			m_lostSvcTime = m_db.convertEventTimeToTimeStamp(m_lostSvcEvent
-					.getTime());
+			m_lostSvcTime = new Timestamp(m_lostSvcEvent.getTime().getTime());
 			m_regainedSvcEvent = regainedSvcEvent;
-			if (m_regainedSvcEvent != null)
-				m_regainedSvcTime = m_db
-						.convertEventTimeToTimeStamp(m_regainedSvcEvent
-								.getTime());
+			if (m_regainedSvcEvent != null) {
+				m_regainedSvcTime = new Timestamp(m_regainedSvcEvent.getTime().getTime());
+			}
 		}
 
                 @Override

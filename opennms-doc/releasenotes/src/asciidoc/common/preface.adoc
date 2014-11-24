@@ -1,0 +1,14 @@
+OpenNMS is the creation of numerous people and organizations, operating under the umbrella of the OpenNMS project.
+The original code base was developed and published under the GPL by the Oculan Corporation until 2002, when the project administration was passed on to Tarus Balog.
+
+The current corporate sponsor of OpenNMS is The OpenNMS Group, which also owns the OpenNMS trademark.
+
+OpenNMS is a derivative work, containing both original code, included code and modified code that was published under the GNU General Public License.
+Please see the source for detailed copyright notices, but some notable copyright owners are listed below:
+
+- Copyright © 2002-2013 The OpenNMS Group, Inc.
+- Original code base for OpenNMS version 1.0.0 Copyright © 1999-2001 Oculan Corporation.
+- Mapping code Copyright © 2003 Networked Knowledge Systems, Inc.
+- ScriptD code Copyright © 2003 Tavve Software Company.
+
+Please send any omissions or corrections to this document to Tarus Balog.

@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -32,7 +32,6 @@ import java.io.File;
 
 import org.opennms.core.logging.Logging;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.collectd.Collectd.SchedulingCompletedFlag;
 import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionException;
@@ -46,10 +45,11 @@ import org.opennms.netmgt.collection.persistence.rrd.OneToOnePersister;
 import org.opennms.netmgt.config.CollectdConfigFactory;
 import org.opennms.netmgt.config.DataCollectionConfigFactory;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
+import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.events.api.EventIpcManagerFactory;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.ResourceTypeUtils;
 import org.opennms.netmgt.model.events.EventBuilder;
-import org.opennms.netmgt.model.events.EventIpcManagerFactory;
 import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.netmgt.scheduler.ReadyRunnable;
 import org.opennms.netmgt.scheduler.Scheduler;
@@ -377,7 +377,7 @@ final class CollectableService implements ReadyRunnable {
          * Perform data collection.
          */
 	private void doCollection() throws CollectionException {
-		LOG.info("run: starting new collection for {}/{}/{}", getHostAddress(), m_spec.getServiceName(), m_spec.getPackageName());
+		LOG.info("run: starting new collection for {}/{}/{}/{}", m_nodeId, getHostAddress(), m_spec.getServiceName(), m_spec.getPackageName());
 		CollectionSet result = null;
 		try {
 		    result = m_spec.collect(m_agent);
@@ -399,6 +399,7 @@ final class CollectableService implements ReadyRunnable {
                             if (m_thresholdVisitor.isNodeInOutage()) {
                                 LOG.info("run: the threshold processing will be skipped because the node {} is on a scheduled outage.", m_nodeId);
                             } else if (m_thresholdVisitor.hasThresholds()) {
+                                m_thresholdVisitor.setCounterReset(result.ignorePersist()); // Required to reinitialize the counters.
                                 result.visit(m_thresholdVisitor);
                             }
                         }
@@ -408,13 +409,13 @@ final class CollectableService implements ReadyRunnable {
                         }
                     }
                 } catch (CollectionException e) {
-                    LOG.warn("run: failed collection for {}/{}/{}", getHostAddress(), m_spec.getServiceName(), m_spec.getPackageName());
+                    LOG.warn("run: failed collection for {}/{}/{}/{}", m_nodeId, getHostAddress(), m_spec.getServiceName(), m_spec.getPackageName());
                     throw e;
 		} catch (Throwable t) {
-                    LOG.warn("run: failed collection for {}/{}/{}", getHostAddress(), m_spec.getServiceName(), m_spec.getPackageName());
-                    throw new CollectionException("An undeclared throwable was caught during data collection for interface " + getHostAddress() +"/"+ m_spec.getServiceName(), t);
+                    LOG.warn("run: failed collection for {}/{}/{}/{}", m_nodeId, getHostAddress(), m_spec.getServiceName(), m_spec.getPackageName());
+                    throw new CollectionException("An undeclared throwable was caught during data collection for interface " + m_nodeId + "/" + getHostAddress() + "/" + m_spec.getServiceName(), t);
 		}
-		LOG.info("run: finished collection for {}/{}/{}", getHostAddress(), m_spec.getServiceName(), m_spec.getPackageName());
+		LOG.info("run: finished collection for {}/{}/{}/{}", m_nodeId, getHostAddress(), m_spec.getServiceName(), m_spec.getPackageName());
 	}
 
 	/**
@@ -453,11 +454,11 @@ final class CollectableService implements ReadyRunnable {
 
                 try {
                     reinitialize(newIface);
-                    LOG.debug("Completed reinitializing {} collector for {}/{}", this.getServiceName(), getHostAddress(), m_spec.getServiceName());
+                    LOG.debug("Completed reinitializing {} collector for {}/{}/{}", this.getServiceName(), m_nodeId, getHostAddress(), m_spec.getServiceName());
                 } catch (CollectionInitializationException rE) {
-                    LOG.warn("Unable to initialize {} for {} collection, reason: {}", getHostAddress(), m_spec.getServiceName(), rE.getMessage());
+                    LOG.warn("Unable to initialize {}/{} for {} collection, reason: {}", m_nodeId, getHostAddress(), m_spec.getServiceName(), rE.getMessage());
                 } catch (Throwable t) {
-                    LOG.error("Uncaught exception, failed to intialize interface {} for {} data collection", getHostAddress(), m_spec.getServiceName(), t);
+                    LOG.error("Uncaught exception, failed to intialize interface {}/{} for {} data collection", m_nodeId, getHostAddress(), m_spec.getServiceName(), t);
                 }
             }
 
@@ -554,13 +555,13 @@ final class CollectableService implements ReadyRunnable {
                 // to the interface's parent node among other things.
                 //
                 try {
-                    LOG.debug("Reinitializing collector for {}/{}", getHostAddress(), m_spec.getServiceName());
+                    LOG.debug("Reinitializing collector for {}/{}/{}", m_nodeId, getHostAddress(), m_spec.getServiceName());
                     reinitialize(m_updates.getUpdatedInterface());
-                    LOG.debug("Completed reinitializing collector for {}/{}", getHostAddress(), m_spec.getServiceName());
+                    LOG.debug("Completed reinitializing collector for {}/{}/{}", m_nodeId, getHostAddress(), m_spec.getServiceName());
                 } catch (CollectionInitializationException rE) {
-                    LOG.warn("Unable to initialize {} for {} collection, reason: {}", getHostAddress(), m_spec.getServiceName(), rE.getMessage());
+                    LOG.warn("Unable to initialize {}/{} for {} collection, reason: {}", m_nodeId, getHostAddress(), m_spec.getServiceName(), rE.getMessage());
                 } catch (Throwable t) {
-                    LOG.error("Uncaught exception, failed to initialize interface {} for {} data collection", getHostAddress(), m_spec.getServiceName(), t);
+                    LOG.error("Uncaught exception, failed to initialize interface {}/{} for {} data collection", m_nodeId, getHostAddress(), m_spec.getServiceName(), t);
                 }
             }
 

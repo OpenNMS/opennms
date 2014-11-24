@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2013 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
+ * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -28,30 +28,43 @@
 
 package org.opennms.features.topology.plugins.browsers;
 
-import com.vaadin.data.Container;
-import com.vaadin.data.Item;
-import com.vaadin.data.Property;
-import com.vaadin.data.util.BeanItem;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+
 import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.Order;
 import org.opennms.core.criteria.restrictions.Restriction;
 import org.opennms.features.topology.api.SelectionListener;
 //import org.opennms.features.topology.api.VerticesUpdateManager;
 import org.opennms.features.topology.api.VerticesUpdateManager;
+import org.opennms.features.topology.api.topo.GroupRef;
+import org.opennms.features.topology.api.topo.Vertex;
+import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.netmgt.dao.api.OnmsDao;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.Serializable;
-import java.util.*;
+import com.google.gwt.thirdparty.guava.common.base.Function;
+import com.google.gwt.thirdparty.guava.common.collect.Collections2;
+import com.vaadin.data.Container;
+import com.vaadin.data.Item;
+import com.vaadin.data.Property;
+import com.vaadin.data.util.BeanItem;
 
-public abstract class OnmsDaoContainer<T,K extends Serializable> implements Container, Container.Sortable, Container.Ordered, Container.Indexed, Container.ItemSetChangeNotifier, VerticesUpdateManager.VerticesUpdateListener
-{
-
+public abstract class OnmsDaoContainer<T,K extends Serializable> implements Container, Container.Sortable, Container.Ordered, Container.Indexed, Container.ItemSetChangeNotifier, VerticesUpdateManager.VerticesUpdateListener {
     private static final long serialVersionUID = -9131723065433979979L;
 
     protected static final int DEFAULT_PAGE_SIZE = 200; // items per page/cache
-
     protected static final int DEFAULT_SIZE_RELOAD_TIME = 10000; // ms
+    private static final Logger LOG = LoggerFactory.getLogger(OnmsDaoContainer.class);
 
     protected static class Page {
         protected int length;
@@ -425,7 +438,8 @@ public abstract class OnmsDaoContainer<T,K extends Serializable> implements Cont
         }
     }
 
-    public void setRestrictions(List<Restriction> newRestrictions) {
+    public void setRestrictions(final List<Restriction> newRestrictions) {
+        if (newRestrictions == m_restrictions) return;
         m_restrictions.clear();
         if (newRestrictions == null) return;
         m_restrictions.addAll(newRestrictions);
@@ -560,6 +574,7 @@ public abstract class OnmsDaoContainer<T,K extends Serializable> implements Cont
             tmpCriteria.setLimit(page.length);
         }
         addAdditionalCriteriaOptions(tmpCriteria, page, doOrder);
+        LOG.debug("query criteria: {}", tmpCriteria);
         return tmpCriteria;
     }
 
@@ -599,5 +614,39 @@ public abstract class OnmsDaoContainer<T,K extends Serializable> implements Cont
                 m_properties.put(key, item.getItemProperty(key).getType());
             }
         }
+    }
+
+    /**
+     * Gets the node ids from the given vertices. A node id can only be extracted from a vertex with a "nodes"' namespace.
+     * For a vertex with namespace "node" the "getId()" method always returns the node id.
+     *
+     * @param vertices
+     * @return
+     */
+    protected List<Integer> extractNodeIds(Collection<VertexRef> vertices) {
+        List<Integer> nodeIdList = new ArrayList<Integer>();
+        for (VertexRef eachRef : vertices) {
+            if ("nodes".equals(eachRef.getNamespace())) {
+                try {
+                    nodeIdList.add(Integer.valueOf(eachRef.getId()));
+                } catch (NumberFormatException e) {
+                    LoggerFactory.getLogger(getClass()).warn("Cannot filter nodes with ID: {}", eachRef.getId());
+                }
+            } else if( ((Vertex)eachRef).isGroup() && "category".equals(eachRef.getNamespace()) ){
+                try{
+                    GroupRef group = (GroupRef) eachRef;
+                    nodeIdList.addAll(Collections2.transform(group.getChildren(), new Function<VertexRef, Integer>(){
+                        @Override
+                        public Integer apply(VertexRef input) {
+                            return Integer.valueOf(input.getId());
+                        }
+                    }));
+                } catch (ClassCastException e){
+                    LoggerFactory.getLogger(getClass()).warn("Cannot filter category with ID: {} children: {}", eachRef.getId(), ((GroupRef) eachRef).getChildren());
+
+                }
+            }
+        }
+        return nodeIdList;
     }
 }

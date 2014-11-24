@@ -2,22 +2,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2005-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -41,9 +41,9 @@
         org.opennms.core.utils.DBUtils,
         org.opennms.core.utils.WebSecurityUtils,
         org.opennms.web.element.*,
-        org.opennms.netmgt.poller.PathOutageManagerJdbcImpl,
+        org.opennms.netmgt.poller.PathOutageManagerDaoImpl,
         org.opennms.netmgt.model.OnmsNode,
-        org.opennms.netmgt.EventConstants,
+        org.opennms.netmgt.events.api.EventConstants,
         org.opennms.netmgt.xml.event.Event,
         org.opennms.web.api.Util,
         org.exolab.castor.xml.ValidationException,
@@ -130,13 +130,13 @@
 
     private static final String GET_NODES_IN_PATH = "SELECT DISTINCT pathoutage.nodeid FROM pathoutage, ipinterface WHERE pathoutage.criticalpathip=? AND pathoutage.nodeid=ipinterface.nodeid AND ipinterface.ismanaged!='D' ORDER BY nodeid";
 
-    private static Set<Integer> getDependencyNodesByCriticalPath(String criticalpathip) throws SQLException {
-	    return PathOutageManagerJdbcImpl.getInstance().getDependencyNodesByCriticalPath(criticalpathip);
+    private static Set<Integer> getAllNodesDependentOnAnyServiceOnInterface(String criticalpathip) throws SQLException {
+	    return PathOutageManagerDaoImpl.getInstance().getAllNodesDependentOnAnyServiceOnInterface(criticalpathip);
         
     }
 	
-	private static Set<Integer> getDependencyNodesByNodeId(int nodeid) throws SQLException {
-	    return PathOutageManagerJdbcImpl.getInstance().getDependencyNodesByNodeId(nodeid);
+	private static Set<Integer> getAllNodesDependentOnAnyServiceOnNode(int nodeid) throws SQLException {
+	    return PathOutageManagerDaoImpl.getInstance().getAllNodesDependentOnAnyServiceOnNode(nodeid);
 	}
 	
 	public void sendOutagesChangedEvent() throws ServletException {
@@ -149,7 +149,7 @@
 			event.setHost("unresolved.host");
 		}
 
-		event.setTime(EventConstants.formatToString(new java.util.Date()));
+		event.setTime(new java.util.Date());
 		try {
 			Util.createEventProxy().send(event);
 		} catch (Throwable e) {
@@ -225,28 +225,37 @@
 		request.getSession().setAttribute("opennms.editoutage", theOutage);
 		request.getSession().setAttribute("opennms.editoutage.origname", nameParam);
 	} else if ("true".equals(request.getParameter("addNew"))) {
-		theOutage = new Outage();
-		String nodes[] = request.getParameterValues("nodeID");
-		String interfaces[] = request.getParameterValues("ipAddr");
+		nameParam = request.getParameter("newName");
+		Outage tempOutage = pollFactory.getOutage(nameParam);
+		if (tempOutage != null) { //there is an outage with that name, forcing edit existing
+			CharArrayWriter writer = new CharArrayWriter();
+			tempOutage.marshal(writer);
+			theOutage = (Outage) Outage.unmarshal(new CharArrayReader(writer.toCharArray()));
+			request.getSession().setAttribute("opennms.editoutage", theOutage);
+			request.getSession().setAttribute("opennms.editoutage.origname", nameParam);
+		} else {
+			theOutage = new Outage();
+			String nodes[] = request.getParameterValues("nodeID");
+			String interfaces[] = request.getParameterValues("ipAddr");
 
+			//Nuke whitespace - it messes with all sorts of things
+			theOutage.setName(nameParam.trim());
 
-		//Nuke whitespace - it messes with all sorts of things
-		theOutage.setName(request.getParameter("newName").trim());
-		
-		request.getSession().setAttribute("opennms.editoutage", theOutage);
-		request.getSession().removeAttribute("opennms.editoutage.origname");
-		if (nodes != null) {
-			for(int i = 0 ; i < nodes.length; i++ ) {
-				int node = WebSecurityUtils.safeParseInt(nodes[i]);
-				addNode(theOutage, node);
+			request.getSession().setAttribute("opennms.editoutage", theOutage);
+			request.getSession().removeAttribute("opennms.editoutage.origname");
+			if (nodes != null) {
+				for(int i = 0 ; i < nodes.length; i++ ) {
+					int node = WebSecurityUtils.safeParseInt(nodes[i]);
+					addNode(theOutage, node);
+				}
 			}
-		}
-		if (interfaces != null) {
-			for(int i = 0 ; i < interfaces.length; i++ ) {
-				org.opennms.netmgt.config.poller.outages.Interface newInterface = new org.opennms.netmgt.config.poller.outages.Interface();
-				// hope this has builtin safeParseStuff
-				newInterface.setAddress(interfaces[i]);
-				addInterface(theOutage, newInterface);
+			if (interfaces != null) {
+				for(int i = 0 ; i < interfaces.length; i++ ) {
+					org.opennms.netmgt.config.poller.outages.Interface newInterface = new org.opennms.netmgt.config.poller.outages.Interface();
+					// hope this has builtin safeParseStuff
+					newInterface.setAddress(interfaces[i]);
+					addInterface(theOutage, newInterface);
+				}
 			}
 		}
 	} else {
@@ -457,7 +466,7 @@ Could not find an outage to edit because no outage name parameter was specified 
 					int newNodeId = WebSecurityUtils.safeParseInt(newNode);
 					addNode(theOutage, newNodeId);
 					if (request.getParameter("addPathOutageNodeRadio") != null) {
-						for (Integer pathOutageNodeid: getDependencyNodesByNodeId(newNodeId)) {
+						for (Integer pathOutageNodeid: getAllNodesDependentOnAnyServiceOnNode(newNodeId)) {
 						    addNode(theOutage,pathOutageNodeid.intValue());
 						}
 					}
@@ -472,7 +481,7 @@ Could not find an outage to edit because no outage name parameter was specified 
 					newInterface.setAddress(newIface);
 					addInterface(theOutage, newInterface);
 					if (request.getParameter("addPathOutageInterfaceRadio") != null) {
-						for (Integer pathOutageNodeid: getDependencyNodesByCriticalPath(newIface)) {
+						for (Integer pathOutageNodeid: getAllNodesDependentOnAnyServiceOnInterface(newIface)) {
 						    addNode(theOutage,pathOutageNodeid.intValue());
 						}
 					}

@@ -38,6 +38,11 @@
 						<Set name="keyManagerPassword"><SystemProperty name="org.opennms.netmgt.jetty.https-keypassword" default="changeit" /></Set>
 						<Set name="trustStore"><SystemProperty name="org.opennms.netmgt.jetty.https-keystore" /></Set>
 						<Set name="trustStorePassword"><SystemProperty name="org.opennms.netmgt.jetty.https-keystorepassword" default="changeit" /></Set>
+						<Set name="ExcludeProtocols">
+							<Array type="java.lang.String">
+								<Item>SSLv3</Item>
+							</Array>
+						</Set>
 					</New>
 				</Arg>
 				<Set name="host"><SystemProperty name="org.opennms.netmgt.jetty.https-host" default="0.0.0.0" /></Set>

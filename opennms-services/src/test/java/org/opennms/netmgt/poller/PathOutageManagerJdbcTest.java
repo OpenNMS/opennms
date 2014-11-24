@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -50,7 +50,6 @@ import org.opennms.core.test.db.TemporaryDatabaseAware;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.Querier;
-import org.opennms.netmgt.dao.api.PathOutageDao;
 import org.opennms.netmgt.dao.support.NullRrdStrategy;
 import org.opennms.netmgt.mock.MockElement;
 import org.opennms.netmgt.mock.MockNetwork;
@@ -66,20 +65,16 @@ import org.opennms.netmgt.xml.event.Event;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.opennms.test.mock.MockUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.annotation.Repeat;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.transaction.annotation.Transactional;
-import org.opennms.netmgt.poller.QueryManager;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
-        "classpath:/META-INF/opennms/applicationContext-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
+        "classpath:/META-INF/opennms/applicationContext-dao.xml",
         "classpath*:/META-INF/opennms/component-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-daemon.xml",
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
-        //"classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
 
         // Override the default QueryManager with the DAO version
         "classpath:/META-INF/opennms/applicationContext-pollerdTest.xml"
@@ -101,13 +96,14 @@ public class PathOutageManagerJdbcTest implements TemporaryDatabaseAware<MockDat
 
 	private MockPollerConfig m_pollerConfig;
 	
-	 @Autowired
-	 private QueryManager m_queryManager;
+	@Autowired
+	private QueryManager m_queryManager;
 	
-	private static PathOutageManagerJdbcImpl getInstance() {
-		return new PathOutageManagerJdbcImpl();
-	}
-	
+	private final PathOutageManager m_pathOutageManager = new PathOutageManagerJdbcImpl();
+
+    protected PathOutageManager getPathOutageManager() {
+        return m_pathOutageManager;
+    }
 
 	//private DemandPollDao m_demandPollDao;
 
@@ -249,47 +245,56 @@ public class PathOutageManagerJdbcTest implements TemporaryDatabaseAware<MockDat
 	@Test
 	public void test() throws SQLException {
 		
-		//final Connection conn = DataSourceFactory.getInstance().getConnection();
 		final Connection conn = m_db.getConnection();
 		
-		String[] ar = PathOutageManagerJdbcImpl.getInstance().getLabelAndStatus("1", conn);
+		String[] ar = getPathOutageManager().getLabelAndStatus("1", conn);
 		assertEquals("Router", ar[0]);
 		assertEquals("Normal", ar[1]);
 		assertEquals("All Services Up", ar[2]);
-		String[] cr = PathOutageManagerJdbcImpl.getInstance().getLabelAndStatus("3", conn);
+		String[] cr = getPathOutageManager().getLabelAndStatus("3", conn);
 		assertEquals("Firewall", cr[0]);
 		assertEquals("Normal", cr[1]);
 		assertEquals("All Services Up", cr[2]);
-		List<String> lno = PathOutageManagerJdbcImpl.getInstance().getNodesInPath("192.168.1.1", "ICMP");
-		assertEquals("1",lno.get(0));
-		List<String> vno = PathOutageManagerJdbcImpl.getInstance().getNodesInPath("192.168.1.4", "SMTP");
-		assertEquals("3",vno.get(0));
-		List<String[]> all = PathOutageManagerJdbcImpl.getInstance().getAllCriticalPaths();
-		assertEquals("192.168.1.1",all.get(0)[0]);
-		assertEquals("ICMP", all.get(0)[1]);
-		assertEquals("192.168.1.4",all.get(1)[0]);
-		assertEquals("SMTP",all.get(1)[1]);
-		String[] dat = PathOutageManagerJdbcImpl.getInstance().getCriticalPathData("192.168.1.1", "ICMP");
+		Set<Integer> lno = getPathOutageManager().getNodesInPath("192.168.1.1", "ICMP");
+		assertEquals(new Integer(1), lno.iterator().next());
+		Set<Integer> vno = getPathOutageManager().getNodesInPath("192.168.1.4", "SMTP");
+		assertEquals(new Integer(3), vno.iterator().next());
+
+		// This list should order by node label so Firewall should precede Router
+		List<String[]> all = getPathOutageManager().getAllCriticalPaths();
+		assertEquals(2, all.size());
+
+		assertEquals("Firewall",all.get(0)[0]);
+		assertEquals("192.168.1.4",all.get(0)[1]);
+		assertEquals("SMTP",all.get(0)[2]);
+
+		assertEquals("Router",all.get(1)[0]);
+		assertEquals("192.168.1.1",all.get(1)[1]);
+		assertEquals("ICMP", all.get(1)[2]);
+
+		String[] dat = getPathOutageManager().getCriticalPathData("192.168.1.1", "ICMP");
 		assertEquals("Router", dat[0]);
 		assertEquals("1", dat[1]);
 		assertEquals("1", dat[2]);
 		assertEquals("Normal", dat[3]);
-		String mm = PathOutageManagerJdbcImpl.getInstance().getPrettyCriticalPath(1);
+		String mm = getPathOutageManager().getPrettyCriticalPath(1);
 		assertEquals("192.168.1.1 ICMP", mm);
-		String nn = PathOutageManagerJdbcImpl.getInstance().getPrettyCriticalPath(3);
+		String nn = getPathOutageManager().getPrettyCriticalPath(3);
 		assertEquals("192.168.1.4 SMTP", nn);
-		String[] pa = PathOutageManagerJdbcImpl.getInstance().getCriticalPath(1);
+		String[] pa = getPathOutageManager().getCriticalPath(1);
 		assertEquals("192.168.1.1", pa[0]);
 		assertEquals("ICMP", pa[1]);
-		String[] nc = PathOutageManagerJdbcImpl.getInstance().getCriticalPath(3);
+		String[] nc = getPathOutageManager().getCriticalPath(3);
 		assertEquals("192.168.1.4", nc[0]);
 		assertEquals("SMTP", nc[1]);
 		
-		Set<Integer> test = PathOutageManagerJdbcImpl.getInstance().getDependencyNodesByCriticalPath("192.168.1.1");
+		Set<Integer> test = getPathOutageManager().getAllNodesDependentOnAnyServiceOnInterface("192.168.1.1");
 		assertEquals(1, test.size());
 		
-		Set<Integer> less = PathOutageManagerJdbcImpl.getInstance().getDependencyNodesByNodeId(3);
+		Set<Integer> less = getPathOutageManager().getAllNodesDependentOnAnyServiceOnNode(3);
 		assertEquals(1, less.size());
+
+		conn.close();
 	}
 	
 	/**
@@ -303,7 +308,7 @@ public class PathOutageManagerJdbcTest implements TemporaryDatabaseAware<MockDat
 		}
 	}
 
-	class OutageChecker extends Querier {
+	private class OutageChecker extends Querier {
 		private Event m_lostSvcEvent;
 
 		private Timestamp m_lostSvcTime;
@@ -314,10 +319,6 @@ public class PathOutageManagerJdbcTest implements TemporaryDatabaseAware<MockDat
 
 		private Timestamp m_regainedSvcTime;
 
-		OutageChecker(MockService svc, Event lostSvcEvent) throws Exception {
-			this(svc, lostSvcEvent, null);
-		}
-
 		OutageChecker(MockService svc, Event lostSvcEvent,
 				Event regainedSvcEvent) {
 			super(m_db,
@@ -325,13 +326,11 @@ public class PathOutageManagerJdbcTest implements TemporaryDatabaseAware<MockDat
 
 			m_svc = svc;
 			m_lostSvcEvent = lostSvcEvent;
-			m_lostSvcTime = m_db.convertEventTimeToTimeStamp(m_lostSvcEvent
-					.getTime());
+			m_lostSvcTime = new Timestamp(m_lostSvcEvent.getTime().getTime());
 			m_regainedSvcEvent = regainedSvcEvent;
-			if (m_regainedSvcEvent != null)
-				m_regainedSvcTime = m_db
-						.convertEventTimeToTimeStamp(m_regainedSvcEvent
-								.getTime());
+			if (m_regainedSvcEvent != null) {
+				m_regainedSvcTime = new Timestamp(m_regainedSvcEvent.getTime().getTime());
+			}
 		}
 
                 @Override

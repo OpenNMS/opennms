@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -44,8 +44,8 @@ import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.db.XADataSourceFactory;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.db.MockDatabase;
-import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.xmlrpcd.XmlrpcServer;
+import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.mock.MockNetwork;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
@@ -209,7 +209,7 @@ public class XmlRpcNotifierTest  {
     @Test
     public void testSendServiceDownEvent() throws Exception {
         Date date = new Date();
-        m_anticipator.anticipateCall("sendServiceDownEvent", s_nodeLabel, s_interface, s_service, "Not Available", s_host, EventConstants.formatToString(date));
+        m_anticipator.anticipateCall("sendServiceDownEvent", s_nodeLabel, s_interface, s_service, "Not Available", s_host, date.toString());
 
         EventBuilder bldr = serviceEventBuilder(date);
         assertTrue("notifier sendServiceDownEvent", m_notifier.sendServiceDownEvent(bldr.getEvent()));
@@ -230,7 +230,7 @@ public class XmlRpcNotifierTest  {
     @Test
     public void testSendServiceUpEvent() throws Exception {
         Date date = new Date();
-        m_anticipator.anticipateCall("sendServiceUpEvent", s_nodeLabel, s_interface, s_service, "Not Available", s_host, EventConstants.formatToString(date));
+        m_anticipator.anticipateCall("sendServiceUpEvent", s_nodeLabel, s_interface, s_service, "Not Available", s_host, date.toString());
 
         EventBuilder bldr = serviceEventBuilder(date);
         assertTrue("notifier sendServiceUpEvent", m_notifier.sendServiceUpEvent(bldr.getEvent()));
@@ -251,7 +251,7 @@ public class XmlRpcNotifierTest  {
     @Test
     public void testSendInterfaceDownEvent() throws Exception {
         Date date = new Date();
-        m_anticipator.anticipateCall("sendInterfaceDownEvent", s_nodeLabel, s_interface, s_host, EventConstants.formatToString(date));
+        m_anticipator.anticipateCall("sendInterfaceDownEvent", s_nodeLabel, s_interface, s_host, date.toString());
 
         EventBuilder bldr = serviceEventBuilder(date);
         assertTrue("notifier sendInterfaceDownEvent", m_notifier.sendInterfaceDownEvent(bldr.getEvent()));
@@ -272,7 +272,7 @@ public class XmlRpcNotifierTest  {
     @Test
     public void testSendInterfaceUpEvent() throws Exception {
         Date date = new Date();
-        m_anticipator.anticipateCall("sendInterfaceUpEvent", s_nodeLabel, s_interface, s_host, s_host, EventConstants.formatToString(date));
+        m_anticipator.anticipateCall("sendInterfaceUpEvent", s_nodeLabel, s_interface, s_host, s_host, date.toString());
 
         EventBuilder bldr = serviceEventBuilder(date);
         assertTrue("notifier sendInterfaceUpEvent", m_notifier.sendInterfaceUpEvent(bldr.getEvent()));
@@ -293,7 +293,7 @@ public class XmlRpcNotifierTest  {
     @Test
     public void testSendNodeDownEvent() throws Exception {
         Date date = new Date();
-        m_anticipator.anticipateCall("sendNodeDownEvent", s_nodeLabel, s_host, EventConstants.formatToString(date));
+        m_anticipator.anticipateCall("sendNodeDownEvent", s_nodeLabel, s_host, date.toString());
 
         EventBuilder bldr = basicEventBuilder(date);
         assertTrue("notifier sendNodeDownEvent", m_notifier.sendNodeDownEvent(bldr.getEvent()));
@@ -315,7 +315,7 @@ public class XmlRpcNotifierTest  {
     @Test
     public void testSendNodeUpEvent() throws Exception {
         Date date = new Date();
-        m_anticipator.anticipateCall("sendNodeUpEvent", s_nodeLabel, s_host, EventConstants.formatToString(date));
+        m_anticipator.anticipateCall("sendNodeUpEvent", s_nodeLabel, s_host, date.toString());
 
         EventBuilder bldr = basicEventBuilder(date);
         assertTrue("notifier sendNodeUpEvent", m_notifier.sendNodeUpEvent(bldr.getEvent()));
@@ -528,7 +528,7 @@ public class XmlRpcNotifierTest  {
         Hashtable<String, String> t = new Hashtable<String, String>();
         t.put("uei", "hi!");
         t.put("source", s_source);
-        t.put("time", EventConstants.formatToString(date));
+        t.put("time", date.toString());
         t.put("nodeId", String.valueOf(s_noNodeId));
         m_anticipator.anticipateCall("sendEvent", t);
 
@@ -551,7 +551,7 @@ public class XmlRpcNotifierTest  {
         Hashtable<String, String> t = new Hashtable<String, String>();
         t.put("uei", "hi!");
         t.put("source", s_source);
-        t.put("time", EventConstants.formatToString(date));
+        t.put("time", date.toString());
         t.put("nodeId", String.valueOf(s_unknownNodeId));
         m_anticipator.anticipateCall("sendEvent", t);
 
@@ -673,7 +673,7 @@ public class XmlRpcNotifierTest  {
         Hashtable<String, String> t = new Hashtable<String, String>();
         t.put("uei", s_uei);
         t.put("source", s_source);
-        t.put("time", EventConstants.formatToString(date));
+        t.put("time", date.toString());
         t.put("host", s_host);
         t.put("nodeId", String.valueOf(s_nodeId));
         t.put("nodeLabel", s_nodeLabel);

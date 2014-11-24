@@ -1,0 +1,24 @@
+
+[[doc-guidelines-cheat-sheets]]
+== Cheat Sheets and additional hints
+
+For how to build the manual see:
+https://github.com/OpenNMS/opennms/blob/development/docs/opennms-doc/doc-overview/README.adoc[readme]
+
+The documents use the AsciiDoc format, see:
+
+* http://www.methods.co.nz/asciidoc/[Aciidoc Reference]
+* http://www.methods.co.nz/asciidoc/faq.html[AsciiDoc FAQ]
+* http://powerman.name/doc/asciidoc[AsciiDoc cheatsheet]
+* http://xpt.sourceforge.net/techdocs/nix/tool/asciidoc-syn/ascs01-AsciiDocMarkupSyntaxQuickSummary/single/[AsciiDoc Cheatsheet]
+
+Here you can find other resources to get familiar with AsciiDoc, see:
+
+ * http://asciidoctor.org/docs/user-manual[AsciiDoc User Manual]
+ * http://asciidoctor.org/docs/install-and-use-asciidoctor-maven-plugin/[AsciiDoc Maven Plugin]
+ * https://groups.google.com/forum/?fromgroups#!forum/asciidoc[AsciiDoc discussion list]
+ * http://code.google.com/p/asciidoc/issues/list[AsciiDoc issue tracker]
+ * https://github.com/oreillymedia/docbook2asciidoc[Docbook to AsciiDoc]
+ * http://blog.rainwebs.net/2010/02/25/how-to-create-handsome-pdf-documents-without-frustration/[How to create handsome PDF documents without frustration]
+
+The cheatsheets are really useful!

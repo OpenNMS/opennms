@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -29,7 +29,9 @@
 package org.opennms.netmgt.config;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
@@ -39,9 +41,12 @@ import java.util.TreeSet;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.api.EventConfDao;
 import org.opennms.netmgt.xml.eventconf.Event;
+import org.opennms.netmgt.xml.eventconf.EventMatchers;
+import org.opennms.netmgt.xml.eventconf.EventOrdering;
 import org.opennms.netmgt.xml.eventconf.Events;
 import org.opennms.netmgt.xml.eventconf.Events.EventCallback;
 import org.opennms.netmgt.xml.eventconf.Events.EventCriteria;
+import org.opennms.netmgt.xml.eventconf.Field;
 import org.opennms.netmgt.xml.eventconf.Partition;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.io.Resource;
@@ -62,8 +67,21 @@ public class DefaultEventConfDao implements EventConfDao, InitializingBean {
 	private Resource m_configResource;
 
 	private Partition m_partition;
+	
+    private static class EventLabelComparator implements Comparator<Event>, Serializable {
 
-    public String getProgrammaticStoreRelativeUrl() {
+        private static final long serialVersionUID = 7976730920523203921L;
+
+        @Override
+        public int compare(final Event e1, final Event e2) {
+            if (e1.getEventLabel() == e2.getEventLabel()) return 0;
+            if (e1.getEventLabel() == null) return -1;
+            if (e2.getEventLabel() == null) return 1;
+            return e1.getEventLabel().compareToIgnoreCase(e2.getEventLabel());
+        }
+    }
+
+	public String getProgrammaticStoreRelativeUrl() {
 		return m_programmaticStoreRelativePath;
 	}
 
@@ -163,7 +181,7 @@ public class DefaultEventConfDao implements EventConfDao, InitializingBean {
 	@Override
 	public void addEvent(Event event) {
 		m_events.addEvent(event);
-		m_events.initialize(m_partition);
+		m_events.initialize(m_partition, new EventOrdering());
 	}
 
 	@Override
@@ -175,7 +193,7 @@ public class DefaultEventConfDao implements EventConfDao, InitializingBean {
 		}
 
 		programmaticEvents.addEvent(event);
-		programmaticEvents.initialize(m_partition);
+		m_events.initialize(m_partition, new EventOrdering());
 
 	}
 
@@ -187,9 +205,10 @@ public class DefaultEventConfDao implements EventConfDao, InitializingBean {
 		programmaticEvents.removeEvent(event);
 		if (programmaticEvents.getEventCount() <= 0) {
 			m_events.removeLoadedEventFile(m_programmaticStoreRelativePath);
-		} else {
-			programmaticEvents.initialize(m_partition);
-		}
+		} 
+
+		m_events.initialize(m_partition, new EventOrdering());
+
 		return true;
 
 	}
@@ -229,13 +248,38 @@ public class DefaultEventConfDao implements EventConfDao, InitializingBean {
 		loadConfig();
 	}
 
+	private static class EnterpriseIdPartition implements Partition {
+
+		private Field m_field = EventMatchers.field("id");
+
+		@Override
+		public List<String> group(Event eventConf) {
+			List<String> keys = eventConf.getMaskElementValues("id");
+			if (keys == null) return null;
+			for(String key : keys) {
+			    // if this issue is a wildcard issue we need to test against
+			    // all events so return null here so it isn't pigeon-holed into
+			    // a particular partition
+			    if (key.endsWith("%")) return null;
+			    if (key.startsWith("~")) return null;
+			}
+			return keys;
+		}
+
+		@Override
+		public String group(org.opennms.netmgt.xml.event.Event matchingEvent) {
+			return m_field.get(matchingEvent);
+		}
+		
+	}
+	
 	private synchronized void loadConfig() throws DataAccessException {
 		try {
 			Events events = JaxbUtils.unmarshal(Events.class, m_configResource);
 			events.loadEventFiles(m_configResource);
 			
 			m_partition = new EnterpriseIdPartition();
-			events.initialize(m_partition);
+			events.initialize(m_partition, new EventOrdering());
 
 			m_events = events;
 

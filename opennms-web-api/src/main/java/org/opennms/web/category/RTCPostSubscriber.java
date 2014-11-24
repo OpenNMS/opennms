@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -35,13 +35,13 @@ import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.logging.Logging;
 import org.opennms.core.resource.Vault;
-import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.ViewsDisplayFactory;
 import org.opennms.netmgt.config.viewsdisplay.Section;
 import org.opennms.netmgt.config.viewsdisplay.View;
+import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.events.api.EventProxy;
+import org.opennms.netmgt.events.api.EventProxyException;
 import org.opennms.netmgt.model.events.EventBuilder;
-import org.opennms.netmgt.model.events.EventProxy;
-import org.opennms.netmgt.model.events.EventProxyException;
 import org.opennms.web.api.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -79,13 +79,13 @@ public class RTCPostSubscriber {
     /**
      * <p>sendSubscribeEvent</p>
      *
-     * @param proxy a {@link org.opennms.netmgt.model.events.EventProxy} object.
+     * @param proxy a {@link org.opennms.netmgt.events.api.EventProxy} object.
      * @param url a {@link java.lang.String} object.
      * @param username a {@link java.lang.String} object.
      * @param password a {@link java.lang.String} object.
      * @param categoryName a {@link java.lang.String} object.
      * @throws java.lang.IllegalArgumentException if any.
-     * @throws org.opennms.netmgt.model.events.EventProxyException if any.
+     * @throws org.opennms.netmgt.events.api.EventProxyException if any.
      */
     public static void sendSubscribeEvent(final EventProxy proxy, final String url, final String username, final String password, final String categoryName) throws IllegalArgumentException, EventProxyException {
         if (proxy == null || url == null || username == null || password == null || categoryName == null) {
@@ -117,10 +117,10 @@ public class RTCPostSubscriber {
     /**
      * <p>sendUnsubscribeEvent</p>
      *
-     * @param proxy a {@link org.opennms.netmgt.model.events.EventProxy} object.
+     * @param proxy a {@link org.opennms.netmgt.events.api.EventProxy} object.
      * @param url a {@link java.lang.String} object.
      * @throws java.lang.IllegalArgumentException if any.
-     * @throws org.opennms.netmgt.model.events.EventProxyException if any.
+     * @throws org.opennms.netmgt.events.api.EventProxyException if any.
      */
     public static void sendUnsubscribeEvent(final EventProxy proxy, final String url) throws IllegalArgumentException, EventProxyException {
         if (proxy == null || url == null) {
@@ -151,7 +151,7 @@ public class RTCPostSubscriber {
      * @param categoryName a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
      * @throws java.lang.IllegalArgumentException if any.
-     * @throws org.opennms.netmgt.model.events.EventProxyException if any.
+     * @throws org.opennms.netmgt.events.api.EventProxyException if any.
      */
     public String subscribe(final String categoryName) throws IllegalArgumentException, EventProxyException {
         if (categoryName == null) {
@@ -167,7 +167,7 @@ public class RTCPostSubscriber {
      * <p>unsubscribe</p>
      *
      * @throws java.lang.IllegalArgumentException if any.
-     * @throws org.opennms.netmgt.model.events.EventProxyException if any.
+     * @throws org.opennms.netmgt.events.api.EventProxyException if any.
      */
     public void unsubscribe() throws IllegalArgumentException, EventProxyException {
         sendUnsubscribeEvent(m_proxy, m_url);
@@ -225,7 +225,7 @@ public class RTCPostSubscriber {
      * @throws java.io.IOException if any.
      * @throws org.exolab.castor.xml.MarshalException if any.
      * @throws org.exolab.castor.xml.ValidationException if any.
-     * @throws org.opennms.netmgt.model.events.EventProxyException if any.
+     * @throws org.opennms.netmgt.events.api.EventProxyException if any.
      */
     public static void subscribeAll(final String viewName) throws IOException, MarshalException, ValidationException, EventProxyException {
         if (viewName == null) {

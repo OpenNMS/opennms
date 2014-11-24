@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>opennms</artifactId>
-    <version>1.15.0-SNAPSHOT</version>
+    <version>15.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>org.opennms.core</artifactId>
@@ -15,7 +15,7 @@
         <artifactId>maven-assembly-plugin</artifactId>
         <configuration>
           <descriptors>
-            <descriptor>src/assemble/bin.xml</descriptor>
+            <descriptor>src/assembly/bin.xml</descriptor>
           </descriptors>
         </configuration>
       </plugin>
@@ -40,10 +40,11 @@
     <module>snmp</module>
     <module>soa</module>
     <module>spring</module>
+    <module>spring-web</module>
     <module>tasks</module>
     <module>test-api</module>
     <module>upgrade</module>
-    <!--<module>web</module>-->
+    <module>web</module>
     <module>xml</module>
   </modules>
 </project>

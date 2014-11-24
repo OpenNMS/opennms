@@ -12,7 +12,7 @@
     </bean>
 
     <bean id="droolsCorrelationEngineBuilder" class="org.opennms.netmgt.correlation.drools.DroolsCorrelationEngineBuilder">
-    	<property name="eventIpcManager" ref="eventIpcManager" />
+    	<property name="eventIpcManager" ref="eventProxy" />
     	<property name="correlationEngineRegistrar" ref="correlator" />
     	<property name="configurationResource" ref="droolsCorrelationEngineBuilderConfigurationResource"/>
     	<property name="configurationDirectory" ref="droolsCorrelationEngineBuilderConfigurationDirectory"/>

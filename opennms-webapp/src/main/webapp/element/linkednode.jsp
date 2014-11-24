@@ -2,22 +2,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -35,6 +35,7 @@
 <%@page import="org.opennms.web.enlinkd.NodeLinkBridge"%>
 <%@page import="org.opennms.web.enlinkd.BridgeLinkRemoteNode"%>
 <%@page import="org.opennms.web.enlinkd.LldpLinkNode"%>
+<%@page import="org.opennms.web.enlinkd.CdpLinkNode"%>
 <%@page import="org.opennms.web.enlinkd.OspfLinkNode"%>
 <%@page import="org.opennms.web.enlinkd.IsisLinkNode"%>
 <%@page
@@ -543,7 +544,7 @@
            <% if (remlink.getBridgeRemotePortUrl() != null) { %>
             	<a href="<%=remlink.getBridgeRemotePortUrl()%>"><%=remlink.getBridgeRemotePort()%></a>
             <% } else { %> 
-				<%=remlink.getBridgeRemotePort()%>
+				<%=remlink.getBridgeRemotePort() != null ? remlink.getBridgeRemotePort() : "" %>
     			<% } %> 
             </td>
 		    <td class="standard">
@@ -619,6 +620,69 @@
 		    <td class="standard"><%=lldplink.getLldpRemPortDescr()%></td>
 		    <td class="standard"><%=lldplink.getLldpCreateTime()%></td>
 		    <td class="standard"><%=lldplink.getLldpLastPollTime()%></td>
+	    </tr>
+	    <% } %>
+		    
+	    </table>
+
+<% }  %>
+
+<hr />        
+<%
+   if (enlinkdfactory.getCdpLinks(nodeId).isEmpty()) {
+%>
+	<div class="TwoColLeft">
+		<h3>No Cdp Cache Table Links found on <%=node_db.getLabel()%> by Enhanced Linkd</h3>
+	</div>
+<% } else { %>
+<h3><%=node_db.getLabel()%> Cdp Cache Table Links found by Enhanced Linkd</h3>
+		
+		<!-- Link box -->
+		<table class="standard">
+		
+		<thead>
+			<tr>
+			<th>Local Port</th> 
+			<th>Address Type</th>
+			<th>Address</th>
+			<th>Version</th>
+			<th>Device Id</th>
+			<th>Device Port</th> 
+            <th>Platform</th>
+			<th>Created</th>
+			<th>Last Poll</th>
+			</tr>
+		</thead>
+				
+		<% for( CdpLinkNode cdplink: enlinkdfactory.getCdpLinks(nodeId)) { %>
+	    <tr>
+		    <td class="standard">
+		 	<% if (cdplink.getCdpLocalPortUrl() != null) { %>
+            	<a href="<%=cdplink.getCdpLocalPortUrl()%>"><%=cdplink.getCdpLocalPort()%></a>
+            <% } else { %> 
+                    <%=cdplink.getCdpLocalPort()%>
+    		<% } %> 
+            </td>
+		    <td class="standard"><%=cdplink.getCdpCacheAddressType()%></td>
+		    <td class="standard"><%=cdplink.getCdpCacheAddress()%></td>
+		    <td class="standard"><%=cdplink.getCdpCacheVersion()%></td>
+            <td class="standard">
+            <% if (cdplink.getCdpCacheDeviceUrl() != null) { %>
+            	<a href="<%=cdplink.getCdpCacheDeviceUrl()%>"><%=cdplink.getCdpCacheDeviceId()%></a>
+            <% } else { %> 
+                    <%=cdplink.getCdpCacheDeviceId()%>
+    			<% } %> 
+            </td>
+		    <td class="standard">
+		 	<% if (cdplink.getCdpCacheDevicePortUrl() != null) { %>
+            	<a href="<%=cdplink.getCdpCacheDevicePortUrl()%>"><%=cdplink.getCdpCacheDevicePort()%></a>
+            <% } else { %> 
+                    <%=cdplink.getCdpCacheDevicePort()%>
+    		<% } %> 
+            </td>
+		    <td class="standard"><%=cdplink.getCdpCacheDevicePlatform()%></td>
+		    <td class="standard"><%=cdplink.getCdpCreateTime()%></td>
+		    <td class="standard"><%=cdplink.getCdpLastPollTime()%></td>
 	    </tr>
 	    <% } %>
 		    

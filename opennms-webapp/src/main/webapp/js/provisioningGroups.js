@@ -59,6 +59,10 @@ function editForeignSource(foreignSourceName) {
 }
 
 function resetDefaultForeignSource() {
+	var really = confirm("Are you sure you want to reset the default foreign-source definition? This CANNOT be undone.");
+	if (!really) {
+		return false;
+	}
 	document.takeAction.groupName.value = "default";
 	document.takeAction.action.value = "resetDefaultForeignSource";
 	document.takeAction.submit();
