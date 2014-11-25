@@ -415,8 +415,8 @@ function confirmAssetEdit() {
 
 <c:if test="${! empty schedOutages}">
   <table class="table table-condensed severity">
-    <tr>
-      <td align="left" class="severity-critical">
+    <tr class="severity-Critical">
+      <td align="left" class="bright">
         <b>This node is currently affected by the following scheduled outages: </b> ${schedOutages}
       </td>
     </tr>
