@@ -108,11 +108,11 @@
             <%= categoryName %>
           <% } %>
 		</td>
-		<td class="severity-<%= (opennmsDisconnect ? "indeterminate" : category.getOutageClass().toString().toLowerCase()) %> bright divider"
+		<td class="severity-<%= (opennmsDisconnect ? "indeterminate" : category.getOutageClass().toLowerCase()) %> bright divider"
 	        align="right"
 		    title="Updated: <%= category.getLastUpdated() %>"><%= category.getOutageText() %>
 		</td>
-		<td class="severity-<%= (opennmsDisconnect ? "indeterminate" : category.getAvailClass().toString().toLowerCase()) %> bright divider"
+		<td class="severity-<%= (opennmsDisconnect ? "indeterminate" : category.getAvailClass().toLowerCase()) %> bright divider"
 		    align="right" 
 		    title="Updated: <%= category.getLastUpdated() %>"><%= category.getAvailText() %>
 		</td>
