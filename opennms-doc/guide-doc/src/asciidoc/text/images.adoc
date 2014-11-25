@@ -1,10 +1,10 @@
 
 [[doc-guidelines-images]]
 == Include images
-Visualizing complex problems can help to explain much more information in an image.
-We have in our documentation modules two directories for images.
+Whren visualizing complex problems you can help the explanation and provide greater information by using an image.
+We use in OpenNMS documentation modules two directories for images.
 
-The folder structure follows the included text structure.
+The image folder structure mirrors the text structure.
 In this case it is a little bit easier to locate the AsciiDoc text file where the image is included.
 
 .Example folder structure for image files
@@ -32,22 +32,22 @@ In this case it is a little bit easier to locate the AsciiDoc text file where th
         |           └── writing.adoc
         └── target<11>
 ----
-<1> Folder contains all documentation modules
-<2> The module for this documentation for target group of documentation contributors
-<3> Indicates a source folder
-<4> Documentation root folder
-<5> Folder for images as *.png or *.jpg and included in the documentation
-<6> The image with leading a leading `<number>_` followed by a non-space name
-<7> Some images are created from tools like _yED_, this folder should contain the editable version of the file with the same file name
-<8> Editable version of the image source file
-<9> Main document file which includes all documentation parts and is rendered as `index.html` for web representation
-<10> AsciiDoc source file which can include images
-<11> Target folder with generated HTML output after `mvn clean package`
 
-IMPORTANT: All images in the entire manual share the same namespace.
+<1> This folder contains all documentation modules;
+<2> The module for this documentation for target group of documentation contributors;
+<3> Indicates a source folder;
+<4> The documentation root folder;
+<5> Folder for images. Images should be *.png or *.jpg if included in the documentation;
+<6> The image used, the format is a leading `<number>_` followed by a name using no spaces;
+<7> Some images are created from tools like _yED_, this folder should contain the editable version of the file with the same file name;
+<8> Editable version of the image source file, note no spaces in the name;
+<9> Main document file which includes all documentation parts and is rendered as `index.html` for the web;
+<10> AsciiDoc source file which can include images;
+<11> Target folder with generated HTML output after `mvn clean package` has been performed;
 
-To include an image file, make sure it resides at least in the 'images/' directory relative to the document you're including it from.
-Then go:
+IMPORTANT: All images in the entire manual share the same namespace, it is therefore best practice to use unique identifiers for images.
+
+To include an image file, make sure that it resides in the 'images/' directory relative to the document you're including it within. Then use the following syntax for inclusion in the document:
 
 .First included image
 [source]
@@ -74,4 +74,4 @@ Which is rendered as:
 image::../images/02_example.png[]
 
 
-IMPORTANT: The image path is relative to the *.adoc source file, where you include the image.
+IMPORTANT: The image path for the images you include is relative to the *.adoc source file, where you use the image.
