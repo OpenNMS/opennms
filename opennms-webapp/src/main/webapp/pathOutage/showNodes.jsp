@@ -37,52 +37,58 @@
 			org.opennms.netmgt.poller.PathOutageManagerJdbcImpl
 " %>
 
-<jsp:include page="/includes/header.jsp" flush="false">
-  <jsp:param name="title" value="Show Path Outage Nodes" />
-  <jsp:param name="headTitle" value="Show Path Outage Nodes" />
-  <jsp:param name="breadcrumb" value="Show Path Outage Nodes" />
-
+<jsp:include page="/includes/bootstrap.jsp" flush="false">
+  <jsp:param name="title" value="Path Outage Nodes" />
+  <jsp:param name="headTitle" value="Path Outage Nodes" />
+  <jsp:param name="breadcrumb" value="<a href=&quot;pathOutage/index.jsp&quot;>Path Outages</a>" />
+  <jsp:param name="breadcrumb" value="Nodes" />
 </jsp:include>
 
 <% 
       String critIp = request.getParameter("critIp");
       String critSvc = request.getParameter("critSvc");
       String[] pthData = PathOutageManagerJdbcImpl.getInstance().getCriticalPathData(critIp, critSvc);
-      List<String> nodeList = PathOutageManagerJdbcImpl.getInstance().getNodesInPath(critIp, critSvc); %>
-  
-      <h3>Path Outage Node List</h3>
-      <table>
+      List<String> nodeList = PathOutageManagerJdbcImpl.getInstance().getNodesInPath(critIp, critSvc); 
+%>
+
+<div class="panel panel-success fix-subpixel">
+    <div class="panel-heading">
+        <h3 class="panel-title">Path Outage Node List</h3>
+    </div>
+    <table class="table table-condensed severity">
+          <thead class="dark">
           <tr>
           <th>Critical Path</th>
           <th>Status</th>
           </tr>
+          </thead>
 
-          <tr class="CellStatus">
+          <tr>
           <td><%= critIp %></td>
-          <td class="<%= pthData[3] %>"><%= critSvc %></td>
+          <td class="bright severity-<%= pthData[3].toLowerCase() %>"><%= critSvc %></td>
           </tr>
 
+          <thead class="dark">
           <tr>
           <th>Node</th>
           <th>Status</th>
           </tr>
+          </thead>
 
 <%        final Connection conn = DataSourceFactory.getInstance().getConnection();
           final DBUtils d = new DBUtils(PathOutageManagerJdbcImpl.class, conn);
           try {
               for (String nodeid : nodeList) {
                   String labelColor[] = PathOutageManagerJdbcImpl.getInstance().getLabelAndStatus(nodeid, conn); %>
-                  <tr class="CellStatus">
+                  <tr>
                   <td><a href="element/node.jsp?node=<%= nodeid %>"><%= labelColor[0] %></a></td>
-                  <td class="<%= labelColor[1] %>"><%= labelColor[2] %></td>
+                  <td class="bright severity-<%= labelColor[1].toLowerCase() %>"><%= labelColor[2] %></td>
                   </tr>
               <% } %>
           <% } finally {
             d.cleanUp();
           } %>
+    </table>
+</div>
 
-      </table>
-
-<jsp:include page="/includes/footer.jsp" flush="false" />
-
-
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />
