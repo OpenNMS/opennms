@@ -36,6 +36,10 @@ import org.opennms.netmgt.dao.api.EventdServiceManager;
 import org.opennms.netmgt.eventd.adaptors.EventReceiver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
+import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.util.Assert;
 
 /**
@@ -95,6 +99,9 @@ public final class Eventd extends AbstractServiceDaemon {
      */
     private Collection<EventReceiver> m_eventReceivers;
 
+    @Autowired
+    private TransactionTemplate m_transactionTemplate;
+
     /**
      * Constuctor creates the localhost address(to be used eventually when
      * eventd originates events during correlation) and the broadcast queue
@@ -111,8 +118,13 @@ public final class Eventd extends AbstractServiceDaemon {
         Assert.state(m_eventdServiceManager != null, "property eventdServiceManager must be set");
         Assert.state(m_eventReceivers != null, "property eventReceivers must be set");
         Assert.state(m_receiver != null, "property receiver must be set");
-        
-        m_eventdServiceManager.dataSourceSync();
+
+        m_transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+            @Override
+            public void doInTransactionWithoutResult(TransactionStatus status) {
+                m_eventdServiceManager.dataSourceSync();
+            }
+        });
     }
 
     /**
