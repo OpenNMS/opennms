@@ -289,15 +289,15 @@ function confirmAssetEdit() {
 }
 </script>
 
-<strong>
-  Node: ${model.label} (ID: ${model.id})<br>
+<h4>
+  Node: <strong>${model.label}</strong> (ID: <strong>${model.id}</strong>)<br>
   <c:if test="${model.foreignSource != null}">
-    <em>Created via provisioning requisition <strong>${model.foreignSource} (foreignId: ${model.foreignId})</strong></em><br>
+    <em>Created via provisioning requisition <strong>${model.foreignSource}</strong> (foreignId: <strong>${model.foreignId}</strong>)</em><br>
   </c:if>
   <c:if test="${model.foreignSource == null}">
     <em>Not a member of any provisioning requisition</em>
   </c:if>
-</strong>
+</h4>
 
   <ul class="list-inline">
     <c:url var="eventLink" value="event/list">
