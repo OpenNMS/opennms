@@ -57,9 +57,13 @@
 <c:url var="outageLink" value="outage/list.htm">
   <c:param name="filter" value="intf=${ipAddr}"/>
 </c:url>
-<h3><a href="<c:out value="${outageLink}"/>">Recent&nbsp;Outages</a></h3>
 
-<table>
+<div class="panel panel-success">
+<div class="panel-heading">
+  <h3 class="panel-title"><a href="<c:out value="${outageLink}"/>">Recent&nbsp;Outages</a></h3>
+</div>
+
+<table class="table table-condensed">
 
 <% if(outages.length == 0) { %>
   <tr>
@@ -100,3 +104,4 @@
 <% } %>
 
 </table>
+</div>
