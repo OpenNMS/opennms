@@ -438,7 +438,7 @@ function confirmAssetEdit() {
       <h3 class="panel-title">Asset Information</h3>
     </div>
     <table class="table table-condensed">
-      <tr">
+      <tr>
         <th>Description</th>
         <td>${model.asset.description}</td>
       </tr>
