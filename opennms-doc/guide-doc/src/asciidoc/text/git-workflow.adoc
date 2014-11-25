@@ -18,7 +18,9 @@ The JIRA issue number is important to recognize the issue and is therefore used 
 image::../images/01_pick-issue.png[]
 
 It might be easier at this stage to open a second browser tab and navigate to your GitHub account with your repositories.
-Select your fork, identified by having your Github username at the start, from the previously forked OpenNMS project. Switch to the appropriate branch using the dropdown selection box or by use of the input field autocompletion. You need to select the _development/docs_ branch.
+Select your fork, identified by having your Github username at the start, from the previously forked OpenNMS project. 
+Switch to the appropriate branch using the dropdown selection box or by use of the input field autocompletion. 
+You need to select the _development/docs_ branch.
 
 .Switch to the development/docs branch
 image::../images/02_switch-to-dev-docs-branch.png[]
@@ -65,7 +67,8 @@ The command:
 
 adds this file for the next commit.
 
-NOTE: The full path to the file to add depends on your current location in the file system. If you are not in the same directory as the file when you use add then you must provide the path as part of the command.
+NOTE: The full path to the file to add depends on your current location in the file system. 
+If you are not in the same directory as the file when you use add then you must provide the path as part of the command.
 
 .Add your created or modified files with git add.
 image::../images/05_add-to-git.png[]
@@ -96,7 +99,8 @@ Once you have completed, or wish to push upstream your contribution into the mai
 .Click on _Compare & pull request_
 image::../images/09_compare-branches.png[]
 
-The next dialog prepares your _pull request_ and you have to make sure you make the _pull request_ against the relevant OpenNMS branch. For the purposes of our example this would be the 'OpenNMS:development/docs' branch.
+The next dialog prepares your _pull request_ and you have to make sure you make the _pull request_ against the relevant OpenNMS branch. 
+For the purposes of our example this would be the 'OpenNMS:development/docs' branch.
 By default you will see _OpenNMS:master_, you can change the branch by clicking on _Edit_(1) and switching from _OpenNMS:master_ to _OpenNMS:development/docs_(2).
 GitHub will use your last git commit message for the _pull request_ and you have a chance to add or change the commit message before sending the _pull request_.
 
@@ -128,4 +132,5 @@ When a reviewer merges your _pull request_ to the official OpenNMS project, the 
 .Status of pull requests is indicated on your GitHub profile page
 image::../images/14_merged-pull-request.png[]
 
-The OpenNMS Continuous Integration system based on _Bamboo_ picks up the merged pull request and starts a build then deploys a version with your changes automatically. You can see the built items on the publically available link:http://bamboo.internal.opennms.com:8085/allPlans.action[Bamboo system].
+The OpenNMS Continuous Integration system based on _Bamboo_ picks up the merged pull request and starts a build then deploys a version with your changes automatically. 
+You can see the built items on the publically available link:http://bamboo.internal.opennms.com:8085/allPlans.action[Bamboo system].
