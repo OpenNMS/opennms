@@ -37,7 +37,7 @@
 	"
 %>
 
-<jsp:include page="/includes/header.jsp" flush="false">
+<jsp:include page="/includes/bootstrap.jsp" flush="false">
   <jsp:param name="title" value="Path Outages" />
   <jsp:param name="headTitle" value="Path Outages" />
   <jsp:param name="location" value="pathOutage" />
@@ -54,29 +54,37 @@
 <% if (dcpip != null && !"".equals(dcpip)) { %>
 	<p>The default critical path is service ICMP on interface <%= dcpip %>.</p>
 <% } %>
-	<h3>All Path Outages</h3>
-	<table>
-		<tr>
-			<th>Critical Path Node</th>
-			<th>Critical Path IP</th>
-			<th>Critical Path Service</th>
-			<th>Number of Nodes</th>
-		</tr>
+
+<div class="panel panel-success fix-subpixel">
+	<div class="panel-heading">
+		<h3 class="panel-title">All Path Outages</h3>
+	</div>
+	<table class="table table-condensed severity">
+		<thead class="dark">
+			<tr>
+				<th>Critical Path Node</th>
+				<th>Critical Path IP</th>
+				<th>Critical Path Service</th>
+				<th>Number of Nodes</th>
+			</tr>
+		</thead>
 		<% for (String[] pth : testPaths) {
 			pthData = PathOutageManagerJdbcImpl.getInstance().getCriticalPathData(pth[0], pth[1]); %>
-			<tr class="CellStatus">
-				<% if((pthData[0] == null) || (pthData[0].equals(""))) { %>
-					<td>(Interface not in database)</td>
-				<% } else if (pthData[0].indexOf("nodes have this IP") > -1) { %>
-					<td><a href="element/nodeList.htm?iplike=<%= pth[0] %>"><%= pthData[0] %></a></td>
-				<% } else { %>
-					<td><a href="element/node.jsp?node=<%= pthData[1] %>"><%= pthData[0] %></a></td>
-				<% } %>
-				<td><%= pth[0] %></td>
-				<td class="<%= pthData[3] %>"><%= pth[1] %></td>
-				<td><a href="pathOutage/showNodes.jsp?critIp=<%= pth[0] %>&critSvc=<%= pth[1] %>"><%= pthData[2] %></a></td>
-			</tr>
+		<tr>
+			<% if((pthData[0] == null) || (pthData[0].equals(""))) { %>
+			<td>(Interface not in database)</td>
+			<% } else if (pthData[0].indexOf("nodes have this IP") > -1) { %>
+			<td><a href="element/nodeList.htm?iplike=<%= pth[0] %>"><%= pthData[0] %></a></td>
+			<% } else { %>
+			<td><a href="element/node.jsp?node=<%= pthData[1] %>"><%= pthData[0] %></a></td>
+			<% } %>
+			<td><%= pth[0] %></td>
+			<td class="<%= pthData[3] %>"><%= pth[1] %></td>
+			<td><a
+				href="pathOutage/showNodes.jsp?critIp=<%= pth[0] %>&critSvc=<%= pth[1] %>"><%= pthData[2] %></a></td>
+		</tr>
 		<% } %>
-</table>
+	</table>
+</div>
 
-<jsp:include page="/includes/footer.jsp" flush="false" />
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />
