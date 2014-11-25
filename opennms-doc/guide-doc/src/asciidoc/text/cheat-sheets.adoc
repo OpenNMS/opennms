@@ -3,7 +3,8 @@
 == Cheat Sheets and additional hints
 
 For instructions on how to build your own version of the manual:
-https://github.com/OpenNMS/opennms/blob/development/docs/opennms-doc/doc-overview/README.adoc[readme]
+
+* https://github.com/OpenNMS/opennms/blob/development/docs/opennms-doc/doc-overview/README.adoc[readme]
 
 The documentation uses the AsciiDoc format. There are a number of guides that will help you to get started with using AsciiDoc:
 
