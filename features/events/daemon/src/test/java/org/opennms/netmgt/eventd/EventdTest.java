@@ -54,14 +54,15 @@ import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.AlarmData;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Crank up a real eventd instance, send it some events, and verify that the records 
@@ -79,6 +80,7 @@ import org.springframework.test.context.ContextConfiguration;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
+@Transactional
 public class EventdTest implements InitializingBean {
     private static final long SLEEP_TIME = 50;
 
@@ -112,7 +114,6 @@ public class EventdTest implements InitializingBean {
     @After
     public void tearDown() {
         m_eventd.onStop();
-        m_databasePopulator.resetDatabase();
         MockLogAppender.assertNoWarningsOrGreater();
     }
 
@@ -167,6 +168,7 @@ public class EventdTest implements InitializingBean {
         OnmsMonitoredService svc = intf.getMonitoredServiceByServiceType("ICMP");
         assertNotNull(svc);
         assertEquals("192.168.1.1", str(svc.getIpAddress()));
+        assertEquals("ICMP", svc.getServiceName());
         final Integer serviceId = svc.getServiceId();
         sendServiceDownEvent(null, svc);
 
@@ -174,7 +176,12 @@ public class EventdTest implements InitializingBean {
             Thread.sleep(SLEEP_TIME);
         }
         assertEquals(1, m_eventDao.countMatching(cb.toCriteria()));
-        assertEquals("service ID for event", serviceId, m_eventDao.findMatching(cb.toCriteria()).get(0).getServiceType().getId());
+        OnmsEvent event = m_eventDao.findMatching(cb.toCriteria()).get(0);
+        assertNotNull(event);
+        assertEquals("uei.opennms.org/nodes/serviceUnresponsive", event.getEventUei());
+        OnmsServiceType serviceType = event.getServiceType();
+        assertNotNull(serviceType);
+        assertEquals("service ID for event", serviceId, serviceType.getId());
     }
 
 
