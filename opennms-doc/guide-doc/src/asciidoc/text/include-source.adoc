@@ -1,11 +1,13 @@
 
 [[doc-guidelines-include-source]]
 == Code Snippets ==
-You can include code snippets, configuration- or source code files in the documentation. You can enable syntax highlighting by providing the given language parameter, this will work on source code or configuration.
+You can include code snippets, configuration- or source code files in the documentation. 
+You can enable syntax highlighting by providing the given language parameter, this will work on source code or configuration.
 
 === Explicitly defined in the document ===
 
-WARNING: be careful to use this kind of code snippets as sparesely as possible. Code becomes obsolete very quickly, archaic usage practices are detrimental.
+WARNING: be careful to use this kind of code snippets as sparesely as possible. 
+Code becomes obsolete very quickly, archaic usage practices are detrimental.
 
 if you do wish to include snippets use the following method:
 
@@ -38,7 +40,9 @@ Currently the following syntax highlighters are enabled:
 For other highlighters that could be added see https://code.google.com/p/google-code-prettify/.
 
 === Included from an example file
-You can include source or configuration from an external file. In this way you can provide a working example configuration maintaining doc and example at the same time. The procedure and rules are the same as with images, the path is relative to the *.adoc file where the file to be used is included.
+You can include source or configuration from an external file. 
+In this way you can provide a working example configuration maintaining doc and example at the same time. 
+The procedure and rules are the same as with images, the path is relative to the *.adoc file where the file to be used is included.
 
 .Include complete external file
  [source,xml]
@@ -54,7 +58,8 @@ include::../configs/wmi-config.xml[]
 ----
 
 === Include parts of a file
-If you want to include just a specific segment of a large configuration file, you can assign tags that indicate to AsciiDoc the section that is to be included. In this example just the service definition of the _ICMP monitor_ should be included.
+If you want to include just a specific segment of a large configuration file, you can assign tags that indicate to AsciiDoc the section that is to be included. 
+In this example just the service definition of the _ICMP monitor_ should be included.
 
 In the 'poller-configuration.xml' tag the section in the following manner:
 
