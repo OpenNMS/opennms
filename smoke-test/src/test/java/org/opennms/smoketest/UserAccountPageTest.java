@@ -28,38 +28,43 @@
 
 package org.opennms.smoketest;
 
-import org.junit.FixMethodOrder;
-import org.junit.Test;
-import org.junit.runners.MethodSorters;
+import static org.junit.Assert.assertNotNull;
 
-@FixMethodOrder(MethodSorters.NAME_ASCENDING)
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+import org.junit.Test;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+
 public class UserAccountPageTest extends OpenNMSSeleniumTestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        
-        selenium.open("/opennms/account/selfService/index.jsp");
-        waitForPageToLoad();
-    }
-    
-    @Test
-    public void a_testAllTextIsPresent() throws Exception {
-        waitForText("User Account Self-Service");
-        waitForText("Account Self-Service Options");
-        waitForText("require further");
-    }
-
-    @Test 
-    public void b_testAllLinksArePresent() throws InterruptedException {
-        waitForElement("link=Change Password");
+        m_driver.get(BASE_URL + "opennms/account/selfService/index.jsp");
     }
 
     @Test
-    public void c_testAllLinks() throws InterruptedException {
-        clickAndWait("link=Change Password");
-        waitForText("Please enter the old and new passwords and confirm.");
-        waitForText("Current Password");
-        waitForElement("link=Cancel");
+    public void testExpectedTextAndLinksArePresent() throws Exception {
+        final List<WebElement> h3s = m_driver.findElements(By.tagName("h3"));
+        assertEquals(2, h3s.size());
+        assertEquals("User Account Self-Service", h3s.get(0).getText());
+        assertEquals("Account Self-Service Options", h3s.get(1).getText());
+    }
+
+    @Test
+    public void testSubmitWithWrongPassword() throws InterruptedException {
+        m_driver.findElement(By.linkText("Change Password")).click();
+        m_driver.findElement(By.cssSelector("input[type=password][name=oldpass]")).sendKeys("12345");
+        m_driver.findElement(By.cssSelector("input[type=password][name=pass1]")).sendKeys("23456");
+        m_driver.findElement(By.cssSelector("input[type=password][name=pass2]")).sendKeys("34567");
+        m_driver.findElement(By.cssSelector("input[type=submit][value=OK]")).click();
+
+        final WebDriverWait wait = new WebDriverWait(m_driver, TimeUnit.SECONDS.convert(LOAD_TIMEOUT, TimeUnit.MILLISECONDS));
+        assertNotNull(wait.until(ExpectedConditions.alertIsPresent()));
+        m_driver.switchTo().alert().dismiss();
     }
 
 }

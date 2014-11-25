@@ -202,7 +202,7 @@ public class OpenNMSSeleniumTestCase extends SeleneseTestBase {
 
     protected void goBack() {
         LOG.warn("goBack() is not supported on Safari!");
-        selenium.goBack();
+        m_driver.navigate().back();
         waitForPageToLoad();
     }
 
