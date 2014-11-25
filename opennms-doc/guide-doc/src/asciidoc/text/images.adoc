@@ -47,7 +47,8 @@ In this case it is a little bit easier to locate the AsciiDoc text file where th
 
 IMPORTANT: All images in the entire manual share the same namespace, it is therefore best practice to use unique identifiers for images.
 
-To include an image file, make sure that it resides in the 'images/' directory relative to the document you're including it within. Then use the following syntax for inclusion in the document:
+To include an image file, make sure that it resides in the 'images/' directory relative to the document you're including it within. 
+Then use the following syntax for inclusion in the document:
 
 .First included image
 [source]
