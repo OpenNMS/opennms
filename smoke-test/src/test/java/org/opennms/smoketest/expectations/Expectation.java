@@ -67,6 +67,9 @@ public class Expectation {
         if (m_target.startsWith("link=")) {
             final String target = m_target.replaceFirst("link=", "");
             element = wait.until(visibilityOfElementLocated(By.linkText(target)));
+        } else if (m_target.startsWith("css=")) {
+            final String target = m_target.replaceFirst("css=", "");
+            element = wait.until(visibilityOfElementLocated(By.cssSelector(target)));
         } else {
             element = wait.until(visibilityOfElementLocated(By.xpath(m_target)));
         }
