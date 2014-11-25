@@ -16,49 +16,40 @@
 
 package org.opennms.netmgt.ticketer.otrs31;
 
-import static org.junit.Assert.*;
+import org.junit.After;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.opennms.api.integration.ticketing.PluginException;
+import org.opennms.api.integration.ticketing.Ticket;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.util.Date;
 
-import org.junit.BeforeClass;
-import org.junit.Test;
-import static org.junit.Assume.assumeTrue;
-import org.opennms.api.integration.ticketing.PluginException;
-import org.opennms.api.integration.ticketing.Ticket;
-import org.opennms.netmgt.ticketer.otrs.common.DefaultOtrsConfigDao;
+import static org.junit.Assert.assertEquals;
 
 public class Otrs31TicketerPluginTest {
 
-    // defaults for ticket
+    private static final Logger LOG = LoggerFactory.getLogger(Otrs31TicketerPluginTest.class);
 
     private static String DEFAULT_USER = "customer@localhost";
-    
+
     private static String SUMMARY_MARKUP = "<p>Test Remove Markup</p>";
+    
     private static String SUMMARY_NO_MARKUP = "Test Remove Markup";
 
+    private static Otrs31TicketerPlugin otrsPlugin;
 
-    DefaultOtrsConfigDao m_configDao;
-
-    static Otrs31TicketerPlugin s_ticketer;
-
-    static Ticket s_ticket;
+    private static Ticket s_ticket;
     
     
-
     @BeforeClass
     public static void setUpPlugin() throws Exception {
-        
-        assumeTrue(Boolean.getBoolean("runOtrs31Tests"));
+        System.setProperty("opennms.home", "src" + File.separatorChar + "test" + File.separatorChar + "opennms-home");
+        LOG.info("src" + File.separatorChar + "test" + File.separatorChar + "opennms-home");
 
-        System.setProperty("opennms.home", "src" + File.separatorChar
-                + "test" + File.separatorChar + "opennms-home");
-
-        System.out.println("src" + File.separatorChar + "test"
-                + File.separatorChar + "opennms-home");
-
-        s_ticketer = new Otrs31TicketerPlugin();
-
+        otrsPlugin = new Otrs31TicketerPlugin();
         s_ticket = new Ticket();
         s_ticket.setState(Ticket.State.OPEN);
         s_ticket.setSummary("Ticket Summary for ticket: " + new Date());
@@ -68,46 +59,43 @@ public class Otrs31TicketerPluginTest {
     }
     
 
-    @Test
-    public void testCreate() {
-
-        try {
-            s_ticketer.saveOrUpdate(s_ticket);
-            Ticket otrsTicket = s_ticketer.get(s_ticket.getId());
-            assertTicketEquals(s_ticket, otrsTicket);
-        } catch (PluginException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+    @After
+    public void cleanUp() throws PluginException {
+        if (s_ticket != null && s_ticket.getId() != null) {
+            s_ticket = otrsPlugin.get(s_ticket.getId());
+            s_ticket.setState(Ticket.State.CLOSED);
+            otrsPlugin.saveOrUpdate(s_ticket);
         }
 
     }
 
     @Test
-    public void testOpenAndClose() throws InterruptedException {
+    public void testCreate() throws PluginException {
+        otrsPlugin.saveOrUpdate(s_ticket);
+        Ticket otrsTicket = otrsPlugin.get(s_ticket.getId());
+        assertTicketEquals(s_ticket, otrsTicket);
+    }
 
+    @Test
+    public void testOpenAndClose() throws PluginException {
         Ticket ticket = new Ticket();
         ticket.setState(Ticket.State.OPEN);
         ticket.setSummary("Testing Open and Close Summary: " + new Date());
         ticket.setDetails("Testing Open and Close Detail: " + new Date());
         //ticket.setUser(DEFAULT_USER);
 
-        try {
-            s_ticketer.saveOrUpdate(ticket);
-            Ticket initialOtrsTicket = s_ticketer.get(ticket.getId());
-            assertTicketEquals(ticket, initialOtrsTicket);
-            ticket.setState(Ticket.State.CLOSED);
-            s_ticketer.saveOrUpdate(ticket);
-            Ticket closedOtrsTicket = s_ticketer.get(ticket.getId());
-            assertTicketEquals(ticket, closedOtrsTicket);
-        } catch (PluginException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+        otrsPlugin.saveOrUpdate(ticket);
+        Ticket initialOtrsTicket = otrsPlugin.get(ticket.getId());
+        assertTicketEquals(ticket, initialOtrsTicket);
+        ticket.setState(Ticket.State.CLOSED);
+        otrsPlugin.saveOrUpdate(ticket);
+        Ticket closedOtrsTicket = otrsPlugin.get(ticket.getId());
+        assertTicketEquals(ticket, closedOtrsTicket);
 
     }
     
     @Test
-    public void testRemoveMarkup() throws InterruptedException {
+    public void testRemoveMarkup() throws PluginException {
 
     	Ticket ticket = new Ticket();
         ticket.setState(Ticket.State.OPEN);
@@ -115,16 +103,11 @@ public class Otrs31TicketerPluginTest {
         ticket.setDetails("Testing Markup Removal from title: " + new Date());
         //ticket.setUser(DEFAULT_USER);
 
-        try {
-            s_ticketer.saveOrUpdate(ticket);
-            Ticket initialOtrsTicket = s_ticketer.get(ticket.getId());
-            assertEquals(initialOtrsTicket.getSummary(),SUMMARY_NO_MARKUP);
-            ticket.setState(Ticket.State.CLOSED);
-            s_ticketer.saveOrUpdate(ticket);
-        } catch (PluginException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+        otrsPlugin.saveOrUpdate(ticket);
+        Ticket initialOtrsTicket = otrsPlugin.get(ticket.getId());
+        assertEquals(initialOtrsTicket.getSummary(),SUMMARY_NO_MARKUP);
+        ticket.setState(Ticket.State.CLOSED);
+        otrsPlugin.saveOrUpdate(ticket);
 
     }
 

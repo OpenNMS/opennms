@@ -46,12 +46,12 @@ import org.slf4j.LoggerFactory;
  * @version $Id: $
  */
 public class DefaultOtrsConfigDao {
+
     private static final Logger LOG = LoggerFactory.getLogger(DefaultOtrsConfigDao.class);
 
 	/**
 	 * Retrieves the properties defined in the otrs.properties file.
 	 * 
-	 * @param otrsTicketerPlugin
 	 * @return a
 	 *         <code>java.util.Properties object containing otrs plugin defined properties
 	 * @throws IOException 
