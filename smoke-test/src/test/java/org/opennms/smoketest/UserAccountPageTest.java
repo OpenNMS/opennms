@@ -31,13 +31,11 @@ package org.opennms.smoketest;
 import static org.junit.Assert.assertNotNull;
 
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
 
 public class UserAccountPageTest extends OpenNMSSeleniumTestCase {
     @Override
@@ -62,7 +60,6 @@ public class UserAccountPageTest extends OpenNMSSeleniumTestCase {
         m_driver.findElement(By.cssSelector("input[type=password][name=pass2]")).sendKeys("34567");
         m_driver.findElement(By.cssSelector("input[type=submit][value=OK]")).click();
 
-        final WebDriverWait wait = new WebDriverWait(m_driver, TimeUnit.SECONDS.convert(LOAD_TIMEOUT, TimeUnit.MILLISECONDS));
         assertNotNull(wait.until(ExpectedConditions.alertIsPresent()));
         m_driver.switchTo().alert().dismiss();
     }

@@ -77,6 +77,7 @@
 
 <c:forEach var="foreignSourceName" items="${foreignSourceNames}">
 <c:if test='${foreignSourceName != "default"}'>
+  <span data-foreignSource="${foreignSourceName}">
   <h3 style="vertical-align: middle; margin: 25px 0px 5px 0px; padding: 5px">
     <span style="font-size: large"><c:out value="${foreignSourceName}" /></span>
   </h3>
@@ -107,11 +108,16 @@
         <span style="font-size: smaller">
           <c:choose>
             <c:when test="${empty groups[foreignSourceName]}">
-              0 nodes defined, 0 nodes in database
+              <span data-requisitionedNodes="0" data-databaseNodes="0">
+                0 nodes defined,
+                0 nodes in database
+              </span>
             </c:when>
             <c:otherwise>
-              ${groups[foreignSourceName].nodeCount} nodes defined,
-              ${dbNodeCounts[foreignSourceName]} nodes in database
+              <span data-requisitionedNodes="${groups[foreignSourceName].nodeCount}" data-databaseNodes="${dbNodeCounts[foreignSourceName]}">
+                ${groups[foreignSourceName].nodeCount} nodes defined,
+                ${dbNodeCounts[foreignSourceName]} nodes in database
+              </span>
             </c:otherwise>
           </c:choose>
           <br />
@@ -136,7 +142,7 @@
   	  <td>
   	    <c:choose>
   	  	<c:when test="${!empty foreignSources[foreignSourceName]}">
-        <button onclick="editForeignSource(<js:quote value="${foreignSourceName}"/>)">Edit</button> | <button onclick="cloneForeignSource(<js:quote value="${foreignSourceName}"/>)">Clone</button>
+        <button id="edit_fs_anchor_${foreignSourceName}" onclick="editForeignSource(<js:quote value="${foreignSourceName}"/>)">Edit</button> | <button onclick="cloneForeignSource(<js:quote value="${foreignSourceName}"/>)">Clone</button>
   	  	<br />
           <span style="font-size: smaller">
             Last Modified:
@@ -147,7 +153,7 @@
   	      </span>
   	    </c:when>
   	    <c:otherwise>
-        <button onclick="editForeignSource(<js:quote value="${foreignSourceName}"/>)">Fork and Edit</button>
+        <button id="edit_fs_anchor_${foreignSourceName}" onclick="editForeignSource(<js:quote value="${foreignSourceName}"/>)">Fork and Edit</button>
   	  	<br />
           <span style="font-size: smaller">
             The default foreign-source definition is currently in effect for this requisition.
@@ -157,6 +163,7 @@
   	  </td>
   	</tr>
   </table>
+  </span>
 </c:if>
 </c:forEach>
 

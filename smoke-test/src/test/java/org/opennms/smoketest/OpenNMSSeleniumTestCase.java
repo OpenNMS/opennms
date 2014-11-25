@@ -58,12 +58,18 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.junit.After;
 import org.junit.Before;
+import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
+import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.phantomjs.PhantomJSDriver;
 import org.openqa.selenium.phantomjs.PhantomJSDriverService;
 import org.openqa.selenium.remote.DesiredCapabilities;
+import org.openqa.selenium.support.ui.ExpectedCondition;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -88,6 +94,7 @@ public class OpenNMSSeleniumTestCase extends SeleneseTestBase {
     protected static final boolean usePhantomJS = Boolean.getBoolean("org.opennms.smoketest.webdriver.use-phantomjs") || Boolean.getBoolean("smoketest.usePhantomJS");
 
     protected WebDriver m_driver = null;
+    protected WebDriverWait wait = null;
 
     @Before
     public void setUp() throws Exception {
@@ -120,6 +127,7 @@ public class OpenNMSSeleniumTestCase extends SeleneseTestBase {
 
         LOG.debug("Using driver: {}", m_driver);
         m_driver.manage().timeouts().implicitlyWait(LOAD_TIMEOUT, TimeUnit.MILLISECONDS);
+        wait = new WebDriverWait(m_driver, TimeUnit.SECONDS.convert(LOAD_TIMEOUT, TimeUnit.MILLISECONDS));
 
         selenium = new WebDriverBackedSelenium(m_driver, BASE_URL);
         // Change the timeout from the default of 30 seconds to 60 seconds
@@ -316,8 +324,9 @@ public class OpenNMSSeleniumTestCase extends SeleneseTestBase {
             public String handleResponse(final HttpResponse response) throws ClientProtocolException, IOException {
                 try {
                     final int status = response.getStatusLine().getStatusCode();
+                    // 400 because we return that if you try to delete something that is already deleted
                     // 404 because it's OK if it's already not there
-                    if (status >= 200 && status < 300 || status == 404) {
+                    if (status >= 200 && status < 300 || status == 400 || status == 404) {
                         final HttpEntity entity = response.getEntity();
                         return entity != null ? EntityUtils.toString(entity) : null;
                     } else {
@@ -335,7 +344,75 @@ public class OpenNMSSeleniumTestCase extends SeleneseTestBase {
         client.close();
     }
 
+    protected void provisioningPage() {
+        m_driver.get(BASE_URL + "opennms/admin/index.jsp");
+        m_driver.findElement(By.linkText("Manage Provisioning Requisitions")).click();
+    }
+
+    public void deleteExistingRequisition(final String foreignSource) {
+        provisioningPage();
+
+        LOG.debug("deleteExistingRequisition: Deleting Requisition: {}", foreignSource);
+        if (getForeignSourceElement(foreignSource) == null) {
+            return;
+        }
+
+        // if the foreign source has nodes to delete, delete them
+        long nodesInRequisition = getNodesInRequisition(getForeignSourceElement(foreignSource));
+        if (nodesInRequisition > 0) {
+            WebElement del = null;
+            try {
+                del = getForeignSourceElement(foreignSource).findElement(By.xpath("//input[@type='button' and @value='Delete Nodes']"));
+                LOG.debug("deleteExistingRequisition: Found 'Delete Nodes' button.  Deleting nodes.");
+                del.click();
+                final Alert alert = wait.until(ExpectedConditions.alertIsPresent());
+                if (alert == null) {
+                    LOG.warn("deleteExistingRequisition: No alert box after clicking 'Delete Nodes', this is probably wrong!");
+                } else {
+                    alert.accept();
+                }
+            } catch (final NoSuchElementException e) {
+                LOG.debug("deleteExistingRequisition: 'Delete Nodes' button not found.  Assuming the requisition is empty.");
+            }
+        }
+
+        // if the database has nodes to delete, synchronize
+        long nodesInDatabase = getNodesInDatabase(getForeignSourceElement(foreignSource));
+        if (nodesInDatabase > 0) {
+            final WebElement synchronizeButton = getForeignSourceElement(foreignSource).findElement(By.xpath("//input[@type='button' and @value='Synchronize']"));
+            LOG.debug("deleteExistingRequisition: {} still has nodes in the database.  Synchronizing.", foreignSource);
+            synchronizeButton.click();
+
+            final Boolean matched = wait.until(new WaitForNodesInDatabase(0));
+            if (matched == null || !matched) {
+                LOG.warn("Failed to remove nodes from foreign source: {}", foreignSource);
+            }
+        }
+
+        // now try to delete the requisition
+        try {
+            final WebElement deleteButton = getForeignSourceElement(foreignSource).findElement(By.xpath("//input[@type='button' and @value='Delete Requisition']"));
+            deleteButton.click();
+        } catch (final NoSuchElementException e) {
+            LOG.debug("Failed to delete " + foreignSource, e);
+        }
+    }
+
+    protected WebElement getForeignSourceElement(final String requisitionName) {
+        final String selector = "//span[@data-foreignSource='" + requisitionName + "']";
+        WebElement foreignSourceElement = null;
+        try {
+            foreignSourceElement = m_driver.findElement(By.xpath(selector));
+        } catch (final NoSuchElementException e) {
+            // no match, treat as a no-op
+            LOG.debug("Could not find: {}", selector);
+            return null;
+        }
+        return foreignSourceElement;
+    }
+
     protected void deleteTestRequisition() throws Exception {
+        deleteExistingRequisition(REQUISITION_NAME);
         doRequest(new HttpDelete(BASE_URL + "/opennms/rest/requisitions/" + REQUISITION_NAME));
         doRequest(new HttpDelete(BASE_URL + "/opennms/rest/requisitions/deployed/" + REQUISITION_NAME));
         doRequest(new HttpGet(BASE_URL + "/opennms/rest/requisitions"));
@@ -344,8 +421,57 @@ public class OpenNMSSeleniumTestCase extends SeleneseTestBase {
     protected void deleteTestUser() throws Exception {
         doRequest(new HttpDelete(BASE_URL + "/opennms/rest/users/" + USER_NAME));
     }
-    
+
     protected void deleteTestGroup() throws Exception {
         doRequest(new HttpDelete(BASE_URL + "/opennms/rest/groups/" + GROUP_NAME));
     }
+
+    protected long getNodesInRequisition(final WebElement element) {
+        try {
+            final WebElement match = element.findElement(By.xpath("//span[@data-requisitionedNodes]"));
+            final String nodes = match.getAttribute("data-requisitionedNodes");
+            if (nodes != null) {
+                final Long nodeCount = Long.valueOf(nodes);
+                LOG.debug("{} requisitioned nodes found.", nodeCount);
+                return nodeCount;
+            }
+        } catch (final NoSuchElementException e) {
+        }
+        LOG.debug("0 requisitioned nodes found.");
+        return 0;
+    }
+
+    protected long getNodesInDatabase(final WebElement element) {
+        try {
+            final WebElement match = element.findElement(By.xpath("//span[@data-databaseNodes]"));
+            final String nodes = match.getAttribute("data-databaseNodes");
+            if (nodes != null) {
+                final Long nodeCount = Long.valueOf(nodes);
+                LOG.debug("{} database nodes found.", nodeCount);
+                return nodeCount;
+            }
+        } catch (final NoSuchElementException e) {
+        }
+        LOG.debug("0 database nodes found.");
+        return 0;
+    }
+
+    protected final class WaitForNodesInDatabase implements ExpectedCondition<Boolean> {
+        private final int m_numberToMatch;
+        public WaitForNodesInDatabase(int numberOfNodes) {
+            m_numberToMatch = numberOfNodes;
+        }
+
+        @Override public Boolean apply(final WebDriver input) {
+            provisioningPage();
+            final long nodes = getNodesInDatabase(getForeignSourceElement(REQUISITION_NAME));
+            if (nodes == m_numberToMatch) {
+                return true;
+            } else {
+                return null;
+            }
+        }
+    }
+
+
 }
