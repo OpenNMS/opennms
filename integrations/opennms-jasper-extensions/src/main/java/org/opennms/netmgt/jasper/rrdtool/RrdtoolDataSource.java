@@ -49,7 +49,7 @@ public class RrdtoolDataSource implements JRDataSource {
 			long ts = new Long(m_data.getData().getRow(m_currentRow).getT().getContent()) * 1000L;
 			return new Date(ts);
 		}else if ("Step".equalsIgnoreCase(getColumnName(field))) {
-		    return Integer.valueOf(m_data.getMeta().getStep().getContent());
+		    return Long.valueOf(m_data.getMeta().getStep().getContent());
 		}
 		int index = getColumnIndex(field);
 		return new Double(m_data.getData().getRow(m_currentRow).getV(index).getContent());

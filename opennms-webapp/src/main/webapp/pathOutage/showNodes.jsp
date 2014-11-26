@@ -32,6 +32,7 @@
 <%@page language="java" contentType="text/html" session="true"
 	import="java.sql.Connection,
 			java.util.List,
+			java.util.Set,
 			org.opennms.core.db.DataSourceFactory,
 			org.opennms.core.utils.DBUtils,
 			org.opennms.netmgt.poller.PathOutageManagerJdbcImpl
@@ -48,9 +49,9 @@
       String critIp = request.getParameter("critIp");
       String critSvc = request.getParameter("critSvc");
       String[] pthData = PathOutageManagerJdbcImpl.getInstance().getCriticalPathData(critIp, critSvc);
-      List<String> nodeList = PathOutageManagerJdbcImpl.getInstance().getNodesInPath(critIp, critSvc); 
+      Set<Integer> nodeList = PathOutageManagerJdbcImpl.getInstance().getNodesInPath(critIp, critSvc);
 %>
-
+  
 <div class="panel panel-success fix-subpixel">
     <div class="panel-heading">
         <h3 class="panel-title">Path Outage Node List</h3>
@@ -75,11 +76,12 @@
           </tr>
           </thead>
 
-<%        final Connection conn = DataSourceFactory.getInstance().getConnection();
+          <%
+          final Connection conn = DataSourceFactory.getInstance().getConnection();
           final DBUtils d = new DBUtils(PathOutageManagerJdbcImpl.class, conn);
           try {
-              for (String nodeid : nodeList) {
-                  String labelColor[] = PathOutageManagerJdbcImpl.getInstance().getLabelAndStatus(nodeid, conn); %>
+              for (Integer nodeid : nodeList) {
+                  String labelColor[] = PathOutageManagerJdbcImpl.getInstance().getLabelAndStatus(nodeid.toString(), conn); %>
                   <tr>
                   <td><a href="element/node.jsp?node=<%= nodeid %>"><%= labelColor[0] %></a></td>
                   <td class="bright severity-<%= labelColor[1].toLowerCase() %>"><%= labelColor[2] %></td>

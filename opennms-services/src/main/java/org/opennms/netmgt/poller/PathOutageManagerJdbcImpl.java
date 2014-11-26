@@ -191,11 +191,11 @@ public class PathOutageManagerJdbcImpl implements PathOutageManager{
      * @throws java.sql.SQLException if any.
      */
     @Override
-    public List<String> getNodesInPath(String criticalPathIp, String criticalPathServiceName) throws SQLException {
+    public Set<Integer> getNodesInPath(String criticalPathIp, String criticalPathServiceName) throws SQLException {
         final Connection conn = DataSourceFactory.getInstance().getConnection();
         final DBUtils d = new DBUtils(PathOutageManagerJdbcImpl.class, conn);
 
-        final List<String> pathNodes = new ArrayList<String>();
+        final Set<Integer> pathNodes = new TreeSet<Integer>();
 
         try {
             final PreparedStatement stmt = conn.prepareStatement(GET_NODES_IN_PATH);
@@ -207,7 +207,7 @@ public class PathOutageManagerJdbcImpl implements PathOutageManager{
             d.watch(rs);
 
             while (rs.next()) {
-                pathNodes.add(rs.getString(1));
+                pathNodes.add(rs.getInt(1));
             }
         } finally {
             d.cleanUp();
