@@ -204,7 +204,7 @@ Which is rendered as:
 Tiptext. +
 Line 2.
 
-NOTE: Remember to write these in full caps. There is no easy manner in which to add new ones
+NOTE: Remember to write these in full caps. There is no easy manner in which to add new admonitions, do not create your own.
 
 == Attributes
 
