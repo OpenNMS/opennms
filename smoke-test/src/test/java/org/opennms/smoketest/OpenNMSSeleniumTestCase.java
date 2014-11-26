@@ -79,6 +79,9 @@ public class OpenNMSSeleniumTestCase extends SeleneseTestBase {
     protected static final int    OPENNMS_EVENT_PORT = Integer.getInteger("org.opennms.smoketest.event-port", 5817);
 
     protected static final String BASE_URL = "http://" + OPENNMS_WEB_HOST + ":" + OPENNMS_WEB_PORT + "/";
+    protected static final String REQUISITION_NAME = "SeleniumTestGroup";
+    protected static final String USER_NAME = "SmokeTestUser";
+    protected static final String GROUP_NAME = "SmokeTestGroup";
 
     protected static final boolean usePhantomJS = Boolean.getBoolean("org.opennms.smoketest.webdriver.use-phantomjs") || Boolean.getBoolean("smoketest.usePhantomJS");
 
