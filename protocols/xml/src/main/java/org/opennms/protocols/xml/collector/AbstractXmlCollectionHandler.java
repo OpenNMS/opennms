@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -34,15 +34,16 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.StringWriter;
 import java.net.URL;
 import java.net.URLConnection;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.xml.namespace.NamespaceContext;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.Source;
@@ -61,6 +62,7 @@ import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.jsoup.Jsoup;
+
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.netmgt.collectd.PersistAllSelectorStrategy;
 import org.opennms.netmgt.collection.api.AttributeGroupType;
@@ -110,8 +112,8 @@ public abstract class AbstractXmlCollectionHandler implements XmlCollectionHandl
     /** The RRD Repository. */
     private RrdRepository m_rrdRepository;
 
-    /** The XML resource type Map. */
-    private HashMap<String, XmlResourceType> m_resourceTypeList = new HashMap<String, XmlResourceType>();
+    /** The Node Level Resource (temporary variable). It is initialized on each collection attempt. */
+    private XmlSingleInstanceCollectionResource m_nodeResource;
 
     /* (non-Javadoc)
      * @see org.opennms.protocols.xml.collector.XmlCollectionHandler#setServiceName(java.lang.String)
@@ -211,7 +213,10 @@ public abstract class AbstractXmlCollectionHandler implements XmlCollectionHandl
      * @throws ParseException the parse exception
      */
     protected void fillCollectionSet(CollectionAgent agent, XmlCollectionSet collectionSet, XmlSource source, Document doc) throws XPathExpressionException, ParseException {
+        m_nodeResource = null; // Be sure that the temporary resource for node level data is clean before processing a new document.
+        NamespaceContext nc = new DocumentNamespaceResolver(doc);
         XPath xpath = XPathFactory.newInstance().newXPath();
+        xpath.setNamespaceContext(nc);
         for (XmlGroup group : source.getXmlGroups()) {
             LOG.debug("fillCollectionSet: getting resources for XML group {} using XPATH {}", group.getName(), group.getResourceXpath());
             Date timestamp = getTimeStamp(doc, xpath, group);
@@ -295,7 +300,11 @@ public abstract class AbstractXmlCollectionHandler implements XmlCollectionHandl
     protected XmlCollectionResource getCollectionResource(CollectionAgent agent, String instance, String resourceType, Date timestamp) {
         XmlCollectionResource resource = null;
         if (resourceType.equalsIgnoreCase("node")) {
-            resource = new XmlSingleInstanceCollectionResource(agent);
+            if (m_nodeResource == null) {
+                LOG.debug("getCollectionResource: initializing node-level resource.");
+                m_nodeResource = new XmlSingleInstanceCollectionResource(agent);
+            }
+            resource = m_nodeResource;
         } else {
             XmlResourceType type = getXmlResourceType(agent, resourceType);
             resource = new XmlMultiInstanceCollectionResource(agent, instance, type);
@@ -470,8 +479,20 @@ public abstract class AbstractXmlCollectionHandler implements XmlCollectionHandl
             is = applyXsltTransformation(request, is);
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             factory.setIgnoringComments(true);
+            factory.setNamespaceAware(true);
             DocumentBuilder builder = factory.newDocumentBuilder();
-            return builder.parse(is);
+            StringWriter writer = new StringWriter();
+            IOUtils.copy(is, writer, "UTF-8");
+            String contents = writer.toString();
+            Document doc = builder.parse(IOUtils.toInputStream(contents, "UTF-8"));
+            // Ugly hack to deal with DOM & XPath 1.0's battle royale 
+            // over handling namespaces without a prefix. 
+            if(doc.getNamespaceURI() != null && doc.getPrefix() == null){
+                factory.setNamespaceAware(false);
+                builder = factory.newDocumentBuilder();
+                doc = builder.parse(IOUtils.toInputStream(contents, "UTF-8"));
+            }
+            return doc;
         } catch (Exception e) {
             throw new XmlCollectorException(e.getMessage(), e);
         }
@@ -534,21 +555,17 @@ public abstract class AbstractXmlCollectionHandler implements XmlCollectionHandl
      * @return the XML resource type
      */
     protected XmlResourceType getXmlResourceType(CollectionAgent agent, String resourceType) {
-        if (!m_resourceTypeList.containsKey(resourceType)) {
-            ResourceType rt = DataCollectionConfigFactory.getInstance().getConfiguredResourceTypes().get(resourceType);
-            if (rt == null) {
-                LOG.debug("getXmlResourceType: using default XML resource type strategy.");
-                rt = new ResourceType();
-                rt.setName(resourceType);
-                rt.setStorageStrategy(new StorageStrategy());
-                rt.getStorageStrategy().setClazz(XmlStorageStrategy.class.getName());
-                rt.setPersistenceSelectorStrategy(new PersistenceSelectorStrategy());
-                rt.getPersistenceSelectorStrategy().setClazz(PersistAllSelectorStrategy.class.getName());
-            }
-            XmlResourceType type = new XmlResourceType(agent, rt);
-            m_resourceTypeList.put(resourceType, type);
+        ResourceType rt = DataCollectionConfigFactory.getInstance().getConfiguredResourceTypes().get(resourceType);
+        if (rt == null) {
+            LOG.debug("getXmlResourceType: using default XML resource type strategy.");
+            rt = new ResourceType();
+            rt.setName(resourceType);
+            rt.setStorageStrategy(new StorageStrategy());
+            rt.getStorageStrategy().setClazz(XmlStorageStrategy.class.getName());
+            rt.setPersistenceSelectorStrategy(new PersistenceSelectorStrategy());
+            rt.getPersistenceSelectorStrategy().setClazz(PersistAllSelectorStrategy.class.getName());
         }
-        return m_resourceTypeList.get(resourceType);
+        return new XmlResourceType(agent, rt);
     }
 
 }

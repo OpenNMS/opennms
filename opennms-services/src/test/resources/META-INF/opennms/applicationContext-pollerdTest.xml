@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:tx="http://www.springframework.org/schema/tx"
+  xmlns:context="http://www.springframework.org/schema/context"
+  xmlns:util="http://www.springframework.org/schema/util"
+  xmlns:aop="http://www.springframework.org/schema/aop"
+  xmlns:jdbc="http://www.springframework.org/schema/jdbc" 
+  xmlns:onmsgi="http://xmlns.opennms.org/xsd/spring/onms-osgi"
+  xsi:schemaLocation="
+  http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+  http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.2.xsd
+  http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.2.xsd
+  http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.2.xsd
+  http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.2.xsd
+  http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd
+">
+
+    <aop:aspectj-autoproxy proxy-target-class="true"/>
+    <context:annotation-config />
+
+    <bean name="pollerQueryManager" class="org.opennms.netmgt.poller.QueryManagerDaoImpl"/>
+    
+    <bean name="pathOutageManagerDaoImpl" class="org.opennms.netmgt.poller.PathOutageManagerDaoImpl" />
+
+    <!--
+    <bean name="pollContext" class="org.opennms.netmgt.poller.DefaultPollContext">
+      <property name="eventManager" ref="eventIpcManager" />
+      <property name="localHostName" ref="localHostName" />
+      <property name="name" value="OpenNMS.Poller.DefaultPollContext" />
+      <property name="pollerConfig" ref="pollerConfig" />
+      <property name="queryManager" ref="pollerQueryManager" />
+    </bean> 
+    
+    <bean name="pollableNetwork" class="org.opennms.netmgt.poller.pollables.PollableNetwork">
+        <constructor-arg ref="pollContext" />
+    </bean>
+    
+    <bean name="daemon" class="org.opennms.netmgt.poller.Poller">
+      <property name="network" ref="pollableNetwork" />
+      <property name="pollerConfig" ref="pollerConfig" />
+      <property name="pollOutagesConfig" ref="pollOutagesConfig" />
+    </bean>
+    -->
+    
+</beans>

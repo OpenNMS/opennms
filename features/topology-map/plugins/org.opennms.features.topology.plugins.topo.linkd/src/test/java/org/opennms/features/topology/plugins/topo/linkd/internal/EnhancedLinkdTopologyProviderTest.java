@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -39,10 +39,8 @@ import org.opennms.features.topology.api.topo.*;
 import org.opennms.netmgt.dao.api.DataLinkInterfaceDao;
 import org.opennms.netmgt.dao.api.LldpLinkDao;
 import org.opennms.netmgt.dao.api.NodeDao;
-import org.opennms.netmgt.model.DataLinkInterface;
-import org.opennms.netmgt.model.FilterManager;
-import org.opennms.netmgt.model.LldpLink;
-import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.dao.api.OspfLinkDao;
+import org.opennms.netmgt.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -92,6 +90,10 @@ public class EnhancedLinkdTopologyProviderTest {
         LldpLinkDao lldpLinkDao = m_databasePopulator.getLldpLinkDao();
         List<LldpLink> links = lldpLinkDao.findAll();
         assertEquals(16, links.size());
+
+        OspfLinkDao ospfLinkDao = m_databasePopulator.getOspfLinkDao();
+        List<OspfLink> ospfLinks = ospfLinkDao.findAll();
+        assertEquals(2, ospfLinks.size());
     }
 
     @Test
@@ -248,7 +250,7 @@ public class EnhancedLinkdTopologyProviderTest {
         m_topologyProvider.load(null);
 
         assertEquals(24, m_topologyProvider.getVertices().size());
-        assertEquals(8, m_topologyProvider.getEdges().size());
+        assertEquals(9, m_topologyProvider.getEdges().size());
     }
 
     @Test
@@ -323,7 +325,7 @@ public class EnhancedLinkdTopologyProviderTest {
         */
 
         assertEquals(8, m_topologyProvider.getVertices().size());
-        assertEquals(8, m_topologyProvider.getEdges().size());
+        assertEquals(9, m_topologyProvider.getEdges().size());
 
         Vertex v1 = m_topologyProvider.getVertex("nodes", "1");
         Vertex v2 = m_topologyProvider.getVertex("nodes", "2");
@@ -349,8 +351,8 @@ public class EnhancedLinkdTopologyProviderTest {
         assertEquals(0, m_topologyProvider.getSemanticZoomLevel(v5));
         assertEquals(0, m_topologyProvider.getSemanticZoomLevel(v6));
 
-        assertEquals(2, m_topologyProvider.getEdgeIdsForVertex(v1).length);
-        assertEquals(2, m_topologyProvider.getEdgeIdsForVertex(v2).length);
+        assertEquals(3, m_topologyProvider.getEdgeIdsForVertex(v1).length);
+        assertEquals(3, m_topologyProvider.getEdgeIdsForVertex(v2).length);
         assertEquals(2, m_topologyProvider.getEdgeIdsForVertex(v3).length);
         assertEquals(2, m_topologyProvider.getEdgeIdsForVertex(v4).length);
         assertEquals(2, m_topologyProvider.getEdgeIdsForVertex(v5).length);
@@ -360,9 +362,18 @@ public class EnhancedLinkdTopologyProviderTest {
             assertEquals("nodes", vertex.getNamespace());
             //assertTrue(vertex.getIpAddress(), "127.0.0.1".equals(vertex.getIpAddress()) || "64.146.64.214".equals(vertex.getIpAddress()));
         }
+
+        int countLLDP = 0;
+        int countOSPF = 0;
         for (Edge edge : m_topologyProvider.getEdges()) {
-            assertEquals("nodes", edge.getNamespace());
+            if (edge.getNamespace().equals(EnhancedLinkdTopologyProvider.LLDP_EDGE_NAMESPACE)) {
+                countLLDP++;
+            } else if (edge.getNamespace().equals(EnhancedLinkdTopologyProvider.OSPF_EDGE_NAMESPACE)) {
+                countOSPF++;
+            }
         }
+        assertEquals(8, countLLDP);
+        assertEquals(1, countOSPF);
     }
 
     @Test

@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2005-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -38,9 +38,11 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.opennms.core.logging.Logging;
 import org.opennms.core.utils.PropertiesUtils;
 import org.opennms.core.utils.PropertiesUtils.SymbolTable;
 import org.opennms.netmgt.config.VacuumdConfigFactory;
@@ -50,8 +52,8 @@ import org.opennms.netmgt.config.vacuumd.Assignment;
 import org.opennms.netmgt.config.vacuumd.AutoEvent;
 import org.opennms.netmgt.config.vacuumd.Automation;
 import org.opennms.netmgt.config.vacuumd.Trigger;
+import org.opennms.netmgt.events.api.EventParameterUtils;
 import org.opennms.netmgt.model.events.EventBuilder;
-import org.opennms.netmgt.model.events.Parameter;
 import org.opennms.netmgt.scheduler.ReadyRunnable;
 import org.opennms.netmgt.scheduler.Schedule;
 import org.opennms.netmgt.xml.event.Event;
@@ -609,7 +611,7 @@ public class AutomationProcessor implements ReadyRunnable {
                 
                 try {
                     if (m_actionEvent.isAddAllParms() && resultHasColumn(triggerResultSet, "eventParms") ) {
-                        bldr.setParms(Parameter.decode(triggerResultSet.getString("eventParms")));
+                        bldr.setParms(EventParameterUtils.decode(triggerResultSet.getString("eventParms")));
                     }
                     buildEvent(bldr, symbols);
                 } catch (SQLExceptionHolder holder) {
@@ -686,6 +688,8 @@ public class AutomationProcessor implements ReadyRunnable {
      */
     @Override
     public void run() {
+        final Map<String,String> mdc = Logging.getCopyOfContextMap();
+        Logging.putPrefix("vacuumd");
 
         Date startDate = new Date();
         LOG.debug("Start Scheduled automation {}", this);
@@ -702,7 +706,7 @@ public class AutomationProcessor implements ReadyRunnable {
         }
 
         LOG.debug("run: Finished automation {}, started at {}", m_automation.getName(), startDate);
-        
+        Logging.setContextMap(mdc);
     }
 
     /**

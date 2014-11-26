@@ -20,7 +20,7 @@
       <property name="staticMethod"><value>org.opennms.netmgt.config.MapsAdapterConfigFactory.getInstance</value></property>
      </bean>
 
-     <bean name="mapsEventListenerAdapter" class="org.opennms.netmgt.model.events.AnnotationBasedEventListenerAdapter">
+     <bean name="mapsEventListenerAdapter" class="org.opennms.netmgt.events.api.AnnotationBasedEventListenerAdapter">
       <property name="annotatedListener" ref="mapAdapter" />
        <property name="eventSubscriptionService" ref="eventSubscriptionService" />
      </bean>

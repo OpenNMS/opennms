@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -78,11 +78,11 @@ import org.codehaus.jackson.annotate.JsonValue;
 import org.hibernate.annotations.Filter;
 import org.hibernate.annotations.Type;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.model.events.AddEventVisitor;
 import org.opennms.netmgt.model.events.DeleteEventVisitor;
 import org.opennms.netmgt.model.events.EventBuilder;
-import org.opennms.netmgt.model.events.EventForwarder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.style.ToStringCreator;
@@ -180,21 +180,26 @@ public class OnmsNode extends OnmsEntity implements Serializable, Comparable<Onm
     private IsIsElement m_isisElement;
 
     /** persistent field */
+    private CdpElement m_cdpElement;
+
+    /** persistent field */
     private Set<OnmsIpInterface> m_ipInterfaces = new LinkedHashSet<OnmsIpInterface>();
 
     /** persistent field */
     private Set<OnmsSnmpInterface> m_snmpInterfaces = new LinkedHashSet<OnmsSnmpInterface>();
 
     /** persistent field */
-    private Set<OnmsArpInterface> m_arpInterfaces = new LinkedHashSet<OnmsArpInterface>();
+    private Set<OnmsArpInterface> m_arpInterfaces = new LinkedHashSet<>();
 
     /** persistent field */
-    private Set<LldpLink> m_lldpLinks = new LinkedHashSet<LldpLink>();
+    private Set<LldpLink> m_lldpLinks = new LinkedHashSet<>();
 
     /** persistent field */
-    private Set<OnmsArpInterface> m_arpInterfacesBySource = new LinkedHashSet<OnmsArpInterface>();
+    private Set<OnmsArpInterface> m_arpInterfacesBySource = new LinkedHashSet<>();
 
-    private Set<OnmsCategory> m_categories = new LinkedHashSet<OnmsCategory>();
+    private Set<OnmsCategory> m_categories = new LinkedHashSet<>();
+
+    private Set<String> m_requisitionedCategories = new LinkedHashSet<>();
 
     private PathElement m_pathElement;
 
@@ -809,6 +814,24 @@ public class OnmsNode extends OnmsEntity implements Serializable, Comparable<Onm
         m_isisElement = isisElement;
     }
 
+    /**
+     * The cdp element associated with this node
+     *
+     * @return a {@link org.opennms.netmgt.model.CdpElement} object.
+     */
+    @OneToOne(mappedBy="node", cascade = CascadeType.ALL, fetch=FetchType.LAZY)
+    public CdpElement getCdpElement() {
+        return m_cdpElement;
+    }
+
+    /**
+     * <p>setCdpElement</p>
+     *
+     * @param asset a {@link org.opennms.netmgt.model.CdpElement} object.
+     */
+    public void setCdpElement(CdpElement cdpElement) {
+        m_cdpElement = cdpElement;
+    }
 
     /**
      * <p>getPathElement</p>
@@ -1040,6 +1063,24 @@ public class OnmsNode extends OnmsEntity implements Serializable, Comparable<Onm
         return false;
     }
 
+    @Transient
+    @XmlTransient
+    public Set<String> getRequisitionedCategories() {
+        return m_requisitionedCategories;
+    }
+
+    public void setRequisitionedCategories(final Set<String> categories) {
+        m_requisitionedCategories = new LinkedHashSet<>(categories);
+    }
+
+    public void addRequisitionedCategory(final String category) {
+        m_requisitionedCategories.add(category);
+    }
+
+    public void removeRequisitionedCategory(final String category) {
+        m_requisitionedCategories.remove(category);
+    }
+
     /**
      * <p>toString</p>
      *
@@ -1049,6 +1090,8 @@ public class OnmsNode extends OnmsEntity implements Serializable, Comparable<Onm
     public String toString() {
         ToStringCreator retval = new ToStringCreator(this);
         retval.append("id", m_id);
+        retval.append("foreignSource", m_foreignSource);
+        retval.append("foreignId", m_foreignId);
         retval.append("labelSource", m_labelSource == null ? null : m_labelSource.toString());
         retval.append("label", m_label);
         retval.append("parent.id", getParent() == null ? null : getParent().getId());
@@ -1303,15 +1346,11 @@ public class OnmsNode extends OnmsEntity implements Serializable, Comparable<Onm
 
         boolean send = false;
 
-        // LOG.debug("mergeNodeAttributes(): scanned = {}", scannedNode);
-        // LOG.debug("mergeNodeAttributes(): existing = {}", this);
-        // LOG.debug("mergeNodeAttributes(): oldLabel = {}", m_oldLabel);
-
         if (m_oldLabel != null || m_oldLabelSource != null) {
             send = true;
-        } else if (hasNewValue(scannedLabel, m_label)) {
-            m_oldLabel = m_label;
-            m_oldLabelSource = m_labelSource;
+        } else if (hasNewValue(scannedLabel, getLabel())) {
+            m_oldLabel = getLabel();
+            m_oldLabelSource = getLabelSource();
             send = true;
         }
 
@@ -1439,7 +1478,7 @@ public class OnmsNode extends OnmsEntity implements Serializable, Comparable<Onm
      * <p>mergeIpInterfaces</p>
      *
      * @param scannedNode a {@link org.opennms.netmgt.model.OnmsNode} object.
-     * @param eventForwarder a {@link org.opennms.netmgt.model.events.EventForwarder} object.
+     * @param eventForwarder a {@link org.opennms.netmgt.events.api.EventForwarder} object.
      * @param deleteMissing a boolean.
      */
     public void mergeIpInterfaces(OnmsNode scannedNode, EventForwarder eventForwarder, boolean deleteMissing) {
@@ -1542,7 +1581,7 @@ public class OnmsNode extends OnmsEntity implements Serializable, Comparable<Onm
      * <p>mergeNode</p>
      *
      * @param scannedNode a {@link org.opennms.netmgt.model.OnmsNode} object.
-     * @param eventForwarder a {@link org.opennms.netmgt.model.events.EventForwarder} object.
+     * @param eventForwarder a {@link org.opennms.netmgt.events.api.EventForwarder} object.
      * @param deleteMissing a boolean.
      */
     public void mergeNode(OnmsNode scannedNode, EventForwarder eventForwarder, boolean deleteMissing) {

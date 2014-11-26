@@ -9,9 +9,7 @@
 	elementFormDefault="qualified">
 	<annotation>
 		<documentation>
-			XML Schema for the enlinkd-configuration.xml configuration
-			file. Version: $Id: enlinkd-configuration.xsd 3400 2006-10-03
-			22:01:41Z rssntn67 $
+			XML Schema for the enlinkd-configuration.xml configuration file.
 		</documentation>
 	</annotation>
 
@@ -56,7 +54,7 @@
 				use="optional" default="true">
 				<annotation>
 					<documentation>
-						Whether links discovery process should use 
+						Whether links discovery process should use
 						cisco discovery protocol cache table.
 					</documentation>
 				</annotation>

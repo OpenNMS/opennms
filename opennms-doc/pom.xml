@@ -5,9 +5,10 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>opennms</artifactId>
-    <version>1.13.4-SNAPSHOT</version>
+    <version>15.0.0-SNAPSHOT</version>
   </parent>
-  <artifactId>documentation</artifactId>
+  <groupId>org.opennms.doc</groupId>
+  <artifactId>parent</artifactId>
   <packaging>pom</packaging>
   <name>OpenNMS :: Documentation</name>
   <description>Official documentation</description>
@@ -96,12 +97,10 @@
             </execution>
           </executions>
           <configuration>
-            <descriptors>
+            <skipAssembly>true</skipAssembly>
+	    <descriptors>
               <descriptor>${basedir}/../src/assembly/doc.xml</descriptor>
             </descriptors>
-            <appendAssemblyId>true</appendAssemblyId>
-            <outputDirectory>${dist.dir}</outputDirectory>
-            <finalName>${dist.name}</finalName>
           </configuration>
         </plugin>
       </plugins>

@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2013 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -133,18 +133,9 @@ public class JaxbUtilsTest {
 		assertNotNull(log.getEvents());
 		assertEquals(2, log.getEvents().getEventCount());
 		assertEquals("JaxbUtilsTest", log.getEvents().getEvent(0).getSource());
-		
-		final InputStream is = new ByteArrayInputStream(m_logXml.getBytes());
-		final Log log2 = CastorUtils.unmarshal(Log.class, is);
-		is.close();
-		
-		assertNotNull(log2.getEvents());
-		assertEquals(2, log2.getEvents().getEventCount());
-		assertEquals("JaxbUtilsTest", log2.getEvents().getEvent(0).getSource());
-		assertNotNull(log2.getEvents().getEvent(0).getTime());
-		LOG.debug("castor log = {}", log2);
+		assertEquals(1300739661000L, log.getEvents().getEvent(0).getTime().getTime());
 	}
-	
+
     /**
      * This test can be used to compare the performance of JAXB vs. Castor in XML unmarshalling speed.
      * After running this test on my system when preparing for the OpenNMS 1.10 release, JAXB was
@@ -197,25 +188,16 @@ public class JaxbUtilsTest {
         
         System.out.printf("JAXB marshal: %dms, Castor marshal: %dms\n", jaxbTime, castorTime);
     }
-    
+
 	@Test
 	public void testUnmarshalLogNoNamespace() throws Exception {
 		final Log log = JaxbUtils.unmarshal(Log.class, m_logXmlWithoutNamespace);
 		assertNotNull(log.getEvents());
 		assertEquals(2, log.getEvents().getEventCount());
 		assertEquals("JaxbUtilsTest", log.getEvents().getEvent(0).getSource());
-		
-		final InputStream is = new ByteArrayInputStream(m_logXmlWithoutNamespace.getBytes());
-		final Log log2 = CastorUtils.unmarshal(Log.class, is);
-		is.close();
-		
-		assertNotNull(log2.getEvents());
-		assertEquals(2, log2.getEvents().getEventCount());
-		assertEquals("JaxbUtilsTest", log2.getEvents().getEvent(0).getSource());
-		assertNotNull(log2.getEvents().getEvent(0).getTime());
-		LOG.debug("castor log = {}", log2);
+		assertEquals(1300739661000L, log.getEvents().getEvent(0).getTime().getTime());
 	}
-	
+
 	private Event getEvent() {
 		final EventBuilder eb = new EventBuilder("uei.opennms.org/test", "JaxbUtilsTest");
 		final Event e = eb
@@ -253,6 +235,8 @@ public class JaxbUtilsTest {
 		assertNotNull(log);
 		assertNotNull(log.getEvents());
 		assertEquals(1, log.getEvents().getEvent().length);
+		// Make sure that the time was parsed properly to a specific epoch time
+		assertEquals(1302631500000L, log.getEvents().getEvent(0).getTime().getTime());
 	}
 	
 	@Test

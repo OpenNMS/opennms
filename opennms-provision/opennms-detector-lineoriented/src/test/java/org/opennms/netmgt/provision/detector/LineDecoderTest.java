@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -95,7 +95,7 @@ public class LineDecoderTest {
     public static class TestDetector extends AsyncLineOrientedDetectorMinaImpl {
 
         public TestDetector() {
-            super("POP3", 110, 5000, 1);
+            super("POP3", 110, 500, 1);
            
         }
 
@@ -165,7 +165,7 @@ public class LineDecoderTest {
     @Test
     public void testDetectorFailWrongPort() throws Exception{
         
-        m_detector = createDetector(9000);
+        m_detector = createDetector(65535);
         
         assertFalse( doCheck( m_detector.isServiceDetected( m_server.getInetAddress())));
     }
@@ -173,7 +173,6 @@ public class LineDecoderTest {
     private static TestDetector createDetector(int port) {
         TestDetector detector = new TestDetector();
         detector.setServiceName("TEST");
-        detector.setTimeout(1000);
         detector.setPort(port);
         detector.init();
         return detector;

@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -34,6 +34,8 @@ import java.util.List;
 import org.opennms.netmgt.model.BridgeElement;
 import org.opennms.netmgt.model.BridgeMacLink;
 import org.opennms.netmgt.model.BridgeStpLink;
+import org.opennms.netmgt.model.CdpElement;
+import org.opennms.netmgt.model.CdpLink;
 import org.opennms.netmgt.model.IpNetToMedia;
 import org.opennms.netmgt.model.IsIsElement;
 import org.opennms.netmgt.model.IsIsLink;
@@ -41,6 +43,7 @@ import org.opennms.netmgt.model.LldpElement;
 import org.opennms.netmgt.model.LldpLink;
 import org.opennms.netmgt.model.OspfElement;
 import org.opennms.netmgt.model.OspfLink;
+import org.opennms.netmgt.model.topology.LinkableSnmpNode;
 
 /**
  * <p>QueryManager interface.</p>
@@ -56,7 +59,7 @@ public interface EnhancedLinkdService {
      * @return a {@link java.util.List} object.
      * @throws java.sql.SQLException if any.
      */
-    List<LinkableNode> getSnmpNodeList();
+    List<LinkableSnmpNode> getSnmpNodeList();
 
     /**
      * <p>getSnmpNode</p>
@@ -65,7 +68,7 @@ public interface EnhancedLinkdService {
      * @return a {@link org.opennms.netmgt.enlinkd.LinkableNode} object.
      * @throws java.sql.SQLException if any.
      */
-    LinkableNode getSnmpNode(int nodeid);
+    LinkableSnmpNode getSnmpNode(int nodeid);
         
     /**
      * <p>delete</p>
@@ -103,8 +106,9 @@ public interface EnhancedLinkdService {
 	
 	void store(int nodeId, IsIsElement element);
 
-	//	void store(int nodeId, CdpElement cdp);
-	//	void store(int nodeId, CdpLink link);
+	void store(int nodeId, CdpElement cdp);
+	
+	void store(int nodeId, CdpLink link);
 	
 	void store(int nodeId, IpNetToMedia link);
 

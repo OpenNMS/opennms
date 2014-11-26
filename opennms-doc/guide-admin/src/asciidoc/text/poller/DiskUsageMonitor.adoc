@@ -1,3 +1,4 @@
+
 === DiskUsageMonitor
 
 The DiskUsageMonitor monitor can be used to test the amount of free space available on certain storages of a node.
@@ -34,12 +35,12 @@ Out-of-box support for _HOST-RESOURCES-MIB_ among commercial _Unix_ operating sy
                  Must be one of the following symbolic operators: +
                  `endswith`   : The `disk` parameter's value is evaluated as a string that storages' description
                                 must end with; +
-                 `exact`      : The disk` parameter's value is evaluated as a string that storages" description 
+                 `exact`      : The disk` parameter's value is evaluated as a string that storages" description
                                 must exactly match; +
                  `regex`      : The `disk` parameter's value is evaluated as a regular expression that storages'
                                 description must match; +
                  `startswith` : The `disk` parameter's value is evaluated as a string that storages' description
-                                must start with. + 
+                                must start with. +
                  Note: Comparisons are case-sensitive                                                               | optional | `exact`
 | `port`       | Destination port where the SNMP requests shall be sent.                                            | optional | `from snmp-config.xml'
 | `retries`    | Deprecated.

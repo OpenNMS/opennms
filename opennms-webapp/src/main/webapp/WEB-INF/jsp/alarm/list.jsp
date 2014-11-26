@@ -2,22 +2,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -32,6 +32,7 @@
 <%@page language="java" contentType="text/html" session="true" %>
   
 <%@page import="org.opennms.core.utils.InetAddressUtils" %>
+<%@page import="org.opennms.core.utils.WebSecurityUtils" %>
 <%@page import="org.opennms.netmgt.model.OnmsAlarm" %>
 <%@page import="org.opennms.netmgt.model.OnmsFilterFavorite"%>
 <%@page import="org.opennms.web.alarm.AcknowledgeType" %>
@@ -367,13 +368,14 @@
           <td class="divider bright" valign="middle" rowspan="1">
             
             <a style="vertical-align:middle" href="<%= Util.calculateUrlBase(request, "alarm/detail.htm?id=" + alarms[i].getId()) %>"><%=alarms[i].getId()%></a>
+            <c:if test="<%= (alarms[i].getStickyMemo() != null && alarms[i].getStickyMemo().getId() != null) && (alarms[i].getReductionKeyMemo() != null && alarms[i].getReductionKeyMemo().getId() != null) %>">
+                <br />
+            </c:if>
             <c:if test="<%= alarms[i].getStickyMemo() != null && alarms[i].getStickyMemo().getId() != null%>">
-                <img style="vertical-align:middle" src="images/AlarmMemos/StickyMemo.png" width="20" height="20" 
-		     title="<%=alarms[i].getStickyMemo().getBody() %>"/>
+                <img style="vertical-align:middle" src="images/AlarmMemos/StickyMemo.png" width="20" height="20" title="<%=alarms[i].getStickyMemo().getBody() %>"/>
             </c:if>
             <c:if test="<%= alarms[i].getReductionKeyMemo() != null && alarms[i].getReductionKeyMemo().getId() != null%>">
-                <img style="vertical-align:middle" src="images/AlarmMemos/JournalMemo.png" width="20" height="20" 
-                     title="<%=alarms[i].getReductionKeyMemo().getBody() %>"/>
+                <img style="vertical-align:middle" src="images/AlarmMemos/JournalMemo.png" width="20" height="20" title="<%=alarms[i].getReductionKeyMemo().getBody() %>"/>
             </c:if>
 
           <c:if test="${param.display == 'long'}">
@@ -495,7 +497,7 @@
 			<% }%>
           </c:if>
           </td>
-          <td class="divider"><%=alarms[i].getLogMsg()%></td>
+          <td class="divider"><%=WebSecurityUtils.sanitizeString(alarms[i].getLogMsg(), true)%></td>
         </tr> 
       <% } /*end for*/%>
 

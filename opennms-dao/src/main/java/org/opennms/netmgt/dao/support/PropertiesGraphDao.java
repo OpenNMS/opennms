@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2013 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -80,7 +80,7 @@ public class PropertiesGraphDao implements GraphDao, InitializingBean {
     private Map<String, FileReloadContainer<PrefabGraphTypeDao>> m_types =
         new HashMap<String, FileReloadContainer<PrefabGraphTypeDao>>();
 
-    private HashMap<String, FileReloadContainer<AdhocGraphType>> m_adhocTypes =
+    private Map<String, FileReloadContainer<AdhocGraphType>> m_adhocTypes =
         new HashMap<String, FileReloadContainer<AdhocGraphType>>();
 
     private PrefabGraphTypeCallback m_prefabCallback =
@@ -661,7 +661,7 @@ public class PropertiesGraphDao implements GraphDao, InitializingBean {
         }
 
         try {
-            return new Integer(value);
+            return Integer.valueOf(value);
         } catch (NumberFormatException e) {
             throw new DataAccessResourceFailureException(
                                                          "Property value for '"

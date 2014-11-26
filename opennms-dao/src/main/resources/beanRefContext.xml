@@ -10,7 +10,7 @@
          <value>classpath*:/META-INF/opennms/component-dao.xml</value>
        </list>
      </constructor-arg>
-     <constructor-arg ref="soaContext" />
+     <constructor-arg ref="daemonContext" />
    </bean>
    
 </beans>

@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -463,6 +463,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
         return getInterfaceArray(m_ipInterfaceDao.findMatching(criteria));
     }
 
+
     
 
     /* (non-Javadoc)
@@ -587,6 +588,22 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
         }else {
             return getInterfaceArrayWithSnmpData(m_ipInterfaceDao.findMatching(criteria));
         }
+    }
+
+    @Override
+    public Interface[] getAllManagedIpInterfacesLike(String ipHost){
+        OnmsCriteria criteria = new OnmsCriteria(OnmsIpInterface.class);
+        criteria.createAlias("snmpInterface", "snmpInterface", OnmsCriteria.LEFT_JOIN);
+        criteria.createAlias("node", "node");
+        criteria.add(Restrictions.ne("isManaged", "D"));
+        //criteria.add(Restrictions.ne("ipAddress", InetAddressUtils.addr("0.0.0.0")));
+        criteria.add(Restrictions.or(Restrictions.ilike("ipHostName", ipHost, MatchMode.ANYWHERE), Restrictions.ilike("ipAddress", ipHost, MatchMode.ANYWHERE)));
+        //criteria.add(Restrictions.isNotNull("ipAddress"));
+        criteria.addOrder(Order.asc("ipHostName"));
+        criteria.addOrder(Order.asc("node.id"));
+        criteria.addOrder(Order.asc("ipAddress"));
+
+        return getInterfaceArray(m_ipInterfaceDao.findMatching(criteria));
     }
 
     /* (non-Javadoc)
@@ -1292,26 +1309,6 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
         	}
         }
         return stpNode;
-    }
-
-    /**
-     * <p>getIpAddress</p>
-     *
-     * @param nodeid a int.
-     * @param ifindex a int.
-     * @return a {@link java.lang.String} object.
-     * @throws java.sql.SQLException if any.
-     */
-    @Transactional
-    private String getIpAddress(int nodeid, int ifindex)
-            {
-    	String retval = null;
-    	OnmsSnmpInterface snmpinterface = m_snmpInterfaceDao.findByNodeIdAndIfIndex(nodeid, ifindex);
-    	for (OnmsIpInterface ipinterface: snmpinterface.getIpInterfaces() ) {
-    		retval = ipinterface.getIpAddress().getHostAddress();
-    	}
-
-        return retval;
     }
 
     /* (non-Javadoc)

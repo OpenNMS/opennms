@@ -1,6 +1,41 @@
 [releasenotes-1.13]
 === Release 1.13
 
+
+[releasenotes-changelog-1.13.4]
+==== Release 1.13.4
+Release 1.13.4 is the 5th unstable release; it is a preview of what will eventually become the OpenNMS 1.14.x stable series.
+
+The codename for 1.13.4 is _Metallica_
+
+===== Bug
+
+* incorrectly translated trap contents (Issue http://issues.opennms.org/browse/NMS-5281 [NMS-5281])
+* uninformative notifd.log messages (Issue http://issues.opennms.org/browse/NMS-5645 [NMS-5645])
+* Linkd reports incorrect topology (Issue http://issues.opennms.org/browse/NMS-5862 [NMS-5862])
+* net-snmp extend output not properly interpreted if numbers are exactly 8 characters long (Issue http://issues.opennms.org/browse/NMS-6202 [NMS-6202])
+* OpenNMS depends on OpenJDK 6 instead of OpenJDK 7 (Issue http://issues.opennms.org/browse/NMS-6396 [NMS-6396])
+* Can't monitor JBoss EAP 6.1.0 or later with the JMXMonitor/JMXCollector because they don't
+support jmx-remoting protocol (Issue http://issues.opennms.org/browse/NMS-6589 [NMS-6589])
+* RPM dependencies for Java broken (Issue http://issues.opennms.org/browse/NMS-6599 [NMS-6599])
+* New jetty.xml configuration lacks default keystore passwords (Issue http://issues.opennms.org/browse/NMS-6601 [NMS-6601])
+* Having hundreds of scheduled outage hurts the performance of the OpenNMS server (Issue http://issues.opennms.org/browse/NMS-6748 [NMS-6748])
+* High CPU usage due to DataCollectionConfigDao.getConfiguredResourceTypes() while Collectd
+starts (Issue http://issues.opennms.org/browse/NMS-6757 [NMS-6757])
+* The rescanExisting flag in Provisiond is not working as expected (Issue http://issues.opennms.org/browse/NMS-6759 [NMS-6759])
+
+
+===== Enhancements
+
+* Remove dead code from org.opennms.web.ServletInitializer (Issue http://issues.opennms.org/browse/NMS-4945 [NMS-4945])
+* Monitoring Asterisk SIP Clients (Issue http://issues.opennms.org/browse/NMS-5767 [NMS-5767])
+* Remove link to Surveillance Category Editor from nodepage for requisitioned nodes (Issue http://issues.opennms.org/browse/NMS-6372 [NMS-6372])
+* Asset page should not be in edit mode for requisitioned nodes (Issue http://issues.opennms.org/browse/NMS-6373 [NMS-6373])
+* Dynamically generated filename cause packaging issues (Issue http://issues.opennms.org/browse/NMS-6577 [NMS-6577])
+* Add a timeline of outages to nodepage availability-box (Issue http://issues.opennms.org/browse/NMS-6578 [NMS-6578])
+
+
+
 [releasenotes-changelog-1.13.3]
 ==== Release 1.13.3
 Release 1.13.3 is the 4th unstable release; it is a preview of what will eventually become the OpenNMS 1.14.x stable series.

@@ -49,7 +49,7 @@ Name:			opennms
 Summary:		Enterprise-grade Network Management Platform (Easy Install)
 Release:		%releasenumber
 Version:		%version
-License:		LGPL/GPL
+License:		LGPL/AGPL
 Group:			Applications/System
 BuildArch:		noarch
 
@@ -201,6 +201,8 @@ Requires(pre):	opennms-plugin-provisioning-rancid
 Requires:	opennms-plugin-provisioning-rancid
 Requires(pre):	opennms-plugin-provisioning-snmp-asset
 Requires:	opennms-plugin-provisioning-snmp-asset
+Requires(pre):	opennms-plugin-provisioning-snmp-hardware-inventory
+Requires:	opennms-plugin-provisioning-snmp-hardware-inventory
 Requires(pre):	opennms-plugin-ticketer-centric
 Requires:	opennms-plugin-ticketer-centric
 Requires(pre):	opennms-plugin-ticketer-jira
@@ -221,6 +223,8 @@ Requires(pre):	opennms-plugin-protocol-xml
 Requires:	opennms-plugin-protocol-xml
 Requires(pre):	opennms-plugin-protocol-xmp
 Requires:	opennms-plugin-protocol-xmp
+Requires(pre):	opennms-plugin-collector-vtdxml-handler
+Requires:	opennms-plugin-collector-vtdxml-handler
 
 %description plugins
 This installs all optional plugins for OpenNMS.
@@ -295,6 +299,20 @@ Requires:	opennms-core = %{version}-%{release}
 %description plugin-provisioning-snmp-asset
 The SNMP asset provisioning adapter responds to provisioning events by updating asset
 fields with data fetched from SNMP GET requests.
+
+%{extrainfo}
+%{extrainfo2}
+
+
+%package plugin-provisioning-snmp-hardware-inventory
+Summary:	SNMP Hardware Inventory Provisioning Adapter for OpenNMS
+Group:		Applications/System
+Requires(pre):	opennms-core = %{version}-%{release}
+Requires:	opennms-core = %{version}-%{release}
+
+%description plugin-provisioning-snmp-hardware-inventory
+The SNMP Hardware Inventory provisioning adapter responds to provisioning events by updating 
+hardware fields with data fetched from the ENTITY-MIB and vendor extensions of this MIB.
 
 %{extrainfo}
 %{extrainfo2}
@@ -439,6 +457,7 @@ The Juniper JCA collector provides a collector plugin for Collectd to collect da
 %package plugin-collector-vtdxml-handler
 Summary:	VTD-XML Collection Handler for OpenNMS
 Group:		Applications/System
+License:	GPL
 Requires(pre):	opennms-plugin-protocol-xml = %{version}-%{release}
 Requires:	opennms-plugin-protocol-xml = %{version}-%{release}
 
@@ -520,7 +539,7 @@ tar zxvf $RPM_BUILD_DIR/%{name}-%{version}-%{release}/target$RPM_BUILD_ROOT.tar.
 
 echo "=== UNTAR BUILD COMPLETED ==="
 
-### XXX is this needed?  (Most of) the current scripts don't use OPENNMS_HOME.
+### Set this so users can refer to $OPENNMS_HOME easily.
 ### /etc/profile.d
 
 mkdir -p $RPM_BUILD_ROOT%{profiledir}
@@ -539,7 +558,7 @@ END
 %if %{with_docs}
 
 mkdir -p $RPM_BUILD_ROOT%{_docdir}/%{name}-%{version}
-cp -pr $RPM_BUILD_DIR/%{name}-%{version}-%{release}/opennms-doc/target/docbkx/html/* $RPM_BUILD_ROOT%{_docdir}/%{name}-%{version}/
+tar -xvzf $RPM_BUILD_DIR/%{name}-%{version}-%{release}/opennms-doc/guide-all/target/*.tar.gz -C $RPM_BUILD_ROOT%{_docdir}/%{name}-%{version}/
 rm -rf $RPM_BUILD_ROOT%{instprefix}/docs
 cp README* $RPM_BUILD_ROOT%{instprefix}/etc/
 rm -rf $RPM_BUILD_ROOT%{instprefix}/etc/README
@@ -584,6 +603,7 @@ find $RPM_BUILD_ROOT%{instprefix}/etc ! -type d | \
 	grep -v 'otrs.properties' | \
 	grep -v '/rt.properties' | \
 	grep -v 'snmp-asset-adapter-configuration.xml' | \
+	grep -v 'snmp-hardware-inventory-adapter-configuration.xml' | \
 	grep -v 'xml-datacollection-config.xml' | \
 	grep -v 'xmp-config.xml' | \
 	grep -v 'xmp-datacollection-config.xml' | \
@@ -608,6 +628,7 @@ find $RPM_BUILD_ROOT%{sharedir}/etc-pristine ! -type d | \
 	grep -v 'otrs.properties' | \
 	grep -v '/rt.properties' | \
 	grep -v 'snmp-asset-adapter-configuration.xml' | \
+	grep -v 'snmp-hardware-inventory-adapter-configuration.xml' | \
 	grep -v 'xml-datacollection-config.xml' | \
 	grep -v 'xmp-config.xml' | \
 	grep -v 'xmp-datacollection-config.xml' | \
@@ -766,6 +787,12 @@ rm -rf $RPM_BUILD_ROOT
 %config(noreplace) %{instprefix}/etc/snmp-asset-adapter-configuration.xml
 %{sharedir}/etc-pristine/snmp-asset-adapter-configuration.xml
 
+%files plugin-provisioning-snmp-hardware-inventory
+%defattr(664 root root 775)
+%{instprefix}/lib/opennms-snmp-hardware-inventory-provisioning-adapter*.jar
+%config(noreplace) %{instprefix}/etc/snmp-hardware-inventory-adapter-configuration.xml
+%{sharedir}/etc-pristine/snmp-hardware-inventory-adapter-configuration.xml
+
 %files plugin-protocol-cifs
 %defattr(664 root root 775)
 %{instprefix}/lib/org.opennms.protocols.cifs*.jar
@@ -813,13 +840,13 @@ rm -rf $RPM_BUILD_ROOT
 %files plugin-protocol-xml
 %defattr(664 root root 775)
 %config(noreplace) %{instprefix}/etc/xml-*.xml
-%config(noreplace) %{instprefix}/etc/*datacollection*/3gpp*
-%config(noreplace) %{instprefix}/etc/snmp-graph.properties.d/3gpp*
+%config(noreplace) %{instprefix}/etc/examples/3gpp-juniper/xml-*.xml
+%config(noreplace) %{instprefix}/etc/examples/3gpp-juniper/*datacollection*/3gpp*
+%config(noreplace) %{instprefix}/etc/examples/3gpp-juniper/snmp-graph.properties.d/3gpp*
+%config(noreplace) %{instprefix}/etc/examples/opennms-mx4j/*
 %{instprefix}/lib/org.opennms.protocols.xml-*.jar
-%attr(755,root,root) %{instprefix}/contrib/xml-collector/*.pl
+%attr(755,root,root) %{instprefix}/contrib/xml-collector/3gpp*
 %{sharedir}/etc-pristine/xml-*.xml
-%{sharedir}/etc-pristine/*datacollection*/3gpp*
-%{sharedir}/etc-pristine/snmp-graph.properties.d/3gpp*
 
 %files plugin-protocol-xmp
 %defattr(664 root root 775)
@@ -866,6 +893,16 @@ fi
 if [ -n "$DEBUG" ]; then
 	env | grep RPM_INSTALL_PREFIX | sort -u
 fi
+
+for prefix in lib lib64; do
+	if [ -d "/usr/$prefix/systemd" ]; then
+		SYSTEMDDIR="/usr/$prefix/systemd/system"
+		printf -- "- installing opennms.service into $SYSTEMDDIR... "
+		install -d -m 755 "$SYSTEMDDIR"
+		install -m 655 "%{instprefix}/etc/opennms.service" "$SYSTEMDDIR"/
+		echo "done"
+	fi
+done
 
 if [ "$RPM_INSTALL_PREFIX0/logs" != "$RPM_INSTALL_PREFIX2" ]; then
 	printf -- "- making symlink for $RPM_INSTALL_PREFIX0/logs... "

@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -85,16 +85,16 @@ public class TimeChunker {
     
     private List<TimeChunk> m_resolutionSegments = new ArrayList<TimeChunk>();
     private Iterator<TimeChunk> m_itr;
-    private int m_resolution;
+    private long m_resolution;
     
-    public TimeChunker(int resolution, Date startDate, Date endDate) {
+    public TimeChunker(long resolution, Date startDate, Date endDate) {
         m_startDate = startDate;
         m_endDate = endDate;
         m_resolution = resolution;
         createTimeSegments(m_resolutionSegments, resolution, startDate.getTime(), (endDate.getTime() - startDate.getTime()));
     }
     
-    private void createTimeSegments(List<TimeChunk> resolutionSegments, int resolution, long startTime, long timeInMilliseconds) {
+    private void createTimeSegments(List<TimeChunk> resolutionSegments, long resolution, long startTime, long timeInMilliseconds) {
         for(long i = 0; i < timeInMilliseconds; i+=resolution) {
             Date startDate = new Date(startTime + i);
             Date endDate = new Date(startTime + i + resolution);
@@ -120,8 +120,8 @@ public class TimeChunker {
         return index >= m_resolutionSegments.size() ? null : m_resolutionSegments.get(index);
     }
     
-    public int getIndexContaining(Date timestamp) {
-        return (int)(timestamp.getTime() - m_startDate.getTime()) / m_resolution;
+    public long getIndexContaining(Date timestamp) {
+        return (long)(timestamp.getTime() - m_startDate.getTime()) / m_resolution;
     }
     
     

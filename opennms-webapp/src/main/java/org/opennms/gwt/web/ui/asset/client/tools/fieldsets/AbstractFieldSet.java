@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -29,6 +29,7 @@
 package org.opennms.gwt.web.ui.asset.client.tools.fieldsets;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.opennms.gwt.web.ui.asset.client.tools.validation.Validator;
 
@@ -69,8 +70,8 @@ public abstract class AbstractFieldSet extends Composite implements FieldSet {
 	protected Label warningLabel = new Label();
 	protected String helpText = "";
 	protected DecoratedPopupPanel popPanel = new DecoratedPopupPanel(true);
-	protected ArrayList<Validator> errorValidators = new ArrayList<Validator>();
-	protected ArrayList<Validator> warningValidators = new ArrayList<Validator>();
+	protected List<Validator> errorValidators = new ArrayList<Validator>();
+	protected List<Validator> warningValidators = new ArrayList<Validator>();
 	protected Object inititalValue;
 
 	public AbstractFieldSet(String name, final String helpText) {
@@ -199,7 +200,7 @@ public abstract class AbstractFieldSet extends Composite implements FieldSet {
 		return errorLabel.getText();
 	}
 
-	public ArrayList<Validator> getErrorValidators() {
+	public List<Validator> getErrorValidators() {
 		return errorValidators;
 	}
 
@@ -230,7 +231,7 @@ public abstract class AbstractFieldSet extends Composite implements FieldSet {
 		mainPanel.setStyleDependentName("error", true);
 	}
 
-	public void setErrors(ArrayList<String> errors) {
+	public void setErrors(List<String> errors) {
 		String allErrors = "";
 		for (String error : errors) {
 			allErrors += error + " ";
@@ -240,7 +241,7 @@ public abstract class AbstractFieldSet extends Composite implements FieldSet {
 		mainPanel.setStyleDependentName("error", true);
 	}
 
-	public void setErrorValidators(ArrayList<Validator> validators) {
+	public void setErrorValidators(List<Validator> validators) {
 		errorValidators = validators;
 	}
 
@@ -256,7 +257,7 @@ public abstract class AbstractFieldSet extends Composite implements FieldSet {
 		mainPanel.setStyleDependentName("warning", true);
 	}
 
-	public void setWarnings(ArrayList<String> warnings) {
+	public void setWarnings(List<String> warnings) {
 		String allWarnings = "";
 		for (String warning : warnings) {
 			allWarnings += warning + " ";
@@ -266,7 +267,7 @@ public abstract class AbstractFieldSet extends Composite implements FieldSet {
 		mainPanel.setStyleDependentName("warning", true);
 	}
 
-	public void setWarningValidators(ArrayList<Validator> validators) {
+	public void setWarningValidators(List<Validator> validators) {
 		warningValidators = validators;
 	}
 

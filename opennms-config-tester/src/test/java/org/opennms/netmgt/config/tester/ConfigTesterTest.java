@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -89,11 +89,6 @@ public class ConfigTesterTest {
     public void testSystemProperties() {
         assertEquals("false", System.getProperty("distributed.layoutApplicationsVertically"));
         assertEquals("target/test/logs", System.getProperty("opennms.webapplogs.dir"));
-    }
-
-    @Test
-    public void testAccessPointMonitorConfiguration() {
-        ignoreConfigFile("access-point-monitor-configuration.xml");
     }
 
     @Test
@@ -191,11 +186,6 @@ public class ConfigTesterTest {
     }
 
     @Test
-    public void testEventsArchiverConfiguration() {
-        testConfigFile("events-archiver-configuration.xml");
-    }
-
-    @Test
     public void testExcludeUeis() {
         testConfigFile("exclude-ueis.properties");
     }
@@ -256,11 +246,6 @@ public class ConfigTesterTest {
     @Test
     public void testLog4j2Config() {
         ignoreConfigFile("log4j2.xml");
-    }
-
-    @Test
-    public void testLog4j2ArchiveEventsConfig() {
-        ignoreConfigFile("log4j2-archive-events.xml");
     }
 
     @Test
@@ -447,11 +432,6 @@ public class ConfigTesterTest {
     }
 
     @Test
-    public void testSmsPhonebook() {
-        testConfigFile("smsPhonebook.properties");
-    }
-
-    @Test
     public void testSnmpAdhocGraph() {
         testConfigFile("snmp-adhoc-graph.properties");
     }
@@ -601,6 +581,11 @@ public class ConfigTesterTest {
     @Test
     public void testRemoteRepositoyConfig() {
         ignoreConfigFile("remote-repository.xml");
+    }
+
+    @Test
+    public void testHardwareInventoryAdapterConfiguration() {
+        ignoreConfigFile("snmp-hardware-inventory-adapter-configuration.xml");
     }
 
     @Test

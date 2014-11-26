@@ -163,12 +163,12 @@
     <property name="agentConfigFactory" ref="snmpPeerFactory" />
   </bean>
   
-  <bean id="daemonListener" class="org.opennms.netmgt.model.events.AnnotationBasedEventListenerAdapter">
+  <bean id="daemonListener" class="org.opennms.netmgt.events.api.AnnotationBasedEventListenerAdapter">
     <property name="annotatedListener" ref="daemon" />
     <property name="eventSubscriptionService" ref="eventSubscriptionService" />
   </bean>
  
-  <bean id="adapterManagerListener" class="org.opennms.netmgt.model.events.AnnotationBasedEventListenerAdapter">
+  <bean id="adapterManagerListener" class="org.opennms.netmgt.events.api.AnnotationBasedEventListenerAdapter">
     <property name="annotatedListener" ref="adapterManager" />
     <property name="eventSubscriptionService" ref="eventSubscriptionService" />
   </bean>

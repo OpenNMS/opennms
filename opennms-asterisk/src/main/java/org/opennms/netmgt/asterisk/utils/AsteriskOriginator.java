@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -177,7 +177,7 @@ public class AsteriskOriginator {
         m_dialTimeout = PropertiesUtils.getProperty(m_amiProps, "org.opennms.asterisk.originate.legadialtimeout", DEFAULT_LEGA_TIMEOUT);
         m_legBContext = PropertiesUtils.getProperty(m_amiProps, "org.opennms.asterisk.originate.legbcontext", DEFAULT_LEGB_CONTEXT);
         m_legBExtension = PropertiesUtils.getProperty(m_amiProps, "org.opennms.asterisk.originate.legbextension", DEFAULT_LEGB_EXTENSION);
-        String legBPriorityStr = PropertiesUtils.getProperty(m_amiProps, "org.opennms.asterisk.originate.legbpriority", new Integer(DEFAULT_LEGB_PRIORITY).toString());
+        String legBPriorityStr = PropertiesUtils.getProperty(m_amiProps, "org.opennms.asterisk.originate.legbpriority", Integer.valueOf(DEFAULT_LEGB_PRIORITY).toString());
         m_legBPriority = Integer.parseInt(legBPriorityStr);
         m_legBAppPattern = PropertiesUtils.getProperty(m_amiProps, "org.opennms.asterisk.originate.legbapp", null);
         m_legBAppDataPattern = PropertiesUtils.getProperty(m_amiProps, "org.opennms.asterisk.originate.legbappdata", null);

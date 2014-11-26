@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>container</artifactId>
-    <version>1.13.4-SNAPSHOT</version>
+    <version>15.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.karaf</groupId>
@@ -78,6 +78,8 @@
           -->
           <features>
             <feature>opennms-osgi-core</feature>
+            <feature>opennms-core</feature>
+            <feature>opennms-core-web</feature>
             <feature>jmxconfiggenerator.webui</feature>
             <feature>dashlet-alarms</feature>
             <feature>dashlet-charts</feature>

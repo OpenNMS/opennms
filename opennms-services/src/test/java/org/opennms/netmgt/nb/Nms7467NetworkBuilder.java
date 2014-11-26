@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -128,8 +128,8 @@ public class Nms7467NetworkBuilder extends TestNetworkBuilder {
 
     static {
         CISCO_C870_IP_IF_MAP.put(InetAddressUtils.addr("172.20.1.1"), 12);
-        CISCO_C870_IP_IF_MAP.put(InetAddressUtils.addr("172.20.2.1"), 13);
         CISCO_C870_IP_IF_MAP.put(InetAddressUtils.addr("10.255.255.2"), 12);
+        CISCO_C870_IP_IF_MAP.put(InetAddressUtils.addr("172.20.2.1"), 13);
         CISCO_C870_IP_IF_MAP.put(InetAddressUtils.addr("65.41.39.146"), 14);            
 
         CISCO_C870_IF_IFNAME_MAP.put(1, "Fa0");
@@ -166,10 +166,10 @@ public class Nms7467NetworkBuilder extends TestNetworkBuilder {
         CISCO_C870_IF_IFDESCR_MAP.put(17, "Tunnel0");        
         CISCO_C870_IF_IFDESCR_MAP.put(18, "NVI0");        
 
-        CISCO_C870_IF_MAC_MAP.put(1, "001f6cd034e7");
-        CISCO_C870_IF_MAC_MAP.put(2, "001f6cd034e8");
-        CISCO_C870_IF_MAC_MAP.put(3, "001f6cd034e9");
-        CISCO_C870_IF_MAC_MAP.put(4, "001f6cd034ea");
+        CISCO_C870_IF_MAC_MAP.put(1,  "001f6cd034e7");
+        CISCO_C870_IF_MAC_MAP.put(2,  "001f6cd034e8");
+        CISCO_C870_IF_MAC_MAP.put(3,  "001f6cd034e9");
+        CISCO_C870_IF_MAC_MAP.put(4,  "001f6cd034ea");
         CISCO_C870_IF_MAC_MAP.put(12, "001f6cd034e7");
         CISCO_C870_IF_MAC_MAP.put(13, "001f6cd034e7");
         CISCO_C870_IF_MAC_MAP.put(14, "00000c03b09e");

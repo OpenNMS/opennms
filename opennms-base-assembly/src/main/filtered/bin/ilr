@@ -1,4 +1,11 @@
 #!/bin/sh -
 
-ILR_JAR=`ls -1 "${install.dir}"/lib/org.opennms.features.instrumentationLogReader-*.jar | head -n 1`
-exec ${install.bin.dir}/runjava -r -- -jar "$ILR_JAR" "$@"
+OPENNMS_HOME="${install.dir}"
+OPENNMS_BINDIR="${install.bin.dir}"
+
+ILR_JAR=`ls -1 "$OPENNMS_HOME"/lib/org.opennms.features.instrumentationLogReader-*.jar | head -n 1`
+
+exec "$OPENNMS_BINDIR"/runjava -r -- \
+	-Dlog4j.configurationFile="$OPENNMS_HOME"/etc/log4j2-tools.xml \
+	-jar "$ILR_JAR"
+	"$@"

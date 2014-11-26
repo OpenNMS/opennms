@@ -105,6 +105,7 @@
         <attrib name="PeakPoolThreads"  alias="ONMSCollectPoolPeak" type="gauge"/>
         <attrib name="TasksTotal"     alias="ONMSCollectTasksTot"  type="counter"/>
         <attrib name="TasksCompleted" alias="ONMSCollectTasksCpt"  type="counter"/>
+        <attrib name="CollectableServiceCount" alias="ONMSCollectSvcCount" type="gauge"/>
       </mbean>
       <mbean name="OpenNMS.Capsd" objectname="OpenNMS:Name=Capsd">
         <attrib name="ActiveSuspectThreads" alias="ActiveSuspecThreads" type="gauge"/>
@@ -150,6 +151,9 @@
         <attrib name="BinaryNoticesInterrupted" alias="BinaryNoticeInterr" type="counter"/>
         <attrib name="JavaNoticesInterrupted" alias="JavaNoticesInterru" type="counter"/>
         <attrib name="UnknownNoticesInterrupted" alias="UnknowNoticeInterr" type="counter"/>
+      </mbean>
+      <mbean name="OpenNMS.Manager" objectname="OpenNMS:Name=Manager">
+        <attrib name="onmsUptime" alias="Uptime" type="gauge"/>
       </mbean>
       <mbean name="JVM Memory" objectname="java.lang:type=OperatingSystem">
         <attrib name="FreePhysicalMemorySize" alias="FreeMemory" type="gauge"/>

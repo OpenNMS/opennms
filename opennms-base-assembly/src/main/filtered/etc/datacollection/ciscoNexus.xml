@@ -93,6 +93,15 @@
         </collect>
       </systemDef>
 
+      <systemDef name="Cisco Nexus 7009"><!-- Nexus7000 9 slot N7K chassis -->
+        <sysoid>.1.3.6.1.4.1.9.12.3.1.3.932</sysoid>
+        <collect>
+          <includeGroup>cisco-nx-process-index</includeGroup>
+          <includeGroup>mib2-X-interfaces</includeGroup>
+          <includeGroup>cisco-nx-environmental</includeGroup>
+        </collect>
+      </systemDef>
+
       <systemDef name="Cisco Nexus 7010"><!-- Nexus7000 10 slot N7K chassis -->
         <sysoid>.1.3.6.1.4.1.9.12.3.1.3.612</sysoid>
         <collect>

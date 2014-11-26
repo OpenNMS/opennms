@@ -2,22 +2,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -127,7 +127,7 @@
 		var sendEventOption = document.snmpConfigForm.sendEventOption.checked;
 		var sendLocallyOption = document.snmpConfigForm.saveLocallyOption.checked;
 		if (!sendEventOption && !sendLocallyOption) {
-			alert("You must select either 'send Event' or 'save locally'. It is possible to select both options.");
+			alert("You must select either 'Send Event' or 'Save Locally'. It is possible to select both options.");
 			return false;
 		}
 		
@@ -140,23 +140,34 @@
 				&& input !== "" && input !== false;
 	}
 
+    function getVersion(id) {
+        var element = document.getElementById(id);
+        if (element == null || element.options == null || element.selectedIndex == null) {
+            return "v2c";
+        }
+
+        return element.options[element.selectedIndex].value;
+    }
+
 	/*
 	 * On Version change only the specificy section is shown.
 	 */
 	function onVersionChange() {
 		var versionElements = new Array(document.getElementById("v1v2"), document.getElementById("v3"));
 		var selectedElement = null;
+        var version = getVersion("version");
+
 		//  determine selected element
-		if (document.getElementById("version").value == "v1" || document.getElementById("version").value == "v2c")
-			selectedElement = document.getElementById("v1v2");
-		if (document.getElementById("version").value == "v3")
-			selectedElement = document.getElementById("v3");
+        if (version == "v1" || version == "v2c")
+            selectedElement = document.getElementById("v1v2");
+        if (version == "v3")
+            selectedElement = document.getElementById("v3");
 
 		// hide all not selected elements and show selected Element
 		for ( var elementIndex in versionElements) {
 			var element = versionElements[elementIndex];
 			if (element == selectedElement) { // show
-				element.style.visibility = null;
+				element.style.visibility = "visible";
 				element.style.display = "block";
 			} else { // hide
 				element.style.visibility = "hidden";
@@ -183,23 +194,23 @@
 	}
 	-->
 </style>
-<div class="tooltip" id="versionTT"><p><b>Default: </b>v<%=SnmpConfiguration.DEFAULT_VERSION %><br/>Specify the SNMP version you want to use. You are not allowed to set v1/v2c and v3 parameters at the time.</p></div>
+<div class="tooltip" id="versionTT"><p><b>Default: </b>v<%=SnmpConfiguration.DEFAULT_VERSION %><br/>Specify the SNMP version you want to use. You are not allowed to set v1/v2c and v3 parameters at the same time.</p></div>
 <div class="tooltip" id="firstIpAddressTT"><p><b>Default: </b>-<br/>Specify the IP Address you want to define as the first IP address. Even if you just want to add a specific IP address enter that one here. Either IPv4 or IPv6 format is allowed.</p></div>
 <div class="tooltip" id="lastIpAddressTT"><p><b>Default: </b>-<br/>If you want to define a range of IP addresses, specify the last IP address. If you just want to add a specific IP address to your SNMP configuration leave this field empty. Either IPv4 or IPv6 format is allowed.</p></div>
 <div class="tooltip" id="timeoutTT"><p><b>Default: </b><%=SnmpConfiguration.DEFAULT_TIMEOUT %> ms<br/>The amount of time, in milliseconds, that OpenNMS will wait for a response from the agent.</p></div>
-<div class="tooltip" id="retryCountTT"><p><b>Default: </b><%=SnmpConfiguration.DEFAULT_RETRIES %><br/>The number of attempts that will be made to connect to the SNMP agent.</p></div>
+<div class="tooltip" id="retryCountTT"><p><b>Default: </b><%=SnmpConfiguration.DEFAULT_RETRIES %><br/>The number of retries that will be made to connect to the SNMP agent if the initial attempt fails.</p></div>
 <div class="tooltip" id="portTT"><p><b>Default: </b><%=SnmpConfiguration.DEFAULT_PORT %><br/>This overrides the default port.</p></div>
 <div class="tooltip" id="maxRequestSizeTT"><p><b>Default: </b><%=SnmpConfiguration.DEFAULT_MAX_REQUEST_SIZE %><br/>The maximum size of outgoing SNMP requests. It must be at least 484.</p></div>
 <div class="tooltip" id="maxVarsPerPduTT"><p><b>Default: </b><%=SnmpConfiguration.DEFAULT_MAX_VARS_PER_PDU %><br/>The maximum number of variables per SNMP request.</p></div>
-<div class="tooltip" id="maxRepetitionsTT"><p><b>Default: </b><%=SnmpConfiguration.DEFAULT_MAX_REPETITIONS %><br/>The maximum number of attempts which are made to get the variables beyond those specified by the non repeaters field.</p></div>
+<div class="tooltip" id="maxRepetitionsTT"><p><b>Default: </b><%=SnmpConfiguration.DEFAULT_MAX_REPETITIONS %><br/>The maximum number of instances which the agent may return for any variables beyond those specified by the non-repeaters field. Applies only to v2c and v3.</p></div>
 <div class="tooltip" id="readCommunityStringTT"><p><b>Default: </b><%=SnmpConfiguration.DEFAULT_READ_COMMUNITY %><br/>The default "read" community string for SNMP queries.</p></div>
 <div class="tooltip" id="writeCommunityStringTT"><p><b>Default: </b><%=SnmpConfiguration.DEFAULT_WRITE_COMMUNITY %><br/>The default "write" community string for SNMP queries. Note that this is for future development - OpenNMS does not perform SNMP "sets" at the moment.</p></div>
 <div class="tooltip" id="securityNameTT"><p><b>Default: </b><%=SnmpConfiguration.DEFAULT_SECURITY_NAME %><br/>A security name for SNMP v3 authentication.</p></div>
 <div class="tooltip" id="securityLevelTT"><p><b>Default: </b>noAuthNoPriv|authNoPriv|authPriv<br/>The security level for SNMP v3 authentication. If you leave it empty the security level is determined automatically as follows:<ul><li>if no authentication passphrase is set <u>noAuthNoPriv</u> is determined</li><li>if authentication passphrase is set but a privacy passphrase is not <u>authNoPriv</u> is determined</li><li>if authentication and privacy passphrase is set <u>authPriv</u> is determined</ul></p></div>
 <div class="tooltip" id="authPassPhraseTT"><p><b>Default: </b><%=SnmpConfiguration.DEFAULT_AUTH_PASS_PHRASE %><br/>The passphrase to use for SNMP v3 authentication.</p></div>
 <div class="tooltip" id="authProtocolTT"><p><b>Default: </b><%=SnmpConfiguration.DEFAULT_AUTH_PROTOCOL %><br/>The authentication protocol for SNMP v3.</p></div>
-<div class="tooltip" id="privPassPhraseTT"><p><b>Default: </b><%=SnmpConfiguration.DEFAULT_PRIV_PASS_PHRASE %><br/>A privacy pass phrase used to encrypt the contents of SNMP v3 packages.</p></div>
-<div class="tooltip" id="privProtocolTT"><p><b>Default: </b><%=SnmpConfiguration.DEFAULT_PRIV_PROTOCOL %><br/>The privacy protocol used to encrypt the contents of SNMP v3 packages.</p></div>
+<div class="tooltip" id="privPassPhraseTT"><p><b>Default: </b><%=SnmpConfiguration.DEFAULT_PRIV_PASS_PHRASE %><br/>A privacy pass phrase used to encrypt the contents of SNMP v3 PDUs.</p></div>
+<div class="tooltip" id="privProtocolTT"><p><b>Default: </b><%=SnmpConfiguration.DEFAULT_PRIV_PROTOCOL %><br/>The privacy protocol used to encrypt the contents of SNMP v3 PDUs.</p></div>
 <div class="tooltip" id="engineIdTT"><p><b>Default: </b>-<br/>The engine id of the target agent.</p></div>
 <div class="tooltip" id="contextEngineIdTT"><p><b>Default: </b>-<br/>The name of the context to obtain data from the target agent.</p></div>
 <div class="tooltip" id="contextNameTT"><p><b>Default: </b>-<br/>The context engine id of the target entity on the agent.</p></div>
@@ -207,7 +218,7 @@
 <div class="tooltip" id="ipAddressLookupTT"><p><b>Default: </b>-<br/>Specify the IP Address for which you want to lookup the SNMP configuration. Either IPv4 or IPv6 format is allowed.</div>
 <div class="tooltip" id="proxyHostTT"><p><b>Default: </b>-<br/>A proxy host to use to communicate with the SNMP agent.</p></div>
 <div class="tooltip" id="sendEventOptionTT"><p><b>Default: </b>enabled<br/>By default the snmp configuration is published to the system by sending an event. This is useful if you have multiple OpenNMS instances running and want to notify all of them about the changes. If you do not which to send the event, unmark the checkbox. <b>Be aware that collectd must be activated to process the event!</b></p></div>
-<div class="tooltip" id="saveLocallyOptionTT"><p><b>Default: </b>disabled<br/>This option saves the changes directly in snmp-config.xml and does not send an event. The difference between the "send Event" option is that collectd is not needed. If collectd is not running select this option.</p></div>
+<div class="tooltip" id="saveLocallyOptionTT"><p><b>Default: </b>disabled<br/>This option saves the changes directly in snmp-config.xml and does not send an event. The difference to the "Send Event" option is that Collectd is not needed. If Collectd is not running select this option.</p></div>
 
 <%!// does Null Pointer handling
 	public String getValue(Object input) {
@@ -515,7 +526,7 @@
 				<table>
 					<tr>
 						<td width="25%" align="right">
-							<label for="sendEventOption">send Event</label>
+							<label for="sendEventOption">Send Event</label>
 							<img src="css/images/ui-trans_1x1.png" class="info" onMouseOver="showTT('sendEventOptionTT')" onMouseOut="hideTT()"/>
 							<input type="checkbox" id="sendEventOption" name="sendEventOption" checked="checked"/>
 						</td>
@@ -523,7 +534,7 @@
 					</tr>
 					<tr>
 						<td width="25%" align="right">
-							<label for="saveLocallyOption">save locally</label>
+							<label for="saveLocallyOption">Save Locally</label>
 							<img src="css/images/ui-trans_1x1.png" class="info" onMouseOver="showTT('saveLocallyOptionTT')" onMouseOut="hideTT()"/>
 							<input type="checkbox" id="saveLocallyOption" name="saveLocallyOption"/>
 						</td>

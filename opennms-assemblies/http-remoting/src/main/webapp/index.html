@@ -40,11 +40,13 @@
     // Shorthand for 'onload'
     $(function() {
       $.getJSON('js/properties.json', function (json) {
+          var exe = 'opennms-remote-poller-windows-' + json.projectVersion + '.exe';
           // Change all 'version' spans to the correct version
           $('.version').html(json.projectVersion);
+          $('#exe_link').attr('href', exe);
           // Check to see if the installer EXE is present on the system; if so, show the download link. 
           $.ajax({
-            url: 'opennms-remote-poller-windows-' + json.projectVersion + '.exe',
+            url: exe,
             method: 'HEAD',
             error: function()
             {
@@ -104,8 +106,8 @@
       The following installer package can be used to register the Java Web Start version of the remote poller as a Windows service.
     </p>
     <div id="download-local" class="download-link">
-      <span>&#x25BC; <a href="opennms-remote-poller-windows-1.13.0-SNAPSHOT.exe" style="color:#FFFF88;">OpenNMS Remote Poller Installer</a></span>
-      <p>Windows 2000, XP, 2003, Vista, 2008, 7, 8, 2012</p>
+      <span>&#x25BC; <a id="exe_link" href="opennms-remote-poller-windows.exe" style="color:#FFFF88;">OpenNMS Remote Poller Installer</a></span>
+      <p>Windows Vista, 2008, 7, 8, 2012</p>
       <p>Version <span class="version">Unknown</span></p>
     </div>
     <div id="download-unavailable" class="download-link unavailable">

@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -28,10 +28,10 @@
 
 package org.opennms.smoketest;
 
+import org.junit.After;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
-import org.openqa.selenium.NoSuchElementException;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class ServicePageTest extends OpenNMSSeleniumTestCase {
@@ -73,20 +73,53 @@ public class ServicePageTest extends OpenNMSSeleniumTestCase {
         return currentNode;
     }
 
+    @After
+    public void tearDown() throws Exception {
+        // if selenium is not initialized, do not clean up
+        if (selenium != null) {
+            goToMainPage();
+
+            clickAndWait("link=Admin");
+            clickAndWait("link=Manage Provisioning Requisitions");
+
+            if (selenium.isElementPresent("//input[@value='Delete Nodes']")) {
+                clickAndWait("//input[@value='Delete Nodes']");
+                clickAndWait("//input[@value='Synchronize']");
+            }
+
+            int loop = 0;
+            while (loop < 20) {
+                clickAndWait("link=Provisioning Requisitions");
+                Thread.sleep(1000);
+                if (selenium.isTextPresent("0 nodes defined, 0 nodes in database")) {
+                    break;
+                }
+                loop++;
+            }
+
+            clickAndWait("//input[@value='Delete Requisition']");
+
+            deleteTestRequisition();
+            deleteTestUser();
+            deleteTestGroup();
+
+        }
+
+        super.tearDown();
+    }
 
     @Test
-    public void a_testProvisioningGroupSetup() throws Exception {
-
-        String groupName = "SeleniumTestGroup";
+    public void testRequisitionUI() throws Exception {
+        goToMainPage();
 
         clickAndWait("link=Admin");
 
         clickAndWait("link=Manage Provisioning Requisitions");
         waitForPageToLoad();
 
-        selenium.type("css=form[name=takeAction] > input[name=groupName]", groupName);
+        selenium.type("css=form[name=takeAction] > div > input[name=groupName]", REQUISITION_NAME);
         clickAndWait("css=input[type=submit]");
-        clickAndWait("//a[contains(@href, 'editForeignSource(\""+ groupName+"\")')]");
+        clickAndWait("//button[contains(@onclick, 'editForeignSource(\""+ REQUISITION_NAME+"\")')]");
         clickAndWait("//input[@value='Add Detector']");
 
         String detectorNode = setTreeFieldsAndSave("foreignSourceEditForm", type("name", "HTTP-8080"), select("pluginClass", "HTTP"));
@@ -98,7 +131,8 @@ public class ServicePageTest extends OpenNMSSeleniumTestCase {
         waitForPageToLoad();
 
         clickAndWait("//input[@value='Done']");
-        clickAndWait("//a[contains(@href, '" + groupName + "') and contains(@href, 'editRequisition') and text() = 'Edit']");
+        String rcOfEditAnchor = "id=edit_req_anchor_" + REQUISITION_NAME;
+        clickAndWait(rcOfEditAnchor);
         clickAndWait("//input[@value='Add Node']");
         String nodeForNode = setTreeFieldsAndSave("nodeEditForm", type("nodeLabel", "localNode"));
         waitForPageToLoad();
@@ -113,51 +147,55 @@ public class ServicePageTest extends OpenNMSSeleniumTestCase {
 
         clickAndWait("//input[@value='Done']");
         clickAndWait("//input[@value='Synchronize']");
-        selenium.click("link=Log out");
         waitForPageToLoad();
 
-        // Yo dawg, I heard you liked hacks
-        Thread.sleep(10000);
-    }
+        goToMainPage();
 
-    @Test
-    public void b_testCreateUser() throws InterruptedException { 
         clickAndWait("link=Admin");
         clickAndWait("link=Configure Users, Groups and On-Call Roles");
         clickAndWait("link=Configure Users");
         clickAndWait("link=Add new user");
-        selenium.type("id=userID", "SmokeTestUser");
+        selenium.type("id=userID", USER_NAME);
         selenium.type("id=pass1", "SmokeTestPassword");
         selenium.type("id=pass2", "SmokeTestPassword");
         clickAndWait("id=doOK");
         waitForElement("id=saveUserButton");
         clickAndWait("id=saveUserButton");
-        waitForElement("id=users(SmokeTestUser).doDetails");
-    }
+        waitForElement("id=users(" + USER_NAME + ").doDetails");
 
-    @Test  
-    public void c_testCreateGroup() throws InterruptedException {
+        goToMainPage();
+
         clickAndWait("link=Admin");
         clickAndWait("link=Configure Users, Groups and On-Call Roles");
         clickAndWait("link=Configure Groups");
         clickAndWait("link=Add new group");
-        selenium.type("id=groupName", "SmokeTestGroup");
+        selenium.type("id=groupName", GROUP_NAME);
         selenium.type("id=groupComment", "Test");
         clickAndWait("id=doOK");
         waitForElement("name=finish");
         clickAndWait("name=finish");
         clickAndWait("//div[@id='content']/form/table/tbody/tr[4]/td[2]/a/i");
-        selenium.addSelection("name=availableUsers", "label=SmokeTestUser");
+        selenium.addSelection("name=availableUsers", "label=" + USER_NAME);
         selenium.click("xpath=/html/body/div[2]/form/table[2]/tbody/tr[2]/td/table/tbody/tr[2]/td/p/input[2]");
         waitForElement("name=finish");
         clickAndWait("name=finish");
-        clickAndWait("link=SmokeTestGroup");
-        waitForText("SmokeTestUser");
-    }
+        clickAndWait("link=" + GROUP_NAME);
+        waitForText(USER_NAME);
 
-    @Test
-    public void d_testProvisioningGroupWasCreated() throws InterruptedException {
+        goToMainPage();
+
         clickAndWait("link=Node List");
+
+        int loop = 0;
+        while (loop < 20) {
+            selenium.refresh();
+            Thread.sleep(1000);
+            if (selenium.isTextPresent("localNode")) {
+                break;
+            }
+            loop++;
+        }
+
         if(selenium.isElementPresent("link=localNode")) {
             // if there's more than 1 node discovered, it will give a list
             clickAndWait("link=localNode");
@@ -172,45 +210,6 @@ public class ServicePageTest extends OpenNMSSeleniumTestCase {
         } else {
             fail("Neither of the links were found. Printing page source: " + selenium.getHtmlSource());
         }
-    }
-
-    @Test
-    public void e_testDeleteProvisioningNodesAndGroups() throws Exception {
-        clickAndWait("link=Admin");
-        clickAndWait("link=Manage Provisioning Requisitions");
-        clickAndWait("//input[@value='Delete Nodes']");
-        clickAndWait("//input[@value='Synchronize']");
-
-        /*
-         *  we need to reload this page several times if the 'Delete Group' button doesn't exist
-         *  in case the nodes hadn't been deleted by the time the page was reloaded
-         */
-
-        long end = System.currentTimeMillis() + 300000;
-        while (!selenium.isElementPresent("//input[@value='Delete Requisition']") && System.currentTimeMillis() < end) {
-
-            Thread.sleep(10000);
-
-            if (System.currentTimeMillis() >= end) {
-                throw new NoSuchElementException("Could not find the 'Delete Requisition' button after refreshing for 5 minutes");
-            } else {
-                selenium.refresh();
-                waitForPageToLoad();
-            }
-        }        
-
-        clickAndWait("//input[@value='Delete Requisition']");
-    }
-
-    @Test
-    public void f_testDeleteUsersAndGroups() {
-        clickAndWait("link=Admin");
-        clickAndWait("link=Configure Users, Groups and On-Call Roles");
-        clickAndWait("link=Configure Groups");
-        selenium.click("//div[@id='content']/form/table/tbody/tr[4]/td/a/i");
-        clickAndWait("link=Users and Groups");
-        clickAndWait("link=Configure Users");
-        selenium.click("xpath=//html/body/div[2]/form/table/tbody/tr[2]/td/a/i");  
     }
 
 }

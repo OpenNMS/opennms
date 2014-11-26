@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -31,6 +31,7 @@ package org.opennms.netmgt.collectd.wmi;
 import java.io.File;
 
 import org.opennms.netmgt.collection.api.CollectionAgent;
+import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.rrd.RrdRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,34 +43,37 @@ import org.slf4j.LoggerFactory;
  * @version $Id: $
  */
 public class WmiMultiInstanceCollectionResource extends WmiCollectionResource {
-	
-	private static final Logger LOG = LoggerFactory.getLogger(WmiMultiInstanceCollectionResource.class);
+
+    private static final Logger LOG = LoggerFactory.getLogger(WmiMultiInstanceCollectionResource.class);
 
     private final String m_inst;
-    private final String m_name;
-
+    private String m_resourceLabel;
+    private final WmiResourceType m_resourceType;
     /**
      * <p>Constructor for WmiMultiInstanceCollectionResource.</p>
      *
      * @param agent a {@link org.opennms.netmgt.collection.api.CollectionAgent} object.
      * @param instance a {@link java.lang.String} object.
-     * @param name a {@link java.lang.String} object.
+     * @param type a {@link java.lang.String} object.
      */
-    public WmiMultiInstanceCollectionResource(final CollectionAgent agent, final String instance, final String name) {
+    public WmiMultiInstanceCollectionResource(final CollectionAgent agent, final String instance, final WmiResourceType type) {
         super(agent);
         m_inst = instance;
-        m_name = name;
+        m_resourceType = type;
+    }
+
+    @Override
+    public boolean shouldPersist(ServiceParameters params) {
+        return m_resourceType.getPersistenceSelectorStrategy().shouldPersist(this);
     }
 
     /** {@inheritDoc} */
     @Override
     public File getResourceDir(final RrdRepository repository) {
-        final File rrdBaseDir = repository.getRrdBaseDir();
-        final File nodeDir = new File(rrdBaseDir, getParent());
-        final File typeDir = new File(nodeDir, m_name);
-        final File instDir = new File(typeDir, m_inst.replaceAll("\\s+", "_").replaceAll(":", "_").replaceAll("\\\\", "_").replaceAll("[\\[\\]]", "_"));
-        LOG.debug("getResourceDir: {}", instDir);
-        return instDir;
+        String resourcePath = m_resourceType.getStorageStrategy().getRelativePathForAttribute(getParent(), getInterfaceLabel());
+        File resourceDir = new File(repository.getRrdBaseDir(), resourcePath);
+        LOG.debug("getResourceDir: {}", resourceDir);
+        return resourceDir;
     }
 
     /**
@@ -79,7 +83,7 @@ public class WmiMultiInstanceCollectionResource extends WmiCollectionResource {
      */
     @Override
     public String getResourceTypeName() {
-        return m_name;
+        return m_resourceType.getName();
     }
 
     /**
@@ -95,7 +99,13 @@ public class WmiMultiInstanceCollectionResource extends WmiCollectionResource {
     /** {@inheritDoc} */
     @Override
     public String toString() {
-        return "Node[" + m_agent.getNodeId() + "]/type["+ m_name+"]/instance[" + m_inst +"]";
+        return "Node[" + m_agent.getNodeId() + "]/type["+ getResourceTypeName() +"]/instance[" + m_inst +"]";
     }
 
+    @Override
+    public String getInterfaceLabel(){
+        return (m_resourceLabel == null 
+                ? m_resourceType.getStorageStrategy().getResourceNameFromIndex(this) 
+                : m_resourceLabel);  
+    }
 }

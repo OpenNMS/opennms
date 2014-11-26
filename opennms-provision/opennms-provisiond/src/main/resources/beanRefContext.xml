@@ -11,6 +11,6 @@
          <value>classpath*:/META-INF/opennms/provisiond-extensions.xml</value>
        </list>
      </constructor-arg>
-     <constructor-arg ref="commonContext" />
+     <constructor-arg ref="daoContext" />
    </bean>
 </beans>

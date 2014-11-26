@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -30,7 +30,6 @@ package org.opennms.netmgt.vmmgr;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.UndeclaredThrowableException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -42,7 +41,6 @@ import javax.management.ObjectInstance;
 import javax.management.ObjectName;
 
 import org.opennms.core.logging.Logging;
-import org.opennms.netmgt.config.ServiceConfigFactory;
 import org.opennms.netmgt.config.service.Argument;
 import org.opennms.netmgt.config.service.Invoke;
 import org.opennms.netmgt.config.service.Service;
@@ -96,20 +94,6 @@ public class Invoker {
     }
     
     /**
-     * <p>getDefaultServiceConfigFactory</p>
-     *
-     * @return a {@link org.opennms.netmgt.config.ServiceConfigFactory} object.
-     */
-    public static ServiceConfigFactory getDefaultServiceConfigFactory() {
-        try {
-            ServiceConfigFactory.init();
-            return ServiceConfigFactory.getInstance();
-        } catch (Throwable t) {
-            throw new UndeclaredThrowableException(t);
-        }
-    }
-    
-    /**
      * <p>instantiateClasses</p>
      */
     public void instantiateClasses() {
@@ -130,7 +114,7 @@ public class Invoker {
                 // Get a new instance of the class
                 LOG.debug("create new instance of {}", service.getClassName());
                 
-                Map<?,?> mdc = Logging.getCopyOfContextMap();
+                Map<String,String> mdc = Logging.getCopyOfContextMap();
                 Object bean;
                 try {
                     bean = clazz.newInstance();
@@ -266,7 +250,7 @@ public class Invoker {
         return end;
     }
 
-    private Object invoke(Invoke invoke, ObjectInstance mbean) throws Throwable {
+    private Object invoke(final Invoke invoke, final ObjectInstance mbean) throws Throwable {
         Argument[] args = invoke.getArgument();
         Object[] parms = new Object[0];
         String[] sig = new String[0];
@@ -289,14 +273,14 @@ public class Invoker {
 
         Object object;
         try {
-        	Map<?,?> mdc = Logging.getCopyOfContextMap();
+        	Map<String,String> mdc = Logging.getCopyOfContextMap();
             try {
                 object = getServer().invoke(mbean.getObjectName(), invoke.getMethod(), parms, sig);
             } finally {
             	Logging.setContextMap(mdc);
             }
         } catch (Throwable t) {
-		LOG.error("An error occurred invoking operation {} on MBean {}", invoke.getMethod(), mbean.getObjectName(), t);
+            LOG.error("An error occurred invoking operation {} on MBean {}", invoke.getMethod(), mbean.getObjectName(), t);
             throw t;
         }
 
@@ -310,7 +294,7 @@ public class Invoker {
         Constructor<?> construct = attribClass.getConstructor(new Class[] { String.class });
 
         Object value;
-        Map<?,?> mdc = Logging.getCopyOfContextMap();
+        Map<String,String> mdc = Logging.getCopyOfContextMap();
         try {
             value = construct.newInstance(new Object[] { attrib.getValue().getContent() });
         } finally {
@@ -324,7 +308,7 @@ public class Invoker {
         Class<?> argClass = Class.forName(arg.getType());
         Constructor<?> construct = argClass.getConstructor(new Class[] { String.class });
 
-        Map mdc = Logging.getCopyOfContextMap();
+        Map<String,String> mdc = Logging.getCopyOfContextMap();
         try {
             return construct.newInstance(new Object[] { arg.getContent() });
         } finally {

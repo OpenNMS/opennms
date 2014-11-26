@@ -4,21 +4,22 @@
 LC_ALL=en_US.UTF-8 export LC_ALL
 
 show_help () {
-    cat <<END
+	cat <<END
 Usage: $0 [category name] [format] [month format] [start month] [start date] [start year]
 END
-    return
+	return
 }
 
 # TODO: Is this needed?  If so, document why
 ulimit -s 2048
 
-opennms_home="${install.dir}"
-opennms_webapp="$opennms_home/webapps/opennms"
+OPENNMS_HOME="${install.dir}"
+OPENNMS_BINDIR="${install.bin.dir}"
+OPENNMS_WEBAPP="$OPENNMS_HOME/jetty-webapps/opennms"
 
 if [ $# -ne 6 ]; then
-    show_help
-    exit 1
+	show_help
+	exit 1
 fi
 
 category_name="$1"; shift
@@ -28,16 +29,17 @@ start_month="$1"; shift
 start_date="$1"; shift
 start_year="$1"; shift
 
-app_class=org.opennms.report.availability.AvailabilityReport
+APP_CLASS=org.opennms.reporting.availability.AvailabilityReport
 
-exec $opennms_home/bin/runjava -r -- \
-    -Dimage=$opennms_webapp/images/logo.gif \
-    -Dopennms.manager.class=$app_class \
-    -DcatName="$category_name" \
-    -Dformat="$format" \
-    -DMonthFormat="$month_format" \
-    -DstartMonth="$start_month" \
-    -DstartDate="$start_date" \
-    -DstartYear="$start_year" \
-    -jar $opennms_home/lib/opennms_bootstrap.jar \
-     "$@"
+exec "$OPENNMS_BINDIR"/runjava -r -- \
+	-Dimage="$OPENNMS_WEBAPP"/images/logo.gif \
+	-Dopennms.manager.class="$APP_CLASS" \
+	-Dlog4j.configurationFile="$OPENNMS_HOME"/etc/log4j2-tools.xml \
+	-DcatName="$category_name" \
+	-Dformat="$format" \
+	-DMonthFormat="$month_format" \
+	-DstartMonth="$start_month" \
+	-DstartDate="$start_date" \
+	-DstartYear="$start_year" \
+	-jar $OPENNMS_HOME/lib/opennms_bootstrap.jar \
+	 "$@"

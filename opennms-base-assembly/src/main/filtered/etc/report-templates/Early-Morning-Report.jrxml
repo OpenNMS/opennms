@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Early-Morning-Report" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
 	<property name="ireport.zoom" value="1.5"/>
-	<property name="ireport.x" value="19"/>
+	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
-	<style name="Crosstab Data Text" isDefault="false" hAlign="Center"/>
+	<template><![CDATA[$P{ONMS_REPORT_DIR} + "/assets/styles/defaultStyles.jrtx"]]></template>
+	<style name="Crosstab Data Text" hAlign="Center"/>
 	<subDataset name="outages_24h">
 		<queryString>
 			<![CDATA[SELECT
@@ -581,6 +582,10 @@ WHERE
 			<groupExpression><![CDATA[$F{media}]]></groupExpression>
 		</group>
 	</subDataset>
+	<parameter name="ONMS_REPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<parameterDescription><![CDATA[The directory where all reports can be found]]></parameterDescription>
+		<defaultValueExpression><![CDATA["${install.dir}/etc/report-templates"]]></defaultValueExpression>
+	</parameter>
 	<queryString>
 		<![CDATA[select now() as current_time;]]>
 	</queryString>
@@ -649,7 +654,7 @@ WHERE
 				</pie3DChart>
 				<pie3DChart>
 					<chart renderType="draw" theme="default">
-						<reportElement mode="Opaque" x="0" y="34" width="277" height="96"/>
+						<reportElement key="&quot;ABC&quot;" mode="Opaque" x="0" y="34" width="277" height="96"/>
 						<box>
 							<topPen lineWidth="0.0"/>
 							<bottomPen lineWidth="0.0"/>
@@ -714,7 +719,7 @@ WHERE
 						</graphicElement>
 					</rectangle>
 					<staticText>
-						<reportElement x="3" y="0" width="552" height="20" forecolor="#FFFFFF"/>
+						<reportElement x="0" y="0" width="552" height="20" forecolor="#FFFFFF"/>
 						<textElement verticalAlignment="Middle">
 							<font fontName="SansSerif" size="16" isBold="true" isItalic="false"/>
 						</textElement>
@@ -750,7 +755,7 @@ WHERE
 									<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
 								</box>
 								<textField>
-									<reportElement style="Crosstab Data Text" x="2" y="0" width="61" height="20"/>
+									<reportElement style="Crosstab Data Text" x="0" y="0" width="61" height="20"/>
 									<textElement textAlignment="Left" verticalAlignment="Middle">
 										<font fontName="SansSerif" size="7" isBold="true"/>
 									</textElement>
@@ -787,7 +792,7 @@ WHERE
 									<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
 								</box>
 								<textField>
-									<reportElement style="Crosstab Data Text" x="2" y="0" width="185" height="10"/>
+									<reportElement style="Crosstab Data Text" x="0" y="0" width="185" height="10"/>
 									<textElement textAlignment="Left" verticalAlignment="Middle">
 										<font fontName="SansSerif" size="7"/>
 									</textElement>
@@ -949,7 +954,7 @@ WHERE
 									<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
 								</box>
 								<textField>
-									<reportElement style="Crosstab Data Text" x="2" y="0" width="61" height="10"/>
+									<reportElement style="Crosstab Data Text" x="0" y="0" width="61" height="10"/>
 									<textElement textAlignment="Left" verticalAlignment="Middle">
 										<font fontName="SansSerif" size="7" isBold="true"/>
 									</textElement>
@@ -986,7 +991,7 @@ WHERE
 									<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
 								</box>
 								<textField>
-									<reportElement style="Crosstab Data Text" x="2" y="0" width="186" height="10"/>
+									<reportElement style="Crosstab Data Text" x="0" y="0" width="186" height="10"/>
 									<textElement textAlignment="Left" verticalAlignment="Middle">
 										<font fontName="SansSerif" size="7"/>
 									</textElement>
@@ -1131,7 +1136,7 @@ WHERE
 						</graphicElement>
 					</rectangle>
 					<staticText>
-						<reportElement x="3" y="0" width="552" height="20" forecolor="#FFFFFF"/>
+						<reportElement x="0" y="0" width="552" height="20" forecolor="#FFFFFF"/>
 						<textElement verticalAlignment="Middle">
 							<font fontName="SansSerif" size="16" isBold="true" isItalic="false"/>
 						</textElement>
@@ -1216,7 +1221,7 @@ WHERE
 						</graphicElement>
 					</rectangle>
 					<staticText>
-						<reportElement x="3" y="0" width="552" height="20" forecolor="#FFFFFF"/>
+						<reportElement x="0" y="0" width="552" height="20" forecolor="#FFFFFF"/>
 						<textElement verticalAlignment="Middle">
 							<font fontName="SansSerif" size="16" isBold="true" isItalic="false"/>
 						</textElement>
@@ -1281,7 +1286,7 @@ WHERE
 						</graphicElement>
 					</rectangle>
 					<staticText>
-						<reportElement x="3" y="0" width="552" height="20" forecolor="#FFFFFF"/>
+						<reportElement x="0" y="0" width="552" height="20" forecolor="#FFFFFF"/>
 						<textElement verticalAlignment="Middle">
 							<font fontName="SansSerif" size="16" isBold="true" isItalic="false"/>
 						</textElement>
@@ -1310,7 +1315,7 @@ WHERE
 									<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
 								</box>
 								<textField>
-									<reportElement style="Crosstab Data Text" x="2" y="0" width="61" height="20"/>
+									<reportElement style="Crosstab Data Text" x="0" y="0" width="61" height="20"/>
 									<textElement textAlignment="Left" verticalAlignment="Middle">
 										<font fontName="SansSerif" size="7" isBold="true"/>
 									</textElement>
@@ -1347,7 +1352,7 @@ WHERE
 									<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
 								</box>
 								<textField>
-									<reportElement style="Crosstab Data Text" x="2" y="0" width="186" height="10"/>
+									<reportElement style="Crosstab Data Text" x="0" y="0" width="186" height="10"/>
 									<textElement textAlignment="Left" verticalAlignment="Middle">
 										<font fontName="SansSerif" size="7"/>
 									</textElement>
@@ -1493,7 +1498,7 @@ WHERE
 			<band height="421">
 				<stackedBar3DChart>
 					<chart theme="default">
-						<reportElement x="-1" y="35" width="555" height="185"/>
+						<reportElement x="0" y="35" width="555" height="185"/>
 						<chartTitle>
 							<font fontName="SansSerif" size="10" isBold="true"/>
 							<titleExpression><![CDATA["All Events in last 24h"]]></titleExpression>
@@ -1597,7 +1602,7 @@ WHERE
 						</graphicElement>
 					</rectangle>
 					<staticText>
-						<reportElement x="3" y="0" width="552" height="20" forecolor="#FFFFFF"/>
+						<reportElement x="0" y="0" width="552" height="20" forecolor="#FFFFFF"/>
 						<textElement verticalAlignment="Middle">
 							<font fontName="SansSerif" size="16" isBold="true" isItalic="false"/>
 						</textElement>
@@ -1679,7 +1684,7 @@ WHERE
 						<itemLabel color="#000000" backgroundColor="#FFFFFF">
 							<font fontName="SansSerif" size="8"/>
 						</itemLabel>
-						<categoryAxisFormat>
+						<categoryAxisFormat labelRotation="45.0">
 							<axisFormat>
 								<labelFont>
 									<font fontName="SansSerif" size="8"/>
@@ -1716,14 +1721,14 @@ WHERE
 				<reportElement x="0" y="46" width="555" height="1"/>
 			</line>
 			<staticText>
-				<reportElement x="0" y="0" width="236" height="30"/>
+				<reportElement style="Title" x="0" y="0" width="391" height="30"/>
 				<textElement>
 					<font fontName="SansSerif" size="24" isBold="true" isItalic="false"/>
 				</textElement>
-				<text><![CDATA[Early morning report]]></text>
+				<text><![CDATA[Early morning Report]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="2" y="30" width="234" height="15"/>
+				<reportElement x="0" y="30" width="234" height="15"/>
 				<textElement verticalAlignment="Middle">
 					<font fontName="SansSerif"/>
 				</textElement>
@@ -1731,7 +1736,7 @@ WHERE
 			</textField>
 			<image isUsingCache="false">
 				<reportElement isPrintRepeatedValues="false" mode="Opaque" x="391" y="0" width="164" height="45"/>
-				<imageExpression class="java.lang.String"><![CDATA["${install.dir}/etc/report-templates/opennms-logo.png"]]></imageExpression>
+				<imageExpression class="java.lang.String"><![CDATA[$P{ONMS_REPORT_DIR} + "/assets/images/company-logo.png"]]></imageExpression>
 			</image>
 		</band>
 	</pageHeader>
@@ -1745,17 +1750,20 @@ WHERE
 		<band splitType="Stretch"/>
 	</columnFooter>
 	<pageFooter>
-		<band height="13" splitType="Stretch">
+		<band height="24" splitType="Stretch">
 			<line>
 				<reportElement x="0" y="1" width="555" height="1"/>
 			</line>
-			<staticText>
-				<reportElement x="0" y="4" width="555" height="8"/>
-				<textElement textAlignment="Center">
-					<font fontName="SansSerif" size="6" isBold="false"/>
-				</textElement>
-				<text><![CDATA[OpenNMS Copyright 2002-2011 The OpenNMS Group, Inc. OpenNMS is a registered trademark of The OpenNMS Group, Inc.]]></text>
-			</staticText>
+			<textField>
+				<reportElement x="435" y="4" width="80" height="20"/>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression class="java.lang.String"><![CDATA["Page "+$V{PAGE_NUMBER}+" of"]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Report">
+				<reportElement x="515" y="4" width="40" height="20"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[" " + $V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
 		</band>
 	</pageFooter>
 	<summary>

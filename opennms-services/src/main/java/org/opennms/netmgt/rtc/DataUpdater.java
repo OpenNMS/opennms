@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -31,11 +31,13 @@ package org.opennms.netmgt.rtc;
 import java.net.InetAddress;
 import java.text.ParseException;
 import java.util.List;
+import java.util.Map;
 
+import org.opennms.core.logging.Logging;
 import org.opennms.core.utils.InetAddressUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Value;
@@ -413,19 +415,9 @@ final class DataUpdater implements Runnable {
 
         String svcName = m_event.getService();
 
-        long eventTime = -1;
-        String eventTimeStr = m_event.getTime();
-        try {
-            java.util.Date date = EventConstants.parseToDate(eventTimeStr);
-            eventTime = date.getTime();
-        } catch (ParseException pe) {
-            LOG.warn("Failed to convert time {} to java.util.Date, Setting current time instead", eventTime, pe);
+        long eventTime = m_event.getTime().getTime();
 
-            eventTime = (new java.util.Date()).getTime();
-        }
-
-
-        LOG.debug("Event UEI: {}\tnodeid: {}\tip: {}\tsvcName: {}\teventTime: {}", eventTimeStr, eventUEI, nodeid, InetAddressUtils.str(ip), svcName);
+        LOG.debug("Event UEI: {}\tnodeid: {}\tip: {}\tsvcName: {}\teventTime: {}", eventUEI, nodeid, InetAddressUtils.str(ip), svcName, eventTime);
 
         //
         //
@@ -493,11 +485,14 @@ final class DataUpdater implements Runnable {
      */
     @Override
     public void run() {
+        final Map<String,String> mdc = Logging.getCopyOfContextMap();
 
         try {
+            Logging.putPrefix("rtc");
             processEvent();
         } catch (Throwable t) {
             LOG.warn("Unexpected exception processing event", t);
+            Logging.setContextMap(mdc);
         }
     }
 }

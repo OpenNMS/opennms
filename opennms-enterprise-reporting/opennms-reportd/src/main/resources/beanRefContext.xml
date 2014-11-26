@@ -9,7 +9,7 @@
          <value>META-INF/opennms/applicationContext-reportd.xml</value>
        </list>
      </constructor-arg>
-     <constructor-arg ref="commonContext" />
+     <constructor-arg ref="daoContext" />
    </bean>
 </beans>
 
