@@ -141,44 +141,6 @@ public class ProvisioningTest extends OpenNMSSeleniumTestCase {
 
         assertNotNull(m_driver.findElement(By.linkText("ICMP")));
         assertNotNull(m_driver.findElement(By.xpath("//a[contains(@href, 'element/interface.jsp') and text()='" + InetAddressUtils.normalize("::1") + "']")));
-
-        /*
-
-        // Why is all this junk in the provisioning test?
-
-        goToMainPage();
-
-        clickAndWait("link=Admin");
-        clickAndWait("link=Configure Users, Groups and On-Call Roles");
-        clickAndWait("link=Configure Users");
-        clickAndWait("link=Add new user");
-        selenium.type("id=userID", USER_NAME);
-        selenium.type("id=pass1", "SmokeTestPassword");
-        selenium.type("id=pass2", "SmokeTestPassword");
-        clickAndWait("id=doOK");
-        waitForElement("id=saveUserButton");
-        clickAndWait("id=saveUserButton");
-        waitForElement("id=users(" + USER_NAME + ").doDetails");
-
-        goToMainPage();
-
-        clickAndWait("link=Admin");
-        clickAndWait("link=Configure Users, Groups and On-Call Roles");
-        clickAndWait("link=Configure Groups");
-        clickAndWait("link=Add new group");
-        selenium.type("id=groupName", GROUP_NAME);
-        selenium.type("id=groupComment", "Test");
-        clickAndWait("id=doOK");
-        waitForElement("name=finish");
-        clickAndWait("name=finish");
-        clickAndWait("//div[@id='content']/form/table/tbody/tr[4]/td[2]/a/i");
-        selenium.addSelection("name=availableUsers", "label=" + USER_NAME);
-        selenium.click("xpath=/html/body/div[2]/form/table[2]/tbody/tr[2]/td/table/tbody/tr[2]/td/p/input[2]");
-        waitForElement("name=finish");
-        clickAndWait("name=finish");
-        clickAndWait("link=" + GROUP_NAME);
-        waitForText(USER_NAME);
-         */
     }
 
 }

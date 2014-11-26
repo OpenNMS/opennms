@@ -37,7 +37,6 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
 import org.apache.http.auth.AuthScope;
@@ -134,12 +133,20 @@ public class OpenNMSSeleniumTestCase extends SeleneseTestBase {
         // since we have to launch the browser and visit the front page of
         // the OpenNMS web UI in this amount of time and on the Bamboo
         // machines, 30 seconds is cutting it close. :)
-        selenium.setTimeout("60000");
-        selenium.open("/opennms/login.jsp");
-        selenium.type("name=j_username", "admin");
-        selenium.type("name=j_password", "admin");
-        selenium.click("name=Login");
-        waitForPageToLoad();
+
+        m_driver.get(BASE_URL + "opennms/login.jsp");
+        enterText(By.name("j_username"), "admin");
+        enterText(By.name("j_password"), "admin");
+        findElementByName("Login").click();
+        new WebDriverWait(m_driver, 60).until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@id='content']")));
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        deleteTestRequisition();
+        deleteTestUser();
+        deleteTestGroup();
+        super.tearDown();
     }
 
     private File findPhantomJS() {
@@ -171,61 +178,86 @@ public class OpenNMSSeleniumTestCase extends SeleneseTestBase {
     }
 
     @After
+    @SuppressWarnings("deprecation")
     public void shutDownSelenium() throws Exception {
         if (selenium != null) {
             try {
-                if (selenium.isElementPresent("link=Log out")) selenium.click("link=Log out");
+                findElementByLink("Log out").click();
             } catch (final SeleniumException e) {
                 // don't worry about it, this is just for logging out
             }
             selenium.stop();
-            if (m_driver != null) {
-                m_driver.quit();
-            }
-            Thread.sleep(3000);
         }
+        if (m_driver != null) {
+            m_driver.quit();
+        }
+        Thread.sleep(3000);
     }
 
-    protected void frontPage() throws Exception {
-        selenium.open("/opennms/");
+    protected void frontPage() {
+        m_driver.get(BASE_URL + "opennms/");
+        m_driver.findElement(By.id("index-contentleft"));
+    }
+
+    protected void provisioningPage() {
+        m_driver.get(BASE_URL + "opennms/admin/index.jsp");
+        m_driver.findElement(By.linkText("Manage Provisioning Requisitions")).click();
+    }
+
+    protected void goBack() {
+        LOG.warn("goBack() is supposedly not supported on Safari!");
+        m_driver.navigate().back();
         waitForPageToLoad();
     }
 
+    public WebElement findElementById(final String id) {
+        return m_driver.findElement(By.id(id));
+    }
+
+    public WebElement findElementByLink(final String link) {
+        return m_driver.findElement(By.linkText(link));
+    }
+
+    public WebElement findElementByName(final String name) {
+        return m_driver.findElement(By.name(name));
+    }
+
+    protected void enterText(final By selector, final String text) {
+        final WebElement element = m_driver.findElement(selector);
+        element.clear();
+        element.sendKeys(text);
+    }
+
+    @Deprecated
     protected void clickAndWait(final String pattern) {
         LOG.debug("clickAndWait({})", pattern);
         selenium.click(pattern);
         waitForPageToLoad();
     }
 
+    @Deprecated
     protected void clickAndVerifyText(final String pattern, final String expectedText) {
         LOG.debug("clickAndVerifyText({}, {})", pattern, expectedText);
         clickAndWait(pattern);
         assertTrue("'" + expectedText + "' must exist in page text: " + selenium.getHtmlSource(), selenium.isTextPresent(expectedText));
     }
 
-    protected void goToMainPage() {
-        m_driver.get(BASE_URL + "opennms");
-        m_driver.findElement(By.id("index-contentleft"));
-    }
-
-    protected void goBack() {
-        LOG.warn("goBack() is not supported on Safari!");
-        m_driver.navigate().back();
-        waitForPageToLoad();
-    }
-
+    @Deprecated
     protected void waitForPageToLoad() {
         selenium.waitForPageToLoad(String.valueOf(LOAD_TIMEOUT));
     }
 
+    @Deprecated
     protected void waitForText(final String expectedText) throws InterruptedException {
         waitForText(expectedText, LOAD_TIMEOUT);
     }
 
+    @Deprecated
     protected void waitForText(final String expectedText, final long timeout) throws InterruptedException {
         waitForText(expectedText, timeout, true);
     }
 
+    @Deprecated
     protected void waitForText(final String expectedText, final long timeout, boolean failOnError) throws InterruptedException {
         LOG.debug("waitForText({}, {}, {})", expectedText, timeout, failOnError);
         final long timeoutTime = System.currentTimeMillis() + timeout;
@@ -244,14 +276,17 @@ public class OpenNMSSeleniumTestCase extends SeleneseTestBase {
         }
     }
 
+    @Deprecated
     protected void waitForHtmlSource(final String expectedText) throws InterruptedException {
         waitForHtmlSource(expectedText, LOAD_TIMEOUT);
     }
 
+    @Deprecated
     protected void waitForHtmlSource(final String expectedText, final long timeout) throws InterruptedException {
         waitForHtmlSource(expectedText, timeout, true);
     }
 
+    @Deprecated
     protected void waitForHtmlSource(final String expectedText, final long timeout, boolean failOnError) throws InterruptedException {
         LOG.debug("waitForHtmlSource({}, {}, {})", expectedText, timeout, failOnError);
         final long timeoutTime = System.currentTimeMillis() + timeout;
@@ -270,10 +305,12 @@ public class OpenNMSSeleniumTestCase extends SeleneseTestBase {
         }
     }
 
+    @Deprecated
     protected void waitForElement(final String specification) throws InterruptedException {
         waitForElement(specification, LOAD_TIMEOUT);
     }
 
+    @Deprecated
     protected void waitForElement(final String specification, final long timeout) throws InterruptedException {
         final long timeoutTime = System.currentTimeMillis() + timeout;
         while (!selenium.isElementPresent(specification) && System.currentTimeMillis() <= timeoutTime) {
@@ -288,6 +325,7 @@ public class OpenNMSSeleniumTestCase extends SeleneseTestBase {
         }
     }
 
+    @Deprecated
     protected void handleVaadinErrorButtons() throws InterruptedException {
         if (selenium.isAlertPresent()) {
             selenium.keyPressNative("10");
@@ -300,7 +338,7 @@ public class OpenNMSSeleniumTestCase extends SeleneseTestBase {
         }
     }
 
-    private void doRequest(final HttpRequestBase request) throws ClientProtocolException, IOException, InterruptedException {
+    private Integer doRequest(final HttpRequestBase request) throws ClientProtocolException, IOException, InterruptedException {
         final CountDownLatch waitForCompletion = new CountDownLatch(1);
 
         final URI uri = request.getURI();
@@ -319,16 +357,16 @@ public class OpenNMSSeleniumTestCase extends SeleneseTestBase {
 
         final CloseableHttpClient client = HttpClients.createDefault();
 
-        final ResponseHandler<String> responseHandler = new ResponseHandler<String>() {
+        final ResponseHandler<Integer> responseHandler = new ResponseHandler<Integer>() {
             @Override
-            public String handleResponse(final HttpResponse response) throws ClientProtocolException, IOException {
+            public Integer handleResponse(final HttpResponse response) throws ClientProtocolException, IOException {
                 try {
                     final int status = response.getStatusLine().getStatusCode();
                     // 400 because we return that if you try to delete something that is already deleted
                     // 404 because it's OK if it's already not there
                     if (status >= 200 && status < 300 || status == 400 || status == 404) {
-                        final HttpEntity entity = response.getEntity();
-                        return entity != null ? EntityUtils.toString(entity) : null;
+                        EntityUtils.consume(response.getEntity());
+                        return status;
                     } else {
                         throw new ClientProtocolException("Unexpected response status: " + status);
                     }
@@ -338,15 +376,11 @@ public class OpenNMSSeleniumTestCase extends SeleneseTestBase {
             }
         };
 
-        client.execute(targetHost, request, responseHandler, context);
+        final Integer status = client.execute(targetHost, request, responseHandler, context);
 
         waitForCompletion.await();
         client.close();
-    }
-
-    protected void provisioningPage() {
-        m_driver.get(BASE_URL + "opennms/admin/index.jsp");
-        m_driver.findElement(By.linkText("Manage Provisioning Requisitions")).click();
+        return status;
     }
 
     public void deleteExistingRequisition(final String foreignSource) {
@@ -412,6 +446,13 @@ public class OpenNMSSeleniumTestCase extends SeleneseTestBase {
     }
 
     protected void deleteTestRequisition() throws Exception {
+        final Integer responseCode = doRequest(new HttpGet(BASE_URL + "/opennms/rest/requisitions/" + REQUISITION_NAME));
+        LOG.debug("Checking for existing test requisition: {}", responseCode);
+        if (responseCode == 404 || responseCode == 204) {
+            LOG.debug("deleteTestRequisition: already deleted");
+            return;
+        }
+
         deleteExistingRequisition(REQUISITION_NAME);
         doRequest(new HttpDelete(BASE_URL + "/opennms/rest/requisitions/" + REQUISITION_NAME));
         doRequest(new HttpDelete(BASE_URL + "/opennms/rest/requisitions/deployed/" + REQUISITION_NAME));

@@ -62,7 +62,7 @@ public class AddNodePageTest extends OpenNMSSeleniumTestCase {
         m_driver.findElement(By.cssSelector("form[name=takeAction] input[type=submit]")).click();
         m_driver.findElement(By.xpath("//input[@value='Synchronize']")).click();
 
-        goToMainPage();
+        frontPage();
         new ExpectationBuilder("link=Add Node").withText("Basic Attributes (required)").check(m_driver);
 
         final WebElement submitButton = m_driver.findElement(By.cssSelector("input[type=submit][value=Provision]"));

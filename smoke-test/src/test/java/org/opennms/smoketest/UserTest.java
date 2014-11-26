@@ -36,8 +36,9 @@ import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.Select;
 
-public class UserAccountPageTest extends OpenNMSSeleniumTestCase {
+public class UserTest extends OpenNMSSeleniumTestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
@@ -62,6 +63,44 @@ public class UserAccountPageTest extends OpenNMSSeleniumTestCase {
 
         assertNotNull(wait.until(ExpectedConditions.alertIsPresent()));
         m_driver.switchTo().alert().dismiss();
+    }
+
+    @Test
+    public void testUsersAndGroups() throws Exception {
+        frontPage();
+
+        findElementByLink("Admin").click();
+        findElementByLink("Configure Users, Groups and On-Call Roles").click();
+        findElementByLink("Configure Users").click();
+        findElementByLink("Add new user").click();
+
+        enterText(By.id("userID"), USER_NAME);
+        enterText(By.id("pass1"), "SmokeTestPassword");
+        enterText(By.id("pass2"), "SmokeTestPassword");
+        findElementById("doOK").click();
+
+        findElementById("saveUserButton").click();
+        findElementById("users(" + USER_NAME + ").doDetails");
+
+        frontPage();
+
+        findElementByLink("Admin").click();
+        findElementByLink("Configure Users, Groups and On-Call Roles").click();
+        findElementByLink("Configure Groups").click();
+        findElementByLink("Add new group").click();
+
+        enterText(By.id("groupName"), GROUP_NAME);
+        enterText(By.id("groupComment"), "Test");
+        findElementById("doOK").click();
+
+        final Select select = new Select(findElementByName("availableUsers"));
+        select.selectByVisibleText(USER_NAME);
+        findElementById("users.doAdd").click();
+
+        findElementByName("finish").click();
+
+        findElementByLink(GROUP_NAME).click();
+        m_driver.findElement(By.xpath("//h2[text()='Details for Group: " + GROUP_NAME + "']"));
     }
 
 }
