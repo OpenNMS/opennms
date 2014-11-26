@@ -65,7 +65,6 @@ import org.opennms.netmgt.xml.event.Event;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.opennms.test.mock.MockUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.annotation.Repeat;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -260,10 +259,10 @@ public class PathOutageManagerDaoTest implements TemporaryDatabaseAware<MockData
 			assertEquals("Firewall", cr[0]);
 			assertEquals("Normal", cr[1]);
 			assertEquals("All Services Up", cr[2]);
-			List<String> lno = m_pathOutageManager.getNodesInPath("192.168.1.1", "ICMP");
-			assertEquals("1",lno.get(0));
-			List<String> vno = m_pathOutageManager.getNodesInPath("192.168.1.4", "SMTP");
-			assertEquals("3",vno.get(0));
+			Set<Integer> lno = m_pathOutageManager.getNodesInPath("192.168.1.1", "ICMP");
+			assertEquals(new Integer(1), lno.iterator().next());
+			Set<Integer> vno = m_pathOutageManager.getNodesInPath("192.168.1.4", "SMTP");
+			assertEquals(new Integer(3), vno.iterator().next());
 			List<String[]> all = m_pathOutageManager.getAllCriticalPaths();
 			assertEquals("192.168.1.1",all.get(0)[0]);
 			assertEquals("ICMP", all.get(0)[1]);

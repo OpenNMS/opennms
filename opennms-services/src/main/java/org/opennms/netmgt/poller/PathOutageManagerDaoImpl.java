@@ -165,14 +165,14 @@ public class PathOutageManagerDaoImpl implements PathOutageManager{
      * @return a {@link java.util.List} object.
      * @throws java.sql.SQLException if any.
      */
-    public List<String> getNodesInPath(String criticalPathIp, String criticalPathServiceName) {
-        final List<String> pathNodes = new ArrayList<String>();
+    public Set<Integer> getNodesInPath(String criticalPathIp, String criticalPathServiceName) {
+        final Set<Integer> pathNodes = new TreeSet<Integer>();
         
         List<OnmsPathOutage> outs = pathOutageDao.findAll();
         for (OnmsPathOutage out: outs) {
         	String node = out.getCriticalPathServiceName();
         	if (node.equals(criticalPathServiceName)) {
-        		pathNodes.add(String.valueOf(out.getNode().getId()));
+        		pathNodes.add(out.getNode().getId());
         	}
         }
         

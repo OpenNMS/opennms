@@ -101,11 +101,15 @@ public class ScanResource {
                 m_node.setSysObjectId(value);
             } else if (key.equals("sysName")) {
                 m_node.setSysName(value);
-                // If the node is labeled as just the IP address from the newSuspect that created it,
-                // use the SNMP sysName value instead and update the label source to indicate this
-                if (m_node.getLabelSource() == NodeLabelSource.ADDRESS) {
-                    m_node.setLabel(value);
-                    m_node.setLabelSource(NodeLabelSource.SYSNAME);
+
+                // If the sysName isn't null or empty...
+                if (value != null && !"".equals(value.trim())) {
+                    // If the node is labeled as just the IP address from the newSuspect that created it,
+                    // use the SNMP sysName value instead and update the label source to indicate this
+                    if (m_node.getLabelSource() == NodeLabelSource.ADDRESS) {
+                        m_node.setLabel(value);
+                        m_node.setLabelSource(NodeLabelSource.SYSNAME);
+                    }
                 }
             }
             

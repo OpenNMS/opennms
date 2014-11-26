@@ -177,7 +177,7 @@
       	   <td style="border-right: none;">
 		<p align="center">
         	Powered By Jetty<br/>
-		<a href="http://www.eclipse.org/jetty/" target="_new"><img src="images/powered_by_jetty.gif" hspace="0" vspace="0"
+		<a href="http://www.eclipse.org/jetty/" target="_new"><img src="images/powered_by_jetty.png" hspace="0" vspace="0"
       		   border="0" alt="eclipse.org/jetty/" align="center"></a>.
       		</p>
 	   </td>
