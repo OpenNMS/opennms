@@ -1,7 +1,7 @@
 
 [[doc-guidelines-images]]
 == Include images
-Whren visualizing complex problems you can help the explanation and provide greater information by using an image.
+When visualizing complex problems you can help the explanation and provide greater information by using an image.
 We use in OpenNMS documentation modules two directories for images.
 
 The image folder structure mirrors the text structure.
