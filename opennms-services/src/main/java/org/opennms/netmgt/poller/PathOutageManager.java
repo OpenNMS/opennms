@@ -41,7 +41,7 @@ public interface PathOutageManager {
 	
 	String[] getCriticalPath(int nodeId);
 	
-	List<String> getNodesInPath(String criticalPathIp, String criticalPathServiceName) throws SQLException;
+	Set<Integer> getNodesInPath(String criticalPathIp, String criticalPathServiceName) throws SQLException;
 	
 	String[] getLabelAndStatus(String nodeIDStr, Connection conn) throws SQLException;
 	

@@ -47,7 +47,7 @@ import org.springframework.util.Assert;
  * @author ranger
  * @version $Id: $
  */
-@Transactional(readOnly = true)
+@Transactional
 public class DaoEventdServiceManager implements InitializingBean, EventdServiceManager {
     
     private static final Logger LOG = LoggerFactory.getLogger(DaoEventdServiceManager.class);

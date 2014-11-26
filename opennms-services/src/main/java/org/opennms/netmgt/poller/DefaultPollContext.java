@@ -260,7 +260,7 @@ public class DefaultPollContext implements PollContext, EventListener {
                 && this.getPollerConfig().isPathOutageEnabled()) {
             String[] criticalPath = PathOutageManagerJdbcImpl.getInstance().getCriticalPath(nodeId);
             
-            if (criticalPath[0] != null && !"".equals(criticalPath[0])) {
+            if (criticalPath[0] != null && !"".equals(criticalPath[0].trim())) {
                 if (!this.testCriticalPath(criticalPath)) {
                     LOG.debug("Critical path test failed for node {}", nodeId);
                     
