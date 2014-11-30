@@ -79,7 +79,7 @@ import com.thoughtworks.selenium.webdriven.WebDriverBackedSelenium;
 public class OpenNMSSeleniumTestCase extends SeleneseTestBase {
     private static final Logger LOG = LoggerFactory.getLogger(OpenNMSSeleniumTestCase.class);
 
-    public static final long   LOAD_TIMEOUT       = Long.getLong("org.opennms.smoketest.web-timeout", 30000l);
+    public static final long   LOAD_TIMEOUT       = Long.getLong("org.opennms.smoketest.web-timeout", 60000l);
     public static final String OPENNMS_WEB_HOST   = System.getProperty("org.opennms.smoketest.web-host", "localhost");
     public static final int    OPENNMS_WEB_PORT   = Integer.getInteger("org.opennms.smoketest.web-port", 8980);
     public static final String OPENNMS_EVENT_HOST = System.getProperty("org.opennms.smoketest.event-host", OPENNMS_WEB_HOST);
@@ -129,16 +129,12 @@ public class OpenNMSSeleniumTestCase extends SeleneseTestBase {
         wait = new WebDriverWait(m_driver, TimeUnit.SECONDS.convert(LOAD_TIMEOUT, TimeUnit.MILLISECONDS));
 
         selenium = new WebDriverBackedSelenium(m_driver, BASE_URL);
-        // Change the timeout from the default of 30 seconds to 60 seconds
-        // since we have to launch the browser and visit the front page of
-        // the OpenNMS web UI in this amount of time and on the Bamboo
-        // machines, 30 seconds is cutting it close. :)
 
         m_driver.get(BASE_URL + "opennms/login.jsp");
         enterText(By.name("j_username"), "admin");
         enterText(By.name("j_password"), "admin");
         findElementByName("Login").click();
-        new WebDriverWait(m_driver, 60).until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@id='content']")));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@id='content']")));
     }
 
     @After
