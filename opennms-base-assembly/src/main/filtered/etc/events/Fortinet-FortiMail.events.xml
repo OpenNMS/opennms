@@ -165,8 +165,8 @@
                 <mevalue>106</mevalue>
             </maskelement>
         </mask>
-        <uei>uei.opennms.org/vendor/fortinet/traps/fortimail/fmlTrapAvThresholdEvent</uei>
-        <event-label>FORTINET-FORTIMAIL-MIB defined trap event: fmlTrapAvThresholdEvent</event-label>
+        <uei>uei.opennms.org/vendor/fortinet/traps/fortimail/fmlTrapMailAvThresholdEvent</uei>
+        <event-label>FORTINET-FORTIMAIL-MIB defined trap event: fmlTrapMailAvThresholdEvent</event-label>
         <descr>
 &lt;p&gt;Trap being sent when detected virus number reaches the threshold&lt;/p&gt;&lt;table&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
@@ -175,7 +175,7 @@
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
         <logmsg dest="logndisplay">&lt;p&gt;
-	fmlTrapAvThresholdEvent trap received
+	fmlTrapMailAvThresholdEvent trap received
 	fmlSysSerial=%parm[#1]%&lt;/p&gt;
 	</logmsg>
         <severity>Indeterminate</severity>

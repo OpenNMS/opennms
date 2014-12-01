@@ -115,7 +115,7 @@
 <%
 String nodeBreadCrumb = "<a href='element/node.jsp?node=" + nodeId  + "'>Node</a>";
 %>
-<jsp:include page="/includes/header.jsp" flush="false" >
+<jsp:include page="/includes/bootstrap.jsp" flush="false" >
   <jsp:param name="title" value="Interface" />
   <jsp:param name="headTitle" value="<%= ipAddr %>" />
   <jsp:param name="headTitle" value="Interface" />
@@ -142,11 +142,11 @@ function doDelete() {
 %>
 
 
-      <h2>Interface: <%=intf_db.getIpAddress()%>
+      <h4>Interface: <%=intf_db.getIpAddress()%>
         <% if (intf_db.getHostname() != null && !intf_db.getIpAddress().equals(intf_db.getHostname())) { %>
           (<c:out value="<%=intf_db.getHostname()%>"/>)
         <% } %>
-      </h2>
+      </h4>
 
         <%
         if (request.isUserInRole( Authentication.ROLE_ADMIN )) {
@@ -159,8 +159,7 @@ function doDelete() {
       }
       %>
 
-      <div id="linkbar">
-      <ul>
+      <ul class="list-inline">
         <% if (! ipAddr.equals("0.0.0.0")) { %>
           <li>
             <a href="<c:out value="${eventUrl1}"/>">View Events by IP Address</a>
@@ -237,17 +236,22 @@ function doDelete() {
         <% } %>
 
       </ul>
-      </div>
 
       <% if (request.isUserInRole( Authentication.ROLE_ADMIN )) { %>
       </form>
       <% } %>
 
-	<div id="contentleft">
+<div class="row">
 
-        <h3>General</h3>
+<div class="col-md-6"> <!-- content-right -->
+
+    <div class="panel panel-success">
+    <div class="panel-heading">
+      <h3 class="panel-title">General</h3>
+    </div>
+
             <!-- general info box -->
-	    <table>
+	    <table class="table table-condensed">
               <tr>
                 <th>Node</th>
                 <td><a href="element/node.jsp?node=<%=intf_db.getNodeId()%>"><%=node.getLabel()%></a></td>
@@ -290,6 +294,7 @@ function doDelete() {
                 <td><%=(intf_db.getLastCapsdPoll() == null) ? "&nbsp;" : intf_db.getLastCapsdPoll()%></td>
               </tr>              
             </table>
+          </div> <!-- panel -->
             
             <% if (ifIndex > 0 ) { %>
             
@@ -307,10 +312,10 @@ function doDelete() {
                 <jsp:param name="interfaceStatus" value="<%=ElementUtil.getInterfaceStatusString(intf_db)%>" />
             </jsp:include>
 
-</div>
-       
+</div> <!-- content-left -->
 
-<div id="contentright">
+
+<div class="col-md-6"> <!-- content-right -->
 
             <!-- interface desktop information box -->
           
@@ -347,6 +352,8 @@ function doDelete() {
             </jsp:include>         
 
 
-</div> <!-- id="contentright" -->
+</div> <!-- content-right -->
 
-<jsp:include page="/includes/footer.jsp" flush="false" />
+</div> <!-- row -->
+
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />

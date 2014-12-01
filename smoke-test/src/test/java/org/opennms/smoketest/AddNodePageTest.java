@@ -33,9 +33,16 @@ import org.junit.Before;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
+import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.smoketest.expectations.ExpectationBuilder;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.Select;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class AddNodePageTest extends OpenNMSSeleniumTestCase {
+    private static final String m_unreachableIp = InetAddressUtils.str(InetAddressUtils.UNPINGABLE_ADDRESS);
+
     @Before
     public void setUp() throws Exception {
         deleteTestRequisition();
@@ -50,25 +57,29 @@ public class AddNodePageTest extends OpenNMSSeleniumTestCase {
 
     @Test
     public void testAddNodePage() throws Exception {
-        selenium.open("/opennms/admin/node/add.htm");
-        clickAndWait("link=Admin");
-        clickAndWait("link=Manage Provisioning Requisitions");
-        selenium.type("css=form[name=takeAction] > div > input[name=groupName]", "test");
-        clickAndWait("css=input[type=submit]");
-        clickAndWait("//input[@value='Synchronize']");
+        m_driver.get(BASE_URL + "opennms/admin/provisioningGroups.htm");
+        m_driver.findElement(By.cssSelector("form[name=takeAction] input[name=groupName]")).sendKeys(REQUISITION_NAME);
+        m_driver.findElement(By.cssSelector("form[name=takeAction] input[type=submit]")).click();
+        m_driver.findElement(By.xpath("//input[@value='Synchronize']")).click();
 
-        goToMainPage();
-        clickAndWait("link=Add Node");
+        frontPage();
+        new ExpectationBuilder("link=Add Node").withText("Basic Attributes (required)").check(m_driver);
 
-        waitForText("Category:");
-        assertEquals("Provision", selenium.getValue("css=input[type=submit]"));
-        waitForElement("css=input[type=reset]");
-        waitForText("Enable Password:");
-        waitForText("Node Quick-Add");
-        waitForText("CLI Authentication Parameters (optional)");
-        waitForText("SNMP Parameters (optional)");
-        waitForText("Surveillance Category Memberships (optional)");
-        waitForText("Basic Attributes (required)");
+        final WebElement submitButton = m_driver.findElement(By.cssSelector("input[type=submit][value=Provision]"));
+        assertEquals("Provision", submitButton.getAttribute("value"));
+
+        final WebElement selectElement = m_driver.findElement(By.cssSelector("select[name=foreignSource]"));
+        final Select sel = new Select(selectElement);
+        sel.selectByVisibleText(REQUISITION_NAME);
+
+        m_driver.findElement(By.name("ipAddress")).sendKeys(m_unreachableIp);
+        m_driver.findElement(By.name("nodeLabel")).sendKeys("AddNodePageTest");
+        submitButton.click();
+
+        m_driver.findElement(By.linkText("Provisioning Requisitions")).click();
+        m_driver.findElement(By.id("edit_req_anchor_" + REQUISITION_NAME)).click();
+
+        new ExpectationBuilder("css=input[value=AddNodePageTest]").check(m_driver);
     }
 
 }

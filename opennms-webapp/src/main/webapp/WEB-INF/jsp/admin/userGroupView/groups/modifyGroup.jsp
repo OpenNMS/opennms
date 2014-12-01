@@ -338,7 +338,7 @@
 
         <tr>
           <td align="left">
-            <table bgcolor="white" border="1">
+            <table bgcolor="white" border="1" id="modifyGroupUsers">
               <tr>
                 <td colspan="3" align="center">
                   <b>Assign/Unassign Users</b>
@@ -371,7 +371,7 @@
       
 	      <tr>
 	          <td align="left">
-	            <table bgcolor="white" border="1">
+	            <table bgcolor="white" border="1" id="modifyGroupCategories">
 	              <tr>
 	                <td colspan="3" align="center">
 	                  <b>Assign/Unassign Categories</b>

@@ -347,6 +347,10 @@ a.list-group-item.active:focus {
 	min-width: 50px;
 }
 
+.dropdown:hover .dropdown-menu {
+	display: block;
+}
+
 
 /* =11.0 Navs and Navbars
 ----------------------------------------------- */

@@ -28,162 +28,67 @@
 
 package org.opennms.smoketest;
 
-import org.junit.Before;
+import java.util.concurrent.TimeUnit;
+
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.opennms.smoketest.expectations.ExpectationBuilder;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class MenuHeaderTest extends OpenNMSSeleniumTestCase {
-    private static final Logger LOG = LoggerFactory.getLogger(MenuHeaderTest.class);
-
-    @Before
-    public void setUp() throws Exception {
-        super.setUp();
-        frontPage();
-    }
-
     @Test
-    public void a_testNodeLink() throws Exception {
-        clickAndWait("link=Node List");
-        assertTrue(selenium.isTextPresent("/ Node List") || selenium.isTextPresent("Node Interfaces"));
-    }
+    public void testMenuEntries() throws Exception {
+        new ExpectationBuilder("link=Node List").withText("/ Node List").or().withText("Node Interfaces").check(m_driver);
+        new ExpectationBuilder("link=Search").withText("Search for Nodes").check(m_driver);
+        new ExpectationBuilder("link=Outages").withText("Outage Menu").check(m_driver);
+        new ExpectationBuilder("link=Path Outages")
+            .withText("All path outages").and().withText("Critical Path Node").check(m_driver);
+        // Dashboards below
+        new ExpectationBuilder("link=Events").withText("Event Queries").check(m_driver);
+        new ExpectationBuilder("link=Alarms").withText("Alarm Queries").check(m_driver);
+        new ExpectationBuilder("link=Notifications").withText("Notification queries").check(m_driver);
+        new ExpectationBuilder("link=Assets").withText("Search Asset Information").check(m_driver);
+        new ExpectationBuilder("link=Reports")
+            .withText("Resource Graphs").and().withText("Database Reports").check(m_driver);
+        new ExpectationBuilder("link=Charts").withText("/ Charts").check(m_driver);
+        new ExpectationBuilder("link=Surveillance")
+            .waitFor(2, TimeUnit.SECONDS)
+            .withText("Finding status for nodes in").or().withText("Surveillance View:").check(m_driver);
+        new ExpectationBuilder("link=Distributed Status")
+            .withText("Distributed Status Summary").or()
+            .withText("No applications have been defined for this system").check(m_driver);
+        // Maps below
+        new ExpectationBuilder("link=Add Node").withText("Basic Attributes (required)").check(m_driver);
+        new ExpectationBuilder("link=Admin").withText("Node Provisioning").check(m_driver);
+        new ExpectationBuilder("link=Support").withText("Commercial Support").check(m_driver);
 
-    @Test
-    public void b_testSearchLink() throws Exception {
-        clickAndVerifyText("link=Search", "Search for Nodes");
-    }
+        // Dashboard Menu(s)
+        final ExpectationBuilder dashboardsLink = new ExpectationBuilder("//a[@href='dashboards.htm']");
+        dashboardsLink.check(m_driver);
+        new ExpectationBuilder("link=Dashboard")
+            .waitFor(2, TimeUnit.SECONDS).withText("Surveillance View: default").check(m_driver);
+        // back to dashboard to make it happy
+        dashboardsLink.check(m_driver);
+        new ExpectationBuilder("link=Ops Board")
+            .waitFor(2, TimeUnit.SECONDS).withText("Ops Panel").check(m_driver);
+        ExpectationBuilder.frontPage().check(m_driver);
 
-    @Test
-    public void c_testOutagesLink() throws Exception {
-        clickAndVerifyText("link=Outages", "Outage Menu");
-    }
-
-    @Test
-    public void d_testPathOutagesLink() throws Exception {
-        clickAndVerifyText("link=Path Outages", "All path outages");
-    }
-
-    @Test
-    public void e_testDashboardLink() throws Exception {
-        if (selenium.isElementPresent("//a[@href='dashboards.htm']")) {
-            // new style dashboard menu
-            clickAndWait("//a[@href='dashboards.htm']");
-            waitForText("OpenNMS Dashboards");
-
-            clickAndWait("//div[@id='content']//a[@href='dashboard.jsp']");
-            waitForText("Surveillance View:", LOAD_TIMEOUT);
-
-            frontPage();
-            clickAndWait("//a[@href='dashboards.htm']");
-            waitForText("OpenNMS Dashboards");
-
-            clickAndWait("//div[@id='content']//a[@href='vaadin-wallboard']");
-            waitForElement("//span[@class='v-button-caption' and text() = 'Ops Board']");
-        } else if (selenium.isElementPresent("//a[@href='dashboard.jsp']")) {
-            // old style dashboard menu
-            clickAndWait("//a[@href='dashboard.jsp']");
-            waitForText("Surveillance View:", LOAD_TIMEOUT);
-        } else {
-            fail("No dashboard link found.");
-        }
-    }
-
-    @Test
-    public void f_testEventsLink() {
-        clickAndVerifyText("link=Events", "Event Queries");
-    }
-
-    @Test
-    public void g_testAlarmsLink() {
-        clickAndVerifyText("link=Alarms", "Alarm Queries");
-    }
-
-    @Test
-    public void h_testNotificationsLink() {
-        clickAndVerifyText("link=Notifications", "Notification queries");
-    }
-
-    @Test
-    public void i_testAssetsLink() {
-        clickAndVerifyText("link=Assets", "Search Asset Information");
-    }
-
-    @Test
-    public void j_testReportsLink() {
-        clickAndVerifyText("link=Reports", "Resource Graphs");
-    }
-
-    @Test
-    public void k_testChartsLink() {
-        clickAndVerifyText("link=Charts", "/ Charts");
-    }
-
-    @Test
-    public void l_testSurveillanceLink() throws InterruptedException {
-        clickAndWait("link=Surveillance");
-        waitForText("Surveillance View:", LOAD_TIMEOUT);
-    }
-
-    @Test
-    public void m_testDistributedStatusLink() {
-        clickAndWait("link=Distributed Status");
-        assertTrue(selenium.isTextPresent("Distributed Status Summary") || selenium.isTextPresent("No applications have been defined for this system"));
-    }
-
-    private void goToMapsPage() throws Exception {
-        LOG.debug("goToMapsPage()");
-        frontPage();
-        clickAndVerifyText("//a[@href='maps.htm']", "OpenNMS Maps");
-    }
-
-    @Test
-    public void n_testDistributedMapLink() throws Exception {
-        goToMapsPage();
-        clickAndWait("//div[@id='content']//a[contains(text(), 'Distributed')]");
-        Thread.sleep(1000);
-        waitForHtmlSource("RemotePollerMap");
-        waitForText("Last update:");
-    }
-    
-    @Test
-    public void o_testTopologyMapLink() throws Exception {
-        // the vaadin apps are finicky
-        goToMapsPage();
-        clickAndWait("//div[@id='content']//a[contains(text(), 'Topology')]");
-        waitForHtmlSource("vaadin", 20000, true);
-        waitForHtmlSource("opennmstopology", 20000, true);
-        // Make sure that the alarm browser has loaded
-        waitForText("Select All", 20000, true);
-        handleVaadinErrorButtons();
-    }
-    
-    @Test
-    public void p_testGeographicalMapLink() throws Exception {
-        goToMapsPage();
-        clickAndWait("//div[@id='content']//a[contains(text(), 'Geographical')]");
-        waitForHtmlSource("vaadin", 20000, true);
-        waitForHtmlSource("opennmsnodemaps", 20000, true);
-        handleVaadinErrorButtons();
-    }
-    
-    @Test
-    public void q_testSvgMapLink() throws Exception {
-        goToMapsPage();
-        clickAndWait("//div[@id='content']//a[contains(text(), 'SVG')]");
-        waitForText("/ Network Topology Maps", LOAD_TIMEOUT);
-    }
-
-    @Test
-    public void r_testAdminLink() {
-        clickAndVerifyText("link=Admin", "Configure Users, Groups and On-Call Roles");
-    }
-
-    @Test
-    public void s_testSupportLink() throws Exception {
-        clickAndVerifyText("link=Support", "Enter your OpenNMS Group commercial support login");
+        // Map Menu(s)
+        final ExpectationBuilder mapLink = new ExpectationBuilder("//a[@href='maps.htm']");
+        mapLink.check(m_driver);
+        new ExpectationBuilder("link=Distributed")
+            .waitFor(2, TimeUnit.SECONDS).withText("Last update:").check(m_driver);
+        ExpectationBuilder.frontPage().check(m_driver);
+        mapLink.check(m_driver);
+        new ExpectationBuilder("link=Topology")
+            .waitFor(10, TimeUnit.SECONDS).withText("Select All").check(m_driver);
+        mapLink.check(m_driver);
+        new ExpectationBuilder("link=Geographical")
+            .waitFor(5, TimeUnit.SECONDS).withText("Show Severity").check(m_driver);
+        mapLink.check(m_driver);
+        new ExpectationBuilder("link=SVG")
+            .waitFor(2, TimeUnit.SECONDS).withText("/ Network Topology Maps").check(m_driver);
     }
 
 }

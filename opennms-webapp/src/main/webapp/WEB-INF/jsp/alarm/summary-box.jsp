@@ -46,15 +46,17 @@
 
 <!-- alarm/summary-box.htm -->
 <c:url var="headingLink" value="alarm/list.htm"/>
-<div class="panel panel-success fix-subpixel">
+<div class="panel panel-success">
   <div class="panel-heading">
     <h3 class="panel-title"><a href="${headingLink}">Nodes with Pending Problems</a></h3>
   </div>
   <c:choose>
     <c:when test="${empty summaries}">
-      <p class="clear">
-        There are no pending problems.
-      </p>
+      <div class="panel-body">
+        <p class="noBottomMargin">
+          There are no pending problems.
+        </p>
+      </div>
     </c:when>
     <c:otherwise>
       <table class="table table-condensed severity">
@@ -63,14 +65,16 @@
             <c:param name="node" value="${summary.nodeId}"/>
           </c:url>
           <tr class="severity-${summary.maxSeverity.label} nodivider"><td class="bright"><a href="${nodeLink}">${summary.nodeLabel}</a> has 
-              <a href="alarm/list.htm?sortby=id&acktype=unack&limit=20&display=short&filter=node%3D${summary.nodeId}">${summary.alarmCount} alarms</a> (${summary.fuzzyTimeDown})</td></tr>
+              <a href="alarm/list.htm?sortby=id&acktype=unack&limit=20&display=short&filter=node%3D${summary.nodeId}">${summary.alarmCount} alarm${summary.alarmCount > 1 ? "s" : ""}</a> (${summary.fuzzyTimeDown})</td></tr>
         </c:forEach>
       </table>
       <c:if test="${moreCount > 0}">
-        <p class="clear" align="right" >
-          <c:url var="moreLink" value="alarm/list.htm"/>
-          <a href="${moreLink}">All pending problems...</a>
-        </p>
+        <div class="panel-body">
+          <p class="noBottomMargin" align="right" >
+            <c:url var="moreLink" value="alarm/list.htm"/>
+            <a href="${moreLink}">All pending problems...</a>
+          </p>
+        </div>
       </c:if>
     </c:otherwise>
   </c:choose>

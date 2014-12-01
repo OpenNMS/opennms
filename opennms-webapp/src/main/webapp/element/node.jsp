@@ -289,15 +289,15 @@ function confirmAssetEdit() {
 }
 </script>
 
-<strong>
-  Node: ${model.label} (ID: ${model.id})<br>
+<h4>
+  Node: <strong>${model.label}</strong> (ID: <strong>${model.id}</strong>)<br>
   <c:if test="${model.foreignSource != null}">
-    <em>Created via provisioning requisition <strong>${model.foreignSource} (foreignId: ${model.foreignId})</strong></em><br>
+    <em>Created via provisioning requisition <strong>${model.foreignSource}</strong> (foreignId: <strong>${model.foreignId}</strong>)</em><br>
   </c:if>
   <c:if test="${model.foreignSource == null}">
     <em>Not a member of any provisioning requisition</em>
   </c:if>
-</strong>
+</h4>
 
   <ul class="list-inline">
     <c:url var="eventLink" value="event/list">
@@ -415,8 +415,8 @@ function confirmAssetEdit() {
 
 <c:if test="${! empty schedOutages}">
   <table class="table table-condensed severity">
-    <tr>
-      <td align="left" class="severity-critical">
+    <tr class="severity-Critical">
+      <td align="left" class="bright">
         <b>This node is currently affected by the following scheduled outages: </b> ${schedOutages}
       </td>
     </tr>
@@ -438,7 +438,7 @@ function confirmAssetEdit() {
       <h3 class="panel-title">Asset Information</h3>
     </div>
     <table class="table table-condensed">
-      <tr">
+      <tr>
         <th>Description</th>
         <td>${model.asset.description}</td>
       </tr>
@@ -483,11 +483,11 @@ function confirmAssetEdit() {
     </div>
   </c:if>
 
-  <!-- Lldp box, if info available --> 
+  <!-- LLDP box, if info available --> 
   <c:if test="${! empty model.lldp }">
     <div class="panel panel-success">
     <div class="panel-heading">
-      <h3 class="panel-title">Lldp Information</h3>
+      <h3 class="panel-title">LLDP Information</h3>
     </div>
     <table class="table table-condensed">
       <tr>
@@ -510,11 +510,11 @@ function confirmAssetEdit() {
     </div>
   </c:if>
 
-  <!-- Cdp box, if info available --> 
+  <!-- CDP box, if info available --> 
   <c:if test="${! empty model.cdp }">
     <div class="panel panel-success">
     <div class="panel-heading">
-      <h3 class="panel-title">Cdp Information</h3>
+      <h3 class="panel-title">CDP Information</h3>
     </div>
     <table class="table table-condensed">
       <tr>
@@ -607,11 +607,11 @@ function confirmAssetEdit() {
     </c:forEach>
   </c:if>
 
-  <!-- Ospf box, if info available -->
+  <!-- OSPF box, if info available -->
   <c:if test="${! empty model.ospf }">
     <div class="panel panel-success">
     <div class="panel-heading">
-      <h3 class="panel-title">Ospf Information</h3>
+      <h3 class="panel-title">OSPF Information</h3>
     </div>
     <table class="table table-condensed">
       <tr>
@@ -638,11 +638,11 @@ function confirmAssetEdit() {
     </div>
   </c:if>
 
-  <!-- IsIs box, if info available -->
+  <!-- IS-IS box, if info available -->
   <c:if test="${! empty model.isis }">
     <div class="panel panel-success">
     <div class="panel-heading">
-      <h3 class="panel-title">Is-Is Information</h3>
+      <h3 class="panel-title">IS-IS Information</h3>
     </div>
     <table class="table table-condensed">
       <tr>
@@ -654,11 +654,11 @@ function confirmAssetEdit() {
         <td>${model.isis.isisSysAdminState}</td>
       </tr>
       <tr>
-        <th>create time</th>
+        <th>Create Time</th>
         <td>${model.isis.isisCreateTime}</td>
       </tr>
       <tr>
-        <th>last poll time</th>
+        <th>Last Poll Time</th>
         <td>${model.isis.isisLastPollTime}</td>
       </tr>
     </table>
@@ -669,7 +669,7 @@ function confirmAssetEdit() {
   <c:if test="${model.criticalPath != model.noCriticalPath}">
     <div class="panel panel-success">
     <div class="panel-heading">
-      <h3 class="panel-title">Path Outage - Critical Path	</h3>
+      <h3 class="panel-title">Path Outage - Critical Path</h3>
     </div>
     <div class="panel-body">
       <ul class="list-unstyled">

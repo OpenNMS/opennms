@@ -378,7 +378,7 @@ final class SuspectEventProcessor implements Runnable {
                 String str = sysgrp.getSysName();
                 LOG.debug("SuspectEventProcessor: {} has sysName: {}", str(ifaddr), str);
 
-                if (str != null && str.length() > 0) {
+                if (str != null && !"".equals(str.trim())) {
                     entryNode.setSystemName(str);
 
                     // Hostname takes precedence over sysName so only replace

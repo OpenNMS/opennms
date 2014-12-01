@@ -753,6 +753,7 @@
            <configuration>
              <descriptor>src/assembly/source.xml</descriptor>
              <classifier>source</classifier>
+             <skipAssembly>${build.skip.tarball}</skipAssembly>
            </configuration>
          </execution>
        </executions>
@@ -998,6 +999,8 @@
   </reporting>
 
   <properties>
+    <build.skip.tarball>false</build.skip.tarball>
+
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 

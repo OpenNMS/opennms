@@ -69,12 +69,6 @@
 
 		<!-- Quick Search box -->
 		<jsp:include page="/includes/quicksearch-box.jsp" flush="false" />
-
-		<%--
-		<!-- security box -->    
-		Commenting out the security box include until it is functional
-		<jsp:include page="/includes/security-box.jsp" flush="false" />
-		--%>
 	</div>
 
 <jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />
