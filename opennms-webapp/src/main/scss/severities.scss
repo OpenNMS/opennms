@@ -28,16 +28,17 @@ $severity-alarm-cleared-text: black;
 $severity-alarm-cleared-bg: #eeeeee;
 $severity-alarm-cleared-border: $color_mountain_mist_approx;
 
-@mixin severity-variant($text-color, $bg-color, $border-color, $type) {
+@mixin severity-variant($textcolor, $bgcolor, $bordercolor, $type) {
 	.severity & {
-		color: $text-color;
-		background-color: $bg-color;
-		border: 1px solid $table-border-color;
+		color: $textcolor;
+		background-color: $bgcolor;
+
+		border: 1px 0 solid $table-border-color;
 		td {
-			border: 1px solid $table-border-color;
+			border: 1px 0 solid $table-border-color;
 		}
 		&.divider {
-			border-top: 2px solid $border-color;
+			border-top: 2px solid $bordercolor;
 		}
 		&.nodivider {
 			border-top: 1px solid $table-border-color;
