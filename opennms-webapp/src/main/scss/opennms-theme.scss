@@ -561,7 +561,7 @@ a.list-group-item.active:focus {
 .table > thead > tr > th,
 .table > tr > th {
 	vertical-align: bottom;
-  border-bottom: 2px solid #ddd;
+	border-bottom: 2px solid #ddd;
 }
 
 .table > tr > th,
@@ -570,6 +570,10 @@ a.list-group-item.active:focus {
 	color: white;
 	background-color: $color_tundora_approx;
 	border-bottom: 0;
+	a {
+		color: white;
+		text-decoration: underline;
+	}
 }
 
 

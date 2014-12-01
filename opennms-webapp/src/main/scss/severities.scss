@@ -34,6 +34,7 @@ $severity-alarm-cleared-border: $color_mountain_mist_approx;
 		background-color: $bgcolor;
 
 		border: 1px 0 solid $table-border-color;
+
 		td {
 			border: 1px 0 solid $table-border-color;
 		}
@@ -52,11 +53,6 @@ $severity-alarm-cleared-border: $color_mountain_mist_approx;
 				padding-left: 18px;
 			}
 		}
-	}
-
-	thead.severity {
-		color: white;
-		background-color: $color_mine_shaft_approx;
 	}
 }
 
