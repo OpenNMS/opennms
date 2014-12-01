@@ -79,7 +79,7 @@ import com.thoughtworks.selenium.webdriven.WebDriverBackedSelenium;
 public class OpenNMSSeleniumTestCase extends SeleneseTestBase {
     private static final Logger LOG = LoggerFactory.getLogger(OpenNMSSeleniumTestCase.class);
 
-    public static final long   LOAD_TIMEOUT       = Long.getLong("org.opennms.smoketest.web-timeout", 60000l);
+    public static final long   LOAD_TIMEOUT       = Long.getLong("org.opennms.smoketest.web-timeout", 120000l);
     public static final String OPENNMS_WEB_HOST   = System.getProperty("org.opennms.smoketest.web-host", "localhost");
     public static final int    OPENNMS_WEB_PORT   = Integer.getInteger("org.opennms.smoketest.web-port", 8980);
     public static final String OPENNMS_EVENT_HOST = System.getProperty("org.opennms.smoketest.event-host", OPENNMS_WEB_HOST);
@@ -188,6 +188,10 @@ public class OpenNMSSeleniumTestCase extends SeleneseTestBase {
             m_driver.quit();
         }
         Thread.sleep(3000);
+    }
+
+    protected WebDriverWait waitFor(final long seconds) {
+        return new WebDriverWait(m_driver, seconds);
     }
 
     protected void frontPage() {
