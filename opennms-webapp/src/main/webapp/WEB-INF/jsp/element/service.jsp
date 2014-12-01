@@ -223,7 +223,7 @@ function doDelete() {
                   <div class="panel-heading">
                     <h3 class="panel-title">${entry.key}</h3>
                   </div>
-                  <div class="panel-content">${entry.value}</div>
+                  <div class="panel-content" style="overflow-x:scroll;">${entry.value}</div>
                 </div>
               </c:forEach>
             </c:if>
