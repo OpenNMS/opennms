@@ -39,9 +39,9 @@
 <!--
 function Blank_TextField_Validator()
 {
-  if(document.alarm_search.msgmatchany.value == "")
+  if(document.alarm_search.msgmatchany.value == "" && document.alarm_search.relativetime.value == 0)
      {
-     alert("Please Enter in Alarm Search Text");
+     alert("Please enter an alarm text query.");
      document.alarm_search.msgmatchany.focus();
      return false;
      }

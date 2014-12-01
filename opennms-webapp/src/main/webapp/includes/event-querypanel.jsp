@@ -40,7 +40,7 @@ function Blank_TextField_Validator()
 {
   if(document.event_search.msgmatchany.value == "" && document.event_search.relativetime.value == 0)
      {
-     alert("Please Enter in Event Search Text");
+     alert("Please enter an event text query.");
      document.event_search.msgmatchany.focus();
      return false;
      }
