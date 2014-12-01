@@ -60,7 +60,7 @@
 <c:choose>
 	<c:when test="<%=(ipAddr == null)%>">
 		<c:set var="returnUrl" value="${nodeLink}"/>
-		<jsp:include page="/includes/header.jsp" flush="false" >
+		<jsp:include page="/includes/bootstrap.jsp" flush="false" >
 			<jsp:param name="title" value="Rescan" />
 			<jsp:param name="headTitle" value="Rescan" />
 			<jsp:param name="headTitle" value="Element" />
@@ -75,7 +75,7 @@
 			<c:param name="intf" value="<%=ipAddr%>"/>
 		</c:url>
 		<c:set var="returnUrl" value="${interfaceLink}"/>
-		<jsp:include page="/includes/header.jsp" flush="false" >
+		<jsp:include page="/includes/bootstrap.jsp" flush="false" >
 			<jsp:param name="title" value="Rescan" />
 			<jsp:param name="headTitle" value="Rescan" />
 			<jsp:param name="headTitle" value="Element" />
@@ -87,9 +87,13 @@
 	</c:otherwise>
 </c:choose>
 
-<div class="TwoColLAdmin">
-      <h3>Capability Rescan</h3>
-      
+<div class="row">
+<div class="col-md-5">
+    <div class="panel panel-success">
+    <div class="panel-heading">
+      <h3 class="panel-title">Capability Rescan</h3>
+    </div>
+    <div class="panel-content">
       <p>Are you sure you want to rescan the <nobr><%=nodeLabel%></nobr>
         <% if( ipAddr==null ) { %>
             node?
@@ -107,15 +111,22 @@
           <input type="button" value="Cancel" onClick="window.open('<%= Util.calculateUrlBase(request)%>${returnUrl}', '_self')" />
         </p>
       </form>
-  </div>
+    </div>
+    </div>
+</div>
 
-<div class="TwoColRAdmin">
-      <h3>Rescan Node</h3>
-    
+<div class="col-md-7">
+    <div class="panel panel-success">
+    <div class="panel-heading">
+      <h3 class="panel-title">Rescan Node</h3>
+    </div>
+    <div class="panel-content">
       <p>
         <em>Rescanning</em> a node tells the provisioning subsystem to re-detect what <em>services</em> appear on the node's interfaces and to re-apply the appropriate set of <em>policies</em>.
         If the node is correctly configured for SNMP, a rescan will also cause the node's SNMP attributes (<em>sysLocation</em>, <em>sysContact</em>, <em>etc.</em>) to be refreshed.
-      </p>      
-  </div>
+      </p>
+    </div>
+    </div>
+</div>
 
-<jsp:include page="/includes/footer.jsp" flush="false" />
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />
