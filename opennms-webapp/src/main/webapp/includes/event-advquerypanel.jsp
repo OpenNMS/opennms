@@ -56,9 +56,9 @@
 <fmt:formatDate var="nowAmPm" value="${now}" pattern="a" />
 <c:set var="amPmText">
   <c:choose>
-    <c:when test="${nowAmPm == 'AM' && nowHour == 12}">Noon</c:when>
+    <c:when test="${nowAmPm == 'AM' && nowHour == 12}">Midnight</c:when>
     <c:when test="${nowAmPm == 'AM' && nowHour != 12}">AM</c:when>
-    <c:when test="${nowAmPm == 'PM' && nowHour == 12}">Midnight</c:when>
+    <c:when test="${nowAmPm == 'PM' && nowHour == 12}">Noon</c:when>
     <c:when test="${nowAmPm == 'PM' && nowHour != 12}">PM</c:when>
   </c:choose>
 </c:set>
@@ -169,7 +169,7 @@
 
 	<div class="col-sm-6">
 		<label>
-			<input type="checkbox" name="usebeforetime" value="1" />Events Before:
+			<input type="checkbox" name="usebeforetime" value="1" /> Events Before:
 		</label>
 		<!-- 
 		<input type="date" name="beforedate"/>
