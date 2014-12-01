@@ -475,8 +475,6 @@
               <% } %>
             <% } %>          
 
-    <jsp:include page="/includes/bookmark.jsp" flush="false" />
-
     <jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />
 
 <%!

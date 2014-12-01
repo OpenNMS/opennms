@@ -202,7 +202,7 @@
       <strong>Custom Performance Reports</strong> can be used to produce a
       single graph that contains the data of your choice from a single
       interface or node.  You can select the timeframe, line colors, line
-       styles, and title of the graph and you can bookmark the results.
+       styles, and title of the graph.
     </p>
   </div>
 </div>

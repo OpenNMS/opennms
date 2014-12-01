@@ -223,9 +223,4 @@
 	</div>
 </div>
 
-<jsp:include page="/includes/bookmarkAll.jsp" flush="false" >
-  <jsp:param name="adminrole" 
-   value="<%= role %>" />
-</jsp:include>
-
 <jsp:include page="/includes/bootstrap-footer.jsp" flush="false"/>

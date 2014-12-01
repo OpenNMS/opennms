@@ -314,7 +314,7 @@
 	<!--		<% if( noticeCount > 0 ) { %>
 			<p align="right"><a href="<%=this.makeLink(parms)%>&multiple=<%=parms.multiple+1%>">Next</a></p>
 			<% } %> -->
-		<jsp:include page="/includes/bookmark.jsp" flush="false" />
+
         <% if( noticeCount > 0 ) { %>
           <% String baseUrl = this.makeLink(parms); %>
           <jsp:include page="/includes/resultsIndex.jsp" flush="false" >

@@ -169,11 +169,6 @@
   <strong>From:</strong> <%=startPretty%> <br/>
   <strong>To:</strong> <%=endPretty%>
 
-  <br/>
-  <br/>
-
-  <jsp:include page="/includes/bookmark.jsp" flush="false" />
-
 </div>
 
 <jsp:include page="/includes/footer.jsp" flush="false" />
