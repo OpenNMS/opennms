@@ -281,6 +281,7 @@
     </feature>
 
     <feature name="opennms-snmp" description="OpenNMS :: Core :: SNMP" version="${project.version}">
+      <bundle>wrap:mvn:org.json/json/20140107</bundle>
       <bundle>mvn:org.opennms.core.snmp/org.opennms.core.snmp.api/${project.version}</bundle>
       <bundle>mvn:org.opennms.core.snmp/org.opennms.core.snmp.commands/${project.version}</bundle>
       <bundle>mvn:org.opennms.core.snmp/org.opennms.core.snmp.implementations.snmp4j/${project.version}</bundle>
