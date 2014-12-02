@@ -608,3 +608,58 @@ a.list-group-item.active:focus {
 		background-color: white;
 	}
 }
+
+/* report list page action buttons */
+.o-report-deliver,  .o-report-schedule, .o-report-online{
+  width: 24px;
+  vertical-align: middle;
+  text-align: center;
+  a {
+    background-repeat: no-repeat;
+    width: 24px;
+    height: 24px;
+    display: block;
+  }
+}
+
+.o-report-deliver {
+
+  a {
+    background: url(../images/reportDeliver_grey.png);
+  }
+  a:hover{
+    background: url(../images/reportDeliver.png);
+  }
+}
+
+.o-report-schedule {
+  a {
+    background: url(../images/reportSchedule_grey.png);
+  }
+  a:hover{
+    background: url(../images/reportSchedule.png);
+  }
+}
+
+.o-report-online {
+  a{
+    background: url(../images/reportOnline_grey.png);
+  }
+
+  a:hover {
+    background: url(../images/reportOnline.png);
+  }
+}
+
+.pagination span strong{
+  font-weight: normal;
+  color: #FFF;
+  background-color: #366903;
+}
+.pagination span a, .pagination span a:link, .pagination span a:visited, .pagination span a:active{
+  font-weight: normal;
+  text-decoration: none;
+  color: #366903;
+  line-height: 1.5em;
+}
+

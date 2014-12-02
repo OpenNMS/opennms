@@ -44,38 +44,65 @@
 </jsp:include>
 
 <div class="row">
-  <div class="col-md-6">
+  <div class="col-md-5">
     <div class="panel panel-success">
         <div class="panel-heading">
             <h3 class="panel-title">Reports</h3>
         </div>
 
         <div class="panel-body">
-            <form action="graph/index.jsp" method="get">
-                <p align="right">Name contains
-                    <input type="text" name="match" size="16" />
-                    <input type="submit" value="Resource Graphs"/></p>
-            </form>
-            <form action="KSC/index.htm" method="get">
-                <p align="right">Name contains
-                    <input type="text" name="match" />
-                    <input type="submit" value="KSC Reports"/></p>
-            </form>
-            <ul class="list-unstyled">
-                <li><a href="graph/index.jsp">Resource Graphs</a></li>
-                <li><a href="KSC/index.htm">KSC Performance, Nodes, Domains</a></li>
-                <li><a href="report/database/index.htm">Database Reports</a></li>
-                <% if ("true".equalsIgnoreCase(Vault.getProperty("opennms.rancidIntegrationEnabled"))) {%>
-                <li><a href="inventory/rancidReport.htm">Inventory</a></li>
-                <% }%>
-                <li><a href="statisticsReports/index.htm">Statistics Reports</a></li>
-            </ul>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="pull-right">
+                        <form class="form-inline" role="form" action="graph/index.jsp" method="get">
+                            <div class="form-group">
+                                <label for="resourceName" class="sr-only" >Name contains</label>
+                                <p class="form-control-static">Name Contains</p>
+                            </div>
+                            <div class="form-group">
+                                <input class="form-control" id="resourceName" type="text" name="match" size="16" />
+                            </div>
+                            <div class="form-group">
+                                <input class="btn btn-default" type="submit" value="Resource Graphs"/>
+                            </div>
+                        </form>
+
+                        <form class="form-inline" action="KSC/index.htm" method="get">
+                            <div class="form-group">
+                                <p class="form-control-static">Name Contains</p>
+                            </div>
+                            <div class="form-group">
+                                <input class="form-control" type="text" id="kscName" name="match" />
+                            </div>
+                            <div class="form-group">
+                                <input class="form-control" type="submit" value="KSC Reports"/>
+                            </div>
+
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <ul class="list-unstyled">
+                        <li><a href="graph/index.jsp">Resource Graphs</a></li>
+                        <li><a href="KSC/index.htm">KSC Performance, Nodes, Domains</a></li>
+                        <li><a href="report/database/index.htm">Database Reports</a></li>
+                        <% if ("true".equalsIgnoreCase(Vault.getProperty("opennms.rancidIntegrationEnabled"))) {%>
+                        <li><a href="inventory/rancidReport.htm">Inventory</a></li>
+                        <% }%>
+                        <li><a href="statisticsReports/index.htm">Statistics Reports</a></li>
+                    </ul>
+                </div>
+            </div>
+
         </div>
         <!-- more reports will follow -->
     </div>
   </div>
 
-  <div class="col-md-6">
+  <div class="col-md-7">
     <div class="panel panel-success">
         <div class="panel-heading">
             <h3 class="panel-title">Descriptions</h3>
