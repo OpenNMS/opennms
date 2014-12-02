@@ -37,6 +37,10 @@ public class ReportsPageTest extends OpenNMSSeleniumTestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
+        reportsPage();
+    }
+
+    protected void reportsPage() {
         m_driver.get(BASE_URL + "opennms/report/index.jsp");
     }
 
@@ -71,21 +75,21 @@ public class ReportsPageTest extends OpenNMSSeleniumTestCase {
         findElementByLink("Resource Graphs").click();
         findElementByXpath("//h3[contains(text(), 'Standard Resource')]");
         findElementByXpath("//h3[text()='Network Performance Data']");
-        goBack();
 
+        reportsPage();
         findElementByLink("KSC Performance, Nodes, Domains").click();
         findElementByXpath("//h3[text()='Customized Reports']");
         findElementByXpath("//h3[text()='Descriptions']");
-        goBack();
 
+        reportsPage();
         findElementByLink("Database Reports").click();
         findElementByXpath("//h3[text()='Database Reports']");
         findElementByXpath("//h3[text()='Descriptions']");
         findElementByLink("List reports");
         findElementByLink("View and manage pre-run reports");
         findElementByLink("Manage the batch report schedule");
-        goBack();
 
+        reportsPage();
         findElementByLink("Statistics Reports").click();
         findElementByXpath("//*[text()='Statistics Report List']");
         findElementByXpath("//*[contains(text(), 'results found, displaying')]");
