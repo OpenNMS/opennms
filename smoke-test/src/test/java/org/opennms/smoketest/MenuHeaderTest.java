@@ -59,9 +59,15 @@ public class MenuHeaderTest extends OpenNMSSeleniumTestCase {
             .withText("Distributed Status Summary").or()
             .withText("No applications have been defined for this system").check(m_driver);
         // Maps below
-        new ExpectationBuilder("link=Add Node").withText("Basic Attributes (required)").check(m_driver);
-        new ExpectationBuilder("link=Admin").withText("Node Provisioning").check(m_driver);
-        new ExpectationBuilder("link=Support").withText("Commercial Support").check(m_driver);
+
+        findElementByLink("Add Node").click();
+        findElementByXpath("//h3[text()='Basic Attributes (required)']");
+
+        findElementByLink("Admin").click();
+        findElementByXpath("//h3[text()='Node Provisioning']");
+
+        findElementByLink("Support").click();
+        findElementByXpath("//h3[text()='Commercial Support']");
 
         // Dashboard Menu(s)
         final ExpectationBuilder dashboardsLink = new ExpectationBuilder("//a[@href='dashboards.htm']");
