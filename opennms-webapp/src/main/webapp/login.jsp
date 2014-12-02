@@ -50,8 +50,8 @@
   </blockquote>
 </c:if>
 
-<div class="row">
-  <div class="col-md-4">
+<div class="row row-centered login">
+  <div class="col-md-4 col-centered">
     <form class="form-horizontal" role="form" action="<c:url value='j_spring_security_check'/>" method="post">
       <div class="form-group">
         <label for="input_j_username" class="col-sm-2 control-label">Username</label>

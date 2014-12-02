@@ -54,6 +54,19 @@ a:focus {
 	color: #009900;
 }
 
+/* centered columns styles */
+.row-centered {
+	text-align:center;
+}
+
+.col-centered {
+	display:inline-block;
+	float:none;
+	/* reset the text-align */
+	text-align:left;
+	/* inline-block space fix */
+	margin-right:-4px;
+}
 
 
 /* =2.0 Menu
@@ -434,7 +447,7 @@ a.list-group-item.active:focus {
 	}
 	h3 {
 		margin: 0;
-		font-size: $font-size-large;
+		font-size: $font-size-large !important;
 		font-weight: bold;
 	}
 }
@@ -464,7 +477,7 @@ a.list-group-item.active:focus {
 
 .panel-title {
 	color: white !important;
-	font-size: $font-size-base;
+	font-size: $font-size-base !important;
 	font-weight: bold;
 }
 
@@ -597,10 +610,13 @@ a.list-group-item.active:focus {
 	background-color: $color_gallery_approx;
 	background-image: url(../images/mainbg.png);
 	background-repeat: repeat-x;
+	.login {
+		padding-top: 30px;
+	}
 }
 
 .breadcrumb {
-	font-size: $font-size-base;
+	font-size: $font-size-base !important;
 	font-weight: bold;
 }
 
