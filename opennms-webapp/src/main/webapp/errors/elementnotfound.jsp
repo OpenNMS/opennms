@@ -52,7 +52,7 @@
 %>
 
 
-<jsp:include page="/includes/header.jsp" flush="false" >
+<jsp:include page="/includes/bootstrap.jsp" flush="false" >
   <jsp:param name="title" value="Error" />
   <jsp:param name="headTitle" value="Element Not Found" />
   <jsp:param name="headTitle" value="Error" />
@@ -68,13 +68,14 @@
   <p>
   To search again by <%=enfe.getElemType()%> ID, enter the ID here:
   </p>
-  <form method="get" action="<%=enfe.getDetailUri()%>">
-  <p>
-    Get&nbsp;details&nbsp;for&nbsp;<%=enfe.getElemType()%>&nbsp;:
-    <br/>
-    <input type="text" name="<%=enfe.getDetailParam()%>"/>
-    <input type="submit" value="Search"/>
-  </p>
+  <form role="form" method="get" action="<%=enfe.getDetailUri()%>">
+    <div class="row">
+      <div class="form-group col-md-2">
+        <label for="input_text">Get&nbsp;details&nbsp;for&nbsp;<%=enfe.getElemType()%>&nbsp;:</label>
+        <input type="text" class="form-control" id="input_text" name="<%=enfe.getDetailParam()%>"/>
+      </div>
+    </div>
+    <button type="submit" class="btn btn-default">Search</button>
   </form>
   <% } %>
   
@@ -86,4 +87,4 @@
   <% } %>
 </p>
 
-<jsp:include page="/includes/footer.jsp" flush="false" />
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />
