@@ -6,6 +6,21 @@
 
 	<!-- Start 14.0 -->
 
+	<section id="introduction-14.0.1">
+		<title>Release 14.0.1</title>
+
+		<para>
+			Release 14.0.1 is the latest stable release of OpenNMS.  It provides
+			a few small fixes and enhancements over OpenNMS 14.0.0.  For an overview
+			of the major changes since OpenNMS 1.12.x, see the <ulink
+			url='https://github.com/OpenNMS/opennms/blob/release-14.0.1/WHATSNEW.md'>What's
+			New in OpenNMS 14</ulink> page.
+		</para>
+		<para>
+			The codename for 14.0.1 is <emphasis>Big Red</emphasis>
+		</para>
+	</section>
+
 	<section id="introduction-14.0.0">
 		<title>Release 14.0.0</title>
 

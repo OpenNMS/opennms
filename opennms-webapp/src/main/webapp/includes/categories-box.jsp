@@ -64,7 +64,7 @@
 		m_category_list.isDisconnected(earliestUpdate);
 %>
 <%	if (opennmsDisconnect) { %>
-	    <h3 class="o-box">OpenNMS Disconnect -- is the OpenNMS daemon running? - 
+	    <h3 class="o-box">Waiting for availability data... - 
 		Last update:
 <%=		(earliestUpdate > 0 ?
 			 new Date(earliestUpdate).toString() :

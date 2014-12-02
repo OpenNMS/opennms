@@ -55,11 +55,16 @@
       <artifactId>vaadin-themes</artifactId>
     </dependency>
     <dependency>
-        <groupId>com.vaadin</groupId>
-        <artifactId>vaadin-shared</artifactId>
-        <version>${vaadinVersion}</version>
+      <groupId>com.vaadin</groupId>
+      <artifactId>vaadin-shared</artifactId>
+      <version>${vaadinVersion}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>com.vaadin.external.google</groupId>
+          <artifactId>guava</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
-
     <dependency>
         <groupId>com.vaadin</groupId>
         <artifactId>vaadin-shared-deps</artifactId>
@@ -99,6 +104,11 @@
       <groupId>org.opennms.features.themes</groupId>
       <artifactId>onms-default-theme</artifactId>
       <version>${project.version}</version>
+    </dependency>
+    <!-- this override's vaadin's 16.x guava dependency -->
+    <dependency>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
     </dependency>
   </dependencies>
 
