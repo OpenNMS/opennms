@@ -620,6 +620,11 @@ a.list-group-item.active:focus {
 	font-weight: bold;
 }
 
+/* realign the pagers to the left to match the behavior in 14 */
+.pager {
+	text-align: left;
+}
+
 /*
 .panel.panel-success.fix-subpixel {
 	background-color: $color_green_leaf_approx;

@@ -90,7 +90,7 @@
 %>
 
 
-<jsp:include page="/includes/header.jsp" flush="false" >
+<jsp:include page="/includes/bootstrap.jsp" flush="false" >
   <jsp:param name="title" value="Outage List" />
   <jsp:param name="headTitle" value="List" />
   <jsp:param name="headTitle" value="Outage" />
@@ -110,7 +110,8 @@
       </jsp:include>
     <% } %>           
     <jsp:include page="/includes/search-constraints-box.jsp" />
-    <table>
+<div class="panel panel-default">
+    <table class="table table-bordered table-condensed">
       <tr>
         <th><%=this.makeSortLink(request, parms, SortStyle.ID,                SortStyle.REVERSE_ID,                "id",                        "ID" )%></th>
         <th><%=this.makeSortLink(request, parms, SortStyle.FOREIGNSOURCE,     SortStyle.REVERSE_FOREIGNSOURCE,     "foreignsource",             "Foreign Source" )%></th>
@@ -224,6 +225,7 @@
         </tr>
       <% } %>
     </table>
+</div>
  
      <% if( outageCount > 0 ) { %>
        <% String baseUrl = OutageUtil.makeLink(request, parms); %>
@@ -236,7 +238,7 @@
      <% } %>           
  
 
-<jsp:include page="/includes/footer.jsp" flush="false" />
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />
 
 <%!
     protected String makeSortLink(HttpServletRequest request, OutageQueryParms parms, SortStyle style, SortStyle revStyle, String sortString, String title ) {
