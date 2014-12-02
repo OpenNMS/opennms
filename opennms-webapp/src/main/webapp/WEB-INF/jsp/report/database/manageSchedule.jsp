@@ -38,7 +38,7 @@
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
 
 
-<jsp:include page="/includes/header.jsp" flush="false" >
+<jsp:include page="/includes/bootstrap.jsp" flush="false" >
   <jsp:param name="title" value="Manage Report Schedule" />
   <jsp:param name="headTitle" value="Manage Report Schedule" />
   <jsp:param name="breadcrumb" value="<a href='report/index.jsp'>Reports</a>" />
@@ -53,85 +53,113 @@
 	<c:param name="p" value="~" />
 </c:url>
 
+<div class="row">
+    <div class="col-md-12">
+        <c:choose>
+            <c:when test="${empty pagedListHolder.pageList}">
+                <div class="panel panel-success">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Report Schedule List</h3>
+                    </div>
+                    <div class="panel-body">
+                        <p>The database report schedule is empty.</p>
+                    </div>
+                </div>
+            </c:when>
 
-<c:choose>
-	<c:when test="${empty pagedListHolder.pageList}">
-        <h3>Report Schedule List</h3>
-        <div class="boxWrapper">
-            <p>The database report schedule is empty.</p>
-        </div>
+            <c:otherwise>
+                <form:form commandName="command">
+                    <element:pagedList pagedListHolder="${pagedListHolder}"
+                                       pagedLink="${pagedLink}" />
 
-	</c:when>
+                    <div class="spacer"><!--  --></div>
+                    <table class="table table-bordered table-striped table-hover">
+                        <thead>
+                        <tr>
+                            <th>Trigger Name</th>
+                            <th>Next fire time</th>
+                            <th>Report Parameters</th>
+                            <% if (!request.isUserInRole(Authentication.ROLE_READONLY)) { %>
+                            <th>Select</th>
+                            <% } %>
+                        </tr>
+                        </thead>
+                            <%-- // show only current page worth of data --%>
+                        <c:forEach items="${pagedListHolder.pageList}" var="trigger">
+                            <tr>
+                                <td>${trigger.triggerName}</td>
+                                <td>${trigger.nextFireTime}</td>
+                                <td>
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="row">
+                                                <div class="col-md-2"><strong>Report ID:</strong></div>
+                                                <div class="col-md-6">${trigger.reportId}</div>
+                                            </div>
 
-	<c:otherwise>
-		<form:form commandName="command">
-		<element:pagedList pagedListHolder="${pagedListHolder}"
-			pagedLink="${pagedLink}" />
-
-		<div class="spacer"><!--  --></div>
-		<table>
-			<thead>
-				<tr>
-					<th>Trigger Name</th>
-					<th>Next fire time</th>
-					<th>Report Parameters</th>
+                                            <div class="row">
+                                                <div class="col-md-2"><strong>Format:</strong></div>
+                                                <div class="col-md-6"> ${trigger.deliveryOptions.format}</div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-2"><strong>Persist:</strong></div>
+                                                <div class="col-md-6">${trigger.deliveryOptions.persist}</div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-2"><strong>Mail:</strong></div>
+                                                <div class="col-md-6">
+                                                    <c:choose>
+                                                        <c:when test="${trigger.deliveryOptions.sendMail}">${trigger.deliveryOptions.mailTo}</c:when>
+                                                        <c:otherwise>false</c:otherwise>
+                                                    </c:choose>
+                                                </div>
+                                            </div>
+                                            <c:forEach items="${trigger.reportParameters}" var="entry">
+                                                <div class="row">
+                                                    <div class="col-md-2"><strong>${entry.key}:</strong></div>
+                                                    <div class="col-md-6">${entry.value}</div>
+                                                </div>
+                                            </c:forEach>
+                                        </div>
+                                    </div>
+                                </td>
+                                <% if (!request.isUserInRole(Authentication.ROLE_READONLY)) { %>
+                                <td><form:checkbox path="triggerNames" value="${trigger.triggerName}"/></td>
+                                <% } %>
+                            </tr>
+                        </c:forEach>
+                    </table>
                     <% if (!request.isUserInRole(Authentication.ROLE_READONLY)) { %>
-					<th>Select</th>
+                    <div class="pagination">
+                        <a onClick="toggle(true, 'triggerNames')">Select all</a> /
+                        <a onClick="toggle(false, 'triggerNames')">Deselect all</a>
+                    </div>
                     <% } %>
-				</tr>
-			</thead>
-			<%-- // show only current page worth of data --%>
-			<c:forEach items="${pagedListHolder.pageList}" var="trigger">
-				<tr>
-					<td>${trigger.triggerName}</td>
-					<td>${trigger.nextFireTime}</td>
-					<td><table>
-						<tr><th>Report ID</th><td>${trigger.reportId}</td></tr>
-						<tr><th>Format</th><td>${trigger.deliveryOptions.format}</td></tr>
-						<tr><th>Persist</th><td>${trigger.deliveryOptions.persist}</td></tr>
-						<tr><th>Mail</th><td>
-							<c:choose>
-								<c:when test="${trigger.deliveryOptions.sendMail}">${trigger.deliveryOptions.mailTo}</c:when>
-								<c:otherwise>false</c:otherwise>
-							</c:choose>
-						</td></tr>
-						<c:forEach items="${trigger.reportParameters}" var="entry">
-							<tr><th>${entry.key}</th><td>${entry.value}</td></tr>
-						</c:forEach>
-					</table></td>
+
+                    <% // if deletion was successful %>
+                    <c:if test="${not empty success}">
+                        <div class="alert-success" style="clear:both">
+                                ${success}
+                        </div>
+                    </c:if>
+
+                    <% // If user is not allowed to delete %>
+                    <c:if test="${not empty error}">
+                        <div class="alert-error" style="clear:both">
+                                ${error}
+                        </div>
+                    </c:if>
                     <% if (!request.isUserInRole(Authentication.ROLE_READONLY)) { %>
-					<td><form:checkbox path="triggerNames" value="${trigger.triggerName}"/></td>
+                    <input type="submit" class="btn btn-default" value="unschedule selected jobs"/>
                     <% } %>
-				</tr>
-			</c:forEach>
-		</table>
-        <% if (!request.isUserInRole(Authentication.ROLE_READONLY)) { %>
-            <div class="pagination">
-                <a onClick="toggle(true, 'triggerNames')">Select all</a> /
-                <a onClick="toggle(false, 'triggerNames')">Deselect all</a>
-            </div>
-        <% } %>
 
-        <% // if deletion was successful %>
-        <c:if test="${not empty success}">
-            <div class="alert-success" style="clear:both">
-                    ${success}
-            </div>
-        </c:if>
-
-        <% // If user is not allowed to delete %>
-        <c:if test="${not empty error}">
-            <div class="alert-error" style="clear:both">
-                    ${error}
-            </div>
-        </c:if>
-        <% if (!request.isUserInRole(Authentication.ROLE_READONLY)) { %>
-            <input type="submit" value="unschedule selected jobs"/>
-        <% } %>
-
-	</form:form>
-	</c:otherwise>
-</c:choose>
+                </form:form>
 
 
-<jsp:include page="/includes/footer.jsp" flush="false" />
+
+            </c:otherwise>
+        </c:choose>
+    </div>
+</div>
+
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />
