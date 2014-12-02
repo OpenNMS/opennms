@@ -71,6 +71,7 @@
   <meta http-equiv="Content-Style-Type" content="text/css"/>
   <meta http-equiv="Content-Script-Type" content="text/javascript"/>
   <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+  <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width">
 
   <!-- Set GWT property to get browsers locale -->
   <meta name="gwt:property" content="locale=<%=request.getLocale()%>">
