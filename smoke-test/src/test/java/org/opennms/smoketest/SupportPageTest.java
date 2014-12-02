@@ -74,7 +74,7 @@ public class SupportPageTest extends OpenNMSSeleniumTestCase {
         assertNotNull(about);
         about.click();
         assertNotNull(m_driver.findElement(By.xpath("//h3[text()='License and Copyright']")));
-        assertNotNull(m_driver.findElement(By.xpath("//td[@class='standardheader' and text()='Version:']")));
+        assertNotNull(m_driver.findElement(By.xpath("//th[text()='Version:']")));
     }
     
     @Test

@@ -96,7 +96,6 @@
                     </ul>
                 </div>
             </div>
-
         </div>
         <!-- more reports will follow -->
     </div>

@@ -71,7 +71,7 @@
     <div class="panel-heading">
       <h3 class="panel-title">OpenNMS Web Console</h3>
     </div>
-<table class="table table-condensed severity">
+<table class="table table-condensed">
   <tr>
     <th>Version:</th>
     <td><%=Vault.getProperty("version.display")%></td>
@@ -222,10 +222,5 @@
 		</div>
 	</div>
 </div>
-
-<jsp:include page="/includes/bookmarkAll.jsp" flush="false" >
-  <jsp:param name="adminrole" 
-   value="<%= role %>" />
-</jsp:include>
 
 <jsp:include page="/includes/bootstrap-footer.jsp" flush="false"/>

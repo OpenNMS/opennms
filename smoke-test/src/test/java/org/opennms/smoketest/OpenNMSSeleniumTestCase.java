@@ -79,7 +79,7 @@ import com.thoughtworks.selenium.webdriven.WebDriverBackedSelenium;
 public class OpenNMSSeleniumTestCase extends SeleneseTestBase {
     private static final Logger LOG = LoggerFactory.getLogger(OpenNMSSeleniumTestCase.class);
 
-    public static final long   LOAD_TIMEOUT       = Long.getLong("org.opennms.smoketest.web-timeout", 60000l);
+    public static final long   LOAD_TIMEOUT       = Long.getLong("org.opennms.smoketest.web-timeout", 120000l);
     public static final String OPENNMS_WEB_HOST   = System.getProperty("org.opennms.smoketest.web-host", "localhost");
     public static final int    OPENNMS_WEB_PORT   = Integer.getInteger("org.opennms.smoketest.web-port", 8980);
     public static final String OPENNMS_EVENT_HOST = System.getProperty("org.opennms.smoketest.event-host", OPENNMS_WEB_HOST);
@@ -190,6 +190,10 @@ public class OpenNMSSeleniumTestCase extends SeleneseTestBase {
         Thread.sleep(3000);
     }
 
+    protected WebDriverWait waitFor(final long seconds) {
+        return new WebDriverWait(m_driver, seconds);
+    }
+
     protected void frontPage() {
         m_driver.get(BASE_URL + "opennms/");
         m_driver.findElement(By.id("index-contentleft"));
@@ -216,6 +220,10 @@ public class OpenNMSSeleniumTestCase extends SeleneseTestBase {
 
     public WebElement findElementByName(final String name) {
         return m_driver.findElement(By.name(name));
+    }
+
+    public WebElement findElementByXpath(final String xpath) {
+        return m_driver.findElement(By.xpath(xpath));
     }
 
     protected void enterText(final By selector, final String text) {

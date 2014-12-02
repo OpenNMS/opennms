@@ -40,7 +40,7 @@ function Blank_TextField_Validator()
 {
   if(document.event_search.msgmatchany.value == "" && document.event_search.relativetime.value == 0)
      {
-     alert("Please Enter in Event Search Text");
+     alert("Please enter an event text query.");
      document.event_search.msgmatchany.focus();
      return false;
      }
@@ -49,9 +49,12 @@ function Blank_TextField_Validator()
 -->
 </script>
 
-<form name="event_search" action="event/query" method="get" onsubmit="return Blank_TextField_Validator()">
-      <p>Event Text:<input type="text" name="msgmatchany" /> &nbsp; Time:
-        <select name="relativetime" size="1">
+<form class="form-inline" name="event_search" action="event/query" method="get" onsubmit="return Blank_TextField_Validator()">
+    <div class="form-group">
+      <label for="msgmatchany">Event Text:&nbsp;</label><input class="form-control" type="text" name="msgmatchany" />
+      &nbsp;
+      <label for="relativetime">Time:</label>
+        <select class="form-control" name="relativetime" size="1">
           <option value="0" selected>Any</option>
           <option value="1">Last hour</option>
           <option value="2">Last 4 hours</option>
@@ -59,10 +62,9 @@ function Blank_TextField_Validator()
           <option value="4">Last 12 hours</option>
           <option value="5">Last day</option>
           <option value="6">Last week</option>
-          <option value="7">Last month</option>                
+          <option value="7">Last month</option>
         </select>
+        &nbsp;
         <input type="submit" value="Search" />
+    </div>
 </form>
-
-
-

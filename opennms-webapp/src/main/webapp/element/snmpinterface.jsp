@@ -74,7 +74,7 @@
 <%
 String nodeBreadCrumb = "<a href='element/node.jsp?node=" + nodeId  + "'>Node</a>";
 %>
-<jsp:include page="/includes/header.jsp" flush="false" >
+<jsp:include page="/includes/bootstrap.jsp" flush="false" >
   <jsp:param name="title" value="Snmp Interface" />
   <jsp:param name="headTitle" value="Snmp Interface" />
   <jsp:param name="breadcrumb" value="<a href='element/index.jsp'>Search</a>" />
@@ -100,8 +100,8 @@ function doDelete() {
 %>
 
 
-      <h2>Interface: <%=(intf_db.getSnmpIfDescription() == null) ? "&nbsp;" : intf_db.getSnmpIfDescription()%>
-      </h2>
+      <h4>Interface: <%=(intf_db.getSnmpIfDescription() == null) ? "&nbsp;" : intf_db.getSnmpIfDescription()%>
+      </h4>
 
         <%
         if (request.isUserInRole( Authentication.ROLE_ADMIN )) {
@@ -114,8 +114,7 @@ function doDelete() {
       }
       %>
 
-      <div id="linkbar">
-      <ul>
+      <ul class="list-inline">
 		
         <%
         if (ifIndex > 0 ) {
@@ -156,17 +155,20 @@ function doDelete() {
          <% } %>
          
       </ul>
-      </div>
 
       <% if (request.isUserInRole( Authentication.ROLE_ADMIN )) { %>
       </form>
       <% } %>
 
-	<div id="contentleft">
+  <div class="row">
+	<div class="col-md-6">
 
-        <h3>General</h3>
+        <div class="panel panel-success">
+        <div class="panel-heading">
+        <h3 class="panel-title">General</h3>
+        </div>
             <!-- general info box -->
-	    <table>
+	       <table class="table table-condensed">
               <tr>
                 <th>Node</th>
                 <td><a href="element/node.jsp?node=<%=intf_db.getNodeId()%>"><%=node.getLabel()%></a></td>
@@ -215,7 +217,8 @@ function doDelete() {
         	  	</tr>              
 
             </table>
-            
+            </div>
+
             <!-- Node Link box -->
             <jsp:include page="/includes/interfaceLink-box.jsp" flush="false">
                 <jsp:param name="node" value="<%=nodeId%>" />
@@ -224,8 +227,11 @@ function doDelete() {
                         
 
             <!-- SNMP box, if info available -->
-              <h3>SNMP Attributes</h3>
-		  	<table>
+              <div class="panel panel-success">
+              <div class="panel-heading">
+              <h3 class="panel-title">SNMP Attributes</h3>
+              </div>
+      		  	<table class="table table-condensed">
                 <tr>
                   <th>Interface Type</th>
                   <td><%=ElementUtil.getIfTypeString(intf_db.getSnmpIfType())%></td>
@@ -254,12 +260,13 @@ function doDelete() {
                 </tr>
 
               </table>
+            </div>
 
 
-</div>
+</div> <!-- left content -->
        
 
-<div id="contentright">
+<div class="col-md-6">
 
             <!-- interface desktop information box -->
           
@@ -280,6 +287,7 @@ function doDelete() {
             <jsp:include page="/includes/interfaceSTP-box.jsp" flush="false" />
          
 
-</div> <!-- id="contentright" -->
+</div> <!-- right content -->
+</div> <!-- row -->
 
-<jsp:include page="/includes/footer.jsp" flush="false" />
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />
