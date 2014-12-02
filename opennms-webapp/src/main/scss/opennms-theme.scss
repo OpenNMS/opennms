@@ -462,16 +462,17 @@ a.list-group-item.active:focus {
 	padding: $panel-heading-padding;
 }
 
+.panel-title {
+	color: white !important;
+	font-size: $font-size-base;
+	font-weight: bold;
+}
+
 .panel-body {
 	padding: $panel-body-padding;
 	ul {
 		margin-bottom: 0;
 	}
-}
-
-.panel-title {
-	font-size: $font-size-base;
-	font-weight: bold;
 }
 
 .panel-primary {
