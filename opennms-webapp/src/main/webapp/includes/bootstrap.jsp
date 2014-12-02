@@ -156,7 +156,12 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="<%= baseHref %>index.jsp"><img src="<%= baseHref %>images/logo-bootstrap.png" alt="OpenNMS" /></a>
+          <a class="navbar-brand" href="<%= baseHref %>index.jsp">
+            <picture>
+              <source srcset="<%= baseHref %>images/logo-bootstrap.png, <%= baseHref %>images/logo-bootstrap-2x.png 2x, <%= baseHref %>images/logo-bootstrap-3x.png 3x" />
+              <img src="<%= baseHref %>images/logo-bootstrap.png" alt="OpenNMS" />
+            </picture>
+          </a>
         </div>
 
         <div id="headerinfo" style="display: none" class="nav navbar-nav navbar-right navbar-info">

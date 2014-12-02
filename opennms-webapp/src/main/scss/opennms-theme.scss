@@ -33,6 +33,10 @@ body {
 body.fixed-nav {
 	padding-top: $navbar-height !important;
 }
+img {
+	max-width: 100%;
+	height: auto;
+}
 .wrapper {
 	width: 900px;
 	position:relative;
