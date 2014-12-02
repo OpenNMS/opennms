@@ -409,12 +409,17 @@ a.list-group-item.active:focus {
 }
 
 #navbar {
-	height: $line-height-computed + 10px; /* padding top and bottom of link entries */
-	position: absolute;
-	bottom: 0;
-	right: 0;
 	background-image: none;
 	background-color: transparent;
+}
+
+@media only screen and (min-width: $grid-float-breakpoint) {
+	#navbar {
+		height: $line-height-computed + 10px;
+		position: absolute;
+		bottom: 0;
+		right: 0;
+	}
 }
 
 @mixin navbar-inverse-color($text-color) {
