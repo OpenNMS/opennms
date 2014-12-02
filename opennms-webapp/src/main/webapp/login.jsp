@@ -59,7 +59,7 @@
           <input type="text" class="form-control" id="input_j_username" name="j_username"
             <%-- This is deprecated and requires a custom AuthenticationFailureHandler to function properly --%>
             <c:if test="${not empty param.login_error}">value='<c:out value="${SPRING_SECURITY_LAST_USERNAME}"/>'</c:if>
-            placeholder="Username" />
+            placeholder="Username" autofocus="autofocus" />
         </div>
       </div>
 

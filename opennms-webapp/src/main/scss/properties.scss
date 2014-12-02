@@ -27,23 +27,16 @@ $color_alizarin_crimson_approx: #ef2929;
 $color_lima_approx: #73d216;
 
 /* for now just disable menu collapse */
-$grid-float-breakpoint: 300px;
+/* $grid-float-breakpoint: 300px; */
 
 $font-size-base:  12px;
-$font-size-large: ceil(($font-size-base * 1.25)) !default;
-$font-size-small: ceil(($font-size-base * 0.85)) !default;
 
 $font-family-base-sans-serif: 'Lucida Grande', Verdana, sans-serif;
 
-$navbar-height: 98px;
-$navbar-logo-height: 49px;
+$navbar-logo-height: 48px;
 $navbar-margin-bottom: 0;
 $navbar-inverse-color: white;
 $navbar-inverse-bg: $color_mine_shaft_approx;
-
-$line-height-base:        1.428571429 !default; // 20/14
-/* Computed "line-height" (`font-size` * `line-height`) for use with `margin`, `padding`, etc. */
-$line-height-computed:    floor(($font-size-base * $line-height-base)) !default; // ~20px
 
 $breadcrumb-bg: transparent;
 $breadcrumb-padding-horizontal: 0; /* container-fluid already gives us a good padding */
@@ -55,6 +48,5 @@ $border-radius-small: 0;
 
 $table-border-color: $color_mountain_mist_approx;
 
-$panel-border-radius: $border-radius-base;
 $panel-heading-padding: 6px;
 $panel-body-padding: 4px 6px;
