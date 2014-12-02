@@ -29,61 +29,113 @@
 
 --%>
 
-<%@page import="org.opennms.web.navigate.*" %>
+<%@page import="
+	org.opennms.web.navigate.*,
+	org.opennms.web.api.Authentication,
+	org.opennms.web.api.Util,
+	org.opennms.netmgt.config.NotifdConfigFactory
+" %>
 
 <%@ page contentType="text/html;charset=UTF-8" language="java"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 
+<%!
+	public void init() throws ServletException {
+		try {
+			NotifdConfigFactory.init();
+		} catch (final Throwable t) {
+			// notice status will be unknown if the factory can't be initialized
+		}
+	}
+%>
+<%
+	String noticeStatus = "Unknown";
+	try {
+		noticeStatus = NotifdConfigFactory.getPrettyStatus();
+	} catch (final Throwable t) {
+	}
+	final String baseHref = Util.calculateUrlBase( request );
+	final Boolean isAdmin = request.isUserInRole(Authentication.ROLE_ADMIN);
+	pageContext.setAttribute("isAdmin", isAdmin);
+%>
+
 <c:choose>
   <c:when test="${param.bootstrap == 'true'}">
     <ul class="nav navbar-nav navbar-right">
-      <c:forEach var="entry" items="${model.entries}">
-        <!-- entry ${entry.key.name}, hasEntries=${not empty entry.key.entries}, display=${entry.value.display} -->
-        <c:if test="${entry.value.display}">
-          <c:choose>
-            <c:when test="${not empty entry.key.entries}">
-              <!-- has sub-entries, draw menu drop-downs -->
-              <li class="dropdown">
-              <a href="${entry.key.url}" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">${entry.key.name} <span class="caret"></span></a>
-              <ul class="dropdown-menu" role="menu">
-                <c:forEach var="subEntry" items="${entry.key.entries}">
-                  <%
-                    NavBarEntry subEntry = (NavBarEntry) pageContext.getAttribute("subEntry");
-                    DisplayStatus subEntryDisplayStatus = subEntry.evaluate(request);
-                    pageContext.setAttribute("subEntryDisplayStatus", subEntryDisplayStatus);
-                  %>
-                  <c:if test="${subEntryDisplayStatus.display}">
-                    <li>
+      <c:choose>
+        <c:when test="${empty pageContext.request.remoteUser}">
+        </c:when>
+        <c:otherwise>
+          <c:forEach var="entry" items="${model.entries}">
+            <c:if test="${entry.value.display}">
+              <c:choose>
+                <c:when test="${not empty entry.key.entries}">
+                  <!-- has sub-entries, draw menu drop-downs -->
+                  <li class="dropdown">
+                  <a href="${entry.key.url}" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">${entry.key.name} <span class="caret"></span></a>
+                  <ul class="dropdown-menu" role="menu">
+                    <c:forEach var="subEntry" items="${entry.key.entries}">
+                      <%
+                        NavBarEntry subEntry = (NavBarEntry) pageContext.getAttribute("subEntry");
+                        DisplayStatus subEntryDisplayStatus = subEntry.evaluate(request);
+                        pageContext.setAttribute("subEntryDisplayStatus", subEntryDisplayStatus);
+                      %>
+                      <c:if test="${subEntryDisplayStatus.display}">
+                        <li>
+                        <c:choose>
+                          <c:when test="true">
+                            <a href="${subEntry.url}">${subEntry.name}</a>
+                          </c:when>
+                          <c:otherwise>
+                            <a href="#">${subEntry.name}</a>
+                          </c:otherwise>
+                        </c:choose>
+                        </li>
+                      </c:if>
+                    </c:forEach>
+                  </ul>
+                </c:when>
+                <c:otherwise>
+                  <li>
                     <c:choose>
-                      <c:when test="true">
-                        <a href="${subEntry.url}">${subEntry.name}</a>
+                      <c:when test="${not empty entry.key.url}">
+                        <a href="${entry.key.url}">${entry.key.name}</a>
                       </c:when>
                       <c:otherwise>
-                        ${subEntry.name}
+                        <a href="#">${entry.key.name}</a>
                       </c:otherwise>
                     </c:choose>
-                    </li>
-                  </c:if>
-                </c:forEach>
-              </ul>
-            </c:when>
-            <c:otherwise>
-              <li>
-                <c:choose>
-                  <c:when test="${entry.value.displayLink}">
-                    <!-- entry.displayLink -->
-                    <a href="${entry.key.url}">${entry.key.name}</a>
-                  </c:when>
-                  <c:otherwise>
-                    <!-- entry.key.name -->
-                    ${entry.key.name}
-                  </c:otherwise>
-                </c:choose>
-              </li>
-            </c:otherwise>
-          </c:choose> <!-- has/doesn't have entries -->
-        </c:if> <!-- display -->
-      </c:forEach>
+                  </li>
+                </c:otherwise>
+              </c:choose> <!-- has/doesn't have entries -->
+            </c:if> <!-- display -->
+          </c:forEach>
+          <li class="dropdown">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+              <c:choose>
+                <c:when test="${not empty pageContext.request.remoteUser}">
+                  ${pageContext.request.remoteUser}
+                </c:when>
+                <c:otherwise>
+                  &hellip;
+                </c:otherwise>
+              </c:choose>
+              <span class="caret"></span>
+            </a>
+            <ul class="dropdown-menu" role="menu">
+              <c:if test="${not empty pageContext.request.remoteUser}">
+                <li><a href="<%= baseHref %>j_spring_security_logout">Log Out</a></li>
+              </c:if>
+              <c:if test="${isAdmin}">
+                <li><a href="<%= baseHref %>admin/index.jsp">Configure&nbsp;OpenNMS</a></li>
+                <li><a href="<%= baseHref %>admin/node/add.htm">Quick-Add&nbsp;Node</a></li>
+              </c:if>
+              <li><a href="<%= baseHref %>support/index.htm">Help/Support</a></li>
+              <li><a href="#">Notices:&nbsp;<b id="notification<%= noticeStatus %>"><%= noticeStatus %></b></a></li>
+            </ul>
+          </li>
+        </c:otherwise>
+      </c:choose>
     </ul>
   </c:when>
   <c:otherwise>

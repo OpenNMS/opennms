@@ -44,35 +44,16 @@
 <%@page language="java"
 	contentType="text/html"
 	session="true"
-	import="org.opennms.web.api.Util,org.opennms.netmgt.config.NotifdConfigFactory"
-%>
+	import="
+		org.opennms.web.api.Util,
+		org.opennms.netmgt.config.NotifdConfigFactory
+	"%>
+
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
-<%!
-    public void init() throws ServletException {
-        try {
-            NotifdConfigFactory.init();
-        } catch (Throwable t) {
-	    // notice status will be unknown if the factory can't be initialized
-	}
-    }
-%>
-
 <%
-    String noticeStatus;
-    try {
-        noticeStatus = NotifdConfigFactory.getPrettyStatus();
-        if ("Off".equals(noticeStatus)) {
-          noticeStatus="<b id=\"notificationOff\">Off</b>";
-        } else {
-          noticeStatus="<b id=\"notificationOn\">On</b>";
-        }
-    } catch (Throwable t) {
-        noticeStatus = "<b id=\"notificationOff\">Unknown</b>";
-    }
-    pageContext.setAttribute("noticeStatus", noticeStatus);
-final String baseHref = Util.calculateUrlBase( request );
+	final String baseHref = Util.calculateUrlBase( request );
 %>
 <!DOCTYPE html>
 <%-- The <html> tag is unmatched in this file (its matching tag is in the
@@ -97,22 +78,26 @@ final String baseHref = Util.calculateUrlBase( request );
   <c:forEach var="meta" items="${paramValues.meta}">
     <c:out value="${meta}" escapeXml="false"/>
   </c:forEach>
-  <c:choose>
-    <c:when test="${param.nobase != 'true' }">
-        <base href="<%= baseHref %>" />
-    </c:when>
-  </c:choose>
+  <c:if test="${param.nobase != 'true' }">
+    <base href="<%= baseHref %>" />
+  </c:if>
   <!--  ${nostyles} -->
-  <c:choose>
-    <c:when test="${param.nostyles != 'true' }">
-        <link rel="stylesheet" type="text/css" href="<%= baseHref %>css/bootstrap.css" media="screen" />
-        <link rel="stylesheet" type="text/css" href="<%= baseHref %>css/opennms-theme.css" media="screen" />
-        <!-- <link rel="stylesheet" type="text/css" href="<%= baseHref %>css/styles.css" media="screen" />
-        <link rel="stylesheet" type="text/css" href="<%= baseHref %>css/gwt-asset.css" media="screen" />
-        <link rel="stylesheet" type="text/css" href="<%= baseHref %>css/onms-gwt-chrome.css" media="screen" />
-        <link rel="stylesheet" type="text/css" href="<%= baseHref %>css/print.css" media="print" /> -->
-    </c:when>
-  </c:choose>
+  <c:if test="${param.nostyles != 'true' }">
+    <link rel="stylesheet" type="text/css" href="<%= baseHref %>css/bootstrap.css" media="screen" />
+    <style type="text/css">
+      body.fixed-nav {
+        padding-top: 60px;
+      }
+      .navbar-brand {
+        padding: 1px;
+      }
+    </style>
+    <link rel="stylesheet" type="text/css" href="<%= baseHref %>css/opennms-theme.css" media="screen" />
+    <!-- <link rel="stylesheet" type="text/css" href="<%= baseHref %>css/styles.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="<%= baseHref %>css/gwt-asset.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="<%= baseHref %>css/onms-gwt-chrome.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="<%= baseHref %>css/print.css" media="print" /> -->
+  </c:if>
   <link rel="shortcut icon" href="<%= baseHref %>favicon.ico" />
   <c:forEach var="link" items="${paramValues.link}">
     <c:out value="${link}" escapeXml="false" />
@@ -171,26 +156,12 @@ final String baseHref = Util.calculateUrlBase( request );
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="<%= baseHref %>index.jsp"><img src="<%= baseHref %>images/logo.png" alt="OpenNMS" /></a>
+          <a class="navbar-brand" href="<%= baseHref %>index.jsp"><img src="<%= baseHref %>images/logo-bootstrap.png" alt="OpenNMS" /></a>
         </div>
 
-        <div id="headerinfo" style="margin-right: 0" class="nav navbar-nav navbar-right navbar-info">
-          <h3 align="right">${param.title}</h3>
-          <p align="right">
-            <c:choose>
-              <c:when test="${!empty pageContext.request.remoteUser}">
-                User: <a href="<%= baseHref %>account/selfService/index.jsp" title="Account self-service"><strong>${pageContext.request.remoteUser}</strong></a>&nbsp;(Notices <c:out value="${noticeStatus}" escapeXml="false"/>)
-                  - <a href="<%= baseHref %>j_spring_security_logout">Log out</a><br/>
-              </c:when>
-              <c:otherwise>
-                User: &hellip;<br/>
-              </c:otherwise>
-            </c:choose>
-            <jsp:useBean id="currentDate" class="java.util.Date" />
-            <fmt:formatDate value="${currentDate}" type="date" dateStyle="medium"/>
-            &nbsp;
-            <fmt:formatDate value="${currentDate}" type="time" pattern="HH:mm z"/> 
-          </p>
+        <div id="headerinfo" style="display: none" class="nav navbar-nav navbar-right navbar-info">
+          <jsp:useBean id="currentDate" class="java.util.Date" />
+          <fmt:formatDate value="${currentDate}" type="date" dateStyle="medium"/>&nbsp;<fmt:formatDate value="${currentDate}" type="time" pattern="HH:mm z"/>
         </div>
 
         <div style="margin-right: 15px" id="navbar" class="navbar-collapse collapse">
