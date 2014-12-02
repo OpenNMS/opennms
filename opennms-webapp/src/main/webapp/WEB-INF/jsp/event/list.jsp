@@ -220,10 +220,8 @@
 	  	<input type="hidden" name="uei" id="uei" value="" /> <!-- Set by java script -->
 	  </form>
 
-
-          
+            <div>
             <% if( parms.getFilters().size() > 0 || AcknowledgeType.UNACKNOWLEDGED.toNormalizedAcknowledgeType().equals(parms.getAckType()) || AcknowledgeType.ACKNOWLEDGED.toNormalizedAcknowledgeType().equals(parms.getAckType()) ) { %>
-                <div>
                 <p>
                     Favorites:
                     <onms:select
@@ -259,8 +257,9 @@
                             onDeselect="<%=FavoriteTag.Action.CLEAR_FILTERS%>"/>
 
                 </p>
-                </div>
             <% } %>
+            </div>
+
             <onms:alert/>
 
             <% if( events.length > 0 ) { %>

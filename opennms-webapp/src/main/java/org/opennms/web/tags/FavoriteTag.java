@@ -43,6 +43,8 @@ import java.util.ArrayList;
 
 public class FavoriteTag extends TagSupport {
 
+    private static final long serialVersionUID = -2620230289707902880L;
+
     public static interface Action {
 
         String getDescription();
@@ -53,7 +55,7 @@ public class FavoriteTag extends TagSupport {
 
             @Override
             public String getDescription() {
-                return "clear favorite and reset all filter criteria";
+                return "Clear favorite and reset all filter criteria";
             }
 
             @Override
@@ -76,7 +78,7 @@ public class FavoriteTag extends TagSupport {
         Action DELETE_FAVORITE = new Action() {
             @Override
             public String getDescription() {
-                return "delete the current selected favorite";
+                return "Delete the current selected favorite";
             }
 
             @Override
@@ -99,7 +101,7 @@ public class FavoriteTag extends TagSupport {
 
             @Override
             public String getDescription() {
-                return "create a favorite with current filter settings";
+                return "Create a favorite with current filter settings";
             }
 
             @Override
@@ -268,13 +270,13 @@ public class FavoriteTag extends TagSupport {
                     BUTTON_TEMPLATE,
                     getDeselectAction().getJavascriptCallback(this),
                     getDeselectAction().getDescription(),
-                    "remove filter");
+                    "Remove Filter");
         }
         return MessageFormat.format(
                 BUTTON_TEMPLATE,
                 getSelectAction().getJavascriptCallback(this),
                 getSelectAction().getDescription(),
-                "save filter");
+                "Save Filter");
     }
 
     /**

@@ -48,9 +48,11 @@ import java.util.List;
  */
 public class FiltersTag extends TagSupport {
 
+    private static final long serialVersionUID = -8419211806241306127L;
+
     private static final String TEMPLATE = "{LEADING}{FILTERS}";
 
-    private static final String FILTER_TEMPLATE = "<span class=\"filter\">{FILTER_DESCRIPTION} {REMOVE_FILTER_LINK}</span> ";
+    private static final String FILTER_TEMPLATE = "&nbsp;<span class=\"label label-success\">{FILTER_DESCRIPTION}</span> {REMOVE_FILTER_LINK} ";
 
     private static final String REMOVE_FILTER_TEMPLATE = "<a href=\"{REMOVE_LINK}\" title=\"{REMOVE_LINK_TITLE}\"><i class=\"fa fa-minus-square-o\"></i></a>";
 

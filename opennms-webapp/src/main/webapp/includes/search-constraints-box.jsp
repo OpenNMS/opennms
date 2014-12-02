@@ -79,8 +79,7 @@
   <p>Search constraints: 
       <% for(int i=0; i < length; i++) { %>
         <% Filter filter = (Filter)parms.filters.get(i); %> 
-        &nbsp; <span class="filter"><%=WebSecurityUtils.sanitizeString(filter.getTextDescription())%> <a href="<%=OutageUtil.makeLink(req, parms, filter, false)%>">[-]</a></span>
+        &nbsp; <span class="label label-success"><%=WebSecurityUtils.sanitizeString(filter.getTextDescription())%></span> <a href="<%=OutageUtil.makeLink(req, parms, filter, false)%>">[-]</a>
       <% } %>   
   </p>    
 <% } %>  
-
