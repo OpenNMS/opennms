@@ -43,7 +43,7 @@ public class MenuHeaderTest extends OpenNMSSeleniumTestCase {
         new ExpectationBuilder("link=Search").withText("Search for Nodes").check(m_driver);
         new ExpectationBuilder("link=Outages").withText("Outage Menu").check(m_driver);
         new ExpectationBuilder("link=Path Outages")
-            .withText("All path outages").and().withText("Critical Path Node").check(m_driver);
+            .withText("All Path Outages").and().withText("Critical Path Node").check(m_driver);
         // Dashboards below
         new ExpectationBuilder("link=Events").withText("Event Queries").check(m_driver);
         new ExpectationBuilder("link=Alarms").withText("Alarm Queries").check(m_driver);
@@ -88,7 +88,7 @@ public class MenuHeaderTest extends OpenNMSSeleniumTestCase {
             .waitFor(5, TimeUnit.SECONDS).withText("Show Severity").check(m_driver);
         mapLink.check(m_driver);
         new ExpectationBuilder("link=SVG")
-            .waitFor(2, TimeUnit.SECONDS).withText("/ Network Topology Maps").check(m_driver);
+            .waitFor(2, TimeUnit.SECONDS).withText("Network Topology Maps").check(m_driver);
     }
 
 }

@@ -222,6 +222,10 @@ public class OpenNMSSeleniumTestCase extends SeleneseTestBase {
         return m_driver.findElement(By.name(name));
     }
 
+    public WebElement findElementByXpath(final String xpath) {
+        return m_driver.findElement(By.xpath(xpath));
+    }
+
     protected void enterText(final By selector, final String text) {
         final WebElement element = m_driver.findElement(selector);
         element.clear();

@@ -51,12 +51,12 @@
         </div>
 
         <div class="panel-body">
-            <form action="graph/index.jsp" method="get">
+            <form action="graph/index.jsp" method="get" name="resourceGraphs">
                 <p align="right">Name contains
                     <input type="text" name="match" size="16" />
                     <input type="submit" value="Resource Graphs"/></p>
             </form>
-            <form action="KSC/index.htm" method="get">
+            <form action="KSC/index.htm" method="get" name="kscReports">
                 <p align="right">Name contains
                     <input type="text" name="match" />
                     <input type="submit" value="KSC Reports"/></p>

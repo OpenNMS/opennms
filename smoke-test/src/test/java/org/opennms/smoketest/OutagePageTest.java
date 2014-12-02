@@ -28,52 +28,47 @@
 
 package org.opennms.smoketest;
 
-import org.junit.Before;
-import org.junit.FixMethodOrder;
-import org.junit.Test;
-import org.junit.runners.MethodSorters;
+import static org.junit.Assert.assertNotNull;
 
-@FixMethodOrder(MethodSorters.NAME_ASCENDING)
+import org.junit.Before;
+import org.junit.Test;
+import org.openqa.selenium.Alert;
+import org.openqa.selenium.By;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.Select;
+
 public class OutagePageTest extends OpenNMSSeleniumTestCase {
     @Before
     public void setUp() throws Exception {
         super.setUp();
-        clickAndWait("link=Outages");
+        m_driver.get(BASE_URL + "opennms/outage/index.jsp");
     }
 
     @Test
-    public void a_testAllTextIsPresent() throws Exception {
-        waitForText("Outage Menu");
-        waitForText("Outages and Service Level Availability");
-        waitForText("Outage ID");
-        waitForText("create notifications");
+    public void testAllTextIsPresent() throws Exception {
+        findElementByXpath("//h3[text()='Outage Menu']");
+        findElementByXpath("//h3[text()='Outages and Service Level Availability']");
+        findElementByName("outageIdForm").findElement(By.name("id"));
     }  
 
     @Test
-    public void b_testAllLinksArePresent() throws InterruptedException {
-        waitForElement("link=Current outages");
-        waitForElement("link=All outages");
-    }
+    public void testAllLinks() throws InterruptedException {
+        findElementByLink("Current outages").click();
+        Select select = new Select(findElementByName("outage_search_constraints_box_outtype_form").findElement(By.name("outtype")));
+        assertEquals("Current", select.getFirstSelectedOption().getText());
+        findElementByLink("Interface");
+        goBack();
 
-    @Test
-    public void c_testAllFormsArePresent() {
-        assertEquals("Get details", selenium.getValue("css=input[type='submit']"));
-    }
+        findElementByLink("All outages").click();
+        select = new Select(findElementByName("outage_search_constraints_box_outtype_form").findElement(By.name("outtype")));
+        assertEquals("Both Current & Resolved", select.getFirstSelectedOption().getText());
+        findElementByLink("Interface");
+        goBack();
 
-    @Test
-    public void d_testAllLinks() throws InterruptedException {
-        clickAndWait("link=Current outages");
-        waitForElement("name=outtype");
-        waitForElement("css=input[type='submit']");
-        waitForElement("link=Interface");
-        clickAndWait("css=a[title='Outages System Page']");
-        clickAndWait("link=All outages");
-        waitForElement("name=outtype");
-        waitForText("Current Resolved Both Current & Resolved");
-        waitForText("Interface");
-        clickAndWait("css=a[title='Outages System Page']");
-        clickAndWait("css=input[type='submit']");
-        assertEquals("Please enter a valid outage ID.", selenium.getAlert());
+        findElementByName("outageIdForm").findElement(By.xpath("//input[@type='submit']")).click();
+        final Alert alert = wait.until(ExpectedConditions.alertIsPresent());
+        assertNotNull(alert);
+        assertEquals("Please enter a valid outage ID.", alert.getText());
     }
 
 }
