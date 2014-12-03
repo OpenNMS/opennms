@@ -185,23 +185,11 @@
     boolean isRouteIP = factory.isRouteInfoNode(nodeId);
 
 %>
-<script type="text/javascript">
-  function setDown(node, intf){
-	document.setStatus.action="element/ManageSnmpIntf?node="+node+"&intf="+intf+"&status="+2;
-	document.setStatus.submit();
-	}
-  function setUp(node, intf){
-        document.setStatus.action="element/ManageSnmpIntf?node="+node+"&intf="+intf+"&status="+1;
-        document.setStatus.submit();
-	}
-
-</script>
-
 
 <% pageContext.setAttribute("nodeId", nodeId); %>
 <% pageContext.setAttribute("nodeLabel", node_db.getLabel()); %>
 
-<jsp:include page="/includes/header.jsp" flush="false" >
+<jsp:include page="/includes/bootstrap.jsp" flush="false" >
   <jsp:param name="headTitle" value="${nodeLabel}" />
   <jsp:param name="headTitle" value="Linked Node Info" />
   <jsp:param name="title" value="Linked Node Info" />
@@ -210,17 +198,24 @@
   <jsp:param name="breadcrumb" value="Links" />
 </jsp:include>
 
-
+<script type="text/javascript">
+  function setDown(node, intf){
+  document.setStatus.action="element/ManageSnmpIntf?node="+node+"&intf="+intf+"&status="+2;
+  document.setStatus.submit();
+  }
+  function setUp(node, intf){
+        document.setStatus.action="element/ManageSnmpIntf?node="+node+"&intf="+intf+"&status="+1;
+        document.setStatus.submit();
+  }
+</script>
 
 <!-- Body -->
+  <h4>Node: <%=node_db.getLabel()%></h4>
 
-        <h2>Node: <%=node_db.getLabel()%></h2>
-
-      <div id="linkbar">
-      <ul>
-        <li>
-		<a href="event/list.htm?filter=node%3D<%=nodeId%>">View Events</a>
-	</li>
+  <ul class="list-inline">
+    <li>
+		  <a href="event/list.htm?filter=node%3D<%=nodeId%>">View Events</a>
+	 </li>
     <li>
 		<a href="asset/modify.jsp?node=<%=nodeId%>">Asset Info</a>
 	</li>
@@ -262,14 +257,17 @@
            </li>
         <% } %>
 	  </ul>
-	  </div>
-	  
-	<div class="TwoColLeft">
-            <!-- general info box -->
-			<h3>General (Status: <%=(node_db == null ? "Unknown" : ElementUtil.getNodeStatusString(node_db))%>)</h3>
+
+<div class="row">
+<div class="col-md-12">
+	<div class="panel panel-success">
+    <!-- general info box -->
+    <div class="panel-heading">
+			<h3 class="panel-title">General (Status: <%=(node_db == null ? "Unknown" : ElementUtil.getNodeStatusString(node_db))%>)</h3>
+    </div>
 			<% if( isRouteIP || isBridge ) { %>
-			<div class="boxWrapper">
-			     <ul class="plain">
+			<div class="panel-content">
+			     <ul class="list-inline">
 		            <% if( isRouteIP ) { %>
 		            <li>
 		            	<a href="element/routeipnode.jsp?node=<%=nodeId%>">View Node IP Route Info</a>
@@ -285,18 +283,22 @@
 			</div>
 			<% }%>
 	</div>
-<hr />        
+
+<!-- LINKD Links -->
+
+  <div class="panel panel-success">
 <%
    if (factory.getDataLinksOnNode(nodeId).isEmpty()) {
 %>
-	<div class="TwoColLeft">
-		<h3>No Links found on <%=node_db.getLabel()%> by Linkd</h3>
+  <div class="panel-heading">
+		<h3 class="panel-title">No Links found on <%=node_db.getLabel()%> by Linkd</h3>
 	</div>
 <% } else { %>
-<h3><%=node_db.getLabel()%> Links found by Linkd</h3>
-		
+  <div class="panel-heading">
+    <h3 class="panel-title"><%=node_db.getLabel()%> Links found by Linkd</h3>
+	</div>
 		<!-- Link box -->
-		<table class="standard">
+		<table class="table table-condensed">
 		
 		<thead>
 			<tr>
@@ -321,7 +323,7 @@
 		<% for( LinkInterface linkInterface: factory.getDataLinksOnNode(nodeId)) { %>
 		    <tr>
 
-		    <td class="standard">
+		    <td>
 		 	<% if (linkInterface.hasInterface()) { %>
                 
                 <% if (linkInterface.getInterface().getSnmpIfName() != null && !linkInterface.getInterface().getSnmpIfName().equals("")) { %>
@@ -348,7 +350,7 @@
             <% } %>
             </td>
             
-            <td class="standard">
+            <td>
             <% if (linkInterface.hasInterface() && linkInterface.getInterface().hasIpAddresses()) { %>
                 <% for (String ipaddress : linkInterface.getInterface().getIpaddresses()) { %>
                 	<c:url var="interfaceLink" value="element/interface.jsp">
@@ -360,7 +362,7 @@
             <% } %>
             </td>
             
-            <td class="standard">
+            <td>
             <% if (linkInterface.getLinkTypeIdString() != null ) { %>
              	<%=linkInterface.getLinkTypeIdString()%>
             <% } else if (linkInterface.hasInterface()) { %>
@@ -370,7 +372,7 @@
             <% } %>
             </td>
             
-		    <td class="standard">
+		    <td>
 		    <% if (linkInterface.getStatus() != null ) { %>
              	<%=linkInterface.getStatus()%>
             <% } else { %>
@@ -378,11 +380,11 @@
 		    <% } %>
 		    </td>
 
-		    <td class="standard">
+		    <td>
              	<%=linkInterface.getProtocol()%>
 		    </td>
 
-		    <td class="standard">
+		    <td>
 		    <% if (linkInterface.getLastPollTime() != null ) { %>
              	<%=linkInterface.getLastPollTime()%>
 		    <% } else { %>
@@ -393,7 +395,7 @@
 <%--
 		    // TODO - turning this off until the SET is verified.
 		    <% if( request.isUserInRole( Authentication.ROLE_ADMIN )) { %>
-			<td class="standard" align="center"> 
+			<td align="center"> 
 				<% if(ElementUtil.getIfStatusString[linkInterface.getInterface().getSnmpIfAdminStatus()].equalsIgnoreCase("Up") ){ %>
 		            <input type="button" value="Down" onClick="setDown(<%=linkInterface.getInterface().getNodeId()%>,<%=linkInterface.getInterface().getSnmpIfIndex()%>)"> 
 		 		<% } else if (ElementUtil.getIfStatusString[snmpIntfs[i].getSnmpIfAdminStatus()].equalsIgnoreCase("Down") ){ %>
@@ -405,7 +407,7 @@
 		    <% } %>
 --%>
 				
-			<td class="standard" style="font-size:70%" width="35%">
+			<td style="font-size:70%" width="35%">
 		       	<a href="element/linkednode.jsp?node=<%=linkInterface.getLinkedNodeId()%>"><%=factory.getNodeLabel(linkInterface.getLinkedNodeId())%></a>
 		       	&nbsp;
 		       	<%	if (linkInterface.hasLinkedInterface()) { %>
@@ -450,21 +452,26 @@
 	    </table>
 
 <% }  %>
-<hr />        
+</div>
+
+<!--  BRIDGE Links -->
+
+<div class="panel panel-success">
 <%
    Collection<BridgeLinkNode> bridgelinks = enlinkdfactory.getBridgeLinks(nodeId);
    if (bridgelinks.isEmpty()) {
 	   Collection<NodeLinkBridge> nodelinks = enlinkdfactory.getNodeLinks(nodeId);
 	   if (nodelinks.isEmpty()) {
 %>
-	<div class="TwoColLeft">
-		<h3>No Bridge Forwarding Table Links found on <%=node_db.getLabel()%> by Enhanced Linkd</h3>
+	<div class="panel-heading">
+		<h3 class="panel-title">No Bridge Forwarding Table Links found on <%=node_db.getLabel()%> by Enhanced Linkd</h3>
 	</div>
 	<% } else { %>
-<h3><%=node_db.getLabel()%> Bridge Forwarding Table Links found by Enhanced Linkd</h3>
-		
+  <div class="panel-heading">
+    <h3 class="panel-title"><%=node_db.getLabel()%> Bridge Forwarding Table Links found by Enhanced Linkd</h3>
+	</div>
 		<!-- Link box -->
-		<table class="standard">
+		<table class="table table-condensed">
 		
 		<thead>
 			<tr>
@@ -480,22 +487,22 @@
 		<% for( NodeLinkBridge nodelink: nodelinks) { %>
 			<% for( String localport: nodelink.getNodeLocalPorts()) { %>
 	    <tr>
-		    <td class="standard"><%=localport%></td>
-            <td class="standard">
+		    <td><%=localport%></td>
+            <td>
             	<a href="<%=nodelink.getBridgeLinkRemoteNode().getBridgeRemoteUrl()%>"><%=nodelink.getBridgeLinkRemoteNode().getBridgeRemoteNode()%></a>
              </td>
-            <td class="standard">
+            <td>
             	<a href="<%=nodelink.getBridgeLinkRemoteNode().getBridgeRemotePortUrl()%>"><%=nodelink.getBridgeLinkRemoteNode().getBridgeRemotePort()%></a>
             </td>
-		    <td class="standard">
+		    <td>
 		 	<% if (nodelink.getBridgeLinkRemoteNode().getBridgeRemoteVlan() != null) { %>
             	<%=nodelink.getBridgeLinkRemoteNode().getBridgeRemoteVlan()%>
             <% } else { %> 
             	&nbsp;
     		<% } %> 
             </td>
-		    <td class="standard"><%=nodelink.getBridgeLinkCreateTime()%></td>
-		    <td class="standard"><%=nodelink.getBridgeLinkLastPollTime()%></td>
+		    <td><%=nodelink.getBridgeLinkCreateTime()%></td>
+		    <td><%=nodelink.getBridgeLinkLastPollTime()%></td>
 	    </tr>
 		    <% } %>
 	    <% } %>
@@ -505,10 +512,11 @@
 	<% } %>
 	
 <% } else { %>
-<h3><%=node_db.getLabel()%> Bridge Forwarding Table Links found by Enhanced Linkd</h3>
-		
+  <div class="panel-heading">
+    <h3 class="panel-title"><%=node_db.getLabel()%> Bridge Forwarding Table Links found by Enhanced Linkd</h3>
+  </div>		
 		<!-- Link box -->
-		<table class="standard">
+		<table class="table table-condensed">
 		
 		<thead>
 			<tr>
@@ -525,37 +533,37 @@
 		<% for( BridgeLinkNode bridgelink: bridgelinks) { %>
 			<% for( BridgeLinkRemoteNode remlink: bridgelink.getBridgeLinkRemoteNodes()) { %>
 	    <tr>
-		    <td class="standard"><%=bridgelink.getBridgeLocalPort()%></td>
-		    <td class="standard">
+		    <td><%=bridgelink.getBridgeLocalPort()%></td>
+		    <td>
 		 	<% if (bridgelink.getBridgeLocalVlan() != null) { %>
             	<%=bridgelink.getBridgeLocalVlan()%>
             <% } else { %> 
             	&nbsp;
     		<% } %> 
             </td>
-            <td class="standard">
+            <td>
             <% if (remlink.getBridgeRemoteUrl() != null) { %>
             	<a href="<%=remlink.getBridgeRemoteUrl()%>"><%=remlink.getBridgeRemoteNode()%></a>
             <% } else { %> 
 				<%=remlink.getBridgeRemoteNode()%>
     			<% } %> 
             </td>
-            <td class="standard">
+            <td>
            <% if (remlink.getBridgeRemotePortUrl() != null) { %>
             	<a href="<%=remlink.getBridgeRemotePortUrl()%>"><%=remlink.getBridgeRemotePort()%></a>
             <% } else { %> 
 				<%=remlink.getBridgeRemotePort() != null ? remlink.getBridgeRemotePort() : "" %>
     			<% } %> 
             </td>
-		    <td class="standard">
+		    <td>
 		 	<% if (remlink.getBridgeRemoteVlan() != null) { %>
             	<%=remlink.getBridgeRemoteVlan()%>
             <% } else { %> 
             	&nbsp;
     		<% } %> 
             </td>
-		    <td class="standard"><%=bridgelink.getBridgeLinkCreateTime()%></td>
-		    <td class="standard"><%=bridgelink.getBridgeLinkLastPollTime()%></td>
+		    <td><%=bridgelink.getBridgeLinkCreateTime()%></td>
+		    <td><%=bridgelink.getBridgeLinkLastPollTime()%></td>
 	    </tr>
 		    <% } %>
 	    <% } %>
@@ -563,19 +571,23 @@
 	    </table>
 
 <% }  %>
+</div>
 
-<hr />        
+<!-- LLDP Links -->
+
+<div class="panel panel-success">
 <%
    if (enlinkdfactory.getLldpLinks(nodeId).isEmpty()) {
 %>
-	<div class="TwoColLeft">
-		<h3>No Lldp Remote Table Links found on <%=node_db.getLabel()%> by Enhanced Linkd</h3>
+	<div class="panel-heading">
+		<h3 class="panel-title">No LLDP Remote Table Links found on <%=node_db.getLabel()%> by Enhanced Linkd</h3>
 	</div>
 <% } else { %>
-<h3><%=node_db.getLabel()%> Lldp Remote Table Links found by Enhanced Linkd</h3>
-		
+  <div class="panel-heading">
+    <h3 class="panel-title"><%=node_db.getLabel()%> LLDP Remote Table Links found by Enhanced Linkd</h3>
+  </div>
 		<!-- Link box -->
-		<table class="standard">
+		<table class="table table-condensed">
 		
 		<thead>
 			<tr>
@@ -592,54 +604,54 @@
 				
 		<% for( LldpLinkNode lldplink: enlinkdfactory.getLldpLinks(nodeId)) { %>
 	    <tr>
-		    <td class="standard">
+		    <td>
 		 	<% if (lldplink.getLldpPortUrl() != null) { %>
             	<a href="<%=lldplink.getLldpPortUrl()%>"><%=lldplink.getLldpPortString()%></a>
             <% } else { %> 
                     <%=lldplink.getLldpPortString()%>
     		<% } %> 
             </td>
-		    <td class="standard"><%=lldplink.getLldpPortDescr()%></td>
-            <td class="standard">
+		    <td><%=lldplink.getLldpPortDescr()%></td>
+            <td>
             <% if (lldplink.getLldpRemChassisIdUrl() != null) { %>
             	<a href="<%=lldplink.getLldpRemChassisIdUrl()%>"><%=lldplink.getLldpRemChassisIdString()%></a>
             <% } else { %> 
                     <%=lldplink.getLldpRemChassisIdString()%>
     			<% } %> 
             </td>
-            <td class="standard">
+            <td>
                     <%=lldplink.getLldpRemSysName()%>
             </td>
-		    <td class="standard">
+		    <td>
 		 	<% if (lldplink.getLldpRemPortUrl() != null) { %>
             	<a href="<%=lldplink.getLldpRemPortUrl()%>"><%=lldplink.getLldpRemPortString()%></a>
             <% } else { %> 
                     <%=lldplink.getLldpRemPortString()%>
     		<% } %> 
             </td>
-		    <td class="standard"><%=lldplink.getLldpRemPortDescr()%></td>
-		    <td class="standard"><%=lldplink.getLldpCreateTime()%></td>
-		    <td class="standard"><%=lldplink.getLldpLastPollTime()%></td>
+		    <td><%=lldplink.getLldpRemPortDescr()%></td>
+		    <td><%=lldplink.getLldpCreateTime()%></td>
+		    <td><%=lldplink.getLldpLastPollTime()%></td>
 	    </tr>
 	    <% } %>
 		    
 	    </table>
 
 <% }  %>
+</div>
 
-<hr />        
-<%
-   if (enlinkdfactory.getCdpLinks(nodeId).isEmpty()) {
-%>
-	<div class="TwoColLeft">
-		<h3>No Cdp Cache Table Links found on <%=node_db.getLabel()%> by Enhanced Linkd</h3>
+<!-- CDP Links -->
+
+<div class="panel panel-success">
+<% if (enlinkdfactory.getCdpLinks(nodeId).isEmpty()) { %>
+	<div class="panel-heading">
+		<h3 class="panel-title">No CDP Cache Table Links found on <%=node_db.getLabel()%> by Enhanced Linkd</h3>
 	</div>
 <% } else { %>
-<h3><%=node_db.getLabel()%> Cdp Cache Table Links found by Enhanced Linkd</h3>
-		
-		<!-- Link box -->
-		<table class="standard">
-		
+  <div class="panel-heading">
+    <h3 class="panel-title"><%=node_db.getLabel()%> CDP Cache Table Links found by Enhanced Linkd</h3>
+  </div>
+	<table class="table table-condensed">		
 		<thead>
 			<tr>
 			<th>Local Port</th> 
@@ -648,60 +660,61 @@
 			<th>Version</th>
 			<th>Device Id</th>
 			<th>Device Port</th> 
-            <th>Platform</th>
+      <th>Platform</th>
 			<th>Created</th>
 			<th>Last Poll</th>
 			</tr>
 		</thead>
-				
 		<% for( CdpLinkNode cdplink: enlinkdfactory.getCdpLinks(nodeId)) { %>
 	    <tr>
-		    <td class="standard">
-		 	<% if (cdplink.getCdpLocalPortUrl() != null) { %>
-            	<a href="<%=cdplink.getCdpLocalPortUrl()%>"><%=cdplink.getCdpLocalPort()%></a>
-            <% } else { %> 
-                    <%=cdplink.getCdpLocalPort()%>
+		    <td>
+		 	  <% if (cdplink.getCdpLocalPortUrl() != null) { %>
+        <a href="<%=cdplink.getCdpLocalPortUrl()%>"><%=cdplink.getCdpLocalPort()%></a>
+        <% } else { %> 
+        <%=cdplink.getCdpLocalPort()%>
+        <% } %> 
+        </td>
+		    <td><%=cdplink.getCdpCacheAddressType()%></td>
+		    <td><%=cdplink.getCdpCacheAddress()%></td>
+		    <td><%=cdplink.getCdpCacheVersion()%></td>
+        <td>
+        <% if (cdplink.getCdpCacheDeviceUrl() != null) { %>
+          <a href="<%=cdplink.getCdpCacheDeviceUrl()%>"><%=cdplink.getCdpCacheDeviceId()%></a>
+        <% } else { %> 
+          <%=cdplink.getCdpCacheDeviceId()%>
     		<% } %> 
-            </td>
-		    <td class="standard"><%=cdplink.getCdpCacheAddressType()%></td>
-		    <td class="standard"><%=cdplink.getCdpCacheAddress()%></td>
-		    <td class="standard"><%=cdplink.getCdpCacheVersion()%></td>
-            <td class="standard">
-            <% if (cdplink.getCdpCacheDeviceUrl() != null) { %>
-            	<a href="<%=cdplink.getCdpCacheDeviceUrl()%>"><%=cdplink.getCdpCacheDeviceId()%></a>
-            <% } else { %> 
-                    <%=cdplink.getCdpCacheDeviceId()%>
-    			<% } %> 
-            </td>
-		    <td class="standard">
-		 	<% if (cdplink.getCdpCacheDevicePortUrl() != null) { %>
-            	<a href="<%=cdplink.getCdpCacheDevicePortUrl()%>"><%=cdplink.getCdpCacheDevicePort()%></a>
-            <% } else { %> 
-                    <%=cdplink.getCdpCacheDevicePort()%>
+        </td>
+		    <td>
+		 	  <% if (cdplink.getCdpCacheDevicePortUrl() != null) { %>
+          <a href="<%=cdplink.getCdpCacheDevicePortUrl()%>"><%=cdplink.getCdpCacheDevicePort()%></a>
+        <% } else { %> 
+          <%=cdplink.getCdpCacheDevicePort()%>
     		<% } %> 
-            </td>
-		    <td class="standard"><%=cdplink.getCdpCacheDevicePlatform()%></td>
-		    <td class="standard"><%=cdplink.getCdpCreateTime()%></td>
-		    <td class="standard"><%=cdplink.getCdpLastPollTime()%></td>
+        </td>
+		    <td><%=cdplink.getCdpCacheDevicePlatform()%></td>
+		    <td><%=cdplink.getCdpCreateTime()%></td>
+		    <td><%=cdplink.getCdpLastPollTime()%></td>
 	    </tr>
-	    <% } %>
-		    
-	    </table>
+    <% } %>
+  </table>
+<% } %>
+</div>
 
-<% }  %>
+<!-- OSPF Links -->
 
-<hr />        
+<div class="panel panel-success">
 <%
    if (enlinkdfactory.getOspfLinks(nodeId).isEmpty()) {
 %>
-	<div class="TwoColLeft">
-		<h3>No Ospf Nbr Links found on <%=node_db.getLabel()%> by Enhanced Linkd</h3>
+	<div class="panel-heading">
+		<h3 class="panel-title">No OSPF Nbr Links found on <%=node_db.getLabel()%> by Enhanced Linkd</h3>
 	</div>
 <% } else { %>
-<h3><%=node_db.getLabel()%> Ospf Nbr Table Links found by Enhanced Linkd</h3>
-		
+  <div class="panel-heading">
+    <h3 class="panel-title"><%=node_db.getLabel()%> OSPF Nbr Table Links found by Enhanced Linkd</h3>
+	</div>
 		<!-- Link box -->
-		<table class="standard">
+		<table class="table table-condensed">
 		
 		<thead>
 			<tr>
@@ -717,44 +730,48 @@
 				
 		<% for( OspfLinkNode ospflink: enlinkdfactory.getOspfLinks(nodeId)) { %>
 	    <tr>
-		    <td class="standard"><%=ospflink.getOspfIpAddr()%>(ifindex=<%=ospflink.getOspfIfIndex()%>)</td>
-		    <td class="standard"><%=ospflink.getOspfAddressLessIndex()%></td>
-            <td class="standard">
+		    <td><%=ospflink.getOspfIpAddr()%>(ifindex=<%=ospflink.getOspfIfIndex()%>)</td>
+		    <td><%=ospflink.getOspfAddressLessIndex()%></td>
+            <td>
             <% if (ospflink.getOspfRemRouterUrl() != null) { %>
             	<a href="<%=ospflink.getOspfRemRouterUrl()%>"><%=ospflink.getOspfRemRouterId()%></a>
             <% } else { %> 
                     <%=ospflink.getOspfRemRouterId()%>
     			<% } %> 
             </td>
-		    <td class="standard">
+		    <td>
 		 	<% if (ospflink.getOspfRemPortUrl() != null) { %>
             	<a href="<%=ospflink.getOspfRemPortUrl()%>"><%=ospflink.getOspfRemIpAddr()%></a>
             <% } else { %> 
                     <%=ospflink.getOspfRemIpAddr()%>
     		<% } %> 
             </td>
-		    <td class="standard"><%=ospflink.getOspfRemAddressLessIndex()%></td>
-		    <td class="standard"><%=ospflink.getOspfLinkCreateTime()%></td>
-		    <td class="standard"><%=ospflink.getOspfLinkLastPollTime()%></td>
+		    <td><%=ospflink.getOspfRemAddressLessIndex()%></td>
+		    <td><%=ospflink.getOspfLinkCreateTime()%></td>
+		    <td><%=ospflink.getOspfLinkLastPollTime()%></td>
 	    </tr>
 	    <% } %>
 		    
 	    </table>
 
 <% }  %>
+</div>
 
-<hr />
+<!-- ISIS Links -->
+
+<div class="panel panel-success">
 <%
    if (enlinkdfactory.getIsisLinks(nodeId).isEmpty()) {
 %>
-	<div class="TwoColLeft">
-		<h3>No IS-IS Adjacency Links found on <%=node_db.getLabel()%> by Enhanced Linkd</h3>
+	<div class="panel-heading">
+		<h3 class="panel-title">No IS-IS Adjacency Links found on <%=node_db.getLabel()%> by Enhanced Linkd</h3>
 	</div>
 <% } else { %>
-<h3><%=node_db.getLabel()%> IS-IS Adj Table Links found by Enhanced Linkd</h3>
-		
+  <div class="panel-heading">
+    <h3 class="panel-title"><%=node_db.getLabel()%> IS-IS Adj Table Links found by Enhanced Linkd</h3>
+	</div>
 		<!-- Link box -->
-		<table class="standard">
+		<table class="table table-condensed">
 		
 		<thead>
 			<tr>
@@ -773,33 +790,37 @@
 				
 		<% for( IsisLinkNode isislink: enlinkdfactory.getIsisLinks(nodeId)) { %>
 	    <tr>
-		    <td class="standard"><%=isislink.getIsisCircIfIndex()%></td>
-		    <td class="standard"><%=isislink.getIsisCircAdminState()%></td>
-            <td class="standard">
+		    <td><%=isislink.getIsisCircIfIndex()%></td>
+		    <td><%=isislink.getIsisCircAdminState()%></td>
+            <td>
             <% if (isislink.getIsisISAdjNeighSysUrl() != null) { %>
             	<a href="<%=isislink.getIsisISAdjNeighSysUrl()%>"><%=isislink.getIsisISAdjNeighSysID() %></a>
             <% } else { %> 
                    <%=isislink.getIsisISAdjNeighSysID()%>
     			<% } %> 
             </td>
-		    <td class="standard"><%=isislink.getIsisISAdjNeighSysType()%></td>
-		    <td class="standard">
+		    <td><%=isislink.getIsisISAdjNeighSysType()%></td>
+		    <td>
 		 	<% if (isislink.getIsisISAdjUrl() != null) { %>
             	<a href="<%=isislink.getIsisISAdjUrl()%>"><%=isislink.getIsisISAdjNeighPort()%></a>
             <% } else { %> 
 				<%=isislink.getIsisISAdjNeighPort()%>
     		<% } %> 
             </td>
-		    <td class="standard"><%=isislink.getIsisISAdjState()%></td>
-		    <td class="standard"><%=isislink.getIsisISAdjNeighSNPAAddress()%></td>
-		    <td class="standard"><%=isislink.getIsisISAdjNbrExtendedCircID()%></td>
-		    <td class="standard"><%=isislink.getIsisLinkCreateTime()%></td>
-		    <td class="standard"><%=isislink.getIsisLinkLastPollTime()%></td>
+		    <td><%=isislink.getIsisISAdjState()%></td>
+		    <td><%=isislink.getIsisISAdjNeighSNPAAddress()%></td>
+		    <td><%=isislink.getIsisISAdjNbrExtendedCircID()%></td>
+		    <td><%=isislink.getIsisLinkCreateTime()%></td>
+		    <td><%=isislink.getIsisLinkLastPollTime()%></td>
 	    </tr>
 	    <% } %>
 		    
 	    </table>
 
 <% }  %>
+</div>
 
-<jsp:include page="/includes/footer.jsp" flush="false" />
+</div>
+</div>
+
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />
