@@ -45,8 +45,8 @@ public class AddNodePageTest extends OpenNMSSeleniumTestCase {
 
     @Before
     public void setUp() throws Exception {
-        deleteTestRequisition();
         super.setUp();
+        deleteTestRequisition();
     }
 
     @After
@@ -60,10 +60,10 @@ public class AddNodePageTest extends OpenNMSSeleniumTestCase {
         m_driver.get(BASE_URL + "opennms/admin/provisioningGroups.htm");
         m_driver.findElement(By.cssSelector("form[name=takeAction] input[name=groupName]")).sendKeys(REQUISITION_NAME);
         m_driver.findElement(By.cssSelector("form[name=takeAction] input[type=submit]")).click();
-        m_driver.findElement(By.xpath("//input[@value='Synchronize']")).click();
+        findElementByXpath("//input[@value='Synchronize']").click();
 
         frontPage();
-        new ExpectationBuilder("link=Add Node").withText("Basic Attributes (required)").check(m_driver);
+        clickMenuItem("name=nav-admin-top", "Quick-Add Node", BASE_URL + "opennms/admin/node/add.htm");
 
         final WebElement submitButton = m_driver.findElement(By.cssSelector("input[type=submit][value=Provision]"));
         assertEquals("Provision", submitButton.getAttribute("value"));
@@ -72,12 +72,12 @@ public class AddNodePageTest extends OpenNMSSeleniumTestCase {
         final Select sel = new Select(selectElement);
         sel.selectByVisibleText(REQUISITION_NAME);
 
-        m_driver.findElement(By.name("ipAddress")).sendKeys(m_unreachableIp);
-        m_driver.findElement(By.name("nodeLabel")).sendKeys("AddNodePageTest");
+        findElementByName("ipAddress").sendKeys(m_unreachableIp);
+        findElementByName("nodeLabel").sendKeys("AddNodePageTest");
         submitButton.click();
 
-        m_driver.findElement(By.linkText("Provisioning Requisitions")).click();
-        m_driver.findElement(By.id("edit_req_anchor_" + REQUISITION_NAME)).click();
+        findElementByLink("Provisioning Requisitions").click();
+        findElementById("edit_req_anchor_" + REQUISITION_NAME).click();
 
         new ExpectationBuilder("css=input[value=AddNodePageTest]").check(m_driver);
     }

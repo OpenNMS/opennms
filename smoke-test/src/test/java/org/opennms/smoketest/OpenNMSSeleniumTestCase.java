@@ -59,10 +59,12 @@ import org.junit.After;
 import org.junit.Before;
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
+import org.openqa.selenium.NoAlertPresentException;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.phantomjs.PhantomJSDriver;
 import org.openqa.selenium.phantomjs.PhantomJSDriverService;
 import org.openqa.selenium.remote.DesiredCapabilities;
@@ -194,14 +196,117 @@ public class OpenNMSSeleniumTestCase extends SeleneseTestBase {
         return new WebDriverWait(m_driver, seconds);
     }
 
+    protected ExpectedCondition<Boolean> pageContainsText(final String text) {
+        final String escapedText = text.replace("\'", "\\\'");
+        return new ExpectedCondition<Boolean>() {
+            @Override public Boolean apply(final WebDriver driver) {
+                final String xpathExpression = "//*[contains(., '" + escapedText + "')]";
+                LOG.debug("XPath expression: {}", xpathExpression);
+                final WebElement element = driver.findElement(By.xpath(xpathExpression));
+                return element != null;
+            }
+        };
+    }
+
+    protected String handleAlert() {
+        try {
+            final Alert alert = m_driver.switchTo().alert();
+            final String alertText = alert.getText();
+            alert.dismiss();
+            return alertText;
+        } catch (final NoAlertPresentException e) {
+            LOG.debug("handleAlert: no alert is active");
+        }
+        return null;
+    }
+
+    protected void setChecked(final By by) {
+        final WebElement element = m_driver.findElement(by);
+        if (element.isSelected()) {
+            return;
+        } else {
+            element.click();
+        }
+    }
+
+    protected void setUnchecked(final By by) {
+        final WebElement element = m_driver.findElement(by);
+        if (element.isSelected()) {
+            element.click();
+        } else {
+            return;
+        }
+    }
+
+    protected void clickMenuItem(final String menuItemText, final String submenuItemText, final String submenuItemHref) {
+        final Actions action = new Actions(m_driver);
+
+        final WebElement menuElement;
+        if (menuItemText.startsWith("name=")) {
+            final String menuItemName = menuItemText.replaceFirst("name=", "");
+            menuElement = findElementByName(menuItemName);
+        } else {
+            menuElement = findElementByXpath("//a[contains(text(), '" + menuItemText + "')]");
+        }
+        action.moveToElement(menuElement).perform();
+
+        final WebElement submenuElement;
+        if (submenuItemText != null) {
+            if (submenuItemHref == null) {
+                submenuElement = findElementByXpath("//a[contains(text(), '" + submenuItemText + "')]");
+            } else {
+                submenuElement = findElementByXpath("//a[@href='" + submenuItemHref + "' and contains(text(), '" + submenuItemText + "')]");
+            }
+        } else {
+            submenuElement = null;
+        }
+
+        if (submenuElement == null) {
+            // no submenu given, just click the main element
+            menuElement.click();
+            return;
+        } else {
+            // we want a submenu item, click it instead
+            submenuElement.click();
+        }
+    }
+
     protected void frontPage() {
         m_driver.get(BASE_URL + "opennms/");
         m_driver.findElement(By.id("index-contentleft"));
     }
 
+    public void adminPage() {
+        m_driver.get(BASE_URL + "opennms/admin/index.jsp");
+    }
+
+    protected void nodePage() {
+        m_driver.get(BASE_URL + "opennms/element/nodeList.htm");
+    }
+
+    protected void notificationsPage() {
+        m_driver.get(BASE_URL + "opennms/notification/index.jsp");
+    }
+
+    protected void outagePage() {
+        m_driver.get(BASE_URL + "opennms/outage/index.jsp");
+    }
+
     protected void provisioningPage() {
         m_driver.get(BASE_URL + "opennms/admin/index.jsp");
         m_driver.findElement(By.linkText("Manage Provisioning Requisitions")).click();
+    }
+
+    protected void reportsPage() {
+        m_driver.get(BASE_URL + "opennms/report/index.jsp");
+    }
+
+    protected void searchPage() {
+        m_driver.get(BASE_URL + "opennms/element/index.jsp");
+    }
+
+    protected void supportPage() {
+        m_driver.get(BASE_URL + "opennms/support/index.htm");
     }
 
     protected void goBack() {
@@ -226,10 +331,12 @@ public class OpenNMSSeleniumTestCase extends SeleneseTestBase {
         return m_driver.findElement(By.xpath(xpath));
     }
 
-    protected void enterText(final By selector, final String text) {
+    protected WebElement enterText(final By selector, final String text) {
+        LOG.debug("Enter text: '{}' into selector: {}", text, selector);
         final WebElement element = m_driver.findElement(selector);
         element.clear();
         element.sendKeys(text);
+        return element;
     }
 
     @Deprecated

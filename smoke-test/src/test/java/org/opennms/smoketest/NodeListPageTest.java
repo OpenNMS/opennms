@@ -37,23 +37,18 @@ import org.junit.runners.MethodSorters;
 public class NodeListPageTest extends OpenNMSSeleniumTestCase {
     @Before
     public void setUp() throws Exception {
-    	super.setUp();
-        clickAndWait("link=Node List");
+        super.setUp();
+        nodePage();
     }
 
     @Test
     public void a_testAllTextIsPresent() throws Exception {
-        assertTrue("Could not find header opener '<h3><span>Nodes</span>'", selenium.getHtmlSource().contains("<h3><span>Nodes</span>"));
+        findElementByXpath("//h3//span[text()='Nodes']");
     }
-    
-    @Test
-    public void b_testAllLinksArePresent() throws InterruptedException {
-        waitForElement("//a[@href='element/nodeList.htm?listInterfaces=true']");
-    }
-    
+
     @Test
     public void c_testAllLinks() throws InterruptedException {
-        clickAndWait("link=Show interfaces");
-        waitForText("interfaces");
+        findElementByLink("Show interfaces").click();
+        findElementByLink("Hide interfaces");
     }
 }

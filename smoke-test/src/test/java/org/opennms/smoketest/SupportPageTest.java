@@ -42,10 +42,6 @@ public class SupportPageTest extends OpenNMSSeleniumTestCase {
         supportPage();
     }
 
-    private void supportPage() throws Exception {
-        m_driver.get(BASE_URL + "opennms/support/index.htm");
-    }
-
     @Test
     public void testAllLinksArePresent() throws InterruptedException {
         for (final String text : new String[] {

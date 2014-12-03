@@ -79,7 +79,7 @@
 
 <div class="TwoColLAdmin">
 <form method="post" name="newIpForm" onsubmit="return verifyIpAddress();">
-  <h3>Enter IP address</h3>
+  <h3>Enter IP Address</h3>
   <div class="boxWrapper">
     <c:if test="${param.action == 'redo'}">
       <ul class="error">

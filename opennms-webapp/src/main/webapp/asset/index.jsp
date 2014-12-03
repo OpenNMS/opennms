@@ -72,26 +72,53 @@
 
 <div class="row">
   <div class="col-md-6">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">Search Asset Information</h3>
-      </div>
-      <div class="panel-body">
-        <form role="form" class="form-inline text-right" action="asset/nodelist.jsp" method="get">
-          <div class="form-group">
-            <label for="input_searchvalue">Assets in category:</label>
-            <select class="form-control" id="input_searchvalue" name="searchvalue" size="1">
-              <% for( int i=0; i < Asset.CATEGORIES.length; i++ ) { %>
-                <option><%=Asset.CATEGORIES[i]%></option>
-              <% } %>
-            </select>
+    <div class="row">
+      <div class="col-md-12">
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <h3 class="panel-title">Search Asset Information</h3>
           </div>
-          <input type="hidden" name="column" value="category" />
-          <button type="submit" class="btn btn-default">Search</button>
-        </form>
-        <ul class="list-unstyled">
-          <li><a href="asset/nodelist.jsp?column=_allNonEmpty">All nodes with asset info</a></li>
-        </ul>
+          <div class="panel-body">
+            <form role="form" class="form-inline text-right" action="asset/nodelist.jsp" method="get">
+              <div class="form-group">
+                <label for="input_searchvalue">Assets in category:</label>
+                <select class="form-control" id="input_searchvalue" name="searchvalue" size="1">
+                  <% for( int i=0; i < Asset.CATEGORIES.length; i++ ) { %>
+                    <option><%=Asset.CATEGORIES[i]%></option>
+                  <% } %>
+                </select>
+              </div>
+              <input type="hidden" name="column" value="category" />
+              <button type="submit" class="btn btn-default">Search</button>
+            </form>
+            <ul class="list-unstyled">
+              <li><a href="asset/nodelist.jsp?column=_allNonEmpty">All nodes with asset info</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-12">
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <h3 class="panel-title">Assets with Asset Numbers</h3>
+          </div>
+          <div class="panel-body">
+            <ul class="list-unstyled" style="width:48%; margin-right:2%; float:left;">
+            <% for( int i=0; i < middle; i++ ) {%>
+              <%  Asset asset = (Asset)assetsList.get(i); %>
+              <li> <%=asset.getAssetNumber()%>: <a href="asset/modify.jsp?node=<%=asset.getNodeId()%>"><%=NetworkElementFactory.getInstance(getServletContext()).getNodeLabel(asset.getNodeId())%></a></li>
+            <% } %>
+            </ul>
+            <ul class="list-unstyled" style="width:50%; float:left;">
+            <% for( int i=middle; i < assetCount; i++ ) {%>
+              <%  Asset asset = (Asset)assetsList.get(i); %>
+              <li><%=asset.getAssetNumber()%>: <a href="asset/modify.jsp?node=<%=asset.getNodeId()%>"><%=NetworkElementFactory.getInstance(getServletContext()).getNodeLabel(asset.getNodeId())%></a></li>
+            <% } %>
+            </ul>
+          </div> <!-- panel-body -->
+        </div> <!-- panel -->
       </div>
     </div>
   </div>
@@ -128,32 +155,6 @@
         </p>
        </div> <!-- panel-body -->
      </div> <!-- panel -->
-  </div> <!-- column -->
-</div> <!-- row -->
-
-<hr />
-
-<div class="row">
-  <div class="col-md-6">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">Assets with asset numbers</h3>
-      </div>
-      <div class="panel-body">
-        <ul class="list-unstyled" style="width:48%; margin-right:2%; float:left;">
-        <% for( int i=0; i < middle; i++ ) {%>
-          <%  Asset asset = (Asset)assetsList.get(i); %>
-          <li> <%=asset.getAssetNumber()%>: <a href="asset/modify.jsp?node=<%=asset.getNodeId()%>"><%=NetworkElementFactory.getInstance(getServletContext()).getNodeLabel(asset.getNodeId())%></a></li>
-        <% } %>
-        </ul>
-        <ul class="list-unstyled" style="width:50%; float:left;">
-        <% for( int i=middle; i < assetCount; i++ ) {%>
-          <%  Asset asset = (Asset)assetsList.get(i); %>
-          <li><%=asset.getAssetNumber()%>: <a href="asset/modify.jsp?node=<%=asset.getNodeId()%>"><%=NetworkElementFactory.getInstance(getServletContext()).getNodeLabel(asset.getNodeId())%></a></li>
-        <% } %>
-        </ul>
-      </div> <!-- panel-body -->
-    </div> <!-- panel -->
   </div> <!-- column -->
 </div> <!-- row -->
 

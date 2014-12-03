@@ -37,30 +37,21 @@ import org.junit.runners.MethodSorters;
 public class AssetsPageTest extends OpenNMSSeleniumTestCase {
     @Before
     public void setUp() throws Exception {
-    	super.setUp();
-        clickAndWait("link=Assets");
+        super.setUp();
+        m_driver.get(BASE_URL + "opennms/asset/index.jsp");
     }
 
     @Test
-    public void a_testAllTextIsPresent() throws InterruptedException { 
-        waitForText("Search Asset Information");
-        waitForText("Assets Inventory");
-        waitForText("nter the data by hand");
-        waitForText("Assets with asset numbers");
-        waitForText("Assets in category");
+    public void testAllTextIsPresent() throws InterruptedException { 
+        findElementByXpath("//h3[text()='Search Asset Information']");
+        findElementByXpath("//h3[text()='Assets with Asset Numbers']");
+        findElementByXpath("//h3[text()='Assets Inventory']");
     }    
 
-    @Test 
-    public void b_testAllLinksArePresent() throws InterruptedException {
-        waitForElement("css=input[type=submit]");
-        waitForElement("name=searchvalue");
-        waitForElement("link=All nodes with asset info");
-    }
     @Test
-    public void c_testAllLinks() throws InterruptedException {
-        clickAndWait("link=All nodes with asset info");
-        waitForText("Assets");
-        clickAndWait("//div[@id='content']/div/h2/a[2]");
+    public void testAllLinks() throws InterruptedException {
+        findElementByLink("All nodes with asset info").click();
+        findElementByXpath("//h3[text()='Assets']");
     }
 
 }

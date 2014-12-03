@@ -72,11 +72,11 @@ public class AlarmsPageTest extends OpenNMSSeleniumTestCase {
     @Test
     public void testAllLinks() throws InterruptedException{
         findElementByLink("All alarms (summary)").click();
-        findElementByXpath("//span[@class='filter']//a[@title='Show acknowledged alarm(s)']");
+        findElementByXpath("//a[@title='Show acknowledged alarm(s)']");
 
         alarmsPage();
         findElementByLink("All alarms (detail)").click();
-        findElementByXpath("//span[@class='filter']//a[@title='Show acknowledged alarm(s)']");
+        findElementByXpath("//a[@title='Show acknowledged alarm(s)']");
         findElementByLink("First Event Time");
 
         alarmsPage();
