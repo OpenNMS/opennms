@@ -155,6 +155,9 @@
             </li>
           </c:if>
         </c:forEach>
+        <c:if test="${isAdmin}">
+          <li><a href="<%= baseHref %>admin/index.jsp">Admin</a></li>
+        </c:if>
       </ul>
     </div>
   </c:otherwise>
