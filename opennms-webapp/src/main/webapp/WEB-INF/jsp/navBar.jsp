@@ -124,15 +124,15 @@
               <span class="caret"></span>
             </a>
             <ul class="dropdown-menu" role="menu">
-              <c:if test="${not empty pageContext.request.remoteUser}">
-                <li><a href="<%= baseHref %>j_spring_security_logout">Log Out</a></li>
-              </c:if>
+              <li><a href="#">Notices:&nbsp;<b id="notification<%= noticeStatus %>"><%= noticeStatus %></b></a></li>
               <c:if test="${isAdmin}">
                 <li><a href="<%= baseHref %>admin/index.jsp">Configure&nbsp;OpenNMS</a></li>
                 <li><a href="<%= baseHref %>admin/node/add.htm">Quick-Add&nbsp;Node</a></li>
               </c:if>
               <li><a href="<%= baseHref %>support/index.htm">Help/Support</a></li>
-              <li><a href="#">Notices:&nbsp;<b id="notification<%= noticeStatus %>"><%= noticeStatus %></b></a></li>
+              <c:if test="${not empty pageContext.request.remoteUser}">
+                <li><a href="<%= baseHref %>j_spring_security_logout">Log Out</a></li>
+              </c:if>
             </ul>
           </li>
         </c:otherwise>
