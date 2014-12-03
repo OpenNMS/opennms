@@ -120,54 +120,53 @@
                         <div class="form-group">
                             <div class="col-md-3">
                                 <strong>
-                                    <c:out value="${date.displayName}"/>
+                                    <c:out value="${date.displayName}:"/>
                                 </strong>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-4">
-                                    <c:choose>
-                                        <c:when test="${ schedule && !date.useAbsoluteDate}">
-                                            <form:select path="dateParms[${dateParmRow.index}].count">
-                                                <c:forEach var="count" begin="0" end="31">
-                                                    <form:option value="${count}" />
+                                <div class="row">
+                                    <div class="col-md-5">
+                                        <c:choose>
+                                            <c:when test="${ schedule && !date.useAbsoluteDate}">
+                                                <form:select cssClass="form-select" path="dateParms[${dateParmRow.index}].count">
+                                                    <c:forEach var="count" begin="0" end="31">
+                                                        <form:option value="${count}" />
+                                                    </c:forEach>
+                                                </form:select>
+                                                <form:select cssClass="form-select" path="dateParms[${dateParmRow.index}].interval">
+                                                    <form:option value="day">day</form:option>
+                                                    <form:option value="month">month</form:option>
+                                                    <form:option value="year">year</form:option>
+                                                </form:select>
+                                                ago, at
+                                            </c:when>
+                                            <c:otherwise>
+                                                <form:input cssClass="form-control" path="dateParms[${dateParmRow.index}].date" />
+                                            </c:otherwise>
+                                        </c:choose>
+                                    </div>
+                                    <div class="col-md-7">
+                                        <div class="pull-left">
+                                            <form:select cssClass="form-control" path="dateParms[${dateParmRow.index}].hours">
+                                                <c:forEach var="hour" begin="0" end="23">
+                                                    <form:option value="${hour}">
+                                                        <fmt:formatNumber minIntegerDigits="2" value="${hour}" />
+                                                    </form:option>
                                                 </c:forEach>
                                             </form:select>
-                                            <form:select path="dateParms[${dateParmRow.index}].interval">
-                                                <form:option value="day">day</form:option>
-                                                <form:option value="month">month</form:option>
-                                                <form:option value="year">year</form:option>
+                                        </div>
+                                        <div class="pull-left"><p class="lead">:</p></div>
+                                        <div class="pull-left">
+                                            <form:select cssClass="form-control" path="dateParms[${dateParmRow.index}].minutes">
+                                                <c:forEach var="minute" begin="0" end="59">
+                                                    <form:option value="${minute}">
+                                                        <fmt:formatNumber minIntegerDigits="2" value="${minute}" />
+                                                    </form:option>
+                                                </c:forEach>
                                             </form:select>
-                                            ago, at
-                                        </c:when>
-                                        <c:otherwise>
-                                            <form:input cssClass="form-control" path="dateParms[${dateParmRow.index}].date" />
-                                        </c:otherwise>
-                                    </c:choose>
-                                </div>
-                                <div class="col-md-8">
-                                    <div class="pull-left">
-                                        <form:select cssClass="form-select" path="dateParms[${dateParmRow.index}].hours">
-                                            <c:forEach var="hour" begin="0" end="23">
-                                                <form:option value="${hour}">
-                                                    <fmt:formatNumber minIntegerDigits="2" value="${hour}" />
-                                                </form:option>
-                                            </c:forEach>
-                                        </form:select>
-                                    </div>
-                                    <div class="pull-left"><p class="lead">:</p></div>
-                                    <div class="pull-left">
-                                        <form:select cssClass="form-select" path="dateParms[${dateParmRow.index}].minutes">
-                                            <c:forEach var="minute" begin="0" end="59">
-                                                <form:option value="${minute}">
-                                                    <fmt:formatNumber minIntegerDigits="2" value="${minute}" />
-                                                </form:option>
-                                            </c:forEach>
-                                        </form:select>
-                                    </div>
+                                        </div>
 
+                                    </div>
                                 </div>
                             </div>
-
                         </div>
                     </c:forEach>
 
