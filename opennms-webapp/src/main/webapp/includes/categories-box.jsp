@@ -64,7 +64,7 @@
 
 	String titleName = "Availability Over the Past 24 Hours";
 	if (opennmsDisconnect) {
-		titleName = "OpenNMS Disconnect -- is the OpenNMS daemon running? - Last update: ";
+		titleName = "Waiting for availability data...";
 		if (earliestUpdate > 0) {
 			titleName += new Date(earliestUpdate).toString();
 		} else {

@@ -6,7 +6,7 @@
         <relativePath>../topology-map/poms/compiled/</relativePath>
         <groupId>org.opennms.features.topology.build</groupId>
         <artifactId>compiled-bundle-settings</artifactId>
-        <version>14.0.1-SNAPSHOT</version>
+        <version>14.0.2-SNAPSHOT</version>
     </parent>
     <groupId>org.opennms.features</groupId>
     <artifactId>vaadin-dashboard</artifactId>
@@ -19,7 +19,7 @@
         <bundle.symbolicName>org.opennms.features.vaadin-dashboard</bundle.symbolicName>
         <bundle.namespace>org.opennms.features.vaadin.dashboard</bundle.namespace>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <guava.version>10.0.1</guava.version>
+        <guava.version>${guavaVersion}</guava.version>
     </properties>
 
     <build>
@@ -101,7 +101,7 @@
                 <configuration>
                     <bundles>
                         <bundle>mvn:org.opennms.features/vaadin-dashboard/${project.version}</bundle>
-                        <bundle>wrap:mvn:org.vaadin.addons/dragdroplayouts/1.0.0.alpha4</bundle>
+                        <bundle>wrap:mvn:org.vaadin.addons/dragdroplayouts/1.1.1</bundle>
                     </bundles>
                     <features>
                         <feature>opennms-core</feature>
@@ -152,7 +152,7 @@
         <dependency>
             <groupId>org.vaadin.addons</groupId>
             <artifactId>dragdroplayouts</artifactId>
-            <version>1.0.0.alpha4</version>
+            <version>1.1.1</version>
         </dependency>
 
         <dependency>
