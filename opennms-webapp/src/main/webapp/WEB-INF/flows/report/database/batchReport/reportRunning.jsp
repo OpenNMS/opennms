@@ -48,7 +48,7 @@
     <div class="col-md-12">
         <div class="panel panel-success">
             <div class="panel-heading">
-                <h3>Report Running</h3>
+                <h3 class="panel-title">Report Running</h3>
             </div>
             <div class="panel-body">
                 <form:form cssClass="stdform">

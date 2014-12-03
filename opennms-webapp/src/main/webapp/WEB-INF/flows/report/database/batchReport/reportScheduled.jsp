@@ -44,15 +44,26 @@
   <jsp:param name="breadcrumb" value="Run"/>
 </jsp:include>
 
-<h3>Report Scheduled</h3>
-<div class="boxWrapper">
-    <form:form cssClass="stdform">
-        <p><span class="indent">
-            Your report has been scheduled.
-        </span></p>
-        <span class="indent">
-            <input type="submit" id="proceed" name="_eventId_proceed" value="Finished" />&#160;
-        </span>
-    </form:form>
+<div class="row">
+    <div class="col-md-12">
+        <div class="panel panel-success">
+            <div class="panel-heading">
+                <h3 class="panel-title">Report Scheduled</h3>
+            </div>
+            <div class="boxWrapper">
+                <form:form cssClass="stdform">
+                    <p><span class="indent">
+                        Your report has been scheduled.
+                    </span></p>
+                    <span class="indent">
+                        <input class="btn btn-default" type="submit" id="proceed" name="_eventId_proceed" value="Finished" />&#160;
+                    </span>
+                            </form:form>
+            </div>
+
+        </div>
+    </div>
 </div>
+
+
 <jsp:include page="/includes/footer.jsp" flush="false" />
