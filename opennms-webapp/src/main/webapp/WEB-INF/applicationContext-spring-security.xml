@@ -70,7 +70,7 @@
     
     <!--Commented out for custom authentication filter<form-login login-page="/login.jsp" authentication-failure-url="/login.jsp?login_error=1" />-->
     <http-basic />
-    <logout logout-success-url="/logoff.jsp" />
+    <logout logout-success-url="/" />
 
       <!-- added for custom authentication filter -->
     <custom-filter position="FORM_LOGIN_FILTER" ref="onmsUsernamePasswordAuthenticationFilter" />
