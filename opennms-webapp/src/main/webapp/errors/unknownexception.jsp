@@ -64,7 +64,7 @@ function toggleDiv(divName) {
 }
 </script>
 
-<div class="panel panel-success">
+<div class="panel panel-default">
 <div class="panel-heading">
   <h3 class="panel-title">The OpenNMS Web User Interface Has Experienced an Error</h3>
 </div>
@@ -160,7 +160,7 @@ userSession.setAttribute("errorReportDetails", errorDetails);
 
 <div id="errorDetails" style="display: none;">
 
-<div class="panel panel-success">
+<div class="panel panel-default">
   <div class="panel-heading">
     <h3 class="panel-title">Error Details</h3>
   </div>
@@ -171,7 +171,7 @@ userSession.setAttribute("errorReportDetails", errorDetails);
   </div> <!-- panel-body -->
 </div> <!-- panel -->
 
-<div class="panel panel-success">
+<div class="panel panel-default">
   <div class="panel-heading">
     <h3 class="panel-title">Exception Trace</h3>
   </div>
@@ -180,7 +180,7 @@ userSession.setAttribute("errorReportDetails", errorDetails);
   </div> <!-- panel-body -->
 </div> <!-- panel -->
 
-<div class="panel panel-success">
+<div class="panel panel-default">
   <div class="panel-heading">
     <h3 class="panel-title">Request Details</h3>
   </div>
@@ -228,7 +228,7 @@ userSession.setAttribute("errorReportDetails", errorDetails);
   </table>
 </div> <!-- panel -->
 
-<div class="panel panel-success">
+<div class="panel panel-default">
   <div class="panel-heading">
     <h3 class="panel-title">System Details</h3>
   </div>
@@ -260,7 +260,7 @@ userSession.setAttribute("errorReportDetails", errorDetails);
   </table>
 </div> <!-- panel -->
 
-<div class="panel panel-success">
+<div class="panel panel-default">
   <div class="panel-heading">
     <h3 class="panel-title">Options for Reporting This Problem</h3>
   </div>
@@ -299,7 +299,7 @@ userSession.setAttribute("errorReportDetails", errorDetails);
 
 <div id="plainTextErrorDetails" style="display: none;">
 
-<div class="panel panel-success">
+<div class="panel panel-default">
   <div class="panel-heading">
     <h3 class="panel-title">Plain Text Error Details</h3>
   </div>

@@ -57,7 +57,7 @@
  </jsp:include>
  
 
-<div class="panel panel-success">
+<div class="panel panel-default">
 <div class="panel-heading">
 <h3 class="panel-title"><c:out value="${webTable.title}" /></h3>
 </div>

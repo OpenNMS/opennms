@@ -137,7 +137,7 @@
     String timelineUrl = "/opennms/rest/timeline/html/" + String.valueOf(nodeId) + "/" + ipAddr + "/" + service.getServiceName() + "/" + timelineStart + "/" + timelineEnd + "/" + timelineWidth;
 %>
 
-<div class="panel panel-success">
+<div class="panel panel-default">
 <div class="panel-heading">
     <h3 class="panel-title">Overall Availability</h3>
 </div>

@@ -56,7 +56,7 @@
 
 
 %>
-<div class="panel panel-success">
+<div class="panel panel-default">
 <div class="panel-heading">
 <h3 class="panel-title">Interface Spanning Tree Protocol Info</h3>
 </div>

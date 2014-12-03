@@ -67,7 +67,7 @@
   <jsp:param name="breadcrumb" value="About" />
 </jsp:include>
 
-  <div class="panel panel-success">
+  <div class="panel panel-default">
     <div class="panel-heading">
       <h3 class="panel-title">OpenNMS Web Console</h3>
     </div>
@@ -116,7 +116,7 @@
 </table>
 </div>
 
-<div class="panel panel-success">
+<div class="panel panel-default">
   <div class="panel-heading">
     <h3 class="panel-title">License and Copyright</h3>
   </div>
@@ -167,7 +167,7 @@
   </div>
 </div>
 
-<div class="panel panel-success">
+<div class="panel panel-default">
   <div class="panel-heading">
     <h3 class="panel-title">OSI Certified Open Source Software</h3>
   </div>
@@ -182,7 +182,7 @@
 </div>
 </div>
 
-<div class="panel panel-success">
+<div class="panel panel-default">
 	<div class="panel-heading">
 		<h3 class="panel-title">Supporting Applications and Frameworks</h3>
 	</div>

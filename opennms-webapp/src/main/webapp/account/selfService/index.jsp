@@ -78,7 +78,7 @@
 
 <div class="row">
   <div class="col-md-6">
-    <div class="panel panel-success">
+    <div class="panel panel-default">
       <div class="panel-heading">
         <h3 class="panel-title">User Account Self-Service</h3>
       </div>
@@ -91,7 +91,7 @@
   </div> <!-- column -->
 
   <div class="col-md-6">
-    <div class="panel panel-success">
+    <div class="panel panel-default">
       <div class="panel-heading">
         <h3 class="panel-title">Account Self-Service Options</h3>
       </div>

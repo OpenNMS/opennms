@@ -44,7 +44,7 @@
 
 <c:choose>
   <c:when test="${model.errors.errorCount > 0}">
-    <div class="panel panel-success">
+    <div class="panel panel-default">
     <div class="panel-heading">
     <h3 class="panel-title"><spring:message code="error"/></h3>
     </div>
@@ -60,7 +60,7 @@
   
   <c:otherwise>
     <c:set var="monitor" value="${model.locationMonitors[0]}"/>
-    <div class="panel panel-success">
+    <div class="panel panel-default">
     <div class="panel-heading">
     <h3 class="panel-title"><spring:message code="distributed.locationMonitorDetails.title"/></h3>
     </div>
@@ -115,7 +115,7 @@
     </table>
     </div>
 
-    <div class="panel panel-success">
+    <div class="panel panel-default">
     <div class="panel-heading">
     <h3 class="panel-title"><spring:message code="distributed.locationMonitorDetails.additionalTitle"/></h3>
     </div>
@@ -142,7 +142,7 @@
           }
       </script>
       
-      <div class="panel panel-success">
+      <div class="panel panel-default">
       <div class="panel-heading">
       <h3 class="panel-title">Manage Remote Poller</h3>
       </div>

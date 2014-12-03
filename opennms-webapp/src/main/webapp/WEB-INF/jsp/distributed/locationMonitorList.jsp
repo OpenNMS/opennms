@@ -55,7 +55,7 @@
   </form>
 </c:if>
 
-<div class="panel panel-success">
+<div class="panel panel-default">
 <div class="panel-heading">
   <h3 class="panel-title"><spring:message code="distributed.pollerStatus.title"/></h3>
 </div>

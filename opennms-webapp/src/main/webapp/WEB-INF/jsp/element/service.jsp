@@ -167,7 +167,7 @@ function doDelete() {
       <div class="row">
       <div class="col-md-6">
             <!-- general info box -->
-            <div class="panel panel-success">
+            <div class="panel panel-default">
             <div class="panel-heading">
               <h3 class="panel-title">General</h3>
             </div>
@@ -202,7 +202,7 @@ function doDelete() {
             </div>
             <!-- simple parameters box -->
             <c:if test="${parameters != null}">
-              <div class="panel panel-success">
+              <div class="panel panel-default">
               <div class="panel-heading">
                 <h3 class="panel-title">Service Parameters</h3>
               </div>
@@ -219,7 +219,7 @@ function doDelete() {
             <!-- XML parameters box -->
             <c:if test="${xmlParams != null}">
               <c:forEach var="entry" items="${xmlParams}">
-                <div class="panel panel-success">
+                <div class="panel panel-default">
                   <div class="panel-heading">
                     <h3 class="panel-title">${entry.key}</h3>
                   </div>

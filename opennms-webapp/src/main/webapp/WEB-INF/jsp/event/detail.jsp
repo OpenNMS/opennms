@@ -105,7 +105,7 @@
     <p>Event not found in database.</p>
 <% } else { %>
 
-    <div class="panel panel-success">
+    <div class="panel panel-default">
       <div class="panel-heading">
         <h3 class="panel-title">Event <%=event.getId()%></h3>
       </div>

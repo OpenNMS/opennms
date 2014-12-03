@@ -89,7 +89,7 @@
 
 <div class="row">
 <div class="col-md-5">
-    <div class="panel panel-success">
+    <div class="panel panel-default">
     <div class="panel-heading">
       <h3 class="panel-title">Capability Rescan</h3>
     </div>
@@ -116,7 +116,7 @@
 </div>
 
 <div class="col-md-7">
-    <div class="panel panel-success">
+    <div class="panel panel-default">
     <div class="panel-heading">
       <h3 class="panel-title">Rescan Node</h3>
     </div>

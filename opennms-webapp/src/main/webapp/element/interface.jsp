@@ -245,7 +245,7 @@ function doDelete() {
 
 <div class="col-md-6"> <!-- content-right -->
 
-    <div class="panel panel-success">
+    <div class="panel panel-default">
     <div class="panel-heading">
       <h3 class="panel-title">General</h3>
     </div>

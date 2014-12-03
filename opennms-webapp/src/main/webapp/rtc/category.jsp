@@ -157,7 +157,7 @@
 
 <br/><br/>
 
-    <div class="panel panel-success fix-subpixel">
+    <div class="panel panel-default fix-subpixel">
       <table class="table table-condensed severity">
         <thead>
         <tr>

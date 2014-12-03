@@ -94,7 +94,7 @@
     Outage[] outages = new OutageModel().getCurrentOutagesForNode(nodeId);
 %>
 
-<div id="availability-box" class="panel panel-success">
+<div id="availability-box" class="panel panel-default">
   <div class="panel-heading">
     <h3 class="panel-title">Availability</h3>
   </div>

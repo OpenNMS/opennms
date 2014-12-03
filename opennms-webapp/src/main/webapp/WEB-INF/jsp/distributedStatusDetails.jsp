@@ -43,7 +43,7 @@
 
 <c:choose>
   <c:when test="${webTable.errors.errorCount > 0}">
-    <div class="panel panel-success">
+    <div class="panel panel-default">
       <div class="panel-heading">
         <h3 class="panel-title"><spring:message code="error"/></h3>
       </div>
@@ -58,7 +58,7 @@
   </c:when>
   
   <c:otherwise>
-    <div class="panel panel-success">
+    <div class="panel panel-default">
     <div class="panel-heading">
       <h3 class="panel-title">${webTable.title}</h3>
     </div>
