@@ -36,7 +36,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 
 
-<div id="category-box" class="panel panel-success">
+<div id="category-box" class="panel panel-default">
   <div class="panel-heading">
     <h3 class="panel-title">
   	  Surveillance Category Memberships

@@ -171,7 +171,7 @@
         </li>
       </ul>
 
-	<div class="panel panel-success">
+	<div class="panel panel-default">
         <!-- general info box -->
         <div class="panel-heading">
 			<h3 class="panel-title">General (Status: <%=(node_db == null ? "Unknown" : ElementUtil.getNodeStatusString(node_db))%>)</h3>
@@ -190,7 +190,7 @@
 		</div>
 	</div>
 
-    <div class="panel panel-success">
+    <div class="panel panel-default">
     	<div class="panel-heading">
 			<h3 class="panel-title">Node IP Routes</h3>
 		</div>

@@ -433,7 +433,7 @@ function confirmAssetEdit() {
   
   <!-- Asset box, if info available --> 
   <c:if test="${! empty model.asset && (! empty model.asset.description || ! empty model.asset.comments)}">
-    <div class="panel panel-success">
+    <div class="panel panel-default">
     <div class="panel-heading">
       <h3 class="panel-title">Asset Information</h3>
     </div>
@@ -453,7 +453,7 @@ function confirmAssetEdit() {
 
   <!-- SNMP box, if info available -->
   <c:if test="${! empty model.node.sysObjectId}">
-    <div class="panel panel-success">
+    <div class="panel panel-default">
     <div class="panel-heading">
       <h3 class="panel-title">SNMP Attributes</h3>
     </div>
@@ -485,7 +485,7 @@ function confirmAssetEdit() {
 
   <!-- LLDP box, if info available --> 
   <c:if test="${! empty model.lldp }">
-    <div class="panel panel-success">
+    <div class="panel panel-default">
     <div class="panel-heading">
       <h3 class="panel-title">LLDP Information</h3>
     </div>
@@ -512,7 +512,7 @@ function confirmAssetEdit() {
 
   <!-- CDP box, if info available --> 
   <c:if test="${! empty model.cdp }">
-    <div class="panel panel-success">
+    <div class="panel panel-default">
     <div class="panel-heading">
       <h3 class="panel-title">CDP Information</h3>
     </div>
@@ -540,7 +540,7 @@ function confirmAssetEdit() {
   <!-- Bridge box if available -->
   <c:if test="${! empty model.bridges}">
     <c:forEach items="${model.bridges}" var="bridge">
-    <div class="panel panel-success">
+    <div class="panel panel-default">
     <div class="panel-heading">
       <h3 class="panel-title">Bridge Information
   		<c:if test="${! empty bridge.vlan}">
@@ -609,7 +609,7 @@ function confirmAssetEdit() {
 
   <!-- OSPF box, if info available -->
   <c:if test="${! empty model.ospf }">
-    <div class="panel panel-success">
+    <div class="panel panel-default">
     <div class="panel-heading">
       <h3 class="panel-title">OSPF Information</h3>
     </div>
@@ -640,7 +640,7 @@ function confirmAssetEdit() {
 
   <!-- IS-IS box, if info available -->
   <c:if test="${! empty model.isis }">
-    <div class="panel panel-success">
+    <div class="panel panel-default">
     <div class="panel-heading">
       <h3 class="panel-title">IS-IS Information</h3>
     </div>
@@ -667,7 +667,7 @@ function confirmAssetEdit() {
 
   <!-- Critical Path info, if info available -->
   <c:if test="${model.criticalPath != model.noCriticalPath}">
-    <div class="panel panel-success">
+    <div class="panel panel-default">
     <div class="panel-heading">
       <h3 class="panel-title">Path Outage - Critical Path</h3>
     </div>
@@ -691,7 +691,7 @@ function confirmAssetEdit() {
   <script type="text/javascript">
     var nodeId = ${model.id}
   </script>
-  <div id="interface-panel-gwt" class="panel panel-success">
+  <div id="interface-panel-gwt" class="panel panel-default">
     <div class="panel-heading">
     	<h3 class="panel-title">Node Interfaces</h3>
     </div>
@@ -701,7 +701,7 @@ function confirmAssetEdit() {
 	
   <!-- Vlan box if available -->
   <c:if test="${! empty model.vlans}">
-    <div class="panel panel-success">
+    <div class="panel panel-default">
       <div class="panel-heading">
     	<h3 class="panel-title">VLAN Information</h3>
       </div>
@@ -737,7 +737,7 @@ function confirmAssetEdit() {
 <div class="col-md-6">
   
   <!-- general info box -->
-  <div class="panel panel-success">
+  <div class="panel panel-default">
     <div class="panel-heading">
   	<h3 class="panel-title">General (Status: ${model.status})</h3>
     </div>

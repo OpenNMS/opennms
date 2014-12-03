@@ -72,7 +72,7 @@
 
 <div class="row">
   <div class="col-md-6">
-    <div class="panel panel-success">
+    <div class="panel panel-default">
       <div class="panel-heading">
         <h3 class="panel-title">Search Asset Information</h3>
       </div>
@@ -97,7 +97,7 @@
   </div>
 
   <div class="col-md-6">
-    <div class="panel panel-success">
+    <div class="panel panel-default">
       <div class="panel-heading">
         <h3 class="panel-title">Assets Inventory</h3>
       </div>
@@ -135,7 +135,7 @@
 
 <div class="row">
   <div class="col-md-6">
-    <div class="panel panel-success">
+    <div class="panel panel-default">
       <div class="panel-heading">
         <h3 class="panel-title">Assets with asset numbers</h3>
       </div>

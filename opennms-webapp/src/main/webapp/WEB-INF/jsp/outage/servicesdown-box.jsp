@@ -46,7 +46,7 @@
 
 <!-- outage/servicesdown-box.htm -->
 <c:url var="headingLink" value="outage/list.htm"/>
-<div class="panel panel-success">
+<div class="panel panel-default">
   <div class="panel-heading">
     <h3 class="panel-title"><a href="${headingLink}">Nodes with Outages</a></h3>
   </div>

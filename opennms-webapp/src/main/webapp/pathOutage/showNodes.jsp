@@ -52,7 +52,7 @@
       Set<Integer> nodeList = PathOutageManagerJdbcImpl.getInstance().getNodesInPath(critIp, critSvc);
 %>
   
-<div class="panel panel-success fix-subpixel">
+<div class="panel panel-default fix-subpixel">
     <div class="panel-heading">
         <h3 class="panel-title">Path Outage Node List</h3>
     </div>

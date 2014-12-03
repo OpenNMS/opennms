@@ -58,7 +58,7 @@
   <c:param name="filter" value="intf=${ipAddr}"/>
 </c:url>
 
-<div class="panel panel-success">
+<div class="panel panel-default">
 <div class="panel-heading">
   <h3 class="panel-title"><a href="<c:out value="${outageLink}"/>">Recent&nbsp;Outages</a></h3>
 </div>

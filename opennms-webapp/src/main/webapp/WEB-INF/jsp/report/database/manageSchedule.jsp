@@ -57,7 +57,7 @@
     <div class="col-md-12">
         <c:choose>
             <c:when test="${empty pagedListHolder.pageList}">
-                <div class="panel panel-success">
+                <div class="panel panel-default">
                     <div class="panel-heading">
                         <h3 class="panel-title">Report Schedule List</h3>
                     </div>

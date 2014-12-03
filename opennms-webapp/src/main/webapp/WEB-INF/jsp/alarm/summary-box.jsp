@@ -46,7 +46,7 @@
 
 <!-- alarm/summary-box.htm -->
 <c:url var="headingLink" value="alarm/list.htm"/>
-<div class="panel panel-success">
+<div class="panel panel-default">
   <div class="panel-heading">
     <h3 class="panel-title"><a href="${headingLink}">Nodes with Pending Problems</a></h3>
   </div>

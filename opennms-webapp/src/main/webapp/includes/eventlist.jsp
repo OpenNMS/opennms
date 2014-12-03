@@ -165,7 +165,7 @@
     <input type="hidden" name="actionCode" value="<%=org.opennms.web.event.AcknowledgeType.ACKNOWLEDGED.getShortName() %>" />
 <% } %>
 
-<div id="include-eventlist" class="panel panel-success">
+<div id="include-eventlist" class="panel panel-default">
 
 <div class="panel-heading">
 <h3 class="panel-title"><%=header%></h3>

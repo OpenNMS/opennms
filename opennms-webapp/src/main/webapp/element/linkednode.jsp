@@ -260,7 +260,7 @@
 
 <div class="row">
 <div class="col-md-12">
-	<div class="panel panel-success">
+	<div class="panel panel-default">
     <!-- general info box -->
     <div class="panel-heading">
 			<h3 class="panel-title">General (Status: <%=(node_db == null ? "Unknown" : ElementUtil.getNodeStatusString(node_db))%>)</h3>
@@ -286,7 +286,7 @@
 
 <!-- LINKD Links -->
 
-  <div class="panel panel-success">
+  <div class="panel panel-default">
 <%
    if (factory.getDataLinksOnNode(nodeId).isEmpty()) {
 %>
@@ -456,7 +456,7 @@
 
 <!--  BRIDGE Links -->
 
-<div class="panel panel-success">
+<div class="panel panel-default">
 <%
    Collection<BridgeLinkNode> bridgelinks = enlinkdfactory.getBridgeLinks(nodeId);
    if (bridgelinks.isEmpty()) {
@@ -575,7 +575,7 @@
 
 <!-- LLDP Links -->
 
-<div class="panel panel-success">
+<div class="panel panel-default">
 <%
    if (enlinkdfactory.getLldpLinks(nodeId).isEmpty()) {
 %>
@@ -642,7 +642,7 @@
 
 <!-- CDP Links -->
 
-<div class="panel panel-success">
+<div class="panel panel-default">
 <% if (enlinkdfactory.getCdpLinks(nodeId).isEmpty()) { %>
 	<div class="panel-heading">
 		<h3 class="panel-title">No CDP Cache Table Links found on <%=node_db.getLabel()%> by Enhanced Linkd</h3>
@@ -702,7 +702,7 @@
 
 <!-- OSPF Links -->
 
-<div class="panel panel-success">
+<div class="panel panel-default">
 <%
    if (enlinkdfactory.getOspfLinks(nodeId).isEmpty()) {
 %>
@@ -759,7 +759,7 @@
 
 <!-- ISIS Links -->
 
-<div class="panel panel-success">
+<div class="panel panel-default">
 <%
    if (enlinkdfactory.getIsisLinks(nodeId).isEmpty()) {
 %>

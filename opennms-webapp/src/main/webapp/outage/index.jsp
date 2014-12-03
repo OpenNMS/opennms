@@ -55,7 +55,7 @@ function validateId() {
 
 <div class="row">
   <div class="col-md-6">
-    <div class="panel panel-success">
+    <div class="panel panel-default">
       <div class="panel-heading">
         <h3 class="panel-title">Outage Menu</h3>
       </div>
@@ -76,7 +76,7 @@ function validateId() {
   </div>
 
   <div class="col-md-6">
-    <div class="panel panel-success">
+    <div class="panel panel-default">
       <div class="panel-heading">
         <h3 class="panel-title">Outages and Service Level Availability</h3>
       </div>

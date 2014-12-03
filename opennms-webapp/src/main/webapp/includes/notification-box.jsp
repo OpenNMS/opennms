@@ -58,7 +58,7 @@
     }
 %>
 
-<div class="panel panel-success">
+<div class="panel panel-default">
 	<div class="panel-heading">
 		<h3 class="panel-title"><a href="notification/index.jsp">Notification</a></h3>
 	</div>
