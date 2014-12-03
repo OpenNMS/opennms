@@ -72,7 +72,7 @@
                 <c:when test="${not empty entry.key.entries}">
                   <!-- has sub-entries, draw menu drop-downs -->
                   <li class="dropdown">
-                  <a href="${entry.key.url}" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">${entry.key.name} <span class="caret"></span></a>
+                  <a href="${entry.key.url}" name="nav-${entry.key.name}-top" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">${entry.key.name} <span class="caret"></span></a>
                   <ul class="dropdown-menu" role="menu">
                     <c:forEach var="subEntry" items="${entry.key.entries}">
                       <%
@@ -83,11 +83,11 @@
                       <c:if test="${subEntryDisplayStatus.display}">
                         <li>
                         <c:choose>
-                          <c:when test="true">
-                            <a href="${subEntry.url}">${subEntry.name}</a>
+                          <c:when test="${not empty subEntry.url}">
+                            <a name="nav-${entry.key.name}-${subEntry.name}" href="${subEntry.url}">${subEntry.name}</a>
                           </c:when>
                           <c:otherwise>
-                            <a href="#">${subEntry.name}</a>
+                            <a name="nav-${entry.key.name}-${subEntry.name}" href="#">${subEntry.name}</a>
                           </c:otherwise>
                         </c:choose>
                         </li>
@@ -99,10 +99,10 @@
                   <li>
                     <c:choose>
                       <c:when test="${not empty entry.key.url}">
-                        <a href="${entry.key.url}">${entry.key.name}</a>
+                        <a name="nav-${entry.key.name}-top" href="${entry.key.url}">${entry.key.name}</a>
                       </c:when>
                       <c:otherwise>
-                        <a href="#">${entry.key.name}</a>
+                        <a name="nav-${entry.key.name}-top" href="#">${entry.key.name}</a>
                       </c:otherwise>
                     </c:choose>
                   </li>
@@ -111,7 +111,7 @@
             </c:if> <!-- display -->
           </c:forEach>
           <li class="dropdown">
-            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+            <a name="nav-admin-top" href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
               <c:choose>
                 <c:when test="${not empty pageContext.request.remoteUser}">
                   <span class="glyphicon glyphicon-user"></span>
@@ -124,14 +124,14 @@
               <span class="caret"></span>
             </a>
             <ul class="dropdown-menu" role="menu">
-              <li><a href="#">Notices:&nbsp;<b id="notification<%= noticeStatus %>"><%= noticeStatus %></b></a></li>
+              <li><a name="nav-admin-notice-status" href="#" style="white-space: nowrap">Notices: <b id="notification<%= noticeStatus %>"><%= noticeStatus %></b></a></li>
               <c:if test="${isAdmin}">
-                <li><a href="<%= baseHref %>admin/index.jsp">Configure&nbsp;OpenNMS</a></li>
-                <li><a href="<%= baseHref %>admin/node/add.htm">Quick-Add&nbsp;Node</a></li>
+                <li><a name="nav-admin-admin" href="<%= baseHref %>admin/index.jsp" style="white-space: nowrap">Configure OpenNMS</a></li>
+                <li><a name="nav-admin-quick-add" href="<%= baseHref %>admin/node/add.htm" style="white-space: nowrap">Quick-Add Node</a></li>
               </c:if>
-              <li><a href="<%= baseHref %>support/index.htm">Help/Support</a></li>
+              <li><a name="nav-admin-support" href="<%= baseHref %>support/index.htm">Help/Support</a></li>
               <c:if test="${not empty pageContext.request.remoteUser}">
-                <li><a href="<%= baseHref %>j_spring_security_logout">Log Out</a></li>
+                <li><a name="nav-admin-logout" href="<%= baseHref %>j_spring_security_logout" style="white-space: nowrap">Log Out</a></li>
               </c:if>
             </ul>
           </li>
