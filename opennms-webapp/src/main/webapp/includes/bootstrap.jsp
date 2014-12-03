@@ -158,10 +158,7 @@
             <span class="icon-bar"></span>
           </button>
           <a class="navbar-brand" href="<%= baseHref %>index.jsp">
-            <picture>
-              <source srcset="<%= baseHref %>images/logo-bootstrap.png, <%= baseHref %>images/logo-bootstrap-2x.png 2x, <%= baseHref %>images/logo-bootstrap-3x.png 3x" />
-              <img src="<%= baseHref %>images/logo-bootstrap.png" alt="OpenNMS" />
-            </picture>
+            <img id="logo" src="<%= baseHref %>images/logo-bootstrap.svg" alt="OpenNMS" onerror="this.src='<%= baseHref %>images/logo-bootstrap.png'" />
           </a>
         </div>
 
