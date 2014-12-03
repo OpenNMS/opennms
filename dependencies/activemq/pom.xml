@@ -18,6 +18,10 @@
       <scope>compile</scope>
       <exclusions>
         <exclusion>
+          <groupId>org.apache.felix</groupId>
+          <artifactId>org.apache.felix.framework</artifactId>
+        </exclusion>
+        <exclusion>
           <groupId>commons-logging</groupId>
           <artifactId>commons-logging</artifactId>
         </exclusion>
@@ -145,6 +149,10 @@
         <exclusion>
           <groupId>org.mortbay.jetty</groupId>
           <artifactId>jsp-2.1</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.apache.felix</groupId>
+          <artifactId>org.apache.felix.framework</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
