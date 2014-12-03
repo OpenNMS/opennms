@@ -66,6 +66,6 @@ function Blank_TextField_Validator()
 			<option value="7">Last month</option>
 		</select>
 		&nbsp;
-		<input type="submit" value="Search" />
+		<input class="btn btn-default" type="submit" value="Search" />
 	</div>
 </form>
