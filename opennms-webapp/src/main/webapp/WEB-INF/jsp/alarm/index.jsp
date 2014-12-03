@@ -53,12 +53,11 @@
   <jsp:param name="headTitle" value="Alarms" />
   <jsp:param name="location" value="alarm" />  
   <jsp:param name="breadcrumb" value="Alarms" />
-  <jsp:param name="script" value="<script type='text/javascript' src='js/tooltip.js'></script>" />
 </jsp:include>
 
 <div class="row">
   <div class="col-md-6">
-    <div class="panel panel-success">
+    <div class="panel panel-default">
       <div class="panel-heading">
       	<h3 class="panel-title">Alarm Queries</h3>
       </div>
@@ -76,7 +75,7 @@
         </ul>  
       </div>
     </div>
-    <div class="panel panel-success">
+    <div class="panel panel-default">
       <div class="panel-heading">
         <h3 class="panel-title">Alarm Filter Favorites</h3>
       </div>
@@ -121,7 +120,7 @@
   </div>
 
 	<div class="col-md-6">
-		<div class="panel panel-success">
+		<div class="panel panel-default">
 			<div class="panel-heading">
 				<h3 class="panel-title">Outstanding and acknowledged alarms</h3>
 			</div>
@@ -167,7 +166,7 @@
 	
 </script>
 
-<jsp:include page="/includes/footer.jsp" flush="false"/>
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="false"/>
 
 <%!
     protected String getAlarmPageNavItems(){
