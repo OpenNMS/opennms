@@ -37,7 +37,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring" %>
 
-<jsp:include page="/includes/header.jsp" flush="false" >
+<jsp:include page="/includes/bootstrap.jsp" flush="false" >
   <jsp:param name="title" value="Remote Poller Status" />
   <jsp:param name="headTitle" value="Remote Poller Status" />
   <jsp:param name="location" value="admin" />
@@ -55,9 +55,12 @@
   </form>
 </c:if>
 
-<h3><spring:message code="distributed.pollerStatus.title"/></h3>
+<div class="panel panel-success">
+<div class="panel-heading">
+  <h3 class="panel-title"><spring:message code="distributed.pollerStatus.title"/></h3>
+</div>
 
-<table>
+<table class="table table-condensed table-bordered severity">
   <tr>
     <th><spring:message code="distributed.area"/></th>
     <th><spring:message code="distributed.definitionName"/></th>
@@ -102,6 +105,6 @@
     </tr> 
   </c:forEach>
 </table>
+</div>
 
-
-<jsp:include page="/includes/footer.jsp" flush="false"/>
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="false"/>

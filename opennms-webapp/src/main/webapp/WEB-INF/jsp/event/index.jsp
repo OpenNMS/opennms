@@ -51,7 +51,7 @@
 
 <div class="row">
   <div class="col-md-6">
-      <div class="panel panel-success">
+      <div class="panel panel-default">
       <div class="panel-heading">
       	<h3 class="panel-title">Event Queries</h3>
       </div>
@@ -70,7 +70,7 @@
       </div>
     </div>
 
-    <div class="panel panel-success">
+    <div class="panel panel-default">
     <div class="panel-heading">
     	<h3 class="panel-title">Event Filter Favorites</h3>
     </div>
@@ -120,7 +120,7 @@
 </c:forEach>
 
   <div class="col-md-6">
-	<div class="panel panel-success">
+	<div class="panel panel-default">
 	<div class="panel-heading">
       <h3 class="panel-title">Outstanding and acknowledged events</h3>
  	</div>

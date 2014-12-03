@@ -114,6 +114,7 @@
             <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
               <c:choose>
                 <c:when test="${not empty pageContext.request.remoteUser}">
+                  <span class="glyphicon glyphicon-user"></span>
                   ${pageContext.request.remoteUser}
                 </c:when>
                 <c:otherwise>
@@ -155,6 +156,9 @@
             </li>
           </c:if>
         </c:forEach>
+        <c:if test="${isAdmin}">
+          <li><a href="<%= baseHref %>admin/index.jsp">Admin</a></li>
+        </c:if>
       </ul>
     </div>
   </c:otherwise>

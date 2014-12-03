@@ -83,7 +83,11 @@ public class AlertTag extends SimpleTagSupport {
      * Performs an type to css-class mapping.
      */
     private static String getStyle(AlertType type) {
-        return "alert-" + type.name().toLowerCase();
+        switch (type) {
+        case INFO: return "alert-info";
+        case SUCCESS: return "alert-success";
+        default: return "alert-danger";
+        }
     }
 
     @Override

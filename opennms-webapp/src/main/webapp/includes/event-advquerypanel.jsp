@@ -82,7 +82,7 @@
 
 	<div class="form-group col-sm-6">
 		<label for="severity">Severity:</label>
-		<select class="form-control" name="severity" size="1">
+		<select class="form-control" name="severity">
 			<option selected="selected">Any</option>
 			<% for (OnmsSeverity severity : OnmsSeverity.values() ) { %>
 			<option value="<%= severity.getId() %>">
@@ -99,7 +99,7 @@
 
 	<div class="form-group col-sm-4">
 		<label for="service">Service:</label>
-		<select class="form-control" name="service" size="1">
+		<select class="form-control" name="service">
 			<option selected>Any</option>
 			<% for (String name : serviceNameSet) { %>
 				<option value="<%=serviceNameMap.get(name)%>"><%=name%></option>
@@ -108,8 +108,8 @@
 	</div>
 	
 	<div class="form-group col-sm-4">
-		<label for="sortby">Sort By:</label>
-		<select class="form-control" name="sortby" size="1">
+		<label class="control-label" for="sortby">Sort By:</label>
+		<select class="form-control" name="sortby">
 			<option value="id">Event ID (Descending)</option>
 			<option value="rev_id">Event ID (Ascending)</option>
 			<option value="severity">Severity (Descending)</option>
@@ -127,7 +127,7 @@
 
 	<div class="form-group col-sm-4">
 		<label for="limit">Number of Events Per Page:</label>
-		<select class="form-control" name="limit" size="1">
+		<select class="form-control" name="limit">
 			<option value="10">10 events</option>
 			<option value="20">20 events</option>
 			<option value="30">30 events</option>
@@ -146,25 +146,40 @@
 		<input type="time" name="aftertime"/>
 		-->
 		<br/>
-		<select name="afterhour" size="1">
-			<c:forEach var="i" begin="1" end="12">
-				<form:option value="${i}" selected="${nowHour==i}">${i}</form:option>
-			</c:forEach>
-		</select>
-		<input type="text" name="afterminute" size="4" maxlength="2" value="${formattedNowMinute}" />
-		<select name="afterampm" size="1">
-			<c:forEach var="dayTime" items="AM,Noon,PM,Midnight">
-				<form:option value="${dayTime == 'AM' || dayTime == 'Midnight' ? 'am' : 'pm'}" selected="${dayTime==amPmText}">${dayTime}</form:option>
-			</c:forEach>
-		</select>
-		<br/>
-		<select name="aftermonth" size="1">
-			<c:forEach var="month" items="${months}" varStatus="status">
-				<form:option value="${status.index}" selected="${status.count == nowMonth}">${month}</form:option>
-			</c:forEach>
-		</select>
-		<input type="text" name="afterdate" size="4" maxlength="2" value="${nowDate}" />
-		<input type="text" name="afteryear" size="6" maxlength="4" value="${nowYear}" />
+		<div class="row">
+			<div class="col-sm-2">
+				<select class="form-control" name="afterhour">
+					<c:forEach var="i" begin="1" end="12">
+						<form:option value="${i}" selected="${nowHour==i}">${i}</form:option>
+					</c:forEach>
+				</select>
+			</div>
+			<div class="col-sm-2">
+				<input class="form-control" type="text" name="afterminute" maxlength="2" value="${formattedNowMinute}" />
+			</div>
+			<div class="col-sm-2">
+				<select class="form-control" name="afterampm">
+					<c:forEach var="dayTime" items="AM,Noon,PM,Midnight">
+						<form:option value="${dayTime == 'AM' || dayTime == 'Midnight' ? 'am' : 'pm'}" selected="${dayTime==amPmText}">${dayTime}</form:option>
+					</c:forEach>
+				</select>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-sm-2">
+				<select class="form-control" name="aftermonth">
+					<c:forEach var="month" items="${months}" varStatus="status">
+						<form:option value="${status.index}" selected="${status.count == nowMonth}">${month}</form:option>
+					</c:forEach>
+				</select>
+			</div>
+			<div class="col-sm-2">
+				<input class="form-control" type="text" name="afterdate" maxlength="2" value="${nowDate}" />
+			</div>
+			<div class="col-sm-2">
+				<input class="form-control" type="text" name="afteryear" maxlength="4" value="${nowYear}" />
+			</div>
+		</div>
 	</div>
 
 	<div class="col-sm-6">
@@ -176,26 +191,41 @@
 		<input type="time" name="beforetime"/>
 		-->
 		<br/>
-		<select name="beforehour" size="1">
-			<c:forEach var="i" begin="1" end="12">
-				<form:option value="${i}" selected="${nowHour==i}">${i}</form:option>
-			</c:forEach>
-		</select>
-		<input type="text" name="beforeminute" size="4" maxlength="2" value="${formattedNowMinute}" />
-		<select name="beforeampm" size="1">
-			<c:forEach var="dayTime" items="AM,Noon,PM,Midnight">
-				<form:option value="${dayTime == 'AM' || dayTime == 'Midnight' ? 'am' : 'pm'}" selected="${dayTime==amPmText}">${dayTime}</form:option>
-			</c:forEach>
-		</select>
-		<br/>
-		<select name="beforemonth" size="1">
-			<c:forEach var="month" items="${months}" varStatus="status">
-				<form:option value="${status.index}"
-					selected="${status.count == nowMonth}">${month}</form:option>
-			</c:forEach>
-		</select>
-		<input type="text" name="beforedate" size="4" maxlength="2" value="${nowDate}" />
-		<input type="text" name="beforeyear" size="6" maxlength="4" value="${nowYear}" />
+		<div class="row">
+			<div class="col-sm-2">
+				<select class="form-control" name="beforehour">
+					<c:forEach var="i" begin="1" end="12">
+						<form:option value="${i}" selected="${nowHour==i}">${i}</form:option>
+					</c:forEach>
+				</select>
+			</div>
+			<div class="col-sm-2">
+				<input class="form-control" type="text" name="beforeminute" maxlength="2" value="${formattedNowMinute}" />
+			</div>
+			<div class="col-sm-2">
+				<select class="form-control" name="beforeampm">
+					<c:forEach var="dayTime" items="AM,Noon,PM,Midnight">
+						<form:option value="${dayTime == 'AM' || dayTime == 'Midnight' ? 'am' : 'pm'}" selected="${dayTime==amPmText}">${dayTime}</form:option>
+					</c:forEach>
+				</select>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-sm-2">
+				<select class="form-control" name="beforemonth">
+					<c:forEach var="month" items="${months}" varStatus="status">
+						<form:option value="${status.index}"
+							selected="${status.count == nowMonth}">${month}</form:option>
+					</c:forEach>
+				</select>
+			</div>
+			<div class="col-sm-2">
+				<input class="form-control" type="text" name="beforedate" maxlength="2" value="${nowDate}" />
+			</div>
+			<div class="col-sm-2">
+				<input class="form-control" type="text" name="beforeyear" maxlength="4" value="${nowYear}" />
+			</div>
+		</div>
 	</div>
 
 	<div class="col-sm-12">
@@ -203,7 +233,7 @@
 	</div>
 
 	<div class="form-group col-sm-12">
-		<input type="submit" value="Search" />
+		<button class="btn btn-default" type="submit">Search</button>
 	</div>
 
 </form>

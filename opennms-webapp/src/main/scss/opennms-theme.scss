@@ -46,11 +46,6 @@ img {
 	background:#fff;
 	height:108px;
 }
-#branding #logo {
-	position:absolute;
-	top:20px;
-	left:0px;
-}
 a {
 	color:$color_green_leaf_approx;
 }
@@ -396,7 +391,7 @@ a.list-group-item.active:focus {
 .navbar-brand {
 	line-height: $navbar-logo-height; /* same as the logo image */
 	height: $navbar-logo-height;
-	padding: 1px !important;
+	padding: 2px !important;
 	/*
 	padding-left: 0;
 	padding-right: 0;
@@ -433,7 +428,7 @@ a.list-group-item.active:focus {
 }
 
 .navbar-inverse .navbar-nav > li {
-	padding: 5px;
+	padding: 5px 10px;
 	bottom: 0;
 	@include navbar-inverse-color(white);
 	border: 1px solid transparent;
