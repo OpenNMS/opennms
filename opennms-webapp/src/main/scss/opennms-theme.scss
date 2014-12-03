@@ -428,7 +428,7 @@ a.list-group-item.active:focus {
 }
 
 .navbar-inverse .navbar-nav > li {
-	padding: 5px;
+	padding: 5px 10px;
 	bottom: 0;
 	@include navbar-inverse-color(white);
 	border: 1px solid transparent;
