@@ -28,8 +28,6 @@
 
 package org.opennms.smoketest;
 
-import static org.junit.Assert.assertNotNull;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -41,11 +39,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class ProvisioningTest extends OpenNMSSeleniumTestCase {
+    private static final String NODE_LABEL = "localNode";
     private static final Logger LOG = LoggerFactory.getLogger(ProvisioningTest.class);
 
     @Before
     public void setUp() throws Exception {
         super.setUp();
+        deleteTestRequisition();
         provisioningPage();
     }
 
@@ -65,7 +65,7 @@ public class ProvisioningTest extends OpenNMSSeleniumTestCase {
     Setter type(final String suffix, final String value) {
         return new Setter() {
             public void setField(final String prefix) {
-                final WebElement element = m_driver.findElement(By.name(prefix + "." + suffix));
+                final WebElement element = findElementByName(prefix + "." + suffix);
                 element.clear();
                 element.sendKeys(value);
             }
@@ -75,7 +75,7 @@ public class ProvisioningTest extends OpenNMSSeleniumTestCase {
     Setter select(final String suffix, final String value) {
         return new Setter() {
             public void setField(final String prefix) {
-                new Select(m_driver.findElement(By.name(prefix + "." + suffix))).selectByVisibleText(value);
+                new Select(findElementByName(prefix + "." + suffix)).selectByVisibleText(value);
             }
         };
     }
@@ -90,57 +90,63 @@ public class ProvisioningTest extends OpenNMSSeleniumTestCase {
             setter.setField(prefix);
         }
 
-        m_driver.findElement(By.xpath("//input[contains(@onclick, '" + currentNode + "') and @value='Save']")).click();
+        findElementByXpath("//input[contains(@onclick, '" + currentNode + "') and @value='Save']").click();
         return currentNode;
     }
 
     protected String getCurrentNode() {
-        final WebElement element = m_driver.findElement(By.xpath("//input[@name='currentNode']"));
-        return element.getAttribute("value");
+        return findElementByXpath("//input[@name='currentNode']").getAttribute("value");
     }
 
     @Test
     public void testRequisitionUI() throws Exception {
-        final WebElement form = m_driver.findElement(By.cssSelector("form[name=takeAction]"));
+        final WebElement form = findElementByXpath("//form[@name='takeAction']");
         form.findElement(By.cssSelector("input[type=text][name=groupName]")).sendKeys(REQUISITION_NAME);
         form.submit();
 
         // edit the foreign source
-        m_driver.findElement(By.id("edit_fs_anchor_" + REQUISITION_NAME)).click();
+        findElementById("edit_fs_anchor_" + REQUISITION_NAME).click();
 
         // add a detector
-        m_driver.findElement(By.xpath("//input[@value='Add Detector']")).click();
+        findElementByXpath("//input[@value='Add Detector']").click();
         String detectorNode = setTreeFieldsAndSave("foreignSourceEditForm", type("name", "HTTP-8980"), select("pluginClass", "HTTP"));
 
         // set the port to 8980
-        m_driver.findElement(By.xpath("//a[contains(@href, '"+detectorNode+"') and text() = '[Add Parameter]']")).click();
+        findElementByXpath("//a[contains(@href, '"+detectorNode+"') and text() = '[Add Parameter]']").click();
         setTreeFieldsAndSave("foreignSourceEditForm", select("key", "port"), type("value", "8980"));
 
-        m_driver.findElement(By.xpath("//input[@value='Done']")).click();
+        findElementByXpath("//input[@value='Done']").click();
 
         // add a node
-        m_driver.findElement(By.id("edit_req_anchor_" + REQUISITION_NAME)).click();
-        m_driver.findElement(By.xpath("//input[@value='Add Node']")).click();
-        String nodeForNode = setTreeFieldsAndSave("nodeEditForm", type("nodeLabel", "localNode"));
+        findElementById("edit_req_anchor_" + REQUISITION_NAME).click();
+        findElementByXpath("//input[@value='Add Node']").click();
+        String nodeForNode = setTreeFieldsAndSave("nodeEditForm", type("nodeLabel", NODE_LABEL));
 
         // add the node interface
-        m_driver.findElement(By.xpath("//a[contains(@href, '" + nodeForNode + "') and text() = '[Add Interface]']")).click();
+        findElementByXpath("//a[contains(@href, '" + nodeForNode + "') and text() = '[Add Interface]']").click();
         setTreeFieldsAndSave("nodeEditForm", type("ipAddr", "::1"));
 
         // add the interface service
-        m_driver.findElement(By.xpath("//a[text() = 'Add Service']")).click();
+        findElementByXpath("//a[text() = 'Add Service']").click();
         setTreeFieldsAndSave("nodeEditForm", select("serviceName", "HTTP-8980"));
 
-        m_driver.findElement(By.xpath("//input[@value='Done']")).click();
-        m_driver.findElement(By.xpath("//input[@value='Synchronize']")).click();
+        findElementByXpath("//input[@value='Done']").click();
+        findElementByXpath("//input[@value='Synchronize']").click();
 
         assertTrue(wait.until(new WaitForNodesInDatabase(1)));
         LOG.debug("Found 1 node in the database.");
 
-        m_driver.findElement(By.linkText("Node List")).click();
+        clickMenuItem("Info", "Nodes", "element/nodeList.htm");
 
-        assertNotNull(m_driver.findElement(By.linkText("ICMP")));
-        assertNotNull(m_driver.findElement(By.xpath("//a[contains(@href, 'element/interface.jsp') and text()='" + InetAddressUtils.normalize("::1") + "']")));
+        try {
+            findElementByXpath("//h3//span[text()='Nodes']");
+            findElementByLink(NODE_LABEL).click();
+        } catch (final Exception e) {
+            // if we don't find the node list header, then we probably only have a single node
+        }
+
+        findElementByLink("ICMP");
+        findElementByXpath("//a[contains(@href, 'element/interface.jsp') and text()='" + InetAddressUtils.normalize("::1") + "']");
     }
 
 }

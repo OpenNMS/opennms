@@ -35,7 +35,7 @@ public class NotificationsPageTest extends OpenNMSSeleniumTestCase {
     @Before
     public void setUp() throws Exception {
         super.setUp();
-        m_driver.get(BASE_URL + "opennms/notification/index.jsp");
+        notificationsPage();
     }
 
     @Test
@@ -64,13 +64,13 @@ public class NotificationsPageTest extends OpenNMSSeleniumTestCase {
         findElementByLink("[Remove all]");
         findElementByLink("Sent Time");
         findElementByXpath("//input[@type='button' and @value='Acknowledge Notices']");
-        goBack();
 
+        notificationsPage();
         findElementByLink("All outstanding notices").click();
         findElementByXpath("//p//strong[text()='outstanding']");
         findElementByLink("Respond Time");
-        goBack();
 
+        notificationsPage();
         findElementByLink("All acknowledged notices").click();
         findElementByXpath("//p//strong[text()='acknowledged']");
         findElementByLink("Respond Time");

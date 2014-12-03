@@ -40,10 +40,6 @@ public class ReportsPageTest extends OpenNMSSeleniumTestCase {
         reportsPage();
     }
 
-    protected void reportsPage() {
-        m_driver.get(BASE_URL + "opennms/report/index.jsp");
-    }
-
     @Test
     public void testAllTextIsPresent() throws Exception {
         findElementByXpath("//h3[@class='panel-title' and text()='Reports']");

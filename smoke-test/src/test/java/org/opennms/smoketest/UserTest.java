@@ -67,9 +67,7 @@ public class UserTest extends OpenNMSSeleniumTestCase {
 
     @Test
     public void testUsersAndGroups() throws Exception {
-        frontPage();
-
-        findElementByLink("Admin").click();
+        adminPage();
         findElementByLink("Configure Users, Groups and On-Call Roles").click();
         findElementByLink("Configure Users").click();
         findElementByLink("Add new user").click();
@@ -82,9 +80,7 @@ public class UserTest extends OpenNMSSeleniumTestCase {
         findElementById("saveUserButton").click();
         findElementById("users(" + USER_NAME + ").doDetails");
 
-        frontPage();
-
-        findElementByLink("Admin").click();
+        adminPage();
         findElementByLink("Configure Users, Groups and On-Call Roles").click();
         findElementByLink("Configure Groups").click();
         findElementByLink("Add new group").click();
