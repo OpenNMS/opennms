@@ -79,6 +79,25 @@
             </form>
 
             <form action="element/nodeList.htm" method="get">
+                <p align="right">
+                    <select name="mib2Parm" size="1">
+                        <option>sysDescription</option>
+                        <option>sysObjectId</option> 
+                        <option>sysContact</option>
+                        <option>sysName</option>
+                        <option>sysLocation</option>
+                    </select>
+                    <select name="mib2ParmMatchType" size="1">
+                        <option>contains</option> 
+                        <option>equals</option>
+                    </select>:
+                    <input type="hidden" name="listInterfaces" value="false"/>
+                    <input type="text" name="mib2ParmValue" />
+                    <input type="submit" value="Search"/>
+                </p>
+            </form>
+
+            <form action="element/nodeList.htm" method="get">
 					<p align="right">
 					    <select name="snmpParm" size="1">
                             <option>ifAlias</option> 
@@ -119,7 +138,7 @@
                         <input type="submit" value="Search"/>
                     </p>
             </form>
-                        
+
 			<ul class="plain">
 				<li><a href="element/nodeList.htm">All nodes</a></li>
 				<li><a href="element/nodeList.htm?listInterfaces=true">All nodes and their interfaces</a></li>
