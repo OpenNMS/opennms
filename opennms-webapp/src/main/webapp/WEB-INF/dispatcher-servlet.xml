@@ -584,6 +584,11 @@
                                 <property name="locationMatch" value="ksc"/>
                             </bean>
                             <bean class="org.opennms.web.navigate.LocationBasedNavBarEntry">
+                                <property name="name" value="Database Reports"/>
+                                <property name="url" value="report/database/index.htm"/>
+                                <property name="locationMatch" value="database-reports"/>
+                            </bean>
+                            <bean class="org.opennms.web.navigate.LocationBasedNavBarEntry">
                                 <property name="name" value="Statistics"/>
                                 <property name="url" value="statisticsReports/index.htm"/>
                                 <property name="locationMatch" value="reports"/>
