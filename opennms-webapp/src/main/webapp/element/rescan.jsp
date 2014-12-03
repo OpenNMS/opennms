@@ -93,7 +93,7 @@
     <div class="panel-heading">
       <h3 class="panel-title">Capability Rescan</h3>
     </div>
-    <div class="panel-content">
+    <div class="panel-body">
       <p>Are you sure you want to rescan the <nobr><%=nodeLabel%></nobr>
         <% if( ipAddr==null ) { %>
             node?
@@ -120,7 +120,7 @@
     <div class="panel-heading">
       <h3 class="panel-title">Rescan Node</h3>
     </div>
-    <div class="panel-content">
+    <div class="panel-body">
       <p>
         <em>Rescanning</em> a node tells the provisioning subsystem to re-detect what <em>services</em> appear on the node's interfaces and to re-apply the appropriate set of <em>policies</em>.
         If the node is correctly configured for SNMP, a rescan will also cause the node's SNMP attributes (<em>sysLocation</em>, <em>sysContact</em>, <em>etc.</em>) to be refreshed.

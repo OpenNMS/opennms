@@ -266,7 +266,7 @@
 			<h3 class="panel-title">General (Status: <%=(node_db == null ? "Unknown" : ElementUtil.getNodeStatusString(node_db))%>)</h3>
     </div>
 			<% if( isRouteIP || isBridge ) { %>
-			<div class="panel-content">
+			<div class="panel-body">
 			     <ul class="list-inline">
 		            <% if( isRouteIP ) { %>
 		            <li>
