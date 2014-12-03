@@ -34,7 +34,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring" %>
 
-<jsp:include page="/includes/header.jsp" flush="false">
+<jsp:include page="/includes/bootstrap.jsp" flush="false">
   <jsp:param name="title" value="Remote Poller Details" />
   <jsp:param name="headTitle" value="Remote Poller Details" />
   <jsp:param name="breadcrumb" value="<a href='admin/index.jsp'>Admin</a>" />
@@ -44,21 +44,27 @@
 
 <c:choose>
   <c:when test="${model.errors.errorCount > 0}">
-    <h3><spring:message code="error"/></h3>
-    <div class="boxWrapper">
+    <div class="panel panel-success">
+    <div class="panel-heading">
+    <h3 class="panel-title"><spring:message code="error"/></h3>
+    </div>
+    <div class="panel-body">
       <ul class="error">
         <c:forEach var="err" items="${model.errors.allErrors}">
           <li><spring:message message="${err}"/></li>
         </c:forEach>
       </ul>
     </div>
+    </div>
   </c:when>
   
   <c:otherwise>
     <c:set var="monitor" value="${model.locationMonitors[0]}"/>
-    
-    <h3><spring:message code="distributed.locationMonitorDetails.title"/></h3>
-    <table>
+    <div class="panel panel-success">
+    <div class="panel-heading">
+    <h3 class="panel-title"><spring:message code="distributed.locationMonitorDetails.title"/></h3>
+    </div>
+    <table class="table table-condensed">
       <tr>
         <th><spring:message code="distributed.area"/></th>
         <td>${monitor.area}</td>
@@ -107,9 +113,13 @@
         </td>
       </tr> 
     </table>
-    
-    <h3><spring:message code="distributed.locationMonitorDetails.additionalTitle"/></h3>
-    <table>
+    </div>
+
+    <div class="panel panel-success">
+    <div class="panel-heading">
+    <h3 class="panel-title"><spring:message code="distributed.locationMonitorDetails.additionalTitle"/></h3>
+    </div>
+    <table class="table table-condensed">
       <c:forEach items="${monitor.additionalDetails}" var="detail">
         <tr>
           <th>
@@ -121,6 +131,7 @@
         </tr>
       </c:forEach>
     </table>
+    </div>
     
     <c:if test="${isAdmin}">
       <script type="text/javascript" >
@@ -131,8 +142,11 @@
           }
       </script>
       
-      <h3>Manage Remote Poller</h3>
-      <div class="boxWrapper">
+      <div class="panel panel-success">
+      <div class="panel-heading">
+      <h3 class="panel-title">Manage Remote Poller</h3>
+      </div>
+      <div class="panel-body">
         <form action="admin/distributed/locationMonitorDelete.htm" method="post" name="deleteForm">
           <input type="hidden" name="monitorId" value="${monitor.id}"/>
         </form>
@@ -169,9 +183,10 @@
           polling.
         </p>
       </div>
+      </div>
     </c:if>
   
   </c:otherwise>
 </c:choose>
 
-<jsp:include page="/includes/footer.jsp" flush="false"/>
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="false"/>

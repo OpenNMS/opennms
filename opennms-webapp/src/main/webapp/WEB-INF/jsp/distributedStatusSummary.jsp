@@ -33,7 +33,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 
-<jsp:include page="/includes/header.jsp" flush="false">
+<jsp:include page="/includes/bootstrap.jsp" flush="false">
     <jsp:param name="title" value="Distributed Status Summary" />
     <jsp:param name="headTitle" value="Summary" />
     <jsp:param name="breadcrumb" value="Distributed Status" />
@@ -56,11 +56,13 @@
 
  </jsp:include>
  
- 
-<h3><c:out value="${webTable.title}" /></h3>
 
-<table>
+<div class="panel panel-success">
+<div class="panel-heading">
+<h3 class="panel-title"><c:out value="${webTable.title}" /></h3>
+</div>
 
+<table class="table table-condensed table-bordered severity">
   <tr>
   <c:forEach items="${webTable.columnHeaders}" var="headerCell">
     <th class="<c:out value='${headerCell.styleClass}'/>">
@@ -79,7 +81,7 @@
   <c:forEach items="${webTable.rows}" var="row">
     <tr class="CellStatus">
       <c:forEach items="${row}" var="cell">
-        <td class="<c:out value='${cell.styleClass}'/> divider">
+        <td class="severity-<c:out value='${cell.styleClass}'/> bright divider">
           <c:choose>
             <c:when test="${! empty cell.link}">
                 <a href="<c:out value='${cell.link}'/>"><c:out value="${cell.content}"/></a>
@@ -94,4 +96,6 @@
   </c:forEach>
 </table>
 
-<jsp:include page="/includes/footer.jsp" flush="false"/>
+</div>
+
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="false"/>
