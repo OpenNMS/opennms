@@ -87,11 +87,25 @@
   </tr>
   <tr>
     <th>Java Version:</th>
-    <td><%=System.getProperty( "java.version" )%> <%=System.getProperty( "java.vendor" )%></td>
-  </tr>  
+    <td><%=System.getProperty( "java.version" )%> (<%=System.getProperty( "java.vendor" )%>)</td>
+  </tr>
+  <tr>
+    <th>Java Runtime:</td>
+    <td><%=System.getProperty( "java.runtime.name" )%> (<%=System.getProperty( "java.runtime.version" )%>)</td>
+  </tr>
+  <tr>
+    <th>Java Specification:</th>
+    <td><%=System.getProperty( "java.specification.name" )%> (<%=System.getProperty( "java.specification.vendor" )%>, <%=System.getProperty( "java.specification.version" )%>)</td>
+  </tr>
   <tr>
     <th>Java Virtual Machine:</th>
-    <td><%=System.getProperty( "java.vm.version" )%> <%=System.getProperty( "java.vm.vendor" )%></td>
+    <td><%=System.getProperty( "java.vm.name" )%> (<%=System.getProperty( "java.vm.vendor" )%>, <%=System.getProperty( "java.vm.version" )%>)</td>
+    <%-- java.vm.info doesn't appear to be part of the standard Java system properties--%>
+    <%-- <%=System.getProperty( "java.vm.info" )%> --%>
+  </tr>
+  <tr>
+    <th>Java Virtual Machine Specification:</th>
+    <td><%=System.getProperty( "java.vm.specification.name" )%> (<%=System.getProperty( "java.vm.specification.vendor" )%>, <%=System.getProperty( "java.vm.specification.version" )%>)</td>
   </tr>
   <tr>
     <th>Operating System:</th>
