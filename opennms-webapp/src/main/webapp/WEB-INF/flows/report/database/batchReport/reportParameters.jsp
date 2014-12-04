@@ -118,32 +118,40 @@
                     <%-- // date parameters --%>
                     <c:forEach items="${parameters.dateParms}" var="date" varStatus="dateParmRow">
                         <div class="form-group">
-                            <div class="col-md-3">
-                                <strong>
-                                    <c:out value="${date.displayName}:"/>
-                                </strong>
+                            <div class="col-md-6">
                                 <div class="row">
-                                    <div class="col-md-5">
+                                    <div class="col-md-12">
+                                        <strong>
+                                            <c:out value="${date.displayName}:"/>
+                                        </strong>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
                                         <c:choose>
                                             <c:when test="${ schedule && !date.useAbsoluteDate}">
-                                                <form:select cssClass="form-select" path="dateParms[${dateParmRow.index}].count">
-                                                    <c:forEach var="count" begin="0" end="31">
-                                                        <form:option value="${count}" />
-                                                    </c:forEach>
-                                                </form:select>
-                                                <form:select cssClass="form-select" path="dateParms[${dateParmRow.index}].interval">
-                                                    <form:option value="day">day</form:option>
-                                                    <form:option value="month">month</form:option>
-                                                    <form:option value="year">year</form:option>
-                                                </form:select>
-                                                ago, at
+                                                <div class="pull-left">
+                                                    <form:select cssClass="form-control" path="dateParms[${dateParmRow.index}].count">
+                                                        <c:forEach var="count" begin="0" end="31">
+                                                            <form:option value="${count}" />
+                                                        </c:forEach>
+                                                    </form:select>
+                                                </div>
+                                                <div class="pull-left">
+                                                    <form:select cssClass="form-control" path="dateParms[${dateParmRow.index}].interval">
+                                                        <form:option value="day">day</form:option>
+                                                        <form:option value="month">month</form:option>
+                                                        <form:option value="year">year</form:option>
+                                                    </form:select>
+                                                </div>
+                                                <div class="pull-left">
+                                                    <label style="margin-top: 13%; margin-left:5px; margin-right:5px;"> ago, at </label>
+                                                </div>
                                             </c:when>
                                             <c:otherwise>
                                                 <form:input cssClass="form-control" path="dateParms[${dateParmRow.index}].date" />
                                             </c:otherwise>
                                         </c:choose>
-                                    </div>
-                                    <div class="col-md-7">
                                         <div class="pull-left">
                                             <form:select cssClass="form-control" path="dateParms[${dateParmRow.index}].hours">
                                                 <c:forEach var="hour" begin="0" end="23">
@@ -163,7 +171,6 @@
                                                 </c:forEach>
                                             </form:select>
                                         </div>
-
                                     </div>
                                 </div>
                             </div>
