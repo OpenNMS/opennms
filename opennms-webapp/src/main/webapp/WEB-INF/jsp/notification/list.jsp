@@ -77,10 +77,9 @@
 
 <jsp:include page="/includes/header.jsp" flush="false" >
   <jsp:param name="title" value="Notice List" />
-  <jsp:param name="headTitle" value="Browse" />
-  <jsp:param name="headTitle" value="Notices" />
-  <jsp:param name="breadcrumb" value="<a href='notification/index.jsp' title='Notice System Page'>Notices</a>" />
-  <jsp:param name="breadcrumb" value="List" />
+  <jsp:param name="headTitle" value="Notice List" />
+  <jsp:param name="breadcrumb" value="<a href='notification/index.jsp'>Notifications</a>" />
+  <jsp:param name="breadcrumb" value="Notice List" />
 </jsp:include>
 
 <link rel="stylesheet" href="css/font-awesome-4.0.3/css/font-awesome.min.css">
