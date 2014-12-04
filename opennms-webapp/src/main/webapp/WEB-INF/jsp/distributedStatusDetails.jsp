@@ -59,42 +59,41 @@
   
   <c:otherwise>
     <div class="panel panel-default">
-    <div class="panel-heading">
-      <h3 class="panel-title">${webTable.title}</h3>
-    </div>
-    <table class="table table-condensed table-bordered severity">
-      <tr>
-        <c:forEach items="${webTable.columnHeaders}" var="headerCell">
-          <th class="${headerCell.styleClass}">
-            <c:choose>
-              <c:when test="${! empty headerCell.link}">
-                <a href="${headerCell.link}">${headerCell.content}</a>
-              </c:when>
-              <c:otherwise>
-                ${headerCell.content}
-              </c:otherwise>
-            </c:choose>
-          </th>
-        </c:forEach>
-      </tr>
-      
-      <c:forEach items="${webTable.rows}" var="row">
-        <tr class="severity-${row[0].styleClass}">
-          <c:forEach items="${row}" var="cell">
-            <td class="${cell.styleClass} divider">
+      <div class="panel-heading">
+        <h3 class="panel-title">${webTable.title}</h3>
+      </div>
+      <table class="table table-condensed table-bordered severity">
+        <tr>
+          <c:forEach items="${webTable.columnHeaders}" var="headerCell">
+            <th class="${headerCell.styleClass}">
               <c:choose>
-                <c:when test="${! empty cell.link}">
-                  <a href="${cell.link}">${cell.content}</a>
+                <c:when test="${! empty headerCell.link}">
+                  <a href="${headerCell.link}">${headerCell.content}</a>
                 </c:when>
                 <c:otherwise>
-                  ${cell.content}
+                  ${headerCell.content}
                 </c:otherwise>
               </c:choose>
-            </td>
+            </th>
           </c:forEach>
         </tr>
-      </c:forEach>
-    </table>
+        <c:forEach items="${webTable.rows}" var="row">
+          <tr class="severity-${row[0].styleClass}">
+            <c:forEach items="${row}" var="cell">
+              <td class="${cell.styleClass} divider">
+                <c:choose>
+                  <c:when test="${! empty cell.link}">
+                    <a href="${cell.link}">${cell.content}</a>
+                  </c:when>
+                  <c:otherwise>
+                    ${cell.content}
+                  </c:otherwise>
+                </c:choose>
+              </td>
+            </c:forEach>
+          </tr>
+        </c:forEach>
+      </table>
     </div>
   </c:otherwise>
 </c:choose>
