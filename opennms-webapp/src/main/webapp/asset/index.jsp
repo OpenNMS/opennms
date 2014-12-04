@@ -82,7 +82,7 @@
             <form role="form" class="form-inline text-right" action="asset/nodelist.jsp" method="get">
               <div class="form-group">
                 <label for="input_searchvalue">Assets in category:</label>
-                <select class="form-control" id="input_searchvalue" name="searchvalue" size="1">
+                <select class="form-control" id="input_searchvalue" name="searchvalue">
                   <% for( int i=0; i < Asset.CATEGORIES.length; i++ ) { %>
                     <option><%=Asset.CATEGORIES[i]%></option>
                   <% } %>
