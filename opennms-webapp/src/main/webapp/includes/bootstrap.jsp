@@ -140,7 +140,12 @@
 <%-- The <body> tag is unmatched in this file (its matching tag is in the
      footer), so we hide it in a JSP code fragment so the Eclipse HTML
      validator doesn't complain. --%>
-<%= "<body role=\"document\" class=\"fixed-nav\">" %>
+<%= "<body role=\"document\"" %>
+<%-- Don't add any padding when the visual heading is not being displayed --%>
+<c:if test="${param.quiet != 'true'}">
+  class="fixed-nav"
+</c:if>
+<%= ">" %>
 
 <!-- Bootstrap header -->
 <c:choose>
