@@ -200,7 +200,7 @@
       </table>
     </div>
 
-    <div class="panel panel-primary severity">
+    <div class="panel panel-default severity">
       <div class="panel-heading">
         <h3 class="panel-title">Log&nbsp;Message</h3>
       </div>
@@ -209,7 +209,7 @@
       </div>
     </div>
 
-    <div class="panel panel-primary severity">
+    <div class="panel panel-default severity">
       <div class="panel-heading">
         <h3 class="panel-title">Description</h3>
       </div>
@@ -218,7 +218,7 @@
       </div>
     </div>
 
-    <div class="panel panel-primary severity">
+    <div class="panel panel-default severity">
       <div class="panel-heading">
         <h3 class="panel-title">Operator&nbsp;Instructions</h3>
       </div>
