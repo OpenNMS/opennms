@@ -37,7 +37,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 
-<c:import url="/includes/header.jsp">
+<c:import url="/includes/bootstrap.jsp">
     <c:param name="title" value="Resource Graph Results" />
     <c:param name="headTitle" value="Results" />
     <c:param name="headTitle" value="Resource Graphs" />
@@ -50,6 +50,8 @@
 
 <div id="graph-results">
 
+<div class="row">
+  <div class="col-md-12 text-center">
     <%@ include file="/WEB-INF/jspf/relativetimeform.jspf" %>
 
     <c:set var="showCustom"></c:set>
@@ -57,8 +59,7 @@
         <c:set var="showCustom">style="display: none;"</c:set>
     </c:if>
     <div id="customTimeForm" name="customTimeForm" ${showCustom}>
-
-        <form id="range_form" action="${requestScope.relativeRequestPath}" method="get">
+        <form role="form" class="form-inline top-buffer" id="range_form" action="${requestScope.relativeRequestPath}" method="get">
             <c:forEach var="resultSet" items="${results.graphResultSets}">
                 <input type="hidden" name="resourceId" value="${resultSet.resource.id}"/>
             </c:forEach>
@@ -68,10 +69,10 @@
             <input type="hidden" name="relativetime" value="custom"/>
             <input type="hidden" name="zoom" value="${param.zoom}"/>
 
-            <p>
-                Start Time
-
-                <select name="startMonth" size="1">
+            <div class="row">
+            <div class="form-group">
+               <label>Start Time</label>
+                <select class="form-control" name="startMonth" size="1">
                     <c:forEach var="month" items="${results.monthMap}">
                         <c:choose>
                             <c:when test="${month.key == results.startCalendar.month}">
@@ -85,10 +86,10 @@
                     </c:forEach>
                 </select>
 
-                <input type="text" name="startDate" size="4" maxlength="2" value="${results.startCalendar.date}" />
-                <input type="text" name="startYear" size="6" maxlength="4" value="${results.startCalendar.year}" />
+                <input type="text" class="form-control" name="startDate" size="4" maxlength="2" value="${results.startCalendar.date}" />
+                <input type="text" class="form-control" name="startYear" size="6" maxlength="4" value="${results.startCalendar.year}" />
 
-                <select name="startHour" size="1">
+                <select class="form-control" name="startHour" size="1">
                     <c:forEach var="hour" items="${results.hourMap}">
                         <c:choose>
                             <c:when test="${hour.key == results.startCalendar.hourOfDay}">
@@ -101,12 +102,13 @@
                         <option value="${hour.key}" ${selected}>${hour.value}</option>
                     </c:forEach>
                 </select>          
+              </div> <!-- form-group -->
+              </div> <!-- row -->
 
-                <br/>
-
-                End Time
-
-                <select name="endMonth" size="1">
+              <div class="row">
+              <div class="form-group">
+                <label>End Time</label>
+                <select class="form-control" name="endMonth" size="1">
                     <c:forEach var="month" items="${results.monthMap}">
                         <c:choose>
                             <c:when test="${month.key == results.endCalendar.month}">
@@ -120,10 +122,10 @@
                     </c:forEach>
                 </select>
 
-                <input type="text" name="endDate" size="4" maxlength="2" value="${results.endCalendar.date}" />
-                <input type="text" name="endYear" size="6" maxlength="4" value="${results.endCalendar.year}" />
+                <input type="text" class="form-control" name="endDate" size="4" maxlength="2" value="${results.endCalendar.date}" />
+                <input type="text" class="form-control" name="endYear" size="6" maxlength="4" value="${results.endCalendar.year}" />
 
-                <select name="endHour" size="1">
+                <select class="form-control" name="endHour" size="1">
                     <c:forEach var="hour" items="${results.hourMap}">
                         <c:choose>
                             <c:when test="${hour.key == results.endCalendar.hourOfDay}">
@@ -136,9 +138,9 @@
                         <option value="${hour.key}" ${selected}>${hour.value}</option>
                     </c:forEach>
                 </select>          
-
-            </p>
-            <input type="submit" value="Apply Custom Time Period"/>
+            </div> <!-- form-group -->
+            </div> <!-- row -->
+            <button type="submit" class="btn btn-default">Apply Custom Time Period</button>
         </form>
     </div>
 
@@ -146,11 +148,15 @@
         <strong>From</strong> ${results.start} <br/>
         <strong>To</strong> ${results.end} <br/>
     </p>
+  </div> <!-- column -->
+</div> <!-- row -->
 
     <c:set var="showFootnote1" value="false"/>
 
     <c:forEach var="resultSet" items="${results.graphResultSets}">
-        <h3>
+    <div class="panel panel-default text-center">
+      <div class="panel-heading">
+        <h3 class="panel-title">
             ${resultSet.resource.parent.resourceType.label}:
             <c:choose>
                 <c:when test="${(!empty resultSet.resource.parent.link) && loggedIn}">
@@ -182,7 +188,8 @@
                 </c:choose>
             </c:if>
         </h3>
-
+     </div> <!-- panel-heading -->
+     <div class="panel-body">
         <!-- NRTG Starter script 'window'+resourceId+report -->
         <script type="text/javascript">
             function nrtgPopUp(resourceId, report) {
@@ -272,9 +279,11 @@
                 </p>
             </c:otherwise>
         </c:choose>
-
+    </div> <!-- panel-body -->
+    </div> <!-- panel -->
     </c:forEach>
-</div>
+
+</div> <!-- graph-results -->
 
 <c:url var="relativeTimeReloadUrl" value="${requestScope.relativeRequestPath}">
     <c:forEach var="resultSet" items="${results.graphResultSets}">
@@ -358,4 +367,4 @@
     <jsp:include page="/includes/footnote1.jsp" flush="false" />
 </c:if>
 
-<jsp:include page="/includes/footer.jsp" flush="false" />
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />

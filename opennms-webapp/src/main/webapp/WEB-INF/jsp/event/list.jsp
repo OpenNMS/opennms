@@ -222,15 +222,19 @@
 
             <div>
             <% if( parms.getFilters().size() > 0 || AcknowledgeType.UNACKNOWLEDGED.toNormalizedAcknowledgeType().equals(parms.getAckType()) || AcknowledgeType.ACKNOWLEDGED.toNormalizedAcknowledgeType().equals(parms.getAckType()) ) { %>
-                <p>
-                    Favorites:
+                <div>
+                  <form class="form-inline">
+                    <div class="form-group">
+                    <label for="favorite-select">Favorites:</label>
                     <onms:select
                             defaultText="All Events"
                             elements='${favorites}'
                             selected='${favorite}'
                             handler='${filterFavoriteSelectTagHandler}'
                             onChange='changeFavorite(this)'/>
-                </p>
+                    </div>
+                  </form>
+                </div>
             <% } %>
 
             <jsp:include page="/includes/event-querypanel.jsp" flush="false" />

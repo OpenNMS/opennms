@@ -54,7 +54,7 @@ function Blank_TextField_Validator()
       <label for="msgmatchany">Event Text:&nbsp;</label><input class="form-control" type="text" name="msgmatchany" />
       &nbsp;
       <label for="relativetime">Time:</label>
-        <select class="form-control" name="relativetime" size="1">
+        <select class="form-control" name="relativetime">
           <option value="0" selected>Any</option>
           <option value="1">Last hour</option>
           <option value="2">Last 4 hours</option>

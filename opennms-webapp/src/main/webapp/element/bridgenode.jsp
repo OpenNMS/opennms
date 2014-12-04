@@ -38,10 +38,10 @@
 				org.opennms.core.utils.WebSecurityUtils,
 				java.util.*,
 				java.net.*,
-                org.opennms.core.utils.InetAddressUtils,
-                org.opennms.web.svclayer.ResourceService,
-                org.springframework.web.context.WebApplicationContext,
-                org.springframework.web.context.support.WebApplicationContextUtils
+        org.opennms.core.utils.InetAddressUtils,
+        org.opennms.web.svclayer.ResourceService,
+        org.springframework.web.context.WebApplicationContext,
+        org.springframework.web.context.support.WebApplicationContextUtils
         "
 %>
 
@@ -164,7 +164,6 @@
     <a href="http://<%=httpIp%>">HTTP</a>
   </li>
   <% } %>
-
   <% if (m_resourceService.findNodeChildResources(node_db).size() > 0) { %>
     <li>
       <c:url var="resourceGraphsUrl" value="graph/chooseresource.htm">
@@ -175,7 +174,6 @@
       <a href="${resourceGraphsUrl}">Resource Graphs</a>
     </li>
   <% } %>
-
   <li>
     <a href="element/rescan.jsp?node=<%=nodeId%>">Rescan</a>
   </li>
@@ -204,19 +202,19 @@
 </div> <!-- row -->
 
 <div class="row">
-<div class="col-md-12">
-<jsp:include page="/includes/nodeBridge-box.jsp" flush="false" >
-  <jsp:param name="node" value="<%=nodeId%>" />
-</jsp:include>
-</div> <!-- column -->
+  <div class="col-md-12">
+    <jsp:include page="/includes/nodeBridge-box.jsp" flush="false" >
+      <jsp:param name="node" value="<%=nodeId%>" />
+    </jsp:include>
+  </div> <!-- column -->
 </div> <!-- row -->
 
 <div class="row">
-<div class="col-md-12">
-<jsp:include page="/includes/nodeSTPint-box.jsp" flush="false" >
-  <jsp:param name="node" value="<%=nodeId%>" />
-</jsp:include>
-</div> <!-- column -->
+  <div class="col-md-12">
+    <jsp:include page="/includes/nodeSTPint-box.jsp" flush="false" >
+      <jsp:param name="node" value="<%=nodeId%>" />
+    </jsp:include>
+  </div> <!-- column -->
 </div> <!-- row -->
 
 <jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />

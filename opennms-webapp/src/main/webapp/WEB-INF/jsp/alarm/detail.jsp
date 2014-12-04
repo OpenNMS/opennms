@@ -208,7 +208,7 @@
 </table>
 </div>
 
-<div class="panel panel-primary severity">
+<div class="panel panel-default severity">
   <div class="panel-heading">
     <h3 class="panel-title">Log&nbsp;Message</h3>
   </div>
@@ -217,7 +217,7 @@
   </div>
 </div>
 
-<div class="panel panel-primary severity">
+<div class="panel panel-default severity">
   <div class="panel-heading">
     <h3 class="panel-title">Description</h3>
   </div>
@@ -227,7 +227,7 @@
 </div>
 
 <% if (acks != null && acks.size() > 0) {%>
-<div class="panel panel-primary severity">
+<div class="panel panel-default severity">
   <div class="panel-heading">
     <h3 class="panel-title">Acknowledgements</h3>
   </div>
@@ -250,7 +250,7 @@
 
 <div class="row">
 <div class="col-md-6">
-<div class="panel panel-primary severity">
+<div class="panel panel-default severity">
   <div class="panel-heading">
     <h3 class="panel-title">Sticky&nbsp;Memo</h3>
   </div>
@@ -286,7 +286,7 @@
 </div>
 
 <div class="col-md-6">
-<div class="panel panel-primary severity">
+<div class="panel panel-default severity">
   <div class="panel-heading">
     <h3 class="panel-title">Journal&nbsp;Memo</h3>
   </div>
@@ -324,7 +324,7 @@
 
 </div>
 
-<div class="panel panel-primary severity">
+<div class="panel panel-default severity">
   <div class="panel-heading">
     <h3 class="panel-title">Operator&nbsp;Instructions</h3>
   </div>
