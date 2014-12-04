@@ -35,7 +35,7 @@
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 
-<jsp:include page="/includes/header.jsp" flush="false" >
+<jsp:include page="/includes/bootstrap.jsp" flush="false" >
   <jsp:param name="title" value="Database Reports" />
   <jsp:param name="headTitle" value="Database Reports" />
   <jsp:param name="breadcrumb" value="<a href='report/index.jsp'>Reports</a>" />
@@ -67,4 +67,4 @@
 
 
 
-<jsp:include page="/includes/footer.jsp" flush="false" />
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />
