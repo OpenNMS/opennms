@@ -345,7 +345,7 @@
             <% } %>
           </td>
           <td class="divider">
-            <nobr><fmt:formatDate value="${event.time}" type="date" dateStyle="short"/>&nbsp;<fmt:formatDate value="${event.time}" type="time" pattern="HH:mm:ss"/></nobr>
+            <nobr><fmt:formatDate value="${event.time}" type="BOTH" /></nobr>
             <nobr>
               <a href="<%=this.makeLink(callback, parms, new AfterDateFilter(events[i].getTime()), true, favorite)%>"  class="filterLink" title="Only show events occurring after this one">${addAfterFilter}</a>
               <a href="<%=this.makeLink(callback, parms, new BeforeDateFilter(events[i].getTime()), true, favorite)%>" class="filterLink" title="Only show events occurring before this one">${addBeforeFilter}</a>
