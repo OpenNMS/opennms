@@ -35,10 +35,10 @@
 %>
 
 <jsp:include page="/includes/header.jsp" flush="false" >
-  <jsp:param name="title" value="Notification" />
-  <jsp:param name="headTitle" value="Notification" />
-  <jsp:param name="location" value="notification" />
-  <jsp:param name="breadcrumb" value="Notification" />
+  <jsp:param name="title" value="Notifications" />
+  <jsp:param name="headTitle" value="Notifications" />
+  <jsp:param name="location" value="notifications" />
+  <jsp:param name="breadcrumb" value="Notifications" />
 </jsp:include>
 
   <div class="TwoColLeft">
@@ -52,7 +52,7 @@
         <form method="get" action="notification/detail.jsp" >
           <p align="right">Notice:
           <input type="text" name="notice" />
-          <input type="submit" value="Get details" /></p>       
+          <input type="submit" value="Get details" /></p>
         </form>
         <ul class="plain">
           <li><a href="notification/browse?acktype=unack&filter=<%= java.net.URLEncoder.encode("user="+request.getRemoteUser()) %>">Your outstanding notices</a></li>
