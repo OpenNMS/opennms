@@ -40,16 +40,16 @@
 </jsp:include>
 
 <div class="panel panel-default">
-<div class="panel-heading">
-<h3 class="panel-title"><spring:message code="error"/></h3>
-</div>
-<div class="panel-body">
-  <ul class="error">
-    <c:forEach var="err" items="${errors.allErrors}">
-      <li><spring:message message="${err}"/></li>
-    </c:forEach>
-  </ul>
-</div>
+  <div class="panel-heading">
+    <h3 class="panel-title"><spring:message code="error"/></h3>
+  </div>
+  <div class="panel-body">
+    <ul class="error">
+      <c:forEach var="err" items="${errors.allErrors}">
+        <li><spring:message message="${err}"/></li>
+      </c:forEach>
+    </ul>
+  </div>
 </div>
 
 <jsp:include page="/includes/bootstrap-footer.jsp" flush="false"/>
