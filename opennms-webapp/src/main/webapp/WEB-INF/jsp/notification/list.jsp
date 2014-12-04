@@ -179,12 +179,12 @@
   </jsp:include>
 <% } %>
 
-<% if( parms.filters.size() > 0 ) { %>
+<% if( parms.filters != null && parms.filters.size() > 0 ) { %>
   <% int length = parms.filters.size(); %>
   <p>
     Applied filters:
       <% for( int i = 0; i < length; i++ ) { %>
-		<span class="filter"><% Filter filter = (Filter)parms.filters.get(i); %>
+		<span class="filter"><% Filter filter = parms.filters.get(i); %>
 				<%=WebSecurityUtils.sanitizeString(filter.getTextDescription())%> <a href="<%=this.makeLink( parms, filter, false)%>" title="Remove filter">[-]</a></span> &nbsp; 
       <% } %>
     &mdash; <a href="<%=this.makeLink( parms, new ArrayList<Filter>())%>" title="Remove all filters">[Remove all]</a>
@@ -210,13 +210,16 @@
         </tr>
       </thead>
 
-      <% for( int i=0; i < notices.length; i++ ) { 
+      <% for (int i = 0; i < notices.length; i++) { 
     	final Notification notification = notices[i];
     	if (notification == null) continue;
-        Event event = events.get(notification.getEventId());
+        Event event = null;
         String eventSeverity = "Unknown";
-        if (event != null) {
-          eventSeverity = event.getSeverity().getLabel();
+        if (notification.getEventId() > 0) {
+            event = events.get(notification.getEventId());
+            if (event != null) {
+              eventSeverity = event.getSeverity().getLabel();
+            }
         }
         %>
         <tr class="<%=eventSeverity%>">
@@ -237,7 +240,7 @@
           <% if (responder != null) { %>
             <% Filter responderFilter = new ResponderFilter(responder); %>      
               <%= responder %>
-              <% if( !parms.filters.contains( responderFilter )) { %>
+              <% if( parms.filters != null && !parms.filters.contains( responderFilter )) { %>
                 <a href="<%=this.makeLink( parms, responderFilter, true)%>" class="filterLink" title="Show only notices with this responder">${addPositiveFilter}</a>
               <% } %>
             <% } %>
@@ -248,11 +251,11 @@
             <% } %>
           </td>
           <td class="divider">
-            <% if(notification.getNodeId() != 0 ) { %>
+            <% if(notification.getNodeId() > 0 ) { %>
               <% Filter nodeFilter = new NodeFilter(notification.getNodeId()); %>
               <% String[] labels = nodeLabels.get(notification.getNodeId()); %>
               <a href="element/node.jsp?node=<%=notification.getNodeId()%>" title="<%=labels[1]%>"><%=labels[0]%></a>
-              <% if( !parms.filters.contains(nodeFilter) ) { %>
+              <% if( parms.filters != null && !parms.filters.contains(nodeFilter) ) { %>
 
                 <a href="<%=this.makeLink( parms, nodeFilter, true)%>" class="filterLink" title="Show only notices on this node">${addPositiveFilter}</a>
                 <a href="<%=this.makeLink( parms, new NegativeNodeFilter(notification.getNodeId(), getServletContext()), true)%>" class="filterLink" title="Do not show events for this node">${addNegativeFilter}</a>
@@ -271,7 +274,7 @@
               <% } else { %>
                  <%=notification.getInterfaceId()%>
               <% } %>
-              <% if( !parms.filters.contains(intfFilter) ) { %>
+              <% if( parms.filters != null && !parms.filters.contains(intfFilter) ) { %>
                 <a href="<%=this.makeLink( parms, intfFilter, true)%>" class="filterLink" title="Show only notices on this IP address">${addPositiveFilter}</a>
               <% } %>
             <% } %>
@@ -289,7 +292,7 @@
               <% } else { %>
                 <c:out value="<%=notification.getServiceName()%>"/>
               <% } %>
-              <% if( !parms.filters.contains( serviceFilter )) { %>
+              <% if( parms.filters != null && !parms.filters.contains( serviceFilter )) { %>
                 <a href="<%=this.makeLink( parms, serviceFilter, true)%>" class="filterLink" title="Show only notices with this service type">${addPositiveFilter}</a>
               <% } %>
             <% } %>
@@ -409,7 +412,10 @@
 
 
     public String makeLink( NoticeQueryParms parms, Filter filter, boolean add ) {
-      ArrayList<Filter> newList = new ArrayList<Filter>( parms.filters );
+      List<Filter> newList = new ArrayList<Filter>();
+      if (parms.filters != null) {
+          newList.addAll(parms.filters);
+      }
       if( add ) {
         newList.add( filter );
       }
