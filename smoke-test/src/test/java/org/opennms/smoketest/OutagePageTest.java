@@ -41,7 +41,7 @@ public class OutagePageTest extends OpenNMSSeleniumTestCase {
     @Before
     public void setUp() throws Exception {
         super.setUp();
-        m_driver.get(BASE_URL + "opennms/outage/index.jsp");
+        outagePage();
     }
 
     @Test
@@ -57,15 +57,15 @@ public class OutagePageTest extends OpenNMSSeleniumTestCase {
         Select select = new Select(findElementByName("outage_search_constraints_box_outtype_form").findElement(By.name("outtype")));
         assertEquals("Current", select.getFirstSelectedOption().getText());
         findElementByLink("Interface");
-        goBack();
 
+        outagePage();
         findElementByLink("All outages").click();
         select = new Select(findElementByName("outage_search_constraints_box_outtype_form").findElement(By.name("outtype")));
         assertEquals("Both Current & Resolved", select.getFirstSelectedOption().getText());
         findElementByLink("Interface");
-        goBack();
 
-        findElementByName("outageIdForm").findElement(By.xpath("//input[@type='submit']")).click();
+        outagePage();
+        findElementByName("outageIdForm").findElement(By.xpath("//button[@type='submit']")).click();
         final Alert alert = wait.until(ExpectedConditions.alertIsPresent());
         assertNotNull(alert);
         assertEquals("Please enter a valid outage ID.", alert.getText());

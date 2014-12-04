@@ -77,10 +77,10 @@
 %>
 
 <jsp:include page="/includes/header.jsp" flush="false" >
-  <jsp:param name="title" value="Notification Detail" />
-  <jsp:param name="headTitle" value="Notification Detail" />
-  <jsp:param name="breadcrumb" value="<a href='notification/index.jsp'>Notification</a>" />
-  <jsp:param name="breadcrumb" value="Detail" />
+  <jsp:param name="title" value="Notice Detail" />
+  <jsp:param name="headTitle" value="Notice Detail" />
+  <jsp:param name="breadcrumb" value="<a href='notification/index.jsp'>Notifications</a>" />
+  <jsp:param name="breadcrumb" value="Notice Detail" />
 </jsp:include>
 
 <h3>Notice #<%=notice.getId()%> 

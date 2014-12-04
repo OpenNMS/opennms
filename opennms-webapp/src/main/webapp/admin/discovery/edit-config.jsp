@@ -146,7 +146,7 @@ if (currConfig == null) {
 
       <input type="submit" value="Save and Restart Discovery"/>
 
-<h3>General settings</h3>
+<h3>General Settings</h3>
 			    
 			    <table class="standard" width="100%">
 				 <tr align="left">

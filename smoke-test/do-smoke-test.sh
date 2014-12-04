@@ -78,8 +78,8 @@ reset_database() {
 	banner "Resetting OpenNMS Database"
 
 	# easy way to make sure no one is holding on to any pg sockets
-	do_log "/etc/init.d/postgresql restart"
-	/etc/init.d/postgresql restart
+	do_log "/sbin/service postgresql restart"
+	/sbin/service postgresql restart
 
 	sleep 5
 

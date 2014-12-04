@@ -54,7 +54,7 @@
             <div class="row">
                 <div class="col-md-12">
                     <div class="pull-right">
-                        <form class="form-inline" role="form" action="graph/index.jsp" method="get">
+                        <form class="form-inline" role="form" name="resourceGraphs" action="graph/index.jsp" method="get">
                             <div class="form-group">
                                 <label for="resourceName" class="sr-only" >Name contains</label>
                                 <p class="form-control-static">Name Contains</p>
@@ -67,7 +67,7 @@
                             </div>
                         </form>
 
-                        <form class="form-inline" action="KSC/index.htm" method="get">
+                        <form class="form-inline" name="kscReports" action="KSC/index.htm" method="get">
                             <div class="form-group">
                                 <p class="form-control-static">Name Contains</p>
                             </div>

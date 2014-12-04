@@ -76,7 +76,7 @@ public class SelectTag<T> extends SimpleTagSupport {
         }
     }
 
-    private static final String TEMPLATE = "<select {ONCHANGE}>\n{OPTIONS}\n</select>";
+    private static final String TEMPLATE = "<select id=\"favorite-select\" class=\"form-control\" {ONCHANGE}>\n{OPTIONS}\n</select>";
     private static final String OPTION_TEMPLATE = "<option value='{VALUE}' {SELECTED}>{DESCRIPTION}</option>\n";
 
 

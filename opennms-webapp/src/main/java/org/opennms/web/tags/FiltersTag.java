@@ -52,7 +52,7 @@ public class FiltersTag extends TagSupport {
 
     private static final String TEMPLATE = "{LEADING}{FILTERS}";
 
-    private static final String FILTER_TEMPLATE = "&nbsp;<span class=\"label label-success\">{FILTER_DESCRIPTION}</span> {REMOVE_FILTER_LINK} ";
+    private static final String FILTER_TEMPLATE = "<span class=\"label label-default\">{FILTER_DESCRIPTION}</span> {REMOVE_FILTER_LINK} ";
 
     private static final String REMOVE_FILTER_TEMPLATE = "<a href=\"{REMOVE_LINK}\" title=\"{REMOVE_LINK_TITLE}\"><i class=\"fa fa-minus-square-o\"></i></a>";
 
@@ -180,7 +180,7 @@ public class FiltersTag extends TagSupport {
     private String getLeading() {
         StringBuffer leadingString = new StringBuffer();
         if (favorite == null) {
-            leadingString.append("Search constraints: ");
+            leadingString.append("<strong>Search constraints:</strong> ");
         }
         if (isShowAcknowledgeFilter()) {
             NormalizedQueryParameters params = new NormalizedQueryParameters(parameters);

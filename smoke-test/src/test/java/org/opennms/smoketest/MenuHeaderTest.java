@@ -28,73 +28,102 @@
 
 package org.opennms.smoketest;
 
-import java.util.concurrent.TimeUnit;
-
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
-import org.opennms.smoketest.expectations.ExpectationBuilder;
+import org.openqa.selenium.Alert;
+import org.openqa.selenium.By;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class MenuHeaderTest extends OpenNMSSeleniumTestCase {
     @Test
     public void testMenuEntries() throws Exception {
-        new ExpectationBuilder("link=Node List").withText("/ Node List").or().withText("Node Interfaces").check(m_driver);
-        new ExpectationBuilder("link=Search").withText("Search for Nodes").check(m_driver);
-        new ExpectationBuilder("link=Outages").withText("Outage Menu").check(m_driver);
-        new ExpectationBuilder("link=Path Outages")
-            .withText("All Path Outages").and().withText("Critical Path Node").check(m_driver);
-        // Dashboards below
-        new ExpectationBuilder("link=Events").withText("Event Queries").check(m_driver);
-        new ExpectationBuilder("link=Alarms").withText("Alarm Queries").check(m_driver);
-        new ExpectationBuilder("link=Notifications").withText("Notification queries").check(m_driver);
-        new ExpectationBuilder("link=Assets").withText("Search Asset Information").check(m_driver);
-        new ExpectationBuilder("link=Reports")
-            .withText("Resource Graphs").and().withText("Database Reports").check(m_driver);
-        new ExpectationBuilder("link=Charts").withText("/ Charts").check(m_driver);
-        new ExpectationBuilder("link=Surveillance")
-            .waitFor(2, TimeUnit.SECONDS)
-            .withText("Finding status for nodes in").or().withText("Surveillance View:").check(m_driver);
-        new ExpectationBuilder("link=Distributed Status")
-            .withText("Distributed Status Summary").or()
-            .withText("No applications have been defined for this system").check(m_driver);
-        // Maps below
+        clickMenuItem("Search", null, "element/index.jsp");
+        findElementByXpath("//h3[text()='Search for Nodes']");
 
-        findElementByLink("Add Node").click();
+        clickMenuItem("Info", "Events", "event/index");
+        findElementByXpath("//h3[text()='Event Queries']");
+
+        clickMenuItem("Info", "Alarms", "alarm/index.htm");
+        findElementByXpath("//h3[text()='Alarm Queries']");
+
+        clickMenuItem("Info", "Notifications", "notification/index.jsp");
+        findElementByXpath("//h3[text()='Notification queries']");
+
+        clickMenuItem("Info", "Assets", "asset/index.jsp");
+        findElementByXpath("//h3[text()='Search Asset Information']");
+
+        clickMenuItem("Info", "Nodes", "element/nodeList.htm");
+        findElementByXpath("//h3//span[text()='Nodes']");
+
+        clickMenuItem("Status", "Outages", "outage/index.jsp");
+        findElementByXpath("//h3[text()='Outage Menu']");
+
+        clickMenuItem("Status", "Path Outages", "pathOutage/index.jsp");
+        findElementByXpath("//h3[text()='All Path Outages']");
+
+        clickMenuItem("Status", "Distributed Status", "distributedStatusSummary.htm");
+        findElementByXpath("//h3[contains(text(), 'Distributed Status Summary')]");
+
+        clickMenuItem("Status", "Surveillance", "surveillanceView.htm?viewName=default");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//h3[text()='Surveillance View: default']")));
+
+        clickMenuItem("Reports", "Charts", "charts/index.jsp");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("include-charts")));
+
+        clickMenuItem("Reports", "Resource Graphs", "graph/index.jsp");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//h3[contains(text(), 'Standard Resource')]")));
+
+        clickMenuItem("Reports", "KSC Reports", "KSC/index.htm");
+        findElementByXpath("//h3[text()='Customized Reports']");
+
+        clickMenuItem("Reports", "Statistics", "statisticsReports/index.htm");
+        findElementByXpath("//span[text()='Statistics Report List']");
+
+        clickMenuItem("Dashboards", "Dashboard", "dashboard.jsp");
+        findElementByXpath("//div[text()='Surveillance View: default']");
+
+        clickMenuItem("Dashboards", "Ops Board", "vaadin-wallboard");
+        findElementByXpath("//select[@class='v-select-select']");
+
+        frontPage();
+        clickMenuItem("Maps", "Distributed", "RemotePollerMap/index.jsp");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("gwt-uid-1")));
+
+        frontPage();
+        clickMenuItem("Maps", "Topology", "topology");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[contains(text(), 'Last update time')]")));
+
+        frontPage();
+        clickMenuItem("Maps", "Geographical", "node-maps");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[text()='Show Severity >=']")));
+
+        frontPage();
+        clickMenuItem("Maps", "SVG", "map/index.jsp");
+        findElementById("opennmsSVGMaps");
+        try {
+            final Alert alert = m_driver.switchTo().alert();
+            alert.dismiss();
+        } catch (final Exception e) {
+        }
+
+        frontPage();
+        clickMenuItem("name=nav-admin-top", "Configure OpenNMS", BASE_URL + "opennms/admin/index.jsp");
+        findElementByXpath("//h3[text()='OpenNMS System']");
+        findElementByXpath("//h3[text()='Operations']");
+
+        frontPage();
+        clickMenuItem("name=nav-admin-top", "Quick-Add Node", BASE_URL + "opennms/admin/node/add.htm");
         findElementByXpath("//h3[text()='Basic Attributes (required)']");
 
-        findElementByLink("Admin").click();
-        findElementByXpath("//h3[text()='Node Provisioning']");
-
-        findElementByLink("Support").click();
+        frontPage();
+        clickMenuItem("name=nav-admin-top", "Help/Support", BASE_URL + "opennms/support/index.htm");
         findElementByXpath("//h3[text()='Commercial Support']");
 
-        // Dashboard Menu(s)
-        final ExpectationBuilder dashboardsLink = new ExpectationBuilder("//a[@href='dashboards.htm']");
-        dashboardsLink.check(m_driver);
-        new ExpectationBuilder("link=Dashboard")
-            .waitFor(2, TimeUnit.SECONDS).withText("Surveillance View: default").check(m_driver);
-        // back to dashboard to make it happy
-        dashboardsLink.check(m_driver);
-        new ExpectationBuilder("link=Ops Board")
-            .waitFor(2, TimeUnit.SECONDS).withText("Ops Panel").check(m_driver);
-        ExpectationBuilder.frontPage().check(m_driver);
-
-        // Map Menu(s)
-        final ExpectationBuilder mapLink = new ExpectationBuilder("//a[@href='maps.htm']");
-        mapLink.check(m_driver);
-        new ExpectationBuilder("link=Distributed")
-            .waitFor(2, TimeUnit.SECONDS).withText("Last update:").check(m_driver);
-        ExpectationBuilder.frontPage().check(m_driver);
-        mapLink.check(m_driver);
-        new ExpectationBuilder("link=Topology")
-            .waitFor(10, TimeUnit.SECONDS).withText("Select All").check(m_driver);
-        mapLink.check(m_driver);
-        new ExpectationBuilder("link=Geographical")
-            .waitFor(5, TimeUnit.SECONDS).withText("Show Severity").check(m_driver);
-        mapLink.check(m_driver);
-        new ExpectationBuilder("link=SVG")
-            .waitFor(2, TimeUnit.SECONDS).withText("Network Topology Maps").check(m_driver);
+        frontPage();
+        clickMenuItem("name=nav-admin-top", "Log Out", BASE_URL + "opennms/j_spring_security_logout");
+        findElementById("input_j_username");
     }
 
 }

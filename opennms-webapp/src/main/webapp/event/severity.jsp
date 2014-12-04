@@ -29,45 +29,45 @@
 
 --%>
 
-<jsp:include page="/includes/header.jsp" flush="false" >
+<jsp:include page="/includes/bootstrap.jsp" flush="false" >
   <jsp:param name="title" value="Event Severity Legend" />
   <jsp:param name="headTitle" value="Severity Legend" />
   <jsp:param name="headTitle" value="Events" />
   <jsp:param name="quiet" value="true" />
 </jsp:include>
 
-
-<table>
-  <tr class="Critical">
-    <td class="bright divider"><b>Critical</b></td>
-    <td class="divider">This event means numerous devices on the network are affected by the event. Everyone who can should stop what they are doing and focus on fixing the problem.</td>
+<table class="table table-condensed severity">
+  <tr class="severity-critical">
+    <td class="bright"><strong>Critical</strong></td>
+    <td>This event means numerous devices on the network are affected by the event. Everyone who can should stop what they are doing and focus on fixing the problem.</td>
   </tr>
-  <tr class="Major">
-    <td class="bright divider"><b>Major</b></td>
-    <td class="divider">A device is completely down or in danger of going down. Attention needs to be paid to this problem immediately.</td>
+  <tr class="severity-major">
+    <td class="bright"><strong>Major</strong></td>
+    <td>A device is completely down or in danger of going down. Attention needs to be paid to this problem immediately.</td>
   </tr>
-  <tr class="Minor">
-    <td class="bright divider"><b>Minor</b></td>
-    <td class="divider">A part of a device (a service, and interface, a power supply, etc.) has stopped functioning. The device needs attention.</td>
+  <tr class="severity-minor">
+    <td class="bright"><strong>Minor</strong></td>
+    <td>A part of a device (a service, and interface, a power supply, etc.) has stopped functioning. The device needs attention.</td>
   </tr>
-  <tr class="Warning">
-    <td class="bright divider"><b>Warning</b></td>
-    <td class="divider">An event has occurred that may require action. This severity can also be used to indicate a condition that should be noted (logged) but does not require direct action.</td>
+  <tr class="severity-warning">
+    <td class="bright"><strong>Warning</strong></td>
+    <td>An event has occurred that may require action. This severity can also be used to indicate a condition that should be noted (logged) but does not require direct action.</td>
   </tr>
-  <tr class="Indeterminate">
-    <td class="bright divider"><b>Indeterminate</b></td>
-    <td class="divider">No Severity could be associated with this event.</td>
+  <tr class="severity-indeterminate">
+    <td class="bright"><strong>Indeterminate</strong></td>
+    <td>No Severity could be associated with this event.</td>
   </tr>
-  <tr class="Normal">
-    <td class="bright divider"><b>Normal</b></td>
-    <td class="divider">Informational message. No action required.</td>
+  <tr class="severity-normal">
+    <td class="bright"><strong>Normal</strong></td>
+    <td>Informational message. No action required.</td>
   </tr>
-  <tr class="Cleared">
-    <td class="bright divider"><b>Cleared</b></td><td class="divider">This event indicates that a prior error condition has been corrected and service is restored</td>
+  <tr class="severity-cleared">
+    <td class="bright"><strong>Cleared</strong></td>
+    <td>This event indicates that a prior error condition has been corrected and service is restored</td>
   </tr>
 </table>
 
-<jsp:include page="/includes/footer.jsp" flush="false" >
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="false" >
   <jsp:param name="quiet" value="true" />
 </jsp:include>
 
