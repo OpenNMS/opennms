@@ -57,10 +57,12 @@
       </div>
       <div class="panel-body">
         <%--<jsp:include page="/includes/event-querypanel.jsp" flush="false" />--%>
-        <form action="event/detail.jsp" method="get">
-            <p align="right">Event ID:
-                <input type="text" name="id" />
-                <input type="submit" value="Get details"/></p>
+        <form action="event/detail.jsp" method="get" role="form" class="form-inline pull-right">
+          <div class="form-group">
+            <label for="byeventid_id">Event ID:</label>
+            <input type="text" class="form-control" name="id" id="byeventid_id"/>
+            <button type="submit" class="btn btn-default">Get details</button>
+          </div>                
         </form>
 
         <ul class="list-unstyled">

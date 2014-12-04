@@ -62,10 +62,12 @@
       	<h3 class="panel-title">Alarm Queries</h3>
       </div>
       <div class="panel-body">
-        <form action="alarm/detail.htm" method="get">
-          <p align="right">Alarm ID:          
-            <input type="TEXT" NAME="id" />
-            <input type="submit" value="Get details"/></p>                
+        <form action="alarm/detail.htm" method="get" role="form" class="form-inline pull-right">
+          <div class="form-group">
+            <label for="byalarmid_id">Alarm ID:</label>
+            <input type="text" class="form-control" name="id" id="byalarmid_id"/>
+            <button type="submit" class="btn btn-default">Get details</button>
+          </div>                
         </form>
         <ul class="list-unstyled">
           <li><a href="alarm/list.htm" title="Summary view of all outstanding alarms">All alarms (summary)</a></li>
