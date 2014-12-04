@@ -34,23 +34,23 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 
 <jsp:include page="/includes/bootstrap.jsp" flush="false">
-	<jsp:param name="title" value="Distributed Status Summary" />
-	<jsp:param name="headTitle" value="Summary" />
-	<jsp:param name="breadcrumb" value="Distributed Status" />
+  <jsp:param name="title" value="Distributed Status Summary" />
+  <jsp:param name="headTitle" value="Summary" />
+  <jsp:param name="breadcrumb" value="Distributed Status" />
 </jsp:include>
 
 <div class="panel panel-default">
-<div class="panel-heading">
-<h3 class="panel-title">Distributed Status Summary Error: ${error.shortDescr} </h3>
-</div>
-<div class="panel-body">
-<p>
-${error.longDescr}
-</p>
-<p>
-Click <a href="admin/applications.htm">here</a> to see defined applications.
-</p>
-</div>
+  <div class="panel-heading">
+    <h3 class="panel-title">Distributed Status Summary Error: ${error.shortDescr} </h3>
+  </div>
+  <div class="panel-body">
+    <p>
+      ${error.longDescr}
+    </p>
+    <p>
+      Click <a href="admin/applications.htm">here</a> to see defined applications.
+    </p>
+  </div>
 </div>
 
 <jsp:include page="/includes/bootstrap-footer.jsp" flush="false"/>
