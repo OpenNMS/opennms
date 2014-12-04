@@ -38,7 +38,7 @@
   <jsp:forward page="/element/node.jsp?node=${model.nodes[0].node.id}"/>
 </c:if>
 
-<jsp:include page="/includes/header.jsp" flush="false" >
+<jsp:include page="/includes/bootstrap.jsp" flush="false" >
   <jsp:param name="title" value="Node List" />
   <jsp:param name="headTitle" value="Node List" />
   <jsp:param name="location" value="nodelist" />
@@ -61,16 +61,19 @@
     }
 </script>
 
+<div class="panel panel-default">
+  <div class="panel-heading">
 <c:choose>
   <c:when test="${command.listInterfaces}">
-    <h3>Nodes and their interfaces</h3>
+    <h3 class="panel-title">Nodes and their interfaces</h3>
   </c:when>
   
   <c:otherwise>
-    <h3><span>Nodes</span><span style="padding-left: 32px;"><a href="javascript:toggleClassDisplay('NLdbid', '', 'inline');"><img src="images/nodelist/dbid-16.png" title="Toggle database IDs" width="16" height="16"/></a>&nbsp;<a href="javascript:toggleClassDisplay('NLfs', '', 'inline');"><img src="images/nodelist/foreignsource-16.png" title="Toggle requisition names" width="16" height="16"/></a>&nbsp;<a href="javascript:toggleClassDisplay('NLfid', '', 'inline');"><img src="images/nodelist/foreignid-16.png" title="Toggle foreign-IDs" width="16" height="16"/></a></span></h3>
+    <h3 class="panel-title"><span>Nodes</span><span style="padding-left: 32px;"><a href="javascript:toggleClassDisplay('NLdbid', '', 'inline');"><img src="images/nodelist/dbid-16.png" title="Toggle database IDs" width="16" height="16"/></a>&nbsp;<a href="javascript:toggleClassDisplay('NLfs', '', 'inline');"><img src="images/nodelist/foreignsource-16.png" title="Toggle requisition names" width="16" height="16"/></a>&nbsp;<a href="javascript:toggleClassDisplay('NLfid', '', 'inline');"><img src="images/nodelist/foreignid-16.png" title="Toggle foreign-IDs" width="16" height="16"/></a></span></h3>
   </c:otherwise>
 </c:choose>
-<div class="boxWrapper">
+  </div> <!-- panel-heading -->
+  <div class="panel-body">
   <c:choose>
     <c:when test="${model.nodeCount == 0}">
       <p>
@@ -79,18 +82,20 @@
     </c:when>
 
     <c:otherwise>
-      <div class="TwoColLeft">
-        <element:nodelist nodes="${model.nodesLeft}" snmpParm="${command.snmpParm}" isMaclikeSearch="${command.maclike != null}"/>
-             </div>
-        
-      <div class="TwoColRight">
-        <element:nodelist nodes="${model.nodesRight}" snmpParm="${command.snmpParm}" isMaclikeSearch="${command.maclike != null}"/>
-      </div>
+      <div class="row">
+        <div class="col-md-6">
+          <element:nodelist nodes="${model.nodesLeft}" snmpParm="${command.snmpParm}" isMaclikeSearch="${command.maclike != null}"/>
+               </div>
 
-      <div class="spacer"><!-- --></div>
+        <div class="col-md-6">
+          <element:nodelist nodes="${model.nodesRight}" snmpParm="${command.snmpParm}" isMaclikeSearch="${command.maclike != null}"/>
+        </div>
+      </div>
     </c:otherwise>
   </c:choose>
-</div>
+  </div> <!-- panel-body -->
+</div> <!-- panel -->
+
 <p>
   <c:choose>
     <c:when test="${model.nodeCount == 1}">
@@ -183,4 +188,4 @@
   </c:choose>
 </p>
 
-<jsp:include page="/includes/footer.jsp" flush="false"/>
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="false"/>

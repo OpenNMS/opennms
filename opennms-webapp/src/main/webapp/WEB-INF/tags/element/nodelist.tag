@@ -4,7 +4,7 @@
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
-<ul class="plain">
+<ul class="list-unstyled">
   <c:forEach var="nodeModel" items="${nodes}">
     <c:url var="nodeLink" value="element/node.jsp">
       <c:param name="node" value="${nodeModel.node.id}"/>
