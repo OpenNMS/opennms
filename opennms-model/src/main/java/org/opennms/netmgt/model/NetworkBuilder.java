@@ -28,12 +28,14 @@
 
 package org.opennms.netmgt.model;
 
+import static org.opennms.core.utils.InetAddressUtils.addr;
+
+import java.net.InetAddress;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.model.OnmsArpInterface.StatusType;
 import org.opennms.netmgt.model.OnmsNode.NodeLabelSource;
 import org.opennms.netmgt.model.OnmsNode.NodeType;
@@ -162,14 +164,12 @@ public class NetworkBuilder {
 
     }
 
-    /**
-     * <p>addInterface</p>
-     *
-     * @param ipAddr a {@link java.lang.String} object.
-     * @return a {@link org.opennms.netmgt.model.NetworkBuilder.InterfaceBuilder} object.
-     */
     public InterfaceBuilder addInterface(final String ipAddr) {
-        m_currentIf = new OnmsIpInterface(InetAddressUtils.addr(ipAddr), m_currentNode);
+        return addInterface(addr(ipAddr));
+    }
+
+    public InterfaceBuilder addInterface(final InetAddress ipAddr) {
+        m_currentIf = new OnmsIpInterface(ipAddr, m_currentNode);
         return new InterfaceBuilder(m_currentIf);
     }
 
@@ -260,7 +260,7 @@ public class NetworkBuilder {
      * @return a {@link org.opennms.netmgt.model.NetworkBuilder.InterfaceBuilder} object.
      */
     public InterfaceBuilder addInterface(final String ipAddr, final OnmsSnmpInterface snmpInterface) {
-        m_currentIf = new OnmsIpInterface(InetAddressUtils.addr(ipAddr), m_currentNode);
+        m_currentIf = new OnmsIpInterface(addr(ipAddr), m_currentNode);
         m_currentIf.setSnmpInterface(snmpInterface);
         return new InterfaceBuilder(m_currentIf);
     }

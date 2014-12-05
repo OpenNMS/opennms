@@ -175,6 +175,8 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
     @Autowired
     private PlatformTransactionManager m_transactionManager;
 
+    private HostnameResolver m_hostnameResolver = new DefaultHostnameResolver();
+
     private final ThreadLocal<Map<String, OnmsServiceType>> m_typeCache = new ThreadLocal<Map<String, OnmsServiceType>>();
     private final ThreadLocal<Map<String, OnmsCategory>> m_categoryCache = new ThreadLocal<Map<String, OnmsCategory>>();
 
@@ -225,12 +227,37 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
         final EventAccumulator accumulator = new EventAccumulator(m_eventForwarder);
         dbNode.mergeNode(node, accumulator, false);
 
+        updateNodeHostname(dbNode);
         m_nodeDao.update(dbNode);
         m_nodeDao.flush();
 
         accumulator.flush();
         final EntityVisitor eventAccumlator = new UpdateEventVisitor(m_eventForwarder, rescanExisting);
         dbNode.visit(eventAccumlator);
+    }
+
+    private void updateNodeHostname(final OnmsNode node) {
+        if (NodeLabelSource.HOSTNAME.equals(node.getLabelSource()) || NodeLabelSource.ADDRESS.equals(node.getLabelSource())) {
+            OnmsIpInterface primary = node.getPrimaryInterface();
+            if (primary == null && node.getIpInterfaces() != null) {
+                primary = node.getIpInterfaces().iterator().next();
+            }
+
+            if (primary != null) {
+                LOG.debug("Node Label was set by hostname or address.  Re-resolving.");
+                final InetAddress addr = primary.getIpAddress();
+                final String ipAddress = str(addr);
+                final String hostname = m_hostnameResolver.getHostname(addr);
+
+                if (hostname == null || ipAddress.equals(hostname)) {
+                    node.setLabel(ipAddress);
+                    node.setLabelSource(NodeLabelSource.ADDRESS);
+                } else {
+                    node.setLabel(hostname);
+                    node.setLabelSource(NodeLabelSource.HOSTNAME);
+                }
+            }
+        }
     }
 
     /** {@inheritDoc} */
@@ -989,6 +1016,7 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
                 final boolean changed = handleCategoryChanges(dbNode);
 
                 dbNode.mergeNodeAttributes(node, accumulator);
+                updateNodeHostname(dbNode);
                 final OnmsNode ret = saveOrUpdate(dbNode);
 
                 if (changed) {
@@ -1238,10 +1266,9 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
             protected OnmsNode doInsert() {
                 final Date now = new Date();
 
-                final String hostname = getHostnameForIp(ipAddress);
-
-                // @ipv6
                 final OnmsNode node = new OnmsNode(createDistPollerIfNecessary("localhost", "127.0.0.1"));
+
+                final String hostname = m_hostnameResolver.getHostname(addr(ipAddress));
                 if (hostname == null || ipAddress.equals(hostname)) {
                     node.setLabel(ipAddress);
                     node.setLabelSource(NodeLabelSource.ADDRESS);
@@ -1249,6 +1276,7 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
                     node.setLabel(hostname);
                     node.setLabelSource(NodeLabelSource.HOSTNAME);
                 }
+
                 node.setForeignSource(foreignSource == null ? FOREIGN_SOURCE_FOR_DISCOVERED_NODES : foreignSource);
                 node.setType(NodeType.ACTIVE);
                 node.setLastCapsdPoll(now);
@@ -1317,12 +1345,6 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
         return true;
     }
 
-
-
-    private String getHostnameForIp(final String address) {
-        return addr(address).getCanonicalHostName();
-    }
-
     /** {@inheritDoc} */
     @Transactional
     @Override
@@ -1342,5 +1364,13 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
         m_nodeDao.initialize(node.getCategories());
         m_nodeDao.initialize(node.getDistPoller());
         return node;
+    }
+
+    public void setHostnameResolver(final HostnameResolver resolver) {
+        m_hostnameResolver = resolver;
+    }
+
+    public HostnameResolver getHostnameResolver() {
+        return m_hostnameResolver;
     }
 }
