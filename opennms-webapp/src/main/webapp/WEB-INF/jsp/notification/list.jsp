@@ -75,7 +75,7 @@
     pageContext.setAttribute("addAfterFilter", "<i class=\"fa fa-toggle-left\"></i>");
 %>
 
-<jsp:include page="/includes/header.jsp" flush="false" >
+<jsp:include page="/includes/bootstrap.jsp" flush="false" >
   <jsp:param name="title" value="Notice List" />
   <jsp:param name="headTitle" value="Notice List" />
   <jsp:param name="breadcrumb" value="<a href='notification/index.jsp'>Notifications</a>" />
@@ -184,7 +184,7 @@
   <p>
     Applied filters:
       <% for( int i = 0; i < length; i++ ) { %>
-		<span class="filter"><% Filter filter = parms.filters.get(i); %>
+		<span class="label label-default"><% Filter filter = parms.filters.get(i); %>
 				<%=WebSecurityUtils.sanitizeString(filter.getTextDescription())%> <a href="<%=this.makeLink( parms, filter, false)%>" title="Remove filter">[-]</a></span> &nbsp; 
       <% } %>
     &mdash; <a href="<%=this.makeLink( parms, new ArrayList<Filter>())%>" title="Remove all filters">[Remove all]</a>
@@ -195,11 +195,11 @@
           <input type="hidden" name="curUser" value="<%=request.getRemoteUser()%>"/>
           <input type="hidden" name="redirectParms" value="<c:out value="<%=request.getQueryString()%>"/>" />
           <%=org.opennms.web.api.Util.makeHiddenTags(request)%>
-      <table>
+      <table class="table table-condensed table-bordered severity">
 			<thead>
 			  <tr>
-          <th class="noWrap"><%=this.makeSortLink( parms, SortStyle.ID,SortStyle.REVERSE_ID,     "id",          "ID"           )%></th>
-          <th class="noWrap">Event ID</th>
+          <th nowrap><%=this.makeSortLink( parms, SortStyle.ID,SortStyle.REVERSE_ID,     "id",          "ID"           )%></th>
+          <th nowrap>Event ID</th>
           <th><%=this.makeSortLink( parms, SortStyle.SEVERITY,    SortStyle.REVERSE_SEVERITY,    "severity",    "Severity"     )%></th>
           <th><%=this.makeSortLink( parms, SortStyle.PAGETIME,    SortStyle.REVERSE_PAGETIME,    "pagetime",    "Sent Time"    )%></th>
           <th><%=this.makeSortLink( parms, SortStyle.RESPONDER,   SortStyle.REVERSE_RESPONDER,   "answeredby",  "Responder"    )%></th>
@@ -222,8 +222,8 @@
             }
         }
         %>
-        <tr class="<%=eventSeverity%>">
-          <td class="divider noWrap" rowspan="2"><% if((parms.ackType == AcknowledgeType.UNACKNOWLEDGED ) && 
+        <tr class="severity-<%=eventSeverity%>">
+          <td class="divider" rowspan="2" nowrap><% if((parms.ackType == AcknowledgeType.UNACKNOWLEDGED ) && 
 		(request.isUserInRole( Authentication.ROLE_ADMIN ) || !request.isUserInRole( Authentication.ROLE_READONLY ))) { %>
             <input type="checkbox" name="notices" value="<%=notification.getId()%>" />
           <% } %> 
@@ -298,7 +298,7 @@
             <% } %>
           </td>
         </tr>
-        <tr class="<%=eventSeverity%>">
+        <tr class="severity-<%=eventSeverity%>">
           <td colspan="6"><%=notification.getTextMessage()%></td> 
         </tr>
       <% } /*end for*/%>
@@ -306,9 +306,9 @@
       <p><%=notices.length%> notices &nbsp;
 
         <% if( parms.ackType == AcknowledgeType.UNACKNOWLEDGED && (request.isUserInRole( Authentication.ROLE_ADMIN ) || !request.isUserInRole( Authentication.ROLE_READONLY ))) { %>
-            <input TYPE="reset" />
-            <input TYPE="button" VALUE="Select All" onClick="checkAllCheckboxes()"/>
-            <input type="button" value="Acknowledge Notices" onClick="submitAcknowledge()"/>
+            <button type="reset" class="btn btn-default">Reset</button>
+            <button type="button" onClick="checkAllCheckboxes()" class="btn btn-default">Select All</button>
+            <button type="button" onClick="submitAcknowledge()" class="btn btn-default">Acknowledge Notices</button>
         <% } %>
         
 	</p>
@@ -327,7 +327,7 @@
           </jsp:include>
          <% } %>
  
-<jsp:include page="/includes/footer.jsp" flush="false" />
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />
 
 
 <%!
