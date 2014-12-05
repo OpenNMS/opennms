@@ -86,6 +86,7 @@
             <div class="row">
                 <div class="col-md-12">
                     <ul class="list-unstyled">
+                        <li><a href="charts/index.jsp">Charts</a></li>
                         <li><a href="graph/index.jsp">Resource Graphs</a></li>
                         <li><a href="KSC/index.htm">KSC Performance, Nodes, Domains</a></li>
                         <li><a href="report/database/index.htm">Database Reports</a></li>
