@@ -72,7 +72,14 @@
                 <c:when test="${not empty entry.key.entries}">
                   <!-- has sub-entries, draw menu drop-downs -->
                   <li class="dropdown">
-                  <a href="${entry.key.url}" name="nav-${entry.key.name}-top" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">${entry.key.name} <span class="caret"></span></a>
+                  <c:choose>
+                    <c:when test="${not empty entry.key.url && entry.key.url != '#'}">
+                      <a href="${entry.key.url}" name="nav-${entry.key.name}-top" class="dropdown-toggle disabled" data-toggle="dropdown" role="button" aria-expanded="false">${entry.key.name} <span class="caret"></span></a>
+                    </c:when>
+                    <c:otherwise>
+                      <a href="#" name="nav-${entry.key.name}-top" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">${entry.key.name} <span class="caret"></span></a>
+                    </c:otherwise>
+                  </c:choose>
                   <ul class="dropdown-menu" role="menu">
                     <c:forEach var="subEntry" items="${entry.key.entries}">
                       <%
@@ -111,7 +118,7 @@
             </c:if> <!-- display -->
           </c:forEach>
           <li class="dropdown">
-            <a name="nav-admin-top" href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+            <a name="nav-admin-top" href="<%= baseHref %>account/selfService/index.jsp" class="dropdown-toggle disabled" data-toggle="dropdown" role="button" aria-expanded="false">
               <c:choose>
                 <c:when test="${not empty pageContext.request.remoteUser}">
                   <span class="glyphicon glyphicon-user"></span>
@@ -131,6 +138,7 @@
               </c:if>
               <li><a name="nav-admin-support" href="<%= baseHref %>support/index.htm">Help/Support</a></li>
               <c:if test="${not empty pageContext.request.remoteUser}">
+                <li><a name="nav-admin-self-service" href="<%= baseHref %>account/selfService/index.jsp">Change Password</a>
                 <li><a name="nav-admin-logout" href="<%= baseHref %>j_spring_security_logout" style="white-space: nowrap">Log Out</a></li>
               </c:if>
             </ul>
