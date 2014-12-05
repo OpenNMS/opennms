@@ -195,24 +195,25 @@
      </tr>
 <% } %>
 
+<% if( (request.isUserInRole( Authentication.ROLE_ADMIN ) || !request.isUserInRole( Authentication.ROLE_READONLY )) && "true".equals(acknowledgeEvent)) { %>
      <tr>
        <td class="standard" colspan="2">
-         <%
-         if( (request.isUserInRole( Authentication.ROLE_ADMIN ) || !request.isUserInRole( Authentication.ROLE_READONLY )) && "true".equals(acknowledgeEvent)) { %>
            <nobr>
              <input type="button" value="Acknowledge" onclick="submitAck()">
              <input TYPE="reset" />
            </nobr>
-         <% } %>
        </td>
 
-  <% if( moreUrl != null ) { %>     
-       <td class="standard" colspan="2"><a href="<c:out value="<%=moreUrl%>"/>">More...</a></td>
-  <% } %>
      </tr>
+<% } %>
       
 </table>
+
+<% if( moreUrl != null ) { %>
+  <div class="panel-footer">
+    <a href="<c:out value="<%=moreUrl%>"/>">More...</a>
+  </div>
+<% } %>
+
 </div>
 </form>
-
-

@@ -66,17 +66,15 @@
           </c:url>
           <tr class="severity-${summary.maxSeverity.label} nodivider"><td class="bright">
               <a href="${nodeLink}">${summary.nodeLabel}</a> has 
-              <a href="alarm/list.htm?sortby=id&acktype=unack&limit=20&display=short&filter=node%3D${summary.nodeId}">${summary.alarmCount} alarm${summary.alarmCount > 1 ? "s" : ""}</a>
+              <a href="alarm/list.htm?sortby=id&acktype=unack&limit=20&display=short&filter=node%3D${summary.nodeId}">${summary.alarmCount}&nbsp;alarm${summary.alarmCount > 1 ? "s" : ""}</a>
               <span style="white-space:nowrap;">(${summary.fuzzyTimeDown})</span>
           </td></tr>
         </c:forEach>
       </table>
       <c:if test="${moreCount > 0}">
-        <div class="panel-body">
-          <p class="noBottomMargin" align="right" >
-            <c:url var="moreLink" value="alarm/list.htm"/>
-            <a href="${moreLink}">All pending problems...</a>
-          </p>
+        <div class="panel-footer text-right">
+          <c:url var="moreLink" value="alarm/list.htm"/>
+          <a href="${moreLink}">All pending problems...</a>
         </div>
       </c:if>
     </c:otherwise>

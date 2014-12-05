@@ -67,14 +67,14 @@
           <li><a href="${nodeLink}">${summary.nodeLabel}</a> (${summary.fuzzyTimeDown})</li>
         </c:forEach>
       </ul>
+  </div>
     
       <c:if test="${moreCount > 0}">
-        <p class="noBottomMargin" align="right">
+        <div class="panel-footer text-right">
           <c:url var="moreLink" value="outage/list.htm"/>
           <a href="${moreLink}">${moreCount} more nodes with outages...</a>
-        </p>
+        </div>
       </c:if>
     </c:otherwise>
   </c:choose>
-  </div>
 </div>
