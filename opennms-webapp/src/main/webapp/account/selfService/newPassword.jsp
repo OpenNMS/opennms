@@ -74,11 +74,11 @@
             <input type="password" class="form-control" id="input_oldpass" name="oldpass">
           </div>
           <div class="form-group">
-            <label class="control-label" for="input_pass1">Confirm New Password:</label>
+            <label class="control-label" for="input_pass1">New Password:</label>
             <input type="password" class="form-control" name="pass1">
           </div>
           <div class="form-group">
-            <label class="control-label" for="input_pass2">Confirm Password:</label>
+            <label class="control-label" for="input_pass2">Confirm New Password:</label>
             <input type="password" class="form-control" name="pass2">
           </div>
           <button type="submit" class="btn btn-default">Submit</button>
