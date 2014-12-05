@@ -83,28 +83,6 @@
   </button>
 </div>
 
-<!-- 
-<form class="form-inline" action="outage/list.htm" method="get" name="outage2_search_constraints_box_outtype_form">
-  <%=Util.makeHiddenTags(req, new String[] {"outtype"})%>
-  <div class="form-group">
-    <label for="outtype">Outage Type:&nbsp;</label>
-    <select input class="form-control" name="outtype" size="1" onChange="javascript: document.outage_search_constraints_box_outtype_form.submit()">
-      <option value="<%=OutageType.CURRENT.getShortName() %>" <%=(parms.outageType == OutageType.CURRENT) ? "selected=\"1\"" : ""%>>
-        Current
-      </option>
-      
-      <option value="<%=OutageType.RESOLVED.getShortName()%>" <%=(parms.outageType == OutageType.RESOLVED) ? "selected=\"1\"" : ""%>>
-        Resolved
-      </option>
-      
-      <option value="<%=OutageType.BOTH.getShortName()%>" <%=(parms.outageType == OutageType.BOTH) ? "selected=\"1\"" : ""%>>
-        Both Current &amp; Resolved
-      </option>
-    </select>
-  </div>
-</form>
--->
-
 <br/>
 
 <% if( length > 0 ) { %>
