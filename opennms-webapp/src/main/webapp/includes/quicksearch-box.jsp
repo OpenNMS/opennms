@@ -47,35 +47,36 @@
     <h3 class="panel-title">Quick Search</h3>
   </div>
   <div class="panel-body">
-  <div class="searchHost" style="position:relative; left: 0px;">
-    <form action="element/nodeList.htm" method="get">
-      <font style="align=left">Node ID:</font><br />
+    <form class="form-inline" action="element/nodeList.htm" method="get">
+      <label for="nodeId">Node ID:</label><br/>
       <input type="hidden" name="listInterfaces" value="false"/>
-      <input type="text" size="20" name="nodeId" />
-      <input type="submit" value="Search"/>
+      <input class="form-control input-sm" type="text" size="20" name="nodeId" />
+      <input class="form-control input-sm" type="submit" value="Search"/>
     </form>
-    <form action="element/nodeList.htm" method="get">
-      <font style="align=left">Node label like:</font><br />
+    <br/>
+    <form class="form-inline" action="element/nodeList.htm" method="get">
+      <label for="nodename">Node label like:</label><br/>
       <input type="hidden" name="listInterfaces" value="true"/>
-      <input type="text" size="20" name="nodename" />
-      <input type="submit" value="Search"/>
+      <input class="form-control input-sm" type="text" size="20" name="nodename" />
+      <input class="form-control input-sm" type="submit" value="Search"/>
     </form>
-    <form action="element/nodeList.htm" method="get">
-      <font style="align=left">TCP/IP Address like:</font><br />
+    <br/>
+    <form class="form-inline" action="element/nodeList.htm" method="get">
+      <label for="iplike">TCP/IP Address like:</label><br/>
       <input type="hidden" name="listInterfaces" value="false"/>
-      <input type="text" name="iplike" value="" placeholder="*.*.*.*" />
-      <input type="submit" value="Search"/>               
+      <input class="form-control input-sm" type="text" name="iplike" value="" placeholder="*.*.*.*" />
+      <input class="form-control input-sm" type="submit" value="Search"/>               
     </form>
-    <form action="element/nodeList.htm" method="get">
-      <font style="align=left">Providing service:</font><br />
+    <br/>
+    <form class="form-inline" action="element/nodeList.htm" method="get">
+      <label for="service">Providing service:</label><br/>
       <input type="hidden" name="listInterfaces" value="false"/>
-      <select name="service" size="1">
+      <select class="form-control input-sm" name="service" size="1">
       <c:forEach var="serviceNameId" items="${serviceNameMap}">
         <option value="${serviceNameId.value}">${serviceNameId.key}</option>
       </c:forEach>
       </select>
-      <input type="submit" value="Search"/>               
+      <input class="form-control input-sm" type="submit" value="Search"/>
     </form>
-  </div>
   </div>
 </div>
