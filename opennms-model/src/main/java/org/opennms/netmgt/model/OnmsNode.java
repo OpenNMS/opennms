@@ -1341,7 +1341,7 @@ public class OnmsNode extends OnmsEntity implements Serializable, Comparable<Onm
      *
      * @param scannedNode a {@link org.opennms.netmgt.model.OnmsNode} object.
      */
-    public void mergeNodeAttributes(OnmsNode scannedNode, EventForwarder eventForwarder) {
+    public void mergeNodeAttributes(final OnmsNode scannedNode, final EventForwarder eventForwarder) {
         final String scannedLabel = scannedNode.getLabel();
 
         boolean send = false;
@@ -1360,7 +1360,7 @@ public class OnmsNode extends OnmsEntity implements Serializable, Comparable<Onm
             final EventBuilder bldr = new EventBuilder(EventConstants.NODE_LABEL_CHANGED_EVENT_UEI, "OnmsNode.mergeNodeAttributes");
 
             bldr.setNodeid(scannedNode.getId());
-            bldr.setHost("host");
+            bldr.setHost(InetAddressUtils.getLocalHostAddressAsString());
 
             if (m_oldLabel != null) {
                 bldr.addParam(EventConstants.PARM_OLD_NODE_LABEL, m_oldLabel);
