@@ -226,7 +226,7 @@ public class SyslogNorthbounder extends AbstractNorthbounder implements Initiali
 		String poller = alarm.getPoller() == null ? "localhost" : alarm.getPoller().getName();
 		mapping.put("distPoller", poller);
 		
-		String service = alarm.getService() == null ? "" : alarm.getService().getName();					
+		String service = alarm.getService() == null ? "" : alarm.getService();
 		mapping.put("ifService", service);
 		
 		mapping.put("severity", nullSafeToString(alarm.getSeverity(), ""));

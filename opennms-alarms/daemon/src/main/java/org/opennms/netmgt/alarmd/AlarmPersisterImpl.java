@@ -168,6 +168,9 @@ public class AlarmPersisterImpl implements AlarmPersister {
     }
 
     private static OnmsAlarm createNewAlarm(OnmsEvent e, Event event) {
+        if (e.getServiceType() != null) {
+            e.getServiceType().getName(); // To avoid potential LazyInitializationException when dealing with NorthboundAlarm
+        }
         OnmsAlarm alarm;
         alarm = new OnmsAlarm();
         alarm.setAlarmType(event.getAlarmData().getAlarmType());
