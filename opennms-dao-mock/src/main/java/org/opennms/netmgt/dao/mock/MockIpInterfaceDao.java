@@ -29,26 +29,33 @@
 package org.opennms.netmgt.dao.mock;
 
 import java.net.InetAddress;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class MockIpInterfaceDao extends AbstractMockDao<OnmsIpInterface, Integer> implements IpInterfaceDao {
+    private static final Logger LOG = LoggerFactory.getLogger(MockIpInterfaceDao.class);
     private AtomicInteger m_id = new AtomicInteger(0);
 
     @Override
     public void save(final OnmsIpInterface iface) {
+        updateParent(iface);
         super.save(iface);
         updateSubObjects(iface);
     }
 
     @Override
     public void update(final OnmsIpInterface iface) {
+        updateParent(iface);
         super.update(iface);
         updateSubObjects(iface);
     }
@@ -58,6 +65,24 @@ public class MockIpInterfaceDao extends AbstractMockDao<OnmsIpInterface, Integer
         super.flush();
         for (final OnmsIpInterface iface : findAll()) {
             updateSubObjects(iface);
+        }
+    }
+
+    private void updateParent(final OnmsIpInterface iface) {
+        OnmsNode node = null;
+        if (iface.getNodeId() != null) {
+            node = getNodeDao().get(iface.getNodeId());
+        } else if (iface.getNode() != null) {
+            node = getNodeDao().findByForeignId(iface.getNode().getForeignSource(), iface.getNode().getForeignId());
+        }
+        if (node != null && node != iface.getNode()) {
+            LOG.debug("merging node {} into node {}", iface.getNode(), node);
+            node.mergeNode(iface.getNode(), new NullEventForwarder(), false);
+            iface.setNode(node);
+        }
+        if (!iface.getNode().getIpInterfaces().contains(iface)) {
+            LOG.debug("adding IP interface to node {}: {}", iface.getNode().getId(), iface);
+            iface.getNode().addIpInterface(iface);
         }
     }
 
@@ -107,14 +132,34 @@ public class MockIpInterfaceDao extends AbstractMockDao<OnmsIpInterface, Integer
         return null;
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public OnmsIpInterface findByForeignKeyAndIpAddress(final String foreignSource, final String foreignId, final String ipAddress) {
-        throw new UnsupportedOperationException("Not yet implemented!");
+        if (foreignId == null || ipAddress == null) {
+            return null;
+        }
+        for (final OnmsIpInterface iface : findAll()) {
+            if (!Objects.equals(ipAddress, iface.getIpAddressAsString())) {
+                continue;
+            }
+            if (Objects.equals(foreignSource, iface.getForeignSource()) && Objects.equals(foreignId, iface.getForeignId())) {
+                return iface;
+            }
+        }
+        return null;
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public List<OnmsIpInterface> findByIpAddress(final String ipAddress) {
-        throw new UnsupportedOperationException("Not yet implemented!");
+        final List<OnmsIpInterface> ifaces = new ArrayList<>();
+        if (ipAddress == null) return ifaces;
+        for (final OnmsIpInterface iface : findAll()) {
+            if (ipAddress.equals(iface.getIpAddressAsString())) {
+                ifaces.add(iface);
+            }
+        }
+        return ifaces;
     }
 
     @Override

@@ -30,7 +30,6 @@ package org.opennms.netmgt.dao.mock;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -80,7 +79,7 @@ public class MockNodeDao extends AbstractMockDao<OnmsNode, Integer> implements N
         super.update(node);
         updateSubObjects(node);
     }
-    
+
     @Override
     public void save(final OnmsNode node) {
         if (node == null) return;
@@ -257,17 +256,38 @@ public class MockNodeDao extends AbstractMockDao<OnmsNode, Integer> implements N
 
     @Override
     public List<OnmsIpInterface> findObsoleteIpInterfaces(final Integer nodeId, final Date scanStamp) {
-        final List<OnmsIpInterface> ifaces = new ArrayList<OnmsIpInterface>();
+        final List<OnmsIpInterface> ifaces = new ArrayList<>();
         final OnmsNode node = get(nodeId);
         if (node == null) return ifaces;
-        
+
         for (final OnmsIpInterface iface : node.getIpInterfaces()) {
             if (iface.isPrimary()) continue;
-            if (iface.getIpLastCapsdPoll() == null
-                    || iface.getIpLastCapsdPoll().before(scanStamp)) ifaces.add(iface);
+            if (truncateMillis(iface.getIpLastCapsdPoll()) < truncateMillis(scanStamp)) {
+                LOG.debug("findObsoleteIpInterfaces: {} < {}", truncateMillis(iface.getIpLastCapsdPoll()), truncateMillis(scanStamp));
+                ifaces.add(iface);
+            }
         }
 
         return ifaces;
+    }
+
+    public List<OnmsSnmpInterface> findObsoleteSnmpInterfaces(final Integer nodeId, final Date scanStamp) {
+        final List<OnmsSnmpInterface> ifaces = new ArrayList<>();
+        final OnmsNode node = get(nodeId);
+        if (node == null) return ifaces;
+
+        for (final OnmsSnmpInterface iface : node.getSnmpInterfaces()) {
+            if (truncateMillis(iface.getLastCapsdPoll()) < truncateMillis(scanStamp)) {
+                LOG.debug("findObsoleteSnmpInterfaces: {} < {}", truncateMillis(iface.getLastCapsdPoll()), truncateMillis(scanStamp));
+                ifaces.add(iface);
+            }
+        }
+
+        return ifaces;
+    }
+
+    private static long truncateMillis(final Date date) {
+        return date == null? 0 : (1000 * (date.getTime() / 1000));
     }
 
     @Override
@@ -280,14 +300,11 @@ public class MockNodeDao extends AbstractMockDao<OnmsNode, Integer> implements N
             node.getIpInterfaces().remove(iface);
             getIpInterfaceDao().delete(iface.getId());
         }
-        final Collection<OnmsSnmpInterface> snmpInterfaces = Collections.unmodifiableCollection(node.getSnmpInterfaces());
-        for (final OnmsSnmpInterface iface : snmpInterfaces) {
-            if (iface.getLastCapsdPoll() == null
-                    || iface.getLastCapsdPoll().before(scanStamp)) {
-                LOG.debug("Deleting obsolete SNMP interface: {}", iface);
-                snmpInterfaces.remove(iface);
-                getSnmpInterfaceDao().delete(iface.getId());
-            }
+
+        for (final OnmsSnmpInterface iface : findObsoleteSnmpInterfaces(nodeId, scanStamp)) {
+            LOG.debug("Deleting obsolete SNMP interface: {}", iface);
+            node.getSnmpInterfaces().remove(iface);
+            getSnmpInterfaceDao().delete(iface.getId());
         }
     }
 
