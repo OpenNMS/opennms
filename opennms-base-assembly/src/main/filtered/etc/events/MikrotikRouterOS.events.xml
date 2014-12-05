@@ -1,0 +1,53 @@
+<?xml version="1.0"?>
+<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.14988.1.1.9</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>1</mevalue>
+      </maskelement>
+    </mask>
+    <uei>uei.opennms.org/vendor/mikrotik/traps/routeros/mtxrTrap</uei>
+    <event-label>MIKROTIK-MIB defined trap event: mtxrTrap</event-label>
+    <descr>
+&lt;p&gt;Mikrotik trap OID&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+    <logmsg dest="logndisplay">&lt;p&gt;
+	mtxrTrap trap received&lt;/p&gt;
+	</logmsg>
+    <severity>Indeterminate</severity>
+  </event>
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.14988.1.1.9</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>2</mevalue>
+      </maskelement>
+    </mask>
+    <uei>uei.opennms.org/vendor/mikrotik/traps/routeros/mtxrTemperatureException</uei>
+    <event-label>MIKROTIK-MIB defined trap event: mtxrTemperatureException</event-label>
+    <descr>
+&lt;p&gt;Mikrotik CPU temperature exception trap&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+    <logmsg dest="logndisplay">&lt;p&gt;
+	mtxrTemperatureException trap received&lt;/p&gt;
+	</logmsg>
+    <severity>Indeterminate</severity>
+  </event>
+</events>
