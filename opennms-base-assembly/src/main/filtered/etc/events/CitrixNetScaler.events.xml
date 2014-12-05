@@ -15,7 +15,7 @@
 			<mevalue>1</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/vendor/netscalar/traps/changeToPrimary</uei>
+	<uei>uei.opennms.org/vendor/citrix/netscaler/traps/changeToPrimary</uei>
 	<event-label>NS-ROOT-MIB defined trap event: changeToPrimary</event-label>
 	<descr>
 &lt;p&gt;This trap indicates that the netscaler is now operating in the primary mode.&lt;/p&gt;&lt;table&gt;
@@ -45,7 +45,7 @@
 			<mevalue>2</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/vendor/netscalar/traps/changeToSecondary</uei>
+	<uei>uei.opennms.org/vendor/citrix/netscaler/traps/changeToSecondary</uei>
 	<event-label>NS-ROOT-MIB defined trap event: changeToSecondary</event-label>
 	<descr>
 &lt;p&gt;This trap indicates that the netscaler is now operating in the Secondary mode.&lt;/p&gt;&lt;table&gt;
@@ -75,7 +75,7 @@
 			<mevalue>3</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/vendor/netscalar/traps/cpuUtilization</uei>
+	<uei>uei.opennms.org/vendor/citrix/netscaler/traps/cpuUtilization</uei>
 	<event-label>NS-ROOT-MIB defined trap event: cpuUtilization</event-label>
 	<descr>
 &lt;p&gt;This trap indicates that the CPU utilization has exceeded the high threshold&lt;/p&gt;&lt;table&gt;
@@ -115,7 +115,7 @@
 			<mevalue>4</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/vendor/netscalar/traps/linkUp</uei>
+	<uei>uei.opennms.org/vendor/citrix/netscaler/traps/linkUp</uei>
 	<event-label>NS-ROOT-MIB defined trap event: linkUp</event-label>
 	<descr>
 &lt;p&gt;...OBSOLETE&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
@@ -140,7 +140,7 @@
 			<mevalue>5</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/vendor/netscalar/traps/linkDown</uei>
+	<uei>uei.opennms.org/vendor/citrix/netscaler/traps/linkDown</uei>
 	<event-label>NS-ROOT-MIB defined trap event: linkDown</event-label>
 	<descr>
 &lt;p&gt;...OBSOLETE&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
@@ -165,7 +165,7 @@
 			<mevalue>6</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/vendor/netscalar/traps/discoverFailure</uei>
+	<uei>uei.opennms.org/vendor/citrix/netscaler/traps/discoverFailure</uei>
 	<event-label>NS-ROOT-MIB defined trap event: discoverFailure</event-label>
 	<descr>
 &lt;p&gt;...OBSOLETE&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
@@ -190,7 +190,7 @@
 			<mevalue>7</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/vendor/netscalar/traps/memUtilization</uei>
+	<uei>uei.opennms.org/vendor/citrix/netscaler/traps/memUtilization</uei>
 	<event-label>NS-ROOT-MIB defined trap event: memUtilization</event-label>
 	<descr>
 &lt;p&gt;...OBSOLETE&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
@@ -215,7 +215,7 @@
 			<mevalue>8</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/vendor/netscalar/traps/entitydown</uei>
+	<uei>uei.opennms.org/vendor/citrix/netscaler/traps/entitydown</uei>
 	<event-label>NS-ROOT-MIB defined trap event: entitydown</event-label>
 	<descr>
 &lt;p&gt;This trap is sent when the state of interface, vserver or physicalservice changed to DOWN&lt;/p&gt;&lt;table&gt;
@@ -250,7 +250,7 @@
 			<mevalue>9</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/vendor/netscalar/traps/entityup</uei>
+	<uei>uei.opennms.org/vendor/citrix/netscaler/traps/entityup</uei>
 	<event-label>NS-ROOT-MIB defined trap event: entityup</event-label>
 	<descr>
 &lt;p&gt;This trap is sent when the state of interface, vserver or physicalservice changed to UP&lt;/p&gt;&lt;table&gt;
@@ -285,7 +285,7 @@
 			<mevalue>10</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/vendor/netscalar/traps/synflood</uei>
+	<uei>uei.opennms.org/vendor/citrix/netscaler/traps/synflood</uei>
 	<event-label>NS-ROOT-MIB defined trap event: synflood</event-label>
 	<descr>
 &lt;p&gt;This trap is sent when the rate at which unacknowledged SYNs are received cross a threshold value&lt;/p&gt;&lt;table&gt;
@@ -325,7 +325,7 @@
 			<mevalue>11</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/vendor/netscalar/traps/cpuUtilizationNormal</uei>
+	<uei>uei.opennms.org/vendor/citrix/netscaler/traps/cpuUtilizationNormal</uei>
 	<event-label>NS-ROOT-MIB defined trap event: cpuUtilizationNormal</event-label>
 	<descr>
 &lt;p&gt;This trap indicates that the CPU utilization has come back to normal&lt;/p&gt;&lt;table&gt;
@@ -365,7 +365,7 @@
 			<mevalue>12</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/vendor/netscalar/traps/synfloodNormal</uei>
+	<uei>uei.opennms.org/vendor/citrix/netscaler/traps/synfloodNormal</uei>
 	<event-label>NS-ROOT-MIB defined trap event: synfloodNormal</event-label>
 	<descr>
 &lt;p&gt;This trap is sent when the rate at which unacknowledged SYNs are received returns to normal&lt;/p&gt;&lt;table&gt;
@@ -405,7 +405,7 @@
 			<mevalue>13</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/vendor/netscalar/traps/memoryUtilization</uei>
+	<uei>uei.opennms.org/vendor/citrix/netscaler/traps/memoryUtilization</uei>
 	<event-label>NS-ROOT-MIB defined trap event: memoryUtilization</event-label>
 	<descr>
 &lt;p&gt;This trap is sent when the memory utilization of the system exceeds the threshold value&lt;/p&gt;&lt;table&gt;
@@ -445,7 +445,7 @@
 			<mevalue>14</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/vendor/netscalar/traps/memoryUtilizationNormal</uei>
+	<uei>uei.opennms.org/vendor/citrix/netscaler/traps/memoryUtilizationNormal</uei>
 	<event-label>NS-ROOT-MIB defined trap event: memoryUtilizationNormal</event-label>
 	<descr>
 &lt;p&gt;This trap is sent when the memory utilization of the system returns to normal&lt;/p&gt;&lt;table&gt;
@@ -485,7 +485,7 @@
 			<mevalue>15</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/vendor/netscalar/traps/vServerRequestRate</uei>
+	<uei>uei.opennms.org/vendor/citrix/netscaler/traps/vServerRequestRate</uei>
 	<event-label>NS-ROOT-MIB defined trap event: vServerRequestRate</event-label>
 	<descr>
 &lt;p&gt;This trap is sent when the request rate on a vServer exceeds a threshold value&lt;/p&gt;&lt;table&gt;
@@ -530,7 +530,7 @@
 			<mevalue>16</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/vendor/netscalar/traps/vServerRequestRateNormal</uei>
+	<uei>uei.opennms.org/vendor/citrix/netscaler/traps/vServerRequestRateNormal</uei>
 	<event-label>NS-ROOT-MIB defined trap event: vServerRequestRateNormal</event-label>
 	<descr>
 &lt;p&gt;This trap is sent when the request rate on a vServer returns to normal&lt;/p&gt;&lt;table&gt;
@@ -575,7 +575,7 @@
 			<mevalue>17</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/vendor/netscalar/traps/serviceRequestRate</uei>
+	<uei>uei.opennms.org/vendor/citrix/netscaler/traps/serviceRequestRate</uei>
 	<event-label>NS-ROOT-MIB defined trap event: serviceRequestRate</event-label>
 	<descr>
 &lt;p&gt;This trap is sent when the request rate on a service exceeds a threshold value&lt;/p&gt;&lt;table&gt;
@@ -620,7 +620,7 @@
 			<mevalue>18</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/vendor/netscalar/traps/serviceRequestRateNormal</uei>
+	<uei>uei.opennms.org/vendor/citrix/netscaler/traps/serviceRequestRateNormal</uei>
 	<event-label>NS-ROOT-MIB defined trap event: serviceRequestRateNormal</event-label>
 	<descr>
 &lt;p&gt;This trap is sent when the request rate on a service returns to normal&lt;/p&gt;&lt;table&gt;
@@ -665,7 +665,7 @@
 			<mevalue>19</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/vendor/netscalar/traps/entityRxRate</uei>
+	<uei>uei.opennms.org/vendor/citrix/netscaler/traps/entityRxRate</uei>
 	<event-label>NS-ROOT-MIB defined trap event: entityRxRate</event-label>
 	<descr>
 &lt;p&gt;...OBSOLETE&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
@@ -690,7 +690,7 @@
 			<mevalue>20</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/vendor/netscalar/traps/entityRxRateNormal</uei>
+	<uei>uei.opennms.org/vendor/citrix/netscaler/traps/entityRxRateNormal</uei>
 	<event-label>NS-ROOT-MIB defined trap event: entityRxRateNormal</event-label>
 	<descr>
 &lt;p&gt;...OBSOLETE&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
@@ -715,7 +715,7 @@
 			<mevalue>21</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/vendor/netscalar/traps/entityTxRate</uei>
+	<uei>uei.opennms.org/vendor/citrix/netscaler/traps/entityTxRate</uei>
 	<event-label>NS-ROOT-MIB defined trap event: entityTxRate</event-label>
 	<descr>
 &lt;p&gt;...OBSOLETE&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
@@ -740,7 +740,7 @@
 			<mevalue>22</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/vendor/netscalar/traps/entityTxRateNormal</uei>
+	<uei>uei.opennms.org/vendor/citrix/netscaler/traps/entityTxRateNormal</uei>
 	<event-label>NS-ROOT-MIB defined trap event: entityTxRateNormal</event-label>
 	<descr>
 &lt;p&gt;...OBSOLETE&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
@@ -765,7 +765,7 @@
 			<mevalue>23</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/vendor/netscalar/traps/entitySynflood</uei>
+	<uei>uei.opennms.org/vendor/citrix/netscaler/traps/entitySynflood</uei>
 	<event-label>NS-ROOT-MIB defined trap event: entitySynflood</event-label>
 	<descr>
 &lt;p&gt;...OBSOLETE&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
@@ -790,7 +790,7 @@
 			<mevalue>24</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/vendor/netscalar/traps/entitySynfloodNormal</uei>
+	<uei>uei.opennms.org/vendor/citrix/netscaler/traps/entitySynfloodNormal</uei>
 	<event-label>NS-ROOT-MIB defined trap event: entitySynfloodNormal</event-label>
 	<descr>
 &lt;p&gt;...OBSOLETE&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
@@ -815,7 +815,7 @@
 			<mevalue>25</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/vendor/netscalar/traps/netScalerConfigChange</uei>
+	<uei>uei.opennms.org/vendor/citrix/netscaler/traps/netScalerConfigChange</uei>
 	<event-label>NS-ROOT-MIB defined trap event: netScalerConfigChange</event-label>
 	<descr>
 &lt;p&gt;This trap is sent when the configuration on the NetScaler is changed.&lt;/p&gt;&lt;table&gt;
@@ -871,7 +871,7 @@
 			<mevalue>26</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/vendor/netscalar/traps/maxClients</uei>
+	<uei>uei.opennms.org/vendor/citrix/netscaler/traps/maxClients</uei>
 	<event-label>NS-ROOT-MIB defined trap event: maxClients</event-label>
 	<descr>
 &lt;p&gt;This trap is sent when the number of clients hits the maxClients value for a service&lt;/p&gt;&lt;table&gt;
@@ -916,7 +916,7 @@
 			<mevalue>27</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/vendor/netscalar/traps/maxClientsNormal</uei>
+	<uei>uei.opennms.org/vendor/citrix/netscaler/traps/maxClientsNormal</uei>
 	<event-label>NS-ROOT-MIB defined trap event: maxClientsNormal</event-label>
 	<descr>
 &lt;p&gt;This trap is sent when the number of clients falls below 70% of maxClients value for a service.&lt;/p&gt;&lt;table&gt;
@@ -961,7 +961,7 @@
 			<mevalue>28</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/vendor/netscalar/traps/netScalerConfigSave</uei>
+	<uei>uei.opennms.org/vendor/citrix/netscaler/traps/netScalerConfigSave</uei>
 	<event-label>NS-ROOT-MIB defined trap event: netScalerConfigSave</event-label>
 	<descr>
 &lt;p&gt;This trap is sent when the configuration on the NetScaler is saved.&lt;/p&gt;&lt;table&gt;
@@ -996,7 +996,7 @@
 			<mevalue>29</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/vendor/netscalar/traps/serviceRxBytesRate</uei>
+	<uei>uei.opennms.org/vendor/citrix/netscaler/traps/serviceRxBytesRate</uei>
 	<event-label>NS-ROOT-MIB defined trap event: serviceRxBytesRate</event-label>
 	<descr>
 &lt;p&gt;This trap is sent when the request bytes/s of a service exceeds a threshold value.&lt;/p&gt;&lt;table&gt;
@@ -1041,7 +1041,7 @@
 			<mevalue>30</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/vendor/netscalar/traps/serviceRxBytesRateNormal</uei>
+	<uei>uei.opennms.org/vendor/citrix/netscaler/traps/serviceRxBytesRateNormal</uei>
 	<event-label>NS-ROOT-MIB defined trap event: serviceRxBytesRateNormal</event-label>
 	<descr>
 &lt;p&gt;This trap is sent when the request bytes/s of a service returns to normal.&lt;/p&gt;&lt;table&gt;
@@ -1086,7 +1086,7 @@
 			<mevalue>31</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/vendor/netscalar/traps/vserverRxBytesRate</uei>
+	<uei>uei.opennms.org/vendor/citrix/netscaler/traps/vserverRxBytesRate</uei>
 	<event-label>NS-ROOT-MIB defined trap event: vserverRxBytesRate</event-label>
 	<descr>
 &lt;p&gt;This trap is sent when the request bytes/s of a vserver exceeds a threshold value.&lt;/p&gt;&lt;table&gt;
@@ -1131,7 +1131,7 @@
 			<mevalue>32</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/vendor/netscalar/traps/vserverRxBytesRateNormal</uei>
+	<uei>uei.opennms.org/vendor/citrix/netscaler/traps/vserverRxBytesRateNormal</uei>
 	<event-label>NS-ROOT-MIB defined trap event: vserverRxBytesRateNormal</event-label>
 	<descr>
 &lt;p&gt;This trap is sent when the request bytes/s of a vServer returns to normal.&lt;/p&gt;&lt;table&gt;
@@ -1176,7 +1176,7 @@
 			<mevalue>33</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/vendor/netscalar/traps/serviceTxBytesRate</uei>
+	<uei>uei.opennms.org/vendor/citrix/netscaler/traps/serviceTxBytesRate</uei>
 	<event-label>NS-ROOT-MIB defined trap event: serviceTxBytesRate</event-label>
 	<descr>
 &lt;p&gt;This trap is sent when the response bytes/s of a service exceeds a threshold value.&lt;/p&gt;&lt;table&gt;
@@ -1221,7 +1221,7 @@
 			<mevalue>34</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/vendor/netscalar/traps/serviceTxBytesRateNormal</uei>
+	<uei>uei.opennms.org/vendor/citrix/netscaler/traps/serviceTxBytesRateNormal</uei>
 	<event-label>NS-ROOT-MIB defined trap event: serviceTxBytesRateNormal</event-label>
 	<descr>
 &lt;p&gt;This trap is sent when the response bytes/s of a service returns to normal.&lt;/p&gt;&lt;table&gt;
@@ -1266,7 +1266,7 @@
 			<mevalue>35</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/vendor/netscalar/traps/vserverTxBytesRate</uei>
+	<uei>uei.opennms.org/vendor/citrix/netscaler/traps/vserverTxBytesRate</uei>
 	<event-label>NS-ROOT-MIB defined trap event: vserverTxBytesRate</event-label>
 	<descr>
 &lt;p&gt;This trap is sent when the response bytes/s of a vserver exceeds a threshold value.&lt;/p&gt;&lt;table&gt;
@@ -1311,7 +1311,7 @@
 			<mevalue>36</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/vendor/netscalar/traps/vserverTxBytesRateNormal</uei>
+	<uei>uei.opennms.org/vendor/citrix/netscaler/traps/vserverTxBytesRateNormal</uei>
 	<event-label>NS-ROOT-MIB defined trap event: vserverTxBytesRateNormal</event-label>
 	<descr>
 &lt;p&gt;This trap is sent when the response bytes/s of a vServer returns to normal.&lt;/p&gt;&lt;table&gt;
@@ -1356,7 +1356,7 @@
 			<mevalue>37</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/vendor/netscalar/traps/serviceSynfloodRate</uei>
+	<uei>uei.opennms.org/vendor/citrix/netscaler/traps/serviceSynfloodRate</uei>
 	<event-label>NS-ROOT-MIB defined trap event: serviceSynfloodRate</event-label>
 	<descr>
 &lt;p&gt;This trap is sent when the number of unacknowledged syns for a service exceeds a threshold value.&lt;/p&gt;&lt;table&gt;
@@ -1401,7 +1401,7 @@
 			<mevalue>38</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/vendor/netscalar/traps/serviceSynfloodNormal</uei>
+	<uei>uei.opennms.org/vendor/citrix/netscaler/traps/serviceSynfloodNormal</uei>
 	<event-label>NS-ROOT-MIB defined trap event: serviceSynfloodNormal</event-label>
 	<descr>
 &lt;p&gt;This trap is sent when the number of unacknowledged syns for a service returns to normal.&lt;/p&gt;&lt;table&gt;
@@ -1446,7 +1446,7 @@
 			<mevalue>39</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/vendor/netscalar/traps/vserverSynfloodRate</uei>
+	<uei>uei.opennms.org/vendor/citrix/netscaler/traps/vserverSynfloodRate</uei>
 	<event-label>NS-ROOT-MIB defined trap event: vserverSynfloodRate</event-label>
 	<descr>
 &lt;p&gt;This trap is sent when the number of unacknowledged syns for a vserver exceeds a threshold value.&lt;/p&gt;&lt;table&gt;
@@ -1491,7 +1491,7 @@
 			<mevalue>40</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/vendor/netscalar/traps/vserverSynfloodNormal</uei>
+	<uei>uei.opennms.org/vendor/citrix/netscaler/traps/vserverSynfloodNormal</uei>
 	<event-label>NS-ROOT-MIB defined trap event: vserverSynfloodNormal</event-label>
 	<descr>
 &lt;p&gt;This trap is sent when the number of unacknowledged syns for a vserver returns to normal.&lt;/p&gt;&lt;table&gt;
@@ -1536,7 +1536,7 @@
 			<mevalue>41</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/vendor/netscalar/traps/svcGroupMemberRequestRate</uei>
+	<uei>uei.opennms.org/vendor/citrix/netscaler/traps/svcGroupMemberRequestRate</uei>
 	<event-label>NS-ROOT-MIB defined trap event: svcGroupMemberRequestRate</event-label>
 	<descr>
 &lt;p&gt;This trap is sent when the request rate on a service group member exceeds a threshold value&lt;/p&gt;&lt;table&gt;
@@ -1581,7 +1581,7 @@
 			<mevalue>42</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/vendor/netscalar/traps/svcGroupMemberRequestRateNormal</uei>
+	<uei>uei.opennms.org/vendor/citrix/netscaler/traps/svcGroupMemberRequestRateNormal</uei>
 	<event-label>NS-ROOT-MIB defined trap event: svcGroupMemberRequestRateNormal</event-label>
 	<descr>
 &lt;p&gt;This trap is sent when the request rate on a service group member returns to normal&lt;/p&gt;&lt;table&gt;
@@ -1626,7 +1626,7 @@
 			<mevalue>43</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/vendor/netscalar/traps/svcGroupMemberRxBytesRate</uei>
+	<uei>uei.opennms.org/vendor/citrix/netscaler/traps/svcGroupMemberRxBytesRate</uei>
 	<event-label>NS-ROOT-MIB defined trap event: svcGroupMemberRxBytesRate</event-label>
 	<descr>
 &lt;p&gt;This trap is sent when the request bytes/s of a service group exceeds a threshold value.&lt;/p&gt;&lt;table&gt;
@@ -1671,7 +1671,7 @@
 			<mevalue>44</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/vendor/netscalar/traps/svcGroupMemberRxBytesRateNormal</uei>
+	<uei>uei.opennms.org/vendor/citrix/netscaler/traps/svcGroupMemberRxBytesRateNormal</uei>
 	<event-label>NS-ROOT-MIB defined trap event: svcGroupMemberRxBytesRateNormal</event-label>
 	<descr>
 &lt;p&gt;This trap is sent when the request bytes/s of a service group returns to normal.&lt;/p&gt;&lt;table&gt;
@@ -1716,7 +1716,7 @@
 			<mevalue>45</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/vendor/netscalar/traps/svcGroupMemberTxBytesRate</uei>
+	<uei>uei.opennms.org/vendor/citrix/netscaler/traps/svcGroupMemberTxBytesRate</uei>
 	<event-label>NS-ROOT-MIB defined trap event: svcGroupMemberTxBytesRate</event-label>
 	<descr>
 &lt;p&gt;This trap is sent when the response bytes/s of a service group exceeds a threshold value.&lt;/p&gt;&lt;table&gt;
@@ -1761,7 +1761,7 @@
 			<mevalue>46</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/vendor/netscalar/traps/svcGroupMemberTxBytesRateNormal</uei>
+	<uei>uei.opennms.org/vendor/citrix/netscaler/traps/svcGroupMemberTxBytesRateNormal</uei>
 	<event-label>NS-ROOT-MIB defined trap event: svcGroupMemberTxBytesRateNormal</event-label>
 	<descr>
 &lt;p&gt;This trap is sent when the response bytes/s of a service group returns to normal.&lt;/p&gt;&lt;table&gt;
@@ -1806,7 +1806,7 @@
 			<mevalue>47</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/vendor/netscalar/traps/svcGroupMemberSynfloodRate</uei>
+	<uei>uei.opennms.org/vendor/citrix/netscaler/traps/svcGroupMemberSynfloodRate</uei>
 	<event-label>NS-ROOT-MIB defined trap event: svcGroupMemberSynfloodRate</event-label>
 	<descr>
 &lt;p&gt;This trap is sent when the number of unacknowledged syns for a service group exceeds a threshold value.&lt;/p&gt;&lt;table&gt;
@@ -1851,7 +1851,7 @@
 			<mevalue>48</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/vendor/netscalar/traps/svcGroupMemberSynfloodNormal</uei>
+	<uei>uei.opennms.org/vendor/citrix/netscaler/traps/svcGroupMemberSynfloodNormal</uei>
 	<event-label>NS-ROOT-MIB defined trap event: svcGroupMemberSynfloodNormal</event-label>
 	<descr>
 &lt;p&gt;This trap is sent when the number of unacknowledged syns for a service group returns to normal.&lt;/p&gt;&lt;table&gt;
@@ -1896,7 +1896,7 @@
 			<mevalue>49</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/vendor/netscalar/traps/svcGroupMemberMaxClients</uei>
+	<uei>uei.opennms.org/vendor/citrix/netscaler/traps/svcGroupMemberMaxClients</uei>
 	<event-label>NS-ROOT-MIB defined trap event: svcGroupMemberMaxClients</event-label>
 	<descr>
 &lt;p&gt;This trap is sent when the number of clients hits the maxClients value for a service group member&lt;/p&gt;&lt;table&gt;
@@ -1941,7 +1941,7 @@
 			<mevalue>50</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/vendor/netscalar/traps/svcGroupMemberMaxClientsNormal</uei>
+	<uei>uei.opennms.org/vendor/citrix/netscaler/traps/svcGroupMemberMaxClientsNormal</uei>
 	<event-label>NS-ROOT-MIB defined trap event: svcGroupMemberMaxClientsNormal</event-label>
 	<descr>
 &lt;p&gt;This trap is sent when the number of clients falls below 70% of maxClients value for a service group member.&lt;/p&gt;&lt;table&gt;
@@ -1986,7 +1986,7 @@
 			<mevalue>51</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/vendor/netscalar/traps/averageCpuUtilization</uei>
+	<uei>uei.opennms.org/vendor/citrix/netscaler/traps/averageCpuUtilization</uei>
 	<event-label>NS-ROOT-MIB defined trap event: averageCpuUtilization</event-label>
 	<descr>
 &lt;p&gt;This trap indicates that the average CPU usage in the multi-processor NetScaler system has exceeded the high threshold.&lt;/p&gt;&lt;table&gt;
@@ -2026,7 +2026,7 @@
 			<mevalue>52</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/vendor/netscalar/traps/averageCpuUtilizationNormal</uei>
+	<uei>uei.opennms.org/vendor/citrix/netscaler/traps/averageCpuUtilizationNormal</uei>
 	<event-label>NS-ROOT-MIB defined trap event: averageCpuUtilizationNormal</event-label>
 	<descr>
 &lt;p&gt;This trap indicates that the average CPU usage in the multi-processor NetScaler system has come back to normal.&lt;/p&gt;&lt;table&gt;
@@ -2066,7 +2066,7 @@
 			<mevalue>53</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/vendor/netscalar/traps/monRespTimeoutAboveThresh</uei>
+	<uei>uei.opennms.org/vendor/citrix/netscaler/traps/monRespTimeoutAboveThresh</uei>
 	<event-label>NS-ROOT-MIB defined trap event: monRespTimeoutAboveThresh</event-label>
 	<descr>
 &lt;p&gt;This trap is sent when the response timeout for a monitor probe exceeds the configured threshold.&lt;/p&gt;&lt;table&gt;
@@ -2116,7 +2116,7 @@
 			<mevalue>54</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/vendor/netscalar/traps/monRespTimeoutBelowThresh</uei>
+	<uei>uei.opennms.org/vendor/citrix/netscaler/traps/monRespTimeoutBelowThresh</uei>
 	<event-label>NS-ROOT-MIB defined trap event: monRespTimeoutBelowThresh</event-label>
 	<descr>
 &lt;p&gt;This trap is sent when the response timeout for a monitor probe comes back to normal, less than the threshold set.&lt;/p&gt;&lt;table&gt;
@@ -2166,7 +2166,7 @@
 			<mevalue>55</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/vendor/netscalar/traps/netScalerLoginFailure</uei>
+	<uei>uei.opennms.org/vendor/citrix/netscaler/traps/netScalerLoginFailure</uei>
 	<event-label>NS-ROOT-MIB defined trap event: netScalerLoginFailure</event-label>
 	<descr>
 &lt;p&gt;This trap is sent when a login attempt to the NetScaler fails.&lt;/p&gt;&lt;table&gt;
@@ -2201,7 +2201,7 @@
 			<mevalue>56</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/vendor/netscalar/traps/sslCertificateExpiry</uei>
+	<uei>uei.opennms.org/vendor/citrix/netscaler/traps/sslCertificateExpiry</uei>
 	<event-label>NS-ROOT-MIB defined trap event: sslCertificateExpiry</event-label>
 	<descr>
 &lt;p&gt;This trap is sent as an advance notification when an SSL certificate is due to expire.&lt;/p&gt;&lt;table&gt;
@@ -2241,7 +2241,7 @@
 			<mevalue>57</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/vendor/netscalar/traps/fanSpeedLow</uei>
+	<uei>uei.opennms.org/vendor/citrix/netscaler/traps/fanSpeedLow</uei>
 	<event-label>NS-ROOT-MIB defined trap event: fanSpeedLow</event-label>
 	<descr>
 &lt;p&gt;This trap indicates that a fan speed has gone below an alarm threshold.&lt;/p&gt;&lt;table&gt;
@@ -2286,7 +2286,7 @@
 			<mevalue>58</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/vendor/netscalar/traps/fanSpeedNormal</uei>
+	<uei>uei.opennms.org/vendor/citrix/netscaler/traps/fanSpeedNormal</uei>
 	<event-label>NS-ROOT-MIB defined trap event: fanSpeedNormal</event-label>
 	<descr>
 &lt;p&gt;This trap indicates that a fan speed has returned to normal.&lt;/p&gt;&lt;table&gt;
@@ -2331,7 +2331,7 @@
 			<mevalue>59</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/vendor/netscalar/traps/voltageLow</uei>
+	<uei>uei.opennms.org/vendor/citrix/netscaler/traps/voltageLow</uei>
 	<event-label>NS-ROOT-MIB defined trap event: voltageLow</event-label>
 	<descr>
 &lt;p&gt;This trap indicates that a voltage has gone low.&lt;/p&gt;&lt;table&gt;
@@ -2376,7 +2376,7 @@
 			<mevalue>60</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/vendor/netscalar/traps/voltageNormal</uei>
+	<uei>uei.opennms.org/vendor/citrix/netscaler/traps/voltageNormal</uei>
 	<event-label>NS-ROOT-MIB defined trap event: voltageNormal</event-label>
 	<descr>
 &lt;p&gt;This trap indicates that a voltage has returned to normal.&lt;/p&gt;&lt;table&gt;
@@ -2421,7 +2421,7 @@
 			<mevalue>61</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/vendor/netscalar/traps/voltageHigh</uei>
+	<uei>uei.opennms.org/vendor/citrix/netscaler/traps/voltageHigh</uei>
 	<event-label>NS-ROOT-MIB defined trap event: voltageHigh</event-label>
 	<descr>
 &lt;p&gt;This trap indicates that a voltage has gone high.&lt;/p&gt;&lt;table&gt;
@@ -2466,7 +2466,7 @@
 			<mevalue>62</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/vendor/netscalar/traps/temperatureHigh</uei>
+	<uei>uei.opennms.org/vendor/citrix/netscaler/traps/temperatureHigh</uei>
 	<event-label>NS-ROOT-MIB defined trap event: temperatureHigh</event-label>
 	<descr>
 &lt;p&gt;This trap indicates that a temperature has gone high.&lt;/p&gt;&lt;table&gt;
@@ -2511,7 +2511,7 @@
 			<mevalue>63</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/vendor/netscalar/traps/temperatureNormal</uei>
+	<uei>uei.opennms.org/vendor/citrix/netscaler/traps/temperatureNormal</uei>
 	<event-label>NS-ROOT-MIB defined trap event: temperatureNormal</event-label>
 	<descr>
 &lt;p&gt;This trap indicates that a temperature has returned to normal.&lt;/p&gt;&lt;table&gt;
@@ -2556,7 +2556,7 @@
 			<mevalue>64</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/vendor/netscalar/traps/diskUsageHigh</uei>
+	<uei>uei.opennms.org/vendor/citrix/netscaler/traps/diskUsageHigh</uei>
 	<event-label>NS-ROOT-MIB defined trap event: diskUsageHigh</event-label>
 	<descr>
 &lt;p&gt;This trap indicates that disk usage has gone high.&lt;/p&gt;&lt;table&gt;
@@ -2601,7 +2601,7 @@
 			<mevalue>65</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/vendor/netscalar/traps/diskUsageNormal</uei>
+	<uei>uei.opennms.org/vendor/citrix/netscaler/traps/diskUsageNormal</uei>
 	<event-label>NS-ROOT-MIB defined trap event: diskUsageNormal</event-label>
 	<descr>
 &lt;p&gt;This trap indicates that disk usage has returned to normal.&lt;/p&gt;&lt;table&gt;
@@ -2646,7 +2646,7 @@
 			<mevalue>66</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/vendor/netscalar/traps/interfaceThroughputLow</uei>
+	<uei>uei.opennms.org/vendor/citrix/netscaler/traps/interfaceThroughputLow</uei>
 	<event-label>NS-ROOT-MIB defined trap event: interfaceThroughputLow</event-label>
 	<descr>
 &lt;p&gt;This trap indicates that interface throughput is low.&lt;/p&gt;&lt;table&gt;
@@ -2691,7 +2691,7 @@
 			<mevalue>67</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/vendor/netscalar/traps/interfaceThroughputNormal</uei>
+	<uei>uei.opennms.org/vendor/citrix/netscaler/traps/interfaceThroughputNormal</uei>
 	<event-label>NS-ROOT-MIB defined trap event: interfaceThroughputNormal</event-label>
 	<descr>
 &lt;p&gt;This trap indicates that interface throughput has returned to normal.&lt;/p&gt;&lt;table&gt;
