@@ -683,7 +683,7 @@ Expand line-height for labels so that they have vertical whitespace between
 each other when they wrap inside a div
 */
 .label {
-  line-height: 2.3;
+  line-height: $line-height-base * 1.5;
 }
 
 /* realign the pagers to the left to match the behavior in 14 */
