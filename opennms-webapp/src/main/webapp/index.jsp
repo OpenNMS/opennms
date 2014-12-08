@@ -70,5 +70,5 @@
 		<!-- Quick Search box -->
 		<jsp:include page="/includes/quicksearch-box.jsp" flush="false" />
 	</div>
-
+</div>
 <jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />

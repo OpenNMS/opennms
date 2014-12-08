@@ -36,7 +36,7 @@
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
-<jsp:include page="/includes/header.jsp" flush="false" >
+<jsp:include page="/includes/bootstrap.jsp" flush="false" >
   <jsp:param name="title" value="ViewVC" />
   <jsp:param name="headTitle" value="${model.id}" />
   <jsp:param name="headTitle" value="ViewVC" />
@@ -46,8 +46,13 @@
   <jsp:param name="breadcrumb" value="ViewVC Group ${model.group}" />
 </jsp:include>
 
-<iframe src="${model.iframelink}" width="100%" height="800">
-  <p>Your browser does not support iframes.</p>
-</iframe>
+<div class="row">
+    <div class="col-md-12">
+        <iframe frameborder="0" src="${model.iframelink}" width="100%" height="800px">
+            <p>Your browser does not support iframes.</p>
+        </iframe>
+    </div>
+</div>
 
-<jsp:include page="/includes/footer.jsp" flush="false" />
+
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />

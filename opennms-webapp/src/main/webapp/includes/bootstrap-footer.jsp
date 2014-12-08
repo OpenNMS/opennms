@@ -50,10 +50,7 @@
 
   <!-- End of Content -->
   <div class="spacer"><!-- --></div>
-<%-- This </div> tag is unmatched in this file (its matching tag is in the
-     header), so we hide it in a JSP code fragment so the Eclipse HTML
-     validator doesn't complain.  See bug #1728. --%>
-<%= "</div>" %><!-- id="content" class="container-fluid" -->
+
 
 <c:choose>
   <c:when test="${param.quiet == 'true'}">
@@ -87,6 +84,12 @@
 	  }
   }
 %>
+
+<%-- This </div> tag is unmatched in this file (its matching tag is in the
+     header), so we hide it in a JSP code fragment so the Eclipse HTML
+     validator doesn't complain.  See bug #1728. --%>
+<%= "</div>" %><!-- id="content" class="container-fluid" -->
+
 <%-- The </body> and </html> tags are unmatched in this file (the matching
      tags are in the header), so we hide them in JSP code fragments so the
      Eclipse HTML validator doesn't complain.  See bug #1728. --%>
