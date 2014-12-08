@@ -48,37 +48,43 @@
         <h3 class="panel-title">Notification queries</h3>
       </div>
       <div class="panel-body">
-        <%-- search by user --%>
         <div class="row">
-          <div class="col-md-12">
-            <form role="form" class="form-inline pull-right" method="get" action="notification/browse">
-              <div class="form-group">
-                <label for="byuser_user">User:</label>
-                <input type="text" class="form-control" id="byuser_user" name="user"/>
-              </div>
-              <button type="submit" class="btn btn-default">Check notices</button>
-            </form>
-          </div> <!-- column -->
-        </div> <!-- row -->
+          <div class="col-md-4 col-xs-6">
+            <ul class="list-unstyled">
+              <li><a href="notification/browse?acktype=unack&filter=<%= java.net.URLEncoder.encode("user="+request.getRemoteUser()) %>">Your outstanding notices</a></li>
+              <li><a href="notification/browse?acktype=unack">All outstanding notices</a></li>
+              <li><a href="notification/browse?acktype=ack">All acknowledged notices</a></li>
+            </ul>
+          </div>
 
-        <%-- search by notice --%>
-        <div class="row top-buffer">
-          <div class="col-md-12">
-            <form role="form" class="form-inline pull-right" method="get" action="notification/detail.jsp" >
-              <div class="form-group">
-                <label for="bynotice_notice">Notice:</label>
-                <input type="text" class="form-control" id="bynotice_notice" name="notice"/>
-              </div>
-              <button type="submit" class="btn btn-default">Get details</button>
-            </form>
-          </div> <!-- column -->
-        </div> <!-- row -->
+          <div class="col-md-8 col-xs-6">
+           <%-- search by user --%>
+           <div class="row">
+             <div class="col-md-12">
+               <form role="form" class="form-inline pull-right" method="get" action="notification/browse">
+                 <div class="form-group">
+                   <label for="byuser_user">User:</label>
+                   <input type="text" class="form-control" id="byuser_user" name="user"/>
+                 </div>
+                 <button type="submit" class="btn btn-default">Check notices</button>
+               </form>
+             </div> <!-- column -->
+           </div> <!-- row -->
 
-        <ul class="list-unstyled">
-          <li><a href="notification/browse?acktype=unack&filter=<%= java.net.URLEncoder.encode("user="+request.getRemoteUser()) %>">Your outstanding notices</a></li>
-          <li><a href="notification/browse?acktype=unack">All outstanding notices</a></li>
-          <li><a href="notification/browse?acktype=ack">All acknowledged notices</a></li>
-        </ul>
+           <%-- search by notice --%>
+           <div class="row top-buffer">
+             <div class="col-md-12">
+               <form role="form" class="form-inline pull-right" method="get" action="notification/detail.jsp" >
+                 <div class="form-group">
+                   <label for="bynotice_notice">Notice:</label>
+                   <input type="text" class="form-control" id="bynotice_notice" name="notice"/>
+                 </div>
+                 <button type="submit" class="btn btn-default">Get details</button>
+               </form>
+             </div> <!-- column -->
+           </div> <!-- row -->
+          </div> <!-- column -->
+       </div> <!-- row -->
       </div> <!-- panel-body -->
     </div> <!-- panel -->
   </div> <!-- column -->
