@@ -468,6 +468,48 @@ a.list-group-item.active:focus {
 	}
 }
 
+.pagination {
+  > li {
+    > a,
+    > span {
+      color: $color_green_leaf_approx;
+      /* background-color: $pagination-bg; */
+      border: 1px solid $table-border-color;
+    }
+  }
+  > li > a,
+  > li > span {
+    &:hover,
+    &:focus {
+      color: $color_green_leaf_approx;
+      /* background-color: $pagination-hover-bg; */
+      border-color: $table-border-color;
+    }
+  }
+  > .active > a,
+  > .active > span {
+    &,
+    &:hover,
+    &:focus {
+      /* color: $pagination-active-color; */
+      background-color: $color_green_leaf_approx;
+      border-color: $color_green_leaf_approx;
+    }
+  }
+  > .disabled {
+    > span,
+    > span:hover,
+    > span:focus,
+    > a,
+    > a:hover,
+    > a:focus {
+      /* color: $pagination-disabled-color;
+      background-color: $pagination-disabled-bg; */
+      border-color: $table-border-color;
+    }
+  }
+}
+
 #notificationOff {
 	color: $color_alizarin_crimson_approx;
 }
@@ -636,6 +678,14 @@ a.list-group-item.active:focus {
 	font-weight: bold;
 }
 
+/* 
+Expand line-height for labels so that they have vertical whitespace between
+each other when they wrap inside a div
+*/
+.label {
+  line-height: $line-height-base * 1.5;
+}
+
 /* realign the pagers to the left to match the behavior in 14 */
 .pager {
 	text-align: left;
@@ -695,6 +745,10 @@ a.list-group-item.active:focus {
   }
 }
 
+/*
+This style is used in some legacy places in the OpenNMS UI.
+Do not confuse it with the Bootstrap .pagination class.
+*/
 .pagination span strong{
   font-weight: normal;
   color: #FFF;

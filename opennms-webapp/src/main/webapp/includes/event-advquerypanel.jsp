@@ -65,6 +65,7 @@
 
 <form action="event/query" method="get">
 
+	<div class="row">
 	<div class="form-group col-sm-6">
 		<label for="msgsub">Event Text Contains:</label>
 		<input class="form-control" type="text" name="msgsub" />
@@ -74,7 +75,9 @@
 		<label for="iplike">TCP/IP Address Like:</label>
 		<input class="form-control" type="text" name="iplike" value="" />
 	</div>
+	</div>
 
+	<div class="row">
 	<div class="form-group col-sm-6">
 		<label for="nodenamelike">Node Label Contains:</label>
 		<input class="form-control" type="text" name="nodenamelike" />
@@ -91,12 +94,16 @@
 			<% } %>
 		</select>
 	</div>
+	</div>
 
+	<div class="row">
 	<div class="form-group col-sm-12">
 		<label for="exactuei">Exact Event UEI:</label>
 		<input class="form-control" type="text" name="exactuei" size="64" maxsize="128" />
 	</div>
+	</div>
 
+	<div class="row">
 	<div class="form-group col-sm-4">
 		<label for="service">Service:</label>
 		<select class="form-control" name="service">
@@ -126,7 +133,7 @@
 	</div>
 
 	<div class="form-group col-sm-4">
-		<label for="limit">Number of Events Per Page:</label>
+		<label for="limit">Number&nbsp;of&nbsp;Events&nbsp;Per&nbsp;Page:</label>
 		<select class="form-control" name="limit">
 			<option value="10">10 events</option>
 			<option value="20">20 events</option>
@@ -136,7 +143,9 @@
 			<option value="1000">1000 events</option>
 		</select>
 	</div>
+	</div>
 
+	<div class="row">
 	<div class="col-sm-6">
 		<label>
 			<input type="checkbox" name="useaftertime" value="1" /> Events After:
@@ -147,17 +156,17 @@
 		-->
 		<br/>
 		<div class="row">
-			<div class="col-sm-2">
+			<div class="col-xs-4 col-sm-4 col-md-3">
 				<select class="form-control" name="afterhour">
 					<c:forEach var="i" begin="1" end="12">
 						<form:option value="${i}" selected="${nowHour==i}">${i}</form:option>
 					</c:forEach>
 				</select>
 			</div>
-			<div class="col-sm-2">
+			<div class="col-xs-4 col-sm-4 col-md-3">
 				<input class="form-control" type="text" name="afterminute" maxlength="2" value="${formattedNowMinute}" />
 			</div>
-			<div class="col-sm-2">
+			<div class="col-xs-4 col-sm-4 col-md-3">
 				<select class="form-control" name="afterampm">
 					<c:forEach var="dayTime" items="AM,Noon,PM,Midnight">
 						<form:option value="${dayTime == 'AM' || dayTime == 'Midnight' ? 'am' : 'pm'}" selected="${dayTime==amPmText}">${dayTime}</form:option>
@@ -166,17 +175,17 @@
 			</div>
 		</div>
 		<div class="row">
-			<div class="col-sm-2">
+			<div class="col-xs-4 col-sm-4 col-md-3">
 				<select class="form-control" name="aftermonth">
 					<c:forEach var="month" items="${months}" varStatus="status">
 						<form:option value="${status.index}" selected="${status.count == nowMonth}">${month}</form:option>
 					</c:forEach>
 				</select>
 			</div>
-			<div class="col-sm-2">
+			<div class="col-xs-4 col-sm-4 col-md-3">
 				<input class="form-control" type="text" name="afterdate" maxlength="2" value="${nowDate}" />
 			</div>
-			<div class="col-sm-2">
+			<div class="col-xs-4 col-sm-4 col-md-3">
 				<input class="form-control" type="text" name="afteryear" maxlength="4" value="${nowYear}" />
 			</div>
 		</div>
@@ -192,17 +201,17 @@
 		-->
 		<br/>
 		<div class="row">
-			<div class="col-sm-2">
+			<div class="col-xs-4 col-sm-4 col-md-3">
 				<select class="form-control" name="beforehour">
 					<c:forEach var="i" begin="1" end="12">
 						<form:option value="${i}" selected="${nowHour==i}">${i}</form:option>
 					</c:forEach>
 				</select>
 			</div>
-			<div class="col-sm-2">
+			<div class="col-xs-4 col-sm-4 col-md-3">
 				<input class="form-control" type="text" name="beforeminute" maxlength="2" value="${formattedNowMinute}" />
 			</div>
-			<div class="col-sm-2">
+			<div class="col-xs-4 col-sm-4 col-md-3">
 				<select class="form-control" name="beforeampm">
 					<c:forEach var="dayTime" items="AM,Noon,PM,Midnight">
 						<form:option value="${dayTime == 'AM' || dayTime == 'Midnight' ? 'am' : 'pm'}" selected="${dayTime==amPmText}">${dayTime}</form:option>
@@ -211,7 +220,7 @@
 			</div>
 		</div>
 		<div class="row">
-			<div class="col-sm-2">
+			<div class="col-xs-4 col-sm-4 col-md-3">
 				<select class="form-control" name="beforemonth">
 					<c:forEach var="month" items="${months}" varStatus="status">
 						<form:option value="${status.index}"
@@ -219,21 +228,18 @@
 					</c:forEach>
 				</select>
 			</div>
-			<div class="col-sm-2">
+			<div class="col-xs-4 col-sm-4 col-md-3">
 				<input class="form-control" type="text" name="beforedate" maxlength="2" value="${nowDate}" />
 			</div>
-			<div class="col-sm-2">
+			<div class="col-xs-4 col-sm-4 col-md-3">
 				<input class="form-control" type="text" name="beforeyear" maxlength="4" value="${nowYear}" />
 			</div>
 		</div>
 	</div>
-
-	<div class="col-sm-12">
-		<br/>
 	</div>
 
-	<div class="form-group col-sm-12">
-		<button class="btn btn-default" type="submit">Search</button>
-	</div>
+	<br/>
+
+	<button class="btn btn-default" type="submit">Search</button>
 
 </form>
