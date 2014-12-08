@@ -38,18 +38,24 @@
 --%>
 
 <%@page language="java" contentType="text/html" session="true" import="
+	org.opennms.web.filter.Filter,
 	org.opennms.web.notification.*,
-	org.opennms.netmgt.config.NotifdConfigFactory"
+	org.opennms.web.notification.filter.*,
+	org.opennms.netmgt.config.NotifdConfigFactory,
+	org.springframework.web.context.WebApplicationContext,
+	org.springframework.web.context.support.WebApplicationContextUtils
+"
 %>
 
 <link rel="stylesheet" href="css/font-awesome-4.0.3/css/font-awesome.min.css">
 
 <%!
-	protected NotificationModel model = new NotificationModel();
-	protected java.text.ChoiceFormat formatter = new java.text.ChoiceFormat( "0#No outstanding notices|1#1 outstanding notice|2#{0} outstanding notices" );
+	protected java.text.ChoiceFormat formatter = new java.text.ChoiceFormat( "0#no outstanding notices|1#1 outstanding notice|2#{0} outstanding notices" );
 %>
-
 <%
+    WebApplicationContext context = WebApplicationContextUtils.getWebApplicationContext(application);
+    WebNotificationRepository repository = context.getBean(WebNotificationRepository.class);
+
     //optional parameter: node
     String nodeIdString = request.getParameter("node");
 
@@ -69,24 +75,34 @@
 		<% if( nodeIdString == null ) { %>
 			<li>
 			<i class="fa fa-fw fa-user"></i>
-			<!-- <strong>You</strong>: -->
 			You have 
 			<a href="notification/browse?acktype=unack&amp;filter=<%= java.net.URLEncoder.encode("user="+request.getRemoteUser()) %>">
 			<%
-				int count = this.model.getOutstandingNoticeCount(request.getRemoteUser());
-				String format = this.formatter.format( count );
+				int count = repository.countMatchingNotifications(
+					new NotificationCriteria(
+						AcknowledgeType.UNACKNOWLEDGED, 
+						new Filter[] { 
+							new UserFilter(request.getRemoteUser())
+						}
+					)
+				);
+				String format = formatter.format( count );
 				out.println( java.text.MessageFormat.format( format, new Object[] { new Integer(count) } ));
 			%>
 			</a>
 			</li>
 			<li>
 			<i class="fa fa-fw fa-users"></i>
-			<!-- <strong>All</strong>: -->
 			There are  
 			<a href="notification/browse?acktype=unack">
 			<%
-				count = this.model.getOutstandingNoticeCount();
-				format = this.formatter.format( count );
+				count = repository.countMatchingNotifications(
+					new NotificationCriteria(
+						AcknowledgeType.UNACKNOWLEDGED,
+						new Filter[0]
+					)
+				);
+				format = formatter.format( count );
 				out.println( java.text.MessageFormat.format( format, new Object[] { new Integer(count) } ));
 			%>
 			</a>
