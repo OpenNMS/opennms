@@ -98,9 +98,12 @@ public abstract class AbstractJsonCollectionHandler extends AbstractXmlCollectio
                 XmlCollectionResource collectionResource = getCollectionResource(agent, resourceName, group.getResourceType(), timestamp);
                 AttributeGroupType attribGroupType = new AttributeGroupType(group.getName(), group.getIfType());
                 for (XmlObject object : group.getXmlObjects()) {
-                    String value = (String) relativeContext.getValue(object.getXpath());
-                    XmlCollectionAttributeType attribType = new XmlCollectionAttributeType(object, attribGroupType);
-                    collectionResource.setAttributeValue(attribType, value);
+                    Object obj = relativeContext.getValue(object.getXpath());
+                    if (obj != null) {
+                        String value = obj.toString();
+                        XmlCollectionAttributeType attribType = new XmlCollectionAttributeType(object, attribGroupType);
+                        collectionResource.setAttributeValue(attribType, value);
+                    }
                 }
                 processXmlResource(collectionResource, attribGroupType);
                 collectionSet.getCollectionResources().add(collectionResource);
