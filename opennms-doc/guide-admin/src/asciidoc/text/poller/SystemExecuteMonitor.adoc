@@ -49,7 +49,7 @@ The parameter `args` supports variable replacement for the following set of vari
 
 [source, xml]
 ----
-<parameter key="args" value="-i {ipaddr} -t ${timeout}"/>
+<parameter key="args" value="-i ${ipaddr} -t ${timeout}"/>
 <parameter key="args" value="http://${nodelabel}/${svcname}/static"/>
 ----
 
