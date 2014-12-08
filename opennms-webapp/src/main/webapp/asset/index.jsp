@@ -79,25 +79,31 @@
             <h3 class="panel-title">Search Asset Information</h3>
           </div>
           <div class="panel-body">
-            <form role="form" class="form-inline text-right" action="asset/nodelist.jsp" method="get">
-              <div class="form-group">
-                <label for="input_searchvalue">Assets in category:</label>
-                <select class="form-control" id="input_searchvalue" name="searchvalue">
-                  <% for( int i=0; i < Asset.CATEGORIES.length; i++ ) { %>
-                    <option><%=Asset.CATEGORIES[i]%></option>
-                  <% } %>
-                </select>
-              </div>
-              <input type="hidden" name="column" value="category" />
-              <button type="submit" class="btn btn-default">Search</button>
-            </form>
-            <ul class="list-unstyled">
-              <li><a href="asset/nodelist.jsp?column=_allNonEmpty">All nodes with asset info</a></li>
-            </ul>
-          </div>
-        </div>
-      </div>
-    </div>
+            <div class="row">
+              <div class="col-md-6 col-xs-6">
+                <ul class="list-unstyled">
+                  <li><a href="asset/nodelist.jsp?column=_allNonEmpty">All nodes with asset info</a></li>
+                </ul>
+              </div> <!-- column -->
+              <div class="col-md-6 col-xs-6">
+                <form role="form" class="form-inline text-right" action="asset/nodelist.jsp" method="get">
+                  <div class="form-group">
+                    <label for="input_searchvalue">Assets in category:</label>
+                    <select class="form-control" id="input_searchvalue" name="searchvalue">
+                      <% for( int i=0; i < Asset.CATEGORIES.length; i++ ) { %>
+                        <option><%=Asset.CATEGORIES[i]%></option>
+                      <% } %>
+                    </select>
+                  </div>
+                  <input type="hidden" name="column" value="category" />
+                  <button type="submit" class="btn btn-default">Search</button>
+                </form>
+              </div> <!-- column -->
+            </div> <!-- row -->
+          </div> <!-- panel-body -->
+        </div> <!-- panel -->
+      </div> <!-- column -->
+    </div> <!-- row -->
     <div class="row">
       <div class="col-md-12">
         <div class="panel panel-default">

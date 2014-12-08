@@ -60,20 +60,26 @@ function validateId() {
         <h3 class="panel-title">Outage Menu</h3>
       </div>
       <div class="panel-body">
-        <form role="form" class="form-inline text-right" name="outageIdForm" method="get" action="outage/detail.htm" onsubmit="return validateId();">
-          <div class="form-group">
-            <label for="input_id">Outage ID:</label>
-            <input type="text" class="form-control" id="input_id" name="id" />
-          </div>
-          <button type="submit" class="btn btn-default">Get details</button>
-        </form>
-        <ul class="list-unstyled">
-          <li><a href="outage/list.htm?outtype=current">Current outages</a></li>
-          <li><a href="outage/list.htm?outtype=both">All outages</a></li>
-        </ul>
-      </div>
-    </div>
-  </div>
+        <div class="row">
+          <div class="col-md-6 col-xs-6">
+            <ul class="list-unstyled">
+              <li><a href="outage/list.htm?outtype=current">Current outages</a></li>
+              <li><a href="outage/list.htm?outtype=both">All outages</a></li>
+            </ul>
+          </div> <!-- column -->
+          <div class="col-md-6 col-xs-6">
+            <form role="form" class="form-inline text-right" name="outageIdForm" method="get" action="outage/detail.htm" onsubmit="return validateId();">
+              <div class="form-group">
+                <label for="input_id">Outage ID:</label>
+                <input type="text" class="form-control" id="input_id" name="id" />
+              </div>
+              <button type="submit" class="btn btn-default">Get details</button>
+            </form>
+          </div> <!-- column -->
+        </div> <!-- row -->
+      </div> <!-- panel-body -->
+    </div> <!-- panel -->
+  </div> <!-- column -->
 
   <div class="col-md-6">
     <div class="panel panel-default">
