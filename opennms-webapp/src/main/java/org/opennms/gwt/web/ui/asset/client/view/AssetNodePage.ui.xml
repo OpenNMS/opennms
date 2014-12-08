@@ -30,6 +30,8 @@
 <ui:UiBinder 
 	xmlns:ui="urn:ui:com.google.gwt.uibinder"
 	xmlns:g="urn:import:com.google.gwt.user.client.ui" 
+	xmlns:b="urn:import:org.gwtbootstrap3.client.ui"
+	xmlns:b.html="urn:import:org.gwtbootstrap3.client.ui.html"
 	xmlns:onms_fs='urn:import:org.opennms.gwt.web.ui.asset.client.tools.fieldsets' 
 	xmlns:onms='urn:import:org.opennms.gwt.web.ui.asset.client.tools'>
 	<ui:with field="con"
