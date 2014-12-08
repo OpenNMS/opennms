@@ -57,10 +57,10 @@
   <jsp:param name="breadcrumb" value="Error" />
 </jsp:include>
 
-<h1>Notice Id Not Found</h1>
+<h1>Notice ID Not Found</h1>
 
 <p>
-  The notice id <%=ninfe.getBadID()%> is invalid. <%=ninfe.getMessage()%>
+  The notice ID <%=ninfe.getBadID()%> is invalid. <%=ninfe.getMessage()%>
   <br/>
   You can re-enter it here or
   <a href="notification/browse?acktype=unack">browse all of the notices</a>
