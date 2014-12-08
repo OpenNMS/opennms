@@ -35,18 +35,19 @@
 	import="org.opennms.core.utils.WebSecurityUtils,
 		org.opennms.web.notification.*,
 		org.opennms.web.element.*,
-		org.opennms.web.event.*
+		org.opennms.web.event.*,
+		org.springframework.web.context.WebApplicationContext,
+		org.springframework.web.context.support.WebApplicationContextUtils
 	"
 %>
 
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 
-<%!
-    NotificationModel model = new NotificationModel();
-%>
-
 <%
+    WebApplicationContext context = WebApplicationContextUtils.getWebApplicationContext(application);
+    WebNotificationRepository repository = context.getBean(WebNotificationRepository.class);
+
     String noticeIdString = request.getParameter("notice");
 
     String eventSeverity;
@@ -61,7 +62,7 @@
 					     noticeIdString );
     }
     
-    Notification notice = this.model.getNoticeInfo(noticeID);
+    Notification notice = repository.getNotification(noticeID);
     
     if( notice == null ) {
         throw new NoticeIdNotFoundException("A notice with this ID was not found.", String.valueOf(noticeID));
@@ -115,7 +116,10 @@
     <th>Node</th>
     <td>
       <%if (nodeLabel!=null) { %>
-        <a href="element/node.jsp?node=<%=notice.getNodeId()%>"><c:out value="<%=nodeLabel%>"/></a>
+        <c:url var="nodeLink" value="element/node.jsp">
+          <c:param name="node" value="<%=String.valueOf(notice.getNodeId())%>"/>
+        </c:url>
+        <a href="${nodeLink}"><c:out value="<%=nodeLabel%>"/></a>
       <% } else { %>
         &nbsp;
       <% } %>
@@ -207,10 +211,19 @@
     <tr class="severity-<%=eventSeverity.toLowerCase()%>">
       <td><%=sentTo.getUserId()%></td>
 
-      <td><fmt:formatDate value="<%=sentTo.getTime()%>" type="BOTH" /></td>
+      <td>
+        <c:choose>
+          <c:when test="<%=sentTo.getTime() != null && sentTo.getTime().getTime() > 0%>">
+            <fmt:formatDate value="<%=sentTo.getTime()%>" type="BOTH" />
+          </c:when>
+          <c:otherwise>
+            &nbsp;
+          </c:otherwise>
+        </c:choose>
+      </td>
 
       <td>
-        <% if (sentTo.getMedia()!=null && !sentTo.getMedia().trim().equals("")) { %>
+        <% if (sentTo.getMedia()!=null && !"".equals(sentTo.getMedia().trim())) { %>
           <%=sentTo.getMedia()%>
         <% } else { %>
           &nbsp;
@@ -218,7 +231,7 @@
       </td>
 
       <td>
-        <% if (sentTo.getContactInfo()!=null && !sentTo.getContactInfo().trim().equals("")) { %>
+        <% if (sentTo.getContactInfo()!=null && !"".equals(sentTo.getContactInfo().trim())) { %>
           <%=sentTo.getContactInfo()%>
         <% } else { %>
           &nbsp;
@@ -229,7 +242,7 @@
   </table>
 </div>
 
-<% if (notice.getTimeReplied()==null) { %>
+<% if (notice.getTimeReplied() == null) { %>
   <form class="form-inline" method="post" name="acknowledge" action="notification/acknowledge">
     <input type="hidden" name="curUser" value="<%=request.getRemoteUser()%>">
     <input type="hidden" name="notices" value="<%=notice.getId()%>"/>
