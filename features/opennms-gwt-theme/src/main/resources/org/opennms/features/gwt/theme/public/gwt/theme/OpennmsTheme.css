@@ -13,14 +13,6 @@
  * updated
  */
 
-body, table td, select {
-  font-family: "Lucida Grande", Verdana, sans-serif;
-}
-pre {
-  font-family: "courier new", courier;
-  font-size: small;
-}
-
 /**
  * The reference theme can be used to determine when this style sheet has
  * loaded.  Create a hidden div element with absolute position, assign the style
@@ -1204,7 +1196,4 @@ table.onms-table-no-borders-margin{
 table.onms-table-no-borders-margin td{
     padding-left: 10px;
 }
-
-
-
 
