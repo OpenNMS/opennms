@@ -72,8 +72,8 @@ public class FieldSetTextArea extends AbstractFieldSet implements FieldSet, KeyU
 		textArea.addChangeHandler(this);
 		textArea.addKeyUpHandler(this);
 		textArea.addMouseUpHandler(this);
-		textArea.setStyleName("textArea");
-		textArea.setSize("50em", "20em");
+		textArea.addStyleName("form-control");
+		textArea.setHeight("20em");
 
 		panel.add(textArea);
 	}
