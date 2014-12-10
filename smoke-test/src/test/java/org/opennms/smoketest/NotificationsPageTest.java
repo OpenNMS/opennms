@@ -53,26 +53,28 @@ public class NotificationsPageTest extends OpenNMSSeleniumTestCase {
 
     @Test 
     public void testAllFormsArePresent() throws InterruptedException {
-        findElementByXpath("//input[@type='submit']");
-        findElementByXpath("//input[@value='Get details']");
+        findElementByXpath("//button[@type='submit' and text() = 'Check notices']");
+        findElementByXpath("//button[@type='submit' and text() = 'Get details']");
     }
 
     @Test
     public void testAllLinks() throws InterruptedException {
         findElementByLink("Your outstanding notices").click();
-        findElementByXpath("//span[@class='filter' and contains(text(), 'admin was notified')]");
+        findElementByXpath("//span[@class='label label-default' and contains(text(), 'admin was notified')]");
         findElementByLink("[Remove all]");
         findElementByLink("Sent Time");
-        findElementByXpath("//input[@type='button' and @value='Acknowledge Notices']");
+        findElementByXpath("//button[@type='button' and text()='Acknowledge Notices']");
 
         notificationsPage();
         findElementByLink("All outstanding notices").click();
         findElementByXpath("//p//strong[text()='outstanding']");
+        findElementByLink("[Show acknowledged]");
         findElementByLink("Respond Time");
 
         notificationsPage();
         findElementByLink("All acknowledged notices").click();
         findElementByXpath("//p//strong[text()='acknowledged']");
+        findElementByLink("[Show outstanding]");
         findElementByLink("Respond Time");
     }
 

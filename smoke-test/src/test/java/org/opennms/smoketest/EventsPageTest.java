@@ -53,9 +53,13 @@ public class EventsPageTest extends OpenNMSSeleniumTestCase {
 
     @Test 
     public void testAdvancedSearch() throws InterruptedException {
-        findElementByLink("Advanced Search").click();
+        findElementByXpath("//button[@type='button' and text() = 'Advanced Search']").click();
         findElementByName("msgsub");
         findElementByName("iplike");
+        findElementByName("nodenamelike");
+        findElementByName("severity");
+        findElementByName("exactuei");
+        findElementByName("service");
         findElementByName("usebeforetime");
     }
 

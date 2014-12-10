@@ -79,7 +79,7 @@ public class MenuHeaderTest extends OpenNMSSeleniumTestCase {
         findElementByXpath("//h3[text()='Customized Reports']");
 
         clickMenuItem("Reports", "Statistics", "statisticsReports/index.htm");
-        findElementByXpath("//span[text()='Statistics Report List']");
+        findElementByXpath("//h3[text()='Statistics Report List']");
 
         clickMenuItem("Dashboards", "Dashboard", "dashboard.jsp");
         findElementByXpath("//div[text()='Surveillance View: default']");

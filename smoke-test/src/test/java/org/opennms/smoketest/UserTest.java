@@ -59,7 +59,7 @@ public class UserTest extends OpenNMSSeleniumTestCase {
         m_driver.findElement(By.cssSelector("input[type=password][name=oldpass]")).sendKeys("12345");
         m_driver.findElement(By.cssSelector("input[type=password][name=pass1]")).sendKeys("23456");
         m_driver.findElement(By.cssSelector("input[type=password][name=pass2]")).sendKeys("34567");
-        m_driver.findElement(By.cssSelector("input[type=submit][value=OK]")).click();
+        m_driver.findElement(By.cssSelector("button[type=submit]")).click();
 
         assertNotNull(wait.until(ExpectedConditions.alertIsPresent()));
         m_driver.switchTo().alert().dismiss();

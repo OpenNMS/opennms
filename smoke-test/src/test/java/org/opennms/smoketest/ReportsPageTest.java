@@ -87,8 +87,8 @@ public class ReportsPageTest extends OpenNMSSeleniumTestCase {
 
         reportsPage();
         findElementByLink("Statistics Reports").click();
-        findElementByXpath("//*[text()='Statistics Report List']");
-        findElementByXpath("//*[contains(text(), 'results found, displaying')]");
+        findElementByXpath("//h3[text()='Statistics Report List']");
+        findElementByXpath("//td[contains(text(), 'results found, displaying') or contains(text(), 'There were no results found')]");
     }
 
 }

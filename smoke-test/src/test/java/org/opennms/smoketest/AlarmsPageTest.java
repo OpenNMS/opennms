@@ -66,7 +66,7 @@ public class AlarmsPageTest extends OpenNMSSeleniumTestCase {
         findElementByXpath("//h3[text()='Outstanding and acknowledged alarms']");
 
         findElementByXpath("//form//input[@name='id']");
-        findElementByXpath("//form//input[@type='submit']");
+        findElementByXpath("//form//button[@type='submit']");
     }
 
     @Test
