@@ -187,15 +187,40 @@
     }
   </script>
 
-      <!-- menu -->
-      <ul class="list-inline">
-        <li><a href="<%=this.makeLink(callback, parms, new ArrayList<Filter>(), favorite)%>" title="Remove all search constraints" >View all events</a></li>
-        <li><a href="<%=org.opennms.web.api.Util.calculateUrlBase(req, "event/advsearch.jsp")%>" title="More advanced searching and sorting options">Advanced Search</a></li>
-        <li><a onclick="javascript:window.open('<%=Util.calculateUrlBase(req, "event/severity.jsp")%>','event_severity_legend', 'fullscreen=no,toolbar=no,status=no,menubar=no,scrollbars=no,resizable=yes,directories=no,location=no,width=525,height=330');" title="Open a window explaining the event severities">Severity Legend</a></li>
+	  <!-- hidden form for adding a new Notification -->
+	  <form action="admin/notification/noticeWizard/notificationWizard" method="post" name="add_notification_form">
+	  	<input type="hidden" name="sourcePage" value="<%=NotificationWizardServlet.SOURCE_PAGE_OTHER_WEBUI%>" />
+	  	<input type="hidden" name="uei" id="uei" value="" /> <!-- Set by java script -->
+	  </form>
 
+<div id="advancedSearchModal" class="modal fade" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-body">
+        <jsp:include page="/includes/event-advquerypanel.jsp" flush="false" />
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="severityLegendModal" class="modal fade" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+        <jsp:include page="/event/severity.jsp" flush="false" />
+    </div>
+  </div>
+</div>
+
+
+<div class="list-group">
+<div class="list-group-item row">
+<div class="col-md-6">
+  <!-- start menu -->
+  <a class="btn btn-default" href="<%=this.makeLink(callback, parms, new ArrayList<Filter>(), favorite)%>">View all events</a>
+  <button type="button" class="btn btn-default" onClick="$('#advancedSearchModal').modal()">Advanced Search</button>
+  <button type="button" class="btn btn-default" onClick="$('#severityLegendModal').modal()">Severity Legend</button>
         <% if( req.isUserInRole( Authentication.ROLE_ADMIN ) || !req.isUserInRole( Authentication.ROLE_READONLY ) ) { %>
           <% if ( eventCount > 0 ) { %>
-            <li>
               <!-- hidden form for acknowledging the result set -->
               <form style="display:inline" action="event/acknowledgeByFilter" method="post" name="acknowledge_by_filter_form">
                 <input type="hidden" name="redirectParms" value="<c:out value="<%=req.getQueryString()%>"/>" />
@@ -204,43 +229,22 @@
               </form>
 
               <% if( AcknowledgeType.UNACKNOWLEDGED.toNormalizedAcknowledgeType().equals(parms.getAckType()) ) { %>
-                <a href="javascript:void()" onclick="if (confirm('Are you sure you want to acknowledge all events in the current search including those not shown on your screen?  (<%=eventCount%> total events)')) {  document.acknowledge_by_filter_form.submit(); }" title="Acknowledge all events that match the current search constraints, even those not shown on the screen">Acknowledge entire search</a>
+                <button type="button" class="btn btn-default" onclick="if (confirm('Are you sure you want to acknowledge all events in the current search including those not shown on your screen?  (<%=eventCount%> total events)')) {  document.acknowledge_by_filter_form.submit(); }" title="Acknowledge all events that match the current search constraints, even those not shown on the screen">Acknowledge entire search</button>
               <% } else { %>
-                <a href="javascript:void()" onclick="if (confirm('Are you sure you want to unacknowledge all events in the current search including those not shown on your screen)?  (<%=eventCount%> total events)')) { document.acknowledge_by_filter_form.submit(); }" title="Unacknowledge all events that match the current search constraints, even those not shown on the screen">Unacknowledge entire search</a>
+                <button type="button" class="btn btn-default" onclick="if (confirm('Are you sure you want to unacknowledge all events in the current search including those not shown on your screen)?  (<%=eventCount%> total events)')) { document.acknowledge_by_filter_form.submit(); }" title="Unacknowledge all events that match the current search constraints, even those not shown on the screen">Unacknowledge entire search</button>
               <% } %>
-            </li>
           <% } %>
         <% } %>
-      </ul>
       <!-- end menu -->
+</div>
+<div class="col-md-6 text-right">
+  <jsp:include page="/includes/event-querypanel.jsp" flush="false" />
+</div>
+</div>
 
-	  <!-- hidden form for adding a new Notification -->
-	  <form action="admin/notification/noticeWizard/notificationWizard" method="post" name="add_notification_form">
-	  	<input type="hidden" name="sourcePage" value="<%=NotificationWizardServlet.SOURCE_PAGE_OTHER_WEBUI%>" />
-	  	<input type="hidden" name="uei" id="uei" value="" /> <!-- Set by java script -->
-	  </form>
-
-            <div>
+<div class="list-group-item row">
             <% if( parms.getFilters().size() > 0 || AcknowledgeType.UNACKNOWLEDGED.toNormalizedAcknowledgeType().equals(parms.getAckType()) || AcknowledgeType.ACKNOWLEDGED.toNormalizedAcknowledgeType().equals(parms.getAckType()) ) { %>
-                <div>
-                  <form class="form-inline">
-                    <div class="form-group">
-                    <label for="favorite-select">Favorites:</label>
-                    <onms:select
-                            defaultText="All Events"
-                            elements='${favorites}'
-                            selected='${favorite}'
-                            handler='${filterFavoriteSelectTagHandler}'
-                            onChange='changeFavorite(this)'/>
-                    </div>
-                  </form>
-                </div>
-            <% } %>
-
-            <jsp:include page="/includes/event-querypanel.jsp" flush="false" />
-
-            <% if( parms.getFilters().size() > 0 || AcknowledgeType.UNACKNOWLEDGED.toNormalizedAcknowledgeType().equals(parms.getAckType()) || AcknowledgeType.ACKNOWLEDGED.toNormalizedAcknowledgeType().equals(parms.getAckType()) ) { %>
-                <p>
+              <div class="col-md-8">
                     <onms:filters
                             context="/event/list"
                             favorite="${favorite}"
@@ -250,7 +254,11 @@
                             acknowledgeFilterPrefix="Event(s)"
                             acknowledgeFilterSuffix="event(s)"
                             callback="${callback}" />
+                            </div>
 
+               <div class="col-md-4 text-right">
+                  <form class="form-inline">
+                    <div class="form-group">
                     <onms:favorite
                             favorite="${favorite}"
                             parameters="${parms}"
@@ -260,9 +268,20 @@
                             deleteFavoriteController="/event/deleteFavorite"
                             onDeselect="<%=FavoriteTag.Action.CLEAR_FILTERS%>"/>
 
-                </p>
+                    <label for="favorite-select">Filter Favorites:</label>
+                    <onms:select
+                            defaultText="All Events"
+                            elements='${favorites}'
+                            selected='${favorite}'
+                            handler='${filterFavoriteSelectTagHandler}'
+                            onChange='changeFavorite(this)'/>
+                    </div>
+                  </form>
+                  </div>
+
             <% } %>
-            </div>
+</div>
+</div>
 
             <onms:alert/>
 
@@ -291,7 +310,6 @@
         <input type="hidden" name="actionCode" value="<%=action%>" />
         <%=org.opennms.web.api.Util.makeHiddenTags(req)%>
     <% } %>
-                <jsp:include page="/includes/key.jsp" flush="false" />
 
     <% String acknowledgeEvent = System.getProperty("opennms.eventlist.acknowledge"); %>
 

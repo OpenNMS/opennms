@@ -29,14 +29,7 @@
 
 --%>
 
-<jsp:include page="/includes/bootstrap.jsp" flush="false" >
-  <jsp:param name="title" value="Event Severity Legend" />
-  <jsp:param name="headTitle" value="Severity Legend" />
-  <jsp:param name="headTitle" value="Events" />
-  <jsp:param name="quiet" value="true" />
-</jsp:include>
-
-<table class="table table-condensed severity">
+<table class="table table-condensed severity" style="margin-bottom: 0px;">
   <tr class="severity-critical">
     <td class="bright"><strong>Critical</strong></td>
     <td>This event means numerous devices on the network are affected by the event. Everyone who can should stop what they are doing and focus on fixing the problem.</td>
@@ -66,8 +59,3 @@
     <td>This event indicates that a prior error condition has been corrected and service is restored</td>
   </tr>
 </table>
-
-<jsp:include page="/includes/bootstrap-footer.jsp" flush="false" >
-  <jsp:param name="quiet" value="true" />
-</jsp:include>
-

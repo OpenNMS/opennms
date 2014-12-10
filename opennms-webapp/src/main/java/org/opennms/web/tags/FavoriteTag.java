@@ -134,7 +134,7 @@ public class FavoriteTag extends TagSupport {
      */
     private static final String IMG_TEMPLATE = new String("<img style=\"cursor:pointer;\" title=\"{0}\" with=25 height=25 onClick=\"{1}\" src=\"{2}\"/>{3}");
 
-    private static final String BUTTON_TEMPLATE = new String("<button class=\"btn btn-default\" onClick=\"{0}\" title=\"{1}\" >{2}</button>");
+    private static final String BUTTON_TEMPLATE = new String("<a class=\"btn btn-default\" onClick=\"{0}\" title=\"{1}\" >{2}</a>");
 
     private static final String JAVASCRIPT_TEMPLATE =    "<script type=\"text/javascript\">\n{SELECT_SCRIPT}\n\n{DESELECT_SCRIPT}\n</script>\n";
 

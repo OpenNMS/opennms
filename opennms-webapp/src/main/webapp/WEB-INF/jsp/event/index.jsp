@@ -1,7 +1,3 @@
-<%@ page import="org.opennms.web.filter.NormalizedQueryParameters" %>
-<%@ page import="org.opennms.web.tags.filters.EventFilterCallback" %>
-<%@ page import="org.opennms.web.tags.filters.FilterCallback" %>
-<%@ page import="org.opennms.netmgt.model.OnmsFilterFavorite" %>
 <%--
 /*******************************************************************************
  * This file is part of OpenNMS(R).
@@ -37,6 +33,14 @@
 	contentType="text/html"
 	session="true"
 %>
+
+<%@ page import="java.util.List" %>
+<%@ page import="org.opennms.web.filter.NormalizedQueryParameters" %>
+<%@ page import="org.opennms.web.tags.filters.EventFilterCallback" %>
+<%@ page import="org.opennms.web.tags.filters.FilterCallback" %>
+<%@ page import="org.opennms.netmgt.model.OnmsFilterFavorite" %>
+<%@ page import="org.opennms.web.filter.Filter" %>
+<%@ page import="org.opennms.core.utils.WebSecurityUtils" %>
 
 <jsp:include page="/includes/bootstrap.jsp" flush="false" >
   <jsp:param name="title" value="Events" />
@@ -81,11 +85,28 @@
         <c:choose>
             <c:when test="${!empty favorites}">
                 <!-- Filters -->
-                <ul class="plain">
+                <ul class="list-unstyled">
                     <c:forEach var="eachFavorite" items="${favorites}">
-                        <li><img src="css/images/ui-trans_1x1.png" class="info" onMouseOver="showTT('${eachFavorite.id}')" onMouseOut="hideTT()"/>
-                            <a href="event/list?favoriteId=${eachFavorite.id}&${eachFavorite.filter}" title='show events for this favorite'>${eachFavorite.name}</a> [ <a href="event/deleteFavorite?favoriteId=${eachFavorite.id}&redirect=/event/index" title='delete favorite'>X</a> ]
-                        </li>
+                      	<%
+                      		OnmsFilterFavorite current = (OnmsFilterFavorite) pageContext.getAttribute("eachFavorite");
+    						FilterCallback callback = (EventFilterCallback) request.getAttribute("callback");
+
+					    	List<Filter> queryElements = callback.parse(current.getFilter());
+					    	
+					    	StringBuilder buf = new StringBuilder("<ul class=\"list-unstyled\">"); 
+					    	for(Filter queryElement : queryElements) {
+					    	    buf.append("<li>");
+					    		buf.append(WebSecurityUtils.sanitizeString(queryElement.getTextDescription()));
+							    buf.append("</li>");
+					    	}
+					    	buf.append("</ul>");
+					    	
+					    	pageContext.setAttribute("favTitle", buf.toString());
+    					%>
+                      
+                          <li>
+                              <a href="event/list?favoriteId=${eachFavorite.id}&${eachFavorite.filter}" title='${favTitle}' data-html="true" data-toggle="tooltip" data-placement="right">${eachFavorite.name}</a> <a href="event/deleteFavorite?favoriteId=${eachFavorite.id}&redirect=/event/index" title='Delete favorite' data-toggle="tooltip" data-placement="right"><span class="glyphicon glyphicon-remove text-danger"></span></a>
+                          </li>
                     </c:forEach>
                 </ul>
             </c:when>
@@ -96,30 +117,6 @@
       </div>
       </div>
   </div>
-
-<!-- Tooltips for filters -->
-<c:forEach var="eachFavorite" items="${favorites}">
-    <%
-        OnmsFilterFavorite current = (OnmsFilterFavorite) pageContext.getAttribute("eachFavorite");
-        FilterCallback callback = (EventFilterCallback) request.getAttribute("callback");
-
-        NormalizedQueryParameters params = new NormalizedQueryParameters();
-        params.setFilters(callback.parse(current.getFilter()));
-
-        pageContext.setAttribute("parms", params);
-    %>
-    <div class="tooltip" style="" id="${eachFavorite.id}">
-        <p><b>Filter: </b><br/>
-            <onms:filters
-                    context="/event/index"
-                    favorite="${eachFavorite}"
-                    parameters="${parms}"
-                    showRemoveLink="false"
-                    showAcknowledgeFilter="false"
-                    callback="${callback}" />
-        </p>
-    </div>
-</c:forEach>
 
   <div class="col-md-6">
 	<div class="panel panel-default">
@@ -148,4 +145,13 @@
 	</div>
   </div>
 </div>
+
+<!--  enable tooltips -->
+<script type="text/javascript">
+  $(function () {
+	  $('[data-toggle="tooltip"]').tooltip()
+	});
+	
+</script>
+
 <jsp:include page="/includes/bootstrap-footer.jsp" flush="false"/>
