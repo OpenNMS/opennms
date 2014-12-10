@@ -157,11 +157,14 @@ public class EventQueryServlet extends HttpServlet {
         // convenient syntax for AfterDateFilter as relative to current time
         String relativeTime = WebSecurityUtils.sanitizeString(request.getParameter("relativetime"));
         if (relativeTime != null && !relativeTime.equalsIgnoreCase("any")) {
-            try {
-                filterArray.add(EventUtil.getRelativeTimeFilter(WebSecurityUtils.safeParseInt(relativeTime)));
-            } catch (IllegalArgumentException e) {
-                // ignore the relative time if it is an illegal value
-                this.log("Illegal relativetime value", e);
+            int timeInt = WebSecurityUtils.safeParseInt(relativeTime);
+            if (timeInt > 0) {
+                try {
+                    filterArray.add(EventUtil.getRelativeTimeFilter(timeInt));
+                } catch (IllegalArgumentException e) {
+                    // ignore the relative time if it is an illegal value
+                    this.log("Illegal relativetime value", e);
+                }
             }
         }
 
