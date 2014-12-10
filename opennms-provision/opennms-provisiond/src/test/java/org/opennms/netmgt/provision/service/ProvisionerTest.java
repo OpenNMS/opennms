@@ -117,6 +117,7 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.io.UrlResource;
 import org.springframework.core.style.ToStringCreator;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.ContextConfiguration;
 
 /**
@@ -136,7 +137,7 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath:/importerServiceTest.xml"
 })
 @JUnitConfigurationEnvironment(systemProperties="org.opennms.provisiond.enableDiscovery=false")
-@DirtiesContext
+@DirtiesContext(classMode=ClassMode.AFTER_EACH_TEST_METHOD)
 public class ProvisionerTest extends ProvisioningTestCase implements InitializingBean, MockSnmpDataProviderAware {
     private static final Logger LOG = LoggerFactory.getLogger(ProvisionerTest.class);
 
@@ -1086,6 +1087,7 @@ public class ProvisionerTest extends ProvisioningTestCase implements Initializin
         assertEquals(1, ifaces.size());
         final OnmsNode node = ifaces.iterator().next().getNode();
         assertEquals(2, node.getIpInterfaces().size());
+        assertEquals(2, getMonitoredServiceDao().findAll().size()); // SNMP on each of the 2 interfaces
         m_eventAnticipator.reset();
 
         // the service and interface should be deleted

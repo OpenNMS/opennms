@@ -38,7 +38,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.netmgt.dao.api.NodeDao;
-import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
+import org.opennms.netmgt.model.OnmsArpInterface;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsIpInterface;
@@ -96,16 +96,31 @@ public class MockNodeDao extends AbstractMockDao<OnmsNode, Integer> implements N
     }
 
     private void updateSubObjects(final OnmsNode node) {
+        node.getAssetRecord().setNode(node);
         getAssetRecordDao().saveOrUpdate(node.getAssetRecord());
+
         for (final OnmsCategory cat : node.getCategories()) {
             getCategoryDao().saveOrUpdate(cat);
         }
+
         getDistPollerDao().saveOrUpdate(node.getDistPoller());
-        final SnmpInterfaceDao snmpInterfaceDao = getSnmpInterfaceDao();
-        for (final OnmsSnmpInterface iface : node.getSnmpInterfaces()) {
-            snmpInterfaceDao.saveOrUpdate(iface);
+
+        /** delete any interfaces that were removed compared to the database **/
+        final OnmsNode dbNode = node.getId() == null? null : get(node.getId());
+        if (dbNode != null) {
+            for (final OnmsSnmpInterface iface : dbNode.getSnmpInterfaces()) {
+                if (!node.getSnmpInterfaces().contains(iface)) {
+                    getSnmpInterfaceDao().delete(iface);
+                }
+            }
+            for (final OnmsIpInterface iface : dbNode.getIpInterfaces()) {
+                if (!node.getIpInterfaces().contains(iface)) {
+                    getIpInterfaceDao().delete(iface);
+                }
+            }
         }
         /* not sure if this is necessary */
+        /*
         for (final OnmsIpInterface iface : getIpInterfaceDao().findAll()) {
             final OnmsSnmpInterface snmpInterface = iface.getSnmpInterface();
             if (snmpInterface != null && snmpInterface.getId() != null) {
@@ -114,7 +129,19 @@ public class MockNodeDao extends AbstractMockDao<OnmsNode, Integer> implements N
                 }
             }
         }
+         */
+
+        for (final OnmsArpInterface iface : node.getArpInterfaces()) {
+            iface.setNode(node);
+        }
+
+        for (final OnmsSnmpInterface iface : node.getSnmpInterfaces()) {
+            iface.setNode(node);
+            getSnmpInterfaceDao().saveOrUpdate(iface);
+        }
+
         for (final OnmsIpInterface iface : node.getIpInterfaces()) {
+            iface.setNode(node);
             getIpInterfaceDao().saveOrUpdate(iface);
         }
     }

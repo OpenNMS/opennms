@@ -64,7 +64,6 @@ import org.opennms.netmgt.model.AbstractEntityVisitor;
 import org.opennms.netmgt.model.EntityVisitor;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsDistPoller;
-import org.opennms.netmgt.model.OnmsEntity;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
@@ -344,8 +343,6 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
                 requisitionedNode = getRequisitionedNode(foreignSource, foreignId);
             }
 
-            OnmsEntity highestEntity = null;
-
             if (isRequisitionedEntityDeletionEnabled() || requisitionedNode == null) {
                 LOG.debug("deleteService: requisitioned entity deletion is enabled, or the node does not exist in the requisition");
                 // we're allowing deletion, or there is no requisition for the node, so go for it
@@ -363,8 +360,9 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
 
                 // remove the service from the interface
                 iface.removeMonitoredService(monSvc);
-                m_ipInterfaceDao.saveOrUpdate(iface);
-                highestEntity = monSvc;
+                m_nodeDao.saveOrUpdate(iface.getNode());
+                m_nodeDao.flush();
+                monSvc.visit(visitor);
 
                 if (lastService) {
                     // the interface should be deleted too
@@ -375,7 +373,8 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
                     }
                     node.removeIpInterface(iface);
                     m_nodeDao.saveOrUpdate(node);
-                    highestEntity = iface;
+                    m_nodeDao.flush();
+                    iface.visit(visitor);
 
                     if (lastInterface) {
                         // the node should be deleted too
@@ -385,13 +384,10 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
                             LOG.debug("Deleting discovered node {}/{}/{}", nodeId, foreignSource, foreignId);
                         }
                         m_nodeDao.delete(node);
-                        highestEntity = node;
+                        m_nodeDao.flush();
+                        node.visit(visitor);
                     }
                 }
-
-                m_ipInterfaceDao.flush();
-                m_nodeDao.flush();
-                highestEntity.visit(visitor);
             } else {
                 LOG.debug("NOT deleting requisitioned service {} from node {}/{}/{} on address {} (enableDeletionOfRequisitionedEntities=false)", service, nodeId, foreignSource, foreignId, addrAsString);
             }
@@ -399,8 +395,8 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
             if (shouldDelete(monSvc)) {
                 final OnmsIpInterface iface = monSvc.getIpInterface();
                 iface.removeMonitoredService(monSvc);
-                m_ipInterfaceDao.saveOrUpdate(iface);
-                m_ipInterfaceDao.flush();
+                m_nodeDao.saveOrUpdate(iface.getNode());
+                m_nodeDao.flush();
                 monSvc.visit(visitor);
             }
         }

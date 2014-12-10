@@ -74,6 +74,9 @@ public class MockIpInterfaceDao extends AbstractMockDao<OnmsIpInterface, Integer
             node = getNodeDao().get(iface.getNodeId());
         } else if (iface.getNode() != null) {
             node = getNodeDao().findByForeignId(iface.getNode().getForeignSource(), iface.getNode().getForeignId());
+            if (node == null) {
+                node = getNodeDao().findByForeignId(iface.getNode().getForeignSource(), iface.getNode().getForeignId());
+            }
         }
         if (node != null && node != iface.getNode()) {
             LOG.debug("merging node {} into node {}", iface.getNode(), node);
