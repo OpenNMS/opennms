@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.eventd;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.opennms.netmgt.events.api.EventHandler;
@@ -58,6 +59,8 @@ public final class DefaultEventHandlerImpl implements InitializingBean, EventHan
     private static final Logger LOG = LoggerFactory.getLogger(DefaultEventHandlerImpl.class);
     
     private List<EventProcessor> m_eventProcessors;
+
+    private boolean m_logEventSummaries;
 
     /**
      * <p>Constructor for DefaultEventHandlerImpl.</p>
@@ -101,6 +104,10 @@ public final class DefaultEventHandlerImpl implements InitializingBean, EventHan
             }
 
             for (final Event event : events.getEventCollection()) {
+                if (getLogEventSummaries() && LOG.isInfoEnabled()) {
+                    LOG.info("Received event: UEI={}, src={}, iface={}, svc={}, time={}, parms={}", event.getUei(), event.getSource(), event.getInterface(), event.getService(), event.getTime(), getPrettyParms(event));
+                }
+
                 if (LOG.isDebugEnabled()) {
                     // Log the uei, source, and other important aspects
                     final String uuid = event.getUuid();
@@ -109,8 +116,9 @@ public final class DefaultEventHandlerImpl implements InitializingBean, EventHan
                     LOG.debug("  uei   = {}", event.getUei());
                     LOG.debug("  src   = {}", event.getSource());
                     LOG.debug("  iface = {}", event.getInterface());
+                    LOG.debug("  svc   = {}", event.getService());
                     LOG.debug("  time  = {}", event.getTime());
-                    if (event.getParmCollection().size() > 0) {
+                    if (getPrettyParms(event).size() > 0) {
                         LOG.debug("  parms {");
                         for (final Parm parm : event.getParmCollection()) {
                             if ((parm.getParmName() != null) && (parm.getValue().getContent() != null)) {
@@ -134,6 +142,14 @@ public final class DefaultEventHandlerImpl implements InitializingBean, EventHan
                     }
                 }
             }
+        }
+
+        private List<String> getPrettyParms(final Event event) {
+            final List<String> parms = new ArrayList<>();
+            for (final Parm p : event.getParmCollection()) {
+                parms.add(p.getParmName() + "=" + p.getValue().getContent());
+            }
+            return parms;
         }
 
     }
@@ -165,5 +181,13 @@ public final class DefaultEventHandlerImpl implements InitializingBean, EventHan
      */
     public void setEventProcessors(List<EventProcessor> eventProcessors) {
         m_eventProcessors = eventProcessors;
+    }
+    
+    public boolean getLogEventSummaries() {
+        return m_logEventSummaries;
+    }
+    
+    public void setLogEventSummaries(final boolean logEventSummaries) {
+        m_logEventSummaries = logEventSummaries;
     }
 }

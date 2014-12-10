@@ -34,7 +34,6 @@ import java.net.InetAddress;
 
 import org.opennms.core.tasks.BatchTask;
 import org.opennms.core.tasks.DefaultTaskCoordinator;
-import org.opennms.core.tasks.RunInBatch;
 import org.opennms.core.tasks.Task;
 import org.opennms.netmgt.config.api.SnmpAgentConfigFactory;
 import org.opennms.netmgt.events.api.EventForwarder;
@@ -48,7 +47,7 @@ import org.slf4j.LoggerFactory;
  * @author ranger
  * @version $Id: $
  */
-public class NewSuspectScan implements RunInBatch {
+public class NewSuspectScan implements Scan {
     private static final Logger LOG = LoggerFactory.getLogger(NewSuspectScan.class);
     private InetAddress m_ipAddress;
     private ProvisionService m_provisionService;
@@ -75,11 +74,7 @@ public class NewSuspectScan implements RunInBatch {
         m_foreignSource = foreignSource;
     }
     
-    /**
-     * <p>createTask</p>
-     *
-     * @return a {@link org.opennms.core.tasks.Task} object.
-     */
+    @Override
     public Task createTask() {
         return m_taskCoordinator.createBatch().add(this).get();
     }

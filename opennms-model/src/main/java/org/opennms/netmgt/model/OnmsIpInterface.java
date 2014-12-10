@@ -79,8 +79,7 @@ import org.springframework.core.style.ToStringCreator;
 @XmlAccessorType(XmlAccessType.NONE)
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class OnmsIpInterface extends OnmsEntity implements Serializable {
-    
-    private static final long serialVersionUID = 7750043250236397014L;
+    private static final long serialVersionUID = 5202941338689399917L;
 
     private Integer m_id;
 
@@ -355,8 +354,18 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
         m_node = node;
     }
 
+    @XmlTransient
+    @Transient
+    @JsonIgnore
+    public Integer getNodeId() {
+        if (m_node != null) {
+            return m_node.getId();
+        }
+        return null;
+    }
+
     /**
-     * The services on this node
+     * The services on this interface
      *
      * @return a {@link java.util.Set} object.
      */
@@ -376,6 +385,15 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
         m_monitoredServices = ifServices;
     }
 
+    @Transient
+    @JsonIgnore
+    public void addMonitoredService(final OnmsMonitoredService svc) {
+        m_monitoredServices.add(svc);
+    }
+
+    public void removeMonitoredService(final OnmsMonitoredService svc) {
+        m_monitoredServices.remove(svc);
+    }
 
     /**
      * The SnmpInterface associated with this interface if any
@@ -413,6 +431,7 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
         .append("isManaged", m_isManaged)
         .append("isSnmpPrimary", m_isSnmpPrimary)
         .append("ipLastCapsdPoll", m_ipLastCapsdPoll)
+        .append("nodeId", getNodeId())
         .toString();
     }
 
@@ -612,6 +631,26 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
         mergeInterfaceAttributes(scannedIface);
         updateSnmpInterface(scannedIface);
         mergeMonitoredServices(scannedIface, eventForwarder, deleteMissing);
+    }
+
+    @Transient
+    @XmlTransient
+    @JsonIgnore
+    public String getForeignSource() {
+        if (getNode() != null) {
+            return getNode().getForeignSource();
+        }
+        return null;
+    }
+
+    @Transient
+    @XmlTransient
+    @JsonIgnore
+    public String getForeignId() {
+        if (getNode() != null) {
+            return getNode().getForeignId();
+        }
+        return null;
     }
 
 }

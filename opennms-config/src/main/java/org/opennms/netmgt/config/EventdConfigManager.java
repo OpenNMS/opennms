@@ -201,12 +201,24 @@ public class EventdConfigManager implements EventdConfig {
     /**
      * Return flag indicating if timeout to be set on the socket is specified.
      *
-     * @return flag indicating if timeout to be set on the socket is specified <
+     * @return flag indicating if timeout to be set on the socket is specified
      */
     public boolean hasSocketSoTimeoutPeriod() {
         getReadLock().lock();
         try {
             return m_config.hasSocketSoTimeoutPeriod();
+        } finally {
+            getReadLock().unlock();
+        }
+    }
+    
+    /**
+     * Whether or not Eventd should log event summaries.
+     */
+    public boolean shouldLogEventSummaries() {
+        getReadLock().lock();
+        try {
+            return m_config.hasLogEventSummaries() ? m_config.getLogEventSummaries() : false;
         } finally {
             getReadLock().unlock();
         }

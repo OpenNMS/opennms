@@ -163,6 +163,10 @@ start_opennms() {
 	sleep 20
 }
 
+clean_firefox() {
+	rm -rf "$HOME"/.mozilla
+}
+
 run_tests() {
 	banner "Running Tests"
 
@@ -208,6 +212,7 @@ reset_database
 get_source
 configure_opennms
 start_opennms
+clean_firefox
 
 run_tests
 RETVAL=$?
