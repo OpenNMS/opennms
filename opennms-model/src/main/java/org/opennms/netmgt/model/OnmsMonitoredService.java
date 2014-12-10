@@ -73,13 +73,8 @@ import org.springframework.core.style.ToStringCreator;
 @Entity
 @Table(name="ifServices")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-public class OnmsMonitoredService extends OnmsEntity implements Serializable,
-Comparable<OnmsMonitoredService> {
-
-    /**
-     * 
-     */
-    private static final long serialVersionUID = -7106081378757872886L;
+public class OnmsMonitoredService extends OnmsEntity implements Serializable, Comparable<OnmsMonitoredService> {
+    private static final long serialVersionUID = 7899180234592272274L;
 
     private Integer m_id;
 
@@ -599,4 +594,24 @@ Comparable<OnmsMonitoredService> {
 		 */
 		return !"N".equals(oldStatus) && newStatus != null && !newStatus.equals(oldStatus);
 	}
+
+    @Transient
+    @XmlTransient
+    @JsonIgnore
+    public String getForeignSource() {
+        if (getIpInterface() != null) {
+            return getIpInterface().getForeignSource();
+        }
+        return null;
+    }
+
+    @Transient
+    @XmlTransient
+    @JsonIgnore
+    public String getForeignId() {
+        if (getIpInterface() != null) {
+            return getIpInterface().getForeignId();
+        }
+        return null;
+    }
 }

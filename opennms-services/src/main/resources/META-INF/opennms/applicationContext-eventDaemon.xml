@@ -62,6 +62,8 @@
     <property name="serviceTypeDao" ref="serviceTypeDao"/>
   </bean>
   
+  <bean id="shouldLogEventSummaries" factory-bean="eventdConfigManager" factory-method="shouldLogEventSummaries"/>
+  
   <bean id="eventdEventHandler" class="org.opennms.netmgt.eventd.DefaultEventHandlerImpl">
     <property name="eventProcessors">
       <list>
@@ -75,6 +77,7 @@
         <ref local="eventIpcBroadcastProcessor"/>
       </list>
     </property>
+    <property name="logEventSummaries" ref="shouldLogEventSummaries" />
   </bean>
   
   <bean id="eventWriter" class="org.opennms.netmgt.eventd.processor.JdbcEventWriter">

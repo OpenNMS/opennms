@@ -37,23 +37,43 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.model.OnmsApplication;
+import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.ServiceSelector;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class MockMonitoredServiceDao extends AbstractMockDao<OnmsMonitoredService, Integer> implements MonitoredServiceDao {
+    private static final Logger LOG = LoggerFactory.getLogger(MockMonitoredServiceDao.class);
     private AtomicInteger m_id = new AtomicInteger(0);
 
     @Override
     public void save(final OnmsMonitoredService svc) {
+        updateParent(svc);
         super.save(svc);
         updateSubObjects(svc);
     }
 
     @Override
     public void update(final OnmsMonitoredService svc) {
+        updateParent(svc);
         super.update(svc);
         updateSubObjects(svc);
+    }
+    
+    private void updateParent(final OnmsMonitoredService svc) {
+        if (svc.getIpInterface() != null && svc.getIpInterface().getId() != null) {
+            final OnmsIpInterface iface = getIpInterfaceDao().get(svc.getIpInterface().getId());
+            if (iface != null && iface != svc.getIpInterface()) {
+                LOG.debug("merging interface {} into interface {}", svc.getIpInterface(), iface);
+                iface.mergeInterface(svc.getIpInterface(), new NullEventForwarder(), false);
+                svc.setIpInterface(iface);
+            }
+            if (!svc.getIpInterface().getMonitoredServices().contains(svc)) {
+                svc.getIpInterface().addMonitoredService(svc);
+            }
+        }
     }
 
     private void updateSubObjects(final OnmsMonitoredService svc) {

@@ -92,10 +92,5 @@
       <groupId>org.ow2.asm</groupId>
       <artifactId>asm-all</artifactId>
     </dependency>
-    <!-- replace asm/asm from pax-exam-junit4 -->
-    <dependency>
-      <groupId>org.ow2.asm</groupId>
-      <artifactId>asm-all</artifactId>
-    </dependency>
   </dependencies>
 </project>
