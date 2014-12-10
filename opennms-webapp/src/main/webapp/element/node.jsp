@@ -483,6 +483,72 @@ function confirmAssetEdit() {
     </div>
   </c:if>
 
+  <!-- Critical Path info, if info available -->
+  <c:if test="${model.criticalPath != model.noCriticalPath}">
+    <div class="panel panel-default">
+    <div class="panel-heading">
+      <h3 class="panel-title">Path Outage - Critical Path</h3>
+    </div>
+    <div class="panel-body">
+      <ul class="list-unstyled">
+        <li>
+          ${model.criticalPath}
+        </li>
+      </ul> 
+    </div>          
+    </div>    
+  </c:if>
+	
+  <!-- Availability box -->
+  <c:if test="${fn:length( model.intfs ) < 10}">
+    <jsp:include page="/includes/nodeAvailability-box.jsp" flush="false" >
+      <jsp:param name="node" value="${model.id}" />
+    </jsp:include>
+  </c:if>
+
+  <script type="text/javascript">
+    var nodeId = ${model.id}
+  </script>
+  <div id="interface-panel-gwt" class="panel panel-default">
+    <div class="panel-heading">
+    	<h3 class="panel-title">Node Interfaces</h3>
+    </div>
+    <opennms:interfacelist id="gwtnodeList"></opennms:interfacelist>
+    <div name="opennms-interfacelist" id="gwtnodeList-ie"></div>
+  </div>
+	
+  <!-- Vlan box if available -->
+  <c:if test="${! empty model.vlans}">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+    	<h3 class="panel-title">VLAN Information</h3>
+      </div>
+    <table class="table table-condensed">
+      <thead class="dark">
+        <tr>
+          <th>Vlan ID</th>
+          <th>Vlan Name</th>
+          <th>Vlan Type</th>
+          <th>Vlan Status</th>
+          <th>Status</th>
+          <th>Last Poll Time</th>
+        </tr>
+      </thead>
+  
+      <c:forEach items="${model.vlans}" var="vlan">
+        <tr>
+          <td>${vlan.vlanId}</td>
+          <td>${vlan.vlanName}</td>
+          <td>${vlan.vlanTypeString}</td>
+          <td>${vlan.vlanStatusString}</td>
+          <td>${vlan.statusString}</td>
+          <td>${vlan.lastPollTime}</td>
+        </tr>
+      </c:forEach>
+    </table>
+    </div>
+  </c:if>
+
   <!-- LLDP box, if info available --> 
   <c:if test="${! empty model.lldp }">
     <div class="panel panel-default">
@@ -665,73 +731,6 @@ function confirmAssetEdit() {
     </div>
   </c:if>
 
-  <!-- Critical Path info, if info available -->
-  <c:if test="${model.criticalPath != model.noCriticalPath}">
-    <div class="panel panel-default">
-    <div class="panel-heading">
-      <h3 class="panel-title">Path Outage - Critical Path</h3>
-    </div>
-    <div class="panel-body">
-      <ul class="list-unstyled">
-        <li>
-          ${model.criticalPath}
-        </li>
-      </ul> 
-    </div>          
-    </div>    
-  </c:if>
-	
-  <!-- Availability box -->
-  <c:if test="${fn:length( model.intfs ) < 10}">
-    <jsp:include page="/includes/nodeAvailability-box.jsp" flush="false" >
-      <jsp:param name="node" value="${model.id}" />
-    </jsp:include>
-  </c:if>
-
-  <script type="text/javascript">
-    var nodeId = ${model.id}
-  </script>
-  <div id="interface-panel-gwt" class="panel panel-default">
-    <div class="panel-heading">
-    	<h3 class="panel-title">Node Interfaces</h3>
-    </div>
-    <opennms:interfacelist id="gwtnodeList"></opennms:interfacelist>
-    <div name="opennms-interfacelist" id="gwtnodeList-ie"></div>
-  </div>
-	
-  <!-- Vlan box if available -->
-  <c:if test="${! empty model.vlans}">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-    	<h3 class="panel-title">VLAN Information</h3>
-      </div>
-    <table class="table table-condensed">
-      <thead class="dark">
-        <tr>
-          <th>Vlan ID</th>
-          <th>Vlan Name</th>
-          <th>Vlan Type</th>
-          <th>Vlan Status</th>
-          <th>Status</th>
-          <th>Last Poll Time</th>
-        </tr>
-      </thead>
-  
-      <c:forEach items="${model.vlans}" var="vlan">
-        <tr>
-          <td>${vlan.vlanId}</td>
-          <td>${vlan.vlanName}</td>
-          <td>${vlan.vlanTypeString}</td>
-          <td>${vlan.vlanStatusString}</td>
-          <td>${vlan.statusString}</td>
-          <td>${vlan.lastPollTime}</td>
-        </tr>
-      </c:forEach>
-    </table>
-    </div>
-  </c:if>
-
-  
 </div>
 
 <div class="col-md-6">
