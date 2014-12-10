@@ -61,7 +61,7 @@
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
-<jsp:include page="/includes/header.jsp" flush="false">
+<jsp:include page="/includes/bootstrap.jsp" flush="false">
 	<jsp:param name="title" value="Role Configuration" />
 	<jsp:param name="headTitle" value="List" />
 	<jsp:param name="headTitle" value="Roles" />
@@ -70,8 +70,6 @@
 	<jsp:param name="breadcrumb" value="<a href='admin/userGroupView/index.jsp'>Users, Groups and Roles</a>" />
 	<jsp:param name="breadcrumb" value="Role List" />
 </jsp:include>
-
-<link rel="stylesheet" href="css/font-awesome-4.0.3/css/font-awesome.min.css">
 
 <script type="text/javascript" >
 
@@ -91,18 +89,17 @@
 
 </script>
 
-
-
 <form action="<c:url value='${reqUrl}'/>" method="post" name="roleForm">
 	<input type="hidden" name="operation" />
 	<input type="hidden" name="role" />
 </form>
 
-<h3>Role Configuration</h3>
-
-<table>
-
-         <tr>
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title">Role Configuration</h3>
+  </div>
+  <table class="table table-condensed">
+        <tr>
           <th>Delete</th>
           <th>Name</th>
           <th>Supervisor</th>
@@ -146,14 +143,12 @@
 			</c:forEach>
 	 	  </c:otherwise>
 	 	</c:choose>
-	 	
-		</table>
-		
-<br/>
+  </table>
+</div> <!-- panel -->
 
 <form action="<c:url value='${reqUrl}'/>" method="post" name="newForm">
   <input name="operation" type="hidden" value="new"/>
-  <input type="submit" value="Add New Role"/>
+  <button type="submit" class="btn btn-default">Add New Role</button>
 </form>
 
-<jsp:include page="/includes/footer.jsp" flush="false" />
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />
