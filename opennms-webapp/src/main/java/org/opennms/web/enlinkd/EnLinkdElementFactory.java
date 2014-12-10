@@ -28,6 +28,8 @@
 
 package org.opennms.web.enlinkd;
 
+import static org.opennms.core.utils.InetAddressUtils.str;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -36,8 +38,8 @@ import java.util.Map;
 
 import javax.servlet.ServletContext;
 
-import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.criteria.Alias.JoinType;
+import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.netmgt.dao.api.BridgeBridgeLinkDao;
 import org.opennms.netmgt.dao.api.BridgeElementDao;
@@ -58,25 +60,25 @@ import org.opennms.netmgt.model.BridgeBridgeLink;
 import org.opennms.netmgt.model.BridgeElement;
 import org.opennms.netmgt.model.BridgeElement.BridgeDot1dBaseType;
 import org.opennms.netmgt.model.BridgeElement.BridgeDot1dStpProtocolSpecification;
+import org.opennms.netmgt.model.BridgeMacLink;
 import org.opennms.netmgt.model.CdpElement;
 import org.opennms.netmgt.model.CdpLink;
 import org.opennms.netmgt.model.CdpLink.CiscoNetworkProtocolType;
-import org.opennms.netmgt.model.IsIsElement.IsisAdminState;
-import org.opennms.netmgt.model.IsIsLink.IsisISAdjNeighSysType;
-import org.opennms.netmgt.model.IsIsLink.IsisISAdjState;
-import org.opennms.netmgt.model.LldpElement.LldpChassisIdSubType;
-import org.opennms.netmgt.model.LldpLink.LldpPortIdSubType;
-import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.model.OspfElement.Status;
-import org.opennms.netmgt.model.BridgeMacLink;
 import org.opennms.netmgt.model.IpNetToMedia;
 import org.opennms.netmgt.model.IsIsElement;
+import org.opennms.netmgt.model.IsIsElement.IsisAdminState;
 import org.opennms.netmgt.model.IsIsLink;
+import org.opennms.netmgt.model.IsIsLink.IsisISAdjNeighSysType;
+import org.opennms.netmgt.model.IsIsLink.IsisISAdjState;
 import org.opennms.netmgt.model.LldpElement;
+import org.opennms.netmgt.model.LldpElement.LldpChassisIdSubType;
 import org.opennms.netmgt.model.LldpLink;
+import org.opennms.netmgt.model.LldpLink.LldpPortIdSubType;
 import org.opennms.netmgt.model.OnmsIpInterface;
+import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.OspfElement;
+import org.opennms.netmgt.model.OspfElement.Status;
 import org.opennms.netmgt.model.OspfElement.TruthValue;
 import org.opennms.netmgt.model.OspfLink;
 import org.opennms.web.api.Util;
@@ -86,8 +88,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.support.WebApplicationContextUtils;
-
-import static org.opennms.core.utils.InetAddressUtils.str;
 
 @Transactional(readOnly=true)
 public class EnLinkdElementFactory implements InitializingBean, EnLinkdElementFactoryInterface{
@@ -476,25 +476,26 @@ public class EnLinkdElementFactory implements InitializingBean, EnLinkdElementFa
 	@Transactional
 	private void convertFromModel(int nodeid, BridgeMacLink link, String port) {
 		if (!nodelinks.containsKey(link.getId())) {
-			NodeLinkBridge linknode = new NodeLinkBridge();
-			BridgeLinkRemoteNode remlinknode = new BridgeLinkRemoteNode();
-			
+			final NodeLinkBridge linknode = new NodeLinkBridge();
+			final BridgeLinkRemoteNode remlinknode = new BridgeLinkRemoteNode();
+			final Integer nodeId = link.getNode() == null? null : link.getNode().getId();
+			final Integer bridgePortIfIndex = link.getBridgePortIfIndex();
+
 			remlinknode.setBridgeRemoteNode(link.getNode().getLabel());
-			remlinknode.setBridgeRemoteUrl(getNodeUrl(link.getNode().getId()));
-			OnmsSnmpInterface remiface = m_snmpInterfaceDao.findByNodeIdAndIfIndex(link.getNode().getId(), link.getBridgePortIfIndex());
-			if (remiface != null)
-			    remlinknode.setBridgeRemotePort(getPortString(remiface));
-			else 
-                            remlinknode.setBridgeRemotePort(getPortString(link.getBridgePortIfIndex(),null));
-			remlinknode.setBridgeRemotePortUrl(getSnmpInterfaceUrl(link.getNode().getId(), link.getBridgePortIfIndex()));
+			remlinknode.setBridgeRemoteUrl(getNodeUrl(nodeId));
+			final OnmsSnmpInterface remiface = bridgePortIfIndex == null? null : m_snmpInterfaceDao.findByNodeIdAndIfIndex(nodeId, bridgePortIfIndex);
+			if (remiface != null) {
+				remlinknode.setBridgeRemotePort(getPortString(remiface));
+			} else {
+				remlinknode.setBridgeRemotePort(getPortString(bridgePortIfIndex,null));
+			}
+			remlinknode.setBridgeRemotePortUrl(getSnmpInterfaceUrl(nodeId, bridgePortIfIndex));
 			remlinknode.setBridgeRemoteVlan(link.getVlan());
-			
+
 			linknode.setBridgeLinkRemoteNode(remlinknode);
-			
 			linknode.setBridgeLinkCreateTime(Util.formatDateToUIString(link.getBridgeMacLinkCreateTime()));
 			linknode.setBridgeLinkLastPollTime(Util.formatDateToUIString(link.getBridgeMacLinkLastPollTime()));
 			nodelinks.put(link.getId(), linknode);
-			
 		} 
 			
 		nodelinks.get(link.getId()).getNodeLocalPorts().add(port);
