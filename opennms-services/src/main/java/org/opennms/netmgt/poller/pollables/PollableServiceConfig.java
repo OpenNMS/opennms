@@ -30,6 +30,7 @@ package org.opennms.netmgt.poller.pollables;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentSkipListMap;
+import java.util.concurrent.TimeUnit;
 
 import org.opennms.netmgt.config.PollOutagesConfig;
 import org.opennms.netmgt.config.PollerConfig;
@@ -200,24 +201,28 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
      */
     @Override
     public synchronized long getInterval() {
-
-        if (m_service.isDeleted())
+        LOG.debug("getInterval()", new Exception());
+        if (m_service.isDeleted()) {
+            LOG.debug("getInterval(): {} is deleted", m_service);
             return -1;
+        }
 
         long when = m_configService.getInterval();
 
         if (m_service.getStatus().isDown()) {
-            long downSince = m_timer.getCurrentTime() - m_service.getStatusChangeTime();
+            final long downFor = m_timer.getCurrentTime() - m_service.getStatusChangeTime();
+            LOG.debug("getInterval(): Service {} has been down for {} seconds, checking downtime model.", m_service, TimeUnit.SECONDS.convert(downFor, TimeUnit.MILLISECONDS));
             boolean matched = false;
-            for (Downtime dt : m_pkg.getDowntimes()) {
-                if (dt.getBegin() <= downSince) {
-                    if (dt.getDelete() != null && (dt.getDelete().equals("yes") || dt.getDelete().equals("true"))) {
+            for (final Downtime dt : m_pkg.getDowntimes()) {
+                LOG.debug("getInterval(): Checking downtime: {}", dt);
+                if (dt.getBegin() <= downFor) {
+                    LOG.debug("getInterval(): begin ({}) <= {}", dt.getBegin(), downFor);
+                    if (isTrue(dt.getDelete())) {
                         when = -1;
                         matched = true;
                     }
-                    else if (dt.getEnd() != null && dt.getEnd() > downSince) {
+                    else if (dt.getEnd() != null && dt.getEnd() > downFor) {
                         // in this interval
-                        //
                         when = dt.getInterval();
                         matched = true;
                     } else // no end
@@ -227,6 +232,7 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
                     }
                 }
             }
+            LOG.debug("getInterval(): when={}, matched={}", when, matched);
             if (!matched) {
                 LOG.error("Downtime model is invalid on package {}, cannot schedule service {}", m_pkg.getName(), m_service);
                 return -1;
@@ -240,7 +246,9 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
         return when;
     }
 
-
+    private boolean isTrue(final String value) {
+        return value != null && (value.equalsIgnoreCase("true") || value.equalsIgnoreCase("yes"));
+    }
 
     /**
      * <p>scheduledSuspension</p>

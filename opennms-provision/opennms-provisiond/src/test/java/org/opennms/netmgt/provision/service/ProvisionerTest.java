@@ -117,6 +117,7 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.io.UrlResource;
 import org.springframework.core.style.ToStringCreator;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.ContextConfiguration;
 
 /**
@@ -136,7 +137,7 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath:/importerServiceTest.xml"
 })
 @JUnitConfigurationEnvironment(systemProperties="org.opennms.provisiond.enableDiscovery=false")
-@DirtiesContext
+@DirtiesContext(classMode=ClassMode.AFTER_EACH_TEST_METHOD)
 public class ProvisionerTest extends ProvisioningTestCase implements InitializingBean, MockSnmpDataProviderAware {
     private static final Logger LOG = LoggerFactory.getLogger(ProvisionerTest.class);
 
@@ -337,8 +338,9 @@ public class ProvisionerTest extends ProvisioningTestCase implements Initializin
         final NodeScan scan = m_provisioner.createNodeScan(node.getId(), node.getForeignSource(), node.getForeignId());
         runScan(scan);
 
-        // Make sure that we wait long enough for the node scan to run
-        while(getInterfaceDao().countAll() < 4) {
+        // wait up to 10 seconds for the node scan to run
+        final long end = System.currentTimeMillis() + 10000;
+        while(getInterfaceDao().countAll() < 4 && System.currentTimeMillis() < end) {
             Thread.sleep(500);
         }
 
@@ -780,7 +782,6 @@ public class ProvisionerTest extends ProvisioningTestCase implements Initializin
         final OnmsNode node = nodes.get(0);
 
         final NodeScan scan = m_provisioner.createNodeScan(node.getId(), node.getForeignSource(), node.getForeignId());
-
         runScan(scan);
 
         m_nodeDao.flush();
@@ -788,13 +789,14 @@ public class ProvisionerTest extends ProvisioningTestCase implements Initializin
         assertEquals(2, getInterfaceDao().countAll());
 
         System.err.println("-------------------------------------------------------------------------");
+        // wait long enough for dates to roll over
+        Thread.sleep(1000);
 
         m_mockSnmpDataProvider.setDataForAddress(new SnmpAgentAddress(InetAddressUtils.addr("172.20.2.201"), 161), m_resourceLoader.getResource("classpath:snmpTestData4.properties"));
 
         importFromResource("classpath:/requisition_primary_addr_changed.xml", Boolean.TRUE.toString());
 
         final NodeScan scan2 = m_provisioner.createNodeScan(node.getId(), node.getForeignSource(), node.getForeignId());
-
         runScan(scan2);
 
         m_nodeDao.flush();
@@ -964,7 +966,6 @@ public class ProvisionerTest extends ProvisioningTestCase implements Initializin
         System.setProperty("org.opennms.provisiond.enableDeletionOfRequisitionedEntities", "true");
         assertTrue(m_provisionService.isRequisitionedEntityDeletionEnabled());
 
-
         // This test assumes that discovery is disabled
         assertFalse(m_provisionService.isDiscoveryEnabled());
 
@@ -1014,6 +1015,123 @@ public class ProvisionerTest extends ProvisioningTestCase implements Initializin
         m_eventAnticipator.verifyAnticipated();
     }
 
+    @Test
+    public void testDowntimeModelDeleteServiceEventDiscoveryDisabledDeletionDisabled() throws Exception {
+        System.setProperty("org.opennms.provisiond.enableDiscovery", "false");
+        assertFalse(m_provisionService.isDiscoveryEnabled());
+
+        System.setProperty("org.opennms.provisiond.enableDeletionOfRequisitionedEntities", "false");
+        assertFalse(m_provisionService.isRequisitionedEntityDeletionEnabled());
+
+        importFromResource("classpath:/deleteService.xml", Boolean.TRUE.toString());
+        final OnmsNode node = m_nodeDao.findByForeignId("deleteService", "4243");
+        m_eventAnticipator.reset();
+
+        // no events should be fired
+        m_mockEventIpcManager.sendEventToListeners(deleteService(node.getId(), "10.201.136.161", "ICMP"));
+        m_eventAnticipator.verifyAnticipated();
+    }
+
+    @Test
+    public void testDowntimeModelDeleteServiceEventDiscoveryDisabledDeletionEnabled() throws Exception {
+        System.setProperty("org.opennms.provisiond.enableDiscovery", "false");
+        assertFalse(m_provisionService.isDiscoveryEnabled());
+
+        System.setProperty("org.opennms.provisiond.enableDeletionOfRequisitionedEntities", "true");
+        assertTrue(m_provisionService.isRequisitionedEntityDeletionEnabled());
+
+        importFromResource("classpath:/deleteService.xml", Boolean.TRUE.toString());
+        final OnmsNode node = m_nodeDao.findByForeignId("deleteService", "4243");
+        m_eventAnticipator.reset();
+
+        // only the service deletion should be fired
+        m_eventAnticipator.anticipateEvent(serviceDeleted(node.getId(), "10.201.136.161", "ICMP"));
+        m_mockEventIpcManager.sendEventToListeners(deleteService(node.getId(), "10.201.136.161", "ICMP"));
+        m_eventAnticipator.verifyAnticipated();
+    }
+
+    @Test
+    public void testDowntimeModelDeleteServiceEventDiscoveryEnabledDeletionDisabledRequisitionedNode() throws Exception {
+        System.setProperty("org.opennms.provisiond.enableDiscovery", "true");
+        assertTrue(m_provisionService.isDiscoveryEnabled());
+
+        System.setProperty("org.opennms.provisiond.enableDeletionOfRequisitionedEntities", "false");
+        assertFalse(m_provisionService.isRequisitionedEntityDeletionEnabled());
+
+        importFromResource("classpath:/deleteService.xml", Boolean.TRUE.toString());
+        final OnmsNode node = m_nodeDao.findByForeignId("deleteService", "4243");
+        m_eventAnticipator.reset();
+
+        // no events should be fired
+        m_mockEventIpcManager.sendEventToListeners(deleteService(node.getId(), "10.201.136.161", "ICMP"));
+        m_eventAnticipator.verifyAnticipated();
+    }
+
+    @Test
+    @JUnitSnmpAgents({
+        @JUnitSnmpAgent(host="172.20.2.201", resource="classpath:snmpTestData3.properties"),
+        @JUnitSnmpAgent(host="172.20.2.204", resource="classpath:snmpTestData3.properties")
+    })
+    public void testDowntimeModelDeleteServiceEventDiscoveryEnabledDeletionDisabledDiscoveredNode() throws Exception {
+        System.setProperty("org.opennms.provisiond.enableDiscovery", "true");
+        assertTrue(m_provisionService.isDiscoveryEnabled());
+
+        System.setProperty("org.opennms.provisiond.enableDeletionOfRequisitionedEntities", "false");
+        assertFalse(m_provisionService.isRequisitionedEntityDeletionEnabled());
+
+        final NewSuspectScan scan = m_provisioner.createNewSuspectScan(addr("172.20.2.201"), null);
+        runScan(scan);
+        assertEquals(2, m_ipInterfaceDao.findAll().size());
+        LOG.debug("ifaces = {}", m_ipInterfaceDao.findAll());
+        final List<OnmsIpInterface> ifaces = m_ipInterfaceDao.findByIpAddress("172.20.2.201");
+        assertEquals(1, ifaces.size());
+        final OnmsNode node = ifaces.iterator().next().getNode();
+        assertEquals(2, node.getIpInterfaces().size());
+        assertEquals(2, getMonitoredServiceDao().findAll().size()); // SNMP on each of the 2 interfaces
+        m_eventAnticipator.reset();
+
+        // the service and interface should be deleted
+        // since there is another interface, the node remains
+        m_eventAnticipator.anticipateEvent(serviceDeleted(node.getId(), "172.20.2.201", "SNMP"));
+        m_eventAnticipator.anticipateEvent(interfaceDeleted(node.getId(), "172.20.2.201"));
+        getScheduledExecutor().resume();
+        m_mockEventIpcManager.sendEventToListeners(deleteService(node.getId(), "172.20.2.201", "SNMP"));
+        m_eventAnticipator.waitForAnticipated(10000);
+        m_eventAnticipator.verifyAnticipated();
+    }
+
+    @Test
+    @JUnitSnmpAgents({
+        @JUnitSnmpAgent(host="172.20.2.201", resource="classpath:snmpwalk-system.properties")
+    })
+    public void testDowntimeModelDeleteServiceEventDiscoveryEnabledDeletionDisabledDiscoveredNodeSingleInterface() throws Exception {
+        System.setProperty("org.opennms.provisiond.enableDiscovery", "true");
+        assertTrue(m_provisionService.isDiscoveryEnabled());
+
+        System.setProperty("org.opennms.provisiond.enableDeletionOfRequisitionedEntities", "false");
+        assertFalse(m_provisionService.isRequisitionedEntityDeletionEnabled());
+
+        final NewSuspectScan scan = m_provisioner.createNewSuspectScan(addr("172.20.2.201"), null);
+        runScan(scan);
+        assertEquals(1, m_ipInterfaceDao.findAll().size());
+        LOG.debug("ifaces = {}", m_ipInterfaceDao.findAll());
+        final List<OnmsIpInterface> ifaces = m_ipInterfaceDao.findByIpAddress("172.20.2.201");
+        assertEquals(1, ifaces.size());
+        final OnmsNode node = ifaces.iterator().next().getNode();
+        assertEquals(1, node.getIpInterfaces().size());
+        m_eventAnticipator.reset();
+
+        // everything up to the node should be deleted, since there is only a single interface with a single service
+        // since there is another interface, the node remains
+        m_eventAnticipator.anticipateEvent(serviceDeleted(node.getId(), "172.20.2.201", "SNMP"));
+        m_eventAnticipator.anticipateEvent(interfaceDeleted(node.getId(), "172.20.2.201"));
+        m_eventAnticipator.anticipateEvent(nodeDeleted(node.getId()));
+        getScheduledExecutor().resume();
+        m_mockEventIpcManager.sendEventToListeners(deleteService(node.getId(), "172.20.2.201", "SNMP"));
+        m_eventAnticipator.waitForAnticipated(10000);
+        m_eventAnticipator.verifyAnticipated();
+    }
+
     @Test(timeout=300000)
     public void testPopulate() throws Exception {
         importFromResource("classpath:/tec_dump.xml.smalltest", Boolean.TRUE.toString());
@@ -1038,7 +1156,7 @@ public class ProvisionerTest extends ProvisioningTestCase implements Initializin
         return m_distPollerDao;
     }
 
-    private void runScan(final NodeScan scan) throws InterruptedException, ExecutionException {
+    private void runScan(final Scan scan) throws InterruptedException, ExecutionException {
         final boolean paused = getScheduledExecutor().isPaused();
         if (paused) getScheduledExecutor().resume();
         final Task t = scan.createTask();

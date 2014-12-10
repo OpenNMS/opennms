@@ -47,4 +47,6 @@
     <constructor-arg value="classpath:/importerServiceTest-provisiond-configuration.xml" />
   </bean>
 
+  <bean id="discoveryFactory" class="org.opennms.netmgt.provision.persist.MockDiscoveryConfigurationFactory" />
+
 </beans>
