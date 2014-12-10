@@ -107,8 +107,8 @@
 					    	pageContext.setAttribute("favTitle", buf.toString());
     					%>
                       
-                          <li><img src="css/images/ui-trans_1x1.png" class="info" onMouseOver="showTT('${eachFavorite.id}')" onMouseOut="hideTT()"/>
-                              <a href="alarm/list?favoriteId=${eachFavorite.id}&${eachFavorite.filter}" title='${favTitle}' data-html="true" data-toggle="tooltip" data-placement="right">${eachFavorite.name}</a> <a href="alarm/deleteFavorite?favoriteId=${eachFavorite.id}&redirect=/alarm/index" title='delete favorite' data-toggle="tooltip" data-placement="right"><span class="glyphicon glyphicon-remove text-danger"></span></a>
+                          <li>
+                              <a href="alarm/list?favoriteId=${eachFavorite.id}&${eachFavorite.filter}" title='${favTitle}' data-html="true" data-toggle="tooltip" data-placement="right">${eachFavorite.name}</a> <a href="alarm/deleteFavorite?favoriteId=${eachFavorite.id}&redirect=/alarm/index" title='Delete favorite' data-toggle="tooltip" data-placement="right"><span class="glyphicon glyphicon-remove text-danger"></span></a>
                           </li>
                       </c:forEach>
                   </ul>
