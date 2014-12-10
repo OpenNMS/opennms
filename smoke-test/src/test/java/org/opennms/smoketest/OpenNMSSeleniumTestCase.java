@@ -263,10 +263,13 @@ public class OpenNMSSeleniumTestCase extends SeleneseTestBase {
 
         if (submenuElement == null) {
             // no submenu given, just click the main element
+            // wait until the element is visible, not just present in the DOM
+            wait.until(ExpectedConditions.visibilityOf(menuElement));
             menuElement.click();
-            return;
         } else {
             // we want a submenu item, click it instead
+            // wait until the element is visible, not just present in the DOM
+            wait.until(ExpectedConditions.visibilityOf(submenuElement));
             submenuElement.click();
         }
     }
