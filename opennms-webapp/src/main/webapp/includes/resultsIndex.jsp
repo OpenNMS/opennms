@@ -109,9 +109,9 @@
 %>
 
  <% if (limit > 0 ) { %> 
-  <div><strong>Results: (<%=startResult%>-<%=endResult%> of <%=count%>)</strong></div>
+  <strong>Results <%=startResult%>-<%=endResult%> of <%=count%></strong>
  <% } else { %>
-  <div><strong>All Results</strong></div>
+  <strong>All Results</strong>
  <% } %> 
 
 <% if( count > limit ) { %>  

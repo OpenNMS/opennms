@@ -102,15 +102,21 @@
 %>
 
  <% if (limit > 0 ) { %> 
-  <div><strong>Results: (<%=startResult%>-<%=endResult%>)</strong></div>
+  <div class="text-center">
+  <strong>Results <%=startResult%>-<%=endResult%></strong>
+  </div>
  <% } else { %>
-  <div><strong>All Results</strong></div>
+  <div class="text-center">
+  <strong>All Results</strong>
+  </div>
  <% } %> 
 
-  <% if( itemCount >= limit || multiple > 0 ) { %>  
-  <ul class="pager">
+  <% if( itemCount >= limit || multiple > 0 ) { %>
+  <nav>
+  <ul class="pager" style="text-align:center;">
     <li class="<%=multiple > 0 ? "" : "disabled"%>"><a href="<%=baseUrl%>&amp;<%=multipleName%>=0">First</a></li>
     <li class="<%=multiple > 0 ? "" : "disabled"%>"><a href="<%=baseUrl%>&amp;<%=multipleName%>=<%=multiple-1%>">Previous</a></li>  
     <li class="<%=itemCount >= limit ? "" : "disabled"%>"><a href="<%=baseUrl%>&amp;<%=multipleName%>=<%=multiple+1%>">Next</a></li>
   </ul>
+  </nav>
   <% } %>
