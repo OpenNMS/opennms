@@ -43,8 +43,8 @@ public class InstrumentationLogReaderPageTest extends OpenNMSSeleniumTestCase {
     @Test
     public void testInstrumentationLogReaderPage() throws Exception {
         enterText(By.name("searchString"), "test");
-        findElementById("ILRfilter").findElement(By.xpath("//input[@type='submit']")).click();
-        findElementById("ILRreset").findElement(By.xpath("//input[@type='submit']")).click();
+        findElementById("ILRfilter").findElement(By.xpath("//button[@type='submit']")).click();
+        findElementById("ILRreset").findElement(By.xpath("//button[@type='submit']")).click();
     }
 
     @Test
