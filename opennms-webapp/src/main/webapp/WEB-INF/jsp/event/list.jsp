@@ -183,6 +183,10 @@
         var selectedOption = selectElement.options[selectElement.selectedIndex];
         var favoriteId = selectedOption.value.split(';')[0];
         var filter = selectedOption.value.split(';')[1];
+        changeFavorite(favoriteId, filter);
+    }
+
+    function changeFavorite(favoriteId, filter) {
         window.location.href = "<%=req.getContextPath()%>/event/list?favoriteId=" + favoriteId + '&' + filter;
     }
   </script>
@@ -243,6 +247,53 @@
 </div>
 
 <div class="list-group-item row">
+
+<div class="col-md-3">
+  <div class="input-group">
+    <span class="input-group-addon">
+      <c:choose>
+      <c:when test="${favorite == null}">
+      <a onclick="createFavorite()">
+        <i class="fa fa-lg fa-star-o"></i>
+      </a>
+      </c:when>
+      <c:otherwise>
+      <a onclick="deleteFavorite(${favorite.id})">
+        <i class="fa fa-lg fa-star"></i>
+      </a>
+      </c:otherwise>
+      </c:choose>
+    </span>
+    <input type="text" class="form-control" placeholder="Unsaved filter" value="<c:out value="${favorite.name}"/>"/>
+    <div class="input-group-btn">
+      <div class="dropdown">
+        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+          <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu dropdown-menu-right" style="margin: 0px;" role="menu">
+          <c:forEach var="fave" items="${favorites}">
+            <c:if test="${favorite.id != fave.id}">
+              <li>
+                <a onclick="changeFavorite(${fave.id}, '${fave.filter}')">
+                  <c:out value="${fave.name}"/>
+                </a>
+              </li>
+            </c:if>
+          </c:forEach>
+          <li class="divider">
+          <li><a onclick="clearFilters()">Clear filters</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%--
+</div>
+
+<div class="list-group-item row">
+--%>
+
             <% if( parms.getFilters().size() > 0 || AcknowledgeType.UNACKNOWLEDGED.toNormalizedAcknowledgeType().equals(parms.getAckType()) || AcknowledgeType.ACKNOWLEDGED.toNormalizedAcknowledgeType().equals(parms.getAckType()) ) { %>
               <div class="col-md-8">
                     <onms:filters
@@ -256,7 +307,7 @@
                             callback="${callback}" />
                             </div>
 
-               <div class="col-md-4 text-right">
+               <div class="col-md-4 text-right hidden">
                   <form class="form-inline">
                     <div class="form-group">
                     <onms:favorite
@@ -265,8 +316,7 @@
                             callback="${callback}"
                             context="/event/list"
                             createFavoriteController="/event/createFavorite"
-                            deleteFavoriteController="/event/deleteFavorite"
-                            onDeselect="<%=FavoriteTag.Action.CLEAR_FILTERS%>"/>
+                            deleteFavoriteController="/event/deleteFavorite"/>
 
                     <label for="favorite-select">Filter Favorites:</label>
                     <onms:select

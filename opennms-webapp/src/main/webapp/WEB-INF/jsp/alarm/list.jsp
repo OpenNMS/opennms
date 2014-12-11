@@ -271,8 +271,7 @@
                             callback="${callback}"
                             context="/alarm/list"
                             createFavoriteController="/alarm/createFavorite"
-                            deleteFavoriteController="/alarm/deleteFavorite"
-                            onDeselect="<%=FavoriteTag.Action.CLEAR_FILTERS%>"/>
+                            deleteFavoriteController="/alarm/deleteFavorite"/>
                 </p>
                 </div>
             <% } %>
