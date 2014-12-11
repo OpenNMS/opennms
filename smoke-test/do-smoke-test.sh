@@ -103,7 +103,7 @@ reset_opennms() {
 	rm -rf "$OPENNMS_HOME"/* /var/log/opennms /var/opennms
 
 	if [ `ls "$ME"/../../rpms/*.rpm | wc -l` -gt 0 ]; then
-		do_log "rpm -Uvh --force $ME/../../rpms/*.rpm"
+		do_log rpm -Uvh --force "$ME"/../../rpms/*.rpm
 		rpm -Uvh --force "$ME"/../../rpms/*.rpm
 	else
 		echo "Unable to locate RPMs for installing!"
