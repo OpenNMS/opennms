@@ -350,10 +350,15 @@ a.list-group-item.active:focus {
 
 /* =10.0 Dropdowns
 ----------------------------------------------- */
+.dropdown-menu > li > a {
+	color: white;
+}
+
 .dropdown-menu,
 .dropdown-menu>.active>a, 
 .dropdown-menu>.active>a:hover, 
 .dropdown-menu>.active>a:focus {
+	color: white;
 	background-color: $color_tundora_approx;
 	border-color: $color_suva_gray_approx;
 	padding: 5px;
