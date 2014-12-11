@@ -95,7 +95,7 @@ public class FavoriteTag extends TagSupport {
 
         private static final String CREATE_FAVORITE_JAVASCRIPT_TEMPLATE =
                 "   function createFavorite() {\n" +
-                "       var favoriteName = prompt(\"Please enter a favorite name\", \"\");\n" +
+                "       var favoriteName = prompt(\"Please enter a name for this filter favorite:\", \"\");\n" +
                 "       if (favoriteName != null && favoriteName != '') {\n" +
                 "           window.location.href = '{CREATE_FAVORITE_URL}' + favoriteName;\n" +
                 "       }\n" +

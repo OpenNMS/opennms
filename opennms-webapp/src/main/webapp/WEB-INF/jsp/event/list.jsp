@@ -216,8 +216,7 @@
 </div>
 
 
-<div class="list-group">
-<div class="list-group-item row">
+<div class="row">
 <div class="col-md-6">
   <!-- start menu -->
   <a class="btn btn-default" href="<%=this.makeLink(callback, parms, new ArrayList<Filter>(), favorite)%>">View all events</a>
@@ -246,14 +245,28 @@
 </div>
 </div>
 
-<div class="list-group-item row">
+<%-- This tag writes out the createFavorite(), deleteFavorite(), and clearFilters() methods --%>
+<onms:favorite
+  favorite="${favorite}"
+  parameters="${parms}"
+  callback="${callback}"
+  context="/event/list"
+  createFavoriteController="/event/createFavorite"
+  deleteFavoriteController="/event/deleteFavorite"
+/>
 
-<div class="col-md-3">
+<div class="row">
+<br/>
+</div>
+
+<div class="row">
+  <div class="col-sm-6 col-md-3">
   <div class="input-group">
     <span class="input-group-addon">
       <c:choose>
       <c:when test="${favorite == null}">
       <a onclick="createFavorite()">
+        <!-- Star outline -->
         <i class="fa fa-lg fa-star-o"></i>
       </a>
       </c:when>
@@ -270,6 +283,7 @@
         <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
           <span class="caret"></span>
         </button>
+        <!-- I put margin: 0px here because the margin gap was causing the menu to disappear before you could get the mouse on it -->
         <ul class="dropdown-menu dropdown-menu-right" style="margin: 0px;" role="menu">
           <c:forEach var="fave" items="${favorites}">
             <c:if test="${favorite.id != fave.id}">
@@ -278,24 +292,19 @@
                   <c:out value="${fave.name}"/>
                 </a>
               </li>
+              <c:set var="showDivider" value="${true}"/>
             </c:if>
           </c:forEach>
-          <li class="divider">
+          <c:if test="${showDivider}"><li class="divider"/></c:if>
           <li><a onclick="clearFilters()">Clear filters</a></li>
         </ul>
       </div>
     </div>
   </div>
-</div>
-
-<%--
-</div>
-
-<div class="list-group-item row">
---%>
+  </div>
 
             <% if( parms.getFilters().size() > 0 || AcknowledgeType.UNACKNOWLEDGED.toNormalizedAcknowledgeType().equals(parms.getAckType()) || AcknowledgeType.ACKNOWLEDGED.toNormalizedAcknowledgeType().equals(parms.getAckType()) ) { %>
-              <div class="col-md-8">
+              <div class="col-sm-6 col-md-9">
                     <onms:filters
                             context="/event/list"
                             favorite="${favorite}"
@@ -305,32 +314,12 @@
                             acknowledgeFilterPrefix="Event(s)"
                             acknowledgeFilterSuffix="event(s)"
                             callback="${callback}" />
-                            </div>
-
-               <div class="col-md-4 text-right hidden">
-                  <form class="form-inline">
-                    <div class="form-group">
-                    <onms:favorite
-                            favorite="${favorite}"
-                            parameters="${parms}"
-                            callback="${callback}"
-                            context="/event/list"
-                            createFavoriteController="/event/createFavorite"
-                            deleteFavoriteController="/event/deleteFavorite"/>
-
-                    <label for="favorite-select">Filter Favorites:</label>
-                    <onms:select
-                            defaultText="All Events"
-                            elements='${favorites}'
-                            selected='${favorite}'
-                            handler='${filterFavoriteSelectTagHandler}'
-                            onChange='changeFavorite(this)'/>
-                    </div>
-                  </form>
-                  </div>
-
+              </div>
             <% } %>
 </div>
+
+<div class="row">
+<br/>
 </div>
 
             <onms:alert/>
