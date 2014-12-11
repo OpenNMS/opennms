@@ -6,6 +6,23 @@
 
 	<!-- Start 14.0 -->
 
+	<section id="introduction-14.0.2">
+		<title>Release 14.0.2</title>
+
+		<para>
+			Release 14.0.2 is the latest stable release of OpenNMS.  It provides
+			a few small fixes and enhancements over OpenNMS 14.0.1, including a fix for
+			a critical memory leak in the OpenNMS web UI.  This upgrade is strongly
+			recommended for all OpenNMS 14.x users.  For an overview
+			of the major changes since OpenNMS 1.12.x, see the <ulink
+			url='https://github.com/OpenNMS/opennms/blob/release-14.0.2/WHATSNEW.md'>What's
+			New in OpenNMS 14</ulink> page.
+		</para>
+		<para>
+			The codename for 14.0.2 is <emphasis>Club-Mate</emphasis>
+		</para>
+	</section>
+
 	<section id="introduction-14.0.1">
 		<title>Release 14.0.1</title>
 
