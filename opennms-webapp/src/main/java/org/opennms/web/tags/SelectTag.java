@@ -48,7 +48,7 @@ import java.util.List;
  */
 public class SelectTag<T> extends SimpleTagSupport {
 
-    private static class DefaultSelectTagHandler implements SelectTagHandler<Object> {
+    private static class DefaultSelectTagHandler<T> implements SelectTagHandler<T> {
 
         private String m_defaultText = "";
 
@@ -57,14 +57,14 @@ public class SelectTag<T> extends SimpleTagSupport {
         }
 
         @Override
-        public String getValue(Object input) {
+        public String getValue(T input) {
             if (input == null) return m_defaultText;
             if (input instanceof String && StringUtils.isEmpty((String)input)) return m_defaultText;
             return input.toString();
         }
 
         @Override
-        public String getDescription(Object input) {
+        public String getDescription(T input) {
             return getValue(input);
         }
 
@@ -82,8 +82,8 @@ public class SelectTag<T> extends SimpleTagSupport {
 
     private List<T> m_elements;
     private T m_selected;
-    private SelectTagHandler m_selectTagHandler;
-    private Comparator m_comparator;
+    private SelectTagHandler<T> m_selectTagHandler;
+    private Comparator<T> m_comparator;
     private String m_onChange;
     private String m_defaultText = "";
 
@@ -113,11 +113,11 @@ public class SelectTag<T> extends SimpleTagSupport {
         m_selected = selected;
     }
 
-    public void setHandler(SelectTagHandler selectTagHandler) {
+    public void setHandler(SelectTagHandler<T> selectTagHandler) {
         m_selectTagHandler = selectTagHandler;
     }
 
-    public void setComparator(Comparator comparator) {
+    public void setComparator(Comparator<T> comparator) {
         m_comparator = comparator;
     }
 
@@ -149,16 +149,16 @@ public class SelectTag<T> extends SimpleTagSupport {
     }
 
     private String getOption(T element, T selected) {
-        SelectTagHandler handler = getSelectTagHandler();
+        SelectTagHandler<T> handler = getSelectTagHandler();
         return OPTION_TEMPLATE
                 .replace("{VALUE}", handler.getValue(element))
                 .replace("{DESCRIPTION}", handler.getDescription(element))
                 .replace("{SELECTED}", handler.isSelected(element, selected) ? "selected" : "");
     }
 
-    private SelectTagHandler getSelectTagHandler() {
+    private SelectTagHandler<T> getSelectTagHandler() {
         if (m_selectTagHandler == null){
-            DefaultSelectTagHandler defaultSelectTagHandler = new DefaultSelectTagHandler();
+            DefaultSelectTagHandler<T> defaultSelectTagHandler = new DefaultSelectTagHandler<T>();
             defaultSelectTagHandler.setDefaultText(m_defaultText);
             return defaultSelectTagHandler;
         }
