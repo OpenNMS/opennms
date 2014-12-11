@@ -75,7 +75,7 @@ public class UserTest extends OpenNMSSeleniumTestCase {
         enterText(By.id("userID"), USER_NAME);
         enterText(By.id("pass1"), "SmokeTestPassword");
         enterText(By.id("pass2"), "SmokeTestPassword");
-        findElementById("doOK").click();
+        findElementByXpath("//button[@type='submit' and text()='OK']").click();
 
         findElementById("saveUserButton").click();
         findElementById("users(" + USER_NAME + ").doDetails");
