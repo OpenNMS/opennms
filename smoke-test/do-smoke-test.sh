@@ -103,7 +103,7 @@ reset_opennms() {
 	rm -rf "$OPENNMS_HOME"/* /var/log/opennms /var/opennms
 
 	if [ `ls "$ME"/../../rpms/*.rpm | wc -l` -gt 0 ]; then
-		do_log "rpm -Uvh --force $ME/../../rpms/*.rpm"
+		do_log rpm -Uvh --force "$ME"/../../rpms/*.rpm
 		rpm -Uvh --force "$ME"/../../rpms/*.rpm
 	else
 		echo "Unable to locate RPMs for installing!"
@@ -130,6 +130,16 @@ get_source() {
 				;;
 		esac
 	popd
+}
+
+build_tests() {
+	banner "Compiling Tests"
+
+	pushd "$SOURCEDIR"
+		do_log "bin/bamboo.pl -Psmoke --projects :smoke-test --also-make install"
+		bin/bamboo.pl -Psmoke --projects :smoke-test --also-make install
+	popd
+
 }
 
 configure_opennms() {
@@ -171,16 +181,10 @@ run_tests() {
 	banner "Running Tests"
 
 	local RETVAL=0
-	rm -rf ~/.m2/repository/org/opennms
-
-	pushd "$SOURCEDIR"
-		do_log "bin/bamboo.pl -Psmoke --projects :smoke-test --also-make install"
-		bin/bamboo.pl -Psmoke --projects :smoke-test --also-make install
-	popd
 
 	do_log "compile.pl test"
 	pushd "$SOURCEDIR/smoke-test"
-		../compile.pl -t -Denable.snapshots=true -DupdatePolicy=always -Dorg.opennms.smoketest.logLevel=INFO test
+		../compile.pl -t -Dorg.opennms.smoketest.logLevel=INFO test
 		RETVAL=$?
 	popd
 
@@ -210,6 +214,7 @@ clean_maven
 reset_opennms
 reset_database
 get_source
+build_tests
 configure_opennms
 start_opennms
 clean_firefox
