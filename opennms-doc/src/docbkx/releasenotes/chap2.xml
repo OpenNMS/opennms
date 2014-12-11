@@ -6,6 +6,48 @@
 
 	<!-- Start 14.0 -->
 
+	<section id="opennms-14.0.2">
+		<title>Changes in OpenNMS 14.0.2</title>
+
+		<section id="opennms-14.0.2-sub-task">
+			<title>Sub-task</title>
+
+			<itemizedlist>
+				<listitem><para>Citrix Netscaler trap events (Issue <ulink url='http://issues.opennms.org/browse/NMS-7238'>NMS-7238</ulink>)</para></listitem>
+			</itemizedlist>
+		</section>
+		<section id="opennms-14.0.2-bug">
+			<title>Bug</title>
+
+			<itemizedlist>
+				<listitem><para>Syslog Northbounder throws exceptions on certain alarms (Issue <ulink url='http://issues.opennms.org/browse/NMS-6551'>NMS-6551</ulink>)</para></listitem>
+				<listitem><para>ICMP availability with custom packet size doesn&#39;t work with JNI (Issue <ulink url='http://issues.opennms.org/browse/NMS-7073'>NMS-7073</ulink>)</para></listitem>
+				<listitem><para>Node page for a switch or router is unusable with Enhanced Linkd enabled (Issue <ulink url='http://issues.opennms.org/browse/NMS-7092'>NMS-7092</ulink>)</para></listitem>
+				<listitem><para>Vaadin applications show Page Not Found error (Issue <ulink url='http://issues.opennms.org/browse/NMS-7130'>NMS-7130</ulink>)</para></listitem>
+				<listitem><para>The XML Collector is not storing the proper data for node-level resources (Issue <ulink url='http://issues.opennms.org/browse/NMS-7186'>NMS-7186</ulink>)</para></listitem>
+				<listitem><para>The XML Collection Handler is caching the resourceTypes (Issue <ulink url='http://issues.opennms.org/browse/NMS-7187'>NMS-7187</ulink>)</para></listitem>
+				<listitem><para>Edit an existing scheduled outage from node&#39;s page doesn&#39;t work (Issue <ulink url='http://issues.opennms.org/browse/NMS-7190'>NMS-7190</ulink>)</para></listitem>
+				<listitem><para>The report &quot;Total Bytes Transferred By Interface&quot; is not working with RRDtool  (Issue <ulink url='http://issues.opennms.org/browse/NMS-7193'>NMS-7193</ulink>)</para></listitem>
+				<listitem><para>When the DNS name of a discovered node changes, Provisiond doesn&#39;t update the node label. (Issue <ulink url='http://issues.opennms.org/browse/NMS-7195'>NMS-7195</ulink>)</para></listitem>
+				<listitem><para>Null pointer exception  removing services from node (Issue <ulink url='http://issues.opennms.org/browse/NMS-7218'>NMS-7218</ulink>)</para></listitem>
+				<listitem><para>Some GWT pages are not working on IE (Issue <ulink url='http://issues.opennms.org/browse/NMS-7227'>NMS-7227</ulink>)</para></listitem>
+				<listitem><para>The downtime model never removes the nodes when it is instructed to do it (Issue <ulink url='http://issues.opennms.org/browse/NMS-7231'>NMS-7231</ulink>)</para></listitem>
+				<listitem><para>XML collector in JSON mode assumes all element content is String (Issue <ulink url='http://issues.opennms.org/browse/NMS-7243'>NMS-7243</ulink>)</para></listitem>
+				<listitem><para>NPE on &quot;manage and unmanage services and interfaces&quot; (Issue <ulink url='http://issues.opennms.org/browse/NMS-7245'>NMS-7245</ulink>)</para></listitem>
+				<listitem><para>Clicking On View Node Link Detailed Info Give java.lang.IllegalArgumentException (Issue <ulink url='http://issues.opennms.org/browse/NMS-7250'>NMS-7250</ulink>)</para></listitem>
+			</itemizedlist>
+		</section>
+		<section id="opennms-14.0.2-enhancement">
+			<title>Enhancement</title>
+
+			<itemizedlist>
+				<listitem><para>Move the &quot;Add new outage&quot; to the top of the page. (Issue <ulink url='http://issues.opennms.org/browse/NMS-7194'>NMS-7194</ulink>)</para></listitem>
+				<listitem><para>The Wallboard app makes OpenNMS unusable after a few days even if it is not used. (Issue <ulink url='http://issues.opennms.org/browse/NMS-7230'>NMS-7230</ulink>)</para></listitem>
+				<listitem><para>Mikrotik RouterOS trap definitions (Issue <ulink url='http://issues.opennms.org/browse/NMS-7237'>NMS-7237</ulink>)</para></listitem>
+			</itemizedlist>
+		</section>
+	</section>
+
 	<section id="opennms-14.0.1">
 		<title>Changes in OpenNMS 14.0.1</title>
 
