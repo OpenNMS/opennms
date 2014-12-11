@@ -29,7 +29,6 @@
 package org.opennms.smoketest;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 public class ReportsPageTest extends OpenNMSSeleniumTestCase {
@@ -50,20 +49,6 @@ public class ReportsPageTest extends OpenNMSSeleniumTestCase {
     public void testAllFormsArePresent() throws InterruptedException {
         findElementByName("resourceGraphs");
         findElementByName("kscReports");
-    }
-
-    //TODO Tak: Build report download test
-    @Test
-    @Ignore
-    @SuppressWarnings("deprecation")
-    public void testDownloadSampleReport() throws InterruptedException {
-        clickAndWait("link=Database Reports");
-        waitForElement("link=Online reports");
-        clickAndWait("link=Online reports");
-        waitForText("Kochwurst sample JasperReport");
-        clickAndWait("link=execute");
-        selenium.click("id=run");
-        selenium.waitForPageToLoad("300000");
     }
 
     @Test

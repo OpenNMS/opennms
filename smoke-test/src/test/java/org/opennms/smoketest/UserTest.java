@@ -28,6 +28,7 @@
 
 package org.opennms.smoketest;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.util.List;

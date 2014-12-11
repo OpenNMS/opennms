@@ -57,6 +57,7 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.rules.TestWatcher;
 import org.junit.runner.Description;
@@ -80,11 +81,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.io.Files;
-import com.thoughtworks.selenium.SeleneseTestBase;
 import com.thoughtworks.selenium.SeleniumException;
-import com.thoughtworks.selenium.webdriven.WebDriverBackedSelenium;
 
-public class OpenNMSSeleniumTestCase extends SeleneseTestBase {
+public class OpenNMSSeleniumTestCase {
     private static final Logger LOG = LoggerFactory.getLogger(OpenNMSSeleniumTestCase.class);
 
     public static final long   LOAD_TIMEOUT       = Long.getLong("org.opennms.smoketest.web-timeout", 120000l);
@@ -106,70 +105,74 @@ public class OpenNMSSeleniumTestCase extends SeleneseTestBase {
     @Rule
     public TestWatcher m_watcher = new TestWatcher() {
         @Override
-        protected void failed(final Throwable e, final Description description) {
-            final String testName = description.getMethodName();
-            if (m_driver != null && m_driver instanceof TakesScreenshot) {
-                final TakesScreenshot shot = (TakesScreenshot)m_driver;
-                final byte[] bytes = shot.getScreenshotAs(OutputType.BYTES);
-                final String screenshotFileName = "target" + File.separator + "screenshots" + File.separator + testName + ".png";
-                final File file = new File(screenshotFileName);
-                if (file.canWrite()) {
-                    try {
-                        Files.write(bytes, file);
-                    } catch (final IOException ioe) {
-                        LOG.debug("Failed to write {}", screenshotFileName, ioe);
-                    }
-                } else {
-                    LOG.error("Can't write to {}", screenshotFileName);
-                }
-            } else {
-                LOG.debug("Driver {} can't take screenshots.", m_driver);
+        protected void starting(final Description description) {
+            try {
+                m_driver = getDriver();
+            } catch (final InstantiationException | IllegalAccessException | ClassNotFoundException e) {
+                LOG.debug("Failed to get driver", e);
             }
         }
+
+        @Override
+        protected void failed(final Throwable e, final Description description) {
+            final String testName = description.getMethodName();
+            LOG.debug("Test {} failed... attempting to take screenshot.", testName);
+            if (m_driver != null && m_driver instanceof TakesScreenshot) {
+                final TakesScreenshot shot = (TakesScreenshot)m_driver;
+                try {
+                    final File from = shot.getScreenshotAs(OutputType.FILE);
+                    final String screenshotFileName = "target" + File.separator + "screenshots" + File.separator + description.getClassName() + "." + testName + ".png";
+                    final File to = new File(screenshotFileName);
+                    LOG.debug("Screenshot saved to: {}", from);
+                    try {
+                        to.getParentFile().mkdirs();
+                        Files.move(from, to);
+                        LOG.debug("Screenshot moved to: {}", to);
+                    } catch (final IOException ioe) {
+                        LOG.debug("Failed to move screenshot from {} to {}", from, to, ioe);
+                    }
+                } catch (final Exception sse) {
+                    LOG.debug("Failed to take screenshot.", sse);
+                }
+            } else {
+                LOG.debug("Driver can't take screenshots.");
+            }
+        }
+
         @Override
         protected void finished(final Description description) {
-            try {
-                shutDownSelenium();
-            } catch (final Exception e) {
-                LOG.error("Failed while shutting down Selenium for test {}.", description.getMethodName(), e);
+            LOG.debug("Shutting down Selenium.");
+            if (m_driver != null) {
+                try {
+                    m_driver.get(BASE_URL + "opennms/j_spring_security_logout");
+                } catch (final SeleniumException e) {
+                    // don't worry about it, this is just for logging out
+                }
+                try {
+                    m_driver.quit();
+                } catch (final Exception e) {
+                    LOG.error("Failed while shutting down WebDriver for test {}.", description.getMethodName(), e);
+                }
+                m_driver = null;
             }
         }
     };
 
-    @Before
-    public void setUp() throws Exception {
+    @BeforeClass
+    public static void configureLogging() throws Exception {
         final String logLevel = System.getProperty("org.opennms.smoketest.logLevel", "DEBUG");
         final Logger logger = org.slf4j.LoggerFactory.getLogger(ch.qos.logback.classic.Logger.ROOT_LOGGER_NAME);
         if (logger instanceof ch.qos.logback.classic.Logger) {
             final ch.qos.logback.classic.Logger logbackLogger = (ch.qos.logback.classic.Logger) logger;
             logbackLogger.setLevel(ch.qos.logback.classic.Level.valueOf(logLevel));
         }
+    }
 
-        final String driverClass = System.getProperty("org.opennms.smoketest.webdriver.class", System.getProperty("webdriver.class"));
-        if (driverClass != null) {
-            m_driver = (WebDriver)Class.forName(driverClass).newInstance();
-        }
-
-        // otherwise, PhantomJS if found, or fall back to Firefox
-        if (m_driver == null) {
-            if (usePhantomJS) {
-                final File phantomJS = findPhantomJS();
-                if (phantomJS != null) {
-                    final DesiredCapabilities caps = new DesiredCapabilities();
-                    caps.setCapability(PhantomJSDriverService.PHANTOMJS_EXECUTABLE_PATH_PROPERTY, phantomJS.toString());
-                    m_driver = new PhantomJSDriver(caps);
-                }
-            }
-            if (m_driver == null) {
-                m_driver = new FirefoxDriver();
-            }
-        }
-
+    @Before
+    public void setUp() throws Exception {
         LOG.debug("Using driver: {}", m_driver);
         m_driver.manage().timeouts().implicitlyWait(LOAD_TIMEOUT, TimeUnit.MILLISECONDS);
         wait = new WebDriverWait(m_driver, TimeUnit.SECONDS.convert(LOAD_TIMEOUT, TimeUnit.MILLISECONDS));
-
-        selenium = new WebDriverBackedSelenium(m_driver, BASE_URL);
 
         m_driver.get(BASE_URL + "opennms/login.jsp");
         enterText(By.name("j_username"), "admin");
@@ -178,12 +181,35 @@ public class OpenNMSSeleniumTestCase extends SeleneseTestBase {
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@id='content']")));
     }
 
+    protected WebDriver getDriver() throws InstantiationException, IllegalAccessException, ClassNotFoundException {
+        WebDriver driver = null;
+        final String driverClass = System.getProperty("org.opennms.smoketest.webdriver.class", System.getProperty("webdriver.class"));
+        if (driverClass != null) {
+            driver = (WebDriver)Class.forName(driverClass).newInstance();
+        }
+
+        // otherwise, PhantomJS if found, or fall back to Firefox
+        if (driver == null) {
+            if (usePhantomJS) {
+                final File phantomJS = findPhantomJS();
+                if (phantomJS != null) {
+                    final DesiredCapabilities caps = new DesiredCapabilities();
+                    caps.setCapability(PhantomJSDriverService.PHANTOMJS_EXECUTABLE_PATH_PROPERTY, phantomJS.toString());
+                    driver = new PhantomJSDriver(caps);
+                }
+            }
+            if (driver == null) {
+                driver = new FirefoxDriver();
+            }
+        }
+        return driver;
+    }
+
     @After
     public void tearDown() throws Exception {
         deleteTestRequisition();
         deleteTestUser();
         deleteTestGroup();
-        super.tearDown();
     }
 
     private File findPhantomJS() {
@@ -212,22 +238,6 @@ public class OpenNMSSeleniumTestCase extends SeleneseTestBase {
             }
         }
         return null;
-    }
-
-    @SuppressWarnings("deprecation")
-    public void shutDownSelenium() throws Exception {
-        if (selenium != null) {
-            try {
-                findElementByLink("Log out").click();
-            } catch (final SeleniumException e) {
-                // don't worry about it, this is just for logging out
-            }
-            selenium.stop();
-        }
-        if (m_driver != null) {
-            m_driver.quit();
-        }
-        Thread.sleep(3000);
     }
 
     protected WebDriverWait waitFor(final long seconds) {
@@ -353,7 +363,6 @@ public class OpenNMSSeleniumTestCase extends SeleneseTestBase {
     protected void goBack() {
         LOG.warn("goBack() is supposedly not supported on Safari!");
         m_driver.navigate().back();
-        waitForPageToLoad();
     }
 
     public WebElement findElementById(final String id) {
@@ -378,116 +387,6 @@ public class OpenNMSSeleniumTestCase extends SeleneseTestBase {
         element.clear();
         element.sendKeys(text);
         return element;
-    }
-
-    @Deprecated
-    protected void clickAndWait(final String pattern) {
-        LOG.debug("clickAndWait({})", pattern);
-        selenium.click(pattern);
-        waitForPageToLoad();
-    }
-
-    @Deprecated
-    protected void clickAndVerifyText(final String pattern, final String expectedText) {
-        LOG.debug("clickAndVerifyText({}, {})", pattern, expectedText);
-        clickAndWait(pattern);
-        assertTrue("'" + expectedText + "' must exist in page text: " + selenium.getHtmlSource(), selenium.isTextPresent(expectedText));
-    }
-
-    @Deprecated
-    protected void waitForPageToLoad() {
-        selenium.waitForPageToLoad(String.valueOf(LOAD_TIMEOUT));
-    }
-
-    @Deprecated
-    protected void waitForText(final String expectedText) throws InterruptedException {
-        waitForText(expectedText, LOAD_TIMEOUT);
-    }
-
-    @Deprecated
-    protected void waitForText(final String expectedText, final long timeout) throws InterruptedException {
-        waitForText(expectedText, timeout, true);
-    }
-
-    @Deprecated
-    protected void waitForText(final String expectedText, final long timeout, boolean failOnError) throws InterruptedException {
-        LOG.debug("waitForText({}, {}, {})", expectedText, timeout, failOnError);
-        final long timeoutTime = System.currentTimeMillis() + timeout;
-        while (!selenium.isTextPresent(expectedText) && System.currentTimeMillis() <= timeoutTime) {
-            Thread.sleep(timeout / 10);
-        }
-        try {
-            assertTrue(String.format("Failed to find text %s after %d milliseconds", expectedText, timeout), selenium.isTextPresent(expectedText));
-        } catch (final AssertionError e) {
-            if (failOnError) {
-                throw e;
-            } else {
-                LOG.error("Failed to find text {} after {} milliseconds.", expectedText, timeout);
-                LOG.error("Page body was:\n{}", selenium.getBodyText());
-            }
-        }
-    }
-
-    @Deprecated
-    protected void waitForHtmlSource(final String expectedText) throws InterruptedException {
-        waitForHtmlSource(expectedText, LOAD_TIMEOUT);
-    }
-
-    @Deprecated
-    protected void waitForHtmlSource(final String expectedText, final long timeout) throws InterruptedException {
-        waitForHtmlSource(expectedText, timeout, true);
-    }
-
-    @Deprecated
-    protected void waitForHtmlSource(final String expectedText, final long timeout, boolean failOnError) throws InterruptedException {
-        LOG.debug("waitForHtmlSource({}, {}, {})", expectedText, timeout, failOnError);
-        final long timeoutTime = System.currentTimeMillis() + timeout;
-        while (!selenium.getHtmlSource().contains(expectedText) && System.currentTimeMillis() <= timeoutTime) {
-            Thread.sleep(timeout / 10);
-        }
-        try {
-            assertTrue(String.format("Failed to find text %s after %d milliseconds", expectedText, timeout), selenium.getHtmlSource().contains(expectedText));
-        } catch (final AssertionError e) {
-            if (failOnError) {
-                throw e;
-            } else {
-                LOG.error("Failed to find text {} after {} milliseconds.", expectedText, timeout);
-                LOG.error("Page body was:\n{}", selenium.getBodyText());
-            }
-        }
-    }
-
-    @Deprecated
-    protected void waitForElement(final String specification) throws InterruptedException {
-        waitForElement(specification, LOAD_TIMEOUT);
-    }
-
-    @Deprecated
-    protected void waitForElement(final String specification, final long timeout) throws InterruptedException {
-        final long timeoutTime = System.currentTimeMillis() + timeout;
-        while (!selenium.isElementPresent(specification) && System.currentTimeMillis() <= timeoutTime) {
-            Thread.sleep(timeout / 10);
-        }
-        try {
-            assertTrue(String.format("Failed to find element %s after %d milliseconds", specification, timeout), selenium.isElementPresent(specification));
-        } catch (final AssertionError e) {
-            throw e;
-            //LOG.error("Failed to find element {} after {} milliseconds.", specification, timeout);
-            //LOG.error("Page body was:\n{}", selenium.getBodyText());
-        }
-    }
-
-    @Deprecated
-    protected void handleVaadinErrorButtons() throws InterruptedException {
-        if (selenium.isAlertPresent()) {
-            selenium.keyPressNative("10");
-            Thread.sleep(1000);
-        }
-        if (selenium.isElementPresent("//input[@type='button' and @value='OK']")) {
-            selenium.click("//input[@type='button' and @value='OK']");
-        } else if (selenium.isElementPresent("//button[contains(text(), 'OK')]")) {
-            selenium.click("//button[contains(text(), 'OK')]");
-        }
     }
 
     private Integer doRequest(final HttpRequestBase request) throws ClientProtocolException, IOException, InterruptedException {

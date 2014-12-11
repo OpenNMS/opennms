@@ -28,6 +28,8 @@
 
 package org.opennms.smoketest;
 
+import static org.junit.Assert.assertEquals;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.By;
@@ -43,8 +45,10 @@ public class InstrumentationLogReaderPageTest extends OpenNMSSeleniumTestCase {
     @Test
     public void testInstrumentationLogReaderPage() throws Exception {
         enterText(By.name("searchString"), "test");
-        findElementById("ILRfilter").findElement(By.xpath("//button[@type='submit']")).click();
-        findElementById("ILRreset").findElement(By.xpath("//button[@type='submit']")).click();
+        assertEquals("test", findElementByName("searchString").getAttribute("value"));
+        findElementByXpath("//button[@type='submit' and text()='Submit']").click();
+        findElementByXpath("//button[@type='submit' and text()='Reset']").click();
+        assertEquals("", findElementByName("searchString").getAttribute("value"));
     }
 
     @Test
