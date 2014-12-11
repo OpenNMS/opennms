@@ -57,10 +57,15 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
+import org.junit.rules.TestWatcher;
+import org.junit.runner.Description;
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoAlertPresentException;
 import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.OutputType;
+import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.firefox.FirefoxDriver;
@@ -74,6 +79,7 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.io.Files;
 import com.thoughtworks.selenium.SeleneseTestBase;
 import com.thoughtworks.selenium.SeleniumException;
 import com.thoughtworks.selenium.webdriven.WebDriverBackedSelenium;
@@ -96,6 +102,31 @@ public class OpenNMSSeleniumTestCase extends SeleneseTestBase {
 
     protected WebDriver m_driver = null;
     protected WebDriverWait wait = null;
+
+    @Rule
+    public TestWatcher m_watcher = new TestWatcher() {
+        @Override
+        protected void failed(final Throwable e, final Description description) {
+            final String testName = description.getMethodName();
+            if (m_driver != null && m_driver instanceof TakesScreenshot) {
+                final TakesScreenshot shot = (TakesScreenshot)m_driver;
+                final byte[] bytes = shot.getScreenshotAs(OutputType.BYTES);
+                final String screenshotFileName = "target" + File.separator + "screenshots" + File.separator + testName + ".png";
+                final File file = new File(screenshotFileName);
+                if (file.canWrite()) {
+                    try {
+                        Files.write(bytes, file);
+                    } catch (final IOException ioe) {
+                        LOG.debug("Failed to write {}", screenshotFileName, ioe);
+                    }
+                } else {
+                    LOG.error("Can't write to {}", screenshotFileName);
+                }
+            } else {
+                LOG.debug("Driver {} can't take screenshots.", m_driver);
+            }
+        }
+    };
 
     @Before
     public void setUp() throws Exception {
@@ -248,7 +279,7 @@ public class OpenNMSSeleniumTestCase extends SeleneseTestBase {
         } else {
             menuElement = findElementByXpath("//a[contains(text(), '" + menuItemText + "')]");
         }
-        action.moveToElement(menuElement).perform();
+        action.moveToElement(menuElement, 2, 2).perform();
 
         final WebElement submenuElement;
         if (submenuItemText != null) {
