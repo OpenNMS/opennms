@@ -51,30 +51,30 @@
     <h3 class="panel-title"><a href="${headingLink}">Nodes with Outages</a></h3>
   </div>
   <div class="panel-body">
-  <c:choose>
-    <c:when test="${empty summaries}">
-      <p class="noBottomMargin">
-        There are no current outages
-      </p>
-    </c:when>
+    <c:choose>
+      <c:when test="${empty summaries}">
+        <p class="noBottomMargin">
+          There are no current outages
+        </p>
+      </c:when>
 
-    <c:otherwise>
-      <ul class="list-unstyled">
-        <c:forEach var="summary" items="${summaries}">
-          <c:url var="nodeLink" value="element/node.jsp">
-            <c:param name="node" value="${summary.nodeId}"/>
-          </c:url>
-          <li><a href="${nodeLink}">${summary.nodeLabel}</a> <span style="white-space:nowrap;">(${summary.fuzzyTimeDown})</span></li>
-        </c:forEach>
-      </ul>
-  </div>
+      <c:otherwise>
+        <ul class="list-unstyled">
+          <c:forEach var="summary" items="${summaries}">
+            <c:url var="nodeLink" value="element/node.jsp">
+              <c:param name="node" value="${summary.nodeId}"/>
+            </c:url>
+            <li><a href="${nodeLink}">${summary.nodeLabel}</a> <span style="white-space:nowrap;">(${summary.fuzzyTimeDown})</span></li>
+          </c:forEach>
+        </ul>
     
-      <c:if test="${moreCount > 0}">
-        <div class="panel-footer text-right">
-          <c:url var="moreLink" value="outage/list.htm"/>
-          <a href="${moreLink}">${moreCount} more nodes with outages...</a>
-        </div>
-      </c:if>
-    </c:otherwise>
-  </c:choose>
+        <c:if test="${moreCount > 0}">
+          <div class="panel-footer text-right">
+            <c:url var="moreLink" value="outage/list.htm"/>
+            <a href="${moreLink}">${moreCount} more nodes with outages...</a>
+          </div>
+        </c:if>
+      </c:otherwise>
+    </c:choose>
+  </div>
 </div>
