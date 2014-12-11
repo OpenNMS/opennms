@@ -1,3 +1,11 @@
+opennms (14.0.1-1) stable; urgency=high
+
+  * New upstream release.  This release contains a few bugfixes as well as a
+    fix for a critical memory leak in the OpenNMS web UI.  Major stable release
+    14.0.2.
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Thu, 11 Dec 2014 10:36:17 -0500
+
 opennms (14.0.1-1) stable; urgency=medium
 
   * New upstream release.  Major stable release 14.0.1.

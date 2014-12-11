@@ -1,6 +1,41 @@
 [releasenotes-14]
 === OpenNMS 14
 
+[releasenotes-changelog-14.0.2]
+==== Release 14.0.2
+
+Release 14.0.2 is the latest stable release of OpenNMS.  It provides a few small fixes and enhancements over OpenNMS 14.0.1, including a fix for a critical memory leak in the OpenNMS web UI.  This upgrade is strongly recommended for all OpenNMS 14.x users.  For an overview of the major changes since OpenNMS 1.12.x, see the https://github.com/OpenNMS/opennms/blob/release-14.0.2/WHATSNEW.md[What's New in OpenNMS 14] page.
+
+The codename for 14.0.2 is _Club-Mate_.
+
+===== Sub-task
+
+* Citrix Netscaler trap events (Issue http://issues.opennms.org/browse/NMS-7238[NMS-7238])
+
+===== Bug
+
+* Syslog Northbounder throws exceptions on certain alarms (Issue http://issues.opennms.org/browse/NMS-6551[NMS-6551])
+* ICMP availability with custom packet size doesn't work with JNI (Issue http://issues.opennms.org/browse/NMS-7073[NMS-7073])
+* Node page for a switch or router is unusable with Enhanced Linkd enabled (Issue http://issues.opennms.org/browse/NMS-7092[NMS-7092])
+* Vaadin applications show Page Not Found error (Issue http://issues.opennms.org/browse/NMS-7130[NMS-7130])
+* The XML Collector is not storing the proper data for node-level resources (Issue http://issues.opennms.org/browse/NMS-7186[NMS-7186])
+* The XML Collection Handler is caching the resourceTypes (Issue http://issues.opennms.org/browse/NMS-7187[NMS-7187])
+* Edit an existing scheduled outage from node's page doesn't work (Issue http://issues.opennms.org/browse/NMS-7190[NMS-7190])
+* The report "Total Bytes Transferred By Interface" is not working with RRDtool  (Issue http://issues.opennms.org/browse/NMS-7193[NMS-7193])
+* When the DNS name of a discovered node changes, Provisiond doesn't update the node label. (Issue http://issues.opennms.org/browse/NMS-7195[NMS-7195])
+* Null pointer exception  removing services from node (Issue http://issues.opennms.org/browse/NMS-7218[NMS-7218])
+* Some GWT pages are not working on IE (Issue http://issues.opennms.org/browse/NMS-7227[NMS-7227])
+* The downtime model never removes the nodes when it is instructed to do it (Issue http://issues.opennms.org/browse/NMS-7231[NMS-7231])
+* XML collector in JSON mode assumes all element content is String (Issue http://issues.opennms.org/browse/NMS-7243[NMS-7243])
+* NPE on "manage and unmanage services and interfaces" (Issue http://issues.opennms.org/browse/NMS-7245[NMS-7245])
+* Clicking On View Node Link Detailed Info Give java.lang.IllegalArgumentException (Issue http://issues.opennms.org/browse/NMS-7250[NMS-7250])
+
+===== Enhancement
+
+* Move the "Add new outage" to the top of the page. (Issue http://issues.opennms.org/browse/NMS-7194[NMS-7194])
+* The Wallboard app makes OpenNMS unusable after a few days even if it is not used. (Issue http://issues.opennms.org/browse/NMS-7230[NMS-7230])
+* Mikrotik RouterOS trap definitions (Issue http://issues.opennms.org/browse/NMS-7237[NMS-7237])
+
 [releasenotes-changelog-14.0.1]
 ==== Release 14.0.1
 
@@ -248,3 +283,4 @@ The codename for 14.0.0 is _Cheerwine_.
 * Test Enhanced Linkd (Issue http://issues.opennms.org/browse/NMS-6989[NMS-6989])
 * Test Topology GUI (Issue http://issues.opennms.org/browse/NMS-6990[NMS-6990])
 * Test Remote Polling (Issue http://issues.opennms.org/browse/NMS-6991[NMS-6991])
+

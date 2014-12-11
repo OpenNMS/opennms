@@ -326,3 +326,4 @@ The codename for 1.11.0 is _MCA_
 * ResponseTimeSummary_Availability_Offenders_subreport (Issue http://issues.opennms.org/browse/NMS-4794[NMS-4794])
 * ResponseTimeSummary_Availability_subreport (Issue http://issues.opennms.org/browse/NMS-4795[NMS-4795])
 * Top25PercentDown_subreport (Issue http://issues.opennms.org/browse/NMS-4796[NMS-4796])
+

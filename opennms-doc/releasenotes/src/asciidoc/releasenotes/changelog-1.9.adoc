@@ -590,3 +590,4 @@ The codename for 1.9.0 is _Timple_.
 (Bug http://bugzilla.opennms.org/show_bug.cgi?id=3413[#3413])
 * Data collection configuration has now been split out into multiple include files, like events.
 (Bug http://bugzilla.opennms.org/show_bug.cgi?id=4031[#4031])
+
