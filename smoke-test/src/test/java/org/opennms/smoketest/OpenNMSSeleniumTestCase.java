@@ -126,6 +126,14 @@ public class OpenNMSSeleniumTestCase extends SeleneseTestBase {
                 LOG.debug("Driver {} can't take screenshots.", m_driver);
             }
         }
+        @Override
+        protected void finished(final Description description) {
+            try {
+                shutDownSelenium();
+            } catch (final Exception e) {
+                LOG.error("Failed while shutting down Selenium for test {}.", description.getMethodName(), e);
+            }
+        }
     };
 
     @Before
@@ -206,7 +214,6 @@ public class OpenNMSSeleniumTestCase extends SeleneseTestBase {
         return null;
     }
 
-    @After
     @SuppressWarnings("deprecation")
     public void shutDownSelenium() throws Exception {
         if (selenium != null) {

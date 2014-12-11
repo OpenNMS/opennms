@@ -87,7 +87,7 @@ public class UserTest extends OpenNMSSeleniumTestCase {
 
         enterText(By.id("groupName"), GROUP_NAME);
         enterText(By.id("groupComment"), "Test");
-        findElementById("doOK").click();
+        findElementByXpath("//button[@type='submit' and text()='OK']").click();
 
         final Select select = new Select(findElementByName("availableUsers"));
         select.selectByVisibleText(USER_NAME);
