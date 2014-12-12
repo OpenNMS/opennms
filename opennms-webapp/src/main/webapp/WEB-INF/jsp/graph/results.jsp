@@ -197,8 +197,10 @@
                     <c:param name="report" value="${resultSet.graphs[0].name}"/>
                     <c:param name="start" value="${results.start.time}"/>
                     <c:param name="end" value="${results.end.time}"/>
-                    <c:param name="width" value="${resultSet.graphs[0].graphWidth}"/>
-                    <c:param name="height" value="${resultSet.graphs[0].graphHeight}"/>
+                    <c:if test="${resultSet.graphs[0].graphWidth != null}">
+                        <c:param name="width" value="${resultSet.graphs[0].graphWidth}"/>
+                        <c:param name="height" value="${resultSet.graphs[0].graphHeight}"/>
+                    </c:if>
                 </c:url>
 
                 <script type="text/javascript">
@@ -223,7 +225,7 @@
                                             <input type="submit" name="nrt" value="NRT Graph"/>
                                         </form>
                     -->
-                    <img id="zoomImage" src="${graphUrl}" alt="Resource graph: ${resultSet.graphs[0].title} (drag to zoom)" />
+                    <img id="zoomImage" class="graphImg" data-imgsrc="${graphUrl}" src="#" alt="Resource graph: ${resultSet.graphs[0].title} (drag to zoom)" />
                     <opennms-addKscReport id="${resultSet.resource.id}.${resultSet.graphs[0].name}" reportName="${resultSet.graphs[0].name}" resourceId="${resultSet.resource.id}" graphTitle="${resultSet.graphs[0].title}" timespan="${results.relativeTime}"></opennms-addKscReport>
                 </div>
             </c:when>
@@ -259,7 +261,7 @@
                                             <input type="submit" name="nrt" value="NRT Graph"/>
                                         </form>
                     -->
-                    <a href="${zoomUrl}"><img src="${graphUrl}" alt="Resource graph: ${graph.title} (click to zoom)" /></a>
+                    <a href="${zoomUrl}"><img class="graphImg" data-imgsrc="${graphUrl}" src="#" alt="Resource graph: ${graph.title} (click to zoom)" /></a>
                     <opennms-addKscReport id="${resultSet.resource.id}.${graph.name}" reportName="${graph.name}" resourceId="${resultSet.resource.id}" graphTitle="${graph.title}" timespan="${results.relativeTime}"></opennms-addKscReport>
                     <br/>
                     <br/>
@@ -275,6 +277,21 @@
 
     </c:forEach>
 </div>
+
+<script type="text/javascript">
+var graphDiv = document.getElementById("graph-results");
+var graphWidth = Math.round(graphDiv.scrollWidth * 0.8);
+var graphHeight = Math.round(graphWidth * 0.25);
+var graphImages = graphDiv.getElementsByClassName("graphImg");
+for (var imgIndex = 0; imgIndex < graphImages.length; imgIndex++) {
+    var thisImg = graphImages[imgIndex];
+    if (thisImg.dataset["imgsrc"].contains("width=") || thisImg.dataset["imgsrc"].contains("height=")) {
+        thisImg.src = thisImg.dataset["imgsrc"];
+    } else {
+        thisImg.src = thisImg.dataset["imgsrc"] + "&width=" + graphWidth + "&height=" + graphHeight;
+    }
+}
+</script>
 
 <c:url var="relativeTimeReloadUrl" value="${requestScope.relativeRequestPath}">
     <c:forEach var="resultSet" items="${results.graphResultSets}">
