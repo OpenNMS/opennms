@@ -2857,6 +2857,21 @@
         <version>3.1.5</version>
       </dependency>
       <dependency>
+        <groupId>com.github.detro.ghostdriver</groupId>
+        <artifactId>phantomjsdriver</artifactId>
+        <version>99.99.99-use-com-github-detro-phantomjsdriver-instead</version>
+      </dependency>
+      <dependency>
+        <groupId>com.github.detro</groupId>
+        <artifactId>phantomjsdriver</artifactId>
+        <version>99.99.99-use-com-codeborne-phantomjsdriver-until-1-2-1-is-released</version>
+      </dependency>
+      <dependency>
+        <groupId>com.codeborne</groupId>
+        <artifactId>phantomjsdriver</artifactId>
+        <version>1.2.1</version>
+      </dependency>
+      <dependency>
         <groupId>org.codehaus.jackson</groupId>
         <artifactId>jackson-core-asl</artifactId>
         <version>${jacksonVersion}</version>
