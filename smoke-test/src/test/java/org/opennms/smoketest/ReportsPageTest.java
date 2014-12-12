@@ -33,9 +33,7 @@ import org.junit.Test;
 
 public class ReportsPageTest extends OpenNMSSeleniumTestCase {
     @Before
-    @Override
     public void setUp() throws Exception {
-        super.setUp();
         reportsPage();
     }
 

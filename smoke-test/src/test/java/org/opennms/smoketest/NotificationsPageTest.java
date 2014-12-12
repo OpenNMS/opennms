@@ -34,7 +34,6 @@ import org.junit.Test;
 public class NotificationsPageTest extends OpenNMSSeleniumTestCase {
     @Before
     public void setUp() throws Exception {
-        super.setUp();
         notificationsPage();
     }
 

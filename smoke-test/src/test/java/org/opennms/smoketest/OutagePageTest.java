@@ -40,7 +40,6 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 public class OutagePageTest extends OpenNMSSeleniumTestCase {
     @Before
     public void setUp() throws Exception {
-        super.setUp();
         outagePage();
     }
 
@@ -71,6 +70,7 @@ public class OutagePageTest extends OpenNMSSeleniumTestCase {
         final Alert alert = wait.until(ExpectedConditions.alertIsPresent());
         assertNotNull(alert);
         assertEquals("Please enter a valid outage ID.", alert.getText());
+        alert.dismiss();
     }
 
 }

@@ -101,7 +101,6 @@
       <groupId>org.slf4j</groupId>
       <artifactId>log4j-over-slf4j</artifactId>
       <scope>test</scope>
-      <version>${slf4jVersion}</version>
     </dependency>
     <dependency>
       <groupId>ch.qos.logback</groupId>

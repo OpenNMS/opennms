@@ -47,19 +47,17 @@ public class AddNodePageTest extends OpenNMSSeleniumTestCase {
 
     @Before
     public void setUp() throws Exception {
-        super.setUp();
         deleteTestRequisition();
     }
 
     @After
     public void tearDown() throws Exception {
         deleteTestRequisition();
-        super.tearDown();
     }
 
     @Test
     public void testAddNodePage() throws Exception {
-        m_driver.get(BASE_URL + "opennms/admin/provisioningGroups.htm");
+        provisioningPage();
         m_driver.findElement(By.cssSelector("form[name=takeAction] input[name=groupName]")).sendKeys(REQUISITION_NAME);
         m_driver.findElement(By.cssSelector("form[name=takeAction] input[type=submit]")).click();
         findElementByXpath("//input[@value='Synchronize']").click();
@@ -82,6 +80,9 @@ public class AddNodePageTest extends OpenNMSSeleniumTestCase {
         findElementById("edit_req_anchor_" + REQUISITION_NAME).click();
 
         new ExpectationBuilder("css=input[value=AddNodePageTest]").check(m_driver);
+
+        provisioningPage();
+        wait.until(new WaitForNodesInDatabase(1));
     }
 
 }

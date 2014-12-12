@@ -37,7 +37,6 @@ import org.openqa.selenium.By;
 public class InstrumentationLogReaderPageTest extends OpenNMSSeleniumTestCase {
     @Before
     public void setUp() throws Exception {
-        super.setUp();
         adminPage();
         findElementByLink("Instrumentation Log Reader").click();
     }

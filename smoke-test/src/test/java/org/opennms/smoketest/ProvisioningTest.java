@@ -30,12 +30,12 @@ package org.opennms.smoketest;
 
 import static org.junit.Assert.assertTrue;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.core.utils.InetAddressUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,18 +46,8 @@ public class ProvisioningTest extends OpenNMSSeleniumTestCase {
 
     @Before
     public void setUp() throws Exception {
-        super.setUp();
         deleteTestRequisition();
         provisioningPage();
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        deleteTestRequisition();
-        deleteTestUser();
-        deleteTestGroup();
-
-        super.tearDown();
     }
 
     interface Setter {
@@ -140,14 +130,13 @@ public class ProvisioningTest extends OpenNMSSeleniumTestCase {
 
         clickMenuItem("Info", "Nodes", "element/nodeList.htm");
 
-        try {
-            findElementByXpath("//h3//span[text()='Nodes']");
+        final WebElement element = findElementByXpath("//h3[text()='Availability']");
+        // if we got a node list rather than the individual node page, click through to the node
+        if ("Nodes".equals(element.getText())) {
             findElementByLink(NODE_LABEL).click();
-        } catch (final Exception e) {
-            // if we don't find the node list header, then we probably only have a single node
         }
 
-        findElementByLink("ICMP");
+        wait.until(ExpectedConditions.elementToBeClickable(By.linkText("ICMP")));
         findElementByXpath("//a[contains(@href, 'element/interface.jsp') and text()='" + InetAddressUtils.normalize("::1") + "']");
     }
 

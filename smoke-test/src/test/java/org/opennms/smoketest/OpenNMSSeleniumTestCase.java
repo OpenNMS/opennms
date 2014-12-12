@@ -55,8 +55,6 @@ import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.rules.TestWatcher;
@@ -108,8 +106,18 @@ public class OpenNMSSeleniumTestCase {
         protected void starting(final Description description) {
             try {
                 m_driver = getDriver();
+                LOG.debug("Using driver: {}", m_driver);
+                m_driver.manage().timeouts().implicitlyWait(LOAD_TIMEOUT, TimeUnit.MILLISECONDS);
+                wait = new WebDriverWait(m_driver, TimeUnit.SECONDS.convert(LOAD_TIMEOUT, TimeUnit.MILLISECONDS));
+
+                m_driver.get(BASE_URL + "opennms/login.jsp");
+                enterText(By.name("j_username"), "admin");
+                enterText(By.name("j_password"), "admin");
+                findElementByName("Login").click();
+                wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@id='content']")));
             } catch (final InstantiationException | IllegalAccessException | ClassNotFoundException e) {
                 LOG.debug("Failed to get driver", e);
+                throw new RuntimeException("Tests aren't going to work.  Bailing.");
             }
         }
 
@@ -141,6 +149,14 @@ public class OpenNMSSeleniumTestCase {
 
         @Override
         protected void finished(final Description description) {
+            try {
+                deleteTestRequisition();
+                deleteTestUser();
+                deleteTestGroup();
+            } catch (final Exception e) {
+                LOG.error("Cleaning up failed. Future tests will be in an unhandled state.", e);
+            }
+
             LOG.debug("Shutting down Selenium.");
             if (m_driver != null) {
                 try {
@@ -168,19 +184,6 @@ public class OpenNMSSeleniumTestCase {
         }
     }
 
-    @Before
-    public void setUp() throws Exception {
-        LOG.debug("Using driver: {}", m_driver);
-        m_driver.manage().timeouts().implicitlyWait(LOAD_TIMEOUT, TimeUnit.MILLISECONDS);
-        wait = new WebDriverWait(m_driver, TimeUnit.SECONDS.convert(LOAD_TIMEOUT, TimeUnit.MILLISECONDS));
-
-        m_driver.get(BASE_URL + "opennms/login.jsp");
-        enterText(By.name("j_username"), "admin");
-        enterText(By.name("j_password"), "admin");
-        findElementByName("Login").click();
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@id='content']")));
-    }
-
     protected WebDriver getDriver() throws InstantiationException, IllegalAccessException, ClassNotFoundException {
         WebDriver driver = null;
         final String driverClass = System.getProperty("org.opennms.smoketest.webdriver.class", System.getProperty("webdriver.class"));
@@ -203,13 +206,6 @@ public class OpenNMSSeleniumTestCase {
             }
         }
         return driver;
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        deleteTestRequisition();
-        deleteTestUser();
-        deleteTestGroup();
     }
 
     private File findPhantomJS() {
@@ -439,59 +435,66 @@ public class OpenNMSSeleniumTestCase {
 
         LOG.debug("deleteExistingRequisition: Deleting Requisition: {}", foreignSource);
         if (getForeignSourceElement(foreignSource) == null) {
+            LOG.debug("deleteExistingRequisition: Requisition {} is already gone.", foreignSource);
             return;
         }
 
-        // if the foreign source has nodes to delete, delete them
-        long nodesInRequisition = getNodesInRequisition(getForeignSourceElement(foreignSource));
-        if (nodesInRequisition > 0) {
-            WebElement del = null;
+        do {
+            long nodesInRequisition = -1;
+            long nodesInDatabase = -1;
+
             try {
-                del = getForeignSourceElement(foreignSource).findElement(By.xpath("//input[@type='button' and @value='Delete Nodes']"));
-                LOG.debug("deleteExistingRequisition: Found 'Delete Nodes' button.  Deleting nodes.");
-                del.click();
-                final Alert alert = wait.until(ExpectedConditions.alertIsPresent());
-                if (alert == null) {
-                    LOG.warn("deleteExistingRequisition: No alert box after clicking 'Delete Nodes', this is probably wrong!");
+                m_driver.manage().timeouts().implicitlyWait(1, TimeUnit.SECONDS);
+
+                final WebElement foreignSourceElement = getForeignSourceElement(foreignSource);
+
+                nodesInRequisition = getNodesInRequisition(foreignSourceElement);
+                nodesInDatabase = getNodesInDatabase(foreignSourceElement);
+
+                LOG.debug("deleteExistingRequisition: nodesInRequisition={}, nodesInDatabase={}", nodesInRequisition, nodesInDatabase);
+
+                if (nodesInDatabase > 0) {
+                    if (nodesInRequisition > 0) {
+                        LOG.debug("deleteExistingRequisition: We have requisitioned nodes, deleting them.");
+                        try {
+                            final WebElement deleteNodesButton = foreignSourceElement.findElement(By.xpath("//input[@type='button' and @value='Delete Nodes']"));
+                            deleteNodesButton.click();
+                            wait.until(ExpectedConditions.alertIsPresent()).accept();
+                        } catch (final NoSuchElementException e) {
+                        }
+                    } else {
+                        LOG.debug("deleteExistingRequisition: We have no requisitioned nodes, but there are nodes in the database. Synchronizing.");
+                        final WebElement synchronizeButton = foreignSourceElement.findElement(By.xpath("//input[@type='button' and @value='Synchronize']"));
+                        synchronizeButton.click();
+                        wait.until(new WaitForNodesInDatabase(0));
+                    }
                 } else {
-                    alert.accept();
+                    // no nodes in the database
+                    try {
+                        LOG.debug("deleteExistingRequisition: We have no nodes in the database, time to delete the requisition. PUSH THE BUTTON FRANK.");
+                        final WebElement deleteRequisitionButton = foreignSourceElement.findElement(By.xpath("//input[@type='button' and @value='Delete Requisition']"));
+                        deleteRequisitionButton.click();
+                    } catch (final NoSuchElementException e) {
+                    }
                 }
-            } catch (final NoSuchElementException e) {
-                LOG.debug("deleteExistingRequisition: 'Delete Nodes' button not found.  Assuming the requisition is empty.");
+            } finally {
+                m_driver.manage().timeouts().implicitlyWait(LOAD_TIMEOUT, TimeUnit.MILLISECONDS);
             }
-        }
-
-        // if the database has nodes to delete, synchronize
-        long nodesInDatabase = getNodesInDatabase(getForeignSourceElement(foreignSource));
-        if (nodesInDatabase > 0) {
-            final WebElement synchronizeButton = getForeignSourceElement(foreignSource).findElement(By.xpath("//input[@type='button' and @value='Synchronize']"));
-            LOG.debug("deleteExistingRequisition: {} still has nodes in the database.  Synchronizing.", foreignSource);
-            synchronizeButton.click();
-
-            final Boolean matched = wait.until(new WaitForNodesInDatabase(0));
-            if (matched == null || !matched) {
-                LOG.warn("Failed to remove nodes from foreign source: {}", foreignSource);
-            }
-        }
-
-        // now try to delete the requisition
-        try {
-            final WebElement deleteButton = getForeignSourceElement(foreignSource).findElement(By.xpath("//input[@type='button' and @value='Delete Requisition']"));
-            deleteButton.click();
-        } catch (final NoSuchElementException e) {
-            LOG.debug("Failed to delete " + foreignSource, e);
-        }
+        } while (getForeignSourceElement(foreignSource) != null);
     }
 
     protected WebElement getForeignSourceElement(final String requisitionName) {
         final String selector = "//span[@data-foreignSource='" + requisitionName + "']";
         WebElement foreignSourceElement = null;
         try {
+            m_driver.manage().timeouts().implicitlyWait(2, TimeUnit.SECONDS);
             foreignSourceElement = m_driver.findElement(By.xpath(selector));
         } catch (final NoSuchElementException e) {
             // no match, treat as a no-op
             LOG.debug("Could not find: {}", selector);
             return null;
+        } finally {
+            m_driver.manage().timeouts().implicitlyWait(LOAD_TIMEOUT, TimeUnit.MILLISECONDS);
         }
         return foreignSourceElement;
     }
@@ -564,6 +567,5 @@ public class OpenNMSSeleniumTestCase {
             }
         }
     }
-
 
 }
