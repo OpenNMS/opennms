@@ -217,10 +217,10 @@
 
 
 <div class="row">
-<div class="col-md-6">
+<div class="col-md-12">
   <!-- start menu -->
   <a class="btn btn-default" href="<%=this.makeLink(callback, parms, new ArrayList<Filter>(), favorite)%>">View all events</a>
-  <button type="button" class="btn btn-default" onClick="$('#advancedSearchModal').modal()">Advanced Search</button>
+  <button type="button" class="btn btn-default" onClick="$('#advancedSearchModal').modal()">Search</button>
   <button type="button" class="btn btn-default" onClick="$('#severityLegendModal').modal()">Severity Legend</button>
         <% if( req.isUserInRole( Authentication.ROLE_ADMIN ) || !req.isUserInRole( Authentication.ROLE_READONLY ) ) { %>
           <% if ( eventCount > 0 ) { %>
@@ -240,7 +240,7 @@
         <% } %>
       <!-- end menu -->
 </div>
-<div class="col-md-6 text-right">
+<div class="text-right hidden">
   <jsp:include page="/includes/event-querypanel.jsp" flush="false" />
 </div>
 </div>

@@ -67,6 +67,17 @@
 
 	<div class="row">
 	<div class="form-group col-sm-6">
+		<label for="msgsub">Event ID:</label>
+		<input class="form-control" type="text" name="eventid" />
+	</div>
+	<div class="form-group col-sm-6">
+		<label for="nodenamelike">Node Label Contains:</label>
+		<input class="form-control" type="text" name="nodenamelike" />
+	</div>
+	</div>
+
+	<div class="row">
+	<div class="form-group col-sm-6">
 		<label for="msgsub">Event Text Contains:</label>
 		<input class="form-control" type="text" name="msgsub" />
 	</div>
@@ -79,11 +90,6 @@
 
 	<div class="row">
 	<div class="form-group col-sm-6">
-		<label for="nodenamelike">Node Label Contains:</label>
-		<input class="form-control" type="text" name="nodenamelike" />
-	</div>
-
-	<div class="form-group col-sm-6">
 		<label for="severity">Severity:</label>
 		<select class="form-control" name="severity">
 			<option selected="selected">Any</option>
@@ -91,6 +97,15 @@
 			<option value="<%= severity.getId() %>">
 				<%= severity.getLabel() %>
 			</option>
+			<% } %>
+		</select>
+	</div>
+	<div class="form-group col-sm-6">
+		<label for="service">Service:</label>
+		<select class="form-control" name="service">
+			<option selected>Any</option>
+			<% for (String name : serviceNameSet) { %>
+				<option value="<%=serviceNameMap.get(name)%>"><%=name%></option>
 			<% } %>
 		</select>
 	</div>
@@ -104,45 +119,48 @@
 	</div>
 
 	<div class="row">
-	<div class="form-group col-sm-4">
-		<label for="service">Service:</label>
-		<select class="form-control" name="service">
-			<option selected>Any</option>
-			<% for (String name : serviceNameSet) { %>
-				<option value="<%=serviceNameMap.get(name)%>"><%=name%></option>
-			<% } %>
-		</select>
-	</div>
-	
-	<div class="form-group col-sm-4">
-		<label class="control-label" for="sortby">Sort By:</label>
-		<select class="form-control" name="sortby">
-			<option value="id">Event ID (Descending)</option>
-			<option value="rev_id">Event ID (Ascending)</option>
-			<option value="severity">Severity (Descending)</option>
-			<option value="rev_severity">Severity (Ascending)</option>
-			<option value="time">Time (Descending)</option>
-			<option value="rev_time">Time (Ascending)</option>
-			<option value="node">Node (Ascending)</option>
-			<option value="rev_node">Node (Descending)</option>
-			<option value="interface">Interface (Ascending)</option>
-			<option value="rev_interface">Interface (Descending)</option>
-			<option value="service">Service (Ascending)</option>
-			<option value="rev_service">Service (Descending)</option>
-		</select>
-	</div>
+		<div class="form-group col-sm-4">
+			<label for="relativetime">Relative Time:</label> <select class="form-control"
+				name="relativetime">
+				<option value="0" selected>Any</option>
+				<option value="1">Last hour</option>
+				<option value="2">Last 4 hours</option>
+				<option value="3">Last 8 hours</option>
+				<option value="4">Last 12 hours</option>
+				<option value="5">Last day</option>
+				<option value="6">Last week</option>
+				<option value="7">Last month</option>
+			</select>
+		</div>
+		<div class="form-group col-sm-4">
+			<label class="control-label" for="sortby">Sort By:</label> <select
+				class="form-control" name="sortby">
+				<option value="id">Event ID (Descending)</option>
+				<option value="rev_id">Event ID (Ascending)</option>
+				<option value="severity">Severity (Descending)</option>
+				<option value="rev_severity">Severity (Ascending)</option>
+				<option value="time">Time (Descending)</option>
+				<option value="rev_time">Time (Ascending)</option>
+				<option value="node">Node (Ascending)</option>
+				<option value="rev_node">Node (Descending)</option>
+				<option value="interface">Interface (Ascending)</option>
+				<option value="rev_interface">Interface (Descending)</option>
+				<option value="service">Service (Ascending)</option>
+				<option value="rev_service">Service (Descending)</option>
+			</select>
+		</div>
 
-	<div class="form-group col-sm-4">
-		<label for="limit">Number&nbsp;of&nbsp;Events&nbsp;Per&nbsp;Page:</label>
-		<select class="form-control" name="limit">
-			<option value="10">10 events</option>
-			<option value="20">20 events</option>
-			<option value="30">30 events</option>
-			<option value="50">50 events</option>
-			<option value="100">100 events</option>
-			<option value="1000">1000 events</option>
-		</select>
-	</div>
+		<div class="form-group col-sm-4">
+			<label for="limit">Number&nbsp;of&nbsp;Events&nbsp;Per&nbsp;Page:</label>
+			<select class="form-control" name="limit">
+				<option value="10">10 events</option>
+				<option value="20">20 events</option>
+				<option value="30">30 events</option>
+				<option value="50">50 events</option>
+				<option value="100">100 events</option>
+				<option value="1000">1000 events</option>
+			</select>
+		</div>
 	</div>
 
 	<div class="row">

@@ -46,6 +46,7 @@ import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.web.api.Util;
 import org.opennms.web.event.filter.AfterDateFilter;
 import org.opennms.web.event.filter.BeforeDateFilter;
+import org.opennms.web.event.filter.EventIdFilter;
 import org.opennms.web.event.filter.ExactUEIFilter;
 import org.opennms.web.event.filter.IPAddrLikeFilter;
 import org.opennms.web.event.filter.LogMessageMatchesAnyFilter;
@@ -63,10 +64,6 @@ import org.opennms.web.servlet.MissingParameterException;
  *
  * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @version $Id: $
- * @since 1.8.1
  */
 public class EventQueryServlet extends HttpServlet {
     /**
@@ -78,7 +75,7 @@ public class EventQueryServlet extends HttpServlet {
      * The list of parameters that are extracted by this servlet and not passed
      * on to the servlet.
      */
-    protected static String[] IGNORE_LIST = new String[] { "msgsub", "msgmatchany", "nodenamelike", "exactuei", "service", "iplike", "severity", "relativetime", "usebeforetime", "beforehour", "beforeminute", "beforeampm", "beforedate", "beforemonth", "beforeyear", "useaftertime", "afterhour", "afterminute", "afterampm", "afterdate", "aftermonth", "afteryear" };
+    protected static String[] IGNORE_LIST = new String[] { "eventid", "msgsub", "msgmatchany", "nodenamelike", "exactuei", "service", "iplike", "severity", "relativetime", "usebeforetime", "beforehour", "beforeminute", "beforeampm", "beforedate", "beforemonth", "beforeyear", "useaftertime", "afterhour", "afterminute", "afterampm", "afterdate", "aftermonth", "afteryear" };
 
     /**
      * The URL for the servlet. The
@@ -152,6 +149,14 @@ public class EventQueryServlet extends HttpServlet {
         String severity = WebSecurityUtils.sanitizeString(request.getParameter("severity"));
         if (severity != null && !severity.equalsIgnoreCase("any")) {
             filterArray.add(new SeverityFilter(WebSecurityUtils.safeParseInt(severity)));
+        }
+
+        String eventId = WebSecurityUtils.sanitizeString(request.getParameter("eventid"));
+        if (eventId != null && !"".equals(eventId)) {
+            int eventIdInt = WebSecurityUtils.safeParseInt(eventId);
+            if (eventIdInt > 0) {
+                filterArray.add(new EventIdFilter(eventIdInt));
+            }
         }
 
         // convenient syntax for AfterDateFilter as relative to current time

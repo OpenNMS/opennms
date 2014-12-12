@@ -119,4 +119,6 @@
     <li class="<%=itemCount >= limit ? "" : "disabled"%>"><a href="<%=baseUrl%>&amp;<%=multipleName%>=<%=multiple+1%>">Next</a></li>
   </ul>
   </nav>
+  <% } else { %>
+   <br/>
   <% } %>
