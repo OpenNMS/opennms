@@ -83,7 +83,7 @@ public abstract class AbstractFieldSet extends Composite implements FieldSet {
 		 */
 		this.helpText = helpText;
 		if ((helpText != null) && (!helpText.equals(""))) {
-			tooltip.setPlacement(Placement.BOTTOM);
+			tooltip.setPlacement(Placement.RIGHT);
 			tooltip.setText(helpText);
 			tooltip.add(label);
 			formGroup.add(tooltip);
