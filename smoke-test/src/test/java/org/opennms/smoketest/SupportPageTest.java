@@ -40,7 +40,6 @@ import org.openqa.selenium.WebElement;
 public class SupportPageTest extends OpenNMSSeleniumTestCase {
     @Before
     public void setUp() throws Exception {
-        super.setUp();
         supportPage();
     }
 

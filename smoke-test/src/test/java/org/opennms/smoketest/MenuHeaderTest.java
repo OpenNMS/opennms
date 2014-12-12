@@ -55,7 +55,7 @@ public class MenuHeaderTest extends OpenNMSSeleniumTestCase {
         findElementByXpath("//h3[text()='Search Asset Information']");
 
         clickMenuItem("Info", "Nodes", "element/nodeList.htm");
-        findElementByXpath("//h3//span[text()='Nodes']");
+        findElementByXpath("//h3//span[text()='Nodes' or text()='Availability']");
 
         clickMenuItem("Status", "Outages", "outage/index.jsp");
         findElementByXpath("//h3[text()='Outage Menu']");
@@ -115,7 +115,7 @@ public class MenuHeaderTest extends OpenNMSSeleniumTestCase {
 
         frontPage();
         clickMenuItem("name=nav-admin-top", "Quick-Add Node", BASE_URL + "opennms/admin/node/add.htm");
-        findElementByXpath("//h3[text()='Basic Attributes (required)']");
+        findElementByXpath("//h3[text()='Node Quick-Add']");
 
         frontPage();
         clickMenuItem("name=nav-admin-top", "Help/Support", BASE_URL + "opennms/support/index.htm");

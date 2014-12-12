@@ -38,7 +38,6 @@ public class AdminPageTest extends OpenNMSSeleniumTestCase {
 
     @Before
     public void setUp() throws Exception {
-        super.setUp();
         adminPage();
     }
 

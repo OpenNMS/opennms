@@ -37,17 +37,16 @@ import org.junit.runners.MethodSorters;
 public class NodeListPageTest extends OpenNMSSeleniumTestCase {
     @Before
     public void setUp() throws Exception {
-        super.setUp();
         nodePage();
     }
 
     @Test
-    public void a_testAllTextIsPresent() throws Exception {
+    public void testAllTextIsPresent() throws Exception {
         findElementByXpath("//h3//span[text()='Nodes']");
     }
 
     @Test
-    public void c_testAllLinks() throws InterruptedException {
+    public void testAllLinks() throws InterruptedException {
         findElementByLink("Show interfaces").click();
         findElementByLink("Hide interfaces");
     }

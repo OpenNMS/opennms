@@ -34,7 +34,6 @@ import org.junit.Test;
 public class SearchPageTest extends OpenNMSSeleniumTestCase {
     @Before
     public void setUp() throws Exception {
-        super.setUp();
         searchPage();
     }
 

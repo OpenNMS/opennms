@@ -51,7 +51,6 @@ public class AlarmsPageTest extends OpenNMSSeleniumTestCase {
 
     @Before
     public void setUp() throws Exception {
-        super.setUp();
         alarmsPage();
     }
 

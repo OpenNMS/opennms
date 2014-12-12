@@ -35,7 +35,6 @@ import org.openqa.selenium.By;
 public class EventsPageTest extends OpenNMSSeleniumTestCase {
     @Before
     public void setUp() throws Exception {
-        super.setUp();
         m_driver.get(BASE_URL + "opennms/event/list");
     }
 
@@ -53,7 +52,7 @@ public class EventsPageTest extends OpenNMSSeleniumTestCase {
 
     @Test 
     public void testAdvancedSearch() throws InterruptedException {
-        findElementByXpath("//button[@type='button' and text() = 'Advanced Search']").click();
+        findElementByXpath("//button[@type='button' and text() = 'Search']").click();
         findElementByName("msgsub");
         findElementByName("iplike");
         findElementByName("nodenamelike");
