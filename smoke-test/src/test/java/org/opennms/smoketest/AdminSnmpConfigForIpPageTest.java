@@ -101,17 +101,17 @@ public class AdminSnmpConfigForIpPageTest extends OpenNMSSeleniumTestCase {
     @Test
     public void testVersionHandling() {
         new Select(findElementByName("version")).selectByVisibleText("v1");
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//th[text()='v1/v2c specific parameters']")));
-        wait.until(ExpectedConditions.invisibilityOfElementLocated(By.xpath("//th[text()='v3 specific parameters']")));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//h3[text()='v1/v2c specific parameters']")));
+        wait.until(ExpectedConditions.invisibilityOfElementLocated(By.xpath("//h3[text()='v3 specific parameters']")));
 
         new Select(findElementByName("version")).selectByVisibleText("v2c");
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//th[text()='v1/v2c specific parameters']")));
-        wait.until(ExpectedConditions.invisibilityOfElementLocated(By.xpath("//th[text()='v3 specific parameters']")));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//h3[text()='v1/v2c specific parameters']")));
+        wait.until(ExpectedConditions.invisibilityOfElementLocated(By.xpath("//h3[text()='v3 specific parameters']")));
 
         // change to v3
         new Select(findElementByName("version")).selectByVisibleText("v3");
-        wait.until(ExpectedConditions.invisibilityOfElementLocated(By.xpath("//th[text()='v1/v2c specific parameters']")));
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//th[text()='v3 specific parameters']")));
+        wait.until(ExpectedConditions.invisibilityOfElementLocated(By.xpath("//h3[text()='v1/v2c specific parameters']")));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//h3[text()='v3 specific parameters']")));
     }
 
     /**
@@ -185,21 +185,13 @@ public class AdminSnmpConfigForIpPageTest extends OpenNMSSeleniumTestCase {
      */
     @Test
     public void testIpValidation() throws Exception {
-        // empty first and last ip
-        enterText(By.name("firstIPAddress"), "");
-        enterText(By.name("lastIPAddress"), "");
-        findElementByName("saveConfig").click();
-
-        String alertText = handleAlert();
-        assertEquals("Please enter a valid first IP address!", alertText);
-
         //invalid first and empty last ip
         gotoPage();
         enterText(By.name("firstIPAddress"), "1234");
         enterText(By.name("lastIPAddress"), "");
         findElementByName("saveConfig").click();
 
-        alertText = handleAlert();
+        String alertText = handleAlert();
         assertEquals("1234 is not a valid IP address!", alertText);
 
         // valid first and invalid last ip
