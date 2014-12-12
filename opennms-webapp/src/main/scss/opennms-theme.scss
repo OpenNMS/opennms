@@ -801,3 +801,9 @@ span.NLfid, span.NPfid {
 div.NLnode:hover span.NLdbid, div.NLnode:hover span.NLfs, div.NLnode:hover span.NLfid {
 	display: inline;
 }
+
+/* Increase the inner width of the tooltips for long messages.
+   Used in admin/snmpConfig.jsp */
+.tooltip-inner {
+    min-width: 200px; //the minimum width
+}
