@@ -29,7 +29,6 @@
 package org.opennms.netmgt.rtc;
 
 import java.net.InetAddress;
-import java.text.ParseException;
 import java.util.List;
 import java.util.Map;
 
@@ -77,9 +76,9 @@ final class DataUpdater implements Runnable {
     }
 
     /**
-     * If it is a nodeLostService, update downtime on the rtcnode
+     * If it is a outageCreated, update downtime on the rtcnode
      */
-    private void handleNodeLostService(long nodeid, InetAddress ip, String svcName, long eventTime) {
+    private void handleOutageCreated(long nodeid, InetAddress ip, String svcName, long eventTime) {
 
         if (nodeid == -1 || ip == null || svcName == null || eventTime == -1) {
             LOG.warn("{} ignored - info incomplete - nodeid/ip/svc/eventtime: {}/{}/{}/{}", m_event.getUei(), nodeid, InetAddressUtils.str(ip), svcName, eventTime);
@@ -87,84 +86,16 @@ final class DataUpdater implements Runnable {
         }
 
         DataManager dataMgr = RTCManager.getDataManager();
-        dataMgr.nodeLostService(nodeid, ip, svcName, eventTime);
+        dataMgr.outageCreated(nodeid, ip, svcName, eventTime);
 
 
-        LOG.debug("Added nodeLostService to nodeid: {} ip: {} svcName: {}", svcName, nodeid, InetAddressUtils.str(ip));
+        LOG.debug("Added outageCreated to nodeid: {} ip: {} svcName: {}", nodeid, InetAddressUtils.str(ip), svcName);
     }
 
     /**
-     * If it is an interfaceDown, update downtime on the appropriate rtcnodes
+     * If it is a outageResolved, update downtime on the rtcnode
      */
-    private void handleInterfaceDown(long nodeid, InetAddress ip, long eventTime) {
-
-        if (nodeid == -1 || ip == null || eventTime == -1) {
-            LOG.warn("{} ignored - info incomplete - nodeid/ip/eventtime: {}/{}/{}", m_event.getUei(), nodeid, InetAddressUtils.str(ip), eventTime);
-            return;
-        }
-
-        DataManager dataMgr = RTCManager.getDataManager();
-        dataMgr.interfaceDown(nodeid, ip, eventTime);
-
-
-        LOG.debug("Recorded interfaceDown for nodeid: {} ip: {}", InetAddressUtils.str(ip), nodeid);
-    }
-
-    /**
-     * If it is an nodeDown, update downtime on the appropriate rtcnodes
-     */
-    private void handleNodeDown(long nodeid, long eventTime) {
-
-        if (nodeid == -1 || eventTime == -1) {
-            LOG.warn("{} ignored - info incomplete - nodeid/eventtime: {}/{}", m_event.getUei(), nodeid, eventTime);
-            return;
-        }
-
-        DataManager dataMgr = RTCManager.getDataManager();
-        dataMgr.nodeDown(nodeid, eventTime);
-
-
-        LOG.debug("Recorded nodeDown for nodeid: {}", nodeid);
-    }
-
-    /**
-     * If it is a nodeUp, update regained time on the appropriate rtcnodes
-     */
-    private void handleNodeUp(long nodeid, long eventTime) {
-
-        if (nodeid == -1 || eventTime == -1) {
-            LOG.warn("{} ignored - info incomplete - nodeid/eventtime: {}/{}", m_event.getUei(), nodeid, eventTime);
-            return;
-        }
-
-        DataManager dataMgr = RTCManager.getDataManager();
-        dataMgr.nodeUp(nodeid, eventTime);
-
-
-        LOG.debug("Recorded nodeUp for nodeid: {}", nodeid);
-    }
-
-    /**
-     * If it is an interfaceUp, update regained time on the appropriate rtcnodes
-     */
-    private void handleInterfaceUp(long nodeid, InetAddress ip, long eventTime) {
-
-        if (nodeid == -1 || ip == null || eventTime == -1) {
-            LOG.warn("{} ignored - info incomplete - nodeid/ip/eventtime: {}/{}/{}", m_event.getUei(), nodeid, InetAddressUtils.str(ip), eventTime);
-            return;
-        }
-
-        DataManager dataMgr = RTCManager.getDataManager();
-        dataMgr.interfaceUp(nodeid, ip, eventTime);
-
-
-        LOG.debug("Recorded interfaceUp for nodeid: {} ip: {}", InetAddressUtils.str(ip), nodeid);
-    }
-
-    /**
-     * If it is a nodeRegainedService, update downtime on the rtcnode
-     */
-    private void handleNodeRegainedService(long nodeid, InetAddress ip, String svcName, long eventTime) {
+    private void handleOutageResolved(long nodeid, InetAddress ip, String svcName, long eventTime) {
 
         if (nodeid == -1 || ip == null || svcName == null || eventTime == -1) {
             LOG.warn("{} ignored - info incomplete - nodeid/ip/svc/eventtime: {}/{}/{}/{}", m_event.getUei(), nodeid, InetAddressUtils.str(ip), svcName, eventTime);
@@ -172,10 +103,10 @@ final class DataUpdater implements Runnable {
         }
 
         DataManager dataMgr = RTCManager.getDataManager();
-        dataMgr.nodeRegainedService(nodeid, ip, svcName, eventTime);
+        dataMgr.outageResolved(nodeid, ip, svcName, eventTime);
 
 
-        LOG.debug("Added nodeRegainedService to nodeid: {} ip: {} svcName: {}", svcName, nodeid, InetAddressUtils.str(ip));
+        LOG.debug("Added outageResolved to nodeid: {} ip: {} svcName: {}", svcName, nodeid, InetAddressUtils.str(ip));
     }
 
     /**
@@ -423,13 +354,9 @@ final class DataUpdater implements Runnable {
         //
         // Check for any of the following UEIs:
         //
+        // outageCreated
+        // outageResolved
         // nodeGainedService
-        // nodeLostService
-        // interfaceDown
-        // nodeDown
-        // nodeUp
-        // interfaceUp
-        // nodeRegainedService
         // serviceDeleted
         // interfaceReparented
         // subscribe
@@ -437,18 +364,10 @@ final class DataUpdater implements Runnable {
         //
         if (eventUEI.equals(EventConstants.NODE_GAINED_SERVICE_EVENT_UEI)) {
             handleNodeGainedService(nodeid, ip, svcName);
-        } else if (eventUEI.equals(EventConstants.NODE_LOST_SERVICE_EVENT_UEI)) {
-            handleNodeLostService(nodeid, ip, svcName, eventTime);
-        } else if (eventUEI.equals(EventConstants.INTERFACE_DOWN_EVENT_UEI)) {
-            handleInterfaceDown(nodeid, ip, eventTime);
-        } else if (eventUEI.equals(EventConstants.NODE_DOWN_EVENT_UEI)) {
-            handleNodeDown(nodeid, eventTime);
-        } else if (eventUEI.equals(EventConstants.NODE_UP_EVENT_UEI)) {
-            handleNodeUp(nodeid, eventTime);
-        } else if (eventUEI.equals(EventConstants.INTERFACE_UP_EVENT_UEI)) {
-            handleInterfaceUp(nodeid, ip, eventTime);
-        } else if (eventUEI.equals(EventConstants.NODE_REGAINED_SERVICE_EVENT_UEI)) {
-            handleNodeRegainedService(nodeid, ip, svcName, eventTime);
+        } else if (eventUEI.equals(EventConstants.OUTAGE_CREATED_EVENT_UEI)) {
+            handleOutageCreated(nodeid, ip, svcName, eventTime);
+        } else if (eventUEI.equals(EventConstants.OUTAGE_RESOLVED_EVENT_UEI)) {
+            handleOutageResolved(nodeid, ip, svcName, eventTime);
         } else if (eventUEI.equals(EventConstants.SERVICE_DELETED_EVENT_UEI)) {
             handleServiceDeleted(nodeid, ip, svcName);
         } else if (eventUEI.equals(EventConstants.SERVICE_UNMANAGED_EVENT_UEI)) {
