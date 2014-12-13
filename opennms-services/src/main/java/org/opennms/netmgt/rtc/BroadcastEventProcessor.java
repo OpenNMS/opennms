@@ -67,17 +67,30 @@ final class BroadcastEventProcessor implements EventListener {
      */
     public void start() {
         List<String> ueisOfInterest = new ArrayList<String>();
-        // add the outageCreated event
-        ueisOfInterest.add(EventConstants.OUTAGE_CREATED_EVENT_UEI);        
-
-        // add the outageResolved event
-        ueisOfInterest.add(EventConstants.OUTAGE_RESOLVED_EVENT_UEI);        
 
         // add the nodeGainedService event
         ueisOfInterest.add(EventConstants.NODE_GAINED_SERVICE_EVENT_UEI);
 
+        // add the nodeLostService event
+        ueisOfInterest.add(EventConstants.NODE_LOST_SERVICE_EVENT_UEI);
+
+        // add the interfaceDown event
+        ueisOfInterest.add(EventConstants.INTERFACE_DOWN_EVENT_UEI);
+
+        // add the nodeDown event
+        ueisOfInterest.add(EventConstants.NODE_DOWN_EVENT_UEI);
+
+        // add the nodeUp event
+        ueisOfInterest.add(EventConstants.NODE_UP_EVENT_UEI);
+        
         // add the nodeCategoryMembershipChanged event
         ueisOfInterest.add(EventConstants.NODE_CATEGORY_MEMBERSHIP_CHANGED_EVENT_UEI);
+
+        // add the interfaceUp event
+        ueisOfInterest.add(EventConstants.INTERFACE_UP_EVENT_UEI);
+
+        // add the nodeRegainedService event
+        ueisOfInterest.add(EventConstants.NODE_REGAINED_SERVICE_EVENT_UEI);
 
         // add the serviceDeleted event
         ueisOfInterest.add(EventConstants.SERVICE_DELETED_EVENT_UEI);

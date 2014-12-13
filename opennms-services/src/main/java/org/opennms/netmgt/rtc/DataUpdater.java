@@ -74,9 +74,9 @@ final class DataUpdater implements Runnable {
     }
 
     /**
-     * If it is a outageCreated, update downtime on the rtcnode
+     * If it is a nodeLostService, update downtime on the rtcnode
      */
-    private void handleOutageCreated(long nodeid, InetAddress ip, String svcName, long eventTime) {
+    private void handleNodeLostService(long nodeid, InetAddress ip, String svcName, long eventTime) {
         ThreadCategory log = ThreadCategory.getInstance(DataUpdater.class);
 
         if (nodeid == -1 || ip == null || svcName == null || eventTime == -1) {
@@ -85,16 +85,88 @@ final class DataUpdater implements Runnable {
         }
 
         DataManager dataMgr = RTCManager.getDataManager();
-        dataMgr.outageCreated(nodeid, ip, svcName, eventTime);
+        dataMgr.nodeLostService(nodeid, ip, svcName, eventTime);
 
         if (log.isDebugEnabled())
-           log.debug("Added outageCreated to nodeid: " + nodeid + " ip: " +  InetAddressUtils.str(ip) + " svcName: " +  svcName);
+            log.debug("Added nodeLostService to nodeid: " + nodeid + " ip: " + InetAddressUtils.str(ip) + " svcName: " + svcName);
     }
 
     /**
-     * If it is a outageResolved, update downtime on the rtcnode
+     * If it is an interfaceDown, update downtime on the appropriate rtcnodes
      */
-    private void handleOutageResolved(long nodeid, InetAddress ip, String svcName, long eventTime) {
+    private void handleInterfaceDown(long nodeid, InetAddress ip, long eventTime) {
+        ThreadCategory log = ThreadCategory.getInstance(DataUpdater.class);
+
+        if (nodeid == -1 || ip == null || eventTime == -1) {
+            log.warn(m_event.getUei() + " ignored - info incomplete - nodeid/ip/eventtime: " + nodeid + "/" + InetAddressUtils.str(ip) + "/" + eventTime);
+            return;
+        }
+
+        DataManager dataMgr = RTCManager.getDataManager();
+        dataMgr.interfaceDown(nodeid, ip, eventTime);
+
+        if (log.isDebugEnabled())
+            log.debug("Recorded interfaceDown for nodeid: " + nodeid + " ip: " + InetAddressUtils.str(ip));
+    }
+
+    /**
+     * If it is an nodeDown, update downtime on the appropriate rtcnodes
+     */
+    private void handleNodeDown(long nodeid, long eventTime) {
+        ThreadCategory log = ThreadCategory.getInstance(DataUpdater.class);
+
+        if (nodeid == -1 || eventTime == -1) {
+            log.warn(m_event.getUei() + " ignored - info incomplete - nodeid/eventtime: " + nodeid + "/" + eventTime);
+            return;
+        }
+
+        DataManager dataMgr = RTCManager.getDataManager();
+        dataMgr.nodeDown(nodeid, eventTime);
+
+        if (log.isDebugEnabled())
+            log.debug("Recorded nodeDown for nodeid: " + nodeid);
+    }
+
+    /**
+     * If it is a nodeUp, update regained time on the appropriate rtcnodes
+     */
+    private void handleNodeUp(long nodeid, long eventTime) {
+        ThreadCategory log = ThreadCategory.getInstance(DataUpdater.class);
+
+        if (nodeid == -1 || eventTime == -1) {
+            log.warn(m_event.getUei() + " ignored - info incomplete - nodeid/eventtime: " + nodeid + "/" + eventTime);
+            return;
+        }
+
+        DataManager dataMgr = RTCManager.getDataManager();
+        dataMgr.nodeUp(nodeid, eventTime);
+
+        if (log.isDebugEnabled())
+            log.debug("Recorded nodeUp for nodeid: " + nodeid);
+    }
+
+    /**
+     * If it is an interfaceUp, update regained time on the appropriate rtcnodes
+     */
+    private void handleInterfaceUp(long nodeid, InetAddress ip, long eventTime) {
+        ThreadCategory log = ThreadCategory.getInstance(DataUpdater.class);
+
+        if (nodeid == -1 || ip == null || eventTime == -1) {
+            log.warn(m_event.getUei() + " ignored - info incomplete - nodeid/ip/eventtime: " + nodeid + "/" + InetAddressUtils.str(ip) + "/" + eventTime);
+            return;
+        }
+
+        DataManager dataMgr = RTCManager.getDataManager();
+        dataMgr.interfaceUp(nodeid, ip, eventTime);
+
+        if (log.isDebugEnabled())
+            log.debug("Recorded interfaceUp for nodeid: " + nodeid + " ip: " + InetAddressUtils.str(ip));
+    }
+
+    /**
+     * If it is a nodeRegainedService, update downtime on the rtcnode
+     */
+    private void handleNodeRegainedService(long nodeid, InetAddress ip, String svcName, long eventTime) {
         ThreadCategory log = ThreadCategory.getInstance(DataUpdater.class);
 
         if (nodeid == -1 || ip == null || svcName == null || eventTime == -1) {
@@ -103,10 +175,10 @@ final class DataUpdater implements Runnable {
         }
 
         DataManager dataMgr = RTCManager.getDataManager();
-        dataMgr.outageResolved(nodeid, ip, svcName, eventTime);
+        dataMgr.nodeRegainedService(nodeid, ip, svcName, eventTime);
 
         if (log.isDebugEnabled())
-           log.debug("Added outageResolved to nodeid: " + nodeid + " ip: " +  InetAddressUtils.str(ip) + " svcName: " +  svcName);
+            log.debug("Added nodeRegainedService to nodeid: " + nodeid + " ip: " + InetAddressUtils.str(ip) + " svcName: " + svcName);
     }
 
     /**
@@ -370,9 +442,13 @@ final class DataUpdater implements Runnable {
         //
         // Check for any of the following UEIs:
         //
-        // outageCreated
-        // outageResolved
         // nodeGainedService
+        // nodeLostService
+        // interfaceDown
+        // nodeDown
+        // nodeUp
+        // interfaceUp
+        // nodeRegainedService
         // serviceDeleted
         // interfaceReparented
         // subscribe
@@ -380,10 +456,18 @@ final class DataUpdater implements Runnable {
         //
         if (eventUEI.equals(EventConstants.NODE_GAINED_SERVICE_EVENT_UEI)) {
             handleNodeGainedService(nodeid, ip, svcName);
-        } else if (eventUEI.equals(EventConstants.OUTAGE_CREATED_EVENT_UEI)) {
-            handleOutageCreated(nodeid, ip, svcName, eventTime);
-        } else if (eventUEI.equals(EventConstants.OUTAGE_RESOLVED_EVENT_UEI)) {
-            handleOutageResolved(nodeid, ip, svcName, eventTime);
+        } else if (eventUEI.equals(EventConstants.NODE_LOST_SERVICE_EVENT_UEI)) {
+            handleNodeLostService(nodeid, ip, svcName, eventTime);
+        } else if (eventUEI.equals(EventConstants.INTERFACE_DOWN_EVENT_UEI)) {
+            handleInterfaceDown(nodeid, ip, eventTime);
+        } else if (eventUEI.equals(EventConstants.NODE_DOWN_EVENT_UEI)) {
+            handleNodeDown(nodeid, eventTime);
+        } else if (eventUEI.equals(EventConstants.NODE_UP_EVENT_UEI)) {
+            handleNodeUp(nodeid, eventTime);
+        } else if (eventUEI.equals(EventConstants.INTERFACE_UP_EVENT_UEI)) {
+            handleInterfaceUp(nodeid, ip, eventTime);
+        } else if (eventUEI.equals(EventConstants.NODE_REGAINED_SERVICE_EVENT_UEI)) {
+            handleNodeRegainedService(nodeid, ip, svcName, eventTime);
         } else if (eventUEI.equals(EventConstants.SERVICE_DELETED_EVENT_UEI)) {
             handleServiceDeleted(nodeid, ip, svcName);
         } else if (eventUEI.equals(EventConstants.SERVICE_UNMANAGED_EVENT_UEI)) {

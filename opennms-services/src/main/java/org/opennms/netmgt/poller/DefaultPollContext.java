@@ -77,7 +77,6 @@ public class DefaultPollContext implements PollContext, EventListener {
         // node events
         EventConstants.NODE_DOWN_EVENT_UEI,
         EventConstants.NODE_UP_EVENT_UEI
-        
     };
     
     private volatile PollerConfig m_pollerConfig;
@@ -302,7 +301,6 @@ public class DefaultPollContext implements PollContext, EventListener {
         final int nodeId = svc.getNodeId();
         final String ipAddr = svc.getIpAddr();
         final String svcName = svc.getSvcName();
-        final String reason = svc.getStatus().getReason();
         final Runnable r = new Runnable() {
             public void run() {
                 if (log().isDebugEnabled()) log().debug("run: Opening outage with query manager: "+svc+" with event:"+svcLostEvent);
@@ -322,8 +320,6 @@ public class DefaultPollContext implements PollContext, EventListener {
         else {
             r.run();
         }
-        log().debug("openOutage: sending outageCreated event for: " + svc + " on " + ipAddr);
-        sendEvent(createEvent(EventConstants.OUTAGE_CREATED_EVENT_UEI, nodeId, InetAddressUtils.addr(ipAddr), svcName, svcLostEvent.getDate(), reason));
         
     }
 
@@ -335,7 +331,6 @@ public class DefaultPollContext implements PollContext, EventListener {
         final int nodeId = svc.getNodeId();
         final String ipAddr = svc.getIpAddr();
         final String svcName = svc.getSvcName();
-        final String reason = svc.getStatus().getReason();
         final Runnable r = new Runnable() {
             public void run() {
                 final int eventId = svcRegainEvent.getEventId();
@@ -352,8 +347,6 @@ public class DefaultPollContext implements PollContext, EventListener {
         else {
             r.run();
         }
-        log().debug("resolveOutage: sending outageResolved event for: " + svc + " on " + ipAddr);
-        sendEvent(createEvent(EventConstants.OUTAGE_RESOLVED_EVENT_UEI, nodeId, InetAddressUtils.addr(ipAddr), svcName, svcRegainEvent.getDate(), reason));
     }
     
     /** {@inheritDoc} */
