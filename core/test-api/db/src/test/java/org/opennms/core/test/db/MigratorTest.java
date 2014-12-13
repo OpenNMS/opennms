@@ -30,9 +30,11 @@ package org.opennms.core.test.db;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
+import java.net.URI;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -92,10 +94,15 @@ public class MigratorTest {
 
         Resource aResource = null;
         for (final Resource resource : getTestResources()) {
-            if (resource.getURI().toString().contains("test-api.schema.a")) {
+            URI uri = resource.getURI();
+            if (uri.getScheme().equals("file") && uri.toString().contains("test-api/schema/a")) {
+                aResource = resource;
+            }
+            if (uri.getScheme().equals("jar") && uri.toString().contains("test-api.schema.a")) {
                 aResource = resource;
             }
         }
+        assertNotNull("aResource must not be null", aResource);
 
         Set<String> tables = getTables();
         assertFalse("must not contain table 'schematest'", tables.contains("schematest"));
@@ -148,7 +155,9 @@ public class MigratorTest {
         // Add a resource accessor to the migration so that it will load multiple changelog.xml files
         // from the classpath
         for (final Resource resource : getTestResources()) {
-            if (!resource.getURI().toString().contains("test-api.schema")) continue;
+            URI uri = resource.getURI();
+            if (uri.getScheme().equals("jar") && !uri.toString().contains("test-api.schema")) continue;
+            if (uri.getScheme().equals("file") && !uri.toString().contains("test-api/schema")) continue;
             LOG.info("=== found resource: {} ===", resource);
             migration.setAccessor(new ExistingResourceAccessor(resource));
             m.migrate(migration);
@@ -300,7 +309,9 @@ public class MigratorTest {
     private List<Resource> getTestResources() throws IOException {
         final List<Resource> resources = new ArrayList<Resource>();
         for (final Resource resource : m_context.getResources("classpath*:/changelog.xml")) {
-            if (!resource.getURI().toString().contains("test-api.schema")) continue;
+            URI uri = resource.getURI();
+            if (uri.getScheme().equals("file") && !uri.toString().contains("test-api/schema")) continue;
+            if (uri.getScheme().equals("jar") && !uri.toString().contains("test-api.schema")) continue;
             resources.add(resource);
         }
         return resources;
