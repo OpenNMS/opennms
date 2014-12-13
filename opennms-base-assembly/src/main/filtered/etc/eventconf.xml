@@ -2190,7 +2190,9 @@
   <event-file>events/OSPF.events.xml</event-file>
   <event-file>events/Overland.events.xml</event-file>
   <event-file>events/Overture.events.xml</event-file>
+  <event-file>events/Procmail.syslog.events.xml</event-file>
   <event-file>events/POSIX.syslog.events.xml</event-file>
+  <event-file>events/Postfix.syslog.events.xml</event-file>
   <event-file>events/Packeteer.events.xml</event-file>
   <event-file>events/Patrol.events.xml</event-file>
   <event-file>events/PCube.events.xml</event-file>
