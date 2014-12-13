@@ -167,4 +167,46 @@ public class TopReportPluginTest {
         assertEquals("Output", m_reportPlugin.getEntries().keySet().iterator().next());
         assertEquals(FileSystemResource.class, m_reportPlugin.getEntries().entrySet().iterator().next().getValue().getClass());
     }
+
+    @Test
+    public void testFreeBSDTop() {
+        final String topHOutput = "top: illegal option -- h\n"
+          + "Top version 3.5beta12\n"
+          + "Usage: top [-abCHIijnPqStuvz] [-d count] [-m io | cpu] [-o field] [-s time]\n"
+          + "       [-J jail] [-U username] [number]";
+
+        final String topOutput = "last pid: 21586;  load averages:  0.21,  0.15,  0.22  up 4+18:55:29    16:39:15\n"
+          + "31 processes:  1 running, 29 sleeping, 1 stopped\n"
+          + "\n"
+          + "Mem: 88M Active, 5225M Inact, 1091M Wired, 39M Cache, 831M Buf, 1504M Free\n"
+          + "Swap: 1024M Total, 16M Used, 1008M Free, 1% Inuse\n"
+          + "\n"
+          + "\n"
+          + "  PID USERNAME    THR PRI NICE   SIZE    RES STATE   C   TIME    WCPU COMMAND\n"
+          + "  699 root          1  20    0 86472K  3532K select  1   8:11   0.00% sshd\n"
+          + "30561 root          1  20    0 86472K  5592K select  3   4:09   0.00% sshd\n"
+          + "  597 pgsql         1  20    0   180M 11052K select  0   3:35   0.00% postgres\n"
+          + "  599 pgsql         1  20    0   180M   139M select  0   1:30   0.00% postgres\n"
+          + "  603 pgsql         1  20    0 43244K  3892K select  3   0:52   0.00% postgres\n"
+          + "  602 pgsql         1  20    0   180M 13032K select  2   0:12   0.00% postgres\n"
+          + "  600 pgsql         1  20    0   180M 14372K select  2   0:10   0.00% postgres\n"
+          + "  601 pgsql         1  20    0   180M 10932K select  1   0:08   0.00% postgres\n"
+          + "30555 root          1  20    0 86472K  4848K select  2   0:08   0.00% sshd\n"
+          + "  636 root          1  20    0 24104K  2060K select  0   0:05   0.00% sendmail\n"
+          + "  435 root          1  20    0 14492K  1232K select  1   0:02   0.00% syslogd\n"
+          + "  702 root          1  29    0 23572K  1732K ttyin   3   0:02   0.00% csh\n"
+          + "  643 root          1  20    0 16592K  1256K nanslp  0   0:01   0.00% cron\n"
+          + "30558 root          1  20    0 23572K  3200K ttyin   3   0:01   0.00% tcsh\n"
+          + "30564 root          1  20    0 17656K  2472K wait    2   0:01   0.00% bash\n"
+          + "  357 root          1  20    0 13164K   156K select  0   0:00   0.00% devd\n"
+          + "21420 root          2  20    0   161M 18344K STOP    1   0:00   0.00% vim\n"
+          + "  639 smmsp         1  21    0 24104K  1728K pause   1   0:00   0.00% sendmail\n";
+
+        Mockito.when(m_resourceLocator.findBinary("top")).thenReturn("/usr/bin/top");
+        Mockito.when(m_resourceLocator.slurpOutput("/usr/bin/top -h", true)).thenReturn(topHOutput);
+        Mockito.when(m_resourceLocator.slurpOutput("/usr/bin/top -b -d 1", false)).thenReturn(topOutput);
+        assertEquals(1, m_reportPlugin.getEntries().size());
+        assertEquals("Output", m_reportPlugin.getEntries().keySet().iterator().next());
+        assertEquals(FileSystemResource.class, m_reportPlugin.getEntries().entrySet().iterator().next().getValue().getClass());
+    }
 }
