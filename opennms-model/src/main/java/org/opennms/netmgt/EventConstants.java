@@ -78,6 +78,9 @@ public class EventConstants {
     // the eventUEIs used by OpenNMS
     //
 
+    public static final String OUTAGE_CREATED_EVENT_UEI = "uei.opennms.org/internal/poller/outageCreated";
+    public static final String OUTAGE_RESOLVED_EVENT_UEI = "uei.opennms.org/internal/poller/outageResolved";
+
     /**
      * The status query control event
      */
