@@ -40,7 +40,6 @@ import org.junit.Test;
 
 import com.sun.jna.LastErrorException;
 import com.sun.jna.Native;
-import com.sun.jna.Platform;
 import com.sun.jna.ptr.IntByReference;
 
 
@@ -106,10 +105,6 @@ public class ByteBufferTest {
     
     @Test(timeout=30000)
     public void testPassing() throws Exception {
-        if (Platform.isMac() || Platform.isFreeBSD() || Platform.isOpenBSD()) {
-            printf("sockaddr_in is incompatible with bsd_sockaddr_in\n");
-            return;
-        }
         Server server = new Server(7777);
         server.start();
         server.waitForStart();
