@@ -671,6 +671,7 @@
         </exclusion>
       </exclusions>
     </dependency>
+
     <!--
 
       JMesa is the latest version of the extremecomponents library. We
@@ -697,6 +698,14 @@
     <dependency>
         <groupId>net.sf.jung</groupId>
         <artifactId>jung-visualization</artifactId>
+    </dependency>
+
+    <!-- CORS support -->
+    <dependency>
+      <groupId>org.ebaysf.web</groupId>
+      <artifactId>cors-filter</artifactId>
+      <version>1.0.1</version>
+      <scope>compile</scope>
     </dependency>
 
     <!-- test dependencies -->
