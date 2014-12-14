@@ -79,7 +79,6 @@ public class DefaultPollContext implements PollContext, EventListener {
         // node events
         EventConstants.NODE_DOWN_EVENT_UEI,
         EventConstants.NODE_UP_EVENT_UEI
-        
     };
     
     private volatile PollerConfig m_pollerConfig;
@@ -304,7 +303,6 @@ public class DefaultPollContext implements PollContext, EventListener {
         final int nodeId = svc.getNodeId();
         final String ipAddr = svc.getIpAddr();
         final String svcName = svc.getSvcName();
-        final String reason = svc.getStatus().getReason();
         final Runnable r = new Runnable() {
             @Override
             public void run() {
@@ -325,8 +323,6 @@ public class DefaultPollContext implements PollContext, EventListener {
         else {
             r.run();
         }
-        LOG.debug("openOutage: sending outageCreated event for: {} on {}", svc, ipAddr);
-        sendEvent(createEvent(EventConstants.OUTAGE_CREATED_EVENT_UEI, nodeId, InetAddressUtils.addr(ipAddr), svcName, svcLostEvent.getDate(), reason));
         
     }
 
@@ -339,7 +335,6 @@ public class DefaultPollContext implements PollContext, EventListener {
         final int nodeId = svc.getNodeId();
         final String ipAddr = svc.getIpAddr();
         final String svcName = svc.getSvcName();
-        final String reason = svc.getStatus().getReason();
         final Runnable r = new Runnable() {
             @Override
             public void run() {
@@ -357,8 +352,6 @@ public class DefaultPollContext implements PollContext, EventListener {
         else {
             r.run();
         }
-        LOG.debug("resolveOutage: sending outageResolved event for: {} on {}", svc, ipAddr);
-        sendEvent(createEvent(EventConstants.OUTAGE_RESOLVED_EVENT_UEI, nodeId, InetAddressUtils.addr(ipAddr), svcName, svcRegainEvent.getDate(), reason));
     }
     
     /** {@inheritDoc} */
