@@ -124,7 +124,9 @@ public class WillItUnmarshalCoverageMetaTest {
         ignoreFile(new File(getDaemonEtcDirectory(), "syslog/ApacheHTTPD.syslog.xml"));
         ignoreFile(new File(getDaemonEtcDirectory(), "syslog/LinuxKernel.syslog.xml"));
         ignoreFile(new File(getDaemonEtcDirectory(), "syslog/OpenSSH.syslog.xml"));
+        ignoreFile(new File(getDaemonEtcDirectory(), "syslog/Procmail.syslog.xml"));
         ignoreFile(new File(getDaemonEtcDirectory(), "syslog/POSIX.syslog.xml"));
+        ignoreFile(new File(getDaemonEtcDirectory(), "syslog/Postfix.syslog.xml"));
         ignoreFile(new File(getDaemonEtcDirectory(), "syslog/Sudo.syslog.xml"));
         ignoreFile(new File(getDaemonEtcDirectory(), "log4j2.xml"));
         LOG.debug("FILES.size() = {}", FILES.size());

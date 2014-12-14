@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+    <!-- Begin syslog event definitions for Procmail  -->
+    <event>
+        <uei>uei.opennms.org/vendor/procmail/syslog/procmail/suspiciousRcfile</uei>
+        <event-label>Procmail-defined event: suspicious rcfile</event-label>
+        <descr>
+            &lt;p&gt;Procmail on %nodelabel% reports wrong permissions or ownership for rcfile %parm[rcfile]%. The user wont get its emails delivered. &lt;br&gt;
+            Rcfile: %parm[rcfile]% &lt;br&gt;
+            Message: %parm[syslogmessage]% &lt;br&gt;
+            Process: %parm[process]% &lt;br&gt;
+            PID: %parm[processid]%
+            &lt;/p&gt;
+        </descr>
+        <logmsg dest="logndisplay">
+            &lt;p&gt;Procmail: Suspicious rcfile %parm[rcfile]% on node %nodelabel%&lt;/p&gt;
+        </logmsg>
+        <severity>Warning</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[rcfile]%" alarm-type="3" auto-clean="false"/>
+    </event>
+    <!-- End syslog event definitions for Procmail  -->
+</events>
