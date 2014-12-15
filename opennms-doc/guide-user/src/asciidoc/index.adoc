@@ -13,5 +13,5 @@
 :revdate: {last-update-label} {docdatetime}
 :version-label!:
 
-// Include your documentation sections here
-// include::text/myFile.adoc[]
+== REST API
+include::text/rest/CORS.adoc[]
