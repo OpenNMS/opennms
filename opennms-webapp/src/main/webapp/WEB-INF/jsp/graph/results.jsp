@@ -48,10 +48,78 @@
     <c:param name="meta"       value="<meta http-equiv='X-UA-Compatible' content='IE=Edge' />"/>
 </c:import>
 
+<!-- Resource Sidedar: Start -->
+<script>
+$(document).ready(function() {
+    var b = $('body');
+    if (b) b.scrollspy({ target: '.resource-graphs-sidebar' });
+});
+</script>
+<style>
+.fixed {
+    position: fixed;
+}
+/* sidebar */
+.resource-graphs-sidebar {
+    padding-left: 0px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+.resource-graphs-sidebar > ul {
+    overflow-y: auto;
+    height: 100%;
+}
+/* all links */
+.resource-graphs-sidebar .nav>li>a {
+    color: #999;
+    border-left: 2px solid transparent;
+    padding: 4px 5px;
+    font-size: 13px;
+    font-weight: 400;
+}
+/* nested links */
+.resource-graphs-sidebar .nav .nav>li>a {
+    padding-top: 1px;
+    padding-bottom: 1px;
+    padding-left: 15px;
+    font-size: 12px;
+}
+/* active & hover links */
+.resource-graphs-sidebar .nav>.active>a,
+.resource-graphs-sidebar .nav>li>a:hover,
+.resource-graphs-sidebar .nav>li>a:focus {
+    color: #563d7c;
+    text-decoration: none;
+    background-color: transparent;
+    border-left-color: #563d7c;
+}
+/* all active links */
+.resource-graphs-sidebar .nav>.active>a,
+.resource-graphs-sidebar .nav>.active:hover>a,
+.resource-graphs-sidebar .nav>.active:focus>a {
+    font-weight: 700;
+}
+/* nested active links */
+.resource-graphs-sidebar .nav .nav>.active>a,
+.resource-graphs-sidebar .nav .nav>.active:hover>a,
+.resource-graphs-sidebar .nav .nav>.active:focus>a {
+    font-weight: 500;
+}
+/* hide inactive nested list */
+.resource-graphs-sidebar .nav ul.nav {
+    display: none;
+}
+/* show active nested list */
+.resource-graphs-sidebar .nav>.active>ul.nav {
+    display: block;
+}
+</style>
+<!-- Resource Sidedar: End -->
+
 <div id="graph-results">
 
 <div class="row">
-  <div class="col-md-12 text-center">
+  <div class="col-md-10 text-center">
     <%@ include file="/WEB-INF/jspf/relativetimeform.jspf" %>
 
     <c:set var="showCustom"></c:set>
@@ -151,10 +219,13 @@
   </div> <!-- column -->
 </div> <!-- row -->
 
-    <c:set var="showFootnote1" value="false"/>
+<c:set var="showFootnote1" value="false"/>
 
-    <c:forEach var="resultSet" items="${results.graphResultSets}">
-    <div class="panel panel-default text-center">
+<div class="row">
+
+	<div class="col-md-10">
+	<c:forEach var="resultSet" items="${results.graphResultSets}" varStatus="loop">
+    <div class="panel panel-default text-center" id="panel-resource${loop.index}">
       <div class="panel-heading">
         <h3 class="panel-title">
             ${resultSet.resource.parent.resourceType.label}:
@@ -276,6 +347,19 @@
     </div> <!-- panel -->
     </c:forEach>
 
+	</div> <!-- col-md-10 -->
+
+	<div class="col-md-2">
+	<div id="results-sidebar" class="resource-graphs-sidebar hidden-print hidden-xs hidden-sm fixed">
+		<ul class="nav nav-stacked">
+		<c:forEach var="resultSet" items="${results.graphResultSets}" varStatus="loop">
+		<li><a href="${requestScope['javax.servlet.forward.request_uri']}?${pageContext.request.queryString}#panel-resource${loop.index}" data-target="#panel-resource${loop.index}">${resultSet.resource.label}</a></li> 
+		</c:forEach>
+		</ul>
+	</div>
+
+</div> <!-- row -->
+
 </div> <!-- graph-results -->
 
 <script type="text/javascript">
@@ -374,5 +458,4 @@ for (var imgIndex = 0; imgIndex < graphImgs.length; imgIndex++) {
 <c:if test="${showFootnote1 == true}">
     <jsp:include page="/includes/footnote1.jsp" flush="false" />
 </c:if>
-
 <jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />
