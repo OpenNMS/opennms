@@ -184,7 +184,7 @@ run_tests() {
 
 	do_log "compile.pl test"
 	pushd "$SOURCEDIR/smoke-test"
-		../compile.pl -t -Dorg.opennms.smoketest.logLevel=INFO -Dorg.opennms.smoketest.webdriver.use-phantomjs=true test
+		../compile.pl -t -Dorg.opennms.smoketest.logLevel=INFO test
 		RETVAL=$?
 	popd
 
