@@ -186,7 +186,7 @@ run_tests() {
 }
 
 post_clean() {
-	rsync -ar "${SOURCEDIR}/smoke-test/target/" target/ || :
+	rsync -ar "${SOURCEDIR}/smoke-test/" ./ || :
 	rm -rf "${SOURCEDIR}" || :
 	rm -rf "${HOME}"/.m2/repository || :
 	rm -rf "${ME}"/../target || :
