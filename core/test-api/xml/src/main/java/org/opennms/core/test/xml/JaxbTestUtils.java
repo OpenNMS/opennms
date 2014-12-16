@@ -61,9 +61,9 @@ public class JaxbTestUtils {
             Assert.assertNotNull("JaxbUtils.getContextFor returned null.", defaultJaxbContext);
 
             final String defaultJaxbContextClass = defaultJaxbContext.getClass().getName();
-            final URL defaultJaxbSourceLocation = defaultJaxbContext.getClass().getProtectionDomain().getCodeSource().getLocation();
+            final URL defaultJaxbSourceLocation = getSourceLocation(defaultJaxbContext);
             final String jaxbUtilsJaxbContextClass =  jaxbUtilsContext.getClass().getName();
-            final URL jaxbUtilsJaxbSourceLocation = jaxbUtilsContext.getClass().getProtectionDomain().getCodeSource().getLocation();
+            final URL jaxbUtilsJaxbSourceLocation = getSourceLocation(jaxbUtilsContext);
 
             LOG.info("Default JAXBContext {} for class {}", defaultJaxbContextClass, clazz);
             LOG.info("Default JAXBContext source location: {}", defaultJaxbSourceLocation);
@@ -75,5 +75,16 @@ public class JaxbTestUtils {
             Assert.assertEquals(defaultJaxbContextClass, jaxbUtilsJaxbContextClass);
             Assert.assertEquals(defaultJaxbSourceLocation, jaxbUtilsJaxbSourceLocation);
         }
+
+    // Sometimes the source code location is null, to prevent NPE we encapsulate the
+    // get functionality here.
+    private static <T> URL getSourceLocation(T object) {
+        if (object != null
+                && object.getClass().getProtectionDomain() != null
+                && object.getClass().getProtectionDomain().getCodeSource() != null) {
+            return object.getClass().getProtectionDomain().getCodeSource().getLocation();
+        }
+        return null;
+    }
 
 }
