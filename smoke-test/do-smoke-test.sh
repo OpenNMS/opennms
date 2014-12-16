@@ -155,9 +155,20 @@ run_tests() {
 
 	local RETVAL=0
 
+	EXTRA_ARGS=""
+	CHROMEDRIVER="/usr/local/bin/chromedriver"
+	CHROME="/usr/bin/google-chrome"
+
+	if [ -e "$CHROMEDRIVER" ] && [ -e "$CHROME" ]; then
+		do_log "found Chrome and ChromeDriver, using it instead"
+		EXTRA_ARGS="-Dorg.opennms.smoketest.webdriver.class=org.openqa.selenium.chrome.ChromeDriver -Dwebdriver.chrome.driver=$CHROMEDRIVER"
+	else
+		do_log "no Chrome found, using defaults"
+	fi
+
 	do_log "compile.pl test"
 	pushd "$SOURCEDIR/smoke-test"
-		../compile.pl -t -Dorg.opennms.smoketest.logLevel=INFO test
+		../compile.pl -t -Dorg.opennms.smoketest.logLevel=INFO $EXTRA_ARGS test
 		RETVAL=$?
 	popd
 
