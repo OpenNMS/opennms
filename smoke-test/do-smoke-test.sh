@@ -12,7 +12,7 @@ if [ -z "$MATCH_RPM" ]; then
 	MATCH_RPM=no
 fi
 OPENNMS_HOME=/opt/opennms
-SOURCEDIR="$ME/opennms-source"
+SOURCEDIR="$ME/.."
 
 PACKAGES="$@"; shift
 if [ -z "$PACKAGES" ]; then
@@ -111,33 +111,12 @@ reset_opennms() {
 	fi
 }
 
-get_source() {
-	banner "Getting OpenNMS Source"
-
-	do_log "rsync source from $ME to $SOURCEDIR"
-	rsync -ar --exclude=target --exclude=smoke-test --delete "$ME"/../  "$SOURCEDIR"/ || die "Unable to create source dir."
-
-	pushd "$SOURCEDIR"
-		do_log "cleaning git"
-		git clean -fdx || die "Unable to clean source tree."
-		git reset --hard HEAD
-
-		# if $MATCH_RPM is set to "yes", then reset the code to the git hash the RPM was built from
-		case $MATCH_RPM in
-			yes|y)
-				do_log "resetting git hash"
-				git reset --hard `get_hash_from_rpm` || die "Unable to reset git tree."
-				;;
-		esac
-	popd
-}
-
 build_tests() {
 	banner "Compiling Tests"
 
 	pushd "$SOURCEDIR"
-		do_log "bin/bamboo.pl -Psmoke --projects :smoke-test --also-make install"
-		bin/bamboo.pl -Psmoke --projects :smoke-test --also-make install
+		do_log "./compile.pl -Psmoke --projects :smoke-test --also-make clean install"
+		./compile.pl -Psmoke --projects :smoke-test --also-make clean install || die "failed to compile smoke tests"
 	popd
 
 }
@@ -185,13 +164,6 @@ run_tests() {
 	return $RETVAL
 }
 
-post_clean() {
-	rsync -ar "${SOURCEDIR}/smoke-test/" ./ || :
-	rm -rf "${SOURCEDIR}" || :
-	rm -rf "${HOME}"/.m2/repository || :
-	rm -rf "${ME}"/../target || :
-}
-
 stop_opennms() {
 	banner "Stopping OpenNMS"
 
@@ -205,17 +177,15 @@ stop_opennms() {
 
 # DO IT!
 clean_maven
+build_tests
 reset_opennms
 reset_database
-get_source
-build_tests
 configure_opennms
 start_opennms
 
 run_tests
 RETVAL=$?
 
-post_clean
 stop_opennms
 
 exit $RETVAL
