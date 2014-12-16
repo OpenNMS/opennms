@@ -309,7 +309,6 @@ public class OnmsMapElement implements Serializable {
      */
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "mapId")
-    @XmlIDREF
     @XmlTransient
     public OnmsMap getMap() {
         return map;

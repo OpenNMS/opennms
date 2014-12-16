@@ -53,10 +53,12 @@ import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlIDREF;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.opennms.netmgt.model.OnmsArpInterface.StatusType;
+import org.opennms.netmgt.xml.bind.StatusTypeXmlAdapter;
 
 /**
  * <p>AtInterface class.</p>
@@ -414,6 +416,7 @@ public class OnmsStpNode {
 	}
 
     @XmlAttribute
+    @XmlJavaTypeAdapter(StatusTypeXmlAdapter.class)
     @Column(nullable=false)
 	public StatusType getStatus() {
 		return m_status;

@@ -53,16 +53,33 @@ import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlIDREF;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
+import javax.xml.bind.annotation.adapters.XmlAdapter;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.opennms.netmgt.model.OnmsArpInterface.StatusType;
+import org.opennms.netmgt.xml.bind.StatusTypeXmlAdapter;
 
 @XmlRootElement(name = "vlan")
 @Entity
 @Table(name="vlan", uniqueConstraints = {@UniqueConstraint(columnNames={"nodeId", "vlanId"})})
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class OnmsVlan {
+
+    public static class VlanStatusXmlAdapter extends XmlAdapter<String, VlanStatus> {
+        /** {@inheritDoc} */
+        @Override
+        public String marshal(VlanStatus statusTypr) throws Exception {
+            return Integer.toString(statusTypr.getIntCode());
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public VlanStatus unmarshal(String status) throws Exception {
+            return VlanStatus.get(Integer.parseInt(status));
+        }
+    }
 
     @Embeddable
     public static class VlanStatus implements Comparable<VlanStatus>, Serializable {
@@ -207,7 +224,22 @@ public class OnmsVlan {
 
 
     }
-    
+
+    public static class VlanTypeXmlAdapter extends XmlAdapter<String, VlanType> {
+        /** {@inheritDoc} */
+        @Override
+        public String marshal(VlanType statusTypr) throws Exception {
+            return Integer.toString(statusTypr.getIntCode());
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public VlanType unmarshal(String status) throws Exception {
+            return VlanType.get(Integer.parseInt(status));
+        }
+    }
+
+
     @Embeddable
     public static class VlanType implements Comparable<VlanType>, Serializable {
 		
@@ -526,6 +558,7 @@ public class OnmsVlan {
 	}
 
 	@XmlAttribute(name="type")
+    @XmlJavaTypeAdapter(VlanTypeXmlAdapter.class)
 	@Column
 	public VlanType getVlanType() {
 		return m_vlanType;
@@ -536,6 +569,7 @@ public class OnmsVlan {
 	}
 
 	@XmlAttribute
+    @XmlJavaTypeAdapter(VlanStatusXmlAdapter.class)
 	@Column
 	public VlanStatus getVlanStatus() {
 		return m_vlanStatus;
@@ -546,6 +580,7 @@ public class OnmsVlan {
 	}
 
 	@XmlAttribute
+    @XmlJavaTypeAdapter(StatusTypeXmlAdapter.class)
 	@Column(nullable=false)
 	public StatusType getStatus() {
 		return m_status;

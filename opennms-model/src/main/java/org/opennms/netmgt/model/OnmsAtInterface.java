@@ -57,6 +57,7 @@ import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.hibernate.annotations.Type;
 import org.opennms.core.network.InetAddressXmlAdapter;
 import org.opennms.netmgt.model.OnmsArpInterface.StatusType;
+import org.opennms.netmgt.xml.bind.StatusTypeXmlAdapter;
 
 /**
  * <p>AtInterface class.</p>
@@ -194,6 +195,7 @@ public class OnmsAtInterface {
 	}
 
 	@XmlAttribute
+	@XmlJavaTypeAdapter(StatusTypeXmlAdapter.class)
 	@Column(nullable=false)
 	public StatusType getStatus() {
 		return m_status;
