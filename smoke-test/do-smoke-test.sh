@@ -147,7 +147,27 @@ start_opennms() {
 	banner "Starting OpenNMS"
 
 	do_log "opennms start"
-	/etc/init.d/opennms start || die "Unable to start OpenNMS."
+	/sbin/service opennms start || die "Unable to start OpenNMS."
+#	COUNT=0
+#	do_log "Waiting for OpenNMS to start..."
+#	while true; do
+#		if [ $COUNT -gt 300 ]; then
+#			do_log "We've waited 5 minutes and OpenNMS still hasn't started.  Bailing."
+#			exit 1
+#		fi
+#		COUNT=`expr $COUNT + 1`
+#		MANAGER_LOG=`find "$OPENNMS_HOME"/logs -name manager.log 2>/dev/nul`
+#		if [ -n "$MANAGER_LOG" ] && [ -e "$MANAGER_LOG" ]; then
+#			if [ `grep -c "Startup complete" "$MANAGER_LOG"` -gt 0 ]; then
+#				do_log "OpenNMS startup complete."
+#				break
+#			fi
+#		fi
+#	done
+}
+
+clean_firefox() {
+	rm -rf "$HOME"/.mozilla
 }
 
 run_tests() {
@@ -188,12 +208,12 @@ stop_opennms() {
 
 # DO IT!
 clean_maven
-build_tests
 reset_opennms
 reset_database
 configure_opennms
 start_opennms
 
+build_tests
 run_tests
 RETVAL=$?
 
