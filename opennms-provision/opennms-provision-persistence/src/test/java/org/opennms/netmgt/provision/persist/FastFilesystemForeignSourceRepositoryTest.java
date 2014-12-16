@@ -50,7 +50,7 @@ public class FastFilesystemForeignSourceRepositoryTest extends ForeignSourceRepo
     private String m_defaultForeignSourceName;
 
     @Autowired
-    @Qualifier("fast")
+    @Qualifier("fastFilePending")
     private ForeignSourceRepository m_foreignSourceRepository;
 
     @Before

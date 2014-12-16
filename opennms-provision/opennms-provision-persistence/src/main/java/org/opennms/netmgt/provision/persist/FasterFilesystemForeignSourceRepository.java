@@ -184,7 +184,8 @@ public class FasterFilesystemForeignSourceRepository extends FilesystemForeignSo
         try {
         	return m_requisitions.getContents(foreignSourceName+".xml");
         } catch (FileNotFoundException e) {
-        	throw new ForeignSourceRepositoryException("Requisition: " + foreignSourceName + " does not exist.", e);
+            LOG.warn("There is no requisition XML file for {} on {}", foreignSourceName, m_requisitionPath);
+            return null;
 		} finally {
             m_readLock.unlock();
         }

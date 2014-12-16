@@ -49,7 +49,8 @@ import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 import javax.xml.bind.ValidationException;
 
-
+import org.opennms.netmgt.provision.persist.FactoryStrategy;
+import org.opennms.netmgt.provision.persist.ForeignSourceRepositoryFactory;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionAsset;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionAssetCollection;
@@ -66,6 +67,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
+import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -133,6 +135,9 @@ public class RequisitionRestService extends OnmsRestService {
     @Autowired
     private RequisitionAccessService m_accessService;
 
+    @Autowired
+    private ForeignSourceRepositoryFactory m_foreignSourceRepositoryFactory;
+
     @Context
     UriInfo m_uriInfo;
 
@@ -161,8 +166,17 @@ public class RequisitionRestService extends OnmsRestService {
         return Integer.toString(m_accessService.getDeployedCount());
     }
 
-   
-   
+    /**
+     * get a plain text with the current selected foreign source repository strategy
+     * 
+     * @return the current strategy.
+     */
+    @GET
+    @Path("repositoryStrategy")
+    @Produces(MediaType.TEXT_PLAIN)
+    public String getForeignSourceRepositoryStrategy() {
+        return m_foreignSourceRepositoryFactory.getRepositoryStrategy().toString();
+    }
 
     /**
      * Get all the deployed requisitions
