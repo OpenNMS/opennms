@@ -106,16 +106,11 @@
       <bundle>wrap:mvn:org.hibernate/hibernate-commons-annotations/3.2.0.Final</bundle>
     </feature>
 
-    <feature name="jaxb" description="Apache ServiceMix :: JAXB" version="2.2.0">
-      <bundle dependency="true">mvn:org.apache.geronimo.specs/geronimo-activation_1.1_spec/1.0.2</bundle>
-      <bundle dependency="true">wrap:mvn:javax.xml.stream/stax-api/1.0-2</bundle>
-      <bundle dependency="true">wrap:mvn:javax.activation/activation/1.1.1</bundle>
-      <bundle dependency="true">wrap:mvn:org.eclipse.persistence/eclipselink/2.5.1</bundle>
-      <bundle dependency="true">mvn:org.eclipse.persistence/javax.persistence/2.1.0</bundle>
-      <bundle dependency="true">mvn:org.eclipse.persistence/commonj.sdo/2.1.1</bundle>
-      <bundle dependency="true">mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.stax-api-1.0/2.2.0</bundle>
-      <bundle>mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.jaxb-api-2.2/2.2.0</bundle>
-      <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.jaxb-impl/2.2.6_1</bundle>
+    <feature name="jaxb" description="Eclipse Moxy :: JAXB" version="${eclipselinkVersion}">
+      <bundle>mvn:org.eclipse.persistence/org.eclipse.persistence.moxy/${eclipselinkVersion}</bundle>
+      <bundle>mvn:org.eclipse.persistence/org.eclipse.persistence.core/${eclipselinkVersion}</bundle>
+      <bundle>mvn:org.eclipse.persistence/org.eclipse.persistence.asm/${eclipselinkVersion}</bundle>
+      <bundle>mvn:org.eclipse.persistence/org.eclipse.persistence.antlr/${eclipselinkVersion}</bundle>
     </feature>
 
     <feature name="jrobin" description="JRobin" version="1.6.0-SNAPSHOT">
