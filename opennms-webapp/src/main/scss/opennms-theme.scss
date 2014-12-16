@@ -653,6 +653,11 @@ a.list-group-item.active:focus {
 	}
 }
 
+/* tables without borders */
+.table-borderless td,
+.table-borderless th{ 
+    border: 0 !important
+}
 
 /* =15.0 Miscellaneous and Workarounds
 ----------------------------------------------- */
@@ -807,3 +812,9 @@ div.NLnode:hover span.NLdbid, div.NLnode:hover span.NLfs, div.NLnode:hover span.
 .tooltip-inner {
     min-width: 200px; //the minimum width
 }
+
+/* Removes the bullet, but keeps the padding. */
+.list-no-bullet {
+    list-style-type: none;
+}
+

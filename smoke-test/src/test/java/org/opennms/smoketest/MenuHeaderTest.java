@@ -103,7 +103,7 @@ public class MenuHeaderTest extends OpenNMSSeleniumTestCase {
         clickMenuItem("Maps", "SVG", "map/index.jsp");
         findElementById("opennmsSVGMaps");
         try {
-            final Alert alert = m_driver.switchTo().alert();
+            final Alert alert = wait.until(ExpectedConditions.alertIsPresent());
             alert.dismiss();
         } catch (final Exception e) {
         }
