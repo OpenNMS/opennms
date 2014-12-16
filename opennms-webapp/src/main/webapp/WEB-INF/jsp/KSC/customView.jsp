@@ -241,17 +241,18 @@
 
 <%-- A script to auto-resize the images --%>
 <script type="text/javascript">
-var graphContainer = document.getElementById("graph-results");
-var defaultGraphWidth = Math.round(graphContainer.scrollWidth * 0.75);
-var defaultGraphHeight = Math.round(defaultGraphWidth * 0.25);
-var graphImgs = graphContainer.getElementsByTagName("img");
-for (var imgIndex = 0; imgIndex < graphImgs.length; imgIndex++) {
-  var graphImg = graphImgs[imgIndex];
-  if (graphImg.dataset["imgsrc"].indexOf("width=") > -1 || graphImg.dataset["imgsrc"].indexOf("height=") > -1) {
-    graphImg.src = graphImg.dataset["imgsrc"];
-  } else {
-    graphImg.src = graphImg.dataset["imgsrc"] + "&width=" + defaultGraphWidth + "&height=" + defaultGraphHeight;
+var e = $('#graph-results');
+var imgs = e.find('img');
+for (var i=0; i < imgs.length; i++) {
+  var img = $(imgs[i]);
+  var container = img.closest('td');
+  var w = Math.round(container.width() * 0.75);
+  var h = Math.round(w * 0.25);
+  var imgsrc = img.data('imgsrc');
+  if (!(imgsrc.indexOf("width=") > -1 || imgsrc.indexOf("height=") > -1)) {
+    imgsrc += "&width=" + w + "&height=" + h;
   }
+  img.attr('src', imgsrc);
 }
 </script>
 
