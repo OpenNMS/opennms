@@ -132,16 +132,6 @@ get_source() {
 	popd
 }
 
-build_tests() {
-	banner "Compiling Tests"
-
-	pushd "$SOURCEDIR"
-		do_log "bin/bamboo.pl -Psmoke --projects :smoke-test --also-make install"
-		bin/bamboo.pl -Psmoke --projects :smoke-test --also-make install
-	popd
-
-}
-
 configure_opennms() {
 	banner "Configuring OpenNMS"
 
@@ -181,10 +171,16 @@ run_tests() {
 	banner "Running Tests"
 
 	local RETVAL=0
+	rm -rf ~/.m2/repository/org/opennms
+
+	pushd "$SOURCEDIR"
+		do_log "bin/bamboo.pl -Psmoke --projects :smoke-test --also-make install"
+		bin/bamboo.pl -Psmoke --projects :smoke-test --also-make install
+	popd
 
 	do_log "compile.pl test"
 	pushd "$SOURCEDIR/smoke-test"
-		../compile.pl -t -Dorg.opennms.smoketest.logLevel=INFO test
+		../compile.pl -t -Denable.snapshots=true -DupdatePolicy=always -Dorg.opennms.smoketest.logLevel=INFO test
 		RETVAL=$?
 	popd
 
@@ -214,7 +210,6 @@ clean_maven
 reset_opennms
 reset_database
 get_source
-build_tests
 configure_opennms
 start_opennms
 clean_firefox
