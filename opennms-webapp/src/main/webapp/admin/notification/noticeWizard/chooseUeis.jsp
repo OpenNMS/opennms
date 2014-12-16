@@ -64,7 +64,7 @@
     Notification newNotice = (Notification)user.getAttribute("newNotice");
 %>
 
-<jsp:include page="/includes/header.jsp" flush="false" >
+<jsp:include page="/includes/bootstrap.jsp" flush="false" >
   <jsp:param name="title" value="Choose Event" />
   <jsp:param name="headTitle" value="Choose Event" />
   <jsp:param name="headTitle" value="Admin" />
@@ -120,25 +120,34 @@ $(document).ready(function() {
 
 <h2><%=(newNotice.getName()!=null ? "Editing notice: " + newNotice.getName() + "<br/>" : "")%></h2>
 
-<h3>Choose the event uei that will trigger this notification.</h3>
-
 <form method="post" name="events"
       action="admin/notification/noticeWizard/notificationWizard" >
-      <input type="hidden" name="sourcePage" value="<%=NotificationWizardServlet.SOURCE_PAGE_UEIS%>"/>
-      <table width="50%">
+<input type="hidden" name="sourcePage" value="<%=NotificationWizardServlet.SOURCE_PAGE_UEIS%>"/>
+
+<div class="row">
+  <div class="col-md-6">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Choose the event uei that will trigger this notification.</h3>
+      </div>
+      <table class="table table-condensed">
         <tr>
           <td valign="top" align="left">
-            <h4>Events</h4>
-            <select id="uei" NAME="uei" SIZE="20" >
-             <%=buildEventSelect(newNotice)%>
-            </select><br />
-            REGEX FIELD:
-            <input id="regexp" name="regexp" type="text" size="96" value="<%=(newNotice.getUei()!=null ? newNotice.getUei() : "")%>" />
+            <div class="form-group">
+              <label for="uei" class="control-label">Events</label>
+              <select id="uei" name="uei" class="form-control" size="20" >
+              <%=buildEventSelect(newNotice)%>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="regexp" class="control-label">Regular Expression Field</label>
+              <input id="regexp" name="regexp" type="text" class="form-control" size="96" value="<%=(newNotice.getUei()!=null ? newNotice.getUei() : "")%>" />
+            </div>
           </td>
         </tr>
         <tr>
           <td colspan="2">
-            <input type="reset"/>
+            <input type="reset" class="btn btn-default"/>
           </td>
         </tr>
         <tr>
@@ -147,9 +156,12 @@ $(document).ready(function() {
           </td>
         </tr>
       </table>
-    </form>
+  </div> <!-- column -->
+</div> <!-- row -->
 
-<jsp:include page="/includes/footer.jsp" flush="false" />
+</form>
+
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />
 
 <%!
     public String buildEventSelect(Notification notice)
