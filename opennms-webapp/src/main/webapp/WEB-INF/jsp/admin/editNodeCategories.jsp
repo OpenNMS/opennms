@@ -33,7 +33,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 
-<jsp:include page="/includes/header.jsp" flush="false">
+<jsp:include page="/includes/bootstrap.jsp" flush="false">
 	<jsp:param name="title" value="Category" />
 	<jsp:param name="headTitle" value="Category" />
 	<jsp:param name="breadcrumb"
@@ -52,92 +52,86 @@ function toggleFormEnablement() {
 }
 </script>
 
-<h3>Edit surveillance categories on ${model.node.label}</h3>
+<div class="row">
+  <div class="col-md-6">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Edit surveillance categories on ${model.node.label}</h3>
+      </div>
+      <div class="panel-body">
+        <p>
+        Node <a href="<c:url value='element/node.jsp?node=${model.node.id}'/>">${model.node.label}</a> (node ID: ${model.node.id}) has ${fn:length(model.node.categories)} categories 
+        </p>
 
-<p>
-Node <a href="<c:url value='element/node.jsp?node=${model.node.id}'/>">${model.node.label}</a> (node ID: ${model.node.id}) has ${fn:length(model.node.categories)} categories 
-</p>
+        <form action="admin/categories.htm" method="get">
+          <input type="hidden" name="node" value="${model.node.id}"/>
+          <input type="hidden" name="edit" value=""/>
 
-<div class="TwoColLeft">
-<form action="admin/categories.htm" method="get">
-  <input type="hidden" name="node" value="${model.node.id}"/>
-  <input type="hidden" name="edit" value=""/>
-  
-  <table class="normal">
-    <tr>
-      <td class="normal" align="center">
-		Available categories
-      </td>
-      
-      <td class="normal">  
-      </td>
+        <div class="row">
+          <div class="col-md-5">
+            <label for="toAdd">Available categories</label>
+            <select id="toAdd" class="form-control" name="toAdd" size="20" multiple="true" <c:if test="${! empty model.node.foreignSource}">disabled="true"</c:if>>
+              <c:forEach items="${model.categories}" var="category">
+                <option value="${category.id}">${category.name}</option>
+              </c:forEach>
+            </select>
+          </div>
+          <div class="col-md-2 text-center">
+                <input id="addButton" type="submit" class="btn btn-default" name="action" value="Add &#155;&#155;" <c:if test="${! empty model.node.foreignSource}">disabled="true"</c:if>/>
+                <input id="removeButton" type="submit" class="btn btn-default" name="action" value="&#139;&#139; Remove" <c:if test="${! empty model.node.foreignSource}">disabled="true"</c:if>/>
+          </div>
+          <div class="col-md-5">
+            <label for="toDelete">Categories on node</label>
+            <select id="toDelete" class="form-control" name="toDelete" size="20" multiple="true" <c:if test="${! empty model.node.foreignSource}">disabled="true"</c:if>>
+              <c:forEach items="${model.sortedCategories}" var="category">
+                <option value="${category.id}">${category.name}</option>
+              </c:forEach>
+            </select>
+          </div>
+        </div> <!-- row -->
 
-      <td class="normal" align="center">
-      	Categories on node
-      </td>
-    </tr>
-      
-    <tr>
-      <td class="normal">  
-    <select id="toAdd" name="toAdd" size="20" multiple="true" <c:if test="${! empty model.node.foreignSource}">disabled="true"</c:if>>
-	  <c:forEach items="${model.categories}" var="category">
-	    <option value="${category.id}">${category.name}</option>
-	  </c:forEach>
-    </select>
-      </td>
-      
-      <td class="normal" style="text-align:center; vertical-align:middle;">  
-        <input id="addButton" type="submit" name="action" value="Add &#155;&#155;" <c:if test="${! empty model.node.foreignSource}">disabled="true"</c:if>/>
-        <br/>
-        <br/>
-        <input id="removeButton" type="submit" name="action" value="&#139;&#139; Remove" <c:if test="${! empty model.node.foreignSource}">disabled="true"</c:if>/>
-      </td>
-    
-      <td class="normal">  
-    <select id="toDelete" name="toDelete" size="20" multiple="true" <c:if test="${! empty model.node.foreignSource}">disabled="true"</c:if>>
-	  <c:forEach items="${model.sortedCategories}" var="category">
-	    <option value="${category.id}">${category.name}</option>
-	  </c:forEach>
-    </select>
-      </td>
-    </tr>
-    <tr>
-      <td colspan="3">
-      <input id="toggleCheckbox" type="checkbox" onchange="javascript:toggleFormEnablement()" />
-      <label for="toggleCheckbox">Check this box to enable controls (see warning above for why)</label>
-      </td>
-    </tr>
-  </table>
-</form>
-</div>
+        </form>
+      </div> <!-- panel-body -->
+      <div class="panel-footer">
+        <input id="toggleCheckbox" type="checkbox" onchange="javascript:toggleFormEnablement()" />
+        <label for="toggleCheckbox">Check this box to enable controls (see warning above for why)</label>
+      </div> <!-- panel-footer -->
+    </div> <!-- panel -->
+  </div> <!-- column -->
 
-<div class="TwoColRight">
 <c:if test="${!empty model.node.foreignSource}">
-  <h3>Warning</h3>
-  <div class="boxWrapper">
-    <p>
-    You are editing category memberships for a node that was provisioned
-    through a requisition. Any edits made here will be rolled back the next
-    time the requisition "<em>${model.node.foreignSource}</em>" is
-    synchronized (typically every 24 hours) or the node manually rescanned.
-    To make permanent changes, do one of the following:
-    </p>
-    <p>
-      <strong>Edit the requisition</strong> from the web UI, if you know that
-      this is how category assignments in this requisition are managed.
-    </p>
-    <p>
-      <strong>Edit the appropriate foreign-source definition</strong> from the
-      web UI, if you know that categories for this requisition's nodes are
-      automatically assigned by a <em>Set Node Category</em> foreign-source policy.
-    </p>
-    <p>
-      <strong>Ask your OpenNMS administrator</strong> if you aren't sure, or if
-      you know that the requisition "<em>${model.node.foreignSource}</em>" is created
-      from some data source outside OpenNMS. 
-    </p>
-  </div>
+  <div class="col-md-6">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Warning</h3>
+      </div>
+      <div class="panel-body">
+        <p>
+        You are editing category memberships for a node that was provisioned
+        through a requisition. Any edits made here will be rolled back the next
+        time the requisition "<em>${model.node.foreignSource}</em>" is
+        synchronized (typically every 24 hours) or the node manually rescanned.
+        To make permanent changes, do one of the following:
+        </p>
+        <p>
+          <strong>Edit the requisition</strong> from the web UI, if you know that
+          this is how category assignments in this requisition are managed.
+        </p>
+        <p>
+          <strong>Edit the appropriate foreign-source definition</strong> from the
+          web UI, if you know that categories for this requisition's nodes are
+          automatically assigned by a <em>Set Node Category</em> foreign-source policy.
+        </p>
+        <p>
+          <strong>Ask your OpenNMS administrator</strong> if you aren't sure, or if
+          you know that the requisition "<em>${model.node.foreignSource}</em>" is created
+          from some data source outside OpenNMS.
+        </p>
+      </div> <!-- panel-body -->
+    </div> <!-- panel -->
+  </div> <!-- column -->
 </c:if>
-</div>
 
-<jsp:include page="/includes/footer.jsp" flush="false"/>
+</div> <!-- row -->
+
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="false"/>
