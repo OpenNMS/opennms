@@ -747,11 +747,6 @@
   </servlet-->
   
   <servlet>
-  	<servlet-name>scheduleEditor</servlet-name>
-  	<servlet-class>org.opennms.web.admin.schedule.ScheduleEditorServlet</servlet-class>
-  </servlet>
-  
-  <servlet>
   	<servlet-name>purdyChart</servlet-name>
   	<servlet-class>org.opennms.web.graph.PurdyChartServlet</servlet-class>
   	<init-param>
@@ -759,7 +754,6 @@
   		<param-value>sample-bar-chart</param-value>
   	</init-param>
   </servlet>
-
  
   <servlet>
         <servlet-name>dispatcher</servlet-name>
@@ -775,11 +769,6 @@
   	<url-pattern>/charts</url-pattern>
   </servlet-mapping>
   
-  <servlet-mapping>
-  	<servlet-name>scheduleEditor</servlet-name>
-  	<url-pattern>/admin/schedule/schedule-editor</url-pattern>
-  </servlet-mapping>
-
   <servlet-mapping>
     <servlet-name>queryEvent</servlet-name>
     <url-pattern>/event/query</url-pattern>
