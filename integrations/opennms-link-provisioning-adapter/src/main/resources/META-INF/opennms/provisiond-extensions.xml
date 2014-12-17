@@ -29,12 +29,12 @@
   
   <bean name="linkMatchResolver" class="org.opennms.netmgt.provision.adapters.link.DefaultLinkMatchResolverImpl" />
   
-  <bean name="lpaEventListenerAdapter" class="org.opennms.netmgt.model.events.AnnotationBasedEventListenerAdapter">
+  <bean name="lpaEventListenerAdapter" class="org.opennms.netmgt.events.api.AnnotationBasedEventListenerAdapter">
     <property name="annotatedListener" ref="lpa" />
     <property name="eventSubscriptionService" ref="eventSubscriptionService" />
   </bean>
   
-  <bean name="lecEventListenerAdapter" class="org.opennms.netmgt.model.events.AnnotationBasedEventListenerAdapter">
+  <bean name="lecEventListenerAdapter" class="org.opennms.netmgt.events.api.AnnotationBasedEventListenerAdapter">
     <property name="annotatedListener" ref="linkEventCorrelator" />
     <property name="eventSubscriptionService" ref="eventSubscriptionService" />
   </bean>

@@ -170,8 +170,9 @@ public class BasePersister extends AbstractCollectionSetVisitor implements Persi
     /** {@inheritDoc} */
     @Override
     public void persistNumericAttribute(CollectionAttribute attribute) {
-        LOG.debug("Persisting {} {}", attribute, (isIgnorePersist() ? ". Ignoring value because of sysUpTime changed." : ""));
-        String value = isIgnorePersist() ? "U" : attribute.getNumericValue();
+        boolean persist = isIgnorePersist() && attribute.getType().toLowerCase().startsWith("counter");
+        LOG.debug("Persisting {} {}", attribute, (persist ? ". Ignoring value because of sysUpTime changed." : ""));
+        String value = persist ? "U" : attribute.getNumericValue();
         m_builder.setAttributeValue(attribute.getAttributeType(), value);
         m_builder.setAttributeMetadata(attribute.getMetricIdentifier(), attribute.getName());
     }

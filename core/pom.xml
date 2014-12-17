@@ -40,10 +40,11 @@
     <module>snmp</module>
     <module>soa</module>
     <module>spring</module>
+    <module>spring-web</module>
     <module>tasks</module>
     <module>test-api</module>
     <module>upgrade</module>
-    <!--<module>web</module>-->
+    <module>web</module>
     <module>xml</module>
   </modules>
 </project>

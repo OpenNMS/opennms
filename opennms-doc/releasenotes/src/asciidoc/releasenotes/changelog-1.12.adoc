@@ -350,3 +350,4 @@ The codename for 1.12.0 is _Barry Privett_
 * NRTG Realtime link does not show up for Storage (MIB-2 Host Resources) (Issue http://issues.opennms.org/browse/NMS-6021[NMS-6021])
 * Statistic Reports shows an empty page (Issue http://issues.opennms.org/browse/NMS-6028[NMS-6028])
 * Can't log in after creating a new user (Issue http://issues.opennms.org/browse/NMS-6030[NMS-6030])
+

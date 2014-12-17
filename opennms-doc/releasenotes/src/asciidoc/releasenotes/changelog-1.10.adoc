@@ -3,7 +3,7 @@
 
 [releasenotes-changelog-1.10.14]
 ==== Release 1.10.14
-Release 1.10.14 is the latest in the stable 1.10 series of OpenNMSreleases.
+Release 1.10.14 is the latest in the stable 1.10 series of OpenNMS releases.
 It contains a few small bugfixes including an importantsecurity fix.
 
 The codename for 1.10.14 is _Chalumeau_.
@@ -25,7 +25,7 @@ The codename for 1.10.14 is _Chalumeau_.
 [releasenotes-changelog-1.10.13]
 ==== Release 1.10.13
 
-Release 1.10.13 is the latest in the stable 1.10 series of OpenNMSreleases.
+Release 1.10.13 is the latest in the stable 1.10 series of OpenNMS releases.
 It contains a few small bugfixes.
 
 The codename for 1.10.13 is _Sopila_.
@@ -440,3 +440,4 @@ The codename for 1.10.0 is _Alboka_.
 * Making logging from linkd more readable (Issue http://issues.opennms.org/browse/NMS-5081[NMS-5081])
 * Change of log level for certain messages from linkd (Issue http://issues.opennms.org/browse/NMS-5087[NMS-5087])
 * Convert OPENNMS-MIB to SMIv2 (Issue http://issues.opennms.org/browse/NMS-5099[NMS-5099])
+

@@ -9,10 +9,10 @@
 
 ### BEGIN INIT INFO
 # Provides:          opennms
-# Required-Start:    $network $time postgresql
-# Required-Stop:     $network postgresql
-# Should-Start:      $local_fs
-# Should-Stop:       $local_fs
+# Required-Start:    $network $time
+# Required-Stop:     $network
+# Should-Start:      $local_fs postgresql
+# Should-Stop:       $local_fs postgresql
 # Default-Start:     2 3 4 5
 # Default-Stop:      0 1 6
 # Short-Description: OpenNMS - Open Source Network Management System

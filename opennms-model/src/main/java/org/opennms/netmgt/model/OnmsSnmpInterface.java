@@ -53,6 +53,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.hibernate.annotations.Type;
 import org.opennms.core.network.InetAddressXmlAdapter;
@@ -70,14 +71,8 @@ import org.springframework.core.style.ToStringCreator;
 @Table(name = "snmpInterface")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
-	
-	private static final Logger LOG = LoggerFactory.getLogger(OnmsSnmpInterface.class);
-
-    
-    /**
-     * 
-     */
-    private static final long serialVersionUID = -5396189389666285305L;
+    private static final long serialVersionUID = -963873273243372864L;
+    private static final Logger LOG = LoggerFactory.getLogger(OnmsSnmpInterface.class);
 
     private Integer m_id;
 
@@ -523,6 +518,16 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
      */
     public void setNode(OnmsNode node) {
         m_node = node;
+    }
+
+    @Transient
+    @XmlTransient
+    @JsonIgnore
+    public Integer getNodeId() {
+        if (m_node != null) {
+            return m_node.getId();
+        }
+        return null;
     }
 
     /**

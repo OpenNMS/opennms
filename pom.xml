@@ -320,7 +320,7 @@
         <artifactId>maven-deploy-plugin</artifactId>
         <version>2.8.1</version>
         <configuration>
-          <deployAtEnd>true</deployAtEnd>
+          <deployAtEnd>false</deployAtEnd>
           <retryFailedDeploymentCount>2</retryFailedDeploymentCount>
         </configuration>
       </plugin>
@@ -763,6 +763,7 @@
            <configuration>
              <descriptor>src/assembly/source.xml</descriptor>
              <classifier>source</classifier>
+             <skipAssembly>${build.skip.tarball}</skipAssembly>
            </configuration>
          </execution>
        </executions>
@@ -1008,6 +1009,8 @@
   </reporting>
 
   <properties>
+    <build.skip.tarball>false</build.skip.tarball>
+
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
@@ -1096,7 +1099,7 @@
     <!-- dependency versions -->
     <oldAsmVersion>99.99.99-exclude-and-use-org.ow2.asm.asm-all-instead</oldAsmVersion>
     <asmVersion>5.0.3</asmVersion>
-    <asciidoctorVersion>0.1.4</asciidoctorVersion>
+    <asciidoctorVersion>1.5.0</asciidoctorVersion>
     <activemqVersion>5.10.0</activemqVersion>
     <atomikosVersion>3.9.2</atomikosVersion>
     <camelVersion>2.13.2</camelVersion>
@@ -1118,7 +1121,7 @@
     <httpcoreVersion>4.3.2</httpcoreVersion>
     <httpclientVersion>4.3.4</httpclientVersion>
     <jacksonVersion>1.9.13</jacksonVersion>
-    <jasperreportsVersion>3.7.6</jasperreportsVersion>
+    <jasperreportsVersion>5.6.1</jasperreportsVersion>
     <jettyVersion>7.6.15.v20140411</jettyVersion>
     <karafVersion>2.4.0</karafVersion>
     <karafPaxExamVersion>2.3.8</karafPaxExamVersion>
@@ -1147,9 +1150,9 @@
 
     <!-- moved here from topology features -->
     <jungVersion>2.0.1</jungVersion>
-    <vaadinVersion>7.1.7</vaadinVersion>
+    <vaadinVersion>7.2.7</vaadinVersion>
     <vaadin.plugin.version>${vaadinVersion}</vaadin.plugin.version>
-    <paxVaadinVersion>0.3.1-SNAPSHOT</paxVaadinVersion>
+    <vaadinExtenderVersion>1.0.0</vaadinExtenderVersion>
 
   </properties>
 
@@ -1435,12 +1438,22 @@
       </dependency>
       <dependency>
         <groupId>org.opennms.core</groupId>
+        <artifactId>org.opennms.core.spring-web</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.core</groupId>
         <artifactId>org.opennms.core.tasks</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.opennms.core</groupId>
         <artifactId>org.opennms.core.upgrade</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.core</groupId>
+        <artifactId>org.opennms.core.web</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
@@ -1594,6 +1607,21 @@
       <dependency>
         <groupId>org.opennms.features</groupId>
         <artifactId>org.opennms.features.system-report</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.features.events</groupId>
+        <artifactId>org.opennms.features.events.api</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.features.events</groupId>
+        <artifactId>org.opennms.features.events.daemon</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.features.events</groupId>
+        <artifactId>org.opennms.features.events.traps</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
@@ -1994,13 +2022,6 @@
         <groupId>org.opennms</groupId>
         <artifactId>opennms-dao-mock</artifactId>
         <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms</groupId>
-        <artifactId>opennms-services</artifactId>
-        <type>test-jar</type>
-        <version>${project.version}</version>
-        <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>org.opennms</groupId>
@@ -2613,7 +2634,23 @@
       </dependency>
       <dependency>
         <groupId>org.apache.httpcomponents</groupId>
+        <artifactId>httpcore-osgi</artifactId>
+        <version>${httpcoreVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.httpcomponents</groupId>
         <artifactId>httpclient</artifactId>
+        <version>${httpclientVersion}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.httpcomponents</groupId>
+        <artifactId>httpclient-osgi</artifactId>
         <version>${httpclientVersion}</version>
         <exclusions>
           <exclusion>
@@ -2759,9 +2796,9 @@
       </dependency>
 
       <dependency>
-        <groupId>org.ops4j.pax.vaadin</groupId>
+        <groupId>org.opennms.vaadin-extender</groupId>
         <artifactId>service</artifactId>
-        <version>${paxVaadinVersion}</version>
+        <version>${vaadinExtenderVersion}</version>
       </dependency>
       <dependency>
         <groupId>ognl</groupId>
@@ -3079,6 +3116,12 @@
         <groupId>joda-time</groupId>
         <artifactId>joda-time</artifactId>
         <version>2.1</version>
+      </dependency>
+      <dependency>
+        <groupId>org.skyscreamer</groupId>
+        <artifactId>jsonassert</artifactId>
+        <version>1.2.3</version>
+        <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>junit</groupId>

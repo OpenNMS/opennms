@@ -63,7 +63,7 @@ public class MenuHeaderTest extends OpenNMSSeleniumTestCase {
 
     @Test
     public void d_testPathOutagesLink() throws Exception {
-        clickAndVerifyText("link=Path Outages", "All path outages");
+        clickAndVerifyText("link=Path Outages", "All Path Outages");
     }
 
     @Test

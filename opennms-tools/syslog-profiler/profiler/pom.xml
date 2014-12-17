@@ -25,22 +25,5 @@
       <artifactId>org.opennms.core.xml</artifactId>
       <version>${project.version}</version>
     </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-services</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <!--
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-test</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.tests</groupId>
-      <artifactId>org.opennms.tests.mock-elements</artifactId>
-      <scope>test</scope>
-    </dependency>
-    -->
   </dependencies>
 </project>

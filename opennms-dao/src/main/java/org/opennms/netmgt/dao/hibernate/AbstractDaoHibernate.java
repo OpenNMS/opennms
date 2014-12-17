@@ -181,6 +181,10 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> extends Hi
         return getHibernateTemplate().execute(callback).intValue();
     }
 
+    /**
+     * Return a single instance that matches the query string, 
+     * or null if the query returns no results.
+     */
     protected T findUnique(final String queryString, final Object... args) {
         final Class <? extends T> type = m_entityClass;
     	final HibernateCallback<T> callback = new HibernateCallback<T>() {

@@ -83,6 +83,8 @@ public class ExecCommandController extends MapsLoggingController {
             commandToExec = commandToExec + " -n ";
         }
 
+        final boolean hideCloseButton = getParameterAsBoolean(request, "hideCloseButton");
+
         if (command.equals("ping")) {
 	        String timeout = request.getParameter("timeOut");
 	        if (timeout != null)
@@ -141,12 +143,15 @@ public class ExecCommandController extends MapsLoggingController {
 				comm = (command.startsWith("traceroute"))?"Trace Route":"";
 			}
 			
-			os.write("<head><title>"+comm+" "+address+" | OpenNMS Web Console</title>" +
-    		"</head>" +
-			"<div width='100%' align='right'>" +
-			"<input type='button' value='Close' onclick='window.close();'/>" +
-			"</div>" +
-    		"<h3><font face='courier,arial'>Executing "+comm+" for the IP address "+address+"</h3>");
+			os.write("<head><title>"+comm+" "+address+" | OpenNMS Web Console</title>");
+            os.write("</head>");
+            if (!hideCloseButton) {
+                os.write("<div width='100%' align='right'>");
+                os.write("<input type='button' value='Close' onclick='window.close();'/>");
+                os.write("</div>");
+            }
+    		os.write("<h3><font face='courier,arial'>Executing "+comm+" for the IP address "+address+"</h3>");
+
 			new Thread(new Runnable()
 			{
                             @Override
@@ -188,6 +193,14 @@ public class ExecCommandController extends MapsLoggingController {
 
 		return null;
 	}
+
+    private static boolean getParameterAsBoolean(HttpServletRequest request, String parameterName) {
+        String parameterStringValue = request.getParameter(parameterName);
+        if (parameterStringValue == null || "".equals(parameterStringValue)) {
+            return false;
+        }
+        return Boolean.valueOf(parameterStringValue.toLowerCase()).booleanValue();
+    }
 	
 	private static class Command
 	{

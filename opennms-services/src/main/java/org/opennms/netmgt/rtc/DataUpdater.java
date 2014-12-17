@@ -37,7 +37,7 @@ import org.opennms.core.logging.Logging;
 import org.opennms.core.utils.InetAddressUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Value;
@@ -415,19 +415,9 @@ final class DataUpdater implements Runnable {
 
         String svcName = m_event.getService();
 
-        long eventTime = -1;
-        String eventTimeStr = m_event.getTime();
-        try {
-            java.util.Date date = EventConstants.parseToDate(eventTimeStr);
-            eventTime = date.getTime();
-        } catch (ParseException pe) {
-            LOG.warn("Failed to convert time {} to java.util.Date, Setting current time instead", eventTime, pe);
+        long eventTime = m_event.getTime().getTime();
 
-            eventTime = (new java.util.Date()).getTime();
-        }
-
-
-        LOG.debug("Event UEI: {}\tnodeid: {}\tip: {}\tsvcName: {}\teventTime: {}", eventTimeStr, eventUEI, nodeid, InetAddressUtils.str(ip), svcName);
+        LOG.debug("Event UEI: {}\tnodeid: {}\tip: {}\tsvcName: {}\teventTime: {}", eventUEI, nodeid, InetAddressUtils.str(ip), svcName, eventTime);
 
         //
         //

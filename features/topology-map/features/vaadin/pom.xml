@@ -55,11 +55,16 @@
       <artifactId>vaadin-themes</artifactId>
     </dependency>
     <dependency>
-        <groupId>com.vaadin</groupId>
-        <artifactId>vaadin-shared</artifactId>
-        <version>${vaadinVersion}</version>
+      <groupId>com.vaadin</groupId>
+      <artifactId>vaadin-shared</artifactId>
+      <version>${vaadinVersion}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>com.vaadin.external.google</groupId>
+          <artifactId>guava</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
-
     <dependency>
         <groupId>com.vaadin</groupId>
         <artifactId>vaadin-shared-deps</artifactId>
@@ -71,7 +76,7 @@
     </dependency>
     
     <dependency>
-      <groupId>org.ops4j.pax.vaadin</groupId>
+      <groupId>org.opennms.vaadin-extender</groupId>
       <artifactId>service</artifactId>
     </dependency>
     <dependency>
@@ -100,12 +105,24 @@
       <artifactId>onms-default-theme</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <!-- this override's vaadin's 16.x guava dependency -->
+    <dependency>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
+    </dependency>
   </dependencies>
 
   <repositories>
     <repository>
        <id>vaadin-addons</id>
        <url>http://maven.opennms.org/content/groups/vaadin.com-addons/</url>
+    </repository>
+    <repository>
+      <snapshots><enabled>false</enabled></snapshots>
+      <releases><enabled>true</enabled></releases>
+      <id>opennms-repo</id>
+      <name>OpenNMS Repository</name>
+      <url>http://maven.opennms.org/content/groups/opennms.org-release</url>
     </repository>
     <repository>
       <snapshots><enabled>true</enabled></snapshots>

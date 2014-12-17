@@ -57,7 +57,8 @@ public interface OutageDao extends LegacyOnmsDao<OnmsOutage, Integer> {
     Collection<OnmsOutage> currentOutages();
 
     /**
-     * <p>currentOutageForService</p>
+     * Return the current open outage for the service or if the service
+     * is up and has no open outage, return null.
      */
     OnmsOutage currentOutageForService(OnmsMonitoredService service);
 

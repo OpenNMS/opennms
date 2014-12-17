@@ -32,7 +32,6 @@ import java.io.File;
 
 import org.opennms.core.logging.Logging;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.collectd.Collectd.SchedulingCompletedFlag;
 import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionException;
@@ -46,10 +45,11 @@ import org.opennms.netmgt.collection.persistence.rrd.OneToOnePersister;
 import org.opennms.netmgt.config.CollectdConfigFactory;
 import org.opennms.netmgt.config.DataCollectionConfigFactory;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
+import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.events.api.EventIpcManagerFactory;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.ResourceTypeUtils;
 import org.opennms.netmgt.model.events.EventBuilder;
-import org.opennms.netmgt.model.events.EventIpcManagerFactory;
 import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.netmgt.scheduler.ReadyRunnable;
 import org.opennms.netmgt.scheduler.Scheduler;
@@ -404,6 +404,7 @@ final class CollectableService implements ReadyRunnable {
                             if (m_thresholdVisitor.isNodeInOutage()) {
                                 LOG.info("run: the threshold processing will be skipped because the node {} is on a scheduled outage.", m_nodeId);
                             } else if (m_thresholdVisitor.hasThresholds()) {
+                                m_thresholdVisitor.setCounterReset(result.ignorePersist()); // Required to reinitialize the counters.
                                 result.visit(m_thresholdVisitor);
                             }
                         }

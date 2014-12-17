@@ -246,7 +246,7 @@ public class PollableNetwork extends PollableContainer {
      */
     @Override
     public void delete() {
-        LOG.warn("Can't delete the entire network.");
+        LOG.debug("Can't delete the entire network.");
     }
 
     /** {@inheritDoc} */

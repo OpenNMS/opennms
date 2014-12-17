@@ -36,7 +36,7 @@
 
     <bean id="accesspointmonitorConfig" class="org.opennms.netmgt.config.accesspointmonitor.AccessPointMonitorConfigFactory" depends-on="init-accesspointmonitorConfig-factory" factory-method="getConfigFromInstance"/>
 
-    <bean id="apMonitorEventListenerAdapter" class="org.opennms.netmgt.model.events.AnnotationBasedEventListenerAdapter">
+    <bean id="apMonitorEventListenerAdapter" class="org.opennms.netmgt.events.api.AnnotationBasedEventListenerAdapter">
   	  <property name="annotatedListener" ref="daemon" />
   	  <property name="eventSubscriptionService" ref="eventSubscriptionService" />
     </bean>

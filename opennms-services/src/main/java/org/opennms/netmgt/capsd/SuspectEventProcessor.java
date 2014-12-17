@@ -50,7 +50,6 @@ import org.opennms.core.utils.ByteArrayComparator;
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.utils.DBUtils;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.capsd.IfCollector.SupportedProtocol;
 import org.opennms.netmgt.capsd.snmp.IfTable;
 import org.opennms.netmgt.capsd.snmp.IfTableEntry;
@@ -61,11 +60,12 @@ import org.opennms.netmgt.config.CapsdConfig;
 import org.opennms.netmgt.config.CapsdConfigFactory;
 import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.config.PollerConfigFactory;
+import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.events.api.EventIpcManagerFactory;
 import org.opennms.netmgt.filter.FilterDaoFactory;
 import org.opennms.netmgt.model.OnmsNode.NodeLabelSource;
 import org.opennms.netmgt.model.OnmsNode.NodeType;
 import org.opennms.netmgt.model.events.EventBuilder;
-import org.opennms.netmgt.model.events.EventIpcManagerFactory;
 import org.opennms.netmgt.xml.event.Event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -378,7 +378,7 @@ final class SuspectEventProcessor implements Runnable {
                 String str = sysgrp.getSysName();
                 LOG.debug("SuspectEventProcessor: {} has sysName: {}", str(ifaddr), str);
 
-                if (str != null && str.length() > 0) {
+                if (str != null && !"".equals(str.trim())) {
                     entryNode.setSystemName(str);
 
                     // Hostname takes precedence over sysName so only replace

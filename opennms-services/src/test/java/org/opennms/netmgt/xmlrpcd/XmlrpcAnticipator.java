@@ -38,7 +38,6 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.net.SocketAddress;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -303,7 +302,11 @@ public class XmlrpcAnticipator implements XmlRpcHandler {
     public synchronized void anticipateCall(String method, Object... args) {
         Vector<Object> params = new Vector<Object>();
         for(Object arg: args) {
-            params.add(arg);
+            if (arg instanceof Hashtable<?,?>) {
+                params.add(arg);
+            } else {
+                params.add(String.valueOf(arg));
+            }
         }
         m_anticipated.add(new XmlrpcCall(method, params));
     }

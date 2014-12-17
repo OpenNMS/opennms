@@ -78,8 +78,8 @@ reset_database() {
 	banner "Resetting OpenNMS Database"
 
 	# easy way to make sure no one is holding on to any pg sockets
-	do_log "/etc/init.d/postgresql restart"
-	/etc/init.d/postgresql restart
+	do_log "/sbin/service postgresql restart"
+	/sbin/service postgresql restart
 
 	sleep 5
 
@@ -103,8 +103,8 @@ reset_opennms() {
 	rm -rf "$OPENNMS_HOME"/* /var/log/opennms /var/opennms
 
 	if [ `ls "$ME"/../../rpms/*.rpm | wc -l` -gt 0 ]; then
-		do_log "rpm -Uvh $ME/../../rpms/*.rpm"
-		rpm -Uvh "$ME"/../../rpms/*.rpm
+		do_log rpm -Uvh --force "$ME"/../../rpms/*.rpm
+		rpm -Uvh --force "$ME"/../../rpms/*.rpm
 	else
 		echo "Unable to locate RPMs for installing!"
 		exit 1
@@ -132,6 +132,16 @@ get_source() {
 	popd
 }
 
+build_tests() {
+	banner "Compiling Tests"
+
+	pushd "$SOURCEDIR"
+		do_log "bin/bamboo.pl -Psmoke --projects :smoke-test --also-make install"
+		bin/bamboo.pl -Psmoke --projects :smoke-test --also-make install
+	popd
+
+}
+
 configure_opennms() {
 	banner "Configuring OpenNMS"
 
@@ -148,10 +158,10 @@ configure_opennms() {
 	popd
 
 	do_log "runjava -s"
-	/opt/opennms/bin/runjava -s || die "'runjava -s' failed."
+	$OPENNMS_HOME/bin/runjava -s || die "'runjava -s' failed."
 
 	do_log "install -dis"
-	/opt/opennms/bin/install -dis || die "Unable to run OpenNMS install."
+	$OPENNMS_HOME/bin/install -dis || die "Unable to run OpenNMS install."
 }
 
 start_opennms() {
@@ -159,22 +169,22 @@ start_opennms() {
 
 	do_log "opennms start"
 	/etc/init.d/opennms start || die "Unable to start OpenNMS."
+	# wait a little longer for OSGi to settle down after we know OpenNMS came up
+	sleep 20
+}
+
+clean_firefox() {
+	rm -rf "$HOME"/.mozilla
 }
 
 run_tests() {
 	banner "Running Tests"
 
 	local RETVAL=0
-	rm -rf ~/.m2/repository/org/opennms
-
-	pushd "$SOURCEDIR"
-		do_log "bin/bamboo.pl -Psmoke --projects :smoke-test --also-make install"
-		bin/bamboo.pl -Psmoke --projects :smoke-test --also-make install
-	popd
 
 	do_log "compile.pl test"
 	pushd "$SOURCEDIR/smoke-test"
-		../compile.pl -t -Denable.snapshots=true -DupdatePolicy=always -Dorg.opennms.smoketest.logLevel=INFO test
+		../compile.pl -t -Dorg.opennms.smoketest.logLevel=INFO test
 		RETVAL=$?
 	popd
 
@@ -204,8 +214,10 @@ clean_maven
 reset_opennms
 reset_database
 get_source
+build_tests
 configure_opennms
 start_opennms
+clean_firefox
 
 run_tests
 RETVAL=$?

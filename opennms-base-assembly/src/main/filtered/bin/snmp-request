@@ -1,6 +1,7 @@
 #!/bin/sh -
 
 OPENNMS_HOME="${install.dir}"
+OPENNMS_BINDIR="${install.bin.dir}"
 
 if [ -f "$OPENNMS_HOME/etc/opennms.conf" ]; then
 	. "$OPENNMS_HOME/etc/opennms.conf"
@@ -30,5 +31,9 @@ else
 	exit 255
 fi
 
-exec ${install.bin.dir}/runjava -r -- \
-     $ADDITIONAL_MANAGER_OPTIONS -cp ${SNMP4J_JAR}:${LOG4J2SLF4J_JAR}:${SLF4JAPI_JAR} org.snmp4j.tools.console.SnmpRequest "$@"
+exec "$OPENNMS_BINDIR"/runjava -r -- \
+	$ADDITIONAL_MANAGER_OPTIONS \
+	-cp "${SNMP4J_JAR}:${LOG4J2SLF4J_JAR}:${SLF4JAPI_JAR}" \
+	-Dlog4j.configurationFile="$OPENNMS_HOME"/etc/log4j2-tools.xml \
+	org.snmp4j.tools.console.SnmpRequest \
+	"$@"

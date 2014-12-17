@@ -78,6 +78,8 @@
           -->
           <features>
             <feature>opennms-osgi-core</feature>
+            <feature>opennms-core</feature>
+            <feature>opennms-core-web</feature>
             <feature>jmxconfiggenerator.webui</feature>
             <feature>dashlet-alarms</feature>
             <feature>dashlet-charts</feature>

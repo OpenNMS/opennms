@@ -42,14 +42,14 @@ import org.opennms.netmgt.config.service.ServiceConfiguration;
 
 /**
  * <p>
- * This factory class is designed to be the main interface between the service
+ * This class is designed to be the main interface between the service
  * configuration information and the users of the information. When initialized
  * the factory loads the configuration from the file system, allowing access to
  * the information by others.
  *
  * @author <a href="mailto:weave@oculan.com">Weave</a>
  */
-public final class ServiceConfigFactory {
+public final class ServiceConfigFactory implements org.opennms.netmgt.config.api.ServiceConfigFactory {
     private static final Logger LOG = LoggerFactory.getLogger(ServiceConfigFactory.class);
 
     /**
@@ -78,6 +78,7 @@ public final class ServiceConfigFactory {
      *                Thrown if the specified config file cannot be read/loaded
      * @throws java.io.IOException if any.
      */
+    @Override
     public synchronized void reload() {
         try {
             File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.SERVICE_CONF_FILE_NAME);
@@ -97,6 +98,7 @@ public final class ServiceConfigFactory {
      * @return An array holding a reference to all the Service configuration
      *         instances.
      */
+    @Override
     public Service[] getServices() {
         final List<Service> services = new ArrayList<Service>();
         for (Service s : m_config.getServiceCollection()) {

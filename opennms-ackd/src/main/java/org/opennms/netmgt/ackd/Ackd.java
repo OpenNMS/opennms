@@ -35,17 +35,17 @@ import java.util.List;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.ackd.AckReader.AckReaderState;
 import org.opennms.netmgt.ackd.readers.ReaderSchedule;
 import org.opennms.netmgt.daemon.SpringServiceDaemon;
 import org.opennms.netmgt.dao.api.AckdConfigurationDao;
 import org.opennms.netmgt.dao.api.AcknowledgmentDao;
+import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.events.api.EventForwarder;
+import org.opennms.netmgt.events.api.annotations.EventHandler;
+import org.opennms.netmgt.events.api.annotations.EventListener;
 import org.opennms.netmgt.model.OnmsAcknowledgment;
 import org.opennms.netmgt.model.events.EventBuilder;
-import org.opennms.netmgt.model.events.EventForwarder;
-import org.opennms.netmgt.model.events.annotations.EventHandler;
-import org.opennms.netmgt.model.events.annotations.EventListener;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 import org.slf4j.Logger;
@@ -379,7 +379,7 @@ public class Ackd implements SpringServiceDaemon, DisposableBean {
     /**
      * <p>getEventForwarder</p>
      *
-     * @return a {@link org.opennms.netmgt.model.events.EventForwarder} object.
+     * @return a {@link org.opennms.netmgt.events.api.EventForwarder} object.
      */
     public EventForwarder getEventForwarder() {
         return m_eventForwarder;
@@ -388,7 +388,7 @@ public class Ackd implements SpringServiceDaemon, DisposableBean {
     /**
      * <p>setEventForwarder</p>
      *
-     * @param eventForwarder a {@link org.opennms.netmgt.model.events.EventForwarder} object.
+     * @param eventForwarder a {@link org.opennms.netmgt.events.api.EventForwarder} object.
      */
     public void setEventForwarder(EventForwarder eventForwarder) {
         m_eventForwarder = eventForwarder;

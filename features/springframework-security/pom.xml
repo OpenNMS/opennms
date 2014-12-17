@@ -21,7 +21,7 @@
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
-      <artifactId>opennms-services</artifactId>
+      <artifactId>opennms-dao-api</artifactId>
     </dependency>
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
@@ -66,6 +66,11 @@
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-dao-mock</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-dao</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>

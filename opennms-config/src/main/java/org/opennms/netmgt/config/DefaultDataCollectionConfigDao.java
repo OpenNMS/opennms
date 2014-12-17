@@ -621,11 +621,12 @@ public class DefaultDataCollectionConfigDao extends AbstractJaxbConfigDao<Dataco
 
     @Override
     public void reload() {
-        loadConfig(getConfigResource());
+        getContainer().reload(); // The idea is to force the reload if this is called, and the update flags must be updated
     }
 
     @Override
     public Date getLastUpdate() {
+        getContainer().getObject(); // This should trigger the reload if the file was changed, and this should trigger the update the lastUpdate flag as well.
         return new Date(getContainer().getLastUpdate());
     }
 

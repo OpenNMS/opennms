@@ -70,11 +70,11 @@
     <td class="standard"><%=Vault.getProperty("opennms.home")%></td>
   </tr>
   <tr>
-    <td class="standardheader">RRD store by Group:</td>
+    <td class="standardheader">RRD store by group enabled?</td>
     <td class="standard"><%=Vault.getProperty("org.opennms.rrd.storeByGroup")%></td>
   </tr>
   <tr>
-    <td class="standardheader">RRD store by Foreign Source:</td>
+    <td class="standardheader">RRD store by foreign source enabled?</td>
     <td class="standard"><%=Vault.getProperty("org.opennms.rrd.storeByForeignSource")%></td>
   </tr>
   <tr>
@@ -86,19 +86,19 @@
     <td class="standard"><%=Vault.getProperty("opennms.report.dir")%></td>
   </tr>
   <tr>
-    <td class="standardheader">Jetty http host:</td>
+    <td class="standardheader">Jetty HTTP host:</td>
     <td class="standard"><%=Vault.getProperty("org.opennms.netmgt.jetty.host")%></td>
   </tr>
   <tr>
-    <td class="standardheader">Jetty http port:</td>
+    <td class="standardheader">Jetty HTTP port:</td>
     <td class="standard"><%=Vault.getProperty("org.opennms.netmgt.jetty.port")%></td>
   </tr>
    <tr>
-    <td class="standardheader">Jetty https host:</td>
+    <td class="standardheader">Jetty HTTPS host:</td>
     <td class="standard"><%=Vault.getProperty("org.opennms.netmgt.jetty.https-host")%></td>
   </tr>
   <tr>
-    <td class="standardheader">Jetty https port:</td>
+    <td class="standardheader">Jetty HTTPS port:</td>
     <td class="standard"><%=Vault.getProperty("org.opennms.netmgt.jetty.https-port")%></td>
   </tr>
 
@@ -110,31 +110,31 @@
   	<div class="boxWrapper">
  	<table class="standard">
   <tr>
-    <td class="standardheader">Server Time:</td>
+    <td class="standardheader">Server&nbsp;Time:</td>
     <td class="standard"><%=new java.util.Date()%></td>
   </tr>
   <tr>
-    <td class="standardheader">Client Time:</td>
+    <td class="standardheader">Client&nbsp;Time:</td>
     <td class="standard"><script type="text/javascript"> document.write( new Date().toString()) </script></td>
   </tr>
   <tr>
-    <td class="standardheader">Java Version:</td>
+    <td class="standardheader">Java&nbsp;Version:</td>
     <td class="standard"><%=System.getProperty( "java.version" )%> <%=System.getProperty( "java.vendor" )%></td>
   </tr>  
   <tr>
-    <td class="standardheader">Java Virtual Machine:</td>
+    <td class="standardheader">Java&nbsp;Virtual&nbsp;Machine:</td>
     <td class="standard"><%=System.getProperty( "java.vm.version" )%> <%=System.getProperty( "java.vm.vendor" )%></td>
   </tr>
   <tr>
-    <td class="standardheader">Operating System:</td>
+    <td class="standardheader">Operating&nbsp;System:</td>
     <td class="standard"><%=System.getProperty( "os.name" )%> <%=System.getProperty( "os.version" )%> (<%=System.getProperty( "os.arch" )%>)</td>
   </tr>
   <tr>
-    <td class="standardheader">Servlet Container:</td>
+    <td class="standardheader">Servlet&nbsp;Container:</td>
     <td class="standard"><%=application.getServerInfo()%> (Servlet Spec <%=application.getMajorVersion()%>.<%=application.getMinorVersion()%>)</td>
   </tr>
   <tr>
-    <td class="standardheader">User Agent:</td>
+    <td class="standardheader">User&nbsp;Agent:</td>
     <td class="standard"><%=request.getHeader( "User-Agent" )%></td>
   </tr>    
 </table>

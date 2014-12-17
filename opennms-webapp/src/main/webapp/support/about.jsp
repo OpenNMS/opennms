@@ -29,37 +29,36 @@
 
 --%>
 
-<%@page
-  language="java"
-  contentType="text/html"
-  session="true"
-  import="org.opennms.web.api.Authentication,
-    org.opennms.core.db.DataSourceFactory,
-    org.opennms.core.resource.Vault,
-    org.opennms.core.utils.WebSecurityUtils,
-    org.opennms.core.utils.DBUtils,
-    java.sql.Connection
-  "
+<%@page language="java"
+	contentType="text/html"
+	session="true"
+	import="org.opennms.web.api.Authentication,
+		org.opennms.core.db.DataSourceFactory,
+		org.opennms.core.resource.Vault,
+		org.opennms.core.utils.WebSecurityUtils,
+		org.opennms.core.utils.DBUtils,
+		java.sql.Connection
+	"
 %>
 
 <%
-boolean role = request.isUserInRole(Authentication.ROLE_ADMIN);
-
-final DBUtils d = new DBUtils();
-String dbName;
-String dbVersion;
-try {
-  Connection conn = DataSourceFactory.getInstance().getConnection();
-  d.watch(conn);
-  dbName = conn.getMetaData().getDatabaseProductName();
-  dbVersion = conn.getMetaData().getDatabaseProductVersion();
-} catch (Exception e) {
-  dbName = "Unknown";
-  dbVersion = "Unknown";
-} finally {
-  d.cleanUp();
-}
-%>
+    boolean role = request.isUserInRole(Authentication.ROLE_ADMIN);
+    
+    final DBUtils d = new DBUtils();
+    String dbName;
+    String dbVersion;
+    try {
+      Connection conn = DataSourceFactory.getInstance().getConnection();
+      d.watch(conn);
+      dbName = conn.getMetaData().getDatabaseProductName();
+      dbVersion = conn.getMetaData().getDatabaseProductVersion();
+   	} catch (Exception e) {
+   	  dbName = "Unknown";
+      dbVersion = "Unknown";
+   	} finally {
+   	  d.cleanUp();
+   	}
+%> 
 
 <jsp:include page="/includes/header.jsp" flush="false" >
   <jsp:param name="title" value="About" />
@@ -87,7 +86,7 @@ try {
   <tr>
     <td class="standardheader">Java Version:</td>
     <td class="standard"><%=System.getProperty( "java.version" )%> <%=System.getProperty( "java.vendor" )%></td>
-  </tr>
+  </tr>  
   <tr>
     <td class="standardheader">Java Virtual Machine:</td>
     <td class="standard"><%=System.getProperty( "java.vm.version" )%> <%=System.getProperty( "java.vm.vendor" )%></td>
@@ -113,11 +112,8 @@ try {
     <td class="standard"><%=dbVersion%></td>
   </tr>
 </table>
-
 <hr />
-
 <h3>License and Copyright</h3>
-
 <div class="boxWrapper">
   <p>
     The <a href="http://www.opennms.org/">OpenNMS&reg;</a> software, as
@@ -160,91 +156,53 @@ try {
   <p>
     Free Software Foundation, Inc.<br/>
     59 Temple Place - Suite 330<br/>
-    Boston, MA  02111-1307, USA
-  </p>
+    Boston, MA  02111-1307, USA</p>
 </div>
-
 <hr />
-
 <h3>OSI Certified Open Source Software</h3>
-
 <div class="boxWrapper">
-  <a target="_new" href="http://www.opensource.org/"><img src="images/osi-certified.png" style="float: left;" alt="OSI Certified"/></a>
-  <p>
-    This software is OSI Certified Open Source Software.<br/>
-    OSI Certified is a certification mark of the
-    <a href="http://www.opensource.org/">Open Source Initiative</a>.
-  </p>
-  <div style="clear:both;"></div>
+<a target="_new" href="http://www.opensource.org/"><img src="images/osi-certified.png" style="float: left;" alt="OSI Certified"/></a>
+<p>This software is OSI Certified Open Source Software.<br/>
+  OSI Certified is a certification mark of the
+  <a href="http://www.opensource.org/">Open Source Initiative</a>.
+</p>
+<div style="clear:both;"></div>
 </div>
-
 <hr />
-
 <h3>Supporting Applications</h3>
 
-<table>
-  <tr>
-    <td style="border-right: none;">
-      <p align="center">
-        Powered By Jetty<br/>
-        <a href="http://www.eclipse.org/jetty/" target="_new"><img src="images/powered_by_jetty.png" hspace="0" vspace="0"
-        border="0" alt="eclipse.org/jetty" align="center"></a>.
-      </p>
-    </td>
-    <td style="border-left: none; border-right: none;">
-      <p align="center">
-        Support for Tobi Oetiker's RRDTool<br/>
-        <a href="http://www.rrdtool.org/" target="_new"><img src="images/rrdtool-logo-dark.png" hspace="0" vspace="0" width="121" height="48"
-        border="0" alt="www.rrdtool.org" align="center"></a>
-      </p>
-    </td>
-    <td style="border-left: none;">
-      <p align="center">
-        PostgreSQL Powered<br/>
-        <a href="http://www.postgresql.org/" target="_new"><img src="images/pg-power_95x51_4.gif" hspace="0" vspace="0" width="95" height="51"
-        border="0" alt="www.postgresql.org" align="center"></a>
-      </p>
-    </td>
-  </tr>
-  <tr>
-    <td style="border-right: none;">
-      <p align="center">
-        Apache Karaf<br/>
-        <a href="http://karaf.apache.org/" target="_new"><img src="images/logokaraf.png" hspace="0" vspace="0"
-        border="0" alt="karaf.apache.org" align="center"></a>.
-      </p>
-    </td>
-    <td style="border-left: none; border-right: none;">
-      <p align="center">
-        ActiveMQ<br/>
-        <a href="http://activemq.apache.org/" target="_new"><img src="images/activemq.png" hspace="0" vspace="0"
-        border="0" alt="activemq.apache.org" align="center"></a>
-      </p>
-    </td>
-    <td style="border-left: none;">
-      <p align="center">
-        JRobin<br/>
-        <a href="http://www.jrobin.org/" target="_new"><img src="images/jrobin.png" hspace="0" vspace="0"
-        border="0" alt="jrobin.org" align="center"></a>
-      </p>
-    </td>
-  </tr>
-</table>
-
-<h3>Artwork Attribution</h3>
-
-<table>
-  <tr>
-    <td style="border-right: none;">
-      <div>
-        Icons in node list page made by Freepik from <a href="http://www.flaticon.com" title="Flaticon">www.flaticon.com</a> and licensed by <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0">CC BY 3.0</a>
-      </div>
-    </td>
-  </tr>
-</table>
+	<table>
+	   <tr>
+      
+      	   <td style="border-right: none;">
+		<p align="center">
+        	Powered By Jetty<br/>
+		<a href="http://www.eclipse.org/jetty/" target="_new"><img src="images/powered_by_jetty.png" hspace="0" vspace="0"
+      		   border="0" alt="eclipse.org/jetty/" align="center"></a>.
+      		</p>
+	   </td>
+           <td style="border-left: none; border-right: none;">
+		<p align="center">
+		Support for Tobi Oetiker's RRDTool<br/>
+        	<a href="http://www.rrdtool.org/" target="_new"><img src="images/rrdtool-logo-dark.png" hspace="0" vspace="0" width="121" height="48"
+           	border="0" alt="www.rrdtool.org" align="center"></a>
+      		</p>      
+	   </td>
+           <td style="border-left: none;">
+		<p align="center">
+		PostgreSQL Powered<br/>
+        	<a href="http://www.postgresql.org/" target="_new"><img src="images/pg-power_95x51_4.gif" hspace="0" vspace="0" width="95" height="51"
+           	border="0" alt="www.postgresql.org" align="center"></a>
+      		</p>      
+	   </td>
+	   </tr>
+	</table>
+ 
+                                   
 
 <jsp:include page="/includes/bookmarkAll.jsp" flush="false" >
-  <jsp:param name="adminrole" value="<%= role %>" />
+  <jsp:param name="adminrole" 
+   value="<%= role %>" />
 </jsp:include>
 
 <jsp:include page="/includes/footer.jsp" flush="false"/>

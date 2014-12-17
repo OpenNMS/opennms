@@ -35,19 +35,40 @@ import java.util.Set;
 
 public interface PathOutageManager {
 
-	List<String[]> getAllCriticalPaths() throws SQLException;
-	
-	String getPrettyCriticalPath(int nodeID) throws SQLException;
-	
-	String[] getCriticalPath(int nodeId);
-	
-	List<String> getNodesInPath(String criticalPathIp, String criticalPathServiceName) throws SQLException;
-	
-	String[] getLabelAndStatus(String nodeIDStr, Connection conn) throws SQLException;
-	
-	String[] getCriticalPathData(String criticalPathIp, String criticalPathServiceName) throws SQLException;
-	
-	Set<Integer> getDependencyNodesByCriticalPath(String criticalpathip) throws SQLException;
+	/** Constant <code>NO_CRITICAL_PATH="Not Configured"</code> */
+	static final String NO_CRITICAL_PATH = "Not Configured";
 
-	Set<Integer> getDependencyNodesByNodeId(int nodeId) throws SQLException;
+	List<String[]> getAllCriticalPaths() throws SQLException;
+
+	String getPrettyCriticalPath(int nodeID) throws SQLException;
+
+	String[] getCriticalPath(int nodeId);
+
+	Set<Integer> getNodesInPath(String criticalPathIp, String criticalPathServiceName) throws SQLException;
+
+	String[] getLabelAndStatus(String nodeIDStr, Connection conn) throws SQLException;
+
+	String[] getCriticalPathData(String criticalPathIp, String criticalPathServiceName) throws SQLException;
+
+	/**
+	 * This method is used when you are scheduling an outage for an interface so that you can have
+	 * the choice of also extending the outage to all nodes that are dependent on that interface for
+	 * connectivity.
+	 * 
+	 * @param criticalpathip IP address of the interface whose outages would affect other nodes
+	 * @return List of node IDs that would be impacted by an outage on the specified interface
+	 * @throws SQLException
+	 */
+	Set<Integer> getAllNodesDependentOnAnyServiceOnInterface(String criticalpathip) throws SQLException;
+
+	/**
+	 * This method is used when you are scheduling an outage for an entire node so that you can have
+	 * the choice of also extending the outage to all nodes that are dependent on that node for
+	 * connectivity.
+	 * 
+	 * @param nodeId ID of the node whose outages would affect other nodes
+	 * @return List of node IDs that would be impacted by an outage on the specified node
+	 * @throws SQLException
+	 */
+	Set<Integer> getAllNodesDependentOnAnyServiceOnNode(int nodeId) throws SQLException;
 }

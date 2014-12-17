@@ -4,7 +4,7 @@
 
 [releasenotes-changelog-1.13.4]
 ==== Release 1.13.4
-Release 1.13.4 is the 5rd unstable release; it is a preview of what will eventually become the OpenNMS 1.14.x stable series.
+Release 1.13.4 is the 5th unstable release; it is a preview of what will eventually become the OpenNMS 1.14.x stable series.
 
 The codename for 1.13.4 is _Metallica_
 
@@ -212,3 +212,4 @@ The codename for 1.13.0 is _Hedningarna_
 * SNMP support for Clavister security devices (Issue http://issues.opennms.org/browse/NMS-6107[NMS-6107])
 * Split Linkd Link dicovery as per discovery Stategy (Issue http://issues.opennms.org/browse/NMS-6110[NMS-6110])
 * add provisioning requisition column to outages list display (Issue http://issues.opennms.org/browse/NMS-6143[NMS-6143])
+

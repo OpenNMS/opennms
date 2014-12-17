@@ -56,7 +56,7 @@
                 <artifactId>vaadin-maven-plugin</artifactId>
                 <version>${vaadin.plugin.version}</version>
                 <configuration>
-                    <extraJvmArgs>-Xmx1g -Xss1024k</extraJvmArgs>
+                    <extraJvmArgs>-XX:MaxPermSize=256m -Xmx1g -Xss1024k</extraJvmArgs>
                     <webappDirectory>${basedir}/target/gwt/VAADIN/widgetsets</webappDirectory>
                     <hostedWebapp>${basedir}/target/gwt/VAADIN/widgetsets</hostedWebapp>
                     <noServer>true</noServer>
@@ -101,12 +101,21 @@
 				<configuration>
 					<bundles>
 						<bundle>mvn:org.opennms.features/vaadin-node-maps/${project.version}</bundle>
+						<bundle>mvn:org.apache.httpcomponents/httpcore-osgi/${httpcoreVersion}</bundle>
+						<bundle>mvn:org.apache.httpcomponents/httpclient-osgi/${httpclientVersion}</bundle>
+						<bundle>mvn:org.opennms.core/org.opennms.core.web/${project.version}</bundle>
 						<bundle>mvn:org.opennms.features.geocoder/org.opennms.features.geocoder.google/${project.version}</bundle>
 						<bundle>mvn:org.opennms.features.geocoder/org.opennms.features.geocoder.nominatim/${project.version}</bundle>
 					</bundles>
 					<features>
+						<feature>opennms-core-web</feature>
 						<feature>vaadin</feature>
 					</features>
+					<!--
+					<repositories>
+						<repository>mvn:org.opennms.karaf/opennms/${project.version}/xml/features</repository>
+					</repositories>
+					-->
 				</configuration>
 			</plugin>
 		</plugins>

@@ -88,11 +88,11 @@
         </simpleType>
       </attribute>
 
-      <attribute name="getNextEventID" type="string" use="required">
+      <attribute name="getNextEventID" type="string" use="optional">
         <annotation>
           <documentation>SQL query to get next value of the 'nodeNxtId'
           database sequence. This is used to make the access database
-          independant.</documentation>
+          independent.</documentation>
         </annotation>
       </attribute>
 
@@ -117,6 +117,14 @@
             <minInclusive value="1"/>
           </restriction>
         </simpleType>
+      </attribute>
+
+      <attribute name="logEventSummaries" type="boolean" use="optional" default="true">
+        <annotation>
+          <documentation>Whether or not to log a simple event summary.  By default, OpenNMS
+          logs detailed event information at DEBUG level.  If this option is enabled,
+          it will additionally log a simple summary of events received at INFO.</documentation>
+        </annotation>
       </attribute>
     </complexType>
   </element>

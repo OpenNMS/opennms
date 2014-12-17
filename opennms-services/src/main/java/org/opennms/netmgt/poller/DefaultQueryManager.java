@@ -44,7 +44,7 @@ import org.opennms.core.utils.DBUtils;
 import org.opennms.core.utils.Querier;
 import org.opennms.core.utils.SingleResultQuerier;
 import org.opennms.core.utils.Updater;
-import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.events.api.EventConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -100,24 +100,9 @@ public class DefaultQueryManager implements QueryManager {
         return nodeLabel;
     }
 
-    /**
-     * <p>convertEventTimeToTimeStamp</p>
-     *
-     * @param time a {@link java.lang.String} object.
-     * @return a {@link java.sql.Timestamp} object.
-     */
-    private static Timestamp convertEventTimeToTimeStamp(String time) {
-        try {
-            Date date = EventConstants.parseToDate(time);
-            return new Timestamp(date.getTime());
-        } catch (ParseException e) {
-            throw new IllegalArgumentException("Invalid date format: " + time, e);
-        }
-    }
-    
     /** {@inheritDoc} */
     @Override
-    public void openOutage(String outageIdSQL, int nodeId, String ipAddr, String svcName, int dbId, String time) {
+    public void openOutage(String outageIdSQL, int nodeId, String ipAddr, String svcName, int dbId, Date time) {
         
         int attempt = 0;
         boolean notUpdated = true;
@@ -142,7 +127,7 @@ public class DefaultQueryManager implements QueryManager {
                         Integer.valueOf(nodeId),
                         ipAddr,
                         Integer.valueOf(serviceId),
-                        convertEventTimeToTimeStamp(time),
+                        new Timestamp(time.getTime())
                 };
 
                 Updater updater = new Updater(m_dataSource, sql);
@@ -161,7 +146,7 @@ public class DefaultQueryManager implements QueryManager {
 
     /** {@inheritDoc} */
     @Override
-    public void resolveOutage(int nodeId, String ipAddr, String svcName, int dbId, String time) {
+    public void resolveOutage(int nodeId, String ipAddr, String svcName, int dbId, Date time) {
         int attempt = 0;
         boolean notUpdated = true;
         
@@ -174,7 +159,7 @@ public class DefaultQueryManager implements QueryManager {
                 
                 Object[] values = {
                         Integer.valueOf(dbId),
-                        convertEventTimeToTimeStamp(time),
+                        new Timestamp(time.getTime()),
                         Integer.valueOf(nodeId),
                         ipAddr,
                         Integer.valueOf(serviceId),

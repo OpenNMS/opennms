@@ -33,6 +33,7 @@
 
 <jsp:include page="/includes/header.jsp" flush="false">
 	<jsp:param name="title" value="Dashboard" />
+   <jsp:param name="location" value="dashboard" />
 	<jsp:param name="meta">
 	  <jsp:attribute name="value">
 	    <meta name='gwt:module' content='org.opennms.dashboard.Dashboard' />

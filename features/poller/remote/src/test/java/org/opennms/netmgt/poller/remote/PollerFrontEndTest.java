@@ -51,6 +51,7 @@ import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.poller.ServiceMonitorLocator;
 import org.opennms.netmgt.poller.remote.support.DefaultPollerFrontEnd;
+import org.opennms.netmgt.poller.remote.support.DefaultPollerFrontEnd.PollerFrontEndStates;
 import org.opennms.test.mock.EasyMockUtils;
 
 public class PollerFrontEndTest extends TestCase {
@@ -605,8 +606,9 @@ public class PollerFrontEndTest extends TestCase {
     private void anticipateStop() {
         anticipateGetMonitorId();
         anticipatePollerStopping();
-        anticipateFirePropertyChangeEvent("registered", true, false);
-        anticipateFirePropertyChangeEvent("started", true, false);
+        //anticipateFirePropertyChangeEvent(PollerFrontEndStates.registered.toString(), true, false);
+        anticipateFirePropertyChangeEvent(PollerFrontEndStates.started.toString(), true, false);
+        anticipateFirePropertyChangeEvent(PollerFrontEndStates.exitNecessary.toString(), false, true);
     }
 
     private void anticipateUpdateServicePollState() {

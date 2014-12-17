@@ -37,13 +37,14 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-services</artifactId>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>hibernate-dependencies</artifactId>
+      <type>pom</type>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
-      <artifactId>hibernate-dependencies</artifactId>
+      <artifactId>servlet-dependencies</artifactId>
       <type>pom</type>
       <scope>provided</scope>
     </dependency>
@@ -68,6 +69,10 @@
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
       <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.events</groupId>
+      <artifactId>org.opennms.features.events.api</artifactId>
     </dependency>
     <dependency>
       <groupId>junit</groupId>

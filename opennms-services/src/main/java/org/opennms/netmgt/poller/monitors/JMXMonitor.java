@@ -94,6 +94,7 @@ public abstract class JMXMonitor extends AbstractServiceMonitor {
 
             long t0 = 0;
             for (int attempts=0; attempts <= retry && !serviceStatus.isAvailable(); attempts++) {
+                LOG.debug("connecting to {} on node ID {}, attempt number {}", InetAddressUtils.str(ipv4Addr), svc.getNodeId(), attempts + 1);
                 try {
                     t0 = System.nanoTime();
                     connection = getMBeanServerConnection(map, ipv4Addr);

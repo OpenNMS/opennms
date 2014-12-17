@@ -36,6 +36,7 @@
 	<jsp:param name="title" value="Requisition Node" />
 	<jsp:param name="headTitle" value="Provisioning Requisitions" />
 	<jsp:param name="headTitle" value="Add Node" />
+	<jsp:param name="location" value="addNode" />		
 	<jsp:param name="breadcrumb" value="<a href='admin/index.jsp'>Admin</a>" />
 	<jsp:param name="breadcrumb" value="<a href='admin/provisioningGroups.htm'>Provisioning Requisitions</a>" />
 	<jsp:param name="breadcrumb" value="Node Quick-Add" />

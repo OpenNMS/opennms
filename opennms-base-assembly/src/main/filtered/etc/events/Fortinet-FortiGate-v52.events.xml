@@ -1,0 +1,1131 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.12356.101.2</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>301</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/fortinet/traps/fortigate/fgTrapVpnTunUp</uei>
+        <event-label>FORTINET-FORTIGATE-MIB defined trap event: fgTrapVpnTunUp</event-label>
+        <descr>
+&lt;p&gt;Indicates that the specified VPN tunnel has been brought up.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	fnSysSerial&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sysName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	fgVpnTrapLocalGateway&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	fgVpnTrapRemoteGateway&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	fgVpnTrapPhase1Name&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+	fgTrapVpnTunUp trap received
+	fnSysSerial=%parm[#1]%
+	sysName=%parm[#2]%
+	fgVpnTrapLocalGateway=%parm[#3]%
+	fgVpnTrapRemoteGateway=%parm[#4]%
+	fgVpnTrapPhase1Name=%parm[#5]%&lt;/p&gt;
+	</logmsg>
+        <severity>Indeterminate</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.12356.101.2</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>302</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/fortinet/traps/fortigate/fgTrapVpnTunDown</uei>
+        <event-label>FORTINET-FORTIGATE-MIB defined trap event: fgTrapVpnTunDown</event-label>
+        <descr>
+&lt;p&gt;The specified VPN tunnel has been brought down.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	fnSysSerial&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sysName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	fgVpnTrapLocalGateway&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	fgVpnTrapRemoteGateway&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	fgVpnTrapPhase1Name&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+	fgTrapVpnTunDown trap received
+	fnSysSerial=%parm[#1]%
+	sysName=%parm[#2]%
+	fgVpnTrapLocalGateway=%parm[#3]%
+	fgVpnTrapRemoteGateway=%parm[#4]%
+	fgVpnTrapPhase1Name=%parm[#5]%&lt;/p&gt;
+	</logmsg>
+        <severity>Indeterminate</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.12356.101.2</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>401</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/fortinet/traps/fortigate/fgTrapHaSwitch</uei>
+        <event-label>FORTINET-FORTIGATE-MIB defined trap event: fgTrapHaSwitch</event-label>
+        <descr>
+&lt;p&gt;The specified cluster member has transitioned from a slave role to a master role.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	fnSysSerial&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sysName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+	fgTrapHaSwitch trap received
+	fnSysSerial=%parm[#1]%
+	sysName=%parm[#2]%&lt;/p&gt;
+	</logmsg>
+        <severity>Indeterminate</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.12356.101.2</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>402</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/fortinet/traps/fortigate/fgTrapHaStateChange</uei>
+        <event-label>FORTINET-FORTIGATE-MIB defined trap event: fgTrapHaStateChange</event-label>
+        <descr>
+&lt;p&gt;Trap being sent when the HA cluster
+         member changes its state&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	fnSysSerial&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+	fgTrapHaStateChange trap received
+	fnSysSerial=%parm[#1]%&lt;/p&gt;
+	</logmsg>
+        <severity>Indeterminate</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.12356.101.2</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>403</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/fortinet/traps/fortigate/fgTrapHaHBFail</uei>
+        <event-label>FORTINET-FORTIGATE-MIB defined trap event: fgTrapHaHBFail</event-label>
+        <descr>
+&lt;p&gt;The heartbeat device failure count has exceeded the configured threshold.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	fnSysSerial&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+	fgTrapHaHBFail trap received
+	fnSysSerial=%parm[#1]%&lt;/p&gt;
+	</logmsg>
+        <severity>Indeterminate</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.12356.101.2</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>404</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/fortinet/traps/fortigate/fgTrapHaMemberDown</uei>
+        <event-label>FORTINET-FORTIGATE-MIB defined trap event: fgTrapHaMemberDown</event-label>
+        <descr>
+&lt;p&gt;The specified device (by serial number) is moving to a down state.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	fnSysSerial&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+	fgTrapHaMemberDown trap received
+	fnSysSerial=%parm[#1]%&lt;/p&gt;
+	</logmsg>
+        <severity>Indeterminate</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.12356.101.2</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>405</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/fortinet/traps/fortigate/fgTrapHaMemberUp</uei>
+        <event-label>FORTINET-FORTIGATE-MIB defined trap event: fgTrapHaMemberUp</event-label>
+        <descr>
+&lt;p&gt;A new cluster member has joined the cluster.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	fnSysSerial&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+	fgTrapHaMemberUp trap received
+	fnSysSerial=%parm[#1]%&lt;/p&gt;
+	</logmsg>
+        <severity>Indeterminate</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.12356.101.2</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>503</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/fortinet/traps/fortigate/fgTrapIpsSignature</uei>
+        <event-label>FORTINET-FORTIGATE-MIB defined trap event: fgTrapIpsSignature</event-label>
+        <descr>
+&lt;p&gt;An IPS signature has been triggered&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	fnSysSerial&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sysName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	fgIpsTrapSigId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	fgIpsTrapSrcIp&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	fgIpsTrapSigMsg&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+	fgTrapIpsSignature trap received
+	fnSysSerial=%parm[#1]%
+	sysName=%parm[#2]%
+	fgIpsTrapSigId=%parm[#3]%
+	fgIpsTrapSrcIp=%parm[#4]%
+	fgIpsTrapSigMsg=%parm[#5]%&lt;/p&gt;
+	</logmsg>
+        <severity>Indeterminate</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.12356.101.2</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>504</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/fortinet/traps/fortigate/fgTrapIpsAnomaly</uei>
+        <event-label>FORTINET-FORTIGATE-MIB defined trap event: fgTrapIpsAnomaly</event-label>
+        <descr>
+&lt;p&gt;An IPS anomaly has been detected&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	fnSysSerial&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sysName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	fgIpsTrapSigId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	fgIpsTrapSrcIp&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	fgIpsTrapSigMsg&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+	fgTrapIpsAnomaly trap received
+	fnSysSerial=%parm[#1]%
+	sysName=%parm[#2]%
+	fgIpsTrapSigId=%parm[#3]%
+	fgIpsTrapSrcIp=%parm[#4]%
+	fgIpsTrapSigMsg=%parm[#5]%&lt;/p&gt;
+	</logmsg>
+        <severity>Indeterminate</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.12356.101.2</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>505</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/fortinet/traps/fortigate/fgTrapIpsPkgUpdate</uei>
+        <event-label>FORTINET-FORTIGATE-MIB defined trap event: fgTrapIpsPkgUpdate</event-label>
+        <descr>
+&lt;p&gt;The IPS signature database has been updated&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	fnSysSerial&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sysName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+	fgTrapIpsPkgUpdate trap received
+	fnSysSerial=%parm[#1]%
+	sysName=%parm[#2]%&lt;/p&gt;
+	</logmsg>
+        <severity>Indeterminate</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.12356.101.2</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>506</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/fortinet/traps/fortigate/fgTrapIpsFailOpen</uei>
+        <event-label>FORTINET-FORTIGATE-MIB defined trap event: fgTrapIpsFailOpen</event-label>
+        <descr>
+&lt;p&gt;The IPS network buffer is full&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	fnSysSerial&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sysName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+	fgTrapIpsFailOpen trap received
+	fnSysSerial=%parm[#1]%
+	sysName=%parm[#2]%&lt;/p&gt;
+	</logmsg>
+        <severity>Indeterminate</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.12356.101.2</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>601</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/fortinet/traps/fortigate/fgTrapAvVirus</uei>
+        <event-label>FORTINET-FORTIGATE-MIB defined trap event: fgTrapAvVirus</event-label>
+        <descr>
+&lt;p&gt;A virus has been detected by the anti-virus engine&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	fnSysSerial&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sysName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	fgAvTrapVirName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+	fgTrapAvVirus trap received
+	fnSysSerial=%parm[#1]%
+	sysName=%parm[#2]%
+	fgAvTrapVirName=%parm[#3]%&lt;/p&gt;
+	</logmsg>
+        <severity>Indeterminate</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.12356.101.2</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>602</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/fortinet/traps/fortigate/fgTrapAvOversize</uei>
+        <event-label>FORTINET-FORTIGATE-MIB defined trap event: fgTrapAvOversize</event-label>
+        <descr>
+&lt;p&gt;An over-sized file has been detected by the anti-virus engine&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	fnSysSerial&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sysName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+	fgTrapAvOversize trap received
+	fnSysSerial=%parm[#1]%
+	sysName=%parm[#2]%&lt;/p&gt;
+	</logmsg>
+        <severity>Indeterminate</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.12356.101.2</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>603</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/fortinet/traps/fortigate/fgTrapAvPattern</uei>
+        <event-label>FORTINET-FORTIGATE-MIB defined trap event: fgTrapAvPattern</event-label>
+        <descr>
+&lt;p&gt;The anti-virus engine has blocked a file because it matched a configured pattern&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	fnSysSerial&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sysName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+	fgTrapAvPattern trap received
+	fnSysSerial=%parm[#1]%
+	sysName=%parm[#2]%&lt;/p&gt;
+	</logmsg>
+        <severity>Indeterminate</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.12356.101.2</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>604</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/fortinet/traps/fortigate/fgTrapAvFragmented</uei>
+        <event-label>FORTINET-FORTIGATE-MIB defined trap event: fgTrapAvFragmented</event-label>
+        <descr>
+&lt;p&gt;The anti-virus engine has detected a fragmented file&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	fnSysSerial&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sysName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+	fgTrapAvFragmented trap received
+	fnSysSerial=%parm[#1]%
+	sysName=%parm[#2]%&lt;/p&gt;
+	</logmsg>
+        <severity>Indeterminate</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.12356.101.2</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>605</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/fortinet/traps/fortigate/fgTrapAvEnterConserve</uei>
+        <event-label>FORTINET-FORTIGATE-MIB defined trap event: fgTrapAvEnterConserve</event-label>
+        <descr>
+&lt;p&gt;The anti-virus engine has entered conservation mode due to low memory conditions&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	fnSysSerial&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sysName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+	fgTrapAvEnterConserve trap received
+	fnSysSerial=%parm[#1]%
+	sysName=%parm[#2]%&lt;/p&gt;
+	</logmsg>
+        <severity>Indeterminate</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.12356.101.2</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>606</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/fortinet/traps/fortigate/fgTrapAvBypass</uei>
+        <event-label>FORTINET-FORTIGATE-MIB defined trap event: fgTrapAvBypass</event-label>
+        <descr>
+&lt;p&gt;The anti-virus engine has been bypassed due to conservation mode&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	fnSysSerial&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sysName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+	fgTrapAvBypass trap received
+	fnSysSerial=%parm[#1]%
+	sysName=%parm[#2]%&lt;/p&gt;
+	</logmsg>
+        <severity>Indeterminate</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.12356.101.2</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>607</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/fortinet/traps/fortigate/fgTrapAvOversizePass</uei>
+        <event-label>FORTINET-FORTIGATE-MIB defined trap event: fgTrapAvOversizePass</event-label>
+        <descr>
+&lt;p&gt;An over-sized file has been detected,
+         but has been passed due to configuration&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	fnSysSerial&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sysName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+	fgTrapAvOversizePass trap received
+	fnSysSerial=%parm[#1]%
+	sysName=%parm[#2]%&lt;/p&gt;
+	</logmsg>
+        <severity>Indeterminate</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.12356.101.2</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>608</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/fortinet/traps/fortigate/fgTrapAvOversizeBlock</uei>
+        <event-label>FORTINET-FORTIGATE-MIB defined trap event: fgTrapAvOversizeBlock</event-label>
+        <descr>
+&lt;p&gt;An over-sized file has been detected
+         and has been blocked&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	fnSysSerial&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sysName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+	fgTrapAvOversizeBlock trap received
+	fnSysSerial=%parm[#1]%
+	sysName=%parm[#2]%&lt;/p&gt;
+	</logmsg>
+        <severity>Indeterminate</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.12356.101.2</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>701</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/fortinet/traps/fortigate/fgTrapFazDisconnect</uei>
+        <event-label>FORTINET-FORTIGATE-MIB defined trap event: fgTrapFazDisconnect</event-label>
+        <descr>
+&lt;p&gt;The device has been disconnected from the FortiAnalyzer.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	fnSysSerial&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+	fgTrapFazDisconnect trap received
+	fnSysSerial=%parm[#1]%&lt;/p&gt;
+	</logmsg>
+        <severity>Indeterminate</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.12356.101.2</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>801</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/fortinet/traps/fortigate/fgTrapWcApUp</uei>
+        <event-label>FORTINET-FORTIGATE-MIB defined trap event: fgTrapWcApUp</event-label>
+        <descr>
+&lt;p&gt;Indicates that the specified AP is up.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	fnSysSerial&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sysName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	fgWcApVdom&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	fgWcApSerial&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	fgWcApName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+	fgTrapWcApUp trap received
+	fnSysSerial=%parm[#1]%
+	sysName=%parm[#2]%
+	fgWcApVdom=%parm[#3]%
+	fgWcApSerial=%parm[#4]%
+	fgWcApName=%parm[#5]%&lt;/p&gt;
+	</logmsg>
+        <severity>Indeterminate</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.12356.101.2</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>802</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/fortinet/traps/fortigate/fgTrapWcApDown</uei>
+        <event-label>FORTINET-FORTIGATE-MIB defined trap event: fgTrapWcApDown</event-label>
+        <descr>
+&lt;p&gt;Indicates that the specified AP is down.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	fnSysSerial&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sysName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	fgWcApVdom&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	fgWcApSerial&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	fgWcApName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+	fgTrapWcApDown trap received
+	fnSysSerial=%parm[#1]%
+	sysName=%parm[#2]%
+	fgWcApVdom=%parm[#3]%
+	fgWcApSerial=%parm[#4]%
+	fgWcApName=%parm[#5]%&lt;/p&gt;
+	</logmsg>
+        <severity>Indeterminate</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.12356.101.2</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>901</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/fortinet/traps/fortigate/fgTrapFcSwUp</uei>
+        <event-label>FORTINET-FORTIGATE-MIB defined trap event: fgTrapFcSwUp</event-label>
+        <descr>
+&lt;p&gt;Indicates that the specified switch controller session is up.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	fnSysSerial&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sysName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	fgFcSwVdom&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	fgFcSwSerial&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	fgFcSwName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+	fgTrapFcSwUp trap received
+	fnSysSerial=%parm[#1]%
+	sysName=%parm[#2]%
+	fgFcSwVdom=%parm[#3]%
+	fgFcSwSerial=%parm[#4]%
+	fgFcSwName=%parm[#5]%&lt;/p&gt;
+	</logmsg>
+        <severity>Indeterminate</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.12356.101.2</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>902</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/fortinet/traps/fortigate/fgTrapFcSwDown</uei>
+        <event-label>FORTINET-FORTIGATE-MIB defined trap event: fgTrapFcSwDown</event-label>
+        <descr>
+&lt;p&gt;Indicates that the specified switch controller session is down.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	fnSysSerial&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sysName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	fgFcSwVdom&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	fgFcSwSerial&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	fgFcSwName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+	fgTrapFcSwDown trap received
+	fnSysSerial=%parm[#1]%
+	sysName=%parm[#2]%
+	fgFcSwVdom=%parm[#3]%
+	fgFcSwSerial=%parm[#4]%
+	fgFcSwName=%parm[#5]%&lt;/p&gt;
+	</logmsg>
+        <severity>Indeterminate</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.12356.101.6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1000</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/fortinet/traps/fortigate/fgTrapDeployComplete</uei>
+        <event-label>FORTINET-FORTIGATE-MIB defined trap event: fgTrapDeployComplete</event-label>
+        <descr>
+&lt;p&gt;Indicates when deployment of a new configuration has been completed. Used for verification by FortiManager.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	fnSysSerial&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+	fgTrapDeployComplete trap received
+	fnSysSerial=%parm[#1]%&lt;/p&gt;
+	</logmsg>
+        <severity>Indeterminate</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.12356.101.6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1002</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/fortinet/traps/fortigate/fgTrapDeployInProgress</uei>
+        <event-label>FORTINET-FORTIGATE-MIB defined trap event: fgTrapDeployInProgress</event-label>
+        <descr>
+&lt;p&gt;Indicates that a configuration change was not immediate and that the change is currently in progress. Used for verification by FortiManager.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	fnSysSerial&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+	fgTrapDeployInProgress trap received
+	fnSysSerial=%parm[#1]%&lt;/p&gt;
+	</logmsg>
+        <severity>Indeterminate</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.12356.101.6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1003</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/fortinet/traps/fortigate/fgTrapConfChange</uei>
+        <event-label>FORTINET-FORTIGATE-MIB defined trap event: fgTrapConfChange</event-label>
+        <descr>
+&lt;p&gt;The device configuration has been changed by something other than the managing FortiManager device.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	fnSysSerial&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+	fgTrapConfChange trap received
+	fnSysSerial=%parm[#1]%&lt;/p&gt;
+	</logmsg>
+        <severity>Indeterminate</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.12356.101.6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1004</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/fortinet/traps/fortigate/fgTrapIfChange</uei>
+        <event-label>FORTINET-FORTIGATE-MIB defined trap event: fgTrapIfChange</event-label>
+        <descr>
+&lt;p&gt;Trap is sent to the managing FortiManager if an interface IP is changed&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	fnSysSerial&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ifName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	fgManIfIp&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	fgManIfMask&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	fgManIfIp6&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+	fgTrapIfChange trap received
+	fnSysSerial=%parm[#1]%
+	ifName=%parm[#2]%
+	fgManIfIp=%parm[#3]%
+	fgManIfMask=%parm[#4]%
+	fgManIfIp6=%parm[#5]%&lt;/p&gt;
+	</logmsg>
+        <severity>Indeterminate</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.12356.101.2</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1101</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/fortinet/traps/fortigate/fgTrapServerLoadBalanceRealServerDown</uei>
+        <event-label>FORTINET-FORTIGATE-MIB defined trap event: fgTrapServerLoadBalanceRealServerDown</event-label>
+        <descr>
+&lt;p&gt;One of servers in a Server Load Balance group goes down.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	fnSysSerial&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sysName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	fgServerLoadBalanceRealServerAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	fgServerLoadBalanceVirtualServerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+	fgTrapServerLoadBalanceRealServerDown trap received
+	fnSysSerial=%parm[#1]%
+	sysName=%parm[#2]%
+	fgServerLoadBalanceRealServerAddress=%parm[#3]%
+	fgServerLoadBalanceVirtualServerName=%parm[#4]%&lt;/p&gt;
+	</logmsg>
+        <severity>Indeterminate</severity>
+    </event>
+</events>

@@ -2,11 +2,11 @@
 <wmi-datacollection-config rrdRepository="${install.share.dir}/rrd/snmp/">
     <wmi-collection name="default">
         <rrd step="300">
-		  <rra>RRA:AVERAGE:0.5:1:2016</rra>
-		  <rra>RRA:AVERAGE:0.5:12:1488</rra>
-		  <rra>RRA:AVERAGE:0.5:288:366</rra>
-		  <rra>RRA:MAX:0.5:288:366</rra>
-		  <rra>RRA:MIN:0.5:288:366</rra>
+            <rra>RRA:AVERAGE:0.5:1:2016</rra>
+            <rra>RRA:AVERAGE:0.5:12:1488</rra>
+            <rra>RRA:AVERAGE:0.5:288:366</rra>
+            <rra>RRA:MAX:0.5:288:366</rra>
+            <rra>RRA:MIN:0.5:288:366</rra>
         </rrd>
 
         <wpms>
@@ -143,12 +143,33 @@
                 <attrib name="PacketsSentUnicastPersec" alias="wmiIpNetOUCPktsSec" wmiObject="PacketsSentUnicastPersec" type="Counter"/>
             </wpm>
 
-            <!--  A group for collecting Terminal Service  statistics.
+            <!--  A group for collecting Terminal Service statistics (Windows Server 2003).
              *  Check the keyvalue "ActiveSessions" - if it's there (should be) collect this whole group.
              *  wmiClass is the WMI object class.
              *  Check every recheckInterval milliseconds (3600000 = 1hr)
             -->
-            <wpm name="win32_terminalservices" wmiClass="Win32_PerfFormattedData_TermService_TerminalServices" wmiNamespace="root/cimv2"
+            <wpm name="win32_terminalservices2003" wmiClass="Win32_PerfFormattedData_TermService_TerminalServices" wmiNamespace="root/cimv2"
+                 keyvalue="ActiveSessions" recheckInterval="3600000" ifType="all" resourceType="node">
+                <!--  Collect these attributes.
+                 *  Name is the unique name used for keyvalue.
+                 *  Alias is the local name for the RRD file.
+                 *  wmiObject is the WMI object instance.
+                 *  Type is used to convert values around.
+                -->
+                <!-- The number of active sessions, including the console. -->
+                <attrib name="ActiveSessions" alias="wmiTSSessActive" wmiObject="ActiveSessions" type="Gauge"/>
+                <!-- The number of inactive (idle, disconnected) sessions. -->
+                <attrib name="InactiveSessions" alias="wmiTSSessInactive" wmiObject="InactiveSessions" type="Gauge"/>
+                <!-- The total number of sessions. -->
+                <attrib name="TotalSessions" alias="wmiTSSessTotal" wmiObject="TotalSessions" type="Gauge"/>
+            </wpm>
+
+            <!--  A group for collecting Terminal Service statistics (Windows Server 2008 and later).
+             *  Check the keyvalue "ActiveSessions" - if it's there (should be) collect this whole group.
+             *  wmiClass is the WMI object class.
+             *  Check every recheckInterval milliseconds (3600000 = 1hr)
+            -->
+            <wpm name="win32_terminalservices2008" wmiClass="Win32_PerfFormattedData_LocalSessionManager_TerminalServices" wmiNamespace="root/cimv2"
                  keyvalue="ActiveSessions" recheckInterval="3600000" ifType="all" resourceType="node">
                 <!--  Collect these attributes.
                  *  Name is the unique name used for keyvalue.

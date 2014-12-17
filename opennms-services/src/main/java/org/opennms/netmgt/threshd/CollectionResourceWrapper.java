@@ -121,7 +121,12 @@ public class CollectionResourceWrapper {
 	 * Holds the timestamp of the collection being thresholded, for the calculation of counter rates
      */
     private final Date m_collectionTimestamp;
-        
+
+    /*
+     * true, if the sysUpTime wrap or abrupt reset has been detected.
+     */
+    private boolean m_counterReset = false;
+
     /**
      * <p>Constructor for CollectionResourceWrapper.</p>
      *
@@ -174,7 +179,11 @@ public class CollectionResourceWrapper {
             m_iflabel = null;
         }
     }
-    
+
+    public void setCounterReset(boolean counterReset) {
+        this.m_counterReset = counterReset;
+    }
+
     /**
      * <p>getNodeId</p>
      *
@@ -396,7 +405,8 @@ public class CollectionResourceWrapper {
 
         if (m_localCache.containsKey(id) == false) {
             // Atomically replace the CacheEntry with the new value
-            CacheEntry last = s_cache.put(id, new CacheEntry(m_collectionTimestamp, current));
+            // If the sysUpTime was changed, the "last" value must be null (to force update the cache).
+            CacheEntry last = m_counterReset ? null : s_cache.put(id, new CacheEntry(m_collectionTimestamp, current));
             LOG.debug("getCounterValue: id={}, last={}, current={}", id, (last==null ? last : last.m_value +"@"+ last.m_timestamp), current);
             if (last == null) {
                 m_localCache.put(id, Double.NaN);

@@ -1,14 +1,14 @@
 #! /bin/sh
 
-# $Id$
-
 if [ -z "$JAVA_HOME" ]; then
-    for dir in /usr/lib/jvm/java-8-*
-    do
-        if [ -d "$dir" -a -f "$dir/lib/tools.jar" ]; then
-            JAVA_HOME="$dir"
-            break
-        fi
+    for version in 8; do
+        for postfix in oracle sun openjdk; do
+            dir="/usr/lib/jvm/java-$version-$postfix"
+            if [ -d "$dir" -a -f "$dir/lib/tools.jar" ]; then
+                JAVA_HOME="$dir"
+                break
+            fi
+        done
     done
 
     if [ -z "$JAVA_HOME" ]; then

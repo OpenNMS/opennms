@@ -28,21 +28,24 @@
 
 package org.opennms.smoketest;
 
+import java.net.InetSocketAddress;
+
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
-import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.events.api.EventProxy;
+import org.opennms.netmgt.events.api.support.TcpEventProxy;
 import org.opennms.netmgt.model.events.EventBuilder;
-import org.opennms.netmgt.model.events.EventProxy;
-import org.opennms.netmgt.utils.TcpEventProxy;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class AlarmsPageTest extends OpenNMSSeleniumTestCase {
     @BeforeClass
     public static void createAlarm() throws Exception {
-        final EventProxy eventProxy = new TcpEventProxy();
+
+        final EventProxy eventProxy = new TcpEventProxy(new InetSocketAddress(OPENNMS_EVENT_HOST, OPENNMS_EVENT_PORT));
         final EventBuilder builder = new EventBuilder(EventConstants.IMPORT_FAILED_UEI, "AlarmsPageTest");
         builder.setParam("importResource", "foo");
         eventProxy.send(builder.getEvent());
@@ -123,7 +126,7 @@ public class AlarmsPageTest extends OpenNMSSeleniumTestCase {
         selenium.open("/opennms/alarm/detail.htm?id=999999999");
         waitForText("Alarm ID Not Found");
     }
-    
+
     private boolean hasAlarmDetailLink() {
         return selenium.isElementPresent("//a[contains(@href,'alarm/detail.htm')]");
     }

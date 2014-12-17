@@ -29,7 +29,7 @@
 package org.opennms.osgi;
 
 import com.vaadin.ui.UI;
-import org.ops4j.pax.vaadin.ApplicationFactory;
+import org.opennms.vaadin.extender.ApplicationFactory;
 import org.osgi.service.blueprint.container.BlueprintContainer;
 
 import java.util.Collections;

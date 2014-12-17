@@ -8,8 +8,10 @@
 :numbered:
 
 = Documentation Guide
-OpenNMS Release v{opennms-version}
-The OpenNMS Group, Inc. 220 Chatham Business Drive, Suite 220 Pittsboro, NC 27312
+:author: Copyright (c) 2014 The OpenNMS Group, Inc.
+:revnumber: OpenNMS v{opennms-version}
+:revdate: {last-update-label} {docdatetime}
+:version-label!:
 
 // Include your documentation sections here
 include::text/introduction.adoc[]
@@ -18,3 +20,4 @@ include::text/writing.adoc[]
 include::text/images.adoc[]
 include::text/include-source.adoc[]
 include::text/cheat-sheets.adoc[]
+include::text/reviewing.adoc[]

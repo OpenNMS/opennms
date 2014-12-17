@@ -49,25 +49,19 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.PosixParser;
 import org.apache.commons.io.IOUtils;
-import org.opennms.bootstrap.Bootstrap;
 import org.opennms.core.soa.ServiceRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
-public class SystemReport extends Bootstrap {
+public class SystemReport {
     private static final Logger LOG = LoggerFactory.getLogger(SystemReport.class);
     final static Pattern m_pattern = Pattern.compile("^-D(.*?)=(.*)$");
-
-    public static void main(String[] args) throws Exception {
-        loadDefaultProperties();
-        executeClass("org.opennms.systemreport.SystemReport", "report", args, true, true);
-    }
 
     /**
      * @param args
      */
-    public static void report(String[] args) throws Exception {
+    public static void main(final String[] args) throws Exception {
         final String tempdir = System.getProperty("java.io.tmpdir");
 
         // pull out -D defines first
@@ -139,6 +133,7 @@ public class SystemReport extends Bootstrap {
     }
 
     private ServiceRegistry m_serviceRegistry;
+    private ClassPathXmlApplicationContext m_context;
     private String m_output = "-";
     private String m_format = "text";
 
@@ -256,11 +251,12 @@ public class SystemReport extends Bootstrap {
         if (m_serviceRegistry == null) {
             List<String> configs = new ArrayList<String>();
             configs.add("classpath:/META-INF/opennms/applicationContext-soa.xml");
+            configs.add("classpath:/META-INF/opennms/applicationContext-commonConfigs.xml");
             configs.add("classpath:/META-INF/opennms/applicationContext-dao.xml");
             configs.add("classpath*:/META-INF/opennms/component-dao.xml");
             configs.add("classpath:/META-INF/opennms/applicationContext-systemReport.xml");
-            final ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext(configs.toArray(new String[0]));
-            m_serviceRegistry = (ServiceRegistry) context.getBean("serviceRegistry");
+            m_context = new ClassPathXmlApplicationContext(configs.toArray(new String[0]));
+            m_serviceRegistry = (ServiceRegistry) m_context.getBean("serviceRegistry");
         }
     }
 

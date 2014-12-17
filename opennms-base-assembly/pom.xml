@@ -88,7 +88,7 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>jasperreports-maven-plugin</artifactId>
-        <version>1.0-beta-3-OPENNMS-20120424-1</version>
+        <version>1.0-beta-3-OPENNMS-20141110-1</version>
         <executions>
           <execution>
             <phase>compile</phase>
@@ -153,11 +153,6 @@
     </plugins>
   </build>
   <dependencies>
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-services</artifactId>
-      <scope>compile</scope>
-    </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-ackd</artifactId>
@@ -327,6 +322,14 @@
       <groupId>org.opennms</groupId>
       <artifactId>opennms-asterisk</artifactId>
       <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.events</groupId>
+      <artifactId>org.opennms.features.events.daemon</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.events</groupId>
+      <artifactId>org.opennms.features.events.traps</artifactId>
     </dependency>
     <dependency>
       <groupId>org.opennms.features.notifications</groupId>

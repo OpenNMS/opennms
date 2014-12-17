@@ -56,7 +56,6 @@ import org.opennms.core.test.db.MockDatabase;
 import org.opennms.core.test.db.TemporaryDatabaseAware;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.Querier;
-import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.capsd.JdbcCapsdDbSyncer;
 import org.opennms.netmgt.config.CollectdConfigFactory;
 import org.opennms.netmgt.config.DatabaseSchemaConfigFactory;
@@ -66,6 +65,8 @@ import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.dao.mock.EventAnticipator;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.dao.support.NullRrdStrategy;
+import org.opennms.netmgt.eventd.EventUtil;
+import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.eventd.AbstractEventUtil;
 import org.opennms.netmgt.mock.MockElement;
 import org.opennms.netmgt.mock.MockEventUtil;
@@ -1324,10 +1325,11 @@ public class PollerTest implements TemporaryDatabaseAware<MockDatabase> {
 
             m_svc = svc;
             m_lostSvcEvent = lostSvcEvent;
-            m_lostSvcTime = m_db.convertEventTimeToTimeStamp(m_lostSvcEvent.getTime());
+            m_lostSvcTime = new Timestamp(m_lostSvcEvent.getTime().getTime());
             m_regainedSvcEvent = regainedSvcEvent;
-            if (m_regainedSvcEvent != null)
-                m_regainedSvcTime = m_db.convertEventTimeToTimeStamp(m_regainedSvcEvent.getTime());
+            if (m_regainedSvcEvent != null) {
+                m_regainedSvcTime = new Timestamp(m_regainedSvcEvent.getTime().getTime());
+            }
         }
 
         @Override

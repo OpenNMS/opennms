@@ -128,7 +128,7 @@ public class JsmiMibParser implements MibParser, Serializable {
     @Override
     public boolean parseMib(File mibFile) {
         // Validate MIB Directory
-        if (mibDirectory == null) {
+        if (mibDirectory == null || !mibDirectory.isDirectory()) {
             errorHandler.addError("MIB directory has not been set.");
             return false;
         }
@@ -389,7 +389,6 @@ public class JsmiMibParser implements MibParser, Serializable {
                         break;
                     }
                 }
-                LOG.debug("Dependency file {} doesn't exist", fileName);
             }
             if (!found) {
                 LOG.warn("Couldn't find dependency {} on {}", dependency, mibDirectory);
@@ -408,10 +407,20 @@ public class JsmiMibParser implements MibParser, Serializable {
      */
     private SmiModule getModule(SmiMib mibObject, File mibFile) {
         for (SmiModule m : mibObject.getModules()) {
-            if (m.getIdToken().getLocation().getSource().contains(mibFile.getAbsolutePath())) {
-                return m;
+            URL source = null;
+            try {
+                source = new URL(m.getIdToken().getLocation().getSource());
+            } catch (Exception e) {}
+            if (source != null) {
+                try {
+                    File srcFile = new File(source.toURI());
+                    if (srcFile.getAbsolutePath().equals(mibFile.getAbsolutePath())) {
+                        return m;
+                    }
+                } catch (Exception e) {}
             }
         }
+        LOG.error("Can't find the MIB module for " + mibFile);
         errorHandler.addError("Can't find the MIB module for " + mibFile);
         return null;
     }

@@ -34,13 +34,15 @@ import static org.opennms.core.utils.InetAddressUtils.addr;
 import java.util.Arrays;
 import java.util.Collection;
 
+import javax.annotation.Resource;
+
 import org.junit.runner.RunWith;
 import org.opennms.core.test.ConfigurationTestUtils;
-import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.correlation.CorrelationEngineRegistrar;
 import org.opennms.netmgt.correlation.drools.DroolsCorrelationEngine;
 import org.opennms.netmgt.dao.mock.EventAnticipator;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
+import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.test.JUnitConfigurationEnvironment;
@@ -53,22 +55,22 @@ import org.springframework.transaction.annotation.Transactional;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
 		"classpath:META-INF/opennms/applicationContext-datasource.xml",
-                "classpath:META-INF/opennms/applicationContext-testDao.xml",
-                "classpath:META-INF/opennms/applicationContext-soa.xml",
+		"classpath:META-INF/opennms/applicationContext-testDao.xml",
+		"classpath:META-INF/opennms/applicationContext-soa.xml",
 		"classpath*:META-INF/opennms/component-dao.xml",
-        "classpath:META-INF/opennms/applicationContext-daemon.xml",
-        "classpath:META-INF/opennms/correlation-engine.xml",
-        "classpath:test-context.xml"
+		"classpath:META-INF/opennms/correlation-engine.xml",
+		"classpath:test-context.xml"
 })
 @JUnitConfigurationEnvironment
 @Transactional
 public abstract class CorrelationRulesTestCase {
 
     @Autowired
-    @Qualifier("mock")
+    @Resource(name="eventProxy")
     private MockEventIpcManager m_eventIpcMgr;
+
     protected Integer m_anticipatedMemorySize = 0;
-    
+
     @Autowired
     private CorrelationEngineRegistrar m_correlator;
 
