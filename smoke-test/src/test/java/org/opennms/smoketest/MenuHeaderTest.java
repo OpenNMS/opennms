@@ -82,7 +82,7 @@ public class MenuHeaderTest extends OpenNMSSeleniumTestCase {
         findElementByXpath("//h3[text()='Statistics Report List']");
 
         clickMenuItem("Dashboards", "Dashboard", "dashboard.jsp");
-        findElementByXpath("//div[text()='Surveillance View: default']");
+        findElementByXpath("//h3[text()='Surveillance View: default']");
 
         clickMenuItem("Dashboards", "Ops Board", "vaadin-wallboard");
         findElementByXpath("//select[@class='v-select-select']");
@@ -103,7 +103,7 @@ public class MenuHeaderTest extends OpenNMSSeleniumTestCase {
         clickMenuItem("Maps", "SVG", "map/index.jsp");
         findElementById("opennmsSVGMaps");
         try {
-            final Alert alert = m_driver.switchTo().alert();
+            final Alert alert = wait.until(ExpectedConditions.alertIsPresent());
             alert.dismiss();
         } catch (final Exception e) {
         }

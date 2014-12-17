@@ -131,7 +131,7 @@
   <!-- embedded Vaadin app, fix container to leave room for headers -->
   <style type="text/css">
     div#footer { position:absolute; bottom:0; width:100%; }
-    div#content { position:absolute; top:99px; left:0px; right:0px; bottom:53px; }
+    div#content { position:absolute; top:50px; left:0px; right:0px; bottom:90px; }
   </style>
 </c:if>
 

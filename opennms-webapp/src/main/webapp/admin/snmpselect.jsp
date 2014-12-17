@@ -67,7 +67,7 @@
 	}
 %>
 
-<jsp:include page="/includes/header.jsp" flush="false" >
+<jsp:include page="/includes/bootstrap.jsp" flush="false" >
 	<jsp:param name="title" value="Select SNMP Interfaces" />
 	<jsp:param name="headTitle" value="Select SNMP Interfaces" />
 	<jsp:param name="headTitle" value="Admin"/>
@@ -122,11 +122,13 @@
 	}
 </script>
 
-<form method="post" name="chooseSnmpNodes" action="admin/changeCollectStatus">
-	<input type="hidden" name="node" value="<%=nodeId%>" />
-
-	<h3 class="o-box">Choose SNMP Interfaces for Data Collection</h3>
-
+<div class="row">
+  <div class="col-md-12">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Choose SNMP Interfaces for Data Collection</h3>
+      </div>
+      <div class="panel-body">
 	<p>
 		Listed below are all the known interfaces for the selected node. If
 		snmpStorageFlag is set to "select" for a collection scheme that includes
@@ -147,40 +149,29 @@
 		for data collection.  To remove them, edit the IP address range in the
 		collectd configuration file.
 	</p>
+
 	<br/>
 	<%=listNodeName(nodeId, nodeLabel)%>
 	<br/>
-	
+      </div> <!-- panel-body -->
+    </div> <!-- panel -->
+  </div> <!-- column -->
+</div> <!-- row -->
+
+<div class="row">
+  <div class="col-md-12">
+    <div class="panel panel-default">
+      <form method="post" name="chooseSnmpNodes" action="admin/changeCollectStatus">
+	<input type="hidden" name="node" value="<%=nodeId%>" />
 	<opennms:snmpSelectList id="selectList"></opennms:snmpSelectList>
 	<!-- For IE -->
 	<div name="opennms-snmpSelectList" id="selectList-ie"></div>
-	<% if (interfaces.size() > 0) { %>
-	<%-- <table class="standardfirst">
-		<tr>
-			<td class="standardheader" width="5%" align="center">ifIndex</td>
-			<td class="standardheader" width="10%" align="center">IP Hostname</td>
-			<td class="standardheader" width="5%" align="center">ifType</td>
-			<td class="standardheader" width="10%" align="center">ifDescription</td>
-			<td class="standardheader" width="10%" align="center">ifName</td>
-			<td class="standardheader" width="10%" align="center">ifAlias</td>
-			<td class="standardheader" width="10%" align="center">SNMP Status</td>
-			<td class="standardheader" width="5%" align="center">Collect?
-				<a href="#" onClick="javascript:collectAll(); return false;">[All]</a>
-				<a href="#" onClick="javascript:collectNone(); return false;">[None]</a>
-				<a href="#" onClick="javascript:collectDefault(); return false;">[Default]</a>
-			</td>
-		</tr>
-		<%=buildTableRows(interfaces, nodeId, interfaces.size())%>
-	</table>--%>
-	<% } /*end if*/ %>
+      </form>
+    </div> <!-- panel -->
+  </div> <!-- column -->
+</div> <!-- row -->
 
-	<%--<br/>
-	<input type="button" value="Update Collection" onClick="applyChanges()" />
-	<input type="button" value="Cancel" onClick="cancel()" /> 
-	<input type="reset" />--%>
-</form>
-
-<jsp:include page="/includes/footer.jsp" flush="true"/>
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="true"/>
 <%!
 	public String listNodeName(int intnodeid, String nodelabel) {
 		StringBuffer nodename = new StringBuffer();

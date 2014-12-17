@@ -130,14 +130,14 @@ public class ProvisioningTest extends OpenNMSSeleniumTestCase {
 
         clickMenuItem("Info", "Nodes", "element/nodeList.htm");
 
-        final WebElement element = findElementByXpath("//h3[text()='Availability']");
-        // if we got a node list rather than the individual node page, click through to the node
-        if ("Nodes".equals(element.getText())) {
+        try {
+            findElementByXpath("//h3[text()='Availability']");
+        } catch (final Exception e) {
+            // We should be on the node list page, click through to the node
             findElementByLink(NODE_LABEL).click();
         }
 
         wait.until(ExpectedConditions.elementToBeClickable(By.linkText("ICMP")));
         findElementByXpath("//a[contains(@href, 'element/interface.jsp') and text()='" + InetAddressUtils.normalize("::1") + "']");
     }
-
 }

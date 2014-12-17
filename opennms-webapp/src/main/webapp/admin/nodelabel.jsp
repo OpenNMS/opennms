@@ -74,49 +74,70 @@
     }
 %>
 
-<jsp:include page="/includes/header.jsp" flush="false" >
+<jsp:include page="/includes/bootstrap.jsp" flush="false" >
   <jsp:param name="title" value="Change Node Label" />
   <jsp:param name="headTitle" value="Change Node Label" />
   <jsp:param name="breadcrumb" value="<a href='admin/index.jsp'>Admin</a>" />
   <jsp:param name="breadcrumb" value="Change Node Label" />
 </jsp:include>
 
-<h3>Current Label</h3>
-<p>
-  <a href="element/node.jsp?node=<%=nodeId%>" title="More information for this node"><%=currentLabel.getLabel()%></a> (<%=typeMap.get(currentLabel.getSource())%>)
-</p>
+<div class="row">
+  <div class="col-md-12">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Current Label</h3>
+      </div>
+      <div class="panel-body">
+        <p>
+          <a href="element/node.jsp?node=<%=nodeId%>" title="More information for this node"><%=currentLabel.getLabel()%></a> (<%=typeMap.get(currentLabel.getSource())%>)
+        </p>
+      </div>
+    </div> <!-- panel -->
+  </div> <!-- column -->
 
-<hr>
+  <div class="col-md-12">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Choose a New Label</h3>
+      </div>
+      <div class="panel-body">
+        <p>
+          You can either specify a name or allow the system to automatically
+          select the name.
+        </p>
 
-<h3>Choose a New Label</h3>
+        <form role="form" class="form-inline" action="admin/nodeLabelChange" method="post">
+          <input type="hidden" name="node" value="<%=nodeId%>" />
 
-<p>
-  You can either specify a name or allow the system to automatically
-  select the name.          
-</p>
+          <div class="form-group">
+            <label>User Defined</label>
+            <br/>
+            <input type="radio" name="labeltype" value="user" <%=(currentLabel.getSource() == NodeLabelSource.USER) ? "checked" : ""%> />
+            <input type="text" name="userlabel" class="form-control" value="<%=currentLabel.getLabel()%>" maxlength="255" size="32"/>
+          </div>
 
-  <form action="admin/nodeLabelChange" method="post">
-    <input type="hidden" name="node" value="<%=nodeId%>" />
+          <br/>
+          <br/>
 
-  <strong>User Defined</strong>
-  <br/>
-  <input type="radio" name="labeltype" value="user" <%=(currentLabel.getSource() == NodeLabelSource.USER) ? "checked" : ""%> />
-  <input type="text" name="userlabel" value="<%=currentLabel.getLabel()%>" maxlength="255" size="32"/>
+          <div class="form-group">
+            <label>Automatic</label>
+            <br/>
+            <input type="radio" name="labeltype" value="auto" <%=(currentLabel.getSource() != NodeLabelSource.USER) ? "checked" : ""%> />
+            <%=autoLabel.getLabel()%> (<%=typeMap.get(autoLabel.getSource())%>)
+          </div>
 
-  <br/>
-  <br/>
+          <br/>
+          <br/>
 
-  <strong>Automatic</strong>
-  <br/>
-  <input type="radio" name="labeltype" value="auto" <%=(currentLabel.getSource() != NodeLabelSource.USER) ? "checked" : ""%> />
+          <div class="form-group">
+            <input type="submit" class="btn btn-default" value="Change Label" />
+            <input type="reset" class="btn btn-default" />
+          </div>
 
-    <%=autoLabel.getLabel()%> (<%=typeMap.get(autoLabel.getSource())%>)
+        </form>
+      </div> <!-- panel-body -->
+    </div> <!-- panel -->
+  </div> <!-- column -->
+</div> <!-- row -->
 
-  <br/>
-  <br/>
-
-  <input type="submit" value="Change Label" />
-  <input type="reset" />
-  </form>
-
-<jsp:include page="/includes/footer.jsp" flush="false" />
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />
