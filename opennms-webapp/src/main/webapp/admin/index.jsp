@@ -147,9 +147,6 @@
             <li><a href="admin/discovery/modifyDiscoveryConfig">Configure Discovery</a></li>
             <li><a href="javascript:snmpConfigPost()">Configure SNMP Community Names by IP</a></li>
             <li><a href="javascript:snmpManagePost()">Configure SNMP Data Collection per Interface</a></li>
-            <!-- Removed this - see bug 586
-            <li><a href="admin/pollerConfig/index.jsp">Configure Pollers</a></li>
-            -->        
             <li><a href="javascript:submitPost()">Manage and Unmanage Interfaces and Services</a></li>
             <li><a href="admin/thresholds/index.htm">Manage Thresholds</a></li>
             <!-- Secret function 
