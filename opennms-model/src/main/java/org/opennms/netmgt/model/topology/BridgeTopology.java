@@ -518,7 +518,7 @@ public class BridgeTopology {
                 continue;
             }
             for (BridgeTopologyLinkCandidate candidateB : bridgeTopologyPortCandidates) {
-                if (parsed(candidateA.getBridgeTopologyPort())) {
+                if (parsed(candidateB.getBridgeTopologyPort())) {
                     continue;
                 }
                 if (candidateB.getTargets().isEmpty()) {
