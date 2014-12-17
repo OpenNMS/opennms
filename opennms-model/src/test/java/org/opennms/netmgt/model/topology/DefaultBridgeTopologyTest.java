@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.model.topology;
 
+import static org.junit.Assert.assertEquals;
+
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -36,7 +38,6 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
-import static org.junit.Assert.assertEquals;
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.core.test.MockLogAppender;
@@ -176,10 +177,10 @@ public class DefaultBridgeTopologyTest {
         	if (link.getBridgeTopologyPort().getBridgePort() == portA1) {
         		assertEquals(4, link.getMacs().size());
         		Iterator<String> macs = link.getMacs().iterator();
+                        assertEquals(mac3, macs.next());
+                        assertEquals(mac2, macs.next());
+                        assertEquals(mac1, macs.next());
         		assertEquals(mac4, macs.next());
-        		assertEquals(mac3, macs.next());
-        		assertEquals(mac2, macs.next());
-        		assertEquals(mac1, macs.next());
         	} else {
         		assertEquals(-1, 1);
         	}
@@ -274,10 +275,10 @@ public class DefaultBridgeTopologyTest {
         	} else if (link.getBridgeTopologyPort().getBridgePort() == portA23) {
         		assertEquals(4, link.getMacs().size());
         		Iterator<String> macs = link.getMacs().iterator();
+                        assertEquals(mac234, macs.next());
+                        assertEquals(mac233, macs.next());
         		assertEquals(mac232, macs.next());
         		assertEquals(mac231, macs.next());
-        		assertEquals(mac234, macs.next());
-        		assertEquals(mac233, macs.next());
         	} else if (link.getBridgeTopologyPort().getBridgePort() == portA24) {
         		assertEquals(5, link.getMacs().size());
         		Iterator<String> macs = link.getMacs().iterator();
@@ -289,9 +290,9 @@ public class DefaultBridgeTopologyTest {
         	} else if (link.getBridgeTopologyPort().getBridgePort() == portA25) {
         		assertEquals(3, link.getMacs().size());
         		Iterator<String> macs = link.getMacs().iterator();
+                        assertEquals(mac252, macs.next());
+                        assertEquals(mac251, macs.next());
         		assertEquals(mac253, macs.next());
-        		assertEquals(mac251, macs.next());
-        		assertEquals(mac252, macs.next());
         	} else {
         		assertEquals(-1, 1);
         	}
