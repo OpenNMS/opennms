@@ -39,10 +39,12 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlIDREF;
+import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
 import org.slf4j.LoggerFactory;
 
+@XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
 public class WrappedVertex implements VertexRef {
 	

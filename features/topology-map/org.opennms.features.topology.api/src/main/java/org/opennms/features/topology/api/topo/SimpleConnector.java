@@ -29,6 +29,7 @@
 package org.opennms.features.topology.api.topo;
 
 import javax.xml.bind.annotation.XmlID;
+import java.util.Objects;
 
 public class SimpleConnector implements Connector {
 
@@ -54,15 +55,11 @@ public class SimpleConnector implements Connector {
 	 * @param vertex
 	 */
 	public SimpleConnector(String namespace, String id, String label, VertexRef vertex) {
-		if (namespace == null) {
-			throw new IllegalArgumentException("Namespace is null");
-		} else if (id == null) {
-			throw new IllegalArgumentException("ID is null");
-		} else if (label == null) {
-			throw new IllegalArgumentException("Label is null");
-		} else if (vertex == null) {
-			throw new IllegalArgumentException("Vertex is null");
-		}
+		Objects.requireNonNull(namespace, "Namespace is null");
+		Objects.requireNonNull(id, "ID is null");
+		Objects.requireNonNull(label, "Label is null");
+		Objects.requireNonNull(vertex, "Vertex is null");
+
 		m_namespace = namespace;
 		m_id = id;
 		m_label = label;
@@ -101,13 +98,6 @@ public class SimpleConnector implements Connector {
 		m_edge = edge;
 	}
 
-	/**
-	 * @param namespace
-	 * @param id
-	 * @param label
-	 * @param vertex
-	 * @param edge
-	 */
 	public SimpleConnector(String namespace, String id, VertexRef vertex, AbstractEdge edge) {
 		this(namespace, id, namespace + ":" + id, vertex, edge);
 	}
