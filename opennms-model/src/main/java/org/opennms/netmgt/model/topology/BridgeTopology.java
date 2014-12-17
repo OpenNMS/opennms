@@ -35,7 +35,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.TreeSet;
 
+import org.apache.commons.lang.builder.CompareToBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,10 +49,10 @@ public class BridgeTopology {
         DIRECT
     };
 
-    public class BridgeTopologyLinkCandidate {
+    public class BridgeTopologyLinkCandidate implements Comparable<BridgeTopologyLinkCandidate> {
         private final BridgeTopologyPort bridgeTopologyPort;
-        private Set<String> macs = new HashSet<String>();
-        private Set<Integer> targets = new HashSet<Integer>();
+        private Set<String> macs = new TreeSet<String>();
+        private Set<Integer> targets = new TreeSet<Integer>();
         private BridgePortRole role;
         private BridgeTopologyPort linkportcandidate;
 
@@ -140,9 +142,20 @@ public class BridgeTopology {
             this.linkportcandidate = linkportcandidate;
         }
 
+        @Override
+        public int compareTo(final BridgeTopologyLinkCandidate o) {
+            return new CompareToBuilder()
+                .append(bridgeTopologyPort, o.bridgeTopologyPort)
+                .append(macs, o.macs)
+                .append(targets, o.targets)
+                .append(role, o.role)
+                .append(linkportcandidate, o.linkportcandidate)
+                .toComparison();
+        }
+
     }
 
-    public class BridgeTopologyPort {
+    public class BridgeTopologyPort implements Comparable<BridgeTopologyPort> {
         private final Integer nodeid;
         private final Integer bridgePort;
         private final Set<String> macs;
@@ -203,13 +216,22 @@ public class BridgeTopology {
             }
             return true;
         }
+
+        @Override
+        public int compareTo(final BridgeTopologyPort other) {
+            return new CompareToBuilder()
+                .append(nodeid, other.nodeid)
+                .append(bridgePort, other.bridgePort)
+                .append(macs, other.macs)
+                .toComparison();
+        }
     }
 
     public class BridgeTopologyLink {
         final private BridgeTopologyPort bridgePort;
         private BridgeTopologyPort designatebridgePort;
 
-        private Set<String> macs = new HashSet<String>();
+        private Set<String> macs = new TreeSet<String>();
 
         public BridgeTopologyLink(BridgeTopologyPort bridgeport) {
             super();
@@ -261,7 +283,7 @@ public class BridgeTopology {
         if (bridgeAssociatedMacAddressMap.containsKey(mac)) {
             bridgeAssociatedMacAddressMap.get(mac).add(new BridgeTopologyPort(nodeid, port, macsonport));
         } else {
-            Set<BridgeTopologyPort> ports = new HashSet<BridgeTopologyPort>();
+            Set<BridgeTopologyPort> ports = new TreeSet<BridgeTopologyPort>();
             ports.add(new BridgeTopologyPort(nodeid, port, macsonport));
             bridgeAssociatedMacAddressMap.put(mac, ports);
         }
@@ -323,7 +345,7 @@ public class BridgeTopology {
             bridgeTopologyPortCandidates.add(parseBFTEntry(topologycandidate));
         }
         // first: cannot have two backbone from one bridge, so if a backbone and b with candidate, then b is direct
-        Set<BridgeTopologyLinkCandidate> secondStep = new HashSet<BridgeTopology.BridgeTopologyLinkCandidate>();
+        Set<BridgeTopologyLinkCandidate> secondStep = new TreeSet<BridgeTopology.BridgeTopologyLinkCandidate>();
         for (BridgeTopologyLinkCandidate candidateA : bridgeTopologyPortCandidates) {
             if (candidateA.getRole() != BridgePortRole.BACKBONE) {
                 continue;
@@ -359,7 +381,7 @@ public class BridgeTopology {
                 if (candidateB.getRole() == BridgePortRole.DIRECT) {
                     continue;
                 }
-                Set<String> otherMacs = new HashSet<String>();
+                Set<String> otherMacs = new TreeSet<String>();
                 for (String mac : candidateA.getMacs()) {
                     if (candidateB.getMacs().contains(mac)) {
                         otherMacs.add(mac);
