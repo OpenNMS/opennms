@@ -51,7 +51,7 @@ public class DirectoryWatcherTest {
 	private DirectoryWatcher<String> m_watcher;
 
 	@Before
-	public void setUp() throws IOException {
+	public void setUp() throws Exception {
 		
 		m_bldr = new FileSystemBuilder("target", "DirectoryWatcherTest");
 		m_bldr.file("file1.xml", "file1Contents").file("file2.xml", "file2Contents");
@@ -70,8 +70,9 @@ public class DirectoryWatcherTest {
 	}
 	
 	@After
-	public void tearDown() throws IOException {
+	public void tearDown() throws Exception {
 		m_bldr.cleanup();
+		m_watcher.stop();
 	}
 
 	@Test
