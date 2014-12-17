@@ -111,6 +111,7 @@ public class OpenNMSSeleniumTestCase {
                 wait = new WebDriverWait(m_driver, TimeUnit.SECONDS.convert(LOAD_TIMEOUT, TimeUnit.MILLISECONDS));
 
                 m_driver.get(BASE_URL + "opennms/login.jsp");
+                wait.until(ExpectedConditions.visibilityOfElementLocated(By.name("j_username")));
                 enterText(By.name("j_username"), "admin");
                 enterText(By.name("j_password"), "admin");
                 findElementByName("Login").click();
@@ -145,6 +146,9 @@ public class OpenNMSSeleniumTestCase {
             } else {
                 LOG.debug("Driver can't take screenshots.");
             }
+            LOG.debug("Current URL: {}", m_driver.getCurrentUrl());
+            m_driver.navigate().back();
+            LOG.debug("Previous URL: {}", m_driver.getCurrentUrl());
         }
 
         @Override
@@ -170,6 +174,11 @@ public class OpenNMSSeleniumTestCase {
                     LOG.error("Failed while shutting down WebDriver for test {}.", description.getMethodName(), e);
                 }
                 m_driver = null;
+            }
+
+            try {
+                Thread.sleep(3000);
+            } catch (final InterruptedException e) {
             }
         }
     };

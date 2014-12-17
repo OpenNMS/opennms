@@ -147,9 +147,23 @@ start_opennms() {
 	banner "Starting OpenNMS"
 
 	do_log "opennms start"
-	/etc/init.d/opennms start || die "Unable to start OpenNMS."
-	# wait a little longer for OSGi to settle down after we know OpenNMS came up
-	sleep 20
+	/sbin/service opennms start || die "Unable to start OpenNMS."
+#	COUNT=0
+#	do_log "Waiting for OpenNMS to start..."
+#	while true; do
+#		if [ $COUNT -gt 300 ]; then
+#			do_log "We've waited 5 minutes and OpenNMS still hasn't started.  Bailing."
+#			exit 1
+#		fi
+#		COUNT=`expr $COUNT + 1`
+#		MANAGER_LOG=`find "$OPENNMS_HOME"/logs -name manager.log 2>/dev/nul`
+#		if [ -n "$MANAGER_LOG" ] && [ -e "$MANAGER_LOG" ]; then
+#			if [ `grep -c "Startup complete" "$MANAGER_LOG"` -gt 0 ]; then
+#				do_log "OpenNMS startup complete."
+#				break
+#			fi
+#		fi
+#	done
 }
 
 clean_firefox() {
@@ -161,9 +175,20 @@ run_tests() {
 
 	local RETVAL=0
 
+	EXTRA_ARGS=""
+#	CHROMEDRIVER="/usr/local/bin/chromedriver"
+#	CHROME="/usr/bin/google-chrome"
+#
+#	if [ -e "$CHROMEDRIVER" ] && [ -e "$CHROME" ]; then
+#		do_log "found Chrome and ChromeDriver, using it instead"
+#		EXTRA_ARGS="-Dorg.opennms.smoketest.webdriver.class=org.openqa.selenium.chrome.ChromeDriver -Dwebdriver.chrome.driver=$CHROMEDRIVER"
+#	else
+#		do_log "no Chrome found, using defaults"
+#	fi
+
 	do_log "compile.pl test"
 	pushd "$SOURCEDIR/smoke-test"
-		../compile.pl -t -Dorg.opennms.smoketest.logLevel=INFO test
+		../compile.pl -t -Dorg.opennms.smoketest.logLevel=INFO $EXTRA_ARGS test
 		RETVAL=$?
 	popd
 
@@ -183,13 +208,13 @@ stop_opennms() {
 
 # DO IT!
 clean_maven
-build_tests
 reset_opennms
 reset_database
 configure_opennms
 start_opennms
 clean_firefox
 
+build_tests
 run_tests
 RETVAL=$?
 
