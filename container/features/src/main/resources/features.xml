@@ -1,10 +1,96 @@
-<features xmlns="http://karaf.apache.org/xmlns/features/v1.0.0" name="opennms-${project.version}">    
-    <!-- Apache Camel features -->
-    <repository>mvn:org.apache.camel.karaf/apache-camel/${camelVersion}/xml/features</repository>
+<features xmlns="http://karaf.apache.org/xmlns/features/v1.0.0" name="opennms-${project.version}">
+    <!-- Apache Camel features wrapper. We cannot use the original ones because they pull in apache
+    service mix jaxb and we need eclipse moxy, so we have to provide the camel feature definitions manually
+    -->
+    <feature name='wrapper-camel' version='${camelVersion}' resolver='(obr)' start-level='50'>
+      <feature version='${camelVersion}'>wrapper-camel-core</feature>
+      <feature version='${camelVersion}'>wrapper-camel-spring</feature>
+      <feature version='${camelVersion}'>wrapper-camel-blueprint</feature>
+    </feature>
+    <feature name='wrapper-camel-core' version='${camelVersion}' resolver='(obr)' start-level='50'>
+      <feature version='${eclipselinkVersion}'>jaxb</feature>
+      <bundle>mvn:org.apache.camel/camel-core/${camelVersion}</bundle>
+      <bundle>mvn:org.apache.camel.karaf/camel-karaf-commands/${camelVersion}</bundle>
+    </feature>
+    <feature name='wrapper-camel-blueprint' version='${camelVersion}' resolver='(obr)' start-level='50'>
+      <feature version='${camelVersion}'>wrapper-camel-core</feature>
+      <bundle>mvn:org.apache.camel/camel-blueprint/${camelVersion}</bundle>
+    </feature>
+    <feature name='wrapper-camel-http' version='${camelVersion}' resolver='(obr)' start-level='50'>
+      <feature version='${camelVersion}'>wrapper-camel-core</feature>
+      <bundle dependency='true'>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.commons-httpclient/3.1_7</bundle>
+      <bundle dependency='true'>mvn:commons-codec/commons-codec/1.9</bundle>
+      <bundle dependency='true'>mvn:org.apache.geronimo.specs/geronimo-servlet_3.0_spec/1.0</bundle>
+      <bundle>mvn:org.apache.camel/camel-http/${camelVersion}</bundle>
+    </feature>
+    <feature name='wrapper-camel-jaxb' version='${camelVersion}' resolver='(obr)' start-level='50'>
+      <feature version='${camelVersion}'>wrapper-camel-core</feature>
+      <bundle>mvn:org.apache.camel/camel-jaxb/${camelVersion}</bundle>
+    </feature>
+    <feature name='wrapper-camel-spring' version='${camelVersion}' resolver='(obr)' start-level='50'>
+      <bundle dependency='true'>mvn:org.apache.geronimo.specs/geronimo-jta_1.1_spec/1.1.1</bundle>
+      <feature version='[3.2,4)'>spring</feature>
+      <feature version='[1.2,2)'>spring-dm</feature>
+      <feature version='[3.2,4)'>spring-tx</feature>
+      <feature version='${camelVersion}'>wrapper-camel-core</feature>
+      <bundle>mvn:org.apache.camel/camel-spring/${camelVersion}</bundle>
+    </feature>
+    <feature name='wrapper-camel-jms' version='${camelVersion}' resolver='(obr)' start-level='50'>
+      <feature version='[3.2,4)'>spring</feature>
+      <bundle dependency='true'>mvn:org.apache.geronimo.specs/geronimo-jta_1.1_spec/1.1.1</bundle>
+      <bundle dependency='true'>mvn:commons-pool/commons-pool/1.6</bundle>
+      <bundle dependency='true'>mvn:org.apache.geronimo.specs/geronimo-jms_1.1_spec/1.1.1</bundle>
+      <feature version='[3.2,4)'>spring-jms</feature>
+      <feature version='${camelVersion}'>wrapper-camel-core</feature>
+      <bundle>mvn:org.apache.camel/camel-jms/${camelVersion}</bundle>
+    </feature>
 
-    <!-- Apache ActiveMQ features -->
-    <repository>mvn:org.apache.activemq/activemq-karaf/${activemqVersion}/xml/features</repository>
-
+    <!-- Apache ActiveMQ features Wrapper
+      We cannot use the original ones because they pull in apache service mix jaxb and we need eclipse moxy.
+      So we have to provide the activemq feature definitions manually
+    -->
+    <feature name="wrapper-activemq" description="ActiveMQ broker libraries" version="${activemqVersion}" resolver="(obr)" start-level="50">
+      <feature>http</feature>
+      <feature version="${activemqVersion}">wrapper-activemq-client</feature>
+      <bundle>mvn:org.apache.activemq/activemq-karaf/${activemqVersion}</bundle>
+      <bundle dependency="true">mvn:org.apache.xbean/xbean-spring/3.16</bundle>
+      <bundle dependency="true">mvn:commons-collections/commons-collections/3.2.1</bundle>
+      <bundle dependency='true'>mvn:commons-lang/commons-lang/2.6</bundle>
+      <bundle dependency="true">mvn:commons-codec/commons-codec/1.4</bundle>
+      <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.velocity/1.7_6</bundle>
+      <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.jasypt/1.9.1_1</bundle>
+      <bundle dependency="true">mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.stax-api-1.0/1.9.0</bundle>
+      <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.xpp3/1.1.4c_5</bundle>
+      <bundle dependency="true">mvn:joda-time/joda-time/1.6.2</bundle>
+      <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.xstream/1.4.7_1</bundle>
+      <bundle dependency="true">mvn:org.apache.aries.transaction/org.apache.aries.transaction.manager/1.0.0</bundle>
+      <bundle dependency="true">mvn:org.apache.geronimo.specs/geronimo-j2ee-connector_1.5_spec/2.0.0</bundle>
+      <bundle dependency="true">mvn:org.apache.aries/org.apache.aries.util/1.0.0</bundle>
+      <bundle dependency="true">mvn:org.apache.activemq/activeio-core/3.1.4</bundle>
+      <bundle dependency="true">mvn:org.codehaus.jettison/jettison/1.3.5</bundle>
+      <bundle dependency="true">mvn:org.codehaus.jackson/jackson-core-asl/1.9.12</bundle>
+      <bundle dependency="true">mvn:org.codehaus.jackson/jackson-mapper-asl/1.9.12</bundle>
+      <bundle dependency="true">mvn:org.scala-lang/scala-library/2.11.0</bundle>
+    </feature>
+    <feature name="wrapper-activemq-client" description="ActiveMQ client libraries" version="${activemqVersion}" resolver="(obr)" start-level="50">
+      <feature version="[3.1,4)">spring</feature>
+      <feature>jaxb</feature>
+      <bundle dependency="true">mvn:org.apache.geronimo.specs/geronimo-annotation_1.0_spec/1.1.1</bundle>
+      <bundle dependency="true">mvn:org.apache.geronimo.specs/geronimo-jta_1.1_spec/1.1.1</bundle>
+      <bundle dependency="true">mvn:org.apache.geronimo.specs/geronimo-jms_1.1_spec/1.1.1</bundle>
+      <bundle dependency="true">mvn:org.apache.geronimo.specs/geronimo-j2ee-management_1.1_spec/1.0.1</bundle>
+      <bundle dependency="false">mvn:commons-pool/commons-pool/1.6</bundle>
+      <bundle dependency="false">mvn:commons-net/commons-net/3.3</bundle>
+      <bundle dependency='true'>mvn:org.apache.zookeeper/zookeeper/3.4.5</bundle>
+      <bundle dependency="false">mvn:org.apache.xbean/xbean-spring/3.16</bundle>
+      <bundle>mvn:org.apache.activemq/activemq-osgi/${activemqVersion}</bundle>
+    </feature>
+    <feature name="wrapper-activemq-camel" version="${activemqVersion}" resolver="(obr)" start-level="50">
+      <feature version="${activemqVersion}">wrapper-activemq-client</feature>
+      <bundle>mvn:org.apache.activemq/activemq-camel/${activemqVersion}</bundle>
+      <feature version="[2.12,3)">wrapper-camel-jms</feature>
+      <feature version="[2.12,3)">wrapper-camel</feature>
+    </feature>
 
     <!-- ActiveMQ service features -->
 
@@ -17,7 +103,7 @@
 
     <feature name="opennms-activemq-dispatcher" description="OpenNMS :: Features :: ActiveMQ :: Dispatcher Broker" version="${project.version}">
       <feature>opennms-activemq-dispatcher-config</feature>
-      <feature>activemq</feature>
+      <feature>wrapper-activemq</feature>
     </feature>
 
     <!-- This broker configuration will configure a local ActiveMQ broker to process messages on the OpenNMS machine -->
@@ -29,24 +115,24 @@
 
     <feature name="opennms-activemq" description="OpenNMS :: Features :: ActiveMQ :: Broker" version="${project.version}">
       <feature>opennms-activemq-config</feature>
-      <feature>activemq</feature>
+      <feature>wrapper-activemq</feature>
     </feature>
 
     <feature name="opennms-activemq-event-forwarder" description="OpenNMS :: Features :: ActiveMQ :: Event Forwarder" version="${project.version}">
-      <feature>camel-core</feature>
-      <feature>camel-blueprint</feature>
-      <feature>camel-http</feature>
-      <feature>activemq-camel</feature>
+      <feature>wrapper-camel-core</feature>
+      <feature>wrapper-camel-blueprint</feature>
+      <feature>wrapper-camel-http</feature>
+      <feature>wrapper-activemq-camel</feature>
       <feature>opennms-activemq-dispatcher</feature>
       <bundle dependency="true">mvn:org.opennms.core/org.opennms.core.camel/${project.version}</bundle>
       <bundle>mvn:org.opennms.features.activemq/org.opennms.features.activemq.event-forwarder/${project.version}</bundle>
     </feature>
 
     <feature name="opennms-activemq-event-receiver" description="OpenNMS :: Features :: ActiveMQ :: Event Receiver" version="${project.version}">
-      <feature>camel-core</feature>
-      <feature>camel-blueprint</feature>
-      <feature>camel-http</feature>
-      <feature>activemq-camel</feature>
+      <feature>wrapper-camel-core</feature>
+      <feature>wrapper-camel-blueprint</feature>
+      <feature>wrapper-camel-http</feature>
+      <feature>wrapper-activemq-camel</feature>
       <feature>opennms-activemq</feature>
       <bundle dependency="true">mvn:org.opennms.core/org.opennms.core.camel/${project.version}</bundle>
       <bundle>mvn:org.opennms.features.activemq/org.opennms.features.activemq.event-receiver/${project.version}</bundle>

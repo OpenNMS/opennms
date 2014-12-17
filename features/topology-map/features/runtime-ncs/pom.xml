@@ -27,9 +27,9 @@
             <repository>mvn:${project.groupId}/opennms-topology-runtime-base/${project.version}/xml/features</repository>
           </repositories>
           <features>
-            <feature>camel-blueprint</feature>
-            <feature>camel-core</feature>
-            <feature>camel-http</feature>
+            <feature>wrapper-camel-blueprint</feature>
+            <feature>wrapper-camel-core</feature>
+            <feature>wrapper-camel-http</feature>
             <feature>opennms-topology-runtime-base</feature>
           </features>
         </configuration>
