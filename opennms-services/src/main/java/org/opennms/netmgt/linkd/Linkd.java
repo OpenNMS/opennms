@@ -34,12 +34,11 @@ import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.TreeSet;
 
 import org.opennms.core.spring.BeanUtils;
@@ -101,7 +100,7 @@ public class Linkd extends AbstractServiceDaemon {
      */
     private List<LinkableNode> m_nodes;
 
-    private Map<String, Map<String, List<AtInterface>>> m_macToAtinterface = new HashMap<String, Map<String, List<AtInterface>>>();
+    private Map<String, Map<String, List<AtInterface>>> m_macToAtinterface = new TreeMap<String, Map<String, List<AtInterface>>>();
 
     /**
      * the list of {@link java.net.InetAddress} for which new suspect event is
@@ -860,7 +859,7 @@ public class Linkd extends AbstractServiceDaemon {
         synchronized (m_macToAtinterface) {
             if (!m_macToAtinterface.containsKey(packageName)) {
                 LOG.debug("addAtInterface: creating map for package {}.",packageName);
-                m_macToAtinterface.put(packageName, new HashMap<String, List<AtInterface>>());
+                m_macToAtinterface.put(packageName, new TreeMap<String, List<AtInterface>>());
             }
 
             final List<AtInterface> atis;
@@ -912,7 +911,7 @@ public class Linkd extends AbstractServiceDaemon {
 
 
     public Set<String> getActivePackages() {
-        Set<String> packages = new HashSet<String>();
+        Set<String> packages = new TreeSet<String>();
         synchronized (m_nodes) {
             for (LinkableNode node: m_nodes)
                 packages.add(node.getPackageName());

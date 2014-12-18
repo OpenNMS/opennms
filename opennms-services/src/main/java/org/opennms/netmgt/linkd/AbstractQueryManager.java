@@ -34,9 +34,9 @@ import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.api.AtInterfaceDao;
@@ -291,7 +291,7 @@ public abstract class AbstractQueryManager implements QueryManager {
         }
 
         node.setIsisSysId(isisSysId);
-        Map<Integer, Integer> isisCircIndexIfIndexMap = new HashMap<Integer, Integer>();
+        Map<Integer, Integer> isisCircIndexIfIndexMap = new TreeMap<Integer, Integer>();
         for (final IsisCircTableEntry circ : snmpcoll.getIsisCircTable()) {
             isisCircIndexIfIndexMap.put(circ.getIsisCircIndex(),
                                         circ.getIsisCircIfIndex());
@@ -437,7 +437,7 @@ public abstract class AbstractQueryManager implements QueryManager {
 
     private Map<Integer, LldpLocTableEntry> getLocalPortNumberToLocalTableEntryMap(
             SnmpCollection snmpcoll) {
-        Map<Integer, LldpLocTableEntry> localPortNumberToLocTableEntryMap = new HashMap<Integer, LldpLocTableEntry>();
+        Map<Integer, LldpLocTableEntry> localPortNumberToLocTableEntryMap = new TreeMap<Integer, LldpLocTableEntry>();
         for (final LldpLocTableEntry lldpLocTableEntry: snmpcoll.getLldpLocTable()) {
             localPortNumberToLocTableEntryMap.put(lldpLocTableEntry.getLldpLocPortNum(), lldpLocTableEntry);
         }
@@ -554,7 +554,7 @@ public abstract class AbstractQueryManager implements QueryManager {
                 LOG.debug("processCdp: Zero CDP cache table entries for {}/{}", node.getNodeId(), str(node.getSnmpPrimaryIpAddr()));
             }
         }
-        Map<Integer, String> cdpifindextoIfnameMap = new HashMap<Integer, String>();
+        Map<Integer, String> cdpifindextoIfnameMap = new TreeMap<Integer, String>();
         if (snmpcoll.hasCdpInterfaceTable()) {
         for (final CdpInterfaceTableEntry cdpEntry: snmpcoll.getCdpInterfaceTable()) {
             LOG.debug("processCdp:adding interface table entries ifindex/ifname {}/{} for node {}", cdpEntry.getCdpInterfaceIfIndex(), cdpEntry.getCdpInterfaceName(), node.getNodeId());
@@ -858,9 +858,9 @@ public abstract class AbstractQueryManager implements QueryManager {
 	private void processDot1dBasePortAndStpPortTables(final OnmsNode onmsNode,
 			final LinkableNode node, final OnmsVlan vlan,
 			final SnmpVlanCollection snmpVlanColl, final Date scanTime) {
-		Map<Integer, OnmsStpInterface> stpinterfaces = new HashMap<Integer, OnmsStpInterface>(snmpVlanColl.getDot1dBasePortTable().size());        
+		Map<Integer, OnmsStpInterface> stpinterfaces = new TreeMap<Integer, OnmsStpInterface>();
 		stpinterfaces = processDot1DBasePortTable(onmsNode,node, scanTime, vlan, snmpVlanColl,stpinterfaces);
-		    
+
 		if (snmpVlanColl.hasDot1dStpPortTable()) {
 		    stpinterfaces = processDot1StpPortTable(node, scanTime, vlan, snmpVlanColl, stpinterfaces);
 		}

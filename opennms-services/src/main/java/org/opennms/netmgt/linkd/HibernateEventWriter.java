@@ -35,9 +35,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import org.opennms.core.criteria.Alias;
 import org.opennms.core.criteria.Alias.JoinType;
@@ -58,10 +58,6 @@ import org.opennms.netmgt.dao.support.UpsertTemplate;
 import org.opennms.netmgt.model.DataLinkInterface;
 import org.opennms.netmgt.model.DataLinkInterface.DiscoveryProtocol;
 import org.opennms.netmgt.model.OnmsArpInterface.StatusType;
-import org.opennms.netmgt.model.topology.LinkableNode;
-import org.opennms.netmgt.model.topology.LinkableSnmpNode;
-import org.opennms.netmgt.model.topology.NodeToNodeLink;
-import org.opennms.netmgt.model.topology.RouterInterface;
 import org.opennms.netmgt.model.OnmsAtInterface;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsIpRouteInterface;
@@ -71,6 +67,10 @@ import org.opennms.netmgt.model.OnmsStpInterface;
 import org.opennms.netmgt.model.OnmsStpNode;
 import org.opennms.netmgt.model.OnmsVlan;
 import org.opennms.netmgt.model.PrimaryType;
+import org.opennms.netmgt.model.topology.LinkableNode;
+import org.opennms.netmgt.model.topology.LinkableSnmpNode;
+import org.opennms.netmgt.model.topology.NodeToNodeLink;
+import org.opennms.netmgt.model.topology.RouterInterface;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -442,7 +442,7 @@ public class HibernateEventWriter extends AbstractQueryManager implements Initia
         builder.alias("node", "node");
         builder.eq("node.id", nodeId);
 
-        final Map<Integer,String> addrMap = new HashMap<Integer, String>();
+        final Map<Integer,String> addrMap = new TreeMap<Integer, String>();
 
         for (final OnmsSnmpInterface snmpInterface : m_snmpInterfaceDao.findMatching(builder.toCriteria())) {
         	Integer ifindex = snmpInterface.getIfIndex();

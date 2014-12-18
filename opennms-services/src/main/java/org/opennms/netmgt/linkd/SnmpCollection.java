@@ -34,9 +34,9 @@ import java.lang.reflect.Constructor;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import org.opennms.netmgt.linkd.scheduler.ReadyRunnable;
 import org.opennms.netmgt.linkd.scheduler.Scheduler;
@@ -196,7 +196,7 @@ public final class SnmpCollection implements ReadyRunnable {
     /**
      * The list of VLAN SNMP collection object
      */
-    public final Map<OnmsVlan, SnmpVlanCollection> m_snmpVlanCollection = new HashMap<OnmsVlan, SnmpVlanCollection>();
+    public final Map<OnmsVlan, SnmpVlanCollection> m_snmpVlanCollection = new TreeMap<OnmsVlan, SnmpVlanCollection>();
 
     /**
      * The scheduler object
