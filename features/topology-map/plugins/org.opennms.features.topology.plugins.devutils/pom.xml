@@ -53,6 +53,12 @@
       <version>${project.version}</version>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>jaxb-dependencies</artifactId>
+      <scope>provided</scope>
+      <type>pom</type>
+    </dependency>
 
     <dependency>
       <groupId>junit</groupId>
