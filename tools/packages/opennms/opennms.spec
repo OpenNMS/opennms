@@ -65,7 +65,7 @@ Requires(pre):		postgresql-server  >= 8.4
 Requires:		postgresql-server  >= 8.4
 
 # don't worry about buildrequires, the shell script will bomb quick  =)
-BuildRequires:		%{jdk}
+#BuildRequires:		%{jdk}
 
 Prefix: %{instprefix}
 Prefix: %{sharedir}
