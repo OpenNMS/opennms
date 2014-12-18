@@ -210,23 +210,29 @@ public class FasterFilesystemForeignSourceRepository extends FilesystemForeignSo
     }
 
     private static FileReloadCallback<ForeignSource> fsLoader() {
-    	return new FileReloadCallback<ForeignSource>() {
-
-			@Override
-			public ForeignSource reload(ForeignSource object, Resource resource) throws IOException {
-				return RequisitionFileUtils.getForeignSourceFromFile(resource.getFile());
-			}
-		};
+        return new FileReloadCallback<ForeignSource>() {
+            @Override
+            public ForeignSource reload(ForeignSource object, Resource resource) throws IOException {
+                if (resource == null || resource.getFile() == null) {
+                    return object;
+                } else {
+                    return RequisitionFileUtils.getForeignSourceFromFile(resource.getFile());
+                }
+            }
+        };
     };
-    
-	private static FileReloadCallback<Requisition> reqLoader() {
-		return new FileReloadCallback<Requisition>() {
 
-			@Override
-			public Requisition reload(Requisition object, Resource resource) throws IOException {
-				return RequisitionFileUtils.getRequisitionFromFile(resource.getFile());
-			}
-		};
-	}
+    private static FileReloadCallback<Requisition> reqLoader() {
+        return new FileReloadCallback<Requisition>() {
+            @Override
+            public Requisition reload(Requisition object, Resource resource) throws IOException {
+                if (resource == null || resource.getFile() == null) {
+                    return object;
+                } else {
+                    return RequisitionFileUtils.getRequisitionFromFile(resource.getFile());
+                }
+            }
+        };
+    }
     
 }
