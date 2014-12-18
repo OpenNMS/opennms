@@ -24,7 +24,7 @@
 # Where OpenNMS binaries live
 %{!?bindir:%define bindir %instprefix/bin}
 
-%{!?jdk:%define jdk jdk >= 2000:1.8}
+%{!?jdk:%define jdk java-1.8.0-openjdk}
 
 %{!?extrainfo:%define extrainfo }
 %{!?extrainfo2:%define extrainfo2 }

@@ -1,7 +1,7 @@
 %{!?version:%define version 1.5.93}
 %{!?releasenumber:%define releasenumber 0}
 %{!?instprefix:%define instprefix /opt/opennms}
-%{!?jdk:%define jdk jdk >= 1:1.5}
+%{!?jdk:%define jdk java-1.8.0-openjdk}
 
 %{!?extrainfo:%define extrainfo %{nil}}
 %{!?extrainfo2:%define extrainfo2 %{nil}}
