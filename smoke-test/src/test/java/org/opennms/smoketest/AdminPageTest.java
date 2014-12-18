@@ -74,7 +74,7 @@ public class AdminPageTest extends OpenNMSSeleniumTestCase {
 
                 // Node Provisioning
                 new String[] { "Add Interface for Scanning", "//h3[text()='Enter IP Address']" },
-                new String[] { "Manage Provisioning Requisitions", "//h3//span[text()='Default Foreign Source Definition']" },
+                new String[] { "Manage Provisioning Requisitions", "//h3[text()='Default Foreign Source Definition']" },
                 new String[] { "Import and Export Asset Information", "//h3[text()='Import and Export Assets']" },
                 new String[] { "Manage Surveillance Categories", "//h3[text()='Surveillance Categories']" },
                 new String[] { "Delete Nodes", "//h3[text()='Delete Nodes']" },
