@@ -26,7 +26,7 @@ BuildRoot:     %{_tmppath}/%{name}-%{version}-root
 
 Requires(pre): opennms-core >= %{version}-%{release}
 Requires:      opennms-core >= %{version}-%{release}
-BuildRequires: %{jdk}
+#BuildRequires: %{jdk}
 
 Prefix:        %{instprefix}
 
