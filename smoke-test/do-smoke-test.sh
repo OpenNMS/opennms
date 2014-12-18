@@ -148,7 +148,7 @@ start_opennms() {
 	banner "Starting OpenNMS"
 
 	do_log "opennms start"
-	/sbin/service opennms start || die "Unable to start OpenNMS."
+	/sbin/service opennms restart || die "Unable to start OpenNMS."
 #	COUNT=0
 #	do_log "Waiting for OpenNMS to start..."
 #	while true; do
