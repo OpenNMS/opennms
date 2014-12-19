@@ -164,9 +164,30 @@
             </li>
           </c:if>
         </c:forEach>
-        <c:if test="${isAdmin}">
-          <li><a href="<%= baseHref %>admin/index.jsp">Admin</a></li>
-        </c:if>
+        <li>
+          <div class="nav-dropdown">
+            <c:choose>
+              <c:when test="${not empty pageContext.request.remoteUser}">
+                <a href="<%= baseHref =>admin/index.jsp" class="nav-dropdown">${pageContext.request.remoteUser} <span class="nav-item">▼</span></a>
+              </c:when>
+              <c:otherwise>
+                &hellip;
+              </c:otherwise>
+            </c:choose>
+            <ul>
+              <li><a name="nav-admin-notice-status" href="#" style="white-space: nowrap">Notices: <b id="notification<%= noticeStatus %>"><%= noticeStatus %></b></a></li>
+              <c:if test="${isAdmin}">
+                <li><a name="nav-admin-admin" href="<%= baseHref %>admin/index.jsp" style="white-space: nowrap">Configure OpenNMS</a></li>
+                <li><a name="nav-admin-quick-add" href="<%= baseHref %>admin/node/add.htm" style="white-space: nowrap">Quick-Add Node</a></li>
+              </c:if>
+              <li><a name="nav-admin-support" href="<%= baseHref %>support/index.htm">Help/Support</a></li>
+              <c:if test="${not empty pageContext.request.remoteUser}">
+                <li><a name="nav-admin-self-service" href="<%= baseHref %>account/selfService/index.jsp">Change Password</a>
+                <li><a name="nav-admin-logout" href="<%= baseHref %>j_spring_security_logout" style="white-space: nowrap">Log Out</a></li>
+              </c:if>
+            </ul>
+          </div>
+        </li>
       </ul>
     </div>
   </c:otherwise>
