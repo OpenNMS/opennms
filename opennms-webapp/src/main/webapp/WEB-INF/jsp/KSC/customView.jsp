@@ -96,7 +96,7 @@
           <c:if test="${!empty report}">
             <input type="hidden" name="<%=FormProcViewController.Parameters.report%>" value="${report}">
           </c:if>
-          <table class="table table-condensed" align="center">
+          <table id="graph-results" class="table table-condensed" align="center">
             <c:set var="graphNum" value="0"/>
             <c:set var="showFootnote1" value="false"/>
             <%-- Loop over each row in the table --%>
@@ -170,7 +170,7 @@
                         <c:param name="zoom" value="true"/>
                       </c:url>
                       <a href="${zoomUrl}">
-                        <img src="${graphUrl}" alt="Resource graph: ${resultSet.prefabGraph.title} (click to zoom)"/>
+                        <img src="#" data-imgsrc="${graphUrl}" alt="Resource graph: ${resultSet.prefabGraph.title} (click to zoom)"/>
                       </a>
                     </td>
                     <c:set var="graphNum" value="${graphNum + 1}"/>
@@ -238,6 +238,23 @@
     </div> <!-- panel -->
   </c:otherwise>
 </c:choose>
+
+<%-- A script to auto-resize the images --%>
+<script type="text/javascript">
+var e = $('#graph-results');
+var imgs = e.find('img');
+for (var i=0; i < imgs.length; i++) {
+  var img = $(imgs[i]);
+  var container = img.closest('td');
+  var w = Math.round(container.width() * 0.75);
+  var h = Math.round(w * 0.25);
+  var imgsrc = img.data('imgsrc');
+  if (!(imgsrc.indexOf("width=") > -1 || imgsrc.indexOf("height=") > -1)) {
+    imgsrc += "&width=" + w + "&height=" + h;
+  }
+  img.attr('src', imgsrc);
+}
+</script>
 
 <c:if test="${showFootnote1 == true}">
   <jsp:include page="/includes/footnote1.jsp" flush="false" />
