@@ -168,7 +168,7 @@
           <div class="nav-dropdown">
             <c:choose>
               <c:when test="${not empty pageContext.request.remoteUser}">
-                <a href="<%= baseHref =>admin/index.jsp" class="nav-dropdown">${pageContext.request.remoteUser} <span class="nav-item">▼</span></a>
+                <a href="<%= baseHref %>admin/index.jsp" class="nav-dropdown">${pageContext.request.remoteUser} <span class="nav-item">▼</span></a>
               </c:when>
               <c:otherwise>
                 &hellip;
