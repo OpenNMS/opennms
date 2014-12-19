@@ -1296,6 +1296,9 @@
           <name>smoke</name>
         </property>
       </activation>
+      <properties>
+        <build.skip.tarball>true</build.skip.tarball>
+      </properties>
       <modules>
         <module>smoke-test</module>
       </modules>
