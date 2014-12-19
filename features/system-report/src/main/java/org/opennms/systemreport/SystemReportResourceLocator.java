@@ -68,6 +68,9 @@ public class SystemReportResourceLocator implements ResourceLocator {
         final PumpStreamHandler streamHandler = new PumpStreamHandler(output, output);
         executor.setWatchdog(new ExecuteWatchdog(m_maxProcessWait));
         executor.setStreamHandler(streamHandler);
+        if (ignoreExitCode) {
+            executor.setExitValues(null);
+        }
     
         try {
             LogUtils.tracef(this, "executing '%s'", commandString);
