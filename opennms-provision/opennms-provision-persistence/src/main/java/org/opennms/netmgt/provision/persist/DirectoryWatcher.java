@@ -104,7 +104,7 @@ public class DirectoryWatcher<T> implements Runnable, Closeable {
         try {
             stop();
         }
-        catch ( InterruptedException e ) {
+        catch (InterruptedException e) {
             LOG.warn( "request to stop failed, guess its time to stop being polite!" );
         }
     }
@@ -127,7 +127,7 @@ public class DirectoryWatcher<T> implements Runnable, Closeable {
             LOG.debug("registering create watcher on " + m_path.toAbsolutePath().toString());
             m_path.register( watcher, StandardWatchEventKinds.ENTRY_MODIFY);
             LOG.debug( "watcher registration complete for " + m_path.toAbsolutePath().toString() );
-            synchronized ( this ) {
+            synchronized (this) {
                 this.notifyAll();
             }
             for ( ;; ) {
