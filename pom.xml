@@ -1142,7 +1142,7 @@
     <!-- ALWAYS change aspectj to match the version referenced in the spring poms -->
     <aspectjVersion>1.7.4</aspectjVersion>
     <springWebFlowVersion>2.3.2.RELEASE</springWebFlowVersion>
-    <springSecurityVersion>3.2.5.RELEASE</springSecurityVersion>
+    <springSecurityVersion>3.1.7.RELEASE</springSecurityVersion>
     <springLdapVersion>${springSecurityVersion}</springLdapVersion>
 
     <!-- moved here from topology features -->
