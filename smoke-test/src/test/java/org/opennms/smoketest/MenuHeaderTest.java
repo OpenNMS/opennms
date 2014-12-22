@@ -89,6 +89,7 @@ public class MenuHeaderTest extends OpenNMSSeleniumTestCase {
 
         frontPage();
         clickMenuItem("Maps", "Distributed", "RemotePollerMap/index.jsp");
+        m_driver.switchTo().frame("app");
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("gwt-uid-1")));
 
         frontPage();
