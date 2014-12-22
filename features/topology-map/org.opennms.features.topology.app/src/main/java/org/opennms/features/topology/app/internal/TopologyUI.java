@@ -163,7 +163,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
     int m_settingFragment = 0;
     private SearchBox m_searchBox;
 
-    private String getHeader(HttpServletRequest request) {
+    private String getHeader(HttpServletRequest request) throws Exception {
         if(m_headerProvider == null) {
             return "";
         } else {

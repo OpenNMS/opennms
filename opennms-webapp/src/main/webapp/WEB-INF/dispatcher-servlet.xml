@@ -621,7 +621,6 @@
     </bean>
 
     <bean id="headerProvider" name="/navBar.htm" class="org.opennms.web.controller.NavBarController">
-    	<property name="viewName" value="navBar" />
         <property name="navBarItems" ref="navBarEntries" />
     </bean>
     

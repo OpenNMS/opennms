@@ -153,43 +153,10 @@
     <!-- No visual header is being displayed -->
   </c:when>
   <c:otherwise>
-    <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
-        <!-- Brand and toggle get grouped for better mobile display -->
-        <div class="navbar-header">
-          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-          <a class="navbar-brand" href="<%= baseHref %>index.jsp">
-            <img id="logo" src="<%= baseHref %>images/logo-bootstrap.svg" alt="OpenNMS" onerror="this.src='<%= baseHref %>images/logo-bootstrap.png'" />
-          </a>
-        </div>
-
-        <div id="headerinfo" style="display: none" class="nav navbar-nav navbar-right navbar-info">
-          <jsp:useBean id="currentDate" class="java.util.Date" />
-          <fmt:formatDate value="${currentDate}" type="date" dateStyle="medium"/>&nbsp;<fmt:formatDate value="${currentDate}" type="time" pattern="HH:mm z"/>
-        </div>
-
-        <div style="margin-right: 15px" id="navbar" class="navbar-collapse collapse">
-          <jsp:include page="/navBar.htm" flush="false">
-            <jsp:param name="bootstrap" value="true" />
-          </jsp:include>
-        </div>
-    </nav>
+    <jsp:include page="/navBar.htm" flush="false" />
   </c:otherwise>
 </c:choose>
 <!-- End bootstrap header -->
-
-<%--
-    Added javascript snippet to hide the header if not displayed in a toplevel window (iFrame).
---%>
-<script type='text/javascript'>
-    if (window.location != window.parent.location) {
-        document.getElementById('header').style.display = 'none';
-    }
-</script>
 
 <!-- Body -->
 <%-- This <div> tag is unmatched in this file (its matching tag is in the
