@@ -31,6 +31,7 @@ package org.opennms.features.vaadin.nodemaps.internal;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.URL;
 import java.security.Principal;
 import java.util.Collections;
 import java.util.Enumeration;
@@ -51,15 +52,17 @@ import com.vaadin.server.VaadinRequest;
  * This class creates an {@link HttpServletRequest} object that delegates all calls to
  * a {@link VaadinRequest} instance. This is used so that we can fetch the header HTML
  * from an {@link OnmsHeaderProvider}.
- * 
+ *
  * TODO: Refactor into a common class.
  */
 public class HttpServletRequestVaadinImpl implements HttpServletRequest {
 
     private final VaadinRequest m_request;
+    private URL m_url;
 
-    public HttpServletRequestVaadinImpl(VaadinRequest request) {
+    public HttpServletRequestVaadinImpl(VaadinRequest request, URL url) {
         m_request = request;
+        m_url = url;
     }
 
     @Override
@@ -333,28 +336,19 @@ public class HttpServletRequestVaadinImpl implements HttpServletRequest {
         return null;
     }
 
-    /**
-     * @throws UnsupportedOperationException
-     */
     @Override
     public String getScheme() {
-        throw new UnsupportedOperationException("Unimplemented: " + this.getClass().getName() + ".getScheme()");
+        return m_url.getProtocol();
     }
 
-    /**
-     * @throws UnsupportedOperationException
-     */
     @Override
     public String getServerName() {
-        throw new UnsupportedOperationException("Unimplemented: " + this.getClass().getName() + ".getServerName()");
+        return m_url.getHost();
     }
 
-    /**
-     * @throws UnsupportedOperationException
-     */
     @Override
     public int getServerPort() {
-        throw new UnsupportedOperationException("Unimplemented: " + this.getClass().getName() + ".getServerPort()");
+        return m_url.getPort();
     }
 
     @Override
