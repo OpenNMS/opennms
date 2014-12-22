@@ -46,6 +46,7 @@ public class DistributedMapTest extends OpenNMSSeleniumTestCase {
 
     @Test
     public void testDistributedMap() throws Exception {
+        m_driver.switchTo().frame("app");
         // first 5 checkboxes are checked by default
         for (int i=1; i <= 5; i++) {
             assertTrue("checkbox gwt-uid-" + i + " should be checked.", m_driver.findElement(By.id("gwt-uid-" + i)).isSelected());

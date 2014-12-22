@@ -151,15 +151,6 @@
         <property name="service" ref="surveillanceService"/>
     </bean>
 
-    <!--<bean name="/daemonstatus.htm"
-          class="org.opennms.web.controller.DaemonStatusController">
-      <property name="daemonStatusService" ref="daemonStatusService" />
-      <property name="commandName" value="toModify" />
-      <property name="commandClass"
-                value="org.opennms.web.controller.DaemonStatusBinder" />
-      <property name="successView" value="daemonstatus" />
-    </bean>-->
-
     <bean name="/distributedStatusSummary.htm"
           class="org.opennms.web.controller.DistributedStatusSummaryController">
         <property name="distributedStatusService"
@@ -630,7 +621,6 @@
     </bean>
 
     <bean id="headerProvider" name="/navBar.htm" class="org.opennms.web.controller.NavBarController">
-    	<property name="viewName" value="navBar" />
         <property name="navBarItems" ref="navBarEntries" />
     </bean>
     
@@ -658,20 +648,6 @@
 
     <bean name="/report/database/index.htm"
           class="org.springframework.web.servlet.mvc.UrlFilenameViewController"/>
-
-    <!-- Replaced by ReportListController
-   <bean name="/report/database/batchList.htm"
-           class="org.opennms.web.controller.BatchReportListController">
-       <property name="databaseReportListService" ref="databaseReportListService"/>
-       <property name="pageSize" value="10"/>
-   </bean -->
-
-    <!-- Replaced by ReportListController
-   <bean name="/report/database/onlineList.htm"
-           class="org.opennms.web.controller.OnlineReportListController">
-       <property name="databaseReportListService" ref="databaseReportListService"/>
-       <property name="pageSize" value="10"/>
-   </bean -->
 
     <bean name="/report/database/reportList.htm"
           class="org.opennms.web.controller.ReportListController">

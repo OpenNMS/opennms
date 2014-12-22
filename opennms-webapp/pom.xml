@@ -684,6 +684,11 @@
         <groupId>net.sf.jung</groupId>
         <artifactId>jung-visualization</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.freemarker</groupId>
+      <artifactId>freemarker</artifactId>
+      <version>${freemarkerVersion}</version>
+    </dependency>
 
     <!-- test dependencies -->
     <dependency>

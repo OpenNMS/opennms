@@ -56,20 +56,6 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.sprin
     <property name="foreignSourceRepository" ref="deployedForeignSourceRepository"/>
     <property name="eventProxy" ref="eventProxy"/>
   </bean>
-  <!-- Daemon Status Service beans -->
-  <!--
-  <bean id="mbeanServer" class="org.springframework.jmx.support.MBeanServerFactoryBean">
-    <property name="locateExistingServerIfPossible" value="true"/>
-  </bean>
-
-  <bean id="daemonStatusDao" class="org.opennms.netmgt.dao.jmx.JmxDaemonStatusDao">
-    <property name="mbeanServer" ref="mbeanServer" />
-  </bean>
-  
-  <bean id="daemonStatusService" class="org.opennms.web.svclayer.daemonstatus.support.DefaultDaemonStatusService">
-    <property name="daemonStatusDao" ref="daemonStatusDao" />
-  </bean>
-  -->
   <!-- Category Service Status beans -->
   <bean id="categoryStatusService" class="org.opennms.web.svclayer.catstatus.support.DefaultCategoryStatusService">
     <property name="categoryConfigDao" ref="categoryConfigDao"/>

@@ -28,17 +28,22 @@
 
 package org.opennms.web.navigate;
 
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.google.common.collect.Lists;
+
 public class NavBarModel {
     private final HttpServletRequest m_request;
     private final Map<NavBarEntry, DisplayStatus> m_entries;
+    private final List<Map.Entry<NavBarEntry, DisplayStatus>> m_entryList;
 
     public NavBarModel(final HttpServletRequest request, final Map<NavBarEntry, DisplayStatus> entries) {
         m_request = request;
         m_entries = entries;
+        m_entryList = Lists.newArrayList(m_entries.entrySet());
     }
 
     public HttpServletRequest getRequest() {
@@ -47,5 +52,12 @@ public class NavBarModel {
 
     public Map<NavBarEntry, DisplayStatus> getEntries() {
         return m_entries;
+    }
+
+    /** Allows the Freemarker template by the NavBarController to iterate
+     *  over the map entries.
+     */
+    public List<Map.Entry<NavBarEntry, DisplayStatus>> getEntryList() {
+        return m_entryList;
     }
 }

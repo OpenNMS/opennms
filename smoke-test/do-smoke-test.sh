@@ -91,6 +91,7 @@ reset_opennms() {
 	banner "Resetting OpenNMS Installation"
 
 	do_log "opennms stop"
+	/sbin/service opennms stop
 	ps auxwww | grep opennms_bootstrap | awk '{ print $2 }' | xargs kill -9
 
 	do_log "clean_yum"
@@ -137,17 +138,29 @@ configure_opennms() {
 	popd
 
 	do_log "runjava -s"
-	$OPENNMS_HOME/bin/runjava -s || die "'runjava -s' failed."
+	"$OPENNMS_HOME/bin/runjava" -s || die "'runjava -s' failed."
 
 	do_log "install -dis"
-	$OPENNMS_HOME/bin/install -dis || die "Unable to run OpenNMS install."
+	"$OPENNMS_HOME/bin/install" -dis || die "Unable to run OpenNMS install."
 }
 
 start_opennms() {
 	banner "Starting OpenNMS"
 
+	do_log "find \*.rpmorig -o -name \*.rpmnew"
+	find "$OPENNMS_HOME" -type f -name \*.rpmorig -o -name \*.rpmnew
+
 	do_log "opennms start"
-	/sbin/service opennms start || die "Unable to start OpenNMS."
+	/sbin/service opennms restart
+	RETVAL=$?
+
+	if [ $? -gt 0 ]; then
+		if [ -x /usr/bin/systemctl ]; then
+			/usr/bin/systemctl status opennms.service
+		fi
+		die "OpenNMS failed to start."
+	fi
+
 #	COUNT=0
 #	do_log "Waiting for OpenNMS to start..."
 #	while true; do
@@ -174,6 +187,17 @@ run_tests() {
 	banner "Running Tests"
 
 	local RETVAL=0
+
+	EXTRA_ARGS=""
+#	CHROMEDRIVER="/usr/local/bin/chromedriver"
+#	CHROME="/usr/bin/google-chrome"
+#
+#	if [ -e "$CHROMEDRIVER" ] && [ -e "$CHROME" ]; then
+#		do_log "found Chrome and ChromeDriver, using it instead"
+#		EXTRA_ARGS="-Dorg.opennms.smoketest.webdriver.class=org.openqa.selenium.chrome.ChromeDriver -Dwebdriver.chrome.driver=$CHROMEDRIVER"
+#	else
+#		do_log "no Chrome found, using defaults"
+#	fi
 
 	EXTRA_ARGS=""
 #	CHROMEDRIVER="/usr/local/bin/chromedriver"
