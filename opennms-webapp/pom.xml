@@ -22,7 +22,7 @@
       <plugin>
         <groupId>org.jasig.maven</groupId>
         <artifactId>sass-maven-plugin</artifactId>
-        <version>1.1.2-ONMS-20131018-1</version>
+        <version>${sass.maven.plugin.version}</version>
         <executions>
           <execution>
             <goals><goal>update-stylesheets</goal></goals>
@@ -236,7 +236,7 @@
     							<pluginExecutionFilter>
     								<groupId>org.jasig.maven</groupId>
     								<artifactId>sass-maven-plugin</artifactId>
-    								<versionRange>[1.1.2-ONMS-20131018-1,)</versionRange>
+    								<versionRange>[${sass.maven.plugin.version},)</versionRange>
     								<goals><goal>update-stylesheets</goal></goals>
     							</pluginExecutionFilter>
     							<action><ignore/></action>

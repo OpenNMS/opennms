@@ -427,8 +427,10 @@ a.list-group-item.active:focus {
 	text-shadow: rgba(0,0,0,0.5) 1px 1px 1px;
 }
 
+$header-background-image: url("../images/headerbg.png") !default;
+
 .navbar-inverse, .navbar-collapse {
-	background-image: url(../images/headerbg.png);
+	background-image: $header-background-image;
 	background-repeat: repeat-x;
 }
 
