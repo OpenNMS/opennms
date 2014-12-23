@@ -4,6 +4,13 @@
 $icon-font-path: "bootstrap/dist/fonts/" !default;
 @import "../../../../../../../../../opennms-webapp/src/main/scss/bootstrap.scss";
 
+/* Reset these to their default value - the Vaadin elements do no display properly otherwise */
+* {
+  -webkit-box-sizing: content-box;
+  -moz-box-sizing: content-box;
+  box-sizing: content-box;
+}
+
 $header-background-image: url("images/headerbg.png") !default;
 @import "../../../../../../../../../opennms-webapp/src/main/scss/opennms-theme.scss";
 
