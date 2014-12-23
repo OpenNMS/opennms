@@ -99,7 +99,7 @@ public class JaxbResourceConfigurationTest {
         config.removePackage(config.getPackages().get(0));
         assertEquals("vmware4", config.getPackages().get(0).getName());
         assertEquals(4, config.getPackages().size());
-        collectd.save(config);
+        collectd.put(config);
 
         config = collectd.get();
         assertNotNull(config);

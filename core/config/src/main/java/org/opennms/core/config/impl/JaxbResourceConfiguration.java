@@ -47,15 +47,16 @@ public class JaxbResourceConfiguration<T> implements ConfigurationResource<T> {
         m_class = clazz;
         m_resource = resource;
     }
-    
+
     protected Class<T> getClassType() {
         return m_class;
     }
-    
+
     protected Resource getResource() {
         return m_resource;
     }
 
+    @Override
     public T get() throws ConfigurationResourceException {
         final Class<T> classType = getClassType();
         final Resource resource = getResource();
@@ -65,8 +66,9 @@ public class JaxbResourceConfiguration<T> implements ConfigurationResource<T> {
             throw new ConfigurationResourceException("Failed to unmarshal " + resource + " to class " + classType, e);
         }
     }
-    
-    public void save(final T config) throws ConfigurationResourceException {
+
+    @Override
+    public void put(final T config) throws ConfigurationResourceException {
         final Resource r = getResource();
         if (!(r instanceof WritableResource)) {
             throw new ConfigurationResourceException("Resource " + r + " is not writable!");

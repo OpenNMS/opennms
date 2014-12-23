@@ -28,7 +28,25 @@
 
 package org.opennms.core.config.api;
 
+/**
+ * A generic API for accessing configuration resources.
+ * 
+ * @param <T> The type of resource to be accessed.
+ */
 public interface ConfigurationResource<T> {
+    /**
+     * Get the configuration resource.
+     * 
+     * @return the resource
+     * @throws ConfigurationResourceException
+     */
     public T get() throws ConfigurationResourceException;
-    public void save(T config) throws ConfigurationResourceException;
+
+    /**
+     * Replace the stored version of the resource with the provided version.
+     * 
+     * @param config The new copy of the resource.
+     * @throws ConfigurationResourceException
+     */
+    public void put(T config) throws ConfigurationResourceException;
 }
