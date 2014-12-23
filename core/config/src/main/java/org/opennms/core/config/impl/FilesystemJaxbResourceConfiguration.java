@@ -29,63 +29,51 @@
 package org.opennms.core.config.impl;
 
 import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 
-import org.apache.commons.io.IOUtils;
 import org.opennms.core.config.api.ConfigurationResourceException;
 import org.opennms.core.xml.JaxbUtils;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.WritableResource;
 
-public class JaxbResourceConfiguration<T> extends AbstractCachingConfigurationResource<T> {
+import com.google.common.base.Charsets;
+
+public class FilesystemJaxbResourceConfiguration<T> extends AbstractPathCachingConfigurationResource<T> {
     private Class<T> m_class;
-    private Resource m_resource;
 
-    public JaxbResourceConfiguration(final Class<T> clazz, final Resource resource) {
+    public FilesystemJaxbResourceConfiguration(final Class<T> clazz, final Path path) {
+        super(path);
         m_class = clazz;
-        m_resource = resource;
     }
 
     protected Class<T> getClassType() {
         return m_class;
     }
 
-    protected Resource getResource() {
-        return m_resource;
-    }
-
     @Override
     public T load() throws ConfigurationResourceException {
         final Class<T> classType = getClassType();
-        final Resource resource = getResource();
+        final Path path = getPath();
         try {
-            return JaxbUtils.unmarshal(classType, resource);
+            return JaxbUtils.unmarshal(classType, path.toFile());
         } catch (final Exception e) {
-            throw new ConfigurationResourceException("Failed to unmarshal " + resource + " to class " + classType, e);
+            throw new ConfigurationResourceException("Failed to unmarshal " + path + " to class " + classType, e);
         }
     }
 
     @Override
     public void save(final T config) throws ConfigurationResourceException {
-        final Resource r = getResource();
-        if (!(r instanceof WritableResource)) {
-            throw new ConfigurationResourceException("Resource " + r + " is not writable!");
+        final Path p = getPath();
+        if (!(Files.isWritable(p))) {
+            throw new ConfigurationResourceException("Resource " + p + " is not writable!");
         }
-        final WritableResource resource = (WritableResource)r;
-        OutputStream os = null;
-        OutputStreamWriter osw = null;
         try {
-            os = resource.getOutputStream();
-            osw = new OutputStreamWriter(os);
-            JaxbUtils.marshal(config, osw);
+            final String output = JaxbUtils.marshal(config);
+            Files.write(p, output.getBytes(Charsets.UTF_8), StandardOpenOption.TRUNCATE_EXISTING);
         } catch (final IOException e) {
-            throw new ConfigurationResourceException("Failed to write to " + r, e);
+            throw new ConfigurationResourceException("Failed to write to " + p, e);
         } catch (final Exception e) {
-            throw new ConfigurationResourceException("Failed to marshal configuration " + getClassType() + " to resource " + r, e);
-        } finally {
-            IOUtils.closeQuietly(osw);
-            IOUtils.closeQuietly(os);
+            throw new ConfigurationResourceException("Failed to marshal configuration " + getClassType() + " to resource " + p, e);
         }
     }
 }
