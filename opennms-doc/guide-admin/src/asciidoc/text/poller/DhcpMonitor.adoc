@@ -1,9 +1,10 @@
 
-=== DhcpMonitor
+==== DhcpMonitor
 
 This monitor is used to monitor the availability and functionality of http://en.wikipedia.org/wiki/Dynamic_Host_Configuration_Protocol[DHCP servers].
 This monitor has two parts, the first one is the monitor class _DhcpMonitor_ executed by _Pollerd_ and the second part is a background daemon _Dhcpd_ running inside the OpenNMS JVM and listening for DHCP responses.
-A DHCP server is tested by sending a _DISCOVER_ message. If the DHCP server responds with an _OFFER_ the service is marked as up.
+A DHCP server is tested by sending a _DISCOVER_ message.
+If the DHCP server responds with an _OFFER_ the service is marked as up.
 The _Dhcpd_ background daemon is disabled by default and has to be activated in 'service-configuration.xml' in OpenNMS by setting `service enabled="true"`.
 The behavior for testing the DHCP server can be modified in the 'dhcp-configuration.xml' configuration file.
 
@@ -25,9 +26,7 @@ CAUTION: Make sure no DHCP client is running on the OpenNMS server and using por
          If UDP/68 is already in use, you will find an error message in the manager.log.
          You can test if a process is listening on udp/68 with `sudo ss -lnpu sport = :68`.
 
-==== Monitor facts
-
-===== DHCP service monitor configuration
+===== Monitor facts
 
 [options="autowidth"]
 |===
@@ -87,7 +86,8 @@ image::poller/02_01_dhcp-monitor-messages-broadcast.png[]
 .Visualization of DHCP message flow in relay mode
 image::poller/02_02_dhcp-monitor-messages-unicast.png[]
 
-==== Example testing DHCP server in the same subnet
+===== Example testing DHCP server in the same subnet
+
 Example configuration how to configure the monitor in the 'poller-configuration.xml'.
 The monitor will try to send in maximum 3 _DISCOVER_ messages and waits 3 seconds for the DHCP server _OFFER_ message.
 
@@ -129,7 +129,7 @@ The monitor will try to send in maximum 3 _DISCOVER_ messages and waits 3 second
 </DhcpdConfiguration>
 ----
 
-==== Example testing DHCP server in a different subnet in extended mode
+===== Example testing DHCP server in a different subnet in extended mode
 
 You can use the same monitor in 'poller-configuration.xml' as in the example above.
 
