@@ -295,6 +295,7 @@ public class NodeMapsApplication extends UI {
     private void createRootLayout() {
         m_rootLayout = new VerticalLayout();
         m_rootLayout.setSizeFull();
+        m_rootLayout.addStyleName("root-layout");
         setContent(m_rootLayout);
         addHeader();
 
