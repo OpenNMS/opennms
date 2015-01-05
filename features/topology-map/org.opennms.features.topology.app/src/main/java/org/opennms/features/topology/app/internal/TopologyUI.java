@@ -354,6 +354,8 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
     private void createLayouts() {
         m_rootLayout = new VerticalLayout();
         m_rootLayout.setSizeFull();
+        m_rootLayout.addStyleName("root-layout");
+        m_rootLayout.addStyleName("topo-root-layout");
         setContent(m_rootLayout);
 
         addHeader();
