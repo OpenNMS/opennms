@@ -6,7 +6,7 @@
 	</ui:style>
 	<g:LayoutPanel ui:field="m_layoutPanel">
        <g:layer top="0" right="0" left="0" bottom="27px">
-           <opennms:ResourceTable ui:field="m_resourceTable" styleName="opennms-gwt-table"/>
+           <opennms:ResourceTable ui:field="m_resourceTable"/>
        </g:layer>
        <g:layer top="308px" left="0" right="55px" height="23px">
            <g:FlowPanel ui:field="m_simplePagerContainer"/>
