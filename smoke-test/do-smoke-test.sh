@@ -56,10 +56,10 @@ get_hash_from_rpm() {
 }
 
 clean_maven() {
-	banner "Cleaning out old Maven files"
+	banner "Cleaning out old Maven files that can conflict or have issues."
 
 	if [ -d "$HOME/.m2/repository" ]; then
-		rm -rf "${HOME}"/.m2/repository
+		rm -rf "${HOME}"/.m2/repository/org/opennms "${HOME}"/.m2/repository/org/springframework
 	fi
 }
 
