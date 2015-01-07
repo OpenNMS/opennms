@@ -68,7 +68,7 @@ public class UserAuth implements Serializable {
     /**
      * Field m_userName.
      */
-    @XmlAttribute(name="username")
+    @XmlAttribute(name="user-name")
     private String m_userName;
 
     /**
@@ -90,6 +90,13 @@ public class UserAuth implements Serializable {
       //-----------/
      //- Methods -/
     //-----------/
+
+    public UserAuth(final String username, final String password) {
+        super();
+        m_userName = username;
+        m_password = password;
+    }
+
 
     /**
      * Overrides the Object.equals method.
