@@ -259,11 +259,19 @@ public class PathOutageManagerJdbcTest implements TemporaryDatabaseAware<MockDat
 		assertEquals(new Integer(1), lno.iterator().next());
 		Set<Integer> vno = getPathOutageManager().getNodesInPath("192.168.1.4", "SMTP");
 		assertEquals(new Integer(3), vno.iterator().next());
+
+		// This list should order by node label so Firewall should precede Router
 		List<String[]> all = getPathOutageManager().getAllCriticalPaths();
-		assertEquals("192.168.1.1",all.get(0)[0]);
-		assertEquals("ICMP", all.get(0)[1]);
-		assertEquals("192.168.1.4",all.get(1)[0]);
-		assertEquals("SMTP",all.get(1)[1]);
+		assertEquals(2, all.size());
+
+		assertEquals("Firewall",all.get(0)[0]);
+		assertEquals("192.168.1.4",all.get(0)[1]);
+		assertEquals("SMTP",all.get(0)[2]);
+
+		assertEquals("Router",all.get(1)[0]);
+		assertEquals("192.168.1.1",all.get(1)[1]);
+		assertEquals("ICMP", all.get(1)[2]);
+
 		String[] dat = getPathOutageManager().getCriticalPathData("192.168.1.1", "ICMP");
 		assertEquals("Router", dat[0]);
 		assertEquals("1", dat[1]);
@@ -311,10 +319,6 @@ public class PathOutageManagerJdbcTest implements TemporaryDatabaseAware<MockDat
 
 		private Timestamp m_regainedSvcTime;
 
-		OutageChecker(MockService svc, Event lostSvcEvent) throws Exception {
-			this(svc, lostSvcEvent, null);
-		}
-
 		OutageChecker(MockService svc, Event lostSvcEvent,
 				Event regainedSvcEvent) {
 			super(m_db,
@@ -322,13 +326,11 @@ public class PathOutageManagerJdbcTest implements TemporaryDatabaseAware<MockDat
 
 			m_svc = svc;
 			m_lostSvcEvent = lostSvcEvent;
-			m_lostSvcTime = m_db.convertEventTimeToTimeStamp(m_lostSvcEvent
-					.getTime());
+			m_lostSvcTime = new Timestamp(m_lostSvcEvent.getTime().getTime());
 			m_regainedSvcEvent = regainedSvcEvent;
-			if (m_regainedSvcEvent != null)
-				m_regainedSvcTime = m_db
-						.convertEventTimeToTimeStamp(m_regainedSvcEvent
-								.getTime());
+			if (m_regainedSvcEvent != null) {
+				m_regainedSvcTime = new Timestamp(m_regainedSvcEvent.getTime().getTime());
+			}
 		}
 
                 @Override

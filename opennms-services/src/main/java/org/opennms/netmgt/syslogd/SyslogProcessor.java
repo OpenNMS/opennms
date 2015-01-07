@@ -37,10 +37,10 @@ import org.opennms.core.concurrent.EndOfTheWaterfall;
 import org.opennms.core.utils.InetAddressUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.SyslogdConfigFactory;
+import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.events.api.EventIpcManagerFactory;
 import org.opennms.netmgt.model.events.EventBuilder;
-import org.opennms.netmgt.model.events.EventIpcManagerFactory;
 import org.opennms.netmgt.xml.event.Parm;
 
 /**

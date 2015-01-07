@@ -1,11 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans" 
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:tx="http://www.springframework.org/schema/tx" 
-       xmlns:context="http://www.springframework.org/schema/context"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd
-       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd" >
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xmlns:util="http://www.springframework.org/schema/util"
+    xmlns:onmsgi="http://xmlns.opennms.org/xsd/spring/onms-osgi"
+    xmlns:tx="http://www.springframework.org/schema/tx" 
+    xsi:schemaLocation="
+      http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+      http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.2.xsd
+      http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.2.xsd
+      http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.2.xsd
+      http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd
+">
 
 	<context:annotation-config/>
 	
@@ -13,15 +19,24 @@
 
 	<bean name="mockTransactionAwareEventIpcManager" class="org.opennms.netmgt.dao.mock.MockEventIpcManager">
 		<qualifier value="transactionAware" />
-		<property name="eventIpcManagerProxy" ref="eventIpcManager" />
 	</bean>
+
+	<onmsgi:service ref="mockTransactionAwareEventIpcManager">
+		<onmsgi:interfaces>
+			<value>org.opennms.netmgt.events.api.EventForwarder</value>
+			<value>org.opennms.netmgt.events.api.EventIpcBroadcaster</value>
+			<value>org.opennms.netmgt.events.api.EventIpcManager</value>
+			<value>org.opennms.netmgt.events.api.EventProxy</value>
+			<value>org.opennms.netmgt.events.api.EventSubscriptionService</value>
+		</onmsgi:interfaces>
+	</onmsgi:service>
 
 	<bean id="endPointConfigResourceLocation" class="java.lang.String">
 		<constructor-arg value="classpath:/test-endpoint-configuration.xml" />
 	</bean>
 
 	<bean id="linkAdapterConfigResourceLocation" class="java.lang.String">
-	  <constructor-arg value="classpath:/test-link-adapter-configuration.xml" />
+		<constructor-arg value="classpath:/test-link-adapter-configuration.xml" />
 	</bean>
 
 </beans>

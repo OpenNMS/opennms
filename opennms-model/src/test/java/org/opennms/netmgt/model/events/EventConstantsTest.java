@@ -45,7 +45,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 import org.opennms.core.test.MockLogAppender;
-import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.events.api.EventConstants;
 
 @RunWith(Parameterized.class)
 public class EventConstantsTest {

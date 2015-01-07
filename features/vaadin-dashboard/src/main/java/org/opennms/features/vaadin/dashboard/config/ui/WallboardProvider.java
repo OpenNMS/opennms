@@ -29,10 +29,12 @@
 package org.opennms.features.vaadin.dashboard.config.ui;
 
 import com.vaadin.data.util.BeanItemContainer;
+
 import org.opennms.features.vaadin.dashboard.model.Wallboard;
 import org.opennms.features.vaadin.dashboard.model.Wallboards;
 
 import javax.xml.bind.JAXB;
+
 import java.io.File;
 
 /**
@@ -51,10 +53,6 @@ public class WallboardProvider {
      * The configuration {@link File} to be used.
      */
     private File m_cfgFile = new File("etc/dashboard-config.xml");
-    /**
-     * The beancontainer this class uses.
-     */
-    private BeanItemContainer<Wallboard> m_beanItemContainer = new BeanItemContainer<Wallboard>(Wallboard.class);
 
     /**
      * Private default constructor used to instantiate this class.
@@ -69,7 +67,7 @@ public class WallboardProvider {
      * @return the {@link BeanItemContainer}
      */
     public BeanItemContainer<Wallboard> getBeanContainer() {
-        return m_beanItemContainer;
+        return new BeanItemContainer<Wallboard>(Wallboard.class, m_wallboards.getWallboards());
     }
 
     /**
@@ -100,18 +98,6 @@ public class WallboardProvider {
             m_wallboards = new Wallboards();
         } else {
             m_wallboards = JAXB.unmarshal(m_cfgFile, Wallboards.class);
-        }
-
-        updateBeanItemContainer();
-    }
-
-    /**
-     * This method updates the {@link BeanItemContainer} of this object.
-     */
-    private void updateBeanItemContainer() {
-        m_beanItemContainer.removeAllItems();
-        for (Wallboard wallboard : m_wallboards.getWallboards()) {
-            m_beanItemContainer.addItem(wallboard);
         }
     }
 
@@ -168,7 +154,6 @@ public class WallboardProvider {
         }
         m_wallboards.getWallboards().add(wallboard);
         save();
-        updateBeanItemContainer();
     }
 
     /**
@@ -182,6 +167,5 @@ public class WallboardProvider {
         }
         m_wallboards.getWallboards().remove(wallboard);
         save();
-        updateBeanItemContainer();
     }
 }

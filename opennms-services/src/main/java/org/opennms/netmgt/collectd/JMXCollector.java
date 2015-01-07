@@ -63,7 +63,7 @@ import org.opennms.netmgt.jmx.JmxUtils;
 import org.opennms.netmgt.jmx.impl.DefaultJmxCollector;
 import org.opennms.netmgt.jmx.samples.JmxAttributeSample;
 import org.opennms.netmgt.jmx.samples.JmxCompositeSample;
-import org.opennms.netmgt.model.events.EventProxy;
+import org.opennms.netmgt.events.api.EventProxy;
 import org.opennms.netmgt.rrd.RrdRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -281,7 +281,8 @@ public abstract class JMXCollector implements ServiceCollector {
         final JMXCollectionResource collectionResource = new JMXCollectionResource(agent, collDir);
         final SingleResourceCollectionSet collectionSet = new SingleResourceCollectionSet(collectionResource, new Date());
 
-        LOG.debug("collecting {} on node ID {}", InetAddressUtils.str(ipaddr), nodeInfo.getNodeId());
+        LOG.debug("connecting to {} on node ID {}", InetAddressUtils.str(ipaddr), nodeInfo.getNodeId());
+
         try {
             // create config for JmxCollector
             final JmxCollectorConfig config = new JmxCollectorConfig();

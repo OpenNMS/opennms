@@ -122,11 +122,6 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-services</artifactId>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>castor-dependencies</artifactId>
       <type>pom</type>

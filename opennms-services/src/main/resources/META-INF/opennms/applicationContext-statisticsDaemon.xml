@@ -32,12 +32,16 @@
       <property name="reportPersister" ref="reportPersister"/>
       <property name="scheduler" ref="scheduler"/>
       <property name="reportDefinitionBuilder" ref="reportDefinitionBuilder"/>
-      <property name="eventForwarder" ref="eventForwarder" />
+      <property name="eventForwarder">
+        <onmsgi:reference interface="org.opennms.netmgt.events.api.EventForwarder"/>
+      </property>
     </bean>
 
-    <bean id="daemonListener" class="org.opennms.netmgt.model.events.AnnotationBasedEventListenerAdapter">
+    <bean id="daemonListener" class="org.opennms.netmgt.events.api.AnnotationBasedEventListenerAdapter">
       <property name="annotatedListener" ref="daemon" />
-      <property name="eventSubscriptionService" ref="eventSubscriptionService" />
+      <property name="eventSubscriptionService">
+        <onmsgi:reference interface="org.opennms.netmgt.events.api.EventSubscriptionService"/>
+      </property>
     </bean>
 
     <bean id="scheduler" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">

@@ -165,7 +165,7 @@
               <%=m_eventconfFactory.getEventLabel(curNotif.getUei())%>
             </td>
             <td>
-              <% if (curNotif.getUei().startsWith("~")) { %>REGEX: <%=curNotif.getUei().substring(1)%><% } else { %><%=curNotif.getUei()%><% } %>
+              <% if (curNotif.getUei() != null && curNotif.getUei().startsWith("~")) { %>REGEX: <%=curNotif.getUei().substring(1)%><% } else { %><%=curNotif.getUei()%><% } %>
             </td>
           </tr>
           <% } %>

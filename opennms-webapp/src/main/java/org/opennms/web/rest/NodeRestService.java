@@ -52,21 +52,22 @@ import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.criteria.Order;
 import org.opennms.core.criteria.restrictions.Restriction;
 import org.opennms.core.criteria.restrictions.Restrictions;
-import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.dao.api.CategoryDao;
 import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.events.api.EventProxy;
+import org.opennms.netmgt.events.api.EventProxyException;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsCategoryCollection;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsNodeList;
 import org.opennms.netmgt.model.events.EventBuilder;
-import org.opennms.netmgt.model.events.EventProxy;
-import org.opennms.netmgt.model.events.EventProxyException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -98,6 +99,7 @@ public class NodeRestService extends OnmsRestService {
     private CategoryDao m_categoryDao;
     
     @Autowired
+    @Qualifier("eventProxy")
     private EventProxy m_eventProxy;
     
     @Context 

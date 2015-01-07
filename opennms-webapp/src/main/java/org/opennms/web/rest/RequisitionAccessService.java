@@ -41,10 +41,10 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.ThreadFactory;
 
-import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.events.api.EventProxy;
+import org.opennms.netmgt.events.api.EventProxyException;
 import org.opennms.netmgt.model.events.EventBuilder;
-import org.opennms.netmgt.model.events.EventProxy;
-import org.opennms.netmgt.model.events.EventProxyException;
 import org.opennms.netmgt.provision.persist.ForeignSourceRepository;
 import org.opennms.netmgt.provision.persist.RequisitionFileUtils;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
@@ -79,6 +79,7 @@ public class RequisitionAccessService {
     private ForeignSourceRepository m_deployedForeignSourceRepository;
 
     @Autowired
+    @Qualifier("eventProxy")
     private EventProxy m_eventProxy;
 
     private final ExecutorService m_executor = Executors.newSingleThreadExecutor(new ThreadFactory() {

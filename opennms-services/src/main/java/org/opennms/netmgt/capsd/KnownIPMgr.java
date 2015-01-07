@@ -36,7 +36,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
-import java.text.ParseException;
 import java.util.Date;
 import java.util.Map;
 import java.util.TreeMap;
@@ -47,7 +46,6 @@ import org.opennms.core.utils.InetAddressComparator;
 import org.opennms.core.utils.InetAddressUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.opennms.netmgt.EventConstants;
 
 /**
  * This class represents a singular instance that is used to check address to
@@ -132,26 +130,6 @@ final class KnownIPMgr {
             m_interface = iface;
             m_lastCheck = date;
             m_nodeid = nodeid;
-        }
-
-        /**
-         * Constructs a new instance to represent the IP interface.
-         * 
-         * @param iface
-         *            The IP Interface address.
-         * @param nodeid
-         *            The node identifier for the address.
-         * @param date
-         *            The last date this address was checked.
-         * 
-         * @throws java.text.ParseException
-         *             Thrown if the date is malformed.
-         */
-        IPInterface(InetAddress iface, int nodeid, String date) throws ParseException {
-            m_interface = iface;
-            m_nodeid = nodeid;
-            java.util.Date tmpDate = EventConstants.parseToDate(date);
-            m_lastCheck = new Timestamp(tmpDate.getTime());
         }
 
         /**

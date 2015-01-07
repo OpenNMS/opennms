@@ -81,7 +81,7 @@ public class SetCriticalPathServlet extends HttpServlet {
             }
         } else if (task.equals("Submit")) {
             try {
-            setCriticalPath(node, criticalIp, criticalSvc);
+                setCriticalPath(node, criticalIp, criticalSvc);
             } catch (SQLException e) {
                 throw new ServletException("SetCriticalPathServlet: Error writing to database." + e);
             }
@@ -95,9 +95,9 @@ public class SetCriticalPathServlet extends HttpServlet {
         dispatcher.forward(request, response);
     }
 
-    private void deleteCriticalPath(int node) throws SQLException {
+    private static void deleteCriticalPath(int node) throws SQLException {
 
-        final DBUtils d = new DBUtils(getClass());
+        final DBUtils d = new DBUtils(SetCriticalPathServlet.class);
 
         try {
             Connection conn = DataSourceFactory.getInstance().getConnection();
@@ -111,11 +111,11 @@ public class SetCriticalPathServlet extends HttpServlet {
         }
     }
 
-    private void setCriticalPath(int node, String criticalIp, String criticalSvc) throws SQLException {
+    private static void setCriticalPath(int node, String criticalIp, String criticalSvc) throws SQLException {
 
         deleteCriticalPath(node);
 
-        final DBUtils d = new DBUtils(getClass());
+        final DBUtils d = new DBUtils(SetCriticalPathServlet.class);
         try {
             Connection conn = DataSourceFactory.getInstance().getConnection();
             d.watch(conn);

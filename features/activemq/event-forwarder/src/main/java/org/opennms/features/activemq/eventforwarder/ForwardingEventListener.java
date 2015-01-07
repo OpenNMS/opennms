@@ -31,11 +31,11 @@ package org.opennms.features.activemq.eventforwarder;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.dao.api.NodeDao;
-import org.opennms.netmgt.model.events.EventForwarder;
-import org.opennms.netmgt.model.events.EventIpcManager;
-import org.opennms.netmgt.model.events.EventListener;
+import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.events.api.EventForwarder;
+import org.opennms.netmgt.events.api.EventIpcManager;
+import org.opennms.netmgt.events.api.EventListener;
 import org.opennms.netmgt.xml.event.Event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

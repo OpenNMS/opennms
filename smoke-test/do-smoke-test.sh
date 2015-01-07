@@ -56,10 +56,10 @@ get_hash_from_rpm() {
 }
 
 clean_maven() {
-	banner "Cleaning out old Maven files"
+	banner "Cleaning out old Maven files that can conflict or have issues."
 
 	if [ -d "$HOME/.m2/repository" ]; then
-		rm -rf "${HOME}"/.m2/repository
+		rm -rf "${HOME}"/.m2/repository/org/opennms "${HOME}"/.m2/repository/org/springframework
 	fi
 }
 
@@ -91,6 +91,7 @@ reset_opennms() {
 	banner "Resetting OpenNMS Installation"
 
 	do_log "opennms stop"
+	/sbin/service opennms stop
 	ps auxwww | grep opennms_bootstrap | awk '{ print $2 }' | xargs kill -9
 
 	do_log "clean_yum"
@@ -137,17 +138,29 @@ configure_opennms() {
 	popd
 
 	do_log "runjava -s"
-	$OPENNMS_HOME/bin/runjava -s || die "'runjava -s' failed."
+	"$OPENNMS_HOME/bin/runjava" -s || die "'runjava -s' failed."
 
 	do_log "install -dis"
-	$OPENNMS_HOME/bin/install -dis || die "Unable to run OpenNMS install."
+	"$OPENNMS_HOME/bin/install" -dis || die "Unable to run OpenNMS install."
 }
 
 start_opennms() {
 	banner "Starting OpenNMS"
 
+	do_log "find \*.rpmorig -o -name \*.rpmnew"
+	find "$OPENNMS_HOME" -type f -name \*.rpmorig -o -name \*.rpmnew
+
 	do_log "opennms start"
-	/sbin/service opennms start || die "Unable to start OpenNMS."
+	/sbin/service opennms restart
+	RETVAL=$?
+
+	if [ $? -gt 0 ]; then
+		if [ -x /usr/bin/systemctl ]; then
+			/usr/bin/systemctl status opennms.service
+		fi
+		die "OpenNMS failed to start."
+	fi
+
 #	COUNT=0
 #	do_log "Waiting for OpenNMS to start..."
 #	while true; do
@@ -174,6 +187,12 @@ run_tests() {
 	banner "Running Tests"
 
 	local RETVAL=0
+	rm -rf ~/.m2/repository/org/opennms
+
+	pushd "$SOURCEDIR"
+		do_log "bin/bamboo.pl -Psmoke --projects :smoke-test --also-make install"
+		bin/bamboo.pl -Psmoke --projects :smoke-test --also-make install
+	popd
 
 	EXTRA_ARGS=""
 #	CHROMEDRIVER="/usr/local/bin/chromedriver"
@@ -212,6 +231,7 @@ reset_opennms
 reset_database
 configure_opennms
 start_opennms
+clean_firefox
 
 build_tests
 run_tests

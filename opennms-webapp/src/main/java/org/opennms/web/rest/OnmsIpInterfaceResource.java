@@ -49,20 +49,21 @@ import javax.ws.rs.core.UriInfo;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.criteria.Alias.JoinType;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.events.api.EventProxy;
+import org.opennms.netmgt.events.api.EventProxyException;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsIpInterfaceList;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.events.EventBuilder;
-import org.opennms.netmgt.model.events.EventProxy;
-import org.opennms.netmgt.model.events.EventProxyException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -86,6 +87,7 @@ public class OnmsIpInterfaceResource extends OnmsRestService {
     private IpInterfaceDao m_ipInterfaceDao;
 
     @Autowired
+    @Qualifier("eventProxy")
     private EventProxy m_eventProxy;
 
     @Context

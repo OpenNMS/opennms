@@ -83,12 +83,12 @@
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
-      <artifactId>opennms-rrd-jrobin</artifactId>
+      <artifactId>opennms-services</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
-      <artifactId>opennms-services</artifactId>
+      <artifactId>opennms-rrd-jrobin</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>

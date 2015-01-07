@@ -9,6 +9,6 @@
          <value>META-INF/opennms/applicationContext-alarmd.xml</value>
        </list>
      </constructor-arg>
-     <constructor-arg ref="daemonContext" />
+     <constructor-arg ref="daoContext" />
    </bean>
 </beans>

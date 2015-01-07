@@ -97,16 +97,12 @@ public class AlarmEventSynchronization implements EventSynchronization {
 
         // alarm creation time
         if (alarm.getFirstEventTime() != null) {
-            DateFormat dateFormat = DateFormat.getDateTimeInstance(DateFormat.FULL, DateFormat.FULL);
-            dateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
-        	event.setCreationTime(dateFormat.format(alarm.getFirstEventTime()));
+        	event.setCreationTime(alarm.getFirstEventTime());
         }
 
         // last event timestamp
         if (alarm.getLastEventTime() != null) {
-            DateFormat dateFormat = DateFormat.getDateTimeInstance(DateFormat.FULL, DateFormat.FULL);
-            dateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
-            event.setTime(dateFormat.format(alarm.getLastEventTime()));
+            event.setTime(alarm.getLastEventTime());
         }
         
         // host

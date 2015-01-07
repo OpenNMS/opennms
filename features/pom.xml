@@ -20,6 +20,9 @@
     <!-- OpenNMS Polling API -->
     <module>poller</module>
 
+    <!-- Events -->
+    <module>events</module>
+
     <!-- OpenNMS Collection API and implementations -->
     <module>collection</module>
     <module>jdbc-collector</module>

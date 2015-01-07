@@ -37,14 +37,14 @@ import java.util.List;
 import org.opennms.core.criteria.Alias.JoinType;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
+import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.events.api.EventIpcManager;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.PrimaryType;
 import org.opennms.netmgt.model.events.EventBuilder;
-import org.opennms.netmgt.model.events.EventIpcManager;
 import org.opennms.netmgt.snmpinterfacepoller.pollable.PollContext;
 import org.opennms.netmgt.xml.event.Event;
 import org.slf4j.Logger;
@@ -95,7 +95,7 @@ public class DefaultPollContext implements PollContext {
     /**
      * <p>getEventManager</p>
      *
-     * @return a {@link org.opennms.netmgt.model.events.EventIpcManager} object.
+     * @return a {@link org.opennms.netmgt.events.api.EventIpcManager} object.
      */
     public EventIpcManager getEventManager() {
         return m_eventManager;
@@ -104,7 +104,7 @@ public class DefaultPollContext implements PollContext {
     /**
      * <p>setEventManager</p>
      *
-     * @param eventManager a {@link org.opennms.netmgt.model.events.EventIpcManager} object.
+     * @param eventManager a {@link org.opennms.netmgt.events.api.EventIpcManager} object.
      */
     public void setEventManager(EventIpcManager eventManager) {
         m_eventManager = eventManager;

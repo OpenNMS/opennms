@@ -46,18 +46,19 @@ import org.opennms.core.criteria.Alias.JoinType;
 import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.criteria.Order;
-import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
+import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.events.api.EventProxy;
+import org.opennms.netmgt.events.api.EventProxyException;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsMonitoredServiceDetail;
 import org.opennms.netmgt.model.OnmsMonitoredServiceDetailList;
 import org.opennms.netmgt.model.OnmsMonitoredServiceList;
 import org.opennms.netmgt.model.events.EventBuilder;
-import org.opennms.netmgt.model.events.EventProxy;
-import org.opennms.netmgt.model.events.EventProxyException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -101,6 +102,7 @@ public class IfServicesRestService extends OnmsRestService {
     private MonitoredServiceDao m_serviceDao;
 
     @Autowired
+    @Qualifier("eventProxy")
     private EventProxy m_eventProxy;
 
     @Context 

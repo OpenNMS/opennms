@@ -1,4 +1,11 @@
 #!/bin/sh -
 
-JROBIN_JAR=`ls -1 "${install.dir}"/lib/jrobin-*.jar | head -n 1`
-exec ${install.bin.dir}/runjava -r -- -cp "$JROBIN_JAR" org.jrobin.inspector.RrdInspector "$@"
+OPENNMS_HOME="${install.dir}"
+OPENNMS_BINDIR="${install.bin.dir}"
+
+JROBIN_JAR=`ls -1 "$OPENNMS_HOME"/lib/jrobin-*.jar | head -n 1`
+
+exec "$OPENNMS_BINDIR"/runjava -r -- \
+	-cp "$JROBIN_JAR" \
+	org.jrobin.inspector.RrdInspector \
+	"$@"

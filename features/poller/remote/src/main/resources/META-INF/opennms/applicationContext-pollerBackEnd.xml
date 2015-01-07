@@ -49,7 +49,7 @@
     <property name="pollerConfig" ref="pollerConfig" />
     <property name="timeKeeper" ref="timeKeeper" />
     <property name="eventIpcManager">
-      <onmsgi:reference interface="org.opennms.netmgt.model.events.EventIpcManager"/>
+      <onmsgi:reference interface="org.opennms.netmgt.events.api.EventIpcManager"/>
     </property>
     <property name="disconnectedTimeout" value="${opennms.pollerBackend.disconnectedTimeout}" />
     <property name="minimumConfigurationReloadInterval" value="${opennms.pollerBackend.minimumConfigurationReloadInterval}" />
@@ -63,10 +63,10 @@
     <property name="pollerBackEnd" ref="daemon" />
   </bean>
 
-  <bean name="pollerBackEndEventListenerAdapter" class="org.opennms.netmgt.model.events.AnnotationBasedEventListenerAdapter">
+  <bean name="pollerBackEndEventListenerAdapter" class="org.opennms.netmgt.events.api.AnnotationBasedEventListenerAdapter">
     <property name="annotatedListener" ref="pollerBackEndEventProcessor" />
     <property name="eventSubscriptionService">
-      <onmsgi:reference interface="org.opennms.netmgt.model.events.EventSubscriptionService"/>
+      <onmsgi:reference interface="org.opennms.netmgt.events.api.EventSubscriptionService"/>
     </property>
   </bean>
 

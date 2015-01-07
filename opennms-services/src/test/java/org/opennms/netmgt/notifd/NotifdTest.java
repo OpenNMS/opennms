@@ -48,9 +48,9 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.opennms.core.utils.RowProcessor;
-import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.NotificationManager;
 import org.opennms.netmgt.config.notifications.Notification;
+import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.mock.MockEventUtil;
 import org.opennms.netmgt.mock.MockInterface;
 import org.opennms.netmgt.mock.MockNode;
@@ -339,7 +339,7 @@ public class NotifdTest extends NotificationsTestCase {
 
         Event event = MockEventUtil.createServiceEvent("Test", "uei.opennms.org/tests/nodeTimeTest", svc, null);
         
-        Date date = EventConstants.parseToDate(event.getTime());
+        Date date = event.getTime();
         String dateString = DateFormat.getDateTimeInstance(DateFormat.FULL,
                        DateFormat.FULL).format(date);
         long endTime = anticipateNotificationsForGroup("time " + dateString + ".", "Timestamp: " + dateString + ".", "InitialGroup", date, interval);

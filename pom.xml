@@ -763,6 +763,7 @@
            <configuration>
              <descriptor>src/assembly/source.xml</descriptor>
              <classifier>source</classifier>
+             <skipAssembly>${build.skip.tarball}</skipAssembly>
            </configuration>
          </execution>
        </executions>
@@ -1008,6 +1009,8 @@
   </reporting>
 
   <properties>
+    <build.skip.tarball>false</build.skip.tarball>
+
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
@@ -1096,7 +1099,7 @@
     <!-- dependency versions -->
     <oldAsmVersion>99.99.99-exclude-and-use-org.ow2.asm.asm-all-instead</oldAsmVersion>
     <asmVersion>5.0.3</asmVersion>
-    <asciidoctorVersion>0.1.4</asciidoctorVersion>
+    <asciidoctorVersion>1.5.0</asciidoctorVersion>
     <activemqVersion>5.10.0</activemqVersion>
     <atomikosVersion>3.9.2</atomikosVersion>
     <camelVersion>2.14.1</camelVersion>
@@ -1118,7 +1121,7 @@
     <httpcoreVersion>4.3.2</httpcoreVersion>
     <httpclientVersion>4.3.4</httpclientVersion>
     <jacksonVersion>1.9.13</jacksonVersion>
-    <jasperreportsVersion>3.7.6</jasperreportsVersion>
+    <jasperreportsVersion>5.6.1</jasperreportsVersion>
     <jettyVersion>7.6.15.v20140411</jettyVersion>
     <karafVersion>2.4.0</karafVersion>
     <karafPaxExamVersion>2.3.9</karafPaxExamVersion>
@@ -1147,7 +1150,7 @@
 
     <!-- moved here from topology features -->
     <jungVersion>2.0.1</jungVersion>
-    <vaadinVersion>7.1.7</vaadinVersion>
+    <vaadinVersion>7.2.7</vaadinVersion>
     <vaadin.plugin.version>${vaadinVersion}</vaadin.plugin.version>
     <vaadinExtenderVersion>1.0.0</vaadinExtenderVersion>
 
@@ -1304,6 +1307,9 @@
           <name>smoke</name>
         </property>
       </activation>
+      <properties>
+        <build.skip.tarball>true</build.skip.tarball>
+      </properties>
       <modules>
         <module>smoke-test</module>
       </modules>
@@ -1431,6 +1437,11 @@
       <dependency>
         <groupId>org.opennms.core</groupId>
         <artifactId>org.opennms.core.spring</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.core</groupId>
+        <artifactId>org.opennms.core.spring-web</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
@@ -1599,6 +1610,21 @@
       <dependency>
         <groupId>org.opennms.features</groupId>
         <artifactId>org.opennms.features.system-report</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.features.events</groupId>
+        <artifactId>org.opennms.features.events.api</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.features.events</groupId>
+        <artifactId>org.opennms.features.events.daemon</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.features.events</groupId>
+        <artifactId>org.opennms.features.events.traps</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
@@ -1999,13 +2025,6 @@
         <groupId>org.opennms</groupId>
         <artifactId>opennms-dao-mock</artifactId>
         <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms</groupId>
-        <artifactId>opennms-services</artifactId>
-        <type>test-jar</type>
-        <version>${project.version}</version>
-        <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>org.opennms</groupId>

@@ -111,7 +111,15 @@
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
+      <artifactId>opennms-dao-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
       <artifactId>opennms-correlator</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>bsh</groupId>
+      <artifactId>bsh</artifactId>
     </dependency>
     <dependency>
       <groupId>org.opennms.core.test-api</groupId>
@@ -139,8 +147,8 @@
       <type>pom</type>
     </dependency>
     <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-model</artifactId>
+      <groupId>org.opennms.features.events</groupId>
+      <artifactId>org.opennms.features.events.api</artifactId>
     </dependency>
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
@@ -161,6 +169,11 @@
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-dao-mock</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-services</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>

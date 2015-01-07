@@ -43,11 +43,11 @@
 	<bean id="eventIpcManager-init"
 		class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
 		<property name="staticMethod"
-			value="org.opennms.netmgt.model.events.EventIpcManagerFactory.init" />
+			value="org.opennms.netmgt.events.api.EventIpcManagerFactory.init" />
 	</bean>
 
 	<bean id="eventIpcManager"
-		class="org.opennms.netmgt.model.events.EventIpcManagerFactory"
+		class="org.opennms.netmgt.events.api.EventIpcManagerFactory"
 		depends-on="eventIpcManager-init"
 		factory-method="getIpcManager"/>
 

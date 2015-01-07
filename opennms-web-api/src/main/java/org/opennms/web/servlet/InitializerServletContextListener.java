@@ -37,7 +37,7 @@ import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.servlet.ServletException;
 
-import org.opennms.netmgt.model.events.EventProxyException;
+import org.opennms.netmgt.events.api.EventProxyException;
 import org.opennms.web.category.CategoryList;
 import org.opennms.web.category.RTCPostSubscriber;
 import org.slf4j.Logger;

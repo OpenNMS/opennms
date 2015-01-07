@@ -30,10 +30,10 @@ package org.opennms.netmgt.queued;
 
 import java.util.Set;
 
-import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
-import org.opennms.netmgt.model.events.EventIpcManager;
-import org.opennms.netmgt.model.events.EventListener;
+import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.events.api.EventIpcManager;
+import org.opennms.netmgt.events.api.EventListener;
 import org.opennms.netmgt.model.events.EventUtils;
 import org.opennms.netmgt.rrd.RrdStrategy;
 import org.opennms.netmgt.xml.event.Event;
@@ -74,7 +74,7 @@ public class Queued extends AbstractServiceDaemon implements EventListener {
     /**
      * <p>setEventIpcManager</p>
      *
-     * @param eventMgr a {@link org.opennms.netmgt.model.events.EventIpcManager} object.
+     * @param eventMgr a {@link org.opennms.netmgt.events.api.EventIpcManager} object.
      */
     public void setEventIpcManager(EventIpcManager eventMgr) {
         m_eventMgr = eventMgr;

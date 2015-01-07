@@ -3,7 +3,7 @@ package org.opennms.features.activemq.eventforwarder.internal;
 import org.apache.camel.InOnly;
 import org.apache.camel.Produce;
 import org.opennms.core.camel.DefaultDispatcher;
-import org.opennms.netmgt.model.events.EventForwarder;
+import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Log;
 

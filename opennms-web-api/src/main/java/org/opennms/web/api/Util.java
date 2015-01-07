@@ -52,8 +52,8 @@ import javax.servlet.http.HttpServletRequest;
 import org.opennms.core.resource.Vault;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.WebSecurityUtils;
-import org.opennms.netmgt.model.events.EventProxy;
-import org.opennms.netmgt.utils.TcpEventProxy;
+import org.opennms.netmgt.events.api.EventProxy;
+import org.opennms.netmgt.events.api.support.TcpEventProxy;
 
 /**
  * Provides convenience functions for web-based interfaces.
@@ -509,7 +509,7 @@ public abstract class Util extends Object {
     /**
      * <p>createEventProxy</p>
      *
-     * @return a {@link org.opennms.netmgt.model.events.EventProxy} object.
+     * @return a {@link org.opennms.netmgt.events.api.EventProxy} object.
      */
     public static EventProxy createEventProxy() {
         /*

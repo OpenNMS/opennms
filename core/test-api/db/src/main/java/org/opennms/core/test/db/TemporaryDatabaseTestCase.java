@@ -39,6 +39,7 @@ import javax.sql.DataSource;
 import junit.framework.AssertionFailedError;
 import junit.framework.TestCase;
 
+import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.db.install.SimpleDataSource;
 import org.springframework.jdbc.core.JdbcTemplate;
 
@@ -204,6 +205,7 @@ public class TemporaryDatabaseTestCase extends TestCase {
     public void setDataSource(DataSource dataSource) {
         m_dataSource = dataSource;
         jdbcTemplate = new JdbcTemplate(dataSource);
+        DataSourceFactory.setInstance(dataSource);
     }
     
     public DataSource getDataSource() {

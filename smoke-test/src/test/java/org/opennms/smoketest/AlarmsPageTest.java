@@ -35,10 +35,10 @@ import org.junit.BeforeClass;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
-import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.events.api.EventProxy;
+import org.opennms.netmgt.events.api.support.TcpEventProxy;
 import org.opennms.netmgt.model.events.EventBuilder;
-import org.opennms.netmgt.model.events.EventProxy;
-import org.opennms.netmgt.utils.TcpEventProxy;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class AlarmsPageTest extends OpenNMSSeleniumTestCase {

@@ -28,18 +28,33 @@
 
 package org.opennms.netmgt.poller;
 
+import java.sql.SQLException;
+
+import org.junit.Ignore;
+import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
-
-@Transactional
 public class PathOutageManagerDaoTest extends PathOutageManagerJdbcTest {
 
 	@Autowired
 	private PathOutageManagerDaoImpl m_pathOutageManager;
-	
+
 	@Override
-    protected PathOutageManager getPathOutageManager() {
-        return m_pathOutageManager;
-    }
+	protected PathOutageManager getPathOutageManager() {
+		return m_pathOutageManager;
+	}
+
+	@Test
+	@Transactional
+	public void test() throws SQLException {
+		super.test();
+	}
+
+	@Ignore
+	@Test
+	@Transactional
+	public void testMethod500Times() throws SQLException {
+		super.testMethod500Times();
+	}
 }
