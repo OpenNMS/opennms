@@ -85,4 +85,11 @@
 </nav>
 
 <#-- hide the header if not displayed in a toplevel window (iFrame) -->
-<script type='text/javascript'>if (window.location != window.parent.location) { document.getElementById('header').style.display = 'none'; }</script>
+<script type='text/javascript'>
+if (window.location != window.parent.location) {
+  // Hide the header
+  $("#header").hide();
+  // Remove any padding from the body
+  $("body.fixed-nav").attr('style', 'padding-top: 0px !important');
+}
+</script>
