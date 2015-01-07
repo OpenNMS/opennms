@@ -49,9 +49,9 @@ import org.slf4j.LoggerFactory;
  * <p>NodeSourceResourceType class.</p>
  */
 public class NodeSourceResourceType implements OnmsResourceType {
-    
+
     private static final Logger LOG = LoggerFactory.getLogger(NodeSourceResourceType.class);
-    
+
     private static final Set<OnmsAttribute> s_emptyAttributeSet = Collections.unmodifiableSet(new HashSet<OnmsAttribute>());
     private ResourceDao m_resourceDao;
     private NodeDao m_nodeDao;
@@ -98,7 +98,7 @@ public class NodeSourceResourceType implements OnmsResourceType {
     public List<OnmsResource> getResourcesForNode(int nodeId) {
         return null;
     }
-    
+
     /** {@inheritDoc} */
     @Override
     public List<OnmsResource> getResourcesForDomain(String domain) {
@@ -116,12 +116,12 @@ public class NodeSourceResourceType implements OnmsResourceType {
     public boolean isResourceTypeOnNode(int nodeId) {
         return false;
     }
-    
+
     /** {@inheritDoc} */
     @Override
-        public boolean isResourceTypeOnDomain(String domain) {
-                return false;
-        }
+    public boolean isResourceTypeOnDomain(String domain) {
+        return false;
+    }
 
 
     /** {@inheritDoc} */
@@ -136,15 +136,30 @@ public class NodeSourceResourceType implements OnmsResourceType {
      * @param nodeSource a {@link java.lang.String} object.
      * @return a {@link org.opennms.netmgt.model.OnmsResource} object.
      */
-    public OnmsResource createChildResource(String nodeSource) {
-        String[] ident = nodeSource.split(":");
-        OnmsNode node = m_nodeDao.findByForeignId(ident[0], ident[1]);
-        
-        String label = ident[0] + ":" + node.getLabel();
+    public OnmsResource createChildResource(final String nodeSource) {
+        if (!nodeSource.contains(":")) {
+            LOG.warn("'%s' is not in the format foreignSource:foreignId.", nodeSource);
+            throw new IllegalArgumentException("Node definition '" + nodeSource + "' is invalid, it should be in the format: 'foreignSource:foreignId'.");
+        }
+
+        final String[] ident = nodeSource.split(":", 2);
+        if (!(ident.length == 2)) {
+            LOG.warn("'%s' is not in the format foreignSource:foreignId.", nodeSource);
+            throw new IllegalArgumentException("Node definition '" + nodeSource + "' is invalid, it should be in the format: 'foreignSource:foreignId'.");
+        }
+
+        final OnmsNode node = m_nodeDao.findByForeignId(ident[0], ident[1]);
+
+        if (node == null) {
+            LOG.debug("Failed to locate node by foreign ID '%s:%s'", ident[0], ident[1]);
+            return null;
+        }
+
+        final String label = ident[0] + ":" + node.getLabel();
         NodeSourceChildResourceLoader loader = new NodeSourceChildResourceLoader(nodeSource, node.getId());
         OnmsResource resource = new OnmsResource(nodeSource, label, this, s_emptyAttributeSet, new LazyList<OnmsResource>(loader));
         loader.setParent(resource);
-        
+
         return resource;
     }
 
@@ -157,7 +172,7 @@ public class NodeSourceResourceType implements OnmsResourceType {
             m_nodeSource = nodeSource;
             m_nodeId = nodeId;
         }
-        
+
         public void setParent(OnmsResource parent) {
             m_parent = parent;
         }
@@ -176,7 +191,7 @@ public class NodeSourceResourceType implements OnmsResourceType {
 
             return children;
         }
-        
+
         private Collection<OnmsResourceType> getResourceTypesForNodeSource(String nodeSource) {
             Collection<OnmsResourceType> resourceTypes = new LinkedList<OnmsResourceType>();
             for (OnmsResourceType resourceType : m_resourceDao.getResourceTypes()) {
