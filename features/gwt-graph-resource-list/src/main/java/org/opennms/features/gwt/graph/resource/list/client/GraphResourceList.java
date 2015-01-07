@@ -113,7 +113,7 @@ public class GraphResourceList implements EntryPoint {
 
 
     private void createReportSelectView(Element element) {
-        ReportSelectListAppController reportSelectListAppController = new ReportSelectListAppController(getResourceListData(getDataObjectAttribute(element)), getBaseUrl());
+        ReportSelectListAppController reportSelectListAppController = new ReportSelectListAppController(getResourceListData(getDataObjectAttribute(element)), getTargetUrl(element), getBaseUrl());
         reportSelectListAppController.go(RootPanel.get(element.getId()));
     }
     
@@ -131,7 +131,7 @@ public class GraphResourceList implements EntryPoint {
     
     
     private void createGraphResourceView(Element element) {
-        ResourceListAppController resourceListView = new ResourceListAppController(getResourceListData(getDataObjectAttribute(element)), getBaseUrl());
+        ResourceListAppController resourceListView = new ResourceListAppController(getResourceListData(getDataObjectAttribute(element)), getTargetUrl(element), getBaseUrl());
         resourceListView.go(RootPanel.get(element.getId()));
     }
     
@@ -148,6 +148,10 @@ public class GraphResourceList implements EntryPoint {
 
     private boolean getReadOnlyAttribue(Element elem){
         return elem.getAttribute("isreadonly") != null ? (elem.getAttribute("isreadonly").equals("true")) : false;
+    }
+
+    private String getTargetUrl(Element elem) {
+        return elem.getAttribute("targetUrl") != null ? elem.getAttribute("targetUrl") : "graph/results.htm";
     }
 
     public final native String getBaseUrl() /*-{

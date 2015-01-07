@@ -154,9 +154,9 @@
 			                                          		]};
 
 	</script>
-	<opennms:graphResourceList id="resourceList1" dataObject="standardResourceData"> </opennms:graphResourceList>
+	<opennms:graphResourceList id="resourceList1" dataObject="standardResourceData" targetUrl="graph/results.htm"> </opennms:graphResourceList>
 	<!-- Div for IE -->
-	<div name="opennms-graphResourceList" id="resourceList-ie" dataObject="standardResourceData"></div>
+	<div name="opennms-graphResourceList" id="resourceList-ie" dataObject="standardResourceData" targetUrl="graph/results.htm"></div>
       </div> <!-- panel-body -->
     </div> <!-- panel -->
 
@@ -186,8 +186,8 @@
 			                                                                 		]};
 		
 	</script>
-	<opennms:graphResourceList id="resourceList2" dataObject="customResources"> </opennms:graphResourceList>
-	<div name="opennms-graphResourceList" id="resourceList2-ie" dataObject="customResources"></div>
+	<opennms:graphResourceList id="resourceList2" dataObject="customResources" targetUrl="graph/adhoc2.jsp"> </opennms:graphResourceList>
+	<div name="opennms-graphResourceList" id="resourceList2-ie" dataObject="customResources" targetUrl="graph/adhoc2.jsp"></div>
       </div> <!-- panel-body -->
     </div> <!-- panel -->
   </div> <!-- column -->
