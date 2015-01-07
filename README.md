@@ -1,35 +1,42 @@
-OpenNMS Prime
-=============
-
-OpenNMS Prime is a stable release of OpenNMS based on the open-source OpenNMS release.
-
-Conventions
+[OpenNMS][]
 ===========
 
-Since we will be working in 2 separate git repositories, this document will specify which repository is being referred to by prefacing it with either `OpenNMS:` for the public upstream OpenNMS git repo, or `Prime:` for the private OpenNMS Prime git repo.  For example, when referring to OpenNMS upstream's `develop` branch, it will always be referred to as `OpenNMS:develop`, whereas the OpenNMS Prime `develop` branch will be referred to as `Prime:develop`.
+[OpenNMS][] is the world's first enterprise grade network management application platform developed under the open source model.
 
-Branch Management
-=================
+Well, what does that mean?
 
-It wouldn't be a README without discussion of branch management.... ;)
+*	World's First
 
-OpenNMS Prime development will generally be one of three kinds of commits:
+	The OpenNMS Project was started in July of 1999 and registered on SourceForge in March of 2000. It has years of experience on the alternatives.
 
-1. Bug fixes
-2. New features that should be shared with OpenNMS upstream
-3. New features that will be unique to OpenNMS Prime
+*	Enterprise Grade
 
-Bug Fixes
----------
+	It was designed from "day one" to monitor tens of thousands to ultimately unlimited devices with a single instance. It brings the power, scalability and flexibility that enterprises and carriers demand.
 
-Bug fixes should be made by making the appropriate fix and applying it to the `OpenNMS:develop` branch in OpenNMS upstream, as normal.  If a bug is deemed important enough to be merged to OpenNMS Prime, it should be cherry-picked back to the `OpenNMS:foundation` branch, which will merge into Prime's `Prime:develop` branch through Bamboo.
+*	Application Platform
 
-New Upstream+Prime Shared Features
-----------------------------------
+	While OpenNMS is useful "out of the box," it is designed to be highly customizable to create an unique and integrated management solution.
 
-If there is a feature being developed that can't wait for a major Prime revision and is deemed low-impact (ie, a new Detector), it should be made in a feature branch based on `OpenNMS:foundation`.  When the feature is complete and tested, it should be merged to `OpenNMS:foundation`, which will merge into OpenNMS upstream's `OpenNMS:develop` branch as well as Prime's `Prime:develop` branch.
+* Open Source
 
-New Prime-Only Features
------------------------
+	OpenNMS is 100% Free and Open Source software, with no license fees, software subscriptions or special "enterprise" versions.
 
-If there is a feature being developed specifically for Prime (ie, a theme editor for creating OpenNMS Prime color schemes), it should be made in a feature branch based on `Prime:develop`.  When the feature is complete and tested, it should be merged back to `Prime:develop`.
+Building OpenNMS
+================
+
+For details on building OpenNMS, please see the wiki page: [Building_OpenNMS][]
+
+Contributing to OpenNMS
+=======================
+
+Before making a pull request, please submit an [OCA][] for copyright assignment.  Note that this does **not** mean that you are giving up your copyright of your changes to OpenNMS, it instead allows for _dual_ copyright over contributed code.
+
+For details on how OpenNMS development works, see the [Branch Management][] README in this source tree.
+
+If you are using Eclipse, please read the [Eclipse][] page for details on setting up your workspace for code conventions and the plugins we use.
+
+[OpenNMS]:           http://www.opennms.org/
+[OCA]:               http://www.opennms.org/wiki/OCA
+[Eclipse]:           http://www.opennms.org/wiki/Eclipse
+[Building_OpenNMS]:  http://www.opennms.org/wiki/Building_OpenNMS
+[Branch Management]: README-branches.md
