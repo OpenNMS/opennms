@@ -85,14 +85,6 @@
   <!--  ${nostyles} -->
   <c:if test="${param.nostyles != 'true' }">
     <link rel="stylesheet" type="text/css" href="<%= baseHref %>css/bootstrap.css" media="screen" />
-    <style type="text/css">
-      body.fixed-nav {
-        padding-top: 60px;
-      }
-      .navbar-brand {
-        padding: 1px;
-      }
-    </style>
     <link rel="stylesheet" type="text/css" href="<%= baseHref %>css/opennms-theme.css" media="screen" />
     <!-- <link rel="stylesheet" type="text/css" href="<%= baseHref %>css/styles.css" media="screen" />
     <link rel="stylesheet" type="text/css" href="<%= baseHref %>css/gwt-asset.css" media="screen" />
