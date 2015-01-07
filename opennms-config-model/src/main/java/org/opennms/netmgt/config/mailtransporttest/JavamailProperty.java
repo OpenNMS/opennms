@@ -82,6 +82,11 @@ public class JavamailProperty implements Serializable {
         super();
     }
 
+    public JavamailProperty(final String name, final String value) {
+        m_name = name;
+        m_value = value;
+    }
+
     /**
      * Returns the value of field 'name'.
      * 
