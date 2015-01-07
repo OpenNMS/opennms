@@ -51,21 +51,21 @@
       <label for="nodeId">Node ID:</label><br/>
       <input type="hidden" name="listInterfaces" value="false"/>
       <input class="form-control input-sm" type="text" size="20" name="nodeId" />
-      <input class="form-control input-sm" type="submit" value="Search"/>
+      <input class="form-control input-sm btn btn-default" type="submit" value="Search"/>
     </form>
     <br/>
     <form class="form-inline" action="element/nodeList.htm" method="get">
       <label for="nodename">Node label like:</label><br/>
       <input type="hidden" name="listInterfaces" value="true"/>
       <input class="form-control input-sm" type="text" size="20" name="nodename" />
-      <input class="form-control input-sm" type="submit" value="Search"/>
+      <input class="form-control input-sm btn btn-default" type="submit" value="Search"/>
     </form>
     <br/>
     <form class="form-inline" action="element/nodeList.htm" method="get">
       <label for="iplike">TCP/IP Address like:</label><br/>
       <input type="hidden" name="listInterfaces" value="false"/>
       <input class="form-control input-sm" type="text" name="iplike" value="" placeholder="*.*.*.*" />
-      <input class="form-control input-sm" type="submit" value="Search"/>               
+      <input class="form-control input-sm btn btn-default" type="submit" value="Search"/>
     </form>
     <br/>
     <form class="form-inline" action="element/nodeList.htm" method="get">
@@ -76,7 +76,7 @@
         <option value="${serviceNameId.value}">${serviceNameId.key}</option>
       </c:forEach>
       </select>
-      <input class="form-control input-sm" type="submit" value="Search"/>
+      <input class="form-control input-sm btn btn-default" type="submit" value="Search"/>
     </form>
   </div>
 </div>
