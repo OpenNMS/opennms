@@ -38,16 +38,24 @@
 --%>
 
 <%@page language="java" contentType="text/html" session="true" import="
+	org.opennms.web.filter.Filter,
 	org.opennms.web.notification.*,
-	org.opennms.netmgt.config.NotifdConfigFactory"
+	org.opennms.web.notification.filter.*,
+	org.opennms.netmgt.config.NotifdConfigFactory,
+	org.springframework.web.context.WebApplicationContext,
+	org.springframework.web.context.support.WebApplicationContextUtils
+"
 %>
+
+<link rel="stylesheet" href="css/font-awesome-4.0.3/css/font-awesome.min.css">
 
 <%!
-	protected NotificationModel model = new NotificationModel();
-	protected java.text.ChoiceFormat formatter = new java.text.ChoiceFormat( "0#No outstanding notices|1#1 outstanding notice|2#{0} outstanding notices" );
+	protected java.text.ChoiceFormat formatter = new java.text.ChoiceFormat( "0#no outstanding notices|1#1 outstanding notice|2#{0} outstanding notices" );
 %>
-
 <%
+    WebApplicationContext context = WebApplicationContextUtils.getWebApplicationContext(application);
+    WebNotificationRepository repository = context.getBean(WebNotificationRepository.class);
+
     //optional parameter: node
     String nodeIdString = request.getParameter("node");
 
@@ -58,28 +66,56 @@
     }
 %>
 
-<h3 class="o-box"><a href="notification/index.jsp">Notification</a></h3>
-<div class="boxWrapper">
-	<ul class="plain o-box">
+<div class="panel panel-default">
+	<div class="panel-heading">
+		<h3 class="panel-title"><a href="notification/index.jsp">Notifications</a></h3>
+	</div>
+	<div class="panel-body">
+	<ul class="list-unstyled">
 		<% if( nodeIdString == null ) { %>
-			<li><strong>You</strong>: <%
-				int count = this.model.getOutstandingNoticeCount(request.getRemoteUser());
-				String format = this.formatter.format( count );
+			<li>
+			<i class="fa fa-fw fa-user"></i>
+			You have 
+			<a href="notification/browse?acktype=unack&amp;filter=<%= java.net.URLEncoder.encode("user="+request.getRemoteUser()) %>">
+			<%
+				int count = repository.countMatchingNotifications(
+					new NotificationCriteria(
+						AcknowledgeType.UNACKNOWLEDGED, 
+						new Filter[] { 
+							new UserFilter(request.getRemoteUser())
+						}
+					)
+				);
+				String format = formatter.format( count );
 				out.println( java.text.MessageFormat.format( format, new Object[] { new Integer(count) } ));
-				%>
-				(<a href="notification/browse?acktype=unack&amp;filter=<%= java.net.URLEncoder.encode("user="+request.getRemoteUser()) %>">Check</a>)</li>
-			<li><strong>All</strong>: <%
-				count = this.model.getOutstandingNoticeCount();
-				format = this.formatter.format( count );
+			%>
+			</a>
+			</li>
+			<li>
+			<i class="fa fa-fw fa-users"></i>
+			There are  
+			<a href="notification/browse?acktype=unack">
+			<%
+				count = repository.countMatchingNotifications(
+					new NotificationCriteria(
+						AcknowledgeType.UNACKNOWLEDGED,
+						new Filter[0]
+					)
+				);
+				format = formatter.format( count );
 				out.println( java.text.MessageFormat.format( format, new Object[] { new Integer(count) } ));
-				%>
-				(<a href="notification/browse?acktype=unack">Check</a>)</li>
-			<li><a href="roles">On-Call Schedule</a></li>
+			%>
+			</a>
+			</li>
+			<li><i class="fa fa-fw fa-calendar"></i> <a href="roles">On-Call Schedule</a></li>
 		<% } else { %>
-			<li><strong>You: Outstanding</strong>: 
-				(<a href="notification/browse?acktype=unack<%=nodeFilter%>&amp;filter=<%= java.net.URLEncoder.encode("user="+request.getRemoteUser()) %>">Check</a>)</li>
-			<li><strong>You: Acknowledged</strong>: 
-				(<a href="notification/browse?acktype=ack<%=nodeFilter%>&amp;filter=<%= java.net.URLEncoder.encode("user="+request.getRemoteUser()) %>">Check</a>)</li>
+			<li><a href="notification/browse?acktype=unack<%=nodeFilter%>&amp;filter=<%= java.net.URLEncoder.encode("user="+request.getRemoteUser()) %>">
+				Your outstanding notifications for this node 
+			</a></li>
+			<li><a href="notification/browse?acktype=ack<%=nodeFilter%>&amp;filter=<%= java.net.URLEncoder.encode("user="+request.getRemoteUser()) %>">
+				Your acknowledged notifications for this node 
+			</a></li>
 		<% } %>
 	</ul>
+	</div>
 </div>

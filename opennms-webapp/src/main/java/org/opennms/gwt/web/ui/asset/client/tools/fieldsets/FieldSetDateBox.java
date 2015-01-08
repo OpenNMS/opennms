@@ -112,8 +112,7 @@ public class FieldSetDateBox extends AbstractFieldSet implements FieldSet, Value
 		dateBox.getTextBox().addKeyUpHandler(this);
 
 		dateBox.addValueChangeHandler(this);
-		dateBox.setStyleName("dateBox");
-		dateBox.setSize("300px", "18px");
+		dateBox.addStyleName("form-control");
 
 		panel.add(dateBox);
 	}

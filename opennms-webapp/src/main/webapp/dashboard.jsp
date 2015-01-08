@@ -31,7 +31,7 @@
 
 <%@page language="java" contentType="text/html" session="true"  %>
 
-<jsp:include page="/includes/header.jsp" flush="false">
+<jsp:include page="/includes/bootstrap.jsp" flush="false">
 	<jsp:param name="title" value="Dashboard" />
    <jsp:param name="location" value="dashboard" />
 	<jsp:param name="meta">
@@ -48,28 +48,45 @@
 </jsp:include>
 
 <script type="text/javascript" src='dashboard/dashboard.nocache.js'></script>
-<table class="dashboard" cellspacing="5" width="100%">
-  <tbody>
-    <tr>
-      <td class="dashletCell"id="surveillanceView"></td>
-    </tr>
-    <tr>
-      <td class="dashletCell" id="alarms"></td>
-    </tr>
-    <tr>
-      <td class="dashletCell" id="notifications"></td>
-    </tr>
-    <tr>
-      <td class="dashletCell" id="nodeStatus"></td>
-    </tr>
-    <tr>
-      <td class="dashletCell" id="graphs"></td>
-    </tr>
-    <tr>
-      <td class="dashletCell" id="outages"></td>
-    </tr>
-  </tbody>
-</table>
 
+<div class="row">
+    <div class="col-md-12">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="dashletCell"id="surveillanceView"></div>
+            </div>
+        </div>
 
-<jsp:include page="/includes/footer.jsp" flush="false" />
+        <div class="row">
+            <div class="col-md-12">
+                <div class="dashletCell" id="alarms"></div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="dashletCell" id="notifications"></div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="dashletCell" id="nodeStatus"></div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="dashletCell" id="graphs"></div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="dashletCell" id="outages"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />

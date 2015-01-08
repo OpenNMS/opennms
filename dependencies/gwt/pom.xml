@@ -50,6 +50,11 @@
       </exclusions>
       <scope>provided</scope>
     </dependency>
+    <dependency>
+      <groupId>org.gwtbootstrap3</groupId>
+      <artifactId>gwtbootstrap3</artifactId>
+      <version>0.8.1</version>
+    </dependency>
   </dependencies>
   <repositories>
     <repository>

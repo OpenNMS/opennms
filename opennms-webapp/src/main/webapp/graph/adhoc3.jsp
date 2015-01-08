@@ -42,7 +42,7 @@
     yesterday.add( Calendar.DATE, -1 );
 %>
 
-<jsp:include page="/includes/header.jsp" flush="false" >
+<jsp:include page="/includes/bootstrap.jsp" flush="false" >
   <jsp:param name="title" value="Custom Resource Graphs" />
   <jsp:param name="headTitle" value="Custom" />
   <jsp:param name="headTitle" value="Resource Graphs" />
@@ -110,7 +110,7 @@
   <input type="reset" />
 </form>
 
-<jsp:include page="/includes/footer.jsp" flush="false" />
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />
 
 <%!
     //note these run from 0-11, this is because of java.util.Calendar!

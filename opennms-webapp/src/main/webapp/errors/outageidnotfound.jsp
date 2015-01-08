@@ -46,12 +46,13 @@
         einfe = (OutageIdNotFoundException)((ServletException)exception).getRootCause();
     }
     else {
-        throw new ServletException( "This error page does not handle this exception type.", exception );
+        einfe = new OutageIdNotFoundException("a", "b");
+        // throw new ServletException( "This error page does not handle this exception type.", exception );
     }
 %>
 
 
-<jsp:include page="/includes/header.jsp" flush="false" >
+<jsp:include page="/includes/bootstrap.jsp" flush="false" >
   <jsp:param name="title" value="Error" />
   <jsp:param name="headTitle" value="Outage ID Not Found" />
   <jsp:param name="headTitle" value="Error" />
@@ -67,13 +68,14 @@
   outages</a> to find the outage you are looking for.
 </p>
 
-<form method="get" action="outage/detail.htm">
-  <p>
-    Get&nbsp;details&nbsp;for&nbsp;Outage&nbsp;ID:
-    <br/>
-    <input type="text" name="id"/>
-    <input type="submit" value="Search" />
-  </p>
+<form role="form" method="get" action="outage/detail.htm">
+  <div class="row">
+    <div class="form-group col-md-2">
+      <label for="input_id">Get&nbsp;details&nbsp;for&nbsp;Outage&nbsp;ID:</label>
+      <input type="text" class="form-control" name="id"/>
+    </div>
+  </div>
+  <button type="submit" class="btn btn-default">Search</button>
 </form>
 
-<jsp:include page="/includes/footer.jsp" flush="false" />
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />

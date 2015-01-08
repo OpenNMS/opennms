@@ -37,7 +37,7 @@
 <%@ taglib tagdir="/WEB-INF/tags/tree" prefix="tree" %>
 <%@ taglib tagdir="/WEB-INF/tags/springx" prefix="springx" %>
 
-<jsp:include page="/includes/header.jsp" flush="false">
+<jsp:include page="/includes/bootstrap.jsp" flush="false">
 	<jsp:param name="title" value="Provisioning Requisitions" /> 
 	<jsp:param name="headTitle" value="Provisioning Requisitions" />
 	<jsp:param name="breadcrumb" value="<a href='admin/index.jsp'>Admin</a>" />
@@ -45,7 +45,11 @@
 	<jsp:param name="breadcrumb" value="Edit Requisition" />
 </jsp:include>
 
-<h3>Requisitioned Nodes for Group: ${fn:escapeXml(nodeEditForm.groupName)}</h3>
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title">Requisitioned Nodes for Group: ${fn:escapeXml(nodeEditForm.groupName)}</h3>
+  </div>
+  <div class="panel-footer">
 
  <tree:form commandName="nodeEditForm"> 
 
@@ -63,6 +67,9 @@
  </p>
  <tree:actionButton label="Done" action="done" />
  <tree:actionButton label="Add Node" action="addNode"/> 
+
+  </div>
+</div>
 
   <!-- FIXME: I have no idea how to get the errors from BindException.reject() to bubble up to here -->
 
@@ -147,4 +154,4 @@
  </tree:tree>
 
 </tree:form> 
-<jsp:include page="/includes/footer.jsp" flush="false"/>
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="false"/>

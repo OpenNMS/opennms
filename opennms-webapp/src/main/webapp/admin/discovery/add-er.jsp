@@ -36,24 +36,19 @@
 	if (request.getProtocol().equals("HTTP/1.1")) {
 		response.setHeader("Cache-Control", "no-cache");
 	}
-
 %>
 
-<html>
+<jsp:include page="/includes/bootstrap.jsp" flush="false" >
+    <jsp:param name="title" value="Add Exclude Range" />
+    <jsp:param name="headTitle" value="Admin" />
+    <jsp:param name="quiet" value="true" />
+</jsp:include>
 
-<head>
-  <title>Add Exclude Range | Admin | OpenNMS Web Console</title>
-  <base href="<%=org.opennms.web.api.Util.calculateUrlBase( request )%>" />
-  <link rel="stylesheet" type="text/css" href="css/styles.css" />
-  <link rel="shortcut icon" href="favicon.ico">
-  <script type='text/javascript' src='js/ipv6/ipv6.js'></script>
-  <script type='text/javascript' src='js/ipv6/lib/jsbn.js'></script>
-  <script type='text/javascript' src='js/ipv6/lib/jsbn2.js'></script>
-  <script type='text/javascript' src='js/ipv6/lib/sprintf.js'></script>
+<script type='text/javascript' src='js/ipv6/ipv6.js'></script>
+<script type='text/javascript' src='js/ipv6/lib/jsbn.js'></script>
+<script type='text/javascript' src='js/ipv6/lib/jsbn2.js'></script>
+<script type='text/javascript' src='js/ipv6/lib/sprintf.js'></script>
 
-</head>
-
-<body>
 <script type="text/javascript">
 function v4BigInteger(ip) {
     var a = ip.split('.');
@@ -74,7 +69,7 @@ function checkIpRange(ip1, ip2){
     return false;
 }
 
-function addExcludeRange(){
+function doAddExcludeRange(){
 	if(!isValidIPAddress(document.getElementById("begin").value)){
 		alert("Begin Address not valid.");
 		document.getElementById("begin").focus();
@@ -104,25 +99,41 @@ function addExcludeRange(){
 
 </script>
 
-<h3>Add Range to Exclude from Discovery</h3>
-<div class="boxWrapper">
-		  <p>Add a range of IP addresses to exclude from discovery.<br/>
-			 Insert <i>Begin</i> and <i>End</i> IP addresses and click on <i>Add</i> to confirm.
-	      </p>
-</div>
-<table class="standard">
-<tr>
- <td class="standard" align="center" width="35%">Begin IP Address:<input type="text" id="begin" name="begin" size="15" value=''/></td>
- <td class="standard" align="center" width="35%">End IP Address:<input type="text" id="end" name="end" size="15"  value=''/></td>
-</tr>
-</table>
+<div class="row">
+  <div class="col-md-12">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Add Range to Exclude from Discovery</h3>
+      </div>
+      <div class="panel-body">
+        <p>Add a range of IP addresses to exclude from discovery.<br/>
+        Insert <i>Begin</i> and <i>End</i> IP addresses and click on <i>Add</i> to confirm.
+        </p>
+        <form role="form" class="form-horizontal">
+          <div class="form-group">
+            <label for="begin" class="control-label col-sm-2">Being IP Address:</label>
+            <div class="col-sm-10">
+              <input type="text" class="form-control" id="begin" name="begin" value=''/>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="end" class="control-label col-sm-2">End IP Address:</label>
+            <div class="col-sm-10">
+              <input type="text" class="form-control" id="end" name="end" value=''/>
+            </div>
+          </div>
+          <div class="form-group">
+            <div class="col-sm-12">
+              <button type="button" class="btn btn-default" name="addExcludeRange" id="addExcludeRange" onclick="doAddExcludeRange();">Add</button>
+              <button type="button" class="btn btn-default" name="cancel" id="cancel" onclick="window.close();opener.document.focus();">Cancel</button>
+            </div>
+          </div>
+        </form>
+      </div> <!-- panel-body -->
+    </div> <!-- panel -->
+  </div> <!-- column -->
+</div> <!-- row -->
 
-
-<input type="button" name="addExcludeRange" id="addExcludeRange" value="Add" onclick="addExcludeRange();" />
-<input type="button" name="cancel" id="cancel" value="Cancel" onclick="window.close();opener.document.focus();" />
-
-<hr/>
-
-</body>
-
-</html>
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="false" >
+  <jsp:param name="quiet" value="true" />
+</jsp:include>

@@ -187,12 +187,17 @@ run_tests() {
 	banner "Running Tests"
 
 	local RETVAL=0
-	rm -rf ~/.m2/repository/org/opennms
 
-	pushd "$SOURCEDIR"
-		do_log "bin/bamboo.pl -Psmoke --projects :smoke-test --also-make install"
-		bin/bamboo.pl -Psmoke --projects :smoke-test --also-make install
-	popd
+	EXTRA_ARGS=""
+#	CHROMEDRIVER="/usr/local/bin/chromedriver"
+#	CHROME="/usr/bin/google-chrome"
+#
+#	if [ -e "$CHROMEDRIVER" ] && [ -e "$CHROME" ]; then
+#		do_log "found Chrome and ChromeDriver, using it instead"
+#		EXTRA_ARGS="-Dorg.opennms.smoketest.webdriver.class=org.openqa.selenium.chrome.ChromeDriver -Dwebdriver.chrome.driver=$CHROMEDRIVER"
+#	else
+#		do_log "no Chrome found, using defaults"
+#	fi
 
 	EXTRA_ARGS=""
 #	CHROMEDRIVER="/usr/local/bin/chromedriver"

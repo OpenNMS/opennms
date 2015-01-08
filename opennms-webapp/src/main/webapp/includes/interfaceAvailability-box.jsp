@@ -109,8 +109,11 @@
     Outage[] outages = new OutageModel().getCurrentOutagesForNode(nodeId);
 %>
 
-<h3>Availability</h3>
-<table>
+<div class="panel panel-default">
+<div class="panel-heading">
+<h3 class="panel-title">Availability</h3>
+</div>
+<table class="table table-condensed severity">
   <tr class="CellStatus">
     <td class="Cleared nobright" colspan="2"><%=ipAddr%></td>
     <td class="Cleared nobright"><img src="/opennms/rest/timeline/header/<%=timelineStart%>/<%=timelineEnd%>/<%=timelineWidth%>"></td>
@@ -155,14 +158,15 @@
       <c:param name="intf" value="<%=ipAddr%>"/>
       <c:param name="service" value="<%=String.valueOf(service.getServiceId())%>"/>
     </c:url>
-    <td class="<%=warnClass%> bright"><a href="<c:out value="${serviceLink}"/>"><c:out value="<%=service.getServiceName()%>"/></a></td>
+    <td class="severity-<%=warnClass%> bright"><a href="<c:out value="${serviceLink}"/>"><c:out value="<%=service.getServiceName()%>"/></a></td>
     <% if( service.isManaged() ) { %>
       <td class="Cleared nobright"><script src="<%=timelineUrl%>"></script></td>
-      <td class="<%=serviceClass%> nobright"><%=CategoryUtil.formatValue(svcValue)%>%</td>
+      <td class="severity-<%=serviceClass%> nobright"><%=CategoryUtil.formatValue(svcValue)%>%</td>
     <% } else { %>
       <td class="Cleared nobright"><img src="<%=emptyUrl%>"></td>
-      <td class="<%=serviceClass%> nobright"><%=ElementUtil.getServiceStatusString(service)%></td>
+      <td class="severity-<%=serviceClass%> nobright"><%=ElementUtil.getServiceStatusString(service)%></td>
     <% } %>
     </tr>
   <% } %>
 </table>
+</div>

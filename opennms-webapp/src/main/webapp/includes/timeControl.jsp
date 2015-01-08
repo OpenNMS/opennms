@@ -40,7 +40,9 @@
 <c:set var="prefix" value="${param.prefix}" />
 <fmt:parseDate var="time" value="${param.time}" pattern="HH:mm:ss" />
 
-					<select name="<c:out value='${prefix}'/>Hour">
+<div class="form-group">
+  <div class="col-sm-4">
+					<select class="form-control" name="<c:out value='${prefix}'/>Hour">
 					<fmt:formatDate var="startHour" value="${time}" pattern="h"/>
 					<c:forEach var="h" begin="1" end="12">
 						<c:choose>
@@ -53,7 +55,9 @@
 						</c:choose>
 					</c:forEach>
 					</select>
-					<select name="<c:out value='${prefix}'/>Minute">
+  </div> <!-- column -->
+  <div class="col-sm-4">
+					<select class="form-control" name="<c:out value='${prefix}'/>Minute">
 					<fmt:formatDate var="startMinute" value="${time}" pattern="m"/>
 					<c:forEach var="half" begin="0" end="1">
 						<c:choose>
@@ -66,7 +70,9 @@
 						</c:choose>
 					</c:forEach>
 					</select>
-					<select name="<c:out value='${prefix}'/>AmOrPm">
+  </div> <!-- column -->
+  <div class="col-sm-4">
+					<select class="form-control" name="<c:out value='${prefix}'/>AmOrPm">
 					<fmt:formatDate var="startAmOrPm" value="${time}" pattern="a"/>
 					<c:forEach var="a" items="${amPmList}">
 						<c:choose>
@@ -79,5 +85,5 @@
 						</c:choose>
 					</c:forEach>
 					</select>
-
-
+  </div> <!-- column -->
+</div> <!-- form-group -->

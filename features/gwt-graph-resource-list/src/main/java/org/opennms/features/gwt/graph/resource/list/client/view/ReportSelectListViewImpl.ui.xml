@@ -7,9 +7,6 @@
 			height: 460px;
 		}
 		
-		.layoutContainer{
-		    overflow: auto;
-		}
 	</ui:style>
 	<g:LayoutPanel ui:field="m_layoutPanel">
 	   <g:layer top="0" right="0" bottom="40px" left="0" >
