@@ -37,7 +37,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring" %>
 
-<jsp:include page="/includes/header.jsp" flush="false" >
+<jsp:include page="/includes/bootstrap.jsp" flush="false" >
   <jsp:param name="title" value="Remote Poller Status" />
   <jsp:param name="headTitle" value="Remote Poller Status" />
   <jsp:param name="location" value="admin" />
@@ -55,53 +55,52 @@
   </form>
 </c:if>
 
-<h3><spring:message code="distributed.pollerStatus.title"/></h3>
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title"><spring:message code="distributed.pollerStatus.title"/></h3>
+  </div>
+  <table class="table table-condensed table-bordered severity">
+    <tr>
+      <th><spring:message code="distributed.area"/></th>
+      <th><spring:message code="distributed.definitionName"/></th>
+      <th><spring:message code="distributed.id"/></th>
+      <th><spring:message code="distributed.hostName"/></th>
+      <th><spring:message code="distributed.ipAddress"/></th>
+      <th><spring:message code="distributed.connectionHostName"/></th>
+      <th><spring:message code="distributed.connectionIpAddress"/></th>
+      <th><spring:message code="distributed.status"/></th>
+      <th><spring:message code="distributed.lastCheckInTime"/></th>
+    </tr>
+    <c:forEach items="${model.locationMonitors}" var="monitor">
+      <spring:message var="statusClass" code="distributed.status.style.${monitor.status}" text="distributed.status.style._DEFAULT"/>
+      <tr class="${statusClass}">
+        <td class="divider">${monitor.area}</td>
+        <td class="divider">${monitor.definitionName}</td>
+        <td class="divider">
+          <c:url var="detailsUrl" value="distributed/locationMonitorDetails.htm">
+            <c:param name="monitorId" value="${monitor.id}"/>
+          </c:url> 
+          <a href="${detailsUrl}">${monitor.id}</a>
+        </td>
+        <td class="divider">${monitor.hostName}</td>
+        <td class="divider">${monitor.ipAddress}</td>
+        <td class="divider">${monitor.connectionHostName}</td>
+        <td class="divider">${monitor.connectionIpAddress}</td>
+        <td class="divider bright"><spring:message code="distributed.status.value.${monitor.status}" text="${monitor.status}"/></td>
+        <td class="divider">
+          <c:choose>
+            <c:when test="${!empty monitor.lastCheckInTime}">
+              <fmt:formatDate value="${monitor.lastCheckInTime}" type="date" dateStyle="short"/>
+              <fmt:formatDate value="${monitor.lastCheckInTime}" type="time" dateStyle="short"/>
+            </c:when>
+            <c:otherwise>
+              Never
+            </c:otherwise>
+          </c:choose>
+        </td>
+      </tr> 
+    </c:forEach>
+  </table>
+</div>
 
-<table>
-  <tr>
-    <th><spring:message code="distributed.area"/></th>
-    <th><spring:message code="distributed.definitionName"/></th>
-    <th><spring:message code="distributed.id"/></th>
-    <th><spring:message code="distributed.hostName"/></th>
-    <th><spring:message code="distributed.ipAddress"/></th>
-    <th><spring:message code="distributed.connectionHostName"/></th>
-    <th><spring:message code="distributed.connectionIpAddress"/></th>
-    <th><spring:message code="distributed.status"/></th>
-    <th><spring:message code="distributed.lastCheckInTime"/></th>
-  </tr>
-  
-
-  <c:forEach items="${model.locationMonitors}" var="monitor">
-    <spring:message var="statusClass" code="distributed.status.style.${monitor.status}" text="distributed.status.style._DEFAULT"/>
-    <tr class="${statusClass}">
-      <td class="divider">${monitor.area}</td>
-      <td class="divider">${monitor.definitionName}</td>
-      <td class="divider">
-        <c:url var="detailsUrl" value="distributed/locationMonitorDetails.htm">
-          <c:param name="monitorId" value="${monitor.id}"/>
-        </c:url> 
-        <a href="${detailsUrl}">${monitor.id}</a>
-      </td>
-      <td class="divider">${monitor.hostName}</td>
-      <td class="divider">${monitor.ipAddress}</td>
-      <td class="divider">${monitor.connectionHostName}</td>
-      <td class="divider">${monitor.connectionIpAddress}</td>
-      <td class="divider bright"><spring:message code="distributed.status.value.${monitor.status}" text="${monitor.status}"/></td>
-      <td class="divider">
-        <c:choose>
-          <c:when test="${!empty monitor.lastCheckInTime}">
-            <fmt:formatDate value="${monitor.lastCheckInTime}" type="date" dateStyle="short"/>
-            <fmt:formatDate value="${monitor.lastCheckInTime}" type="time" dateStyle="short"/>
-          </c:when>
-          
-          <c:otherwise>
-            Never
-          </c:otherwise>
-        </c:choose>
-      </td>
-    </tr> 
-  </c:forEach>
-</table>
-
-
-<jsp:include page="/includes/footer.jsp" flush="false"/>
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="false"/>

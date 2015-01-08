@@ -29,60 +29,52 @@
 package org.opennms.smoketest;
 
 import org.junit.Before;
-import org.junit.FixMethodOrder;
 import org.junit.Test;
-import org.junit.runners.MethodSorters;
 
-@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class NotificationsPageTest extends OpenNMSSeleniumTestCase {
     @Before
     public void setUp() throws Exception {
-        super.setUp();
-        clickAndWait("link=Notifications");
+        notificationsPage();
     }
 
     @Test
-    public void a_testAllTextIsPresent() throws Exception {
-        waitForText("Notification queries");
-        waitForText("Outstanding and Acknowledged Notices");
-        waitForText("Notification Escalation");
-        waitForText("Check your outstanding notices");
-        waitForText("Once a notice is sent");
-        waitForText("User:");
-        waitForText("Notice:");
+    public void testAllTextIsPresent() throws Exception {
+        findElementByXpath("//h3[text()='Notification queries']");
+        findElementByXpath("//h3[text()='Outstanding and Acknowledged Notices']");
     }
 
     @Test
-    public void b_testAllLinksArePresent() throws InterruptedException {
-        waitForElement("link=Your outstanding notices");
-        waitForElement("link=All outstanding notices");
-        waitForElement("link=All acknowledged notices");
+    public void testAllLinksArePresent() throws InterruptedException {
+        findElementByLink("Your outstanding notices");
+        findElementByLink("All outstanding notices");
+        findElementByLink("All acknowledged notices");
     }
 
     @Test 
-    public void c_testAllFormsArePresent() throws InterruptedException {
-        waitForElement("css=input[type=submit]");
-        waitForElement("//input[@value='Get details']");
+    public void testAllFormsArePresent() throws InterruptedException {
+        findElementByXpath("//button[@type='submit' and text() = 'Check notices']");
+        findElementByXpath("//button[@type='submit' and text() = 'Get details']");
     }
 
     @Test
-    public void d_testAllLinks() throws InterruptedException {
-        clickAndWait("link=Your outstanding notices");
-        waitForText("admin was notified");
-        waitForElement("link=[Remove all]");
-        waitForElement("link=Sent Time");
-        waitForElement("//input[@value='Acknowledge Notices']");
-        clickAndWait("link=Notices");
-        clickAndWait("link=All outstanding notices");
-        waitForText("only outstanding notices");
-        waitForElement("link=Respond Time");
-        waitForElement("css=input[type=button]");
-        clickAndWait("link=Notices");
-        clickAndWait("link=All acknowledged notices");
-        waitForText("only acknowledged notices");
-        waitForElement("link=Node");
-        waitForElement("css=input[type=submit]");
-        clickAndWait("link=Notices");
+    public void testAllLinks() throws InterruptedException {
+        findElementByLink("Your outstanding notices").click();
+        findElementByXpath("//span[@class='label label-default' and contains(text(), 'admin was notified')]");
+        findElementByLink("[Remove all]");
+        findElementByLink("Sent Time");
+        findElementByXpath("//button[@type='button' and text()='Acknowledge Notices']");
+
+        notificationsPage();
+        findElementByLink("All outstanding notices").click();
+        findElementByXpath("//p//strong[text()='outstanding']");
+        findElementByLink("[Show acknowledged]");
+        findElementByLink("Respond Time");
+
+        notificationsPage();
+        findElementByLink("All acknowledged notices").click();
+        findElementByXpath("//p//strong[text()='acknowledged']");
+        findElementByLink("[Show outstanding]");
+        findElementByLink("Respond Time");
     }
 
 }

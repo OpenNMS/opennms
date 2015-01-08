@@ -34,7 +34,7 @@
 	session="true"
 	isErrorPage="true"
 %>
-<jsp:include page="/includes/header.jsp" flush="false" >
+<jsp:include page="/includes/bootstrap.jsp" flush="false" >
   <jsp:param name="title" value="Error" />
   <jsp:param name="headTitle" value="Page Not Found" />
   <jsp:param name="headTitle" value="Error" />
@@ -46,4 +46,4 @@
   The page you were looking for does not exist.
 </p>
 
-<jsp:include page="/includes/footer.jsp" flush="false" />
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />

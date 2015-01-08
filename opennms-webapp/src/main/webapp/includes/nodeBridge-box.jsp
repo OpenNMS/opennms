@@ -91,17 +91,20 @@
 
   
 
-<h3>Node Bridge Info</h3>
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title">Node Bridge Info</h3>
+  </div>
 <% if(stpnodes.length == 0) { %>
 		
-	<table>
+	<table class="table table-condensed">
 		<tr>
 		<td>There have been no bridge info on this node.</td>
 		</tr>
 	</table>
         
 <% } else { %>
-		<table>
+		<table class="table table-condensed">
 			<thead>
               <tr>
                 <th>VLAN ID</th>			  
@@ -141,5 +144,5 @@
               </tr>
               <% } %>
        <% } %>
-                     
 </table>      
+</div> <!-- panel -->

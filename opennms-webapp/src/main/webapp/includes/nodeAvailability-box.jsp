@@ -94,12 +94,12 @@
     Outage[] outages = new OutageModel().getCurrentOutagesForNode(nodeId);
 %>
 
-<div id="availability-box">
-
-<h3 class="o-box">Availability</h3>
-<table class="o-box">
-  <tr class="CellStatus">
-
+<div id="availability-box" class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title">Availability</h3>
+  </div>
+  <table class="table table-condensed severity">
+    <tr>
 <%
   if (overallRtcValue < 0) {
     availClass = "Indeterminate";
@@ -109,9 +109,8 @@
     availValue = CategoryUtil.formatValue(overallRtcValue) + "%";
   }
 %>
-
-    <td class="<%= availClass %> nobright" colspan="3">Availability (last 24 hours)</td>
-    <td colspan="1" class="<%= availClass %> nobright"><%= availValue %></td>
+    <td class="severity-<%= availClass %> nobright" colspan="3">Availability (last 24 hours)</td>
+    <td colspan="1" class="severity-<%= availClass %> nobright"><%= availValue %></td>
 
   </tr>
 
@@ -131,7 +130,7 @@
             <% double intfValue = m_model.getInterfaceAvailability(nodeId, ipAddr); %>                              
             <% Service[] svcs = ElementUtil.getServicesOnInterface(nodeId,ipAddr,getServletContext()); %>
 
-            <tr class="CellStatus">
+            <tr>
               <%
                 if (svcs.length < 1) {
                     availClass = "Indeterminate";
@@ -144,19 +143,19 @@
                   availValue = CategoryUtil.formatValue(intfValue) + "%";
                 }
               %>
-              <td class="Cleared nobright" colspan="2"><a href="<c:out value="${interfaceLink}"/>"><%=ipAddr%></a></td>
+              <td class="severity-Cleared nobright" colspan="2"><a href="<c:out value="${interfaceLink}"/>"><%=ipAddr%></a></td>
               <%
                   if ("Not Monitored".equals(availValue)) {
               %>
-                <td class="Cleared nobright"><img src="<%=emptyUrl%>"></td>
+                <td class="severity-Cleared nobright"><img src="<%=emptyUrl%>"></td>
               <%
                   } else {
               %>
-                <td class="Cleared nobright"><img src="/opennms/rest/timeline/header/<%=timelineStart%>/<%=timelineEnd%>/<%=timelineWidth%>"></td>
+                <td class="severity-Cleared nobright"><img src="/opennms/rest/timeline/header/<%=timelineStart%>/<%=timelineEnd%>/<%=timelineWidth%>"></td>
               <%
                   }
               %>
-              <td class="<%= availClass %> nobright"><%= availValue %></td>
+              <td class="severity-<%= availClass %> nobright"><%= availValue %></td>
             </tr>
     
             <% for( int j=0; j < svcs.length; j++ ) { %>
@@ -193,16 +192,16 @@
                   <c:param name="intf" value="<%=ipAddr%>"/>
                   <c:param name="service" value="<%=String.valueOf(service.getServiceId())%>"/>
                 </c:url>
-                <tr class="CellStatus">
+                <tr>
                     <%
                         if (j==0) {
                     %>
-                    <td class="Cleared nobright" rowspan="<%=svcs.length%>"></td>
+                    <td class="severity-Cleared nobright" rowspan="<%=svcs.length%>"></td>
                     <%
                         }
                     %>
-                  <td class="<%= warnClass %> bright"><a href="<c:out value="${serviceLink}"/>"><%=service.getServiceName()%></a></td>
-                  <td class="Cleared nobright">
+                  <td class="severity-<%= warnClass %> bright"><a href="<c:out value="${serviceLink}"/>"><%=service.getServiceName()%></a></td>
+                  <td class="severity-Cleared nobright">
                     <%
                          if (service.isManaged()) {
                     %>
@@ -215,7 +214,7 @@
                         }
                     %>
                   </td>
-                  <td class="<%= availClass %> nobright"><%= availValue %></td>
+                  <td class="severity-<%= availClass %> nobright"><%= availValue %></td>
                 </tr>
             <% } %>
           <% } else { %>
@@ -223,11 +222,11 @@
             <% if("0.0.0.0".equals(ipAddr)) {
             }
             else { %>
-            <tr class="CellStatus">
+            <tr>
               <td>
               <a href="<c:out value="${interfaceLink}"/>"><%=ipAddr%></a>
               </td>
-              <td class="Indeterminate" colspan="2"><%=ElementUtil.getInterfaceStatusString(intf)%></td>
+              <td class="severity-Indeterminate" colspan="2"><%=ElementUtil.getInterfaceStatusString(intf)%></td>
             </tr>
             <% } %>
           <% } %>

@@ -38,7 +38,7 @@
                 java.lang.StringBuilder"
  %>
 
-<jsp:include page="/includes/header.jsp" flush="false" >
+<jsp:include page="/includes/bootstrap.jsp" flush="false" >
   <jsp:param name="title" value="Error" />
   <jsp:param name="headTitle" value="Unexpected Error" />
   <jsp:param name="headTitle" value="Error" />
@@ -64,8 +64,11 @@ function toggleDiv(divName) {
 }
 </script>
 
-<h3>The OpenNMS Web User Interface Has Experienced an Error</h3>
-<br/>
+<div class="panel panel-default">
+<div class="panel-heading">
+  <h3 class="panel-title">The OpenNMS Web User Interface Has Experienced an Error</h3>
+</div>
+<div class="panel-body">
 
 <p>
   The OpenNMS web UI has encountered an error that it does
@@ -152,138 +155,166 @@ userSession.setAttribute("errorReportDetails", errorDetails);
   <strong><a href="javascript:toggleDiv('errorDetails')">here</a></strong>.
 </p>
 
+</div> <!-- panel-body -->
+</div> <!-- panel -->
+
 <div id="errorDetails" style="display: none;">
-<h3>Error Details</h3>
 
-<p>
-Please include the information below when reporting problems.
-</p>
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title">Error Details</h3>
+  </div>
+  <div class="panel-body">
+    <p>
+    Please include the information below when reporting problems.
+    </p>
+  </div> <!-- panel-body -->
+</div> <!-- panel -->
 
-<h3>Exception Trace</h3>
-  <pre id="exceptionTrace">
-<%=stBuilder.toString()%>
-  </pre>
-  
-<h3>Request Details</h3>
-<table class="standard">
-  <tr>
-    <td class="standardheader">Locale</td>
-    <td class="standard"><%=request.getLocale()%></td>
-  </tr>
-  <tr>
-    <td class="standardheader">Method</td>
-    <td class="standard"><%=request.getMethod()%></td>
-  </tr>
-  <tr>
-    <td class="standardheader">Path Info</td>
-    <td class="standard"><%=request.getPathInfo()%></td>
-  </tr>
-  <tr>
-    <td class="standardheader">Path Info (translated)</td>
-    <td class="standard"><%=request.getPathTranslated()%></td>
-  </tr>
-  <tr>
-    <td class="standardheader">Protocol</td>
-    <td class="standard"><%=request.getProtocol()%></td>
-  </tr>
-  <tr>
-    <td class="standardheader">URI</td>
-    <td class="standard"><%=request.getRequestURI()%></td>
-  </tr>
-  <tr>
-    <td class="standardheader">URL</td>
-    <td class="standard"><%=request.getRequestURL()%></td>
-  </tr>
-  <tr>
-    <td class="standardheader">Scheme</td>
-    <td class="standard"><%=request.getScheme()%></td>
-  </tr>
-  <tr>
-    <td class="standardheader">Server Name</td>
-    <td class="standard"><%=request.getServerName()%></td>
-  </tr>
-  <tr>
-    <td class="standardheader">Server Port</td>
-    <td class="standard"><%=request.getServerPort()%></td>
-  </tr>
-  
-</table>
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title">Exception Trace</h3>
+  </div>
+  <div class="panel-body">
+    <pre id="exceptionTrace"><%=stBuilder.toString()%></pre>
+  </div> <!-- panel-body -->
+</div> <!-- panel -->
 
-<h3>System Details</h3>
-<table class="standard">
-  <tr>
-    <td class="standardheader">OpenNMS Version:</td>
-    <td class="standard"><%=Vault.getProperty("version.display")%></td>
-  </tr>
-  <tr>
-    <td class="standardheader">Java Version:</td>
-    <td class="standard"><%=System.getProperty( "java.version" )%> <%=System.getProperty( "java.vendor" )%></td>
-  </tr>  
-  <tr>
-    <td class="standardheader">Java Virtual Machine:</td>
-    <td class="standard"><%=System.getProperty( "java.vm.version" )%> <%=System.getProperty( "java.vm.vendor" )%></td>
-  </tr>
-  <tr>
-    <td class="standardheader">Operating System:</td>
-    <td class="standard"><%=System.getProperty( "os.name" )%> <%=System.getProperty( "os.version" )%> (<%=System.getProperty( "os.arch" )%>)</td>
-  </tr>
-  <tr>
-    <td class="standardheader">Servlet Container:</td>
-    <td class="standard"><%=application.getServerInfo()%> (Servlet Spec <%=application.getMajorVersion()%>.<%=application.getMinorVersion()%>)</td>
-  </tr>
-  <tr>
-    <td class="standardheader">User Agent:</td>
-    <td class="standard"><%=request.getHeader( "User-Agent" )%></td>
-  </tr>
-</table>
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title">Request Details</h3>
+  </div>
+  <table class="table table-condensed table-bordered">
+    <tr>
+      <th>Locale</td>
+      <td><%=request.getLocale()%></td>
+    </tr>
+    <tr>
+      <th>Method</td>
+      <td><%=request.getMethod()%></td>
+    </tr>
+    <tr>
+      <th>Path Info</td>
+      <td><%=request.getPathInfo()%></td>
+    </tr>
+    <tr>
+      <th>Path Info (translated)</td>
+      <td><%=request.getPathTranslated()%></td>
+    </tr>
+    <tr>
+      <th>Protocol</td>
+      <td><%=request.getProtocol()%></td>
+    </tr>
+    <tr>
+      <th>URI</td>
+      <td><%=request.getRequestURI()%></td>
+    </tr>
+    <tr>
+      <th>URL</td>
+      <td><%=request.getRequestURL()%></td>
+    </tr>
+    <tr>
+      <th>Scheme</td>
+      <td><%=request.getScheme()%></td>
+    </tr>
+    <tr>
+      <th>Server Name</td>
+      <td><%=request.getServerName()%></td>
+    </tr>
+    <tr>
+      <th>Server Port</td>
+      <td><%=request.getServerPort()%></td>
+    </tr>
+  </table>
+</div> <!-- panel -->
 
-<h3>Options for Reporting This Problem</h3>
-<p>
-There are two options for reporting this problem outside your own organization.
-</p>
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title">System Details</h3>
+  </div>
+  <table class="table table-condensed table-bordered">
+    <tr>
+      <th>OpenNMS Version:</td>
+      <td><%=Vault.getProperty("version.display")%></td>
+    </tr>
+    <tr>
+      <th>Java Version:</td>
+      <td><%=System.getProperty( "java.version" )%> <%=System.getProperty( "java.vendor" )%></td>
+    </tr>
+    <tr>
+      <th>Java Virtual Machine:</td>
+      <td><%=System.getProperty( "java.vm.version" )%> <%=System.getProperty( "java.vm.vendor" )%></td>
+    </tr>
+    <tr>
+      <th>Operating System:</td>
+      <td><%=System.getProperty( "os.name" )%> <%=System.getProperty( "os.version" )%> (<%=System.getProperty( "os.arch" )%>)</td>
+    </tr>
+    <tr>
+      <th>Servlet Container:</td>
+      <td><%=application.getServerInfo()%> (Servlet Spec <%=application.getMajorVersion()%>.<%=application.getMinorVersion()%>)</td>
+    </tr>
+    <tr>
+      <th>User Agent:</td>
+      <td><%=request.getHeader( "User-Agent" )%></td>
+    </tr>
+  </table>
+</div> <!-- panel -->
 
-<h5>OpenNMS Bug Tracker</h5>
-<p>
-If you have an account on the <a href="http://issues.opennms.org/">OpenNMS issue tracker</a>,
-please consider reporting this problem. Bug reports help us make OpenNMS better, and are
-often the only way we become aware of problems. Please do search the tracker first to check
-that others have not already reported the problem that you have encountered.
-</p>
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title">Options for Reporting This Problem</h3>
+  </div>
+  <div class="panel-body">
+    <p>
+    There are two options for reporting this problem outside your own organization.
+    </p>
 
-<h5>OpenNMS Commercial Support</h5>
-<p>
-If you have a commercial support agreement with <a href="http://www.opennms.com/">The
-OpenNMS Group</a>, please consider opening a support ticket about this problem at
-<strong><a href="https://support.opennms.com/">support.opennms.com</a></strong> or via
-e-mail. Tickets from our customers receive priority treatment from our support staff.
-If you create a support ticket and the support engineer handling the ticket determines
-that you have found a bug, he or she will create a record in the bug tracker.
-</p>
+    <strong>OpenNMS Bug Tracker</strong>
+    <p>
+    If you have an account on the <a href="http://issues.opennms.org/">OpenNMS issue tracker</a>,
+    please consider reporting this problem. Bug reports help us make OpenNMS better, and are
+    often the only way we become aware of problems. Please do search the tracker first to check
+    that others have not already reported the problem that you have encountered.
+    </p>
 
-<p>
-For a plain-text version of the information above suitable for pasting into a bug report
-or support ticket, click
-<strong><a href="javascript:toggleDiv('plainTextErrorDetails');">here</a></strong>.
-</p>
+    <strong>OpenNMS Commercial Support</strong>
+    <p>
+    If you have a commercial support agreement with <a href="http://www.opennms.com/">The
+    OpenNMS Group</a>, please consider opening a support ticket about this problem at
+    <strong><a href="https://support.opennms.com/">support.opennms.com</a></strong> or via
+    e-mail. Tickets from our customers receive priority treatment from our support staff.
+    If you create a support ticket and the support engineer handling the ticket determines
+    that you have found a bug, he or she will create a record in the bug tracker.
+    </p>
+
+    <p>
+    For a plain-text version of the information above suitable for pasting into a bug report
+    or support ticket, click
+    <strong><a href="javascript:toggleDiv('plainTextErrorDetails');">here</a></strong>.
+    </p>
+  </div> <!-- panel-body -->
+</div> <!-- panel -->
+
+</div> <!-- errorDetails -->
 
 <div id="plainTextErrorDetails" style="display: none;">
-<h3>Plain Text Error Details</h3>
-<div class="boxWrapper">
 
-<textarea id="plainTextArea" style="width: 100%; height: 300px;">
-Please take a few moments to include a description of what you were doing when you encountered this problem. Without knowing the context of the error, it's often difficult for the person looking at the problem to narrow the range of possible causes. Bug reports that do not include any information on the context in which the problem occurred will receive a lower priority and may even be closed as invalid. 
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title">Plain Text Error Details</h3>
+  </div>
+  <div class="panel-body">
+    <textarea id="plainTextArea" style="width: 100%; height: 300px;">Please take a few moments to include a description of what you were doing when you encountered this problem. Without knowing the context of the error, it's often difficult for the person looking at the problem to narrow the range of possible causes. Bug reports that do not include any information on the context in which the problem occurred will receive a lower priority and may even be closed as invalid. 
 
 <%= errorDetails %>
+    </textarea>
+  </div> <!-- panel-body -->
+</div> <!-- panel -->
 
-</textarea>
-
-</div>
-
-</div>
+</div> <!-- plainTextErrorDetails -->
 
 <script type="text/javascript">
 var reportArea = document.getElementById("plainTextArea");
 </script>
 
-
-<jsp:include page="/includes/footer.jsp" flush="false" />
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />

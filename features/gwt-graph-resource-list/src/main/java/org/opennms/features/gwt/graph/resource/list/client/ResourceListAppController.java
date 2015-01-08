@@ -40,16 +40,18 @@ import com.google.gwt.user.client.ui.HasWidgets;
 public class ResourceListAppController implements Presenter {
 
     private JsArray<ResourceListItem> m_resourceList;
+    private final String m_targetUrl;
     private String m_baseUrl;
 
-    public ResourceListAppController(JsArray<ResourceListItem> resourceListData, String baseUrl) {
+    public ResourceListAppController(JsArray<ResourceListItem> resourceListData, String targetUrl, String baseUrl) {
         m_resourceList = resourceListData;
+        m_targetUrl = targetUrl;
         m_baseUrl = baseUrl;
     }
 
     @Override
     public void go(HasWidgets container) {
-        new DefaultResourceListPresenter(new DefaultResourceListViewImpl(), new SearchPopup(), m_resourceList, m_baseUrl).go(container);
+        new DefaultResourceListPresenter(new DefaultResourceListViewImpl(), new SearchPopup(), m_resourceList, m_targetUrl, m_baseUrl).go(container);
     }
 
 }

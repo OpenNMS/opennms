@@ -44,12 +44,12 @@ import org.opennms.netmgt.config.groups.Time;
  */
 public class WebSchedEntry {
     
-    int m_schedIndex;
-    int m_timeIndex;
-    String m_user;
-    String m_type;
-    String m_begins;
-    String m_ends;
+    private final int m_schedIndex;
+    private final int m_timeIndex;
+    private final String m_user;
+    private final String m_type;
+    private final String m_begins;
+    private final String m_ends;
 
     /**
      * <p>Constructor for WebSchedEntry.</p>
@@ -73,7 +73,7 @@ public class WebSchedEntry {
      * @param begins a {@link java.lang.String} object.
      * @param ends a {@link java.lang.String} object.
      */
-    public WebSchedEntry(int schedIndex, int timeIndex, String user, String begins, String ends) {
+    private WebSchedEntry(int schedIndex, int timeIndex, String user, String begins, String ends) {
         // this is a specific entry
         m_schedIndex = schedIndex;
         m_timeIndex = timeIndex;

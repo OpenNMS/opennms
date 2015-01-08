@@ -56,7 +56,7 @@
     }
 %>
 
-<jsp:include page="/includes/header.jsp" flush="false" >
+<jsp:include page="/includes/bootstrap.jsp" flush="false" >
   <jsp:param name="title" value="Delete Nodes" />
   <jsp:param name="headTitle" value="Delete Nodes" />
   <jsp:param name="headTitle" value="Admin" />
@@ -137,8 +137,11 @@
   }
 %>
 
-    <h3>Delete Nodes</h3>
-
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title">Delete Nodes</h3>
+  </div>
+  <div class="panel-body">
 	<P>The nodes present in the system are listed below. To permanently delete a node (and all associated
 	   interfaces, services, outages, events and notifications), check the "Delete?" box beside the node's ID and
            select "Delete Nodes". You may check more than one.
@@ -153,62 +156,61 @@
            from the discovery range or unmanage the device instead of deleting it.
         </P>
 
-	<br/>
-
-          <input type="button" value="Delete Nodes" onClick="applyChanges()">
-          <input type="button" value="Cancel" onClick="cancel()">
-          <input type="button" value="Select All" onClick="checkAll()">
-          <input type="button" value="Unselect All" onClick="uncheckAll()">
-          <input type="reset"><br/>&nbsp;
-
-	<br/>
+        <div class="form-group">
+          <input type="button" class="btn btn-default" value="Delete Nodes" onClick="applyChanges()">
+          <input type="button" class="btn btn-default" value="Cancel" onClick="cancel()">
+          <input type="button" class="btn btn-default" value="Select All" onClick="checkAll()">
+          <input type="button" class="btn btn-default" value="Unselect All" onClick="uncheckAll()">
+          <input type="reset" class="btn btn-default">
+        </div>
       
+      <div class="row form-group">
    <% if (nodes.size() > 0) { %>
-	<div id="contentleft">
-          <table class="standardfirst">
+	<div class="col-md-6" id="contentleft">
+          <table class="table table-condensed">
             <tr>
-              <td class="standardheader" width="5%" align="center">Delete?</td>
-              <td class="standardheader" width="5%" align="center">Data?</td>
-              <td class="standardheader" width="5%" align="center">Node ID</td>
-              <td class="standardheader" width="10%" align="center">Node Label</td>
+              <th class="text-center" width="5%">Delete?</th>
+              <th class="text-center" width="5%">Data?</th>
+              <th class="text-center" width="5%">Node ID</th>
+              <th width="10%">Node Label</th>
             </tr>
-            
+
             <%=buildTableRows(nodes, 0, midNodeIndex)%>
-            
           </table>
 	</div>
           <% } /*end if*/ %>
 
       <!--see if there is a second column to draw-->
       <% if (midNodeIndex < nodes.size()) { %>
-	<div id="contentright">
-          <table class="standardfirst">
+	<div class="col-md-6" id="contentright">
+          <table class="table table-condensed">
             <tr>
-              <td class="standardheader" width="5%" align="center">Delete?</td>
-              <td class="standardheader" width="5%" align="center">Data?</td>
-              <td class="standardheader" width="5%" align="center">Node ID</td>
-              <td class="standardheader" width="10%" align="center">Node Label</td>
+              <th class="text-center" width="5%">Delete?</td>
+              <th class="text-center" width="5%">Data?</td>
+              <th class="text-center" width="5%">Node ID</td>
+              <th width="10%">Node Label</td>
             </tr>
-            
+
             <%=buildTableRows(nodes, midNodeIndex, nodes.size())%>
-               
+
           </table>
 	</div>
         <% } /*end if */ %>
+      </div> <!-- row -->
 
-	<div class="spacer"><!-- --></div>
+      <div class="form-group">
+          <input type="button" class="btn btn-default" value="Delete Nodes" onClick="applyChanges()">
+          <input type="button" class="btn btn-default" value="Cancel" onClick="cancel()">
+          <input type="button" class="btn btn-default" value="Select All" onClick="checkAll()">
+          <input type="button" class="btn btn-default" value="Unselect All" onClick="uncheckAll()">
+          <input type="reset" class="btn btn-default">
+      </div>
+  </div> <!-- panel-body -->
+</div> <!-- panel -->
 
-	<br/>
-
-          <input type="button" value="Delete Nodes" onClick="applyChanges()">
-          <input type="button" value="Cancel" onClick="cancel()"> 
-          <input type="button" value="Select All" onClick="checkAll()">
-          <input type="button" value="Unselect All" onClick="uncheckAll()">
-          <input type="reset">
 </form>
 
-
-<jsp:include page="/includes/footer.jsp" flush="true"/>
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="true"/>
 
 <%!
       public String buildTableRows(List<ManagedNode> nodes, int start, int stop)

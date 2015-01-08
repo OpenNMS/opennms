@@ -1,0 +1,87 @@
+.dashboard {
+	padding-left: 10px;
+	padding-right: 10px;
+
+	.box {
+		border-bottom: 1px solid #999;
+		h4 {
+			padding-left: 5px;
+		}
+
+		.alarm {
+			padding: 3px;
+			border: 1px solid #999;
+			border-bottom-style: none;
+		}
+
+		.outage {
+			padding: 3px;
+		}
+
+	}
+
+}
+
+.CLEARED {
+	background-color: #aaaaaa;
+}
+
+.NORMAL {
+	background-image: -webkit-gradient(linear, left top, left bottom,
+		from(#99eb99),
+		color-stop(0.5, #00a300),
+		color-stop(0.5, #00cc00),
+		to(#00cc00));
+	background-image: -moz-linear-gradient(top, #99eb99, #00a300 50%, #00cc00 50%, #00cc00);
+	border: solid 1px rgba(79, 79, 79, 0.75);
+}
+
+.INDETERMINATE {
+	background-image: -webkit-gradient(linear, left top, left bottom,
+		from(#add6c2),
+		color-stop(0.5, #297a52),
+		color-stop(0.5, #339966),
+		to(#339966));
+	background-image: -moz-linear-gradient(top, #add6c2, #297a52 50%, #339966 50%, #339966);
+	border: solid 1px rgba(79, 79, 79, 0.75);
+}
+
+.WARNING {
+	background-image: -webkit-gradient(linear, left top, left bottom,
+		from(#ffff99),
+		color-stop(0.5, #cccc00),
+		color-stop(0.5, #ffff00),
+		to(#ffff00));
+	background-image: -moz-linear-gradient(top, #ffff99, #cccc00 50%, #ffff00 50%, #ffff00);
+	border: solid 1px rgba(79, 79, 79, 0.75);
+}
+
+.MINOR {
+	background-image: -webkit-gradient(linear, left top, left bottom,
+		from(#ffd699),
+		color-stop(0.5, #cc7a00),
+		color-stop(0.5, #ff9900),
+		to(#ff9900));
+	background-image: -moz-linear-gradient(top, #ffd699, #cc7a00 50%, #ff9900 50%, #ff9900);
+	border: solid 1px rgba(79, 79, 79, 0.75);
+}
+
+.MAJOR {
+	background-image: -webkit-gradient(linear, left top, left bottom,
+		from(#ffcccc),
+		color-stop(0.5, #b20000),
+		color-stop(0.5, #ff0000),
+		to(#ff0000));
+	background-image: -moz-linear-gradient(top, #ffcccc, #b20000 50%, #ff0000 50%, #ff0000);
+	border: solid 1px rgba(79, 79, 79, 0.75);
+}
+
+.CRITICAL {
+	background-image: -webkit-gradient(linear, left top, left bottom,
+		from(#f5cccc),
+		color-stop(0.5, #8f0000),
+		color-stop(0.5, #cc0000),
+		to(#cc0000));
+	background-image: -moz-linear-gradient(top, #f5cccc, #8f0000 50%, #cc0000 50%, #cc0000);
+	border: solid 1px rgba(79, 79, 79, 0.75);
+}

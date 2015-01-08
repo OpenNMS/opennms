@@ -48,119 +48,133 @@
 %>
 <c:set var="baseHref" value="<%=Util.calculateUrlBase(request)%>"/>
 
-<jsp:include page="/includes/header.jsp" flush="false" >
+<jsp:include page="/includes/bootstrap.jsp" flush="false" >
   <jsp:param name="title" value="Key SNMP Customized Performance Reports" />
   <jsp:param name="headTitle" value="Performance" />
   <jsp:param name="headTitle" value="Reports" />
   <jsp:param name="headTitle" value="KSC" />
+  <jsp:param name="location" value="ksc" />
   <jsp:param name="breadcrumb" value="<a href='${baseHref}report/index.jsp'>Reports</a>" />
   <jsp:param name="breadcrumb" value="KSC Reports" />
 </jsp:include>
 
-<div class="TwoColLeft">
- 
-  <h3 class="o-box">Customized Reports</h3>
+<div class="row">
 
-  <div class="boxWrapper">
-  <p>Choose the custom report title to view or modify from the list below. There are ${fn:length(reports)} custom reports to select from.</p>
-	<script type="text/javascript">
-		var customData = {total:"${fn:length(reports)}", records:[
-											<c:set var="first" value="true"/>
-											<c:forEach var="report" items="${reports}">
-											  <c:if test="${match == null || match == '' || fn:containsIgnoreCase(report.value,match)}">
-											    <c:choose>
-											      <c:when test="${first == true}">
-												<c:set var="first" value="false"/>
-											        {id:"${report.key}", value:"${report.value}", type:"custom"}
-											      </c:when>
-											      <c:otherwise>
-											        ,{id:"${report.key}", value:"${report.value}", type:"custom"}
-											      </c:otherwise>
-											    </c:choose>
-											  </c:if>
-											</c:forEach>
-				                             ]};
-		
-		
-	</script>
-    <opennms:kscCustomReportList id="kscReportList" dataObject="customData" isreadonly="${isReadOnly}"></opennms:kscCustomReportList>
-    <!-- For IE Only -->
-    <div name="opennms-kscCustomReportList" id="kscReportList-ie" dataObject="customData" isreadonly="${isReadOnly}"></div>
+  <div class="col-md-5">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Customized Reports</h3>
+      </div>
+      <div class="panel-body">
+        <p>Choose the custom report title to view or modify from the list below. There are ${fn:length(reports)} custom reports to select from.</p>
+        <script type="text/javascript">
+          var customData = {
+            total: "${fn:length(reports)}",
+            records: [
+              <c:set var="first" value="true"/>
+              <c:forEach var="report" items="${reports}">
+                <c:if test="${match == null || match == '' || fn:containsIgnoreCase(report.value,match)}">
+                  <c:choose>
+                    <c:when test="${first == true}">
+                      <c:set var="first" value="false"/>
+                      {id:"${report.key}", value:"${report.value}", type:"custom"}
+                    </c:when>
+                    <c:otherwise>
+                      ,{id:"${report.key}", value:"${report.value}", type:"custom"}
+                    </c:otherwise>
+                  </c:choose>
+                </c:if>
+              </c:forEach>
+            ]
+          };
+        </script>
+        <opennms:kscCustomReportList id="kscReportList" dataObject="customData" isreadonly="${isReadOnly}"></opennms:kscCustomReportList>
+        <!-- For IE Only -->
+        <div name="opennms-kscCustomReportList" id="kscReportList-ie" dataObject="customData" isreadonly="${isReadOnly}"></div>
+      </div>
+    </div>
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Node &amp; Domain Interface Reports</h3>
+      </div>
+      <div class="panel-body">
+        <p>Select resource for desired performance report</p>
+        <script type="text/javascript">
+          var standardResourceData = {
+            total: "${fn:length(topLevelResources)}",
+            records: [
+              <c:set var="first" value="true"/>
+              <c:forEach var="resource" items="${topLevelResources}" varStatus="resourceCount">
+                <c:if test="${match == null || match == '' || fn:containsIgnoreCase(resource.label,match)}">
+                  <c:choose>
+                    <c:when test="${first == true}">
+                      <c:set var="first" value="false"/>
+                      {id:"${resource.name}", value:"${resource.resourceType.label}: ${resource.label}", type:"${resource.resourceType.name}"}
+                      </c:when>
+                    <c:otherwise>
+                      ,{id:"${resource.name}", value:"${resource.resourceType.label}: ${resource.label}", type:"${resource.resourceType.name}"}
+                    </c:otherwise>
+                  </c:choose>
+                </c:if>
+              </c:forEach>
+            ]
+          };
+        </script>
+        <div id="snmp-reports"></div>
+        <opennms:nodeSnmpReportList id="nodeSnmpList" dataObject="standardResourceData"></opennms:nodeSnmpReportList>
+        <div name="opennms-nodeSnmpReportList" id="nodeSnmpList-ie" dataObject="standardResourceData"></div>
+      </div>
+    </div>
   </div>
 
-  <h3 class="o-box">Node &amp; Domain Interface Reports</h3>
-  <div class="boxWrapper">
-  <p>Select resource for desired performance report</p>
+  <div class="col-md-7">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Descriptions</h3>
+      </div>
+      <div class="panel-body">
+        <p>
+          <b>Customized Reports</b>
+          <c:choose>
+            <c:when test="${kscReadOnly == false }">
+              allow users to create, view, and edit customized reports containing
+              any number of prefabricated reports from any available graphable
+              resource.
+            </c:when>
+            <c:otherwise>
+              allow users to view customized reports containing any number of
+              prefabricated reports from any available graphable resource.
+            </c:otherwise>
+          </c:choose>
+        </p>
+        <p>
+          <b>Node and Domain Interface Reports</b>
+          <c:choose>
+            <c:when test="${kscReadOnly == false }">
+              allow users to view automatically generated reports for interfaces on
+              any node or domain.These reports can be further edited and saved just
+              like other customized reports.These reports list only the interfaces
+              on the selected node or domain, but they can be customized to include
+              any graphable resource.
+            </c:when>
+            <c:otherwise>
+              allow users to view automatically generated reports for interfaces on
+              any node or domain.
+            </c:otherwise>
+          </c:choose>
+        </p>
+      </div>
+    </div>
     <script type="text/javascript">
-      var standardResourceData = {total:"${fn:length(topLevelResources)}", records:[
-												<c:set var="first" value="true"/>
-												<c:forEach var="resource" items="${topLevelResources}" varStatus="resourceCount">
-												  <c:if test="${match == null || match == '' || fn:containsIgnoreCase(resource.label,match)}">
-												    <c:choose>
-												      <c:when test="${first == true}">
-													    <c:set var="first" value="false"/>
-													    {id:"${resource.name}", value:"${resource.resourceType.label}: ${resource.label}", type:"${resource.resourceType.name}"}
-												      </c:when>
-												      <c:otherwise>
-													    ,{id:"${resource.name}", value:"${resource.resourceType.label}: ${resource.label}", type:"${resource.resourceType.name}"}
-												      </c:otherwise>
-												    </c:choose>
-												  </c:if>
-												</c:forEach>
-      	                                  	]};
+      function doReload() {
+        if (confirm("Are you sure you want to do this?")) {
+          document.location = "<%=Util.calculateUrlBase(request, "KSC/index.htm?reloadConfig=true")%>";
+        }
+      }
     </script>
-    <div id="snmp-reports"></div>
-    <opennms:nodeSnmpReportList id="nodeSnmpList" dataObject="standardResourceData"></opennms:nodeSnmpReportList>
-    <div name="opennms-nodeSnmpReportList" id="nodeSnmpList-ie" dataObject="standardResourceData"></div>
+    <button class="btn btn-default" type="button" onclick="doReload()">Request a Reload of KSC Reports Configuration</button>
   </div>
 
 </div>
 
-<div class="TwoColRight">
-  <h3 class="o-box">Descriptions</h3>
-
-  <div class="boxWrapper">
-    <p>
-      <b>Customized Reports</b>
-      <c:choose>
-        <c:when test="${kscReadOnly == false }">
-          allow users to create, view, and edit customized reports containing
-          any number of prefabricated reports from any available graphable
-          resource.
-        </c:when>
-        <c:otherwise>
-          allow users to view customized reports containing any number of
-          prefabricated reports from any available graphable resource.
-        </c:otherwise>
-      </c:choose>
-    </p>
-
-    <p>
-      <b>Node and Domain Interface Reports</b>
-      <c:choose>
-        <c:when test="${kscReadOnly == false }">
-          allow users to view automatically generated reports for interfaces on
-          any node or domain.These reports can be further edited and saved just
-          like other customized reports.These reports list only the interfaces
-          on the selected node or domain, but they can be customized to include
-          any graphable resource.
-        </c:when>
-        <c:otherwise>
-          allow users to view automatically generated reports for interfaces on
-          any node or domain.  
-        </c:otherwise>
-      </c:choose>
-
-    </p>
-  </div>
-</div>
-<script type="text/javascript">
-function doReload() {
-    if (confirm("Are you sure you want to do this?")) {
-        document.location = "<%=Util.calculateUrlBase(request, "KSC/index.htm?reloadConfig=true")%>";
-    }
-}
-</script>
-<input type="button" onclick="doReload()" value="Request a Reload of KSC Reports Configuration"/>
-
-<jsp:include page="/includes/footer.jsp" flush="false"/>
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="false"/>

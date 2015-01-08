@@ -65,10 +65,6 @@ td.severity.Normal {
 	background-color:rgba(51,102,0,0.8);
 }
 
-.navbar li > div.nav-dropdown > ul {
-	z-index:3000;
-}
-
 .leaflet-container .leaflet-control-zoom {
 	margin-top: 48px;	
 }
