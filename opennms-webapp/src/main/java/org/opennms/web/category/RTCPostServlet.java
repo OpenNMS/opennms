@@ -118,13 +118,9 @@ public class RTCPostServlet extends HttpServlet {
             // one
             // at a time anyway
             category = level.getCategory(0);
-        } catch (MarshalException ex) {
+        } catch (final MarshalException|ValidationException ex) {
             LOG.error("Failed to load configuration", ex);
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid XML input: MarshalException: " + ex.getMessage());
-            return;
-        } catch (ValidationException ex) {
-            LOG.error("Failed to load configuration", ex);
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid XML input: ValidationException" + ex.getMessage());
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid XML input: " + ex.getClass().getSimpleName());
             return;
         }
 

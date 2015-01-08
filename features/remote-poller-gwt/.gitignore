@@ -2,3 +2,4 @@ bin
 war
 *.launch
 tomcat
+/target/
