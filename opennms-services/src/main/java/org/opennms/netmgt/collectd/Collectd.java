@@ -31,7 +31,6 @@ package org.opennms.netmgt.collectd;
 import static org.opennms.core.utils.InetAddressUtils.str;
 
 import java.net.InetAddress;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -290,8 +289,6 @@ public class Collectd extends AbstractServiceDaemon implements
                     public void run() {
                         try {
                             scheduleExistingInterfaces();
-                        } catch (SQLException e) {
-                            LOG.error("start: Failed to schedule existing interfaces", e);
                         } finally {
                             setSchedulingCompleted(true);
                         }
@@ -356,11 +353,8 @@ public class Collectd extends AbstractServiceDaemon implements
 
     /**
      * Schedule existing interfaces for data collection.
-     * 
-     * @throws SQLException
-     *             if database errors encountered.
      */
-    private void scheduleExistingInterfaces() throws SQLException {
+    private void scheduleExistingInterfaces() {
         
         instrumentation().beginScheduleExistingInterfaces();
         try {
