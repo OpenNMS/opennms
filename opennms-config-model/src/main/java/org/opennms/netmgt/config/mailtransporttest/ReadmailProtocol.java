@@ -88,6 +88,13 @@ public class ReadmailProtocol implements Serializable {
         super();
     }
 
+    public ReadmailProtocol(final String transport, final Boolean sslEnable, final Boolean startTls) {
+        super();
+        m_transport = transport;
+        m_sslEnable = sslEnable;
+        m_startTls = startTls;
+    }
+
     public void deleteSslEnable() {
         m_sslEnable = null;
     }

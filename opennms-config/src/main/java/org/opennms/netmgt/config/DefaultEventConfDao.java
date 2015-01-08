@@ -220,13 +220,14 @@ public class DefaultEventConfDao implements EventConfDao, InitializingBean {
 
 	@Override
 	public Event findByUei(final String uei) {
-		return m_events.findFirstMatchingEvent(new EventCriteria() {
-
-			@Override
-			public boolean matches(Event e) {
-				return uei.equals(e.getUei());
-			}
-		});
+	    if (uei == null) {
+	        return null;
+	    }
+	    return m_events.findFirstMatchingEvent(new EventCriteria() {
+	        @Override public boolean matches(final Event e) {
+	            return uei.equals(e.getUei());
+	        }
+	    });
 	}
 
 	@Override
