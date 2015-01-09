@@ -34,8 +34,8 @@ import org.opennms.web.filter.SubstringFilter;
  * <p>LogMessageMatchesAnyFilter class.</p>
  *
  * @author <A HREF="mailto:jamesz@opennms.com">James Zuo </A>
- * @version $Id: $
- * @since 1.8.1
+ * 
+ * @deprecated Replace calls to this with the identical {@link LogMessageSubstringFilter}
  */
 public class LogMessageMatchesAnyFilter extends SubstringFilter {
     /** Constant <code>TYPE="msgmatchany"</code> */

@@ -15,7 +15,7 @@
         <include>org.json:json</include>
         <include>org.seleniumhq.selenium:selenium*</include>
         <include>org.codehaus.groovy:groovy-all</include>
-        <include>com.github.detro.ghostdriver:phantomjsdriver</include>
+        <include>com.codeborne:phantomjsdriver</include>
         <include>junit:junit</include>
       </includes>
       <fileMode>0644</fileMode>

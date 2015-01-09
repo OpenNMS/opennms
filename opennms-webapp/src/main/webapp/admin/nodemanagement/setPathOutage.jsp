@@ -65,7 +65,7 @@
     }
 %>
 
-<jsp:include page="/includes/header.jsp" flush="false" >
+<jsp:include page="/includes/bootstrap.jsp" flush="false" >
   <jsp:param name="title" value="Configure Path Outage" />
   <jsp:param name="headTitle" value="Node Management" />
   <jsp:param name="headTitle" value="Admin" />
@@ -119,13 +119,11 @@ LABEL
   }
 </script>
 
-<h2>Node: <%=node_db.getLabel()%></h2>
+<h3>Node: <%=node_db.getLabel()%></h3>
 
 <% if (task != null) { %>
   <h2><%=task%></h2>
 <% } %>
-
-<hr/>
 
 <p>
   Configuring a path outage consists of selecting an IP address/service pair
@@ -137,39 +135,35 @@ LABEL
   
 </p>
 
-<br/> 
-  
-<form method="post" name="setCriticalPath" action="admin/setCriticalPath" onsubmit="return verifyIpAddress();">
+<form role="form" method="post" class="form-inline" name="setCriticalPath" action="admin/setCriticalPath" onsubmit="return verifyIpAddress();">
 
 <input name="node" value=<%=nodeId%> type="hidden"/>
 
 <p>
 <label for="criticalIp">Critical path IP address in xxx.xxx.xxx.xxx or xxxx:xxxx:xxxx:xxxx:xxxx:xxxx:xxxx:xxxx format:</label><br/>
-<input id="criticalIp" type="text" name="criticalIp" size="57" maxlength="55" />
+<input id="criticalIp" class="form-control" type="text" name="criticalIp" size="57" maxlength="55" />
 </p>
 
 <p>
 <label for="criticalSvc">Critical path service:</label><br/>
 
-  <select id="criticalSvc" name="criticalSvc" value="ICMP" size="1">
+  <select id="criticalSvc" class="form-control" name="criticalSvc" value="ICMP">
         <option value="ICMP">ICMP</option>
   </select>
 </p>
 
 <p>
-<input type="submit" name="task" value="Submit"/>
+<input type="submit" class="btn btn-default" name="task" value="Submit"/>
 &nbsp;
-<input type="button" name="task" value="Cancel" onClick="cancel()"/>
+<input type="button" class="btn btn-default" name="task" value="Cancel" onClick="cancel()"/>
 </p>
 
-<br/>
+<h3>Delete critical path for this node</h3>
 
-<h2>Delete critical path for this node</h2>
-<br/>
 <p>
-<input type="button" name="task" value="Delete" onClick="deletePathOutage()"/>
+<input type="button" class="btn btn-default" name="task" value="Delete" onClick="deletePathOutage()"/>
 </p>
 
 </form>
 
-<jsp:include page="/includes/footer.jsp" flush="true"/>
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="true"/>

@@ -28,34 +28,36 @@
 
 package org.opennms.web.navigate;
 
+import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
 
-/**
- * <p>NavBarModel class.</p>
- *
- * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
- * @version $Id: $
- * @since 1.8.1
- */
+import com.google.common.collect.Lists;
+
 public class NavBarModel {
-    private Map<NavBarEntry, DisplayStatus> m_entries;
+    private final HttpServletRequest m_request;
+    private final Map<NavBarEntry, DisplayStatus> m_entries;
+    private final List<Map.Entry<NavBarEntry, DisplayStatus>> m_entryList;
 
-    /**
-     * <p>Constructor for NavBarModel.</p>
-     *
-     * @param entries a java$util$Map object.
-     */
-    public NavBarModel(Map<NavBarEntry, DisplayStatus> entries) {
+    public NavBarModel(final HttpServletRequest request, final Map<NavBarEntry, DisplayStatus> entries) {
+        m_request = request;
         m_entries = entries;
+        m_entryList = Lists.newArrayList(m_entries.entrySet());
     }
 
-    /**
-     * <p>getEntries</p>
-     *
-     * @return a java$util$Map object.
-     */
+    public HttpServletRequest getRequest() {
+        return m_request;
+    }
+
     public Map<NavBarEntry, DisplayStatus> getEntries() {
         return m_entries;
+    }
+
+    /** Allows the Freemarker template by the NavBarController to iterate
+     *  over the map entries.
+     */
+    public List<Map.Entry<NavBarEntry, DisplayStatus>> getEntryList() {
+        return m_entryList;
     }
 }

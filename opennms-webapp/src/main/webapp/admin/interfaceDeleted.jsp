@@ -86,7 +86,7 @@
   <c:param name="intf" value="<%=ipAddr%>"/>
 </c:url>
 
-<jsp:include page="/includes/header.jsp" flush="false" >
+<jsp:include page="/includes/bootstrap.jsp" flush="false" >
   <jsp:param name="title" value="Interface Deleted" />
   <jsp:param name="headTitle" value="<%= ipAddr %>" />
   <jsp:param name="breadcrumb" value="<a href='element/index.jsp'>Search</a>" />
@@ -95,16 +95,22 @@
   <jsp:param name="breadcrumb" value="Interface Deleted" />
 </jsp:include>
 
-<% if (ifIndex == -1) { %>
-<h3>Finished Deleting Interface <%= ipAddr %></h3>
-<% } else if (!"0.0.0.0".equals(ipAddr) && ipAddr != null && ipAddr.length() !=0){ %>
-<h3>Finished Deleting Interface <%= ipAddr %> with ifIndex <%= ifIndex %></h3>
-<% } else { %>
-<h3>Finished Deleting Interface with ifIndex <%= ifIndex %></h3>
-<% } %>
-<p>
-  OpenNMS should not need to be restarted, but it may take a moment for
-  the Categories to be updated.
-</p>
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <% if (ifIndex == -1) { %>
+    <h3>Finished Deleting Interface <%= ipAddr %></h3>
+    <% } else if (!"0.0.0.0".equals(ipAddr) && ipAddr != null && ipAddr.length() !=0){ %>
+    <h3>Finished Deleting Interface <%= ipAddr %> with ifIndex <%= ifIndex %></h3>
+    <% } else { %>
+    <h3>Finished Deleting Interface with ifIndex <%= ifIndex %></h3>
+    <% } %>
+  </div>
+  <div class="panel-body">
+    <p>
+      OpenNMS should not need to be restarted, but it may take a moment for
+      the Categories to be updated.
+    </p>
+  </div>
+</div> <!-- panel -->
 
-<jsp:include page="/includes/footer.jsp" flush="false" />
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />

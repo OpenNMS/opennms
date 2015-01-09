@@ -32,19 +32,17 @@ import java.net.InetSocketAddress;
 
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.FixMethodOrder;
 import org.junit.Test;
-import org.junit.runners.MethodSorters;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventProxy;
-import org.opennms.netmgt.utils.TcpEventProxy;
+import org.opennms.netmgt.model.events.TcpEventProxy;
+import org.openqa.selenium.By;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 
-@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class AlarmsPageTest extends OpenNMSSeleniumTestCase {
     @BeforeClass
     public static void createAlarm() throws Exception {
-
         final EventProxy eventProxy = new TcpEventProxy(new InetSocketAddress(OPENNMS_EVENT_HOST, OPENNMS_EVENT_PORT));
         final EventBuilder builder = new EventBuilder(EventConstants.IMPORT_FAILED_UEI, "AlarmsPageTest");
         builder.setParam("importResource", "foo");
@@ -53,81 +51,52 @@ public class AlarmsPageTest extends OpenNMSSeleniumTestCase {
 
     @Before
     public void setUp() throws Exception {
-        super.setUp();
-        clickAndWait("link=Alarms");
+        alarmsPage();
+    }
+
+    protected void alarmsPage() {
+        m_driver.get(BASE_URL + "opennms/alarm/index.htm");
     }
 
     @Test
-    public void a_testAllTextIsPresent() throws InterruptedException {
-        waitForText("Alarm Queries");
-        waitForText("Outstanding and acknowledged alarms");
-        waitForText("To view acknowledged alarms");
-        waitForElement("css=input[type=submit]");
-        waitForText("Alarm ID:");
+    public void testAllTextIsPresent() throws InterruptedException {
+        findElementByXpath("//h3[text()='Alarm Queries']");
+        findElementByXpath("//h3[text()='Alarm Filter Favorites']");
+        findElementByXpath("//h3[text()='Outstanding and acknowledged alarms']");
+
+        findElementByXpath("//form//input[@name='id']");
+        findElementByXpath("//form//button[@type='submit']");
     }
 
     @Test
-    public void b_testAllLinksArePresent() throws InterruptedException { 
-        waitForElement("link=All alarms (summary)");
-        waitForElement("link=All alarms (detail)");
-        waitForElement("link=Advanced Search");
+    public void testAllLinks() throws InterruptedException{
+        findElementByLink("All alarms (summary)").click();
+        findElementByXpath("//a[@title='Show acknowledged alarm(s)']");
+
+        alarmsPage();
+        findElementByLink("All alarms (detail)").click();
+        findElementByXpath("//a[@title='Show acknowledged alarm(s)']");
+        findElementByLink("First Event Time");
+
+        alarmsPage();
+        findElementByLink("Advanced Search").click();
+        findElementByName("msgsub");
+        findElementByName("iplike");
     }
 
     @Test
-    public void c_testAllLinks() throws InterruptedException{
-        clickAndWait("link=All alarms (summary)");
-        waitForText("Alarm(s) outstanding");
-        waitForElement("//input[@value='Go']");
-        waitForElement("css=input[type='submit']");
-        clickAndWait("css=a[title='Alarms System Page']");
-        clickAndWait("link=All alarms (detail)");
-        waitForElement("link=First Event Time");
-        waitForElement("link=Last Event Time");
-        waitForElement("css=input[type='reset']");
-        waitForText("Ack");
-        clickAndWait("css=a[title='Alarms System Page']");
-        clickAndWait("link=Advanced Search");
-        waitForText("Alarm Text Contains:");
-        waitForText("Advanced Alarm Search");
-        selenium.open("/opennms/alarm/advsearch.jsp");
-        waitForText("Advanced Alarm Search page");
-        waitForElement("css=input[type='submit']");
-        waitForElement("name=beforefirsteventtimemonth");
-        clickAndWait("//div[@id='content']/div/h2/a[2]");
+    public void testAlarmLink() throws Exception {
+        findElementByLink("All alarms (summary)").click();
+
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//a[contains(@href,'alarm/detail.htm')]")));
+
+        findElementByXpath("//a[contains(@href,'alarm/detail.htm')]").click();
+        findElementByXpath("//tr[@class]//th[text()='Severity']");
     }
 
     @Test
-    public void d_testAlarmLink() throws Exception {
-        createAlarm();
-        clickAndWait("link=All alarms (summary)");
-
-        final int sleepTime = 5000; // 5 seconds
-        final long end = System.currentTimeMillis() + 300000; // 5 minutes
-        while (!hasAlarmDetailLink() && (System.currentTimeMillis() < end)) {
-            Thread.sleep(sleepTime);
-            selenium.refresh();
-            waitForPageToLoad();
-        }
-
-        assertTrue(hasAlarmDetailLink());
-
-        waitForText("Alarm(s) outstanding");
-        waitForElement("//input[@value='Go']");
-        waitForElement("css=input[type='submit']");
-        assertTrue(hasAlarmDetailLink());
-        clickAndWait("//a[contains(@href,'alarm/detail.htm')]");
-        waitForText("Severity");
-        waitForText("Ticket State");
-        waitForText("Acknowledgment and Severity Actions");
-    }
-
-    @Test
-    public void e_testAlarmIdNotFoundPage() throws InterruptedException {
-        selenium.open("/opennms/alarm/detail.htm?id=999999999");
-        waitForText("Alarm ID Not Found");
-    }
-
-    private boolean hasAlarmDetailLink() {
-        return selenium.isElementPresent("//a[contains(@href,'alarm/detail.htm')]");
+    public void testAlarmIdNotFoundPage() throws InterruptedException {
+        m_driver.get(BASE_URL + "opennms/alarm/detail.htm?id=999999999");
+        findElementByXpath("//h1[text()='Alarm ID Not Found']");
     }
 }

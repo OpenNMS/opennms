@@ -46,7 +46,7 @@ public class FilterFavoriteSelectTagHandler implements SelectTagHandler<OnmsFilt
     @Override
     public String getDescription(OnmsFilterFavorite input) {
         if (input == null) return m_nullDescription;
-        return "" + input.getName();
+        return input.getName();
     }
 
     @Override

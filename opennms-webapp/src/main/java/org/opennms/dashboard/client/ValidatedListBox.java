@@ -57,6 +57,7 @@ public class ValidatedListBox extends ListBox {
      */
     public ValidatedListBox(Dashlet dashlet) {
         super();
+        setStyleName("form-control");
         m_dashlet = dashlet;
     }
     

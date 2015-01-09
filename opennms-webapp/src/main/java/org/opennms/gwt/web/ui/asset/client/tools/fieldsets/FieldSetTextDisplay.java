@@ -28,8 +28,9 @@
 
 package org.opennms.gwt.web.ui.asset.client.tools.fieldsets;
 
+import org.gwtbootstrap3.client.ui.FormControlStatic;
+
 import com.google.gwt.uibinder.client.UiConstructor;
-import com.google.gwt.user.client.ui.Label;
 
 /**
  * @author <a href="mailto:MarkusNeumannMarkus@gmail.com">Markus Neumann</a>
@@ -37,7 +38,7 @@ import com.google.gwt.user.client.ui.Label;
  */
 public class FieldSetTextDisplay extends AbstractFieldSet implements FieldSet {
 
-	protected Label textLabel = new Label();
+	protected FormControlStatic textLabel = new FormControlStatic();
 
 	@UiConstructor
 	public FieldSetTextDisplay(String name, String value, String helpText) {
@@ -52,7 +53,6 @@ public class FieldSetTextDisplay extends AbstractFieldSet implements FieldSet {
 
 	private void init(String value) {
 		textLabel.setText(value);
-		textLabel.setStyleName("textLabel");
 		panel.add(textLabel);
 	}
 

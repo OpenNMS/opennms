@@ -31,17 +31,17 @@ package org.opennms.dashboard.client;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.ServiceDefTarget;
-import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.RootPanel;
-import com.google.gwt.user.client.ui.SimplePanel;
-import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
+import org.gwtbootstrap3.client.ui.Modal;
+import org.gwtbootstrap3.client.ui.ModalBody;
+import org.gwtbootstrap3.client.ui.ModalFooter;
+import org.gwtbootstrap3.client.ui.ModalHeader;
+import org.gwtbootstrap3.client.ui.gwt.FlowPanel;
 
 /**
  * <p>Dashboard class.</p>
@@ -62,6 +62,8 @@ public class Dashboard implements EntryPoint, ErrorHandler {
     NotificationDashlet m_notifications;
     GraphDashlet m_graphs;
     private SurveillanceServiceAsync m_surveillanceService;
+    private Modal m_modal;
+    private FlowPanel m_modalContent = new FlowPanel();
 
     /**
      * <p>onModuleLoad</p>
@@ -76,10 +78,35 @@ public class Dashboard implements EntryPoint, ErrorHandler {
         add(createNotificationDashlet(), "notifications");
         //add(createOutageDashlet(),       "outages");
         add(createNodeStatusDashlet(),   "nodeStatus");
-        
-        
+
         setSurveillanceSet(SurveillanceSet.DEFAULT);
-        
+        addModal();
+    }
+
+    private void addModal() {
+        ModalHeader modalHeader = new ModalHeader();
+        modalHeader.setTitle("Error Occurred");
+
+        org.gwtbootstrap3.client.ui.Button okBtn = new org.gwtbootstrap3.client.ui.Button("OK");
+        okBtn.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                m_modal.hide();
+            }
+        });
+
+        ModalBody modalBody = new ModalBody();
+        modalBody.add(m_modalContent);
+
+        ModalFooter modalFooter = new ModalFooter();
+        modalFooter.add(okBtn);
+
+        m_modal = new Modal();
+        m_modal.add(modalHeader);
+        m_modal.add(modalBody);
+        m_modal.add(modalFooter);
+
+        RootPanel.get().add(m_modal);
     }
 
     private GraphDashlet createGraphDashlet() {
@@ -184,33 +211,13 @@ public class Dashboard implements EntryPoint, ErrorHandler {
      * @param err a {@link java.lang.String} object.
      */
     public void error(String err) {
-        final DialogBox dialog = new DialogBox();
-        dialog.setText("Error Occurred");
-        
-        VerticalPanel panel = new VerticalPanel();
+        m_modalContent.clear();
+
         HTMLPanel html = new HTMLPanel(err);
         html.setStyleName("Message");
-        panel.add(html);
-        
-        Button ok = new Button("OK");
-        SimplePanel buttonPanel = new SimplePanel();
-        buttonPanel.setWidget(ok);
-        buttonPanel.setStyleName("Button");
-        panel.add(buttonPanel);
-        
-        dialog.setPopupPosition(Window.getScrollLeft() + 100, Window.getScrollTop() + 100);
-        dialog.setWidget(panel);
-        
-        ok.addClickHandler(new ClickHandler() {
+        m_modalContent.add(html);
 
-            @Override
-            public void onClick(ClickEvent arg0) {
-                dialog.hide();
-            }
-            
-        });
-        
-        dialog.show();
+        m_modal.show();
         
     }
 

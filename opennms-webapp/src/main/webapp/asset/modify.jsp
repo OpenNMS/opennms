@@ -31,7 +31,7 @@
 
 <%@page language="java" contentType="text/html" session="true"  %>
 
-<jsp:include page="/includes/header.jsp" flush="false">
+<jsp:include page="/includes/bootstrap.jsp" flush="false">
   <jsp:param name="title" value="Modify Asset" />
   <jsp:param name="headTitle" value="Modify" />
   <jsp:param name="headTitle" value="Asset" />
@@ -52,4 +52,4 @@
 
 <div id="opennms-assetNodePage"></div>
 
-<jsp:include page="/includes/footer.jsp" flush="false" />
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />

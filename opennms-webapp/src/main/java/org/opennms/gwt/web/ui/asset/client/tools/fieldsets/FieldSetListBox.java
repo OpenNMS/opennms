@@ -28,7 +28,6 @@
 
 package org.opennms.gwt.web.ui.asset.client.tools.fieldsets;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import com.google.gwt.uibinder.client.UiConstructor;
@@ -84,9 +83,7 @@ public class FieldSetListBox extends AbstractFieldSet implements FieldSet {
 
 		listBox.setVisibleItemCount(1);
 		listBox.addChangeHandler(this);
-		listBox.setStyleName("listBox");
-
-		listBox.setSize("300px", "18px");
+		listBox.addStyleName("form-control");
 
 		panel.add(listBox);
 	}

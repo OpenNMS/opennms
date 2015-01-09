@@ -1,65 +1,71 @@
 <!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
 	xmlns:g="urn:import:com.google.gwt.user.client.ui"
+    xmlns:b="urn:import:org.gwtbootstrap3.client.ui"
+    xmlns:b.html="urn:import:org.gwtbootstrap3.client.ui.html"
 	xmlns:opennms="urn:import:org.opennms.features.node.list.gwt.client">
-	<ui:style >
-		.tabLayoutStyle{
-			
-		}
-		
-		.selectBox{
-		  margin-top: 3px;
-		}
-		
-		.tableDiv{
-		   width: 300px;
-		   
-		}
-	</ui:style>
-	<g:TabLayoutPanel barUnit='EM' barHeight='1.25' ui:field="m_tabLayoutPanel" >
-        <g:tab>
-            <g:header size='5'>IP Interfaces</g:header>
-            <g:LayoutPanel>
-                <g:layer bottom="50px" top="0px" left="0" right="0">
-                    <g:FlowPanel ui:field="m_ipInterfaceTableDiv">
-                        <opennms:IpInterfaceTable ui:field="m_ipInterfaceTable"/>
-                    </g:FlowPanel>
-                </g:layer>
-                <g:layer height="21px" bottom="27px" left="25%" right="20%">
-                    <g:FlowPanel ui:field="m_ipTableDiv"/>
-                </g:layer>
-                <g:layer left="0%" right="70%" height="25px" bottom="0px">
-                    <g:ListBox ui:field="m_ipSearchList" width="100%" height="20px" styleName="{style.selectBox}"/>
-                </g:layer>
-                <g:layer left="30%" right="30%" height="25px" bottom="0px">
-                    <g:TextBox ui:field="m_ipTextBox" width="100%"/>
-                </g:layer>
-                <g:layer left="70%" right="0%" bottom="0px" height="25px">
-                    <g:Button ui:field="m_ipSearchBtn" width="100%" height="25px">Search</g:Button>
-                </g:layer>
-            </g:LayoutPanel>
-        </g:tab>
-        <g:tab>
-            <g:header size='5' style="font-family: Lucida Grande, Verdana, sans-serif;">Physical Interfaces</g:header>
-            <g:LayoutPanel>
-                <g:layer bottom="50px" top="0px" left="0" right="0">
-                    <g:FlowPanel ui:field="m_physicalTableDiv">
-                        <opennms:PhysicalInterfaceTable ui:field="m_physicalInterfaceTable"/>
-                    </g:FlowPanel>
-                </g:layer>
-                <g:layer height="21px" bottom="27px" left="25%" right="20%">
-                    <g:FlowPanel ui:field="m_physTableDiv"/>
-                </g:layer>
-                <g:layer left="0%" right="70%" height="25px" bottom="0px">
-                    <g:ListBox ui:field="m_physSearchList" width="100%" height="20px" styleName="{style.selectBox}"/>
-                </g:layer>
-                <g:layer left="30%" right="30%" height="25px" bottom="0px">
-                    <g:TextBox ui:field="m_physTextBox" width="100%"/>
-                </g:layer>
-                <g:layer left="70%" right="0%" bottom="0px" height="25px">
-                    <g:Button ui:field="m_physSearchBtn" width="100%" height="25px">Search</g:Button>
-                </g:layer>
-            </g:LayoutPanel>
-        </g:tab>
-	</g:TabLayoutPanel>
-</ui:UiBinder> 
+
+    <g:HTMLPanel>
+        <b:NavTabs>
+            <b:TabListItem active="true" dataTarget="#ipTab" text="IP Interfaces"/>
+            <b:TabListItem dataTarget="#physicalTab" text="Physical Interfaces"/>
+        </b:NavTabs>
+        <b:TabContent>
+            <b:TabPane active="true" b:id="ipTab">
+                <b:Row>
+                    <b:Row>
+                        <b:Column size="MD_12">
+                            <g:FlowPanel ui:field="m_ipInterfaceTableDiv" height="606px">
+                                <opennms:IpInterfaceTable ui:field="m_ipInterfaceTable" styleName="table table-condensed table-bordered"/>
+                            </g:FlowPanel>
+                        </b:Column>
+                    </b:Row>
+                    <b:Row>
+                        <b:Column size="MD_12">
+                            <g:FlowPanel ui:field="m_ipTableDiv"/>
+                        </b:Column>
+                    </b:Row>
+                    <b:Row>
+                        <b:Column size="MD_4">
+                            <g:ListBox ui:field="m_ipSearchList" width="100%" height="20px" styleName="form-control"/>
+                        </b:Column>
+                        <b:Column size="MD_4">
+                            <g:TextBox ui:field="m_ipTextBox" width="100%"/>
+                        </b:Column>
+                        <b:Column size="MD_4">
+                            <b:Button ui:field="m_ipSearchBtn" width="100%" height="25px">Search</b:Button>
+                        </b:Column>
+                    </b:Row>
+                </b:Row>
+            </b:TabPane>
+            <b:TabPane b:id="physicalTab">
+                <b:Row>
+                    <b:Row>
+                        <b:Column size="MD_12">
+                            <g:FlowPanel ui:field="m_physicalTableDiv" height="606px">
+                                <opennms:PhysicalInterfaceTable ui:field="m_physicalInterfaceTable" styleName="table table-condensed table-bordered"/>
+                            </g:FlowPanel>
+                        </b:Column>
+                    </b:Row>
+
+                    <b:Row>
+                        <b:Column size="MD_12">
+                            <g:FlowPanel ui:field="m_physTableDiv"/>
+                        </b:Column>
+                    </b:Row>
+                    <b:Row>
+                        <b:Column size="MD_4">
+                            <g:ListBox ui:field="m_physSearchList" width="100%" height="20px" styleName="form-control"/>
+                        </b:Column>
+                        <b:Column size="MD_4">
+                            <g:TextBox ui:field="m_physTextBox" width="100%"/>
+                        </b:Column>
+                        <b:Column size="MD_4">
+                            <b:Button ui:field="m_physSearchBtn" width="100%" height="25px">Search</b:Button>
+                        </b:Column>
+                    </b:Row>
+                </b:Row>
+            </b:TabPane>
+        </b:TabContent>
+    </g:HTMLPanel>
+</ui:UiBinder>

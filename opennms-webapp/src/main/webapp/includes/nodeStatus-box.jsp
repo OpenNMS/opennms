@@ -122,9 +122,9 @@
     }
 %>
 
-<table class="o-box">
-  <tr class="CellStatus">
-    <td align="left" class="<%=status%>">
+<table class="table table-condensed severity">
+  <tr class="severity-<%=status%>">
+    <td align="left" class="bright">
       <b><%=message%></b><%=details%>
     </td>
   </tr>

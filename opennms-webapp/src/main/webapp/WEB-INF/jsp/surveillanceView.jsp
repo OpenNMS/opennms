@@ -34,7 +34,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 
-<jsp:include page="/includes/header.jsp" flush="false">
+<jsp:include page="/includes/bootstrap.jsp" flush="false">
 	<jsp:param name="title" value="Surveillance View" />
 	<jsp:param name="headTitle" value="Surveillance" />
 	<jsp:param name="breadcrumb" value="Surveillance" />
@@ -42,42 +42,45 @@
 
 <jsp:include page="/includes/surveillance-key.jsp" flush="false" />
 
-<h3>Surveillance View: ${webTable.title}</h3>
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title">Surveillance View: ${webTable.title}</h3>
+  </div>
 
-<table>
-
-  <tr>
-  <c:forEach items="${webTable.columnHeaders}" var="headerCell">
-    <th class="${headerCell.styleClass}">
-      <c:choose>
-        <c:when test="${! empty headerCell.link}">
-          <a href="${headerCell.link}">${headerCell.content}</a>
-        </c:when>
-        <c:otherwise>
-          ${headerCell.content}
-        </c:otherwise>
-      </c:choose>
-    </th>
-  </c:forEach>
-  </tr>
-  
-  <c:forEach items="${webTable.rows}" var="row">
-    <tr class="CellStatus">
-      <c:forEach items="${row}" var="cell">
-        <td class="${cell.styleClass} divider">
-          <c:choose>
-            <c:when test="${! empty cell.link}">
-              <a href="${cell.link}">${cell.content}</a>
-            </c:when>
-            <c:otherwise>
-              ${cell.content}
-            </c:otherwise>
-          </c:choose>
-        </td>
-      </c:forEach>
+  <table class="table table-condensed table-bordered severity">
+    <tr>
+    <c:forEach items="${webTable.columnHeaders}" var="headerCell">
+      <th class="${headerCell.styleClass}">
+        <c:choose>
+          <c:when test="${! empty headerCell.link}">
+            <a href="${headerCell.link}">${headerCell.content}</a>
+          </c:when>
+          <c:otherwise>
+            ${headerCell.content}
+          </c:otherwise>
+        </c:choose>
+      </th>
+    </c:forEach>
     </tr>
-  </c:forEach>
-</table>
+
+    <c:forEach items="${webTable.rows}" var="row">
+      <tr class="CellStatus">
+        <c:forEach items="${row}" var="cell">
+          <td class="severity-${cell.styleClass} bright">
+            <c:choose>
+              <c:when test="${! empty cell.link}">
+                <a href="${cell.link}">${cell.content}</a>
+              </c:when>
+              <c:otherwise>
+                ${cell.content}
+              </c:otherwise>
+            </c:choose>
+          </td>
+        </c:forEach>
+      </tr>
+    </c:forEach>
+  </table>
+</div> <!-- panel -->
 
 <c:if test="${fn:length(viewNames) > 1}">
   <script type="text/javascript">
@@ -108,12 +111,10 @@
     <input type="hidden" name="viewName" value="node" />
   </form>
         
-  <form name="chooseViewNameList">
-
-    <p>
-      Choose another view:
-      
-      <select name="viewName" onchange="goChooseViewNameChange();">
+  <form role="form" class="form-inline" name="chooseViewNameList">
+    <div class="form-group">
+      <label for="input_viewName">Choose another view:</label>
+      <select class="form-control" id="input_viewName" name="viewName" onchange="goChooseViewNameChange();">
         <c:forEach var="viewName" items="${viewNames}">
           <c:choose>
             <c:when test="${viewName == webTable.title}">
@@ -127,10 +128,8 @@
           <option ${selected}>${viewName}</option>
         </c:forEach>
       </select>
-    </p>
-    
+    </div>
   </form>
 </c:if>
 
-
-<jsp:include page="/includes/footer.jsp" flush="false" />
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />

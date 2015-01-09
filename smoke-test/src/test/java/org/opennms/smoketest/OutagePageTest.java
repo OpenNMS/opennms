@@ -28,52 +28,49 @@
 
 package org.opennms.smoketest;
 
-import org.junit.Before;
-import org.junit.FixMethodOrder;
-import org.junit.Test;
-import org.junit.runners.MethodSorters;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
-@FixMethodOrder(MethodSorters.NAME_ASCENDING)
+import org.junit.Before;
+import org.junit.Test;
+import org.openqa.selenium.Alert;
+import org.openqa.selenium.By;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+
 public class OutagePageTest extends OpenNMSSeleniumTestCase {
     @Before
     public void setUp() throws Exception {
-        super.setUp();
-        clickAndWait("link=Outages");
+        outagePage();
     }
 
     @Test
-    public void a_testAllTextIsPresent() throws Exception {
-        waitForText("Outage Menu");
-        waitForText("Outages and Service Level Availability");
-        waitForText("Outage ID");
-        waitForText("create notifications");
+    public void testAllTextIsPresent() throws Exception {
+        findElementByXpath("//h3[text()='Outage Menu']");
+        findElementByXpath("//h3[text()='Outages and Service Level Availability']");
+        findElementByName("outageIdForm").findElement(By.name("id"));
     }  
 
     @Test
-    public void b_testAllLinksArePresent() throws InterruptedException {
-        waitForElement("link=Current outages");
-        waitForElement("link=All outages");
-    }
+    public void testAllLinks() throws InterruptedException {
+        findElementByLink("Current outages").click();
+        findElementByXpath("//button[contains(@class, 'active') and contains(@onclick, 'current')]");
+        findElementByXpath("//button[not(contains(@class, 'active')) and contains(@onclick, 'resolved')]");
+        findElementByXpath("//button[not(contains(@class, 'active')) and contains(@onclick, 'both')]");
+        findElementByLink("Interface");
 
-    @Test
-    public void c_testAllFormsArePresent() {
-        assertEquals("Get details", selenium.getValue("css=input[type='submit']"));
-    }
+        outagePage();
+        findElementByLink("All outages").click();
+        findElementByXpath("//button[not(contains(@class, 'active')) and contains(@onclick, 'current')]");
+        findElementByXpath("//button[not(contains(@class, 'active')) and contains(@onclick, 'resolved')]");
+        findElementByXpath("//button[contains(@class, 'active') and contains(@onclick, 'both')]");
+        findElementByLink("Interface");
 
-    @Test
-    public void d_testAllLinks() throws InterruptedException {
-        clickAndWait("link=Current outages");
-        waitForElement("name=outtype");
-        waitForElement("css=input[type='submit']");
-        waitForElement("link=Interface");
-        clickAndWait("css=a[title='Outages System Page']");
-        clickAndWait("link=All outages");
-        waitForElement("name=outtype");
-        waitForText("Current Resolved Both Current & Resolved");
-        waitForText("Interface");
-        clickAndWait("css=a[title='Outages System Page']");
-        clickAndWait("css=input[type='submit']");
-        assertEquals("Please enter a valid outage ID.", selenium.getAlert());
+        outagePage();
+        findElementByName("outageIdForm").findElement(By.xpath("//button[@type='submit']")).click();
+        final Alert alert = wait.until(ExpectedConditions.alertIsPresent());
+        assertNotNull(alert);
+        assertEquals("Please enter a valid outage ID.", alert.getText());
+        alert.dismiss();
     }
 
 }

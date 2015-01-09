@@ -31,7 +31,7 @@
 
 <%@page language="java" contentType="text/html" session="true"%>
 
-<jsp:include page="/includes/header.jsp" flush="false">
+<jsp:include page="/includes/bootstrap.jsp" flush="false">
 	<jsp:param name="title" value="New User" />
 	<jsp:param name="headTitle" value="New" />
 	<jsp:param name="headTitle" value="Users" />
@@ -67,41 +67,49 @@
   }    
   function cancelUser()
   {
-      document.newUserForm.action="admin/userGroupView/users/list.jsp";
-      document.newUserForm.submit();
+      window.location.href = "admin/userGroupView/users/list.jsp";
   }
-
 </script>
 
-<%if ("redo".equals(request.getParameter("action"))) { %>
-  <h3>The user <%=request.getParameter("userID")%> already exists.
-    Please type in a different user ID.</h3>
-<%} else { %>
-  <h3>Please enter a user ID and password below</h3>
-<%}%>
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <%if ("redo".equals(request.getParameter("action"))) { %>
+      <h3 class="panel-title">The user <%=request.getParameter("userID")%> already exists.
+        Please type in a different user ID.</h3>
+    <%} else { %>
+      <h3 class="panel-title">Please enter a user ID and password below</h3>
+    <%}%>
+  </div>
+  <div class="panel-body">
+    <form class="form-horizontal" role="form" id="newUserForm" method="post" name="newUserForm" onsubmit="return validateFormInput();">
+      <div class="form-group">
+        <label for="userID" class="col-sm-2 control-label">User ID:</label>
+        <div class="col-sm-10">
+          <input id="userID" type="text" name="userID" class="form-control">
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="pass1" class="col-sm-2 control-label">Password:</label>
+        <div class="col-sm-10">
+          <input id="pass1" type="password" name="pass1" class="form-control">
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="pass2" class="col-sm-2 control-label">Confirm Password:</label>
+        <div class="col-sm-10">
+          <input id="pass2" type="password" name="pass2" class="form-control">
+        </div>
+      </div>
+      <div class="form-group">
+        <div class="col-sm-offset-2 col-sm-10">
+          <div class="btn-group" role="group">
+            <button type="submit" class="btn btn-default">OK</button>
+            <button type="button" class="btn btn-default" onclick="cancelUser()">Cancel</button>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div> <!-- panel-body -->
+</div> <!-- panel -->
 
-<form id="newUserForm" method="post" name="newUserForm" onsubmit="return validateFormInput();">
-  <table>
-    <tr>
-      <td width="10%"><label id="userIDLabel" for="userID">User ID:</label></td>
-      <td width="100%"><input id="userID" type="text" name="userID"/></td>
-    </tr>
-
-    <tr>
-      <td width="10%"><label id="pass1Label" for="password1">Password:</label></td>
-      <td width="100%"><input id="pass1" type="password" name="pass1"/></td>
-    </tr>
-
-    <tr>
-      <td width="10%"><label id="pass2Label" for="password2">Confirm Password:</label></td>
-      <td width="100%"><input id="pass2" type="password" name="pass2"/></td>
-    </tr>
-
-    <tr>
-      <td><input id="doOK" type="submit" value="OK"/></td>
-      <td><input id="doCancel" type="button" value="Cancel" onclick="cancelUser()"/></td>
-    </tr>
-</table>
-</form>
-
-<jsp:include page="/includes/footer.jsp" flush="false" />
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />

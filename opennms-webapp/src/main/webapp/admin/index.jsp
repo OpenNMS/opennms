@@ -40,7 +40,7 @@
         import="org.opennms.netmgt.config.NotifdConfigFactory"
         %>
 
-<jsp:include page="/includes/header.jsp" flush="false" >
+<jsp:include page="/includes/bootstrap.jsp" flush="false" >
     <jsp:param name="title" value="Admin" />
     <jsp:param name="headTitle" value="Admin" />
     <jsp:param name="location" value="admin" />
@@ -123,26 +123,30 @@
     <input type="hidden"/>
 </form>
 
-<div class="TwoColLeft">
-    <h3>OpenNMS System</h3>
-    <div class="boxWrapper">
-        <ul class="plain">  
+<div class="row">
+  <div class="col-md-6">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">OpenNMS System</h3>
+      </div>
+      <div class="panel-body">
+        <ul class="list-unstyled">
             <li><a href="admin/userGroupView/index.jsp">Configure Users, Groups and On-Call Roles</a></li>
             <li><a href="admin/sysconfig.jsp">System Information</a></li>
             <li><a href="admin/nodemanagement/instrumentationLogReader.jsp">Instrumentation Log Reader</a></li>
         </ul>
-    </div>
+      </div> <!-- panel-body -->
+    </div> <!-- panel -->
 
-    <h3>Operations</h3>
-
-    <div class="boxWrapper">
-        <ul class="plain">  
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Operations</h3>
+      </div>
+      <div class="panel-body">
+        <ul class="list-unstyled">
             <li><a href="admin/discovery/modifyDiscoveryConfig">Configure Discovery</a></li>
             <li><a href="javascript:snmpConfigPost()">Configure SNMP Community Names by IP</a></li>
             <li><a href="javascript:snmpManagePost()">Configure SNMP Data Collection per Interface</a></li>
-            <!-- Removed this - see bug 586
-            <li><a href="admin/pollerConfig/index.jsp">Configure Pollers</a></li>
-            -->        
             <li><a href="javascript:submitPost()">Manage and Unmanage Interfaces and Services</a></li>
             <li><a href="admin/thresholds/index.htm">Manage Thresholds</a></li>
             <!-- Secret function 
@@ -155,52 +159,57 @@
             <li><a href="admin/manageSnmpCollections.jsp">Manage SNMP Collections and Data Collection Groups</a></li>
             <%=getAdminPageNavEntries("operations")%>
         </ul>
-    </div>
-    <div class="boxWrapper">
-        <form method="post" name="notificationStatus" action="admin/updateNotificationStatus">
+        <form role="form" class="form-inline pull-right" method="post" name="notificationStatus" action="admin/updateNotificationStatus">
             <%String status = "Unknown";
                 try {
                     NotifdConfigFactory.init();
                     status = NotifdConfigFactory.getPrettyStatus();
                 } catch (Throwable e) { /*if factory can't be initialized, status is already 'Unknown'*/ }
             %>
-            <p align="right">Notification Status:
-                <%if (status.equals("Unknown")) {%>
-                Unknown<br />
-                <% }%>
-                <input type="radio" name="status" id="on" value="on" <%=(status.equals("On") ? "checked" : "")%> /> <label for="on">On</label>&nbsp;&nbsp;&nbsp;
-                <input type="radio" name="status" id="off" value="off" <%=(status.equals("Off") ? "checked" : "")%> /> <label for="off">Off</label>
-                <input type="submit" value="Update" />
-            </p>
+            <div class="form-group">
+              <label class="control-label">Notification Status:<%if (status.equals("Unknown")) {%> Unknown<% }%>
+              <input class="form-control" type="radio" name="status" id="on" value="on" <%=(status.equals("On") ? "checked" : "")%> /> <label for="on">On</label>&nbsp;&nbsp;&nbsp;
+              <input class="form-control" type="radio" name="status" id="off" value="off" <%=(status.equals("Off") ? "checked" : "")%> /> <label for="off">Off</label>
+            </div>
+            <button type="submit" class="btn btn-default">Update</button>
         </form>
-    </div>    
+      </div> <!-- panel-body -->
+    </div> <!-- panel -->
 
-    <h3>Node Provisioning</h3>
-    <div class="boxWrapper">
-        <ul class="plain">  
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Node Provisioning</h3>
+      </div>
+      <div class="panel-body">
+        <ul class="list-unstyled">
             <li><a href="javascript:addInterfacePost()">Add Interface for Scanning</a></li>
             <li><a href="admin/provisioningGroups.htm">Manage Provisioning Requisitions</a></li>
             <li><a href="admin/asset/index.jsp">Import and Export Asset Information</a></li>
             <li><a href="admin/categories.htm">Manage Surveillance Categories</a></li>
             <li><a href="javascript:deletePost()">Delete Nodes</a></li>
         </ul>
-    </div>
+      </div> <!-- panel-body -->
+    </div> <!-- panel -->
 
-    <h3>Distributed Monitoring</h3>
-    <div class="boxWrapper">
-        <ul class="plain">  
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Distributed Monitoring</h3>
+      </div>
+      <div class="panel-body">
+        <ul class="list-unstyled">
             <li><a href="admin/applications.htm">Manage Applications</a></li>
             <li><a href="distributed/locationMonitorList.htm">Manage Remote Pollers</a></li>
         </ul>
-    </div>
+      </div> <!-- panel-body -->
+    </div> <!-- panel -->
+  </div> <!-- column -->
 
-
-
-</div>
-
-<div class="TwoColRight">
-    <h3>Descriptions</h3>
-    <div class="boxWrapper">
+  <div class="col-md-6">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Descriptions</h3>
+      </div>
+      <div class="panel-body">
         <p>Detailed Documentation on all options can be found on <a title="The OpenNMS Project wiki" href="http://www.opennms.org" target="new">the OpenNMS wiki</a>.
         </p>
         <p><b>Configure Users, Groups and On-Call Roles</b>: Add, modify or delete
@@ -295,11 +304,12 @@
         the operation of remote pollers that report back to this OpenNMS server to provide distributed
         status information.
         </p>
+      </div> <!-- panel-body -->
+    </div> <!-- panel -->
+  </div> <!-- column -->
+</div> <!-- row -->
 
-    </div>
-</div>
-<hr />
-<jsp:include page="/includes/footer.jsp" flush="false"/>
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="false"/>
 
 <%!
     /**
