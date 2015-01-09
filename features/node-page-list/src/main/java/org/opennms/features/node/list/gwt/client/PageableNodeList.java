@@ -30,6 +30,7 @@ package org.opennms.features.node.list.gwt.client;
 
 import java.util.List;
 
+import org.gwtbootstrap3.client.ui.Button;
 import org.opennms.features.node.list.gwt.client.events.IpInterfaceSelectionEvent;
 import org.opennms.features.node.list.gwt.client.events.IpInterfaceSelectionHandler;
 import org.opennms.features.node.list.gwt.client.events.PhysicalInterfaceSelectionEvent;
@@ -52,7 +53,7 @@ import com.google.gwt.user.cellview.client.SimplePager.Resources;
 import com.google.gwt.user.cellview.client.SimplePager.TextLocation;
 import com.google.gwt.user.client.Cookies;
 import com.google.gwt.user.client.Window.Location;
-import com.google.gwt.user.client.ui.Button;
+
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.ListBox;
@@ -109,8 +110,8 @@ public class PageableNodeList extends Composite implements ProvidesResize, Physi
     
     public static final String COOKIE = "hideNodePageErrorDialog";
     
-    @UiField
-    TabLayoutPanel m_tabLayoutPanel;
+//    @UiField
+//    TabLayoutPanel m_tabLayoutPanel;
     
     @UiField
     IpInterfaceTable m_ipInterfaceTable;
@@ -263,10 +264,10 @@ public class PageableNodeList extends Composite implements ProvidesResize, Physi
     }
 
     private void initializeTabBar() {
-        m_tabLayoutPanel.setSize("100%", "520px");
-        Node node = m_tabLayoutPanel.getElement().getChild(1);
-        Element element = Element.as(node);
-        element.getStyle().setHeight(100, Unit.EM);
+//        m_tabLayoutPanel.setSize("100%", "520px");
+//        Node node = m_tabLayoutPanel.getElement().getChild(1);
+//        Element element = Element.as(node);
+//        element.getStyle().setHeight(100, Unit.EM);
     }
     
     @UiHandler("m_ipSearchBtn")
@@ -285,7 +286,7 @@ public class PageableNodeList extends Composite implements ProvidesResize, Physi
     
     
     public void onResize() {
-        m_tabLayoutPanel.onResize();
+//        m_tabLayoutPanel.onResize();
     }
 
 

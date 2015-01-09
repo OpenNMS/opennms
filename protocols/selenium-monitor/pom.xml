@@ -11,7 +11,7 @@
   <name>OpenNMS Protocols Selenium Monitor</name>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <seleniumVersion>2.42.2</seleniumVersion>
+    <seleniumVersion>2.44.0</seleniumVersion>
   </properties>
   <packaging>bundle</packaging>
   <build>
@@ -80,9 +80,27 @@
     </dependency>
     
     <dependency>
-        <groupId>org.seleniumhq.selenium</groupId>
-        <artifactId>selenium-support</artifactId>
-        <version>${seleniumVersion}</version>
+      <groupId>org.seleniumhq.selenium</groupId>
+      <artifactId>selenium-support</artifactId>
+      <version>${seleniumVersion}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>commons-logging</groupId>
+          <artifactId>commons-logging</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    
+    <dependency>
+    	<groupId>org.seleniumhq.selenium</groupId>
+    	<artifactId>selenium-remote-driver</artifactId>
+    	<version>${seleniumVersion}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>commons-logging</groupId>
+          <artifactId>commons-logging</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     
     <dependency>
@@ -98,15 +116,8 @@
     </dependency>
 
     <dependency>
-        <groupId>com.github.detro.ghostdriver</groupId>
+        <groupId>com.codeborne</groupId>
         <artifactId>phantomjsdriver</artifactId>
-        <version>1.1.0</version>
-        <exclusions>
-            <exclusion>
-                <groupId>commons-logging</groupId>
-                <artifactId>commons-logging</artifactId>
-            </exclusion>
-        </exclusions>
     </dependency>
     
     <dependency>

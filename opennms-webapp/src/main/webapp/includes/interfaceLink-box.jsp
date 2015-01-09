@@ -57,10 +57,13 @@
 	NetworkElementFactoryInterface factory = NetworkElementFactory.getInstance(getServletContext());    
 
 %>
-	
-<h3>Links on Interface</h3>
+
+<div class="panel panel-default">
+<div class="panel-heading">	
+<h3 class="panel-title">Links on Interface</h3>
+</div>
 		<!-- Link box -->
-		<table class="standard">
+		<table class="table table-condensed">
 		
 		<thead>
 			<tr>
@@ -105,7 +108,7 @@
             	(ifindex <%=linkInterface.getLinkedIfindex()%>)
                 
                 <% if (linkInterface.getLinkedInterface().getSnmpIfAlias() != null && !linkInterface.getLinkedInterface().getSnmpIfAlias().equals("")) { %>
-                    ifAlias <%=linkInterface.getLinkedInterface().getSnmpIfAlias()%>"
+                    ifAlias <%=linkInterface.getLinkedInterface().getSnmpIfAlias()%>
                 <% } else { %> 
                  	&nbsp;
     			<% } %> 
@@ -140,3 +143,4 @@
 	    <% } %>
 		    
 	    </table>
+    </div>

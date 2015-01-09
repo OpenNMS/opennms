@@ -129,7 +129,8 @@
         throw new ServletException("Could not send event " + event.getUei(), e);
     }
 %>
-<jsp:include page="/includes/header.jsp" flush="false" >
+
+<jsp:include page="/includes/bootstrap.jsp" flush="false" >
   <jsp:param name="title" value="Post Event" />
   <jsp:param name="headTitle" value="Post Event" />
   <jsp:param name="headTitle" value="Admin" />
@@ -137,15 +138,19 @@
   <jsp:param name="breadcrumb" value="Post Event" />
 </jsp:include>
 
-<h3>Event Sent...</h3>
-
-<pre>
 <%
-  String eventXml = JaxbUtils.marshal(event);
-  // Strip off xml version string
-  eventXml = eventXml.replaceFirst("^<\\?xml[^\\>]+\\?\\>\\s*", "");
+    String eventXml = JaxbUtils.marshal(event);
+    // Strip off xml version string
+    eventXml = eventXml.replaceFirst("^<\\?xml[^\\>]+\\?\\>\\s*", "");
 %>
-<c:out value="<%=eventXml%>" />
-</pre>
 
-<jsp:include page="/includes/footer.jsp" flush="false" />
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title">Event Sent...</h3>
+  </div>
+  <div class="panel-body">
+    <pre><c:out value="<%=eventXml%>" /></pre>
+  </div> <!-- panel-body -->
+</div> <!-- panel -->
+
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />

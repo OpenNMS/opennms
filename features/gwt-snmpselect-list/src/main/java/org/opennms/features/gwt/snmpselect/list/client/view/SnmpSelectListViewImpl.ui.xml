@@ -1,17 +1,21 @@
 <!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
-	xmlns:g="urn:import:com.google.gwt.user.client.ui" xmlns:opennms="urn:import:org.opennms.features.gwt.snmpselect.list.client.view">
+	xmlns:g="urn:import:com.google.gwt.user.client.ui"
+	xmlns:b="urn:import:org.gwtbootstrap3.client.ui"
+	xmlns:opennms="urn:import:org.opennms.features.gwt.snmpselect.list.client.view">
 	<ui:style>
 		
 	</ui:style>
-	<g:LayoutPanel ui:field="m_layoutPanel">
-	   <g:layer top="0" left="0" right="0" bottom="30px">
-	       <g:FlowPanel>
-	           <opennms:SnmpSelectTable ui:field="m_snmpSelectTable"></opennms:SnmpSelectTable>
-	       </g:FlowPanel>
-	   </g:layer>
-	   <g:layer height="30px" left="0" right="0" bottom="0">
-	       <g:FlowPanel ui:field="m_pagerContainer"/>
-	   </g:layer>
-	</g:LayoutPanel>
-</ui:UiBinder> 
+	<g:FlowPanel>
+		<b:Row>
+			<b:Column size="MD_12">
+				<opennms:SnmpSelectTable ui:field="m_snmpSelectTable"></opennms:SnmpSelectTable>
+			</b:Column>
+		</b:Row>
+		<b:Row>
+			<b:Column size="MD_12">
+				<g:FlowPanel ui:field="m_pagerContainer"/>
+			</b:Column>
+		</b:Row>
+	</g:FlowPanel>
+</ui:UiBinder>

@@ -33,7 +33,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 
-<jsp:include page="/includes/header.jsp" flush="false">
+<jsp:include page="/includes/bootstrap.jsp" flush="false">
 	<jsp:param name="title" value="Categories" />
 	<jsp:param name="headTitle" value="Categories" />
 	<jsp:param name="breadcrumb"
@@ -41,7 +41,6 @@
 	<jsp:param name="breadcrumb" value="Categories" />
 </jsp:include>
 
-<h3>Surveillance Categories</h3>
 <script type="text/javascript">
 
    var surveillanceCategories = {
@@ -69,28 +68,34 @@
        }
    }
 </script>
-<table>
-  <tr>
-    <th>Delete</th>
-    <th>Edit</th>
-    <th>Category</th>
-  </tr>
-  <c:forEach items="${categories}" var="category">
-	  <tr>
-	    <td><a onclick="deleteCategory('${fn:escapeXml(category.name)}', ${category.id})" ><img src="images/trash.gif" alt="Delete Category"/></a></td>
-	    <td><a href="admin/categories.htm?categoryid=${category.id}&edit"><img src="images/modify.gif" alt="Edit Category"/></a></td>
-	    <td><a href="admin/categories.htm?categoryid=${category.id}">${fn:escapeXml(category.name)}</a></td> 
-  	  </tr>
-  </c:forEach>
-  <tr>
-    <td></td>
-    <td></td>
-    <td>
-      <form action="admin/categories.htm">
-        <input type="textfield" name="newCategoryName" size="40"/>
-        <input type="submit" value="Add New Category"/>
-      </form>
-  </tr>
-</table>
 
-<jsp:include page="/includes/footer.jsp" flush="false"/>
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title">Surveillance Categories</h3>
+  </div>
+  <table class="table table-condensed">
+    <tr>
+      <th>Delete</th>
+      <th>Edit</th>
+      <th>Category</th>
+    </tr>
+    <c:forEach items="${categories}" var="category">
+      <tr>
+        <td><a onclick="deleteCategory('${fn:escapeXml(category.name)}', ${category.id})" ><img src="images/trash.gif" alt="Delete Category"/></a></td>
+        <td><a href="admin/categories.htm?categoryid=${category.id}&edit"><img src="images/modify.gif" alt="Edit Category"/></a></td>
+        <td><a href="admin/categories.htm?categoryid=${category.id}">${fn:escapeXml(category.name)}</a></td>
+      </tr>
+    </c:forEach>
+    <tr>
+      <td></td>
+      <td></td>
+      <td>
+        <form role="form" class="form-inline" action="admin/categories.htm">
+          <input type="textfield" class="form-control" size="40" name="newCategoryName"/>
+          <input type="submit" class="btn btn-default" value="Add New Category"/>
+        </form>
+    </tr>
+  </table>
+</div> <!-- panel -->
+
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="false"/>

@@ -38,7 +38,7 @@
 	"
 %>
 
-<jsp:include page="/includes/header.jsp" flush="false" >
+<jsp:include page="/includes/bootstrap.jsp" flush="false" >
   <jsp:param name="title" value="Manage/Unmanage Interfaces Finish" />
   <jsp:param name="headTitle" value="Manage Interfaces" />
   <jsp:param name="headTitle" value="Admin" />
@@ -48,7 +48,6 @@
 </jsp:include>
 
 <%
-
 	OnmsNode node = null;
 	String nodeIdString = request.getParameter("node");
 	if (nodeIdString != null) {
@@ -61,25 +60,30 @@
 	}
 %>
 
-<h3>Database Update Complete After Management Changes</h3>
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title">Database Update Complete After Management Changes</h3>
+  </div>
+  <div class="panel-body">
+    <p>
+      These changes take effect immediately. OpenNMS does not need to be restarted.
+    </p>
 
-<p>
-  These changes take effect immediately. OpenNMS does not need to be restarted.
-</p>
+    <p>
+      Changes for a specific node will become effective upon execution of
+      a forced rescan on that node. The node must be up when rescanned for the
+      inventory information to be updated.
+    </p>
 
-<p>
-  Changes for a specific node will become effective upon execution of
-  a forced rescan on that node. The node must be up when rescanned for the
-  inventory information to be updated.
-</p>
+    <% if (node != null) { %>
+    <p>
+      <a href="element/rescan.jsp?node=<%= node.getId() %>">Rescan this node</a>
+    </p>
+    <p>
+      <a href="element/node.jsp?node=<%= node.getId() %>">Return to node page</a>
+    </p>
+    <% } %>
+  </div> <!-- panel-body -->
+</div> <!-- panel -->
 
-<% if (node != null) { %>
-<p>
-  <a href="element/rescan.jsp?node=<%= node.getId() %>">Rescan this node</a>
-</p>
-<p>
-  <a href="element/node.jsp?node=<%= node.getId() %>">Return to node page</a>
-</p>
-<% } %>
-
-<jsp:include page="/includes/footer.jsp" flush="true"/>
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="true"/>

@@ -49,38 +49,49 @@
         throw new ServletException( "Missing the outage parms request attribute." );
     }
 
-    int length = parms.filters.size();    
+    int length = parms.filters.size();
 %>
 
 <!-- acknowledged/outstanding row -->
 
 <form action="outage/list.htm" method="get" name="outage_search_constraints_box_outtype_form">
   <%=Util.makeHiddenTags(req, new String[] {"outtype"})%>
-    
-  <p>
-    Outage type:
-    <select name="outtype" size="1" onChange="javascript: document.outage_search_constraints_box_outtype_form.submit()">
-      <option value="<%=OutageType.CURRENT.getShortName() %>" <%=(parms.outageType == OutageType.CURRENT) ? "selected=\"1\"" : ""%>>
-        Current
-      </option>
-      
-      <option value="<%=OutageType.RESOLVED.getShortName()%>" <%=(parms.outageType == OutageType.RESOLVED) ? "selected=\"1\"" : ""%>>
-        Resolved
-      </option>
-      
-      <option value="<%=OutageType.BOTH.getShortName()%>" <%=(parms.outageType == OutageType.BOTH) ? "selected=\"1\"" : ""%>>
-        Both Current &amp; Resolved
-      </option>
-    </select>        
-  </p> 
-</form>    
+  <input type="hidden" name="outtype"/>
+</form>
+
+<div class="btn-group">
+  <button 
+    type="button" 
+    class="btn btn-default <%=(parms.outageType == OutageType.CURRENT) ? "active" : ""%>" 
+    onclick="document.outage_search_constraints_box_outtype_form.outtype.value = '<%=OutageType.CURRENT.getShortName() %>'; document.outage_search_constraints_box_outtype_form.submit();"
+  >
+    Current
+  </button>
+  <button 
+    type="button" 
+    class="btn btn-default <%=(parms.outageType == OutageType.RESOLVED) ? "active" : ""%>"
+    onclick="document.outage_search_constraints_box_outtype_form.outtype.value = '<%=OutageType.RESOLVED.getShortName() %>'; document.outage_search_constraints_box_outtype_form.submit();"
+  >
+    Resolved
+  </button>
+  <button 
+    type="button" 
+    class="btn btn-default <%=(parms.outageType == OutageType.BOTH) ? "active" : ""%>"
+    onclick="document.outage_search_constraints_box_outtype_form.outtype.value = '<%=OutageType.BOTH.getShortName() %>'; document.outage_search_constraints_box_outtype_form.submit();"
+  >
+    Both Current &amp; Resolved
+  </button>
+</div>
+
+<br/>
 
 <% if( length > 0 ) { %>
-  <p>Search constraints: 
+  <br/>
+  <strong>Search constraints: 
       <% for(int i=0; i < length; i++) { %>
         <% Filter filter = (Filter)parms.filters.get(i); %> 
-        &nbsp; <span class="filter"><%=WebSecurityUtils.sanitizeString(filter.getTextDescription())%> <a href="<%=OutageUtil.makeLink(req, parms, filter, false)%>">[-]</a></span>
-      <% } %>   
-  </p>    
-<% } %>  
-
+        &nbsp; <span class="label label-default"><%=WebSecurityUtils.sanitizeString(filter.getTextDescription())%></span> <a href="<%=OutageUtil.makeLink(req, parms, filter, false)%>"> <i class="fa fa-minus-square-o"></i></a>
+      <% } %>
+  </strong>
+  <br/>
+<% } %>

@@ -58,7 +58,7 @@
     pageContext.setAttribute("match", match);
 %>
 
-<jsp:include page="/includes/header.jsp" flush="false" >
+<jsp:include page="/includes/bootstrap.jsp" flush="false" >
   <jsp:param name="title" value="Resource Graphs" />
   <jsp:param name="headTitle" value="Resource Graphs" />
   <jsp:param name="headTitle" value="Reports" />
@@ -125,13 +125,15 @@
   }
 
 </script>
-<div class="TwoColLeft">
-  
-    <h3 class="o-box">Standard Resource<br/>Performance Reports</h3>
-	<div class="boxWrapper">
-    <p>
-      Choose a resource for a standard performance report.
-    </p>
+
+<div class="row">
+  <div class="col-md-6">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Standard Resource<br/>Performance Reports</h3>
+      </div>
+      <div class="panel-body">
+        <p>Choose a resource for a standard performance report.</p>
 	<script type="text/javascript">
 		var standardResourceData = {total:"${fn:length(topLevelResources)}", records:[
 									<c:set var="first" value="true"/>
@@ -152,17 +154,18 @@
 			                                          		]};
 
 	</script>
-	<opennms:graphResourceList id="resourceList1" dataObject="standardResourceData"> </opennms:graphResourceList>
+	<opennms:graphResourceList id="resourceList1" dataObject="standardResourceData" targetUrl="graph/results.htm"> </opennms:graphResourceList>
 	<!-- Div for IE -->
-	<div name="opennms-graphResourceList" id="resourceList-ie" dataObject="standardResourceData"></div>
-  </div>
-  
+	<div name="opennms-graphResourceList" id="resourceList-ie" dataObject="standardResourceData" targetUrl="graph/results.htm"></div>
+      </div> <!-- panel-body -->
+    </div> <!-- panel -->
 
-    <h3 class="o-box">Custom Resource<br/>Performance Reports</h3>
-	<div class="boxWrapper">
-    <p>
-      Choose a resource for a custom performance report.
-    </p>
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Custom Resource<br/>Performance Reports</h3>
+      </div>
+      <div class="panel-body">
+        <p>Choose a resource for a custom performance report.</p>
 	<script type="text/javascript">
 		var customResources = {total:"${fn:length(topLevelResources)}", records:[
                                             <c:set var="first" value="true"/>
@@ -183,28 +186,33 @@
 			                                                                 		]};
 		
 	</script>
-	<opennms:graphResourceList id="resourceList2" dataObject="customResources"> </opennms:graphResourceList>
-	<div name="opennms-graphResourceList" id="resourceList2-ie" dataObject="customResources"></div>
-  </div>
-</div>
+	<opennms:graphResourceList id="resourceList2" dataObject="customResources" targetUrl="graph/adhoc2.jsp"> </opennms:graphResourceList>
+	<div name="opennms-graphResourceList" id="resourceList2-ie" dataObject="customResources" targetUrl="graph/adhoc2.jsp"></div>
+      </div> <!-- panel-body -->
+    </div> <!-- panel -->
+  </div> <!-- column -->
 
-<div class="TwoColRight">
-  
-    <h3 class="o-box" align=center>Network Performance Data</h3>
-	<div class="boxWrapper">
-    <p>
-      The <strong>Standard Performance Reports</strong> provide a stock way to
-      easily visualize the critical SNMP data collected from managed nodes
-      and interfaces throughout your network.
-    </p>
+  <div class="col-md-6">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Network Performance Data</h3>
+      </div>
+      <div class="panel-body">
+        <p>
+          The <strong>Standard Performance Reports</strong> provide a stock way to
+          easily visualize the critical SNMP data collected from managed nodes
+          and interfaces throughout your network.
+        </p>
 
-    <p>
-      <strong>Custom Performance Reports</strong> can be used to produce a
-      single graph that contains the data of your choice from a single
-      interface or node.  You can select the timeframe, line colors, line
-       styles, and title of the graph and you can bookmark the results.
-    </p>
-  </div>
-</div>
+        <p>
+          <strong>Custom Performance Reports</strong> can be used to produce a
+          single graph that contains the data of your choice from a single
+          interface or node.  You can select the timeframe, line colors, line
+           styles, and title of the graph.
+        </p>
+     </div> <!-- panel-body -->
+    </div> <!-- panel -->
+  </div> <!-- column -->
+</div> <!-- row -->
 
-<jsp:include page="/includes/footer.jsp" flush="false"/>
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="false"/>

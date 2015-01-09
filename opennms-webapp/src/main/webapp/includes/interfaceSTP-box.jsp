@@ -56,8 +56,11 @@
 
 
 %>
-<h3>Interface Spanning Tree Protocol Info</h3>
-<table>
+<div class="panel panel-default">
+<div class="panel-heading">
+<h3 class="panel-title">Interface Spanning Tree Protocol Info</h3>
+</div>
+<table class="table table-condensed">
   
   
 <% if(stpifs.length == 0) { %>
@@ -119,4 +122,4 @@
 <% } %>
                      
 </table>      
-
+</div>
