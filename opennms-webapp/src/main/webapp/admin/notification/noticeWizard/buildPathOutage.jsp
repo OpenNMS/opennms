@@ -96,7 +96,7 @@
         </div>
         <div class="form-group">
           <label for="criticalSvc">Critical Path Service</label>
-          <select id="criticalSvc" name="criticalSvc" value="ICMP" size="1">
+          <select id="criticalSvc" name="criticalSvc" value="ICMP">
               <option value="ICMP">ICMP</option>
           </select>
         </div>
