@@ -147,7 +147,7 @@ LABEL
 <p>
 <label for="criticalSvc">Critical path service:</label><br/>
 
-  <select id="criticalSvc" class="form-control" name="criticalSvc" value="ICMP" size="1">
+  <select id="criticalSvc" class="form-control" name="criticalSvc" value="ICMP">
         <option value="ICMP">ICMP</option>
   </select>
 </p>

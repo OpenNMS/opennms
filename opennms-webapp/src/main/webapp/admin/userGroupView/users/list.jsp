@@ -164,9 +164,9 @@
           </td>
           <td rowspan="2" class="text-center">
             <% if ( !curUser.getUserId().equals("admin")) { %>
-                <input id="<%= "users("+curUser.getUserId()+").doRename" %>" type="button" name="rename" value="Rename" onclick="renameUser('<%=curUser.getUserId()%>')">
+                <button id="<%= "users("+curUser.getUserId()+").doRename" %>" class="btn btn-default"  name="rename" onclick="renameUser('<%=curUser.getUserId()%>')">Rename</button>
               <% } else { %>
-                <input id="<%= "users("+curUser.getUserId()+").doRename" %>" type="button" name="rename" value="Rename" onclick="alert('Sorry, the admin user cannot be renamed.')">
+                <button id="<%= "users("+curUser.getUserId()+").doRename" %>" class="btn btn-default"  name="rename" onclick="alert('Sorry, the admin user cannot be renamed.')">Rename</button>
               <% } %>
           </td>
           <td>

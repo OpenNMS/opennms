@@ -484,7 +484,7 @@ Collection<String> dutySchedules = user.getDutyScheduleCollection();
        <div class="form-group top-buffer">
          <div class="col-sm-12">
            <button id="addSchedulesButton" type="button" class="btn btn-default" name="addSchedule" onclick="addDutySchedules()">Add This Many Schedules</button>
-           <select name="numSchedules" class="btn btn-default" value="3" size="1">
+           <select name="numSchedules" class="btn btn-default" value="3">
                  <option value="1">1</option>
                  <option value="2">2</option>
                  <option value="3">3</option>

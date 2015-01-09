@@ -79,8 +79,8 @@ $(document).ready(function() {
 
             <div class="row">
             <div class="form-group">
-               <label>Start Time</label>
-                <select class="form-control" name="startMonth" size="1">
+                <label>Start Time</label>
+                <select class="form-control" name="startMonth">
                     <c:forEach var="month" items="${results.monthMap}">
                         <c:choose>
                             <c:when test="${month.key == results.startCalendar.month}">
@@ -97,7 +97,7 @@ $(document).ready(function() {
                 <input type="text" class="form-control" name="startDate" size="4" maxlength="2" value="${results.startCalendar.date}" />
                 <input type="text" class="form-control" name="startYear" size="6" maxlength="4" value="${results.startCalendar.year}" />
 
-                <select class="form-control" name="startHour" size="1">
+                <select class="form-control" name="startHour">
                     <c:forEach var="hour" items="${results.hourMap}">
                         <c:choose>
                             <c:when test="${hour.key == results.startCalendar.hourOfDay}">
@@ -116,7 +116,7 @@ $(document).ready(function() {
               <div class="row">
               <div class="form-group">
                 <label>End Time</label>
-                <select class="form-control" name="endMonth" size="1">
+                <select class="form-control" name="endMonth">
                     <c:forEach var="month" items="${results.monthMap}">
                         <c:choose>
                             <c:when test="${month.key == results.endCalendar.month}">
@@ -133,7 +133,7 @@ $(document).ready(function() {
                 <input type="text" class="form-control" name="endDate" size="4" maxlength="2" value="${results.endCalendar.date}" />
                 <input type="text" class="form-control" name="endYear" size="6" maxlength="4" value="${results.endCalendar.year}" />
 
-                <select class="form-control" name="endHour" size="1">
+                <select class="form-control" name="endHour">
                     <c:forEach var="hour" items="${results.hourMap}">
                         <c:choose>
                             <c:when test="${hour.key == results.endCalendar.hourOfDay}">

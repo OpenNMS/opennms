@@ -110,14 +110,14 @@
                 <form role="form" class="form-inline pull-right" action="element/nodeList.htm" method="get">
                    <input type="hidden" name="listInterfaces" value="false"/>
                    <label class="hidden-sm hidden-md hidden-lg">System attribute:</label>
-                   <select class="form-control" name="mib2Parm" size="1">
+                   <select class="form-control" name="mib2Parm">
                      <option>sysDescription</option>
                      <option>sysObjectId</option>
                      <option>sysContact</option>
                      <option>sysName</option>
                      <option>sysLocation</option>
                    </select>
-                   <select class="form-control" name="mib2ParmMatchType" size="1">
+                   <select class="form-control" name="mib2ParmMatchType">
                      <option>contains</option>
                      <option>equals</option>
                    </select>
@@ -134,12 +134,12 @@
                 <form role="form" class="form-inline pull-right" action="element/nodeList.htm" method="get">
                   <input type="hidden" name="listInterfaces" value="false"/>
                   <label class="hidden-sm hidden-md hidden-lg">Interface attribute:</label>
-                  <select class="form-control" name="snmpParm" size="1">
+                  <select class="form-control" name="snmpParm">
                     <option>ifAlias</option>
                     <option>ifName</option>
                     <option>ifDescr</option>
                   </select>
-                  <select class="form-control" name="snmpParmMatchType" size="1">
+                  <select class="form-control" name="snmpParmMatchType">
                     <option>contains</option>
                     <option>equals</option>
                   </select>
@@ -157,7 +157,7 @@
                   <input type="hidden" name="listInterfaces" value="false"/>
                   <div class="form-group">
                     <label for="byservice_service">Providing service:</label>
-                    <select class="form-control" id="byservice_service" name="service" size="1">
+                    <select class="form-control" id="byservice_service" name="service">
                       <% for (String name : serviceNameList) { %>
                         <option value="<%=serviceNameMap.get(name)%>"><%=name%></option>
                       <% } %>
@@ -219,7 +219,7 @@
                   <input type="hidden" name="column" value="category" />
                   <div class="form-group">
                     <label for="bycat_value">Category:</label>
-                    <select id="bycat_value" class="form-control" name="searchvalue" size="1">
+                    <select id="bycat_value" class="form-control" name="searchvalue">
                       <% for( int i=0; i < Asset.CATEGORIES.length; i++ ) { %>
                         <option><%=Asset.CATEGORIES[i]%></option>
                       <% } %>
@@ -237,7 +237,7 @@
                 <form role="form" class="form-inline pull-right" action="asset/nodelist.jsp" method="get">
                   <div class="form-group">
                     <label for="byfield_column">Field</label>
-                    <select id="byfield_column" class="form-control" name="column" size="1">
+                    <select id="byfield_column" class="form-control" name="column">
                       <% for( int i=0; i < this.columns.length; i++ ) { %>
                       <option value="<%=this.columns[i][1]%>"><%=this.columns[i][0]%></option>
                       <% } %>
