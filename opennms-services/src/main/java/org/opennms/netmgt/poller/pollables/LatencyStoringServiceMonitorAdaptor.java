@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -124,7 +124,7 @@ public class LatencyStoringServiceMonitorAdaptor implements ServiceMonitor {
         return status;
     }
 
-    private void storeResponseTime(MonitoredService svc, LinkedHashMap<String, Number> entries, Map<String,Object> parameters) {
+    private void storeResponseTime(MonitoredService svc, Map<String, Number> entries, Map<String,Object> parameters) {
         String rrdPath     = ParameterMap.getKeyedString(parameters, "rrd-repository", null);
         String dsName      = ParameterMap.getKeyedString(parameters, "ds-name", DEFAULT_BASENAME);
         String rrdBaseName = ParameterMap.getKeyedString(parameters, "rrd-base-name", dsName);
@@ -149,7 +149,7 @@ public class LatencyStoringServiceMonitorAdaptor implements ServiceMonitor {
         updateRRD(rrdPath, svc.getAddress(), rrdBaseName, entries);
     }
 
-    private void applyThresholds(String rrdPath, MonitoredService service, String dsName, LinkedHashMap<String, Number> entries) {
+    private void applyThresholds(String rrdPath, MonitoredService service, String dsName, Map<String, Number> entries) {
         try {
             if (m_thresholdingSet == null) {
                 RrdRepository repository = new RrdRepository();
@@ -210,7 +210,7 @@ public class LatencyStoringServiceMonitorAdaptor implements ServiceMonitor {
      *            the entries for the rrd, containing a Map of dsNames to values
      * @param rrdBaseName a {@link java.lang.String} object.
      */
-    public void updateRRD(String repository, InetAddress addr, String rrdBaseName, LinkedHashMap<String, Number> entries) {
+    public void updateRRD(String repository, InetAddress addr, String rrdBaseName, Map<String, Number> entries) {
         try {
             // Create RRD if it doesn't already exist
             List<RrdDataSource> dsList = new ArrayList<RrdDataSource>(entries.size());

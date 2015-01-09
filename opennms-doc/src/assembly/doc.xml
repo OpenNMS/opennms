@@ -1,19 +1,13 @@
 <assembly>
-  <id>daemon</id>
+  <id>docs</id>
   <formats>
-    <format>tar.gz</format>
+    <format>zip</format>
   </formats>
   <includeBaseDirectory>false</includeBaseDirectory>
   <fileSets>
     <fileSet>
-      <directory>target/docbkx/html</directory>
-      <outputDirectory>docs</outputDirectory>
-      <fileMode>0644</fileMode>
-      <directoryMode>0755</directoryMode>
-    </fileSet>
-    <fileSet>
-      <directory>target/docbkx/pdf</directory>
-      <outputDirectory>docs</outputDirectory>
+      <directory>${asciidoc.output.directory}</directory>
+      <outputDirectory>/</outputDirectory>
       <fileMode>0644</fileMode>
       <directoryMode>0755</directoryMode>
     </fileSet>

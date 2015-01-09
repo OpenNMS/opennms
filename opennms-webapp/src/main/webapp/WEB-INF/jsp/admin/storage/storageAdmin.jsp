@@ -2,22 +2,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -36,7 +36,7 @@
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
-<jsp:include page="/includes/header.jsp" flush="false" >
+<jsp:include page="/includes/bootstrap.jsp" flush="false" >
   <jsp:param name="storageAdmin" value="true" />
   <jsp:param name="title" value="Storage" />
   <jsp:param name="headTitle" value="${model.id}" />
@@ -153,12 +153,16 @@
 </script>
 
 
-<div class="TwoColLeft">
+<div class="row">
+  <div class="col-md-6">
     <!-- general info box -->
-    <h3>General (Status: ${model.status_general})</h3>
-    <table class="o-box">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h3 class="panel-title">General (Status: ${model.status_general})</h3>
+        </div>
+        <table class="table table-condensed">
 		<tr>
-			<th width="50%">Node</th>
+			<th>Node</th>
 	  		<td><a href="element/node.jsp?node=${model.db_id}">${model.id}</a></td>
 	  	</tr>
 		<tr>
@@ -170,10 +174,13 @@
 	  		<td>${model.RWSStatus}</td>
 	  	</tr>
 	</table>
+      </div> <!-- panel -->
 
-	<h3>Software Images Stored</h3>
-	
-	<table class="o-box">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+	  <h3 class="panel-title">Software Images Stored</h3>
+        </div>
+	<table class="table table-condensed">
 	<tr>
 		<th>Name</th>
 		<th>Size</th>
@@ -191,9 +198,13 @@
 		</tr>
 	</c:forEach>
 	</table>
+      </div> <!-- panel -->
 
-	<h3>Manage Images Stored</h3>
-	<table class="o-box">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+	  <h3 class="panel-title">Manage Images Stored</h3>
+        </div>
+	<table class="table table-condensed">
 	<c:choose>		
 	<c:when test="${model.bucketexist}">
 	<tr>
@@ -222,7 +233,7 @@
 	<tr>
 		<th>
 			<form id="createBucketForm" method="post" name="createBucketForm" onsubmit="return createBucket();">
-				<input name="createStatus" id="doCreate" type="submit" value="Create"/>
+				<input name="createStatus" class="btn btn-default" id="doCreate" type="submit" value="Create"/>
 				<input type="hidden" name="bucket" value="${model.id}"/>
 			</form>
 		</th>
@@ -232,26 +243,30 @@
 	
 	</c:choose>		
 	</table>
-</div>
+    </div> <!-- panel -->
+  </div> <!-- column -->
 
-  <div class="TwoColRight">
-      <h3>Descriptions</h3>
-      <div class="boxWrapper">
-      <p>Detailed Documentation on all options can be found on <a title="The OpenNMS Project wiki" href="http://www.opennms.org" target="new">the OpenNMS wiki</a>.
-      </p>
-        <p><b>(Delete) Bucket Item</b>: Delete the specified image file from <em>bucket</em>.</p>
-      
-       <p><b>Upload Bucket</b>:  Add a file to <em>bucket</em>.
-        </p>
-        
-       <p><b>Create Bucket</b>:  Create a <em>bucket</em> for storing image files.
-        </p>
-
-       <p><b>Delete Bucket</b>:  Delete <em>bucket</em> with all image files.
-        </p>
-  
+  <div class="col-md-6">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Descriptions</h3>
       </div>
-  </div>
-  <hr />
+      <div class="panel-body">
+        <p>Detailed Documentation on all options can be found on <a title="The OpenNMS Project wiki" href="http://www.opennms.org" target="new">the OpenNMS wiki</a>.
+        </p>
+          <p><b>(Delete) Bucket Item</b>: Delete the specified image file from <em>bucket</em>.</p>
 
-<jsp:include page="/includes/footer.jsp" flush="false" />
+         <p><b>Upload Bucket</b>:  Add a file to <em>bucket</em>.
+          </p>
+
+         <p><b>Create Bucket</b>:  Create a <em>bucket</em> for storing image files.
+          </p>
+
+         <p><b>Delete Bucket</b>:  Delete <em>bucket</em> with all image files.
+          </p>
+      </div> <!-- panel-body -->
+    </div> <!-- panel -->
+  </div> <!-- column -->
+</div> <!-- row -->
+
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />

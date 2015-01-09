@@ -2,22 +2,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -44,19 +44,17 @@ HttpSession sess = request.getSession(false);
 DiscoveryConfiguration currConfig  = (DiscoveryConfiguration) sess.getAttribute("discoveryConfiguration");
 %>
 
-<html>
-<head>
-  <title>Add Include Range | Admin | OpenNMS Web Console</title>
-  <base href="<%=org.opennms.web.api.Util.calculateUrlBase( request )%>" />
-  <link rel="stylesheet" type="text/css" href="css/styles.css" />
-  <script type='text/javascript' src='js/ipv6/ipv6.js'></script>
-  <script type='text/javascript' src='js/ipv6/lib/jsbn.js'></script>
-  <script type='text/javascript' src='js/ipv6/lib/jsbn2.js'></script>
-  <script type='text/javascript' src='js/ipv6/lib/sprintf.js'></script>
+<jsp:include page="/includes/bootstrap.jsp" flush="false" >
+    <jsp:param name="title" value="Add Include Range" />
+    <jsp:param name="headTitle" value="Admin" />
+    <jsp:param name="quiet" value="true" />
+</jsp:include>
 
-</head>
+<script type='text/javascript' src='js/ipv6/ipv6.js'></script>
+<script type='text/javascript' src='js/ipv6/lib/jsbn.js'></script>
+<script type='text/javascript' src='js/ipv6/lib/jsbn2.js'></script>
+<script type='text/javascript' src='js/ipv6/lib/sprintf.js'></script>
 
-<body>
 <script type="text/javascript">
 function v4BigInteger(ip) {
     var a = ip.split('.');
@@ -77,7 +75,7 @@ function checkIpRange(ip1, ip2){
     return false;
 }
 
-function addIncludeRange(){
+function doAddIncludeRange(){
 	if(!isValidIPAddress(document.getElementById("base").value)){
 		alert("Network Address not valid.");
 		document.getElementById("base").focus();
@@ -108,8 +106,6 @@ function addIncludeRange(){
 		return;		
 	}	
 
-	
-		
 	opener.document.getElementById("irbase").value=document.getElementById("base").value;
 	opener.document.getElementById("irend").value=document.getElementById("end").value;
 	opener.document.getElementById("irtimeout").value=document.getElementById("timeout").value;
@@ -118,35 +114,59 @@ function addIncludeRange(){
 	opener.document.getElementById("modifyDiscoveryConfig").submit();
 	window.close();
 	opener.document.focus();
-	
 }
-
 </script>
 
-<h3>Add Include Range to Discovery</h3>
-<div class="boxWrapper">
-		  <p>Add a range of IP addresses to include in discovery.<br/>
-	      Begin and End IP addresses are required.<br/>
-	      <br/>
-	      You can set the number of <i>Retries</i> and <i>Timeout</i>.
-	      If these parameters are not set, default values will be used.
-	      </p>
-</div>
+<div class="row">
+  <div class="col-md-12">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Add Include Range to Discovery</h3>
+      </div>
+      <div class="panel-body">
+        <p>Add a range of IP addresses to include in discovery.<br/>
+        Begin and End IP addresses are required.<br/>
+        <br/>
+        You can set the number of <i>Retries</i> and <i>Timeout</i>.
+        If these parameters are not set, default values will be used.
+        </p>
+        <form role="form" class="form-horizontal">
+          <div class="form-group">
+            <label for="base" class="control-label col-sm-2">Begin IP Address:</label>
+            <div class="col-sm-10">
+              <input type="text" class="form-control" id="base" name="base"  value=''/>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="end" class="control-label col-sm-2">End IP Address:</label>
+            <div class="col-sm-10">
+              <input type="text" class="form-control" id="end" name="end" value=''/>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="retries" class="control-label col-sm-2">Retries:</label>
+            <div class="col-sm-10">
+              <input type="text" class="form-control" id="retries" name="retries" value='<%=currConfig.getRetries()%>' />
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="timeout" class="control-label col-sm-2">Timeout (ms):</label>
+            <div class="col-sm-10">
+              <input type="text" class="form-control" id="timeout" name="timeout" value='<%=currConfig.getTimeout()%>' />
+            </div>
+          </div>
+          <div class="form-group">
+            <div class="col-sm-12">
+              <button type="button" class="btn btn-default" name="addIncludeRange" id="addIncludeRange" onclick="doAddIncludeRange();">Add</button>
+              <button type="button" class="btn btn-default" name="cancel" id="cancel" onclick="window.close();opener.document.focus();">Cancel</button>
+            </div>
+          </div>
+        </form>
+      </div> <!-- panel-body -->
+    </div> <!-- panel -->
+  </div> <!-- column -->
+</div> <!-- row -->
 
-<table class="standard">
- <tr>
-  <td class="standard" align="center" width="30%">Begin IP Address:<input type="text" id="base" name="base" size="15" value=''/></td>
-  <td class="standard" align="center" width="30%">End IP Address:<input type="text" id="end" name="end" size="15"  value=''/></td>
-  <td class="standard" align="center" width="20%">Retries:<input type="text" id="retries" name="retries" value='<%=currConfig.getRetries()%>' size="2" /></td>
-  <td class="standard" align="center" width="20%">Timeout (ms):<input type="text" id="timeout" name="timeout" value='<%=currConfig.getTimeout()%>' size="5" /></td>
- </tr>
-</table>
-	
-
-<input type="button" name="addIncludeRange" id="addIncludeRange" value="Add" onclick="addIncludeRange();" />
-<input type="button" name="cancel" id="cancel" value="Cancel" onclick="window.close();opener.document.focus();" />
-<hr />
-
-</body>
-
-</html>
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="false" >
+  <jsp:param name="quiet" value="true" />
+</jsp:include>

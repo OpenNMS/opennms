@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -33,12 +33,13 @@ import static org.junit.Assert.assertEquals;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.http.JUnitHttpServerExecutionListener;
@@ -100,15 +101,18 @@ public class NCSNorthbounderTest {
 
         TestServlet.reset();
 
-        HttpClient client = new DefaultHttpClient();
-        HttpEntity entity = new StringEntity(xml);
-        HttpPost method = new HttpPost("http://localhost:10342/fmpm/restful/NotificationMessageRelay");
-        method.setEntity(entity);
-        HttpResponse response = client.execute(method);
-        assertEquals(200, response.getStatusLine().getStatusCode());
-
-        assertEquals(xml, TestServlet.getPosted());
-
+        CloseableHttpClient client = HttpClientBuilder.create().build();
+        try {
+            HttpEntity entity = new StringEntity(xml);
+            HttpPost method = new HttpPost("http://localhost:10342/fmpm/restful/NotificationMessageRelay");
+            method.setEntity(entity);
+            HttpResponse response = client.execute(method);
+            assertEquals(200, response.getStatusLine().getStatusCode());
+    
+            assertEquals(xml, TestServlet.getPosted());
+        } finally {
+            IOUtils.closeQuietly(client);
+        }
     }
 
 

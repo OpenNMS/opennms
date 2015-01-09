@@ -7,16 +7,16 @@
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -57,7 +57,9 @@ import org.springframework.test.context.ContextConfiguration;
  * @author Ronald J. Roskens <ronald.roskens@gmail.com>
  */
 @RunWith(OpenNMSJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"classpath:/META-INF/opennms/emptyContext.xml"})
+@ContextConfiguration(locations = {"classpath:/META-INF/opennms/emptyContext.xml",
+		"classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
+		"classpath:/META-INF/opennms/applicationContext-soa.xml"})
 @JUnitConfigurationEnvironment
 public class SmtpMonitorTest {
 
@@ -137,6 +139,8 @@ public class SmtpMonitorTest {
                     Socket s = m_serverSocket.accept();
                     System.out.println("S: 220-localhost.localdomain ESMTP bogon");
                     s.getOutputStream().write("220-localhost.localdomain ESMTP bogon\r\n".getBytes());
+                    System.out.println("S: 220-send me mail soon!");
+                    s.getOutputStream().write("220-send me mail soon!\r\n".getBytes());
                     System.out.println("S: 220 send me mail now!");
                     s.getOutputStream().write("220 send me mail now!\r\n".getBytes());
                     BufferedReader r = new BufferedReader(new InputStreamReader(s.getInputStream()));

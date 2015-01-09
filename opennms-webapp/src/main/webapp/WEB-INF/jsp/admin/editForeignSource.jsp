@@ -2,22 +2,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -41,7 +41,7 @@
 <%@ taglib tagdir="/WEB-INF/tags/tree" prefix="tree" %>
 <%@ taglib tagdir="/WEB-INF/tags/springx" prefix="springx" %>
 
-<jsp:include page="/includes/header.jsp" flush="false">
+<jsp:include page="/includes/bootstrap.jsp" flush="false">
 	<jsp:param name="title" value="Provisioning Requisitions" /> 
 	<jsp:param name="headTitle" value="Provisioning Requisitions" />
 	<jsp:param name="breadcrumb" value="<a href='admin/index.jsp'>Admin</a>" />
@@ -49,16 +49,18 @@
 	<jsp:param name="breadcrumb" value="Edit Foreign Source Definition" />
 </jsp:include>
 
-<h3>Foreign Source Name: ${fn:escapeXml(foreignSourceEditForm.foreignSourceName)}</h3>
-
 <tree:form commandName="foreignSourceEditForm"> 
+  <input type="hidden" id="foreignSourceName" name="foreignSourceName" value="${fn:escapeXml(foreignSourceEditForm.foreignSourceName)}"/>
 
-	<input type="hidden" id="foreignSourceName" name="foreignSourceName" value="${fn:escapeXml(foreignSourceEditForm.foreignSourceName)}"/> 
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title">Foreign Source Name: ${fn:escapeXml(foreignSourceEditForm.foreignSourceName)}</h3>
+  </div>
+  <div class="panel-footer">
 	<tree:actionButton label="Done" action="done" />
+  </div>
+</div> <!-- panel -->
 
-	<br />
-	<br />
-	
 	<c:set var="showDelete" value="false" scope="request" />
 	<tree:nodeForm>
     	<tree:field label="Scan Interval" property="scanInterval" />
@@ -131,4 +133,4 @@
 	</tree:tree>
 	  
 </tree:form> 
-<jsp:include page="/includes/footer.jsp" flush="false"/>
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="false"/>

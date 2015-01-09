@@ -2,22 +2,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -34,10 +34,10 @@
 	contentType="text/html"
 	session="true"
 	import="
-        java.net.*,
-        java.util.*,
-        org.opennms.core.utils.InetAddressUtils,
-        org.opennms.netmgt.model.OnmsNode,
+    java.net.*,
+    java.util.*,
+    org.opennms.core.utils.InetAddressUtils,
+    org.opennms.netmgt.model.OnmsNode,
 		org.opennms.web.element.*,
 		org.opennms.web.svclayer.ResourceService,
 		org.springframework.web.context.WebApplicationContext,
@@ -124,7 +124,7 @@
 <% pageContext.setAttribute("nodeId", nodeId); %>
 <% pageContext.setAttribute("nodeLabel", node_db.getLabel()); %>
 
-<jsp:include page="/includes/header.jsp" flush="false" >
+<jsp:include page="/includes/bootstrap.jsp" flush="false" >
   <jsp:param name="headTitle" value="${nodeLabel}" />
   <jsp:param name="headTitle" value="Node Route Info" />
   <jsp:param name="title" value="Node Route Info" />
@@ -134,72 +134,67 @@
 </jsp:include>
 
 <!-- Body -->
-     <h2>Node: <%=node_db.getLabel()%></h2>
+<h4>Node: <%=node_db.getLabel()%></h4>
 
-      <div id="linkbar">
-      <ul>
-        <li>
-        	<a href="event/list.htm?filter=node%3D<%=nodeId%>">View Events</a>
-        </li>
-        <li>
-        	<a href="asset/modify.jsp?node=<%=nodeId%>">Asset Info</a>
-        </li>
-        <% if( telnetIp != null ) { %>
-       	<li>
-       		<a href="telnet://<%=telnetIp%>">Telnet</a>
-        </li>
-        <% } %>        
-        <% if( httpIp != null ) { %>
-        <li>
-          <a href="http://<%=httpIp%>">HTTP</a>
-        </li>
-        <% } %>
-        
-        
-        <% if (m_resourceService.findNodeChildResources(node_db).size() > 0) { %>
-          <li>
-            <c:url var="resourceGraphsUrl" value="graph/chooseresource.htm">
-              <c:param name="parentResourceType" value="<%=parentResType%>"/>
-              <c:param name="parentResource" value="<%=parentRes%>"/>
-              <c:param name="reports" value="all"/>
-            </c:url>
-            <a href="${resourceGraphsUrl}">Resource Graphs</a>
-	      </li>
-        <% } %>
-        
-        <li>
-	        <a href="element/rescan.jsp?node=<%=nodeId%>">Rescan</a>    
-        </li>
-      </ul>
-      </div>
+<ul class="list-inline">
+  <li>
+    <a href="event/list.htm?filter=node%3D<%=nodeId%>">View Events</a>
+  </li>
+  <li>
+    <a href="asset/modify.jsp?node=<%=nodeId%>">Asset Info</a>
+  </li>
+  <% if( telnetIp != null ) { %>
+  <li>
+    <a href="telnet://<%=telnetIp%>">Telnet</a>
+  </li>
+  <% } %>        
+  <% if( httpIp != null ) { %>
+  <li>
+  <a href="http://<%=httpIp%>">HTTP</a>
+  </li>
+  <% } %>
+  <% if (m_resourceService.findNodeChildResources(node_db).size() > 0) { %>
+  <li>
+    <c:url var="resourceGraphsUrl" value="graph/chooseresource.htm">
+    <c:param name="parentResourceType" value="<%=parentResType%>"/>
+    <c:param name="parentResource" value="<%=parentRes%>"/>
+    <c:param name="reports" value="all"/>
+  </c:url>
+  <a href="${resourceGraphsUrl}">Resource Graphs</a>
+  </li>
+  <% } %>
+  <li>
+    <a href="element/rescan.jsp?node=<%=nodeId%>">Rescan</a>    
+  </li>
+</ul>
 
-	<div class="TwoColLeft">
-            <!-- general info box -->
-		<h3>General (Status: <%=(node_db == null ? "Unknown" : ElementUtil.getNodeStatusString(node_db))%>)</h3>
-
-			<div class="boxWrapper">
-			     <ul class="plain">
-		         
-		            <% if( isBridgeIP ) { %>
-		            <li>
-						<a href="element/bridgenode.jsp?node=<%=nodeId%>">View Node Bridge/STP Info</a>
-					</li>
-		            <% }%>				     
-		            <li>
-		            	<a href="element/linkednode.jsp?node=<%=nodeId%>">View Node Link Detailed Info</a>
-		            </li>
-		         </ul>	     
-			</div>
-	</div>
-	<hr />
-<div>
-		<h3>Node IP Routes</h3>
-			
-         <!-- general Route info box -->
-            <jsp:include page="/includes/nodeRouteInfo-box.jsp" flush="false" >
-              <jsp:param name="node" value="<%=nodeId%>" />
-			</jsp:include>
-			
+<div class="panel panel-default">
+  <!-- general info box -->
+  <div class="panel-heading">
+    <h3 class="panel-title">General (Status: <%=(node_db == null ? "Unknown" : ElementUtil.getNodeStatusString(node_db))%>)</h3>
+  </div>
+  <div class="panel-body">
+    <ul class="list-inline">
+      <% if( isBridgeIP ) { %>
+      <li>
+        <a href="element/bridgenode.jsp?node=<%=nodeId%>">View Node Bridge/STP Info</a>
+      </li>
+      <% }%>				     
+      <li>
+      	<a href="element/linkednode.jsp?node=<%=nodeId%>">View Node Link Detailed Info</a>
+      </li>
+    </ul>	     
+  </div>
 </div>
 
-<jsp:include page="/includes/footer.jsp" flush="false" />
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title">Node IP Routes</h3>
+  </div>
+  <!-- general Route info box -->
+  <jsp:include page="/includes/nodeRouteInfo-box.jsp" flush="false" >
+    <jsp:param name="node" value="<%=nodeId%>" />
+  </jsp:include>
+</div>
+
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />

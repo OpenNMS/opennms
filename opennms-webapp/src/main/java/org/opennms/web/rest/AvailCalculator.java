@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -172,10 +172,10 @@ public class AvailCalculator {
             
             calc.onStatusChange(statusChange);
         }
-        public double getAvailability(int i) {
+        public double getAvailability(int index) {
             double sum = 0.0;
-            for(Map.Entry<OnmsLocationMonitor, UptimeCalculator> entry : m_uptimeCalculators.entrySet()) {
-                sum += entry.getValue().getUptimePercentage(i);
+            for(final Map.Entry<OnmsLocationMonitor, UptimeCalculator> entry : m_uptimeCalculators.entrySet()) {
+                sum += entry.getValue().getUptimePercentage(index);
             }
             return (m_uptimeCalculators.size() == 0 ? 1.0 : sum / m_uptimeCalculators.size());
         }
@@ -234,11 +234,10 @@ public class AvailCalculator {
     }
     
     
-    public double getAvailabilityFor(Collection<OnmsMonitoredService> svcs, int i) {
-        
+    public double getAvailabilityFor(final Collection<OnmsMonitoredService> svcs, final int index) {
         double sum = 0.0;
-        for(OnmsMonitoredService svc : svcs) {
-            sum += getServiceAvailCalculator(svc).getAvailability(i);
+        for(final OnmsMonitoredService svc : svcs) {
+            sum += getServiceAvailCalculator(svc).getAvailability(index);
         }
         
         return svcs.size() == 0 ? 1.0 : sum / svcs.size();

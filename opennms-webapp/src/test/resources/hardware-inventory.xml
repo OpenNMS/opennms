@@ -1,0 +1,473 @@
+<hwEntity entPhysicalIndex="1">
+   <children>
+      <hwEntity entPhysicalIndex="2">
+         <children>
+            <hwEntity entPhysicalIndex="9">
+               <children>
+                  <hwEntity entPhysicalIndex="16">
+                     <children/>
+                     <entPhysicalClass>sensor</entPhysicalClass>
+                     <entPhysicalDescr>NPE Inlet Temperature Sensor</entPhysicalDescr>
+                     <entPhysicalIsFRU>false</entPhysicalIsFRU>
+                     <entPhysicalName>NPE Inlet Temperature 0</entPhysicalName>
+                     <entPhysicalVendorType>.1.3.6.1.4.1.9.12.3.1.8.36</entPhysicalVendorType>
+                     <vendorAttributes/>
+                  </hwEntity>
+                  <hwEntity entPhysicalIndex="17">
+                     <children/>
+                     <entPhysicalClass>sensor</entPhysicalClass>
+                     <entPhysicalDescr>NPE Outlet Temperature Sensor</entPhysicalDescr>
+                     <entPhysicalIsFRU>false</entPhysicalIsFRU>
+                     <entPhysicalName>NPE Outlet Temperature 0</entPhysicalName>
+                     <entPhysicalVendorType>.1.3.6.1.4.1.9.12.3.1.8.35</entPhysicalVendorType>
+                     <vendorAttributes/>
+                  </hwEntity>
+                  <hwEntity entPhysicalIndex="18">
+                     <children/>
+                     <entPhysicalClass>sensor</entPhysicalClass>
+                     <entPhysicalDescr>+3.45 V  Voltage Sensor</entPhysicalDescr>
+                     <entPhysicalIsFRU>false</entPhysicalIsFRU>
+                     <entPhysicalName>+3.45 V Voltage 0</entPhysicalName>
+                     <entPhysicalVendorType>.1.3.6.1.4.1.9.12.3.1.8.45</entPhysicalVendorType>
+                     <vendorAttributes/>
+                  </hwEntity>
+                  <hwEntity entPhysicalIndex="19">
+                     <children/>
+                     <entPhysicalClass>sensor</entPhysicalClass>
+                     <entPhysicalDescr>+5.15 V  Voltage Sensor</entPhysicalDescr>
+                     <entPhysicalIsFRU>false</entPhysicalIsFRU>
+                     <entPhysicalName>+5.15 V Voltage 0</entPhysicalName>
+                     <entPhysicalVendorType>.1.3.6.1.4.1.9.12.3.1.8.45</entPhysicalVendorType>
+                     <vendorAttributes/>
+                  </hwEntity>
+                  <hwEntity entPhysicalIndex="20">
+                     <children/>
+                     <entPhysicalClass>sensor</entPhysicalClass>
+                     <entPhysicalDescr>+12.15 V  Voltage Sensor</entPhysicalDescr>
+                     <entPhysicalIsFRU>false</entPhysicalIsFRU>
+                     <entPhysicalName>+12.15 V Voltage 0</entPhysicalName>
+                     <entPhysicalVendorType>.1.3.6.1.4.1.9.12.3.1.8.45</entPhysicalVendorType>
+                     <vendorAttributes/>
+                  </hwEntity>
+                  <hwEntity entPhysicalIndex="21">
+                     <children/>
+                     <entPhysicalClass>sensor</entPhysicalClass>
+                     <entPhysicalDescr>-11.95 V  Voltage Sensor</entPhysicalDescr>
+                     <entPhysicalIsFRU>false</entPhysicalIsFRU>
+                     <entPhysicalName>-11.95 V Voltage 0</entPhysicalName>
+                     <entPhysicalVendorType>.1.3.6.1.4.1.9.12.3.1.8.45</entPhysicalVendorType>
+                     <vendorAttributes/>
+                  </hwEntity>
+               </children>
+               <entPhysicalClass>module</entPhysicalClass>
+               <entPhysicalDescr>Cisco 7200VXR Network Processing Engine NPE-400</entPhysicalDescr>
+               <entPhysicalHardwareRev>1.0</entPhysicalHardwareRev>
+               <entPhysicalIsFRU>true</entPhysicalIsFRU>
+               <entPhysicalMfgName>Cisco</entPhysicalMfgName>
+               <entPhysicalModelName>NPE-400</entPhysicalModelName>
+               <entPhysicalName>NPE400 0</entPhysicalName>
+               <entPhysicalSerialNum>11111111</entPhysicalSerialNum>
+               <entPhysicalSoftwareRev>12.4(4)T1</entPhysicalSoftwareRev>
+               <entPhysicalVendorType>.1.3.6.1.4.1.9.12.3.1.9.5.39</entPhysicalVendorType>
+               <vendorAttributes>
+                  <hwEntityAttribute class="string" name="ceAssetSoftwareID" oid=".1.3.6.1.4.1.9.9.92.1.1.1.9" value="C7200-ADVIPSERVICESK9-M"/>
+                  <hwEntityAttribute class="string" name="ceAssetMfgAssyRevision" oid=".1.3.6.1.4.1.9.9.92.1.1.1.6" value="B0"/>
+                  <hwEntityAttribute class="string" name="ceAssetMfgAssyNumber" oid=".1.3.6.1.4.1.9.9.92.1.1.1.5" value="73-5308-02"/>
+                  <hwEntityAttribute class="string" name="ceAssetOrderablePartNumber" oid=".1.3.6.1.4.1.9.9.92.1.1.1.3" value="NPE-400"/>
+                  <hwEntityAttribute class="string" name="ceAssetOEMString" oid=".1.3.6.1.4.1.9.9.92.1.1.1.1" value="Cisco"/>
+                  <hwEntityAttribute class="integer" name="ceExtNVRAMUsed" oid=".1.3.6.1.4.1.9.9.195.1.1.1.3" value="8605"/>
+                  <hwEntityAttribute class="integer" name="ceExtNVRAMSize" oid=".1.3.6.1.4.1.9.9.195.1.1.1.2" value="129016"/>
+                  <hwEntityAttribute class="integer" name="ceExtProcessorRam" oid=".1.3.6.1.4.1.9.9.195.1.1.1.1" value="268435456"/>
+               </vendorAttributes>
+            </hwEntity>
+            <hwEntity entPhysicalIndex="12">
+               <children>
+                  <hwEntity entPhysicalIndex="13">
+                     <children/>
+                     <entPhysicalClass>port</entPhysicalClass>
+                     <entPhysicalDescr>DEC21140</entPhysicalDescr>
+                     <entPhysicalIsFRU>false</entPhysicalIsFRU>
+                     <entPhysicalName>FastEthernet0/0</entPhysicalName>
+                     <entPhysicalVendorType>.1.3.6.1.4.1.9.12.3.1.10.16</entPhysicalVendorType>
+                     <vendorAttributes/>
+                  </hwEntity>
+                  <hwEntity entPhysicalIndex="14">
+                     <children/>
+                     <entPhysicalClass>sensor</entPhysicalClass>
+                     <entPhysicalDescr>I/O Cont Inlet Temperature Sensor</entPhysicalDescr>
+                     <entPhysicalIsFRU>false</entPhysicalIsFRU>
+                     <entPhysicalName>I/O Cont Inlet Temperature 0</entPhysicalName>
+                     <entPhysicalVendorType>.1.3.6.1.4.1.9.12.3.1.8.36</entPhysicalVendorType>
+                     <vendorAttributes/>
+                  </hwEntity>
+                  <hwEntity entPhysicalIndex="15">
+                     <children/>
+                     <entPhysicalClass>sensor</entPhysicalClass>
+                     <entPhysicalDescr>I/O Cont Outlet Temperature Sensor</entPhysicalDescr>
+                     <entPhysicalIsFRU>false</entPhysicalIsFRU>
+                     <entPhysicalName>I/O Cont Outlet Temperature 0</entPhysicalName>
+                     <entPhysicalVendorType>.1.3.6.1.4.1.9.12.3.1.8.35</entPhysicalVendorType>
+                     <vendorAttributes/>
+                  </hwEntity>
+                  <hwEntity entPhysicalIndex="22">
+                     <children>
+                        <hwEntity entPhysicalIndex="23">
+                           <children/>
+                           <entPhysicalClass>module</entPhysicalClass>
+                           <entPhysicalDescr>Cisco 7200 I/O PCMCIA Flash Disk, 64M</entPhysicalDescr>
+                           <entPhysicalHardwareRev>N/A</entPhysicalHardwareRev>
+                           <entPhysicalIsFRU>true</entPhysicalIsFRU>
+                           <entPhysicalModelName>MEM-I/O-FLD64M</entPhysicalModelName>
+                           <entPhysicalName>disk0</entPhysicalName>
+                           <entPhysicalSerialNum>N/A</entPhysicalSerialNum>
+                           <entPhysicalVendorType>.1.3.6.1.4.1.9.12.3.1.9.2.123</entPhysicalVendorType>
+                           <vendorAttributes/>
+                        </hwEntity>
+                     </children>
+                     <entPhysicalClass>container</entPhysicalClass>
+                     <entPhysicalDescr>Flash Card Slot Container I/O</entPhysicalDescr>
+                     <entPhysicalIsFRU>false</entPhysicalIsFRU>
+                     <entPhysicalName>Flash Card Slot Container I/O</entPhysicalName>
+                     <entPhysicalVendorType>.1.3.6.1.4.1.9.12.3.1.5.138</entPhysicalVendorType>
+                     <vendorAttributes/>
+                  </hwEntity>
+               </children>
+               <entPhysicalClass>module</entPhysicalClass>
+               <entPhysicalDescr>I/O FastEthernet (TX-ISL)</entPhysicalDescr>
+               <entPhysicalHardwareRev>1.14</entPhysicalHardwareRev>
+               <entPhysicalIsFRU>true</entPhysicalIsFRU>
+               <entPhysicalMfgName>Cisco Systems Inc</entPhysicalMfgName>
+               <entPhysicalModelName>C7200-IO-FE-MII/RJ45=</entPhysicalModelName>
+               <entPhysicalName>module 0</entPhysicalName>
+               <entPhysicalSerialNum>4294967295</entPhysicalSerialNum>
+               <entPhysicalVendorType>.1.3.6.1.4.1.9.12.3.1.9.7.6</entPhysicalVendorType>
+               <vendorAttributes>
+                  <hwEntityAttribute class="string" name="ceAssetMfgAssyRevision" oid=".1.3.6.1.4.1.9.9.92.1.1.1.6" value="A0"/>
+                  <hwEntityAttribute class="string" name="ceAssetMfgAssyNumber" oid=".1.3.6.1.4.1.9.9.92.1.1.1.5" value="73-2956-02"/>
+                  <hwEntityAttribute class="string" name="ceAssetOrderablePartNumber" oid=".1.3.6.1.4.1.9.9.92.1.1.1.3" value="C7200-IO-FE-MII/RJ45="/>
+                  <hwEntityAttribute class="string" name="ceAssetOEMString" oid=".1.3.6.1.4.1.9.9.92.1.1.1.1" value="Cisco Systems Inc"/>
+               </vendorAttributes>
+            </hwEntity>
+         </children>
+         <entPhysicalClass>container</entPhysicalClass>
+         <entPhysicalDescr>I/O and Processor Slot Container</entPhysicalDescr>
+         <entPhysicalIsFRU>false</entPhysicalIsFRU>
+         <entPhysicalName>I/O and CPU Slot 0</entPhysicalName>
+         <entPhysicalVendorType>.1.3.6.1.4.1.9.12.3.1.5.1</entPhysicalVendorType>
+         <vendorAttributes/>
+      </hwEntity>
+      <hwEntity entPhysicalIndex="3">
+         <children>
+            <hwEntity entPhysicalIndex="24">
+               <children>
+                  <hwEntity entPhysicalIndex="25">
+                     <children/>
+                     <entPhysicalClass>port</entPhysicalClass>
+                     <entPhysicalDescr>M8T-X.21</entPhysicalDescr>
+                     <entPhysicalIsFRU>false</entPhysicalIsFRU>
+                     <entPhysicalName>Serial1/0</entPhysicalName>
+                     <entPhysicalVendorType>.1.3.6.1.4.1.9.12.3.1.10.4</entPhysicalVendorType>
+                     <vendorAttributes/>
+                  </hwEntity>
+                  <hwEntity entPhysicalIndex="26">
+                     <children/>
+                     <entPhysicalClass>port</entPhysicalClass>
+                     <entPhysicalDescr>M8T-X.21</entPhysicalDescr>
+                     <entPhysicalIsFRU>false</entPhysicalIsFRU>
+                     <entPhysicalName>Serial1/1</entPhysicalName>
+                     <entPhysicalVendorType>.1.3.6.1.4.1.9.12.3.1.10.4</entPhysicalVendorType>
+                     <vendorAttributes/>
+                  </hwEntity>
+                  <hwEntity entPhysicalIndex="27">
+                     <children/>
+                     <entPhysicalClass>port</entPhysicalClass>
+                     <entPhysicalDescr>M8T-X.21</entPhysicalDescr>
+                     <entPhysicalIsFRU>false</entPhysicalIsFRU>
+                     <entPhysicalName>Serial1/2</entPhysicalName>
+                     <entPhysicalVendorType>.1.3.6.1.4.1.9.12.3.1.10.4</entPhysicalVendorType>
+                     <vendorAttributes/>
+                  </hwEntity>
+                  <hwEntity entPhysicalIndex="28">
+                     <children/>
+                     <entPhysicalClass>port</entPhysicalClass>
+                     <entPhysicalDescr>M8T-X.21</entPhysicalDescr>
+                     <entPhysicalIsFRU>false</entPhysicalIsFRU>
+                     <entPhysicalName>Serial1/3</entPhysicalName>
+                     <entPhysicalVendorType>.1.3.6.1.4.1.9.12.3.1.10.4</entPhysicalVendorType>
+                     <vendorAttributes/>
+                  </hwEntity>
+                  <hwEntity entPhysicalIndex="29">
+                     <children/>
+                     <entPhysicalClass>port</entPhysicalClass>
+                     <entPhysicalDescr>M8T-X.21</entPhysicalDescr>
+                     <entPhysicalIsFRU>false</entPhysicalIsFRU>
+                     <entPhysicalName>Serial1/4</entPhysicalName>
+                     <entPhysicalVendorType>.1.3.6.1.4.1.9.12.3.1.10.4</entPhysicalVendorType>
+                     <vendorAttributes/>
+                  </hwEntity>
+                  <hwEntity entPhysicalIndex="30">
+                     <children/>
+                     <entPhysicalClass>port</entPhysicalClass>
+                     <entPhysicalDescr>M8T-X.21</entPhysicalDescr>
+                     <entPhysicalIsFRU>false</entPhysicalIsFRU>
+                     <entPhysicalName>Serial1/5</entPhysicalName>
+                     <entPhysicalVendorType>.1.3.6.1.4.1.9.12.3.1.10.4</entPhysicalVendorType>
+                     <vendorAttributes/>
+                  </hwEntity>
+                  <hwEntity entPhysicalIndex="31">
+                     <children/>
+                     <entPhysicalClass>port</entPhysicalClass>
+                     <entPhysicalDescr>M8T-X.21</entPhysicalDescr>
+                     <entPhysicalIsFRU>false</entPhysicalIsFRU>
+                     <entPhysicalName>Serial1/6</entPhysicalName>
+                     <entPhysicalVendorType>.1.3.6.1.4.1.9.12.3.1.10.4</entPhysicalVendorType>
+                     <vendorAttributes/>
+                  </hwEntity>
+                  <hwEntity entPhysicalIndex="32">
+                     <children/>
+                     <entPhysicalClass>port</entPhysicalClass>
+                     <entPhysicalDescr>M8T-X.21</entPhysicalDescr>
+                     <entPhysicalIsFRU>false</entPhysicalIsFRU>
+                     <entPhysicalName>Serial1/7</entPhysicalName>
+                     <entPhysicalVendorType>.1.3.6.1.4.1.9.12.3.1.10.4</entPhysicalVendorType>
+                     <vendorAttributes/>
+                  </hwEntity>
+               </children>
+               <entPhysicalClass>module</entPhysicalClass>
+               <entPhysicalDescr>Serial</entPhysicalDescr>
+               <entPhysicalHardwareRev>1.15</entPhysicalHardwareRev>
+               <entPhysicalIsFRU>true</entPhysicalIsFRU>
+               <entPhysicalMfgName>Cisco Systems Inc</entPhysicalMfgName>
+               <entPhysicalModelName>PA-8T-X21=</entPhysicalModelName>
+               <entPhysicalName>module 1</entPhysicalName>
+               <entPhysicalSerialNum>4294967295</entPhysicalSerialNum>
+               <entPhysicalVendorType>.1.3.6.1.4.1.9.12.3.1.9.4.42</entPhysicalVendorType>
+               <vendorAttributes>
+                  <hwEntityAttribute class="string" name="ceAssetMfgAssyRevision" oid=".1.3.6.1.4.1.9.9.92.1.1.1.6" value="A0"/>
+                  <hwEntityAttribute class="string" name="ceAssetMfgAssyNumber" oid=".1.3.6.1.4.1.9.9.92.1.1.1.5" value="73-1582-07"/>
+                  <hwEntityAttribute class="string" name="ceAssetOrderablePartNumber" oid=".1.3.6.1.4.1.9.9.92.1.1.1.3" value="PA-8T-X21="/>
+                  <hwEntityAttribute class="string" name="ceAssetOEMString" oid=".1.3.6.1.4.1.9.9.92.1.1.1.1" value="Cisco Systems Inc"/>
+               </vendorAttributes>
+            </hwEntity>
+         </children>
+         <entPhysicalClass>container</entPhysicalClass>
+         <entPhysicalDescr>PA Slot Container</entPhysicalDescr>
+         <entPhysicalIsFRU>false</entPhysicalIsFRU>
+         <entPhysicalName>PA Slot 1</entPhysicalName>
+         <entPhysicalVendorType>.1.3.6.1.4.1.9.12.3.1.5.1</entPhysicalVendorType>
+         <vendorAttributes/>
+      </hwEntity>
+      <hwEntity entPhysicalIndex="4">
+         <children>
+            <hwEntity entPhysicalIndex="33">
+               <children/>
+               <entPhysicalClass>module</entPhysicalClass>
+               <entPhysicalDescr>ATM Lite Port Adaptor (MM)</entPhysicalDescr>
+               <entPhysicalHardwareRev>1.15</entPhysicalHardwareRev>
+               <entPhysicalIsFRU>true</entPhysicalIsFRU>
+               <entPhysicalMfgName>Cisco Systems Inc</entPhysicalMfgName>
+               <entPhysicalModelName>PA-A1-OC3MM=</entPhysicalModelName>
+               <entPhysicalName>module 2</entPhysicalName>
+               <entPhysicalSerialNum>4294967295</entPhysicalSerialNum>
+               <entPhysicalVendorType>.1.3.6.1.4.1.9.12.3.1.9.4.17</entPhysicalVendorType>
+               <vendorAttributes>
+                  <hwEntityAttribute class="string" name="ceAssetMfgAssyRevision" oid=".1.3.6.1.4.1.9.9.92.1.1.1.6" value="A0"/>
+                  <hwEntityAttribute class="string" name="ceAssetMfgAssyNumber" oid=".1.3.6.1.4.1.9.9.92.1.1.1.5" value="73-1582-07"/>
+                  <hwEntityAttribute class="string" name="ceAssetOrderablePartNumber" oid=".1.3.6.1.4.1.9.9.92.1.1.1.3" value="PA-A1-OC3MM="/>
+                  <hwEntityAttribute class="string" name="ceAssetOEMString" oid=".1.3.6.1.4.1.9.9.92.1.1.1.1" value="Cisco Systems Inc"/>
+               </vendorAttributes>
+            </hwEntity>
+         </children>
+         <entPhysicalClass>container</entPhysicalClass>
+         <entPhysicalDescr>PA Slot Container</entPhysicalDescr>
+         <entPhysicalIsFRU>false</entPhysicalIsFRU>
+         <entPhysicalName>PA Slot 2</entPhysicalName>
+         <entPhysicalVendorType>.1.3.6.1.4.1.9.12.3.1.5.1</entPhysicalVendorType>
+         <vendorAttributes/>
+      </hwEntity>
+      <hwEntity entPhysicalIndex="5">
+         <children>
+            <hwEntity entPhysicalIndex="34">
+               <children>
+                  <hwEntity entPhysicalIndex="35">
+                     <children/>
+                     <entPhysicalClass>port</entPhysicalClass>
+                     <entPhysicalDescr>i82543 (Livengood)</entPhysicalDescr>
+                     <entPhysicalIsFRU>false</entPhysicalIsFRU>
+                     <entPhysicalName>FastEthernet3/0</entPhysicalName>
+                     <entPhysicalVendorType>.1.3.6.1.4.1.9.12.3.1.10.16</entPhysicalVendorType>
+                     <vendorAttributes/>
+                  </hwEntity>
+                  <hwEntity entPhysicalIndex="36">
+                     <children/>
+                     <entPhysicalClass>port</entPhysicalClass>
+                     <entPhysicalDescr>i82543 (Livengood)</entPhysicalDescr>
+                     <entPhysicalIsFRU>false</entPhysicalIsFRU>
+                     <entPhysicalName>FastEthernet3/1</entPhysicalName>
+                     <entPhysicalVendorType>.1.3.6.1.4.1.9.12.3.1.10.16</entPhysicalVendorType>
+                     <vendorAttributes/>
+                  </hwEntity>
+               </children>
+               <entPhysicalClass>module</entPhysicalClass>
+               <entPhysicalDescr>Dual Port FastEthernet (RJ45)</entPhysicalDescr>
+               <entPhysicalHardwareRev>1.0</entPhysicalHardwareRev>
+               <entPhysicalIsFRU>true</entPhysicalIsFRU>
+               <entPhysicalMfgName>Cisco Systems Inc</entPhysicalMfgName>
+               <entPhysicalModelName>PA-2FE-FX</entPhysicalModelName>
+               <entPhysicalName>module 3</entPhysicalName>
+               <entPhysicalSerialNum>XXX00000000</entPhysicalSerialNum>
+               <entPhysicalVendorType>.1.3.6.1.4.1.9.12.3.1.9.4.92</entPhysicalVendorType>
+               <vendorAttributes>
+                  <hwEntityAttribute class="string" name="ceAssetMfgAssyRevision" oid=".1.3.6.1.4.1.9.9.92.1.1.1.6" value="A0"/>
+                  <hwEntityAttribute class="string" name="ceAssetMfgAssyNumber" oid=".1.3.6.1.4.1.9.9.92.1.1.1.5" value="73-5420-04"/>
+                  <hwEntityAttribute class="string" name="ceAssetOrderablePartNumber" oid=".1.3.6.1.4.1.9.9.92.1.1.1.3" value="PA-2FE-FX"/>
+                  <hwEntityAttribute class="string" name="ceAssetOEMString" oid=".1.3.6.1.4.1.9.9.92.1.1.1.1" value="Cisco Systems Inc"/>
+               </vendorAttributes>
+            </hwEntity>
+         </children>
+         <entPhysicalClass>container</entPhysicalClass>
+         <entPhysicalDescr>PA Slot Container</entPhysicalDescr>
+         <entPhysicalIsFRU>false</entPhysicalIsFRU>
+         <entPhysicalName>PA Slot 3</entPhysicalName>
+         <entPhysicalVendorType>.1.3.6.1.4.1.9.12.3.1.5.1</entPhysicalVendorType>
+         <vendorAttributes/>
+      </hwEntity>
+      <hwEntity entPhysicalIndex="6">
+         <children>
+            <hwEntity entPhysicalIndex="37">
+               <children>
+                  <hwEntity entPhysicalIndex="38">
+                     <children>
+                        <hwEntity entPhysicalIndex="39">
+                           <children>
+                              <hwEntity entPhysicalIndex="40">
+                                 <children/>
+                                 <entPhysicalClass>port</entPhysicalClass>
+                                 <entPhysicalDescr>82543</entPhysicalDescr>
+                                 <entPhysicalIsFRU>false</entPhysicalIsFRU>
+                                 <entPhysicalName>GigabitEthernet4/0</entPhysicalName>
+                                 <entPhysicalVendorType>.1.3.6.1.4.1.9.12.3.1.10.109</entPhysicalVendorType>
+                                 <vendorAttributes/>
+                              </hwEntity>
+                           </children>
+                           <entPhysicalClass>module</entPhysicalClass>
+                           <entPhysicalDescr>Unknown Port Module</entPhysicalDescr>
+                           <entPhysicalHardwareRev>N/A</entPhysicalHardwareRev>
+                           <entPhysicalIsFRU>true</entPhysicalIsFRU>
+                           <entPhysicalName>module 4/0</entPhysicalName>
+                           <entPhysicalSerialNum>N/A</entPhysicalSerialNum>
+                           <entPhysicalVendorType>.1.3.6.1.4.1.9.12.3.1.9.16</entPhysicalVendorType>
+                           <vendorAttributes/>
+                        </hwEntity>
+                     </children>
+                     <entPhysicalClass>container</entPhysicalClass>
+                     <entPhysicalDescr>GBIC port container</entPhysicalDescr>
+                     <entPhysicalIsFRU>false</entPhysicalIsFRU>
+                     <entPhysicalName>GBIC port container 4/0</entPhysicalName>
+                     <entPhysicalVendorType>.1.3.6.1.4.1.9.12.3.1.5.142</entPhysicalVendorType>
+                     <vendorAttributes/>
+                  </hwEntity>
+               </children>
+               <entPhysicalClass>module</entPhysicalClass>
+               <entPhysicalDescr>GigabitEthernet</entPhysicalDescr>
+               <entPhysicalHardwareRev>1.0</entPhysicalHardwareRev>
+               <entPhysicalIsFRU>true</entPhysicalIsFRU>
+               <entPhysicalMfgName>Cisco Systems Inc</entPhysicalMfgName>
+               <entPhysicalModelName>PA-1GE=</entPhysicalModelName>
+               <entPhysicalName>module 4</entPhysicalName>
+               <entPhysicalSerialNum>0</entPhysicalSerialNum>
+               <entPhysicalVendorType>.1.3.6.1.4.1.9.12.3.1.9.4.59</entPhysicalVendorType>
+               <vendorAttributes>
+                  <hwEntityAttribute class="string" name="ceAssetMfgAssyRevision" oid=".1.3.6.1.4.1.9.9.92.1.1.1.6" value="A0"/>
+                  <hwEntityAttribute class="string" name="ceAssetMfgAssyNumber" oid=".1.3.6.1.4.1.9.9.92.1.1.1.5" value="00-3144-03"/>
+                  <hwEntityAttribute class="string" name="ceAssetOrderablePartNumber" oid=".1.3.6.1.4.1.9.9.92.1.1.1.3" value="PA-1GE="/>
+                  <hwEntityAttribute class="string" name="ceAssetOEMString" oid=".1.3.6.1.4.1.9.9.92.1.1.1.1" value="Cisco Systems Inc"/>
+               </vendorAttributes>
+            </hwEntity>
+         </children>
+         <entPhysicalClass>container</entPhysicalClass>
+         <entPhysicalDescr>PA Slot Container</entPhysicalDescr>
+         <entPhysicalIsFRU>false</entPhysicalIsFRU>
+         <entPhysicalName>PA Slot 4</entPhysicalName>
+         <entPhysicalVendorType>.1.3.6.1.4.1.9.12.3.1.5.1</entPhysicalVendorType>
+         <vendorAttributes/>
+      </hwEntity>
+      <hwEntity entPhysicalIndex="7">
+         <children/>
+         <entPhysicalClass>container</entPhysicalClass>
+         <entPhysicalDescr>PA Slot Container</entPhysicalDescr>
+         <entPhysicalIsFRU>false</entPhysicalIsFRU>
+         <entPhysicalName>PA Slot 5</entPhysicalName>
+         <entPhysicalVendorType>.1.3.6.1.4.1.9.12.3.1.5.1</entPhysicalVendorType>
+         <vendorAttributes/>
+      </hwEntity>
+      <hwEntity entPhysicalIndex="8">
+         <children/>
+         <entPhysicalClass>container</entPhysicalClass>
+         <entPhysicalDescr>PA Slot Container</entPhysicalDescr>
+         <entPhysicalIsFRU>false</entPhysicalIsFRU>
+         <entPhysicalName>PA Slot 6</entPhysicalName>
+         <entPhysicalVendorType>.1.3.6.1.4.1.9.12.3.1.5.1</entPhysicalVendorType>
+         <vendorAttributes/>
+      </hwEntity>
+      <hwEntity entPhysicalIndex="10">
+         <children>
+            <hwEntity entPhysicalIndex="41">
+               <children/>
+               <entPhysicalClass>powerSupply</entPhysicalClass>
+               <entPhysicalDescr>Cisco 7200 AC Power Supply</entPhysicalDescr>
+               <entPhysicalHardwareRev>N/A</entPhysicalHardwareRev>
+               <entPhysicalIsFRU>true</entPhysicalIsFRU>
+               <entPhysicalModelName>PWR-7200-AC</entPhysicalModelName>
+               <entPhysicalName>Power Supply 0</entPhysicalName>
+               <entPhysicalSerialNum>N/A</entPhysicalSerialNum>
+               <entPhysicalVendorType>.1.3.6.1.4.1.9.12.3.1.6.93</entPhysicalVendorType>
+               <vendorAttributes/>
+            </hwEntity>
+         </children>
+         <entPhysicalClass>container</entPhysicalClass>
+         <entPhysicalDescr>Power Supply Container</entPhysicalDescr>
+         <entPhysicalIsFRU>false</entPhysicalIsFRU>
+         <entPhysicalName>PEM 0</entPhysicalName>
+         <entPhysicalVendorType>.1.3.6.1.4.1.9.12.3.1.5.1</entPhysicalVendorType>
+         <vendorAttributes/>
+      </hwEntity>
+      <hwEntity entPhysicalIndex="11">
+         <children>
+            <hwEntity entPhysicalIndex="42">
+               <children/>
+               <entPhysicalClass>powerSupply</entPhysicalClass>
+               <entPhysicalDescr>Cisco 7200 AC Power Supply</entPhysicalDescr>
+               <entPhysicalHardwareRev>N/A</entPhysicalHardwareRev>
+               <entPhysicalIsFRU>true</entPhysicalIsFRU>
+               <entPhysicalModelName>PWR-7200-AC</entPhysicalModelName>
+               <entPhysicalName>Power Supply 1</entPhysicalName>
+               <entPhysicalSerialNum>N/A</entPhysicalSerialNum>
+               <entPhysicalVendorType>.1.3.6.1.4.1.9.12.3.1.6.93</entPhysicalVendorType>
+               <vendorAttributes/>
+            </hwEntity>
+         </children>
+         <entPhysicalClass>container</entPhysicalClass>
+         <entPhysicalDescr>Power Supply Container</entPhysicalDescr>
+         <entPhysicalIsFRU>false</entPhysicalIsFRU>
+         <entPhysicalName>PEM 1</entPhysicalName>
+         <entPhysicalVendorType>.1.3.6.1.4.1.9.12.3.1.5.1</entPhysicalVendorType>
+         <vendorAttributes/>
+      </hwEntity>
+   </children>
+   <entPhysicalClass>chassis</entPhysicalClass>
+   <entPhysicalDescr>Cisco 7206VXR, 6-slot chassis</entPhysicalDescr>
+   <entPhysicalHardwareRev>2.1</entPhysicalHardwareRev>
+   <entPhysicalIsFRU>true</entPhysicalIsFRU>
+   <entPhysicalMfgName>Cisco</entPhysicalMfgName>
+   <entPhysicalModelName>CISCO7206VXR</entPhysicalModelName>
+   <entPhysicalName>Chassis</entPhysicalName>
+   <entPhysicalSerialNum>4294967295</entPhysicalSerialNum>
+   <entPhysicalVendorType>.1.3.6.1.4.1.9.12.3.1.3.74</entPhysicalVendorType>
+   <vendorAttributes>
+      <hwEntityAttribute class="string" name="ceAssetMfgAssyRevision" oid=".1.3.6.1.4.1.9.9.92.1.1.1.6" value="M0"/>
+      <hwEntityAttribute class="string" name="ceAssetMfgAssyNumber" oid=".1.3.6.1.4.1.9.9.92.1.1.1.5" value="73-1539-03"/>
+      <hwEntityAttribute class="string" name="ceAssetOrderablePartNumber" oid=".1.3.6.1.4.1.9.9.92.1.1.1.3" value="CISCO7206VXR"/>
+      <hwEntityAttribute class="string" name="ceAssetOEMString" oid=".1.3.6.1.4.1.9.9.92.1.1.1.1" value="Cisco"/>
+   </vendorAttributes>
+</hwEntity>

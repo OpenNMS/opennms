@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -34,6 +34,7 @@ import java.util.Collection;
 import java.util.Date;
 
 import org.opennms.netmgt.poller.PollStatus;
+import org.opennms.netmgt.poller.remote.support.DefaultPollerFrontEnd.PollerFrontEndStates;
 import org.quartz.Scheduler;
 import org.quartz.Trigger;
 import org.slf4j.Logger;
@@ -197,17 +198,21 @@ public class Poller implements InitializingBean, PollObserver, ConfigurationChan
     public void propertyChange(PropertyChangeEvent evt) {
         try {
             if (Boolean.TRUE.equals(evt.getNewValue())) {
-                if ("paused".equals(evt.getPropertyName())) {
-                    unschedulePolls();
-                } else if ("disconnected".equals(evt.getPropertyName())) {
+                // If the poller is paused, disconnected, or exiting then unschedule all of the
+                // polling tasks so that the scheduler can shut down cleanly
+                if (
+                    PollerFrontEndStates.paused.toString().equals(evt.getPropertyName()) ||
+                    PollerFrontEndStates.disconnected.toString().equals(evt.getPropertyName()) ||
+                    PollerFrontEndStates.exitNecessary.toString().equals(evt.getPropertyName())
+                ) {
                     unschedulePolls();
                 }
             } else {
-                if ("paused".equals(evt.getPropertyName()) ) {
+                if (PollerFrontEndStates.paused.toString().equals(evt.getPropertyName()) ) {
                     schedulePolls();
-                } else if ("disconnected".equals(evt.getPropertyName())) {
+                } else if (PollerFrontEndStates.disconnected.toString().equals(evt.getPropertyName())) {
                     schedulePolls();
-                } else if ("started".equals(evt.getPropertyName())) {
+                } else if (PollerFrontEndStates.started.toString().equals(evt.getPropertyName())) {
                     unschedulePolls();
                 }
             }

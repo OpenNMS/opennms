@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -40,6 +40,9 @@ public class NodeListCommand {
     private String m_maclike = null;
     private String m_foreignsource = null;
     private Integer m_service = null;
+    private String m_mib2Parm = null;
+    private String m_mib2ParmValue = null;
+    private String m_mib2ParmMatchType = null;
     private String m_snmpParm = null;
     private String m_snmpParmValue = null;
     private String m_snmpParmMatchType = null;
@@ -112,6 +115,34 @@ public class NodeListCommand {
     }
     public boolean hasService() {
         return m_service != null;
+    }
+    
+    public void setMib2Parm(String mib2Parm) {
+        m_mib2Parm = mib2Parm;
+    }
+    public String getMib2Parm() {
+        return m_mib2Parm;
+    }
+    public boolean hasMib2Parm() {
+        return m_mib2Parm != null;
+    }
+    public void setMib2ParmValue(String mib2ParmValue) {
+        m_mib2ParmValue = mib2ParmValue;
+    }
+    public String getMib2ParmValue() {
+        return m_mib2ParmValue;
+    }
+    public boolean hasMib2ParmValue() {
+        return m_mib2ParmValue != null;
+    }
+    public void setMib2ParmMatchType(String mib2ParmMatchType) {
+        m_mib2ParmMatchType = mib2ParmMatchType;
+    }
+    public String getMib2ParmMatchType() {
+        return m_mib2ParmMatchType;
+    }
+    public boolean hasMib2ParmMatchType() {
+        return m_mib2ParmMatchType != null;
     }
     
     public void setSnmpParm(String snmpParm) {

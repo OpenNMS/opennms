@@ -2,22 +2,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -94,12 +94,12 @@
     Outage[] outages = new OutageModel().getCurrentOutagesForNode(nodeId);
 %>
 
-<div id="availability-box">
-
-<h3 class="o-box">Availability</h3>
-<table class="o-box">
-  <tr class="CellStatus">
-
+<div id="availability-box" class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title">Availability</h3>
+  </div>
+  <table class="table table-condensed severity">
+    <tr>
 <%
   if (overallRtcValue < 0) {
     availClass = "Indeterminate";
@@ -109,9 +109,8 @@
     availValue = CategoryUtil.formatValue(overallRtcValue) + "%";
   }
 %>
-
-    <td class="<%= availClass %> nobright" colspan="3">Availability (last 24 hours)</td>
-    <td colspan="1" class="<%= availClass %> nobright"><%= availValue %></td>
+    <td class="severity-<%= availClass %> nobright" colspan="3">Availability (last 24 hours)</td>
+    <td colspan="1" class="severity-<%= availClass %> nobright"><%= availValue %></td>
 
   </tr>
 
@@ -131,7 +130,7 @@
             <% double intfValue = m_model.getInterfaceAvailability(nodeId, ipAddr); %>                              
             <% Service[] svcs = ElementUtil.getServicesOnInterface(nodeId,ipAddr,getServletContext()); %>
 
-            <tr class="CellStatus">
+            <tr>
               <%
                 if (svcs.length < 1) {
                     availClass = "Indeterminate";
@@ -144,19 +143,19 @@
                   availValue = CategoryUtil.formatValue(intfValue) + "%";
                 }
               %>
-              <td class="Cleared nobright" colspan="2"><a href="<c:out value="${interfaceLink}"/>"><%=ipAddr%></a></td>
+              <td class="severity-Cleared nobright" colspan="2"><a href="<c:out value="${interfaceLink}"/>"><%=ipAddr%></a></td>
               <%
                   if ("Not Monitored".equals(availValue)) {
               %>
-                <td class="Cleared nobright"><img src="<%=emptyUrl%>"></td>
+                <td class="severity-Cleared nobright"><img src="<%=emptyUrl%>"></td>
               <%
                   } else {
               %>
-                <td class="Cleared nobright"><img src="/opennms/rest/timeline/header/<%=timelineStart%>/<%=timelineEnd%>/<%=timelineWidth%>"></td>
+                <td class="severity-Cleared nobright"><img src="/opennms/rest/timeline/header/<%=timelineStart%>/<%=timelineEnd%>/<%=timelineWidth%>"></td>
               <%
                   }
               %>
-              <td class="<%= availClass %> nobright"><%= availValue %></td>
+              <td class="severity-<%= availClass %> nobright"><%= availValue %></td>
             </tr>
     
             <% for( int j=0; j < svcs.length; j++ ) { %>
@@ -193,16 +192,16 @@
                   <c:param name="intf" value="<%=ipAddr%>"/>
                   <c:param name="service" value="<%=String.valueOf(service.getServiceId())%>"/>
                 </c:url>
-                <tr class="CellStatus">
+                <tr>
                     <%
                         if (j==0) {
                     %>
-                    <td class="Cleared nobright" rowspan="<%=svcs.length%>"></td>
+                    <td class="severity-Cleared nobright" rowspan="<%=svcs.length%>"></td>
                     <%
                         }
                     %>
-                  <td class="<%= warnClass %> bright"><a href="<c:out value="${serviceLink}"/>"><%=service.getServiceName()%></a></td>
-                  <td class="Cleared nobright">
+                  <td class="severity-<%= warnClass %> bright"><a href="<c:out value="${serviceLink}"/>"><%=service.getServiceName()%></a></td>
+                  <td class="severity-Cleared nobright">
                     <%
                          if (service.isManaged()) {
                     %>
@@ -215,7 +214,7 @@
                         }
                     %>
                   </td>
-                  <td class="<%= availClass %> nobright"><%= availValue %></td>
+                  <td class="severity-<%= availClass %> nobright"><%= availValue %></td>
                 </tr>
             <% } %>
           <% } else { %>
@@ -223,11 +222,11 @@
             <% if("0.0.0.0".equals(ipAddr)) {
             }
             else { %>
-            <tr class="CellStatus">
+            <tr>
               <td>
               <a href="<c:out value="${interfaceLink}"/>"><%=ipAddr%></a>
               </td>
-              <td class="Indeterminate" colspan="2"><%=ElementUtil.getInterfaceStatusString(intf)%></td>
+              <td class="severity-Indeterminate" colspan="2"><%=ElementUtil.getInterfaceStatusString(intf)%></td>
             </tr>
             <% } %>
           <% } %>

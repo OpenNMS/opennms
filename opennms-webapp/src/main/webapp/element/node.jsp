@@ -2,22 +2,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -29,8 +29,12 @@
 
 --%>
 
-<%@page import="org.opennms.web.lldp.LldpElementFactory"%>
-<%@page import="org.opennms.web.lldp.LldpElementNode"%>
+<%@page import="org.opennms.web.enlinkd.LldpElementNode"%>
+<%@page import="org.opennms.web.enlinkd.CdpElementNode"%>
+<%@page import="org.opennms.web.enlinkd.OspfElementNode"%>
+<%@page import="org.opennms.web.enlinkd.IsisElementNode"%>
+<%@page import="org.opennms.web.enlinkd.BridgeElementNode"%>
+<%@page import="org.opennms.web.enlinkd.EnLinkdElementFactory"%>
 <%@page language="java"
 	contentType="text/html"
 	session="true"
@@ -43,7 +47,8 @@
         org.opennms.netmgt.config.PollOutagesConfigFactory,
         org.opennms.netmgt.config.poller.outages.Outage,
         org.opennms.netmgt.model.OnmsNode,
-        org.opennms.netmgt.poller.PathOutageFactory,
+        org.opennms.netmgt.poller.PathOutageManager,
+        org.opennms.netmgt.poller.PathOutageManagerDaoImpl,
         org.opennms.web.api.Authentication,
         org.opennms.web.asset.Asset,
         org.opennms.web.asset.AssetModel,
@@ -165,12 +170,33 @@
         nodeModel.put("statusSite", asset.getBuilding());
     }
     
-    LldpElementNode lldp = LldpElementFactory.getInstance(getServletContext()).getLldpElement(nodeId);
-    nodeModel.put("lldp", lldp);
+    nodeModel.put("lldp",    EnLinkdElementFactory.getInstance(getServletContext()).getLldpElement(nodeId));
+    nodeModel.put("cdp",    EnLinkdElementFactory.getInstance(getServletContext()).getCdpElement(nodeId));
+    nodeModel.put("ospf",    EnLinkdElementFactory.getInstance(getServletContext()).getOspfElement(nodeId));
+    nodeModel.put("isis",    EnLinkdElementFactory.getInstance(getServletContext()).getIsisElement(nodeId));
+    nodeModel.put("bridges", EnLinkdElementFactory.getInstance(getServletContext()).getBridgeElements(nodeId));
+
     nodeModel.put("resources", m_resourceService.findNodeChildResources(node_db));
     nodeModel.put("vlans", NetworkElementFactory.getInstance(getServletContext()).getVlansOnNode(nodeId));
-    nodeModel.put("criticalPath", PathOutageFactory.getPrettyCriticalPath(nodeId));
-    nodeModel.put("noCriticalPath", PathOutageFactory.NO_CRITICAL_PATH);
+    nodeModel.put("criticalPath", PathOutageManagerDaoImpl.getInstance().getPrettyCriticalPath(nodeId));
+    nodeModel.put("noCriticalPath", PathOutageManager.NO_CRITICAL_PATH);
+
+	// { IP address, service name }
+	String[] criticalPath = PathOutageManagerDaoImpl.getInstance().getCriticalPath(nodeId);
+	// { node label, node ID, # of nodes affected by critical path, path status }
+	String[] criticalPathData = PathOutageManagerDaoImpl.getInstance().getCriticalPathData(criticalPath[0], criticalPath[1]);
+
+	if((criticalPathData[0] == null) || (criticalPathData[0].equals(""))) {
+		// If we can't find the interface in the database, don't provide a link
+		nodeModel.put("criticalPathLink", null);
+	} else if (criticalPathData[0].indexOf("nodes have this IP") > -1) {
+		// If multiple nodes have this IP address, link to the nodeList.jsp with an IPLIKE filter
+		nodeModel.put("criticalPathLink", "element/nodeList.htm?iplike=" + criticalPath[0]);
+	} else {
+		// If one node contains the IP address, link directly to that node
+		nodeModel.put("criticalPathLink", "element/node.jsp?node=" + criticalPathData[1]);
+	}
+
     nodeModel.put("admin", request.isUserInRole(Authentication.ROLE_ADMIN));
     
     // get the child interfaces
@@ -250,7 +276,7 @@
 %>
 
 <%@page import="org.opennms.core.resource.Vault"%>
-<jsp:include page="/includes/header.jsp" flush="false" >
+<jsp:include page="/includes/bootstrap.jsp" flush="false" >
   <jsp:param name="title" value="Node" />
   <jsp:param name="headTitle" value="${model.label}" />
   <jsp:param name="headTitle" value="ID ${model.id}" />
@@ -260,55 +286,93 @@
   <jsp:param name="enableExtJS" value="false"/>
 </jsp:include>
 
-<div class="onms">
-<h2>Node: ${model.label} (ID: ${model.id})</h2>
+<script type="text/javascript">
+function confirmAssetEdit() {
+  var confirmText = "You are about to edit asset fields for a node that was provisioned " +
+    "through a requisition. Any edits made here will be rolled back the next " +
+    "time the requisition \"${model.node.foreignSource}\" is " +
+    "synchronized (typically every 24 hours) or the node manually rescanned.\n\n" +
+    "To learn the best way to make permanent asset changes, talk to your " +
+    "OpenNMS administrator.";
 <c:if test="${model.foreignSource != null}">
-<h2><em>Created via provisioning requisition <strong>${model.foreignSource} (foreignId: ${model.foreignId})</strong></em></h2>
+<% if (!request.isUserInRole(Authentication.ROLE_READONLY)) { %>
+    return confirm(confirmText);
+<% } else { %>
+    return true;
+<% } %>
 </c:if>
 <c:if test="${model.foreignSource == null}">
-<h2><em>Not a member of any provisioning requisition</em></h2>
+  return true;
 </c:if>
-<div id="linkbar">
-  <ul class="o-menu">
+}
+</script>
+
+<h4>
+  Node: <strong>${model.label}</strong> (ID: <strong>${model.id}</strong>)<br>
+  <c:if test="${model.foreignSource != null}">
+    <em>Created via provisioning requisition <strong>${model.foreignSource}</strong> (foreignId: <strong>${model.foreignId}</strong>)</em><br>
+  </c:if>
+  <c:if test="${model.foreignSource == null}">
+    <em>Not a member of any provisioning requisition</em>
+  </c:if>
+</h4>
+
+  <ul class="list-inline">
     <c:url var="eventLink" value="event/list">
       <c:param name="filter" value="node=${model.id}"/>
     </c:url>
-    <li class="o-menuitem">
+    <li>
       <a href="<c:out value="${eventLink}"/>">View Events</a>
     </li>
 
     <c:url var="alarmLink" value="alarm/list.htm">
       <c:param name="filter" value="node=${model.id}"/>
     </c:url>
-    <li class="o-menuitem">
+    <li>
       <a href="<c:out value="${alarmLink}"/>">View Alarms</a>
     </li>
     
     <c:url var="outageLink" value="outage/list.htm">
       <c:param name="filter" value="node=${model.id}"/>
     </c:url>
-    <li class="o-menuitem">
+    <li>
       <a href="<c:out value="${outageLink}"/>">View Outages</a>
     </li>
     
     <c:url var="assetLink" value="asset/modify.jsp">
       <c:param name="node" value="${model.id}"/>
     </c:url>
-    <li class="o-menuitem">
-      <a href="<c:out value="${assetLink}"/>">Asset Info</a>
+    <li>
+      <a href="<c:out value="${assetLink}"/>" onclick="return confirmAssetEdit()">Asset Info</a>
     </li>
+
+    <c:url var="hardwareLink" value="hardware/list.jsp">
+      <c:param name="node" value="${model.id}"/>
+    </c:url>
+    <li>
+      <a href="<c:out value="${hardwareLink}"/>">Hardware Info</a>
+    </li>
+
+    <c:if test="${fn:length( model.intfs ) >= 10}">
+      <c:url var="intfAvailabilityLink" value="element/availability.jsp">
+        <c:param name="node" value="${model.id}"/>
+      </c:url>
+      <li>
+        <a href="<c:out value="${intfAvailabilityLink}"/>">Availability</a>
+      </li>
+    </c:if>
 
     <c:if test="${! empty model.statusSite}">
       <c:url var="siteLink" value="siteStatusView.htm">
         <c:param name="statusSite" value="${model.statusSite}"/>
       </c:url>
-      <li class="o-menuitem">
+      <li>
         <a href="<c:out value="${siteLink}"/>">Site Status</a>
       </li>
     </c:if>
 
     <c:forEach items="${model.links}" var="link">
-      <li class="o-menuitem">
+      <li>
         <a href="<c:out value="${link.url}"/>">${link.text}</a>
       </li>
     </c:forEach>
@@ -319,7 +383,7 @@
         <c:param name="parentResource" value="${model.parentRes}"/>
         <c:param name="reports" value="all"/>
       </c:url>
-      <li class="o-menuitem">
+      <li>
         <a href="<c:out value="${resourceGraphsUrl}"/>">Resource Graphs</a>
       </li>
     </c:if>
@@ -328,14 +392,14 @@
       <c:url var="rescanLink" value="element/rescan.jsp">
         <c:param name="node" value="${model.id}"/>
       </c:url>
-      <li class="o-menuitem">
+      <li>
         <a href="<c:out value="${rescanLink}"/>">Rescan</a>
       </li>
       
       <c:url var="adminLink" value="admin/nodemanagement/index.jsp">
         <c:param name="node" value="${model.id}"/>
       </c:url>
-      <li class="o-menuitem">
+      <li>
         <a href="<c:out value="${adminLink}"/>">Admin</a>
       </li>
 
@@ -344,7 +408,7 @@
           <c:param name="node" value="${model.id}"/>
           <c:param name="ipaddr" value="${model.snmpPrimaryIntf.ipAddress}"/>
         </c:url>
-        <li class="o-menuitem">
+        <li>
           <a href="<c:out value="${updateSnmpLink}"/>">Update SNMP</a>
         </li>
       </c:if>
@@ -354,24 +418,23 @@
 	<c:param name="addNew" value="true"/>
 	<c:param name="nodeID" value="${model.id}"/>
       </c:url>
-      <li class="o-menuitem">
+      <li>
         <a href="<c:out value="${createOutage}"/>">Schedule Outage</a>
       </li>
     </c:if>
     
     <c:forEach items="${navEntries}" var="entry">
-      <li class="o-menuitem">
+      <li>
       	<c:out value="${entry}" escapeXml="false" />
       </li>
     </c:forEach>
   </ul>
-</div>
-</div>
+
 
 <c:if test="${! empty schedOutages}">
-  <table class="o-box">
-    <tr class="CellStatus">
-      <td align="left" class="Critical">
+  <table class="table table-condensed severity">
+    <tr class="severity-Critical">
+      <td align="left" class="bright">
         <b>This node is currently affected by the following scheduled outages: </b> ${schedOutages}
       </td>
     </tr>
@@ -383,14 +446,16 @@
 <jsp:include page="/includes/nodeStatus-box.jsp?nodeId=${model.id}" flush="false" />
 <% } %>
 
-<div class="TwoColLeft">
+<div class="row">
+<div class="col-md-6">
   
-  
-
   <!-- Asset box, if info available --> 
   <c:if test="${! empty model.asset && (! empty model.asset.description || ! empty model.asset.comments)}">
-    <h3 class="o-box">Asset Information</h3>
-    <table class="o-box">
+    <div class="panel panel-default">
+    <div class="panel-heading">
+      <h3 class="panel-title">Asset Information</h3>
+    </div>
+    <table class="table table-condensed">
       <tr>
         <th>Description</th>
         <td>${model.asset.description}</td>
@@ -401,12 +466,17 @@
         <td>${model.asset.comments}</td>
       </tr>
     </table>
+    </div>
   </c:if>
 
   <!-- SNMP box, if info available -->
   <c:if test="${! empty model.node.sysObjectId}">
-    <h3 class="o-box">SNMP Attributes</h3>
-    <table class="o-box">
+    <div class="panel panel-default">
+    <div class="panel-heading">
+      <h3 class="panel-title">SNMP Attributes</h3>
+    </div>
+    
+    <table class="table table-condensed">
       <tr>
         <th>Name</th>
         <td>${model.node.sysName}</td>
@@ -428,64 +498,56 @@
         <td valign="top">${model.node.sysDescription}</td>
       </tr>
     </table>
-  </c:if>
-
-  <!-- Asset box, if info available --> 
-  <c:if test="${! empty model.lldp }">
-    <h3 class="o-box">Lldp Information</h3>
-    <table class="o-box">
-      <tr>
-        <th>chassis id</th>
-        <td>${model.lldp.lldpChassisIdString}</td>
-      </tr>
-      <tr>
-        <th>sysname</th>
-        <td>${model.lldp.lldpSysName}</td>
-      </tr>
-      <tr>
-        <th>create time</th>
-        <td>${model.lldp.lldpCreateTime}</td>
-      </tr>
-      <tr>
-        <th>last poll time</th>
-        <td>${model.lldp.lldpLastPollTime}</td>
-      </tr>
-    </table>
+    </div>
   </c:if>
 
   <!-- Critical Path info, if info available -->
   <c:if test="${model.criticalPath != model.noCriticalPath}">
-    <h3 class="o-box">Path Outage - Critical Path</h3>
-    <div class="boxWrapper">
-      <ul class="plain o-box">
+    <div class="panel panel-default">
+    <div class="panel-heading">
+      <h3 class="panel-title">Path Outage - Critical Path</h3>
+    </div>
+    <div class="panel-body">
+      <ul class="list-unstyled">
         <li>
-          ${model.criticalPath}
+          <c:if test="${! empty model.criticalPathLink}">
+            <a href="<c:out value="${model.criticalPathLink}"/>">${model.criticalPath}</a>
+          </c:if>
+          <c:if test="${empty model.criticalPathLink}">
+            ${model.criticalPath}
+          </c:if>
         </li>
-      </ul>           
+      </ul> 
+    </div>          
     </div>    
   </c:if>
 	
-	<!-- Availability box -->
-	<c:if test="${fn:length( model.intfs ) < 10}">
+  <!-- Availability box -->
+  <c:if test="${fn:length( model.intfs ) < 10}">
     <jsp:include page="/includes/nodeAvailability-box.jsp" flush="false" >
       <jsp:param name="node" value="${model.id}" />
     </jsp:include>
-    </c:if> 
+  </c:if>
 
   <script type="text/javascript">
     var nodeId = ${model.id}
   </script>
-  <div id="interface-panel-gwt">
-    <h3 class="o-box">Node Interfaces</h3>
+  <div id="interface-panel-gwt" class="panel panel-default">
+    <div class="panel-heading">
+    	<h3 class="panel-title">Node Interfaces</h3>
+    </div>
     <opennms:interfacelist id="gwtnodeList"></opennms:interfacelist>
     <div name="opennms-interfacelist" id="gwtnodeList-ie"></div>
   </div>
 	
   <!-- Vlan box if available -->
   <c:if test="${! empty model.vlans}">
-    <h3 class="o-box">VLAN Information</h3>
-    <table class="o-box">
-      <thead>
+    <div class="panel panel-default">
+      <div class="panel-heading">
+    	<h3 class="panel-title">VLAN Information</h3>
+      </div>
+    <table class="table table-condensed">
+      <thead class="dark">
         <tr>
           <th>Vlan ID</th>
           <th>Vlan Name</th>
@@ -507,17 +569,202 @@
         </tr>
       </c:forEach>
     </table>
+    </div>
   </c:if>
 
-  
+  <!-- LLDP box, if info available --> 
+  <c:if test="${! empty model.lldp }">
+    <div class="panel panel-default">
+    <div class="panel-heading">
+      <h3 class="panel-title">LLDP Information</h3>
+    </div>
+    <table class="table table-condensed">
+      <tr>
+        <th>chassis id</th>
+        <td>${model.lldp.lldpChassisIdString}</td>
+      </tr>
+      <tr>
+        <th>sysname</th>
+        <td>${model.lldp.lldpSysName}</td>
+      </tr>
+      <tr>
+        <th>create time</th>
+        <td>${model.lldp.lldpCreateTime}</td>
+      </tr>
+      <tr>
+        <th>last poll time</th>
+        <td>${model.lldp.lldpLastPollTime}</td>
+      </tr>
+    </table>
+    </div>
+  </c:if>
+
+  <!-- CDP box, if info available --> 
+  <c:if test="${! empty model.cdp }">
+    <div class="panel panel-default">
+    <div class="panel-heading">
+      <h3 class="panel-title">CDP Information</h3>
+    </div>
+    <table class="table table-condensed">
+      <tr>
+        <th>global device id</th>
+        <td>${model.cdp.cdpGlobalDeviceId}</td>
+      </tr>
+      <tr>
+        <th>global run</th>
+        <td>${model.cdp.cdpGlobalRun}</td>
+      </tr>
+      <tr>
+        <th>create time</th>
+        <td>${model.cdp.cdpCreateTime}</td>
+      </tr>
+      <tr>
+        <th>last poll time</th>
+        <td>${model.cdp.cdpLastPollTime}</td>
+      </tr>
+    </table>
+    </div>
+  </c:if>
+
+  <!-- Bridge box if available -->
+  <c:if test="${! empty model.bridges}">
+    <c:forEach items="${model.bridges}" var="bridge">
+    <div class="panel panel-default">
+    <div class="panel-heading">
+      <h3 class="panel-title">Bridge Information
+  		<c:if test="${! empty bridge.vlan}">
+  		 vlanid ${bridge.vlan}
+  		</c:if>
+  		<c:if test="${! empty bridge.vlanname}">
+  		  (${bridge.vlan})
+  		</c:if>
+    </h3>
+    </div>
+    <table class="table table-condensed">
+      <tr>
+        <th>Base Bridge Address</th>
+        <td>${bridge.baseBridgeAddress}</td>
+      </tr>
+      <tr>
+        <th>Base Number of Ports</th>
+        <td>${bridge.baseNumPorts}</td>
+      </tr>
+      <tr>
+        <th>Base Type</th>
+        <td>${bridge.baseType}</td>
+      </tr>
+ 	<c:if test="${! empty bridge.stpProtocolSpecification}">
+      <tr>
+        <th>STP Protocol Specification</th>
+        <td>${bridge.stpProtocolSpecification}</td>
+      </tr>
+  	</c:if>
+ 	<c:if test="${! empty bridge.stpPriority}">
+      <tr>
+        <th>STP Priority</th>
+        <td>${bridge.stpPriority}</td>
+      </tr>
+  	</c:if>
+ 	<c:if test="${! empty bridge.stpDesignatedRoot}">
+      <tr>
+        <th>STP Designated Root</th>
+        <td>${bridge.stpDesignatedRoot}</td>
+      </tr>
+  	</c:if>
+ 	<c:if test="${! empty bridge.stpRootCost}">
+      <tr>
+        <th>STP Root Cost</th>
+        <td>${bridge.stpRootCost}</td>
+      </tr>
+  	</c:if>
+ 	<c:if test="${! empty bridge.stpRootPort}">
+      <tr>
+        <th>STP Root Port</th>
+        <td>${bridge.stpRootPort}</td>
+      </tr>
+  	</c:if>
+      <tr>
+        <th>Create Time</th>
+        <td>${bridge.bridgeNodeCreateTime}</td>
+      </tr>
+      <tr>
+        <th>Last Poll Time</th>
+        <td>${bridge.bridgeNodeLastPollTime}</td>
+      </tr>
+    </table>
+    </div>
+    </c:forEach>
+  </c:if>
+
+  <!-- OSPF box, if info available -->
+  <c:if test="${! empty model.ospf }">
+    <div class="panel panel-default">
+    <div class="panel-heading">
+      <h3 class="panel-title">OSPF Information</h3>
+    </div>
+    <table class="table table-condensed">
+      <tr>
+        <th>Router Id</th>
+        <td>${model.ospf.ospfRouterId}</td>
+      </tr>
+      <tr>
+        <th>Version Number</th>
+        <td>${model.ospf.ospfVersionNumber}</td>
+      </tr>
+      <tr>
+        <th>Admin Status</th>
+        <td>${model.ospf.ospfAdminStat}</td>
+      </tr>
+      <tr>
+        <th>create time</th>
+        <td>${model.ospf.ospfCreateTime}</td>
+      </tr>
+      <tr>
+        <th>last poll time</th>
+        <td>${model.ospf.ospfLastPollTime}</td>
+      </tr>
+    </table>
+    </div>
+  </c:if>
+
+  <!-- IS-IS box, if info available -->
+  <c:if test="${! empty model.isis }">
+    <div class="panel panel-default">
+    <div class="panel-heading">
+      <h3 class="panel-title">IS-IS Information</h3>
+    </div>
+    <table class="table table-condensed">
+      <tr>
+        <th>Sys ID</th>
+        <td>${model.isis.isisSysID}</td>
+      </tr>
+      <tr>
+        <th>Admin State</th>
+        <td>${model.isis.isisSysAdminState}</td>
+      </tr>
+      <tr>
+        <th>Create Time</th>
+        <td>${model.isis.isisCreateTime}</td>
+      </tr>
+      <tr>
+        <th>Last Poll Time</th>
+        <td>${model.isis.isisLastPollTime}</td>
+      </tr>
+    </table>
+    </div>
+  </c:if>
+
 </div>
 
-<div class="TwoColRight">
+<div class="col-md-6">
   
   <!-- general info box -->
-  <h3 class="o-box">General (Status: ${model.status})</h3>
-  <div class="boxWrapper">
-    <ul class="plain o-box">
+  <div class="panel panel-default">
+    <div class="panel-heading">
+  	<h3 class="panel-title">General (Status: ${model.status})</h3>
+    </div>
+  <div class="panel-body">
+    <ul class="list-unstyled">
       <c:if test="${model.showRancid}">
         <c:url var="rancidLink" value="inventory/rancid.htm">
           <c:param name="node" value="${model.id}"/>
@@ -551,7 +798,8 @@
       <li>
         <a href="<c:out value="${detailLink}"/>">View Node Link Detailed Info</a>
       </li>
-    </ul>	     
+    </ul>
+    </div>	     
   </div>
   
   <!-- Category box -->
@@ -581,4 +829,6 @@
   </jsp:include>
 </div>
 
-<jsp:include page="/includes/footer.jsp" flush="false" />
+</div>
+
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />

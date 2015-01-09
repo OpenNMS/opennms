@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -53,6 +53,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.hibernate.annotations.Type;
 import org.opennms.core.network.InetAddressXmlAdapter;
@@ -70,14 +71,8 @@ import org.springframework.core.style.ToStringCreator;
 @Table(name = "snmpInterface")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
-	
-	private static final Logger LOG = LoggerFactory.getLogger(OnmsSnmpInterface.class);
-
-    
-    /**
-     * 
-     */
-    private static final long serialVersionUID = -5396189389666285305L;
+    private static final long serialVersionUID = -963873273243372864L;
+    private static final Logger LOG = LoggerFactory.getLogger(OnmsSnmpInterface.class);
 
     private Integer m_id;
 
@@ -129,7 +124,7 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
      * @param ifIndex a int.
      */
     public OnmsSnmpInterface(OnmsNode node, int ifIndex) {
-        this(node, new Integer(ifIndex));
+        this(node, Integer.valueOf(ifIndex));
     }
 
     /**
@@ -523,6 +518,16 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
      */
     public void setNode(OnmsNode node) {
         m_node = node;
+    }
+
+    @Transient
+    @XmlTransient
+    @JsonIgnore
+    public Integer getNodeId() {
+        if (m_node != null) {
+            return m_node.getId();
+        }
+        return null;
     }
 
     /**

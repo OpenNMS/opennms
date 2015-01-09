@@ -41,7 +41,7 @@ function hideTT() {
 }
 
 <!-- ensures that the tool tip moves with the mouse, but only if the tool tip is visible -->
-function updateTT(event) {
+function updateTT() {
     if (ttContent != null && ttContent.style.display == 'block') {
         x = (event.pageX ? event.pageX : window.event.x) + ttContent.offsetParent.scrollLeft - ttContent.offsetParent.offsetLeft;
         y = (event.pageY ? event.pageY : window.event.y) + ttContent.offsetParent.scrollTop - ttContent.offsetParent.offsetTop;

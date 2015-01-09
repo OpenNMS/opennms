@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2013 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
+ * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -50,7 +50,7 @@ public class FilterFavoriteDaoHibernate extends AbstractDaoHibernate<OnmsFilterF
         return getHibernateTemplate().execute(new HibernateCallback<OnmsFilterFavorite>() {
             @Override
             public OnmsFilterFavorite doInHibernate(Session session) throws HibernateException, SQLException {
-                Query query = session.createQuery("from OnmsFilterFavorite f where f.username = :userName and f.filterName = :filterName");
+                Query query = session.createQuery("from OnmsFilterFavorite f where f.username = :userName and f.name = :filterName order by f.name");
                 query.setParameter("filterName", filterName);
                 query.setParameter("userName", userName);
                 Object result = query.uniqueResult();
@@ -65,7 +65,7 @@ public class FilterFavoriteDaoHibernate extends AbstractDaoHibernate<OnmsFilterF
         return getHibernateTemplate().execute(new HibernateCallback<List<OnmsFilterFavorite>>() {
             @Override
             public List<OnmsFilterFavorite> doInHibernate(Session session) throws HibernateException, SQLException {
-                Query query = session.createQuery("from OnmsFilterFavorite f where f.username = :userName and f.page = :page");
+                Query query = session.createQuery("from OnmsFilterFavorite f where f.username = :userName and f.page = :page order by f.name");
                 query.setParameter("userName", userName);
                 query.setParameter("page", page);
                 return query.list();
@@ -79,7 +79,7 @@ public class FilterFavoriteDaoHibernate extends AbstractDaoHibernate<OnmsFilterF
         List<OnmsFilterFavorite> favorites = getHibernateTemplate().execute(new HibernateCallback<List<OnmsFilterFavorite>>() {
             @Override
             public List<OnmsFilterFavorite> doInHibernate(Session session) throws HibernateException, SQLException {
-                Query query = session.createQuery("from OnmsFilterFavorite f where f.username = :userName and f.page = :page and f.name = :filterName");
+                Query query = session.createQuery("from OnmsFilterFavorite f where f.username = :userName and f.page = :page and f.name = :filterName order by f.name");
                 query.setParameter("userName", userName);
                 query.setParameter("page", page);
                 query.setParameter("filterName", filterName);

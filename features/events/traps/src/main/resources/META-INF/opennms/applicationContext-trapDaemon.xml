@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:tx="http://www.springframework.org/schema/tx"
+  xmlns:context="http://www.springframework.org/schema/context"
+  xmlns:util="http://www.springframework.org/schema/util"
+  xmlns:aop="http://www.springframework.org/schema/aop"
+  xmlns:jdbc="http://www.springframework.org/schema/jdbc" 
+  xmlns:onmsgi="http://xmlns.opennms.org/xsd/spring/onms-osgi"
+  xsi:schemaLocation="
+  http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+  http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.2.xsd
+  http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.2.xsd
+  http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.2.xsd
+  http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.2.xsd
+  http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd
+">
+
+  <context:annotation-config />
+  <tx:annotation-driven/>
+  
+  <bean id="daemon" class="org.opennms.netmgt.trapd.Trapd">
+    <property name="eventReader" ref="eventReader"/>
+    <property name="backlogQ" ref="trapdBacklogQ"/>
+  </bean>
+  
+  
+  <!--
+  <bean id="trapdIpMgr" class="org.opennms.netmgt.trapd.JdbcTrapdIpMgr">
+    <property name="dataSource" ref="dataSource"/>
+  </bean>
+  -->
+  
+  <bean id="trapdIpMgr" class="org.opennms.netmgt.trapd.HibernateTrapdIpMgr"/>
+  
+  <bean id="eventReader" class="org.opennms.netmgt.trapd.BroadcastEventProcessor">
+    <constructor-arg ref="eventIpcManager" />
+    <constructor-arg ref="trapdIpMgr" />
+  </bean>
+  
+  <!-- Single-threaded pool that will queue and convert traps into events -->
+  <bean id="trapdBacklogQ" class="java.util.concurrent.Executors" factory-method="newFixedThreadPool">
+    <constructor-arg value="1"/>
+  </bean>
+  
+  <bean id="processorFactory" class="org.opennms.netmgt.trapd.TrapQueueProcessorFactory">
+    <property name="eventManager" ref="eventIpcManager"/>
+  </bean>
+  
+  <bean id="newSuspectOnTrap" factory-bean="trapdConfig" factory-method="getNewSuspectOnTrap"/>
+  
+  <bean id="snmpTrapAddress" factory-bean="trapdConfig" factory-method="getSnmpTrapAddress"/>
+  
+  <bean id="snmpTrapPort" factory-bean="trapdConfig" factory-method="getSnmpTrapPort"/>
+
+  <bean id="snmpV3Users" factory-bean="trapdConfig" factory-method="getSnmpV3Users"/>
+  
+</beans>

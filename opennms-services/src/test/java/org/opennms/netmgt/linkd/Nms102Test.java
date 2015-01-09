@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -30,12 +30,16 @@ package org.opennms.netmgt.linkd;
 
 import static org.opennms.netmgt.nb.TestNetworkBuilder.MAC1_IP;
 import static org.opennms.netmgt.nb.TestNetworkBuilder.MAC1_NAME;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.MAC1_SNMP_RESOURCE;
 import static org.opennms.netmgt.nb.TestNetworkBuilder.MAC2_IP;
 import static org.opennms.netmgt.nb.TestNetworkBuilder.MAC2_NAME;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.MAC2_SNMP_RESOURCE;
 import static org.opennms.netmgt.nb.TestNetworkBuilder.MIKROTIK_IP;
 import static org.opennms.netmgt.nb.TestNetworkBuilder.MIKROTIK_NAME;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.MIKROTIK_SNMP_RESOURCE;
 import static org.opennms.netmgt.nb.TestNetworkBuilder.SAMSUNG_IP;
 import static org.opennms.netmgt.nb.TestNetworkBuilder.SAMSUNG_NAME;
+import static org.opennms.netmgt.nb.TestNetworkBuilder.SAMSUNG_SNMP_RESOURCE;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -68,10 +72,10 @@ public class Nms102Test extends LinkdTestBuilder {
      */
     @Test
     @JUnitSnmpAgents(value={
-        @JUnitSnmpAgent(host=MIKROTIK_IP, port=161, resource="classpath:linkd/nms102/"+MIKROTIK_NAME+"-"+MIKROTIK_IP+"-walk.txt"),
-        @JUnitSnmpAgent(host=SAMSUNG_IP, port=161, resource="classpath:linkd/nms102/"+SAMSUNG_NAME+"-"+SAMSUNG_IP+"-walk.txt"),
-        @JUnitSnmpAgent(host=MAC1_IP, port=161, resource="classpath:linkd/nms102/"+"mac-"+MAC1_IP+"-walk.txt"),
-        @JUnitSnmpAgent(host=MAC2_IP, port=161, resource="classpath:linkd/nms102/"+"mac-"+MAC2_IP+"-walk.txt")
+        @JUnitSnmpAgent(host=MIKROTIK_IP, port=161, resource=MIKROTIK_SNMP_RESOURCE),
+        @JUnitSnmpAgent(host=SAMSUNG_IP, port=161, resource=SAMSUNG_SNMP_RESOURCE),
+        @JUnitSnmpAgent(host=MAC1_IP, port=161, resource=MAC1_SNMP_RESOURCE),
+        @JUnitSnmpAgent(host=MAC2_IP, port=161, resource=MAC2_SNMP_RESOURCE)
     })
     public void testWifiLinksWithExclusiveConf() throws Exception {
 
@@ -120,10 +124,10 @@ public class Nms102Test extends LinkdTestBuilder {
 
     @Test
     @JUnitSnmpAgents(value={
-        @JUnitSnmpAgent(host=MIKROTIK_IP, port=161, resource="classpath:linkd/nms102/"+MIKROTIK_NAME+"-"+MIKROTIK_IP+"-walk.txt"),
-        @JUnitSnmpAgent(host=SAMSUNG_IP, port=161, resource="classpath:linkd/nms102/"+SAMSUNG_NAME+"-"+SAMSUNG_IP+"-walk.txt"),
-        @JUnitSnmpAgent(host=MAC1_IP, port=161, resource="classpath:linkd/nms102/"+"mac-"+MAC1_IP+"-walk.txt"),
-        @JUnitSnmpAgent(host=MAC2_IP, port=161, resource="classpath:linkd/nms102/"+"mac-"+MAC2_IP+"-walk.txt")
+            @JUnitSnmpAgent(host=MIKROTIK_IP, port=161, resource=MIKROTIK_SNMP_RESOURCE),
+            @JUnitSnmpAgent(host=SAMSUNG_IP, port=161, resource=SAMSUNG_SNMP_RESOURCE),
+            @JUnitSnmpAgent(host=MAC1_IP, port=161, resource=MAC1_SNMP_RESOURCE),
+            @JUnitSnmpAgent(host=MAC2_IP, port=161, resource=MAC2_SNMP_RESOURCE)
     })
     public void testWifiLinksWithDefaultConf() throws Exception {
 
@@ -163,10 +167,10 @@ public class Nms102Test extends LinkdTestBuilder {
 
     @Test
     @JUnitSnmpAgents(value={
-        @JUnitSnmpAgent(host=MIKROTIK_IP, port=161, resource="classpath:linkd/nms102/"+MIKROTIK_NAME+"-"+MIKROTIK_IP+"-walk.txt"),
-        @JUnitSnmpAgent(host=SAMSUNG_IP, port=161, resource="classpath:linkd/nms102/"+SAMSUNG_NAME+"-"+SAMSUNG_IP+"-walk.txt"),
-        @JUnitSnmpAgent(host=MAC1_IP, port=161, resource="classpath:linkd/nms102/"+"mac-"+MAC1_IP+"-walk.txt"),
-        @JUnitSnmpAgent(host=MAC2_IP, port=161, resource="classpath:linkd/nms102/"+"mac-"+MAC2_IP+"-walk.txt")
+            @JUnitSnmpAgent(host=MIKROTIK_IP, port=161, resource=MIKROTIK_SNMP_RESOURCE),
+            @JUnitSnmpAgent(host=SAMSUNG_IP, port=161, resource=SAMSUNG_SNMP_RESOURCE),
+            @JUnitSnmpAgent(host=MAC1_IP, port=161, resource=MAC1_SNMP_RESOURCE),
+            @JUnitSnmpAgent(host=MAC2_IP, port=161, resource=MAC2_SNMP_RESOURCE)
     })
     public void testLinksWithIpRoute() throws Exception {
 
@@ -210,10 +214,10 @@ public class Nms102Test extends LinkdTestBuilder {
 
     @Test
     @JUnitSnmpAgents(value={
-        @JUnitSnmpAgent(host=MIKROTIK_IP, port=161, resource="classpath:linkd/nms102/"+MIKROTIK_NAME+"-"+MIKROTIK_IP+"-walk.txt"),
-        @JUnitSnmpAgent(host=SAMSUNG_IP, port=161, resource="classpath:linkd/nms102/"+SAMSUNG_NAME+"-"+SAMSUNG_IP+"-walk.txt"),
-        @JUnitSnmpAgent(host=MAC1_IP, port=161, resource="classpath:linkd/nms102/"+"mac-"+MAC1_IP+"-walk.txt"),
-        @JUnitSnmpAgent(host=MAC2_IP, port=161, resource="classpath:linkd/nms102/"+"mac-"+MAC2_IP+"-walk.txt")
+            @JUnitSnmpAgent(host=MIKROTIK_IP, port=161, resource=MIKROTIK_SNMP_RESOURCE),
+            @JUnitSnmpAgent(host=SAMSUNG_IP, port=161, resource=SAMSUNG_SNMP_RESOURCE),
+            @JUnitSnmpAgent(host=MAC1_IP, port=161, resource=MAC1_SNMP_RESOURCE),
+            @JUnitSnmpAgent(host=MAC2_IP, port=161, resource=MAC2_SNMP_RESOURCE)
     })
     public void testLinksTwoPackage() throws Exception {
 

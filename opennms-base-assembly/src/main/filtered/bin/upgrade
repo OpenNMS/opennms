@@ -2,18 +2,20 @@
 
 JAVA_OPTIONS="-Xmx512m"
 OPENNMS_HOME="${install.dir}"
+OPENNMS_BINDIR="${install.bin.dir}"
 RUNAS="root"
 
 myuser="`id | sed -e 's/uid=[0-9][0-9]*(//' -e 's/).*//'`"
 if [ x"$myuser" = x"$RUNAS" ]; then
-    true # all is well
+	true # all is well
 else
-    echo "Error: you must run this script as $RUNAS, not '$myuser'" >&2
-    exit 4 # According to LSB: 4 - user had insufficient privileges
+	echo "Error: you must run this script as $RUNAS, not '$myuser'" >&2
+	exit 4 # According to LSB: 4 - user had insufficient privileges
 fi
 
-app_class=org.opennms.upgrade.support.Upgrade
+APP_CLASS=org.opennms.upgrade.support.Upgrade
 exec $OPENNMS_HOME/bin/runjava -r -- $JAVA_OPTIONS \
-    -Dopennms.home=$OPENNMS_HOME \
-    -Dopennms.manager.class=$app_class \
-    -jar $OPENNMS_HOME/lib/opennms_bootstrap.jar $@
+	-Dopennms.home="$OPENNMS_HOME" \
+	-Dlog4j.configurationFile="$OPENNMS_HOME"/etc/log4j2-tools.xml \
+	-Dopennms.manager.class="$APP_CLASS" \
+	-jar "$OPENNMS_HOME"/lib/opennms_bootstrap.jar $@

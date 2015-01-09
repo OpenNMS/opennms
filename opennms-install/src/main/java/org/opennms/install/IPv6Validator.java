@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -41,7 +41,34 @@ public class IPv6Validator {
 	private static final String REGISTRY_CURRENTVERSION = "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion";
 	Pattern SERVICE_PACK_PATTERN = Pattern.compile("Service Pack (\\d+)");
 
-	public boolean isPlatformIPv6Ready() {
+    /**
+     * Checks if the platform is IPv6 ready.
+     * For non windows platforms it always returns true.
+     * For windows platforms it is version dependant.
+     *
+     * The following table assigns the internal microsoft version to the windows release.
+     *
+     * Operating system        Version number
+     * -----------------       --------------
+     * Windows 8.1                 6.3
+     * Windows Server 2012 R2      6.3
+     * Windows 8                   6.2
+     * Windows Server 2012         6.2
+     * Windows 7                   6.1
+     * Windows Server 2008 R2      6.1
+     * Windows Server 2008         6.0
+     * Windows Vista               6.0
+     * Windows Server 2003 R2      5.2
+     * Windows Server 2003         5.2
+     * Windows XP 64-Bit Edition   5.2
+     * Windows XP                  5.1
+     * Windows 2000                5.0
+     *
+     * Source: http://msdn.microsoft.com/en-us/library/windows/desktop/ms724832(v=vs.85).aspx
+     *
+     * @return true if Platform is not windows or if the provided windows system supports IPv6.
+     */
+    public boolean isPlatformIPv6Ready() {
 		boolean ok = true;
 		if (Platform.isWindows()) {
 			debug(null, "Looks like we're on Windows...  Validating.");
@@ -97,6 +124,8 @@ public class IPv6Validator {
 					// If we get this far, make sure the hotfixes are installed
 					for (final String hotfix : new String[] { "978338", "947369" }) {
 						if (!checkHotfix(hotfix, "Windows XP or Windows Server 2003")) {
+                            warn(null, "Hotfix %s was not found.", hotfix);
+                            warn(null, "Go to http://support.microsoft.com/kb/%s and install it", hotfix);
 							ok = false;
 						}
 					}
@@ -116,6 +145,7 @@ public class IPv6Validator {
 			}
 			debug(null, "Windows NT Version %.1f, Build %d (Service Pack %d)", version, build, servicePack);
 		}
+        debug(null, "Platform is IPv6 ready: %s", ok);
 		return ok;
 	}
 
@@ -138,7 +168,6 @@ public class IPv6Validator {
 		if (t != null) {
 			t.printStackTrace();
 		}
-		// LogUtils.errorf(this, t, format, args);
 	}
 
 	private static void warn(final Throwable t, final String format, final Object... args) {
@@ -146,7 +175,6 @@ public class IPv6Validator {
 		if (t != null) {
 			t.printStackTrace();
 		}
-		// LogUtils.errorf(this, t, format, args);
 	}
 
 	private static void debug(final Throwable t, final String format, final Object... args) {
@@ -154,14 +182,14 @@ public class IPv6Validator {
 		if (t != null) {
 			t.printStackTrace();
 		}
-		// LogUtils.debugf(this, t, format, args);
 	}
 
 	private String getStringFromRegistry(final String key) {
 		try {
 			return Advapi32Util.registryGetStringValue(WinReg.HKEY_LOCAL_MACHINE, REGISTRY_CURRENTVERSION, key);
 		} catch (final Throwable t) {
-			warn(t, "Unable to retrieve the value for %s\\%s", REGISTRY_CURRENTVERSION, key);
+            // NMS-7053: we only want to warn the user, but do not scare him with an exception
+			warn(null, "Unable to retrieve the value for %s\\%s", REGISTRY_CURRENTVERSION, key);
 			return null;
 		}
 	}

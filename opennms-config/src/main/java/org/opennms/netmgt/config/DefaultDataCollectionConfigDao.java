@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -55,7 +55,6 @@ import org.opennms.netmgt.config.datacollection.Systems;
 import org.opennms.netmgt.rrd.RrdRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.core.io.Resource;
 
 /**
  * DefaultDataCollectionConfigDao
@@ -72,43 +71,48 @@ public class DefaultDataCollectionConfigDao extends AbstractJaxbConfigDao<Dataco
     
     private String m_configDirectory;
 
-    // have we validated the config since last reloading?
-    private boolean m_validated = false;
-    private RuntimeException m_validationException = null;
-
     private List<String> dataCollectionGroups = new ArrayList<String>();
+    private Map<String, ResourceType> resourceTypes = new HashMap<String, ResourceType>();
 
     public DefaultDataCollectionConfigDao() {
         super(DatacollectionConfig.class, "data-collection");
     }
 
     @Override
-    protected DatacollectionConfig loadConfig(final Resource resource) {
-        m_validated = false;
-        m_validationException = null;
-        return super.loadConfig(resource);
-    }
-    
-    @Override
     protected DatacollectionConfig translateConfig(final DatacollectionConfig config) {
         final DataCollectionConfigParser parser = new DataCollectionConfigParser(getConfigDirectory());
-
-        // Updating Configured Collections
-        for (final SnmpCollection collection : config.getSnmpCollections()) {
-            parser.parseCollection(collection);
-        }
+        resourceTypes.clear();
 
         // Create a special collection to hold all resource types, because they should be defined only once.
         final SnmpCollection resourceTypeCollection = new SnmpCollection();
         resourceTypeCollection.setName("__resource_type_collection");
+
+        // Updating Configured Collections
+        for (final SnmpCollection collection : config.getSnmpCollections()) {
+            parser.parseCollection(collection);
+            // Save local resource types
+            for (final ResourceType rt : collection.getResourceTypes()) {
+                resourceTypeCollection.addResourceType(rt);
+                resourceTypes.put(rt.getName(), rt);
+            }
+            // Remove local resource types
+            collection.setResourceTypes(new ArrayList<ResourceType>());
+        }
+
+        // Save external Resource Types
         for (final ResourceType rt : parser.getAllResourceTypes()) {
             resourceTypeCollection.addResourceType(rt);
+            resourceTypes.put(rt.getName(), rt);
         }
+
         resourceTypeCollection.setGroups(new Groups());
         resourceTypeCollection.setSystems(new Systems());
         config.insertSnmpCollection(resourceTypeCollection);
         dataCollectionGroups.clear();
         dataCollectionGroups.addAll(parser.getExternalGroupMap().keySet());
+
+        validateResourceTypes(config.getSnmpCollections(), resourceTypes.keySet());
+
         return config;
     }
 
@@ -287,30 +291,7 @@ public class DefaultDataCollectionConfigDao extends AbstractJaxbConfigDao<Dataco
 
     @Override
     public Map<String, ResourceType> getConfiguredResourceTypes() {
-        final Map<String,ResourceType> map = new HashMap<String,ResourceType>();
-
-        final Collection<SnmpCollection> snmpCollections = getContainer().getObject().getSnmpCollections();
-        for (final SnmpCollection collection : snmpCollections) {
-            for (final ResourceType resourceType : collection.getResourceTypes()) {
-                map.put(resourceType.getName(), resourceType);
-            }
-        }
-
-        // FIXME: I guarantee there's a cleaner way to do this, but I didn't want to refactor everything
-        // that calls this just to optimize out validation.
-        if (!m_validated) {
-            try {
-                validateResourceTypes(getContainer(), map.keySet());
-            } catch (final RuntimeException e) {
-                m_validationException = e;
-                throw e;
-            }
-        } else {
-            if (m_validationException != null) {
-                throw m_validationException;
-            }
-        }
-        return Collections.unmodifiableMap(map);
+        return Collections.unmodifiableMap(resourceTypes);
     }
 
     @Override
@@ -569,7 +550,7 @@ public class DefaultDataCollectionConfigDao extends AbstractJaxbConfigDao<Dataco
         return Collections.unmodifiableMap(collectionGroupMap);
     }
 
-    private static void validateResourceTypes(final FileReloadContainer<DatacollectionConfig> container, final Set<String> allowedResourceTypes) {
+    private void validateResourceTypes(final Collection<SnmpCollection> snmpCollections, final Set<String> allowedResourceTypes) {
         final String configuredString;
         if (allowedResourceTypes.size() == 0) {
             configuredString = "(none)";
@@ -578,26 +559,26 @@ public class DefaultDataCollectionConfigDao extends AbstractJaxbConfigDao<Dataco
         }
 
         final String allowableValues = "any positive number, 'ifIndex', or any of the configured resourceTypes: " + configuredString;
-        for (final SnmpCollection collection : container.getObject().getSnmpCollections()) {
+        for (final SnmpCollection collection : snmpCollections) {
             final Groups groups = collection.getGroups();
             if (groups != null) {
-				for (final Group group : groups.getGroups()) {
-	                for (final MibObj mibObj : group.getMibObjs()) {
-	                    final String instance = mibObj.getInstance();
-	                    if (instance == null)                            continue;
+                for (final Group group : groups.getGroups()) {
+                    for (final MibObj mibObj : group.getMibObjs()) {
+                        final String instance = mibObj.getInstance();
+                        if (instance == null)                            continue;
                         if (MibObject.INSTANCE_IFINDEX.equals(instance)) continue;
                         if (allowedResourceTypes.contains(instance))     continue;
-	                    try {
-	                        // Check to see if the value is a non-negative integer
-	                        if (Integer.parseInt(instance.trim()) >= 0) {
-	                            continue;
-	                        }
-	                    } catch (NumberFormatException e) {}
+                        try {
+                            // Check to see if the value is a non-negative integer
+                            if (Integer.parseInt(instance.trim()) >= 0) {
+                                continue;
+                            }
+                        } catch (NumberFormatException e) {}
 
-	                    // XXX this should be a better exception
-	                    throw new IllegalArgumentException("instance '" + instance + "' invalid in mibObj definition for OID '" + mibObj.getOid() + "' in collection '" + collection.getName() + "' for group '" + group.getName() + "'.  Allowable instance values: " + allowableValues);
-	                }
-				}
+                        // XXX this should be a better exception
+                        throw new IllegalArgumentException("instance '" + instance + "' invalid in mibObj definition for OID '" + mibObj.getOid() + "' in collection '" + collection.getName() + "' for group '" + group.getName() + "'.  Allowable instance values: " + allowableValues);
+                    }
+                }
             }
         }
     }
@@ -640,11 +621,12 @@ public class DefaultDataCollectionConfigDao extends AbstractJaxbConfigDao<Dataco
 
     @Override
     public void reload() {
-        loadConfig(getConfigResource());
+        getContainer().reload(); // The idea is to force the reload if this is called, and the update flags must be updated
     }
 
     @Override
     public Date getLastUpdate() {
+        getContainer().getObject(); // This should trigger the reload if the file was changed, and this should trigger the update the lastUpdate flag as well.
         return new Date(getContainer().getLastUpdate());
     }
 

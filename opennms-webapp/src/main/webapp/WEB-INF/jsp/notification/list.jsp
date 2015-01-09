@@ -2,22 +2,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -75,12 +75,11 @@
     pageContext.setAttribute("addAfterFilter", "<i class=\"fa fa-toggle-left\"></i>");
 %>
 
-<jsp:include page="/includes/header.jsp" flush="false" >
+<jsp:include page="/includes/bootstrap.jsp" flush="false" >
   <jsp:param name="title" value="Notice List" />
-  <jsp:param name="headTitle" value="Browse" />
-  <jsp:param name="headTitle" value="Notices" />
-  <jsp:param name="breadcrumb" value="<a href='notification/index.jsp' title='Notice System Page'>Notices</a>" />
-  <jsp:param name="breadcrumb" value="List" />
+  <jsp:param name="headTitle" value="Notice List" />
+  <jsp:param name="breadcrumb" value="<a href='notification/index.jsp'>Notifications</a>" />
+  <jsp:param name="breadcrumb" value="Notice List" />
 </jsp:include>
 
 <link rel="stylesheet" href="css/font-awesome-4.0.3/css/font-awesome.min.css">
@@ -180,12 +179,12 @@
   </jsp:include>
 <% } %>
 
-<% if( parms.filters.size() > 0 ) { %>
+<% if( parms.filters != null && parms.filters.size() > 0 ) { %>
   <% int length = parms.filters.size(); %>
   <p>
     Applied filters:
       <% for( int i = 0; i < length; i++ ) { %>
-		<span class="filter"><% Filter filter = (Filter)parms.filters.get(i); %>
+		<span class="label label-default"><% Filter filter = parms.filters.get(i); %>
 				<%=WebSecurityUtils.sanitizeString(filter.getTextDescription())%> <a href="<%=this.makeLink( parms, filter, false)%>" title="Remove filter">[-]</a></span> &nbsp; 
       <% } %>
     &mdash; <a href="<%=this.makeLink( parms, new ArrayList<Filter>())%>" title="Remove all filters">[Remove all]</a>
@@ -196,11 +195,11 @@
           <input type="hidden" name="curUser" value="<%=request.getRemoteUser()%>"/>
           <input type="hidden" name="redirectParms" value="<c:out value="<%=request.getQueryString()%>"/>" />
           <%=org.opennms.web.api.Util.makeHiddenTags(request)%>
-      <table>
+      <table class="table table-condensed table-bordered severity">
 			<thead>
 			  <tr>
-          <th class="noWrap"><%=this.makeSortLink( parms, SortStyle.ID,SortStyle.REVERSE_ID,     "id",          "ID"           )%></th>
-          <th class="noWrap">Event ID</th>
+          <th nowrap><%=this.makeSortLink( parms, SortStyle.ID,SortStyle.REVERSE_ID,     "id",          "ID"           )%></th>
+          <th nowrap>Event ID</th>
           <th><%=this.makeSortLink( parms, SortStyle.SEVERITY,    SortStyle.REVERSE_SEVERITY,    "severity",    "Severity"     )%></th>
           <th><%=this.makeSortLink( parms, SortStyle.PAGETIME,    SortStyle.REVERSE_PAGETIME,    "pagetime",    "Sent Time"    )%></th>
           <th><%=this.makeSortLink( parms, SortStyle.RESPONDER,   SortStyle.REVERSE_RESPONDER,   "answeredby",  "Responder"    )%></th>
@@ -211,17 +210,20 @@
         </tr>
       </thead>
 
-      <% for( int i=0; i < notices.length; i++ ) { 
+      <% for (int i = 0; i < notices.length; i++) { 
     	final Notification notification = notices[i];
     	if (notification == null) continue;
-        Event event = events.get(notification.getEventId());
+        Event event = null;
         String eventSeverity = "Unknown";
-        if (event != null) {
-          eventSeverity = event.getSeverity().getLabel();
+        if (notification.getEventId() > 0) {
+            event = events.get(notification.getEventId());
+            if (event != null) {
+              eventSeverity = event.getSeverity().getLabel();
+            }
         }
         %>
-        <tr class="<%=eventSeverity%>">
-          <td class="divider noWrap" rowspan="2"><% if((parms.ackType == AcknowledgeType.UNACKNOWLEDGED ) && 
+        <tr class="severity-<%=eventSeverity%>">
+          <td class="divider" rowspan="2" nowrap><% if((parms.ackType == AcknowledgeType.UNACKNOWLEDGED ) && 
 		(request.isUserInRole( Authentication.ROLE_ADMIN ) || !request.isUserInRole( Authentication.ROLE_READONLY ))) { %>
             <input type="checkbox" name="notices" value="<%=notification.getId()%>" />
           <% } %> 
@@ -238,7 +240,7 @@
           <% if (responder != null) { %>
             <% Filter responderFilter = new ResponderFilter(responder); %>      
               <%= responder %>
-              <% if( !parms.filters.contains( responderFilter )) { %>
+              <% if( parms.filters != null && !parms.filters.contains( responderFilter )) { %>
                 <a href="<%=this.makeLink( parms, responderFilter, true)%>" class="filterLink" title="Show only notices with this responder">${addPositiveFilter}</a>
               <% } %>
             <% } %>
@@ -249,11 +251,11 @@
             <% } %>
           </td>
           <td class="divider">
-            <% if(notification.getNodeId() != 0 ) { %>
+            <% if(notification.getNodeId() > 0 ) { %>
               <% Filter nodeFilter = new NodeFilter(notification.getNodeId()); %>
               <% String[] labels = nodeLabels.get(notification.getNodeId()); %>
               <a href="element/node.jsp?node=<%=notification.getNodeId()%>" title="<%=labels[1]%>"><%=labels[0]%></a>
-              <% if( !parms.filters.contains(nodeFilter) ) { %>
+              <% if( parms.filters != null && !parms.filters.contains(nodeFilter) ) { %>
 
                 <a href="<%=this.makeLink( parms, nodeFilter, true)%>" class="filterLink" title="Show only notices on this node">${addPositiveFilter}</a>
                 <a href="<%=this.makeLink( parms, new NegativeNodeFilter(notification.getNodeId(), getServletContext()), true)%>" class="filterLink" title="Do not show events for this node">${addNegativeFilter}</a>
@@ -272,7 +274,7 @@
               <% } else { %>
                  <%=notification.getInterfaceId()%>
               <% } %>
-              <% if( !parms.filters.contains(intfFilter) ) { %>
+              <% if( parms.filters != null && !parms.filters.contains(intfFilter) ) { %>
                 <a href="<%=this.makeLink( parms, intfFilter, true)%>" class="filterLink" title="Show only notices on this IP address">${addPositiveFilter}</a>
               <% } %>
             <% } %>
@@ -290,13 +292,13 @@
               <% } else { %>
                 <c:out value="<%=notification.getServiceName()%>"/>
               <% } %>
-              <% if( !parms.filters.contains( serviceFilter )) { %>
+              <% if( parms.filters != null && !parms.filters.contains( serviceFilter )) { %>
                 <a href="<%=this.makeLink( parms, serviceFilter, true)%>" class="filterLink" title="Show only notices with this service type">${addPositiveFilter}</a>
               <% } %>
             <% } %>
           </td>
         </tr>
-        <tr class="<%=eventSeverity%>">
+        <tr class="severity-<%=eventSeverity%>">
           <td colspan="6"><%=notification.getTextMessage()%></td> 
         </tr>
       <% } /*end for*/%>
@@ -304,9 +306,9 @@
       <p><%=notices.length%> notices &nbsp;
 
         <% if( parms.ackType == AcknowledgeType.UNACKNOWLEDGED && (request.isUserInRole( Authentication.ROLE_ADMIN ) || !request.isUserInRole( Authentication.ROLE_READONLY ))) { %>
-            <input TYPE="reset" />
-            <input TYPE="button" VALUE="Select All" onClick="checkAllCheckboxes()"/>
-            <input type="button" value="Acknowledge Notices" onClick="submitAcknowledge()"/>
+            <button type="reset" class="btn btn-default">Reset</button>
+            <button type="button" onClick="checkAllCheckboxes()" class="btn btn-default">Select All</button>
+            <button type="button" onClick="submitAcknowledge()" class="btn btn-default">Acknowledge Notices</button>
         <% } %>
         
 	</p>
@@ -314,7 +316,7 @@
 	<!--		<% if( noticeCount > 0 ) { %>
 			<p align="right"><a href="<%=this.makeLink(parms)%>&multiple=<%=parms.multiple+1%>">Next</a></p>
 			<% } %> -->
-		<jsp:include page="/includes/bookmark.jsp" flush="false" />
+
         <% if( noticeCount > 0 ) { %>
           <% String baseUrl = this.makeLink(parms); %>
           <jsp:include page="/includes/resultsIndex.jsp" flush="false" >
@@ -325,7 +327,7 @@
           </jsp:include>
          <% } %>
  
-<jsp:include page="/includes/footer.jsp" flush="false" />
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />
 
 
 <%!
@@ -410,7 +412,10 @@
 
 
     public String makeLink( NoticeQueryParms parms, Filter filter, boolean add ) {
-      ArrayList<Filter> newList = new ArrayList<Filter>( parms.filters );
+      List<Filter> newList = new ArrayList<Filter>();
+      if (parms.filters != null) {
+          newList.addAll(parms.filters);
+      }
       if( add ) {
         newList.add( filter );
       }

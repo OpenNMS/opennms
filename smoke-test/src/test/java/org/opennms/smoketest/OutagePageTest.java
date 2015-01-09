@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -28,52 +28,49 @@
 
 package org.opennms.smoketest;
 
-import org.junit.Before;
-import org.junit.FixMethodOrder;
-import org.junit.Test;
-import org.junit.runners.MethodSorters;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
-@FixMethodOrder(MethodSorters.NAME_ASCENDING)
+import org.junit.Before;
+import org.junit.Test;
+import org.openqa.selenium.Alert;
+import org.openqa.selenium.By;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+
 public class OutagePageTest extends OpenNMSSeleniumTestCase {
     @Before
     public void setUp() throws Exception {
-        super.setUp();
-        clickAndWait("link=Outages");
+        outagePage();
     }
 
     @Test
-    public void a_testAllTextIsPresent() throws Exception {
-        waitForText("Outage Menu");
-        waitForText("Outages and Service Level Availability");
-        waitForText("Outage ID");
-        waitForText("create notifications");
+    public void testAllTextIsPresent() throws Exception {
+        findElementByXpath("//h3[text()='Outage Menu']");
+        findElementByXpath("//h3[text()='Outages and Service Level Availability']");
+        findElementByName("outageIdForm").findElement(By.name("id"));
     }  
 
     @Test
-    public void b_testAllLinksArePresent() throws InterruptedException {
-        waitForElement("link=Current outages");
-        waitForElement("link=All outages");
-    }
+    public void testAllLinks() throws InterruptedException {
+        findElementByLink("Current outages").click();
+        findElementByXpath("//button[contains(@class, 'active') and contains(@onclick, 'current')]");
+        findElementByXpath("//button[not(contains(@class, 'active')) and contains(@onclick, 'resolved')]");
+        findElementByXpath("//button[not(contains(@class, 'active')) and contains(@onclick, 'both')]");
+        findElementByLink("Interface");
 
-    @Test
-    public void c_testAllFormsArePresent() {
-        assertEquals("Get details", selenium.getValue("css=input[type='submit']"));
-    }
+        outagePage();
+        findElementByLink("All outages").click();
+        findElementByXpath("//button[not(contains(@class, 'active')) and contains(@onclick, 'current')]");
+        findElementByXpath("//button[not(contains(@class, 'active')) and contains(@onclick, 'resolved')]");
+        findElementByXpath("//button[contains(@class, 'active') and contains(@onclick, 'both')]");
+        findElementByLink("Interface");
 
-    @Test
-    public void d_testAllLinks() throws InterruptedException {
-        clickAndWait("link=Current outages");
-        waitForElement("name=outtype");
-        waitForElement("css=input[type='submit']");
-        waitForElement("link=Interface");
-        clickAndWait("css=a[title='Outages System Page']");
-        clickAndWait("link=All outages");
-        waitForElement("name=outtype");
-        waitForText("Current Resolved Both Current & Resolved");
-        waitForText("Interface");
-        clickAndWait("css=a[title='Outages System Page']");
-        clickAndWait("css=input[type='submit']");
-        assertEquals("Please enter a valid outage ID.", selenium.getAlert());
+        outagePage();
+        findElementByName("outageIdForm").findElement(By.xpath("//button[@type='submit']")).click();
+        final Alert alert = wait.until(ExpectedConditions.alertIsPresent());
+        assertNotNull(alert);
+        assertEquals("Please enter a valid outage ID.", alert.getText());
+        alert.dismiss();
     }
 
 }

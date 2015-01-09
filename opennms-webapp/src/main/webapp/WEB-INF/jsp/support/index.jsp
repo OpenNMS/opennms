@@ -2,22 +2,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2010-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -36,39 +36,25 @@
 session="true"
 %>
 
-<jsp:include page="/includes/header.jsp" flush="false" >
+<jsp:include page="/includes/bootstrap.jsp" flush="false" >
   <jsp:param name="title" value="Support" />
   <jsp:param name="headTitle" value="Get Support" />
   <jsp:param name="location" value="help" />
   <jsp:param name="breadcrumb" value="Support" />
 </jsp:include>
 
-<style type="text/css">
-.textwrapper {
-    overflow: hidden;
-    display: block;
-	width: 100%;
-	border: 1px solid black;
-	padding: 1px;
-	padding-top: 2px;
-	padding-bottom: 2px;
-}
-
-</style>
-
-<div class="TwoColLeft">
+<div class="row">
+<div class="col-md-6">
     <c:choose>
 
       <c:when test="${!results.needsLogin}">
         <!-- we have a login session, show support details -->
 
-        <h3>
-          Commercial Support
-          <form method="post" action="support/index.htm" id="signout">
-            <input type="hidden" name="operation" value="logout" />
-          </form>
-        </h3>
-        <div class="boxWrapper">
+		<div class="panel panel-default">
+		  <div class="panel-heading">
+        	<h3 class="panel-title">Commercial Support</h3>
+        </div>
+        <div class="panel-body">
 
         <c:if test="${not empty results.message}">
           <div class="something">
@@ -85,49 +71,56 @@ session="true"
            the support engineer who works your ticket diagnose the problem more
            quickly.</p>
 
-        <form method="post" action="support/index.htm">
-          <table class="top" style="width:100%">
-            <tr>
-              <td>Username:</td>
-              <td colspan="2">
-                <c:out value="${results.username}" />
-                <input type="button" value="Sign Out" onClick="document.forms['signout'].submit();" />
-              </td>
-            </tr>
-            <tr>
-              <td>Queue:</td>
-              <td colspan="2">
-                <c:out value="${results.queue}" />
-              </td>
-            </tr>
-            <tr>
-              <td>Subject:</td>
-              <td colspan="2">
-                <input class="textwrapper" type="text" name="subject" value="${sessionScope.errorReportSubject}" />
-              </td>
-            </tr>
-            <tr>
-              <td>Text:</td>
-              <td colspan="2">
-                <textarea class="textwrapper" name="text" rows="15" />${sessionScope.errorReportDetails}</textarea>
-              </td>
-            </tr>
-            <tr>
-              <td></td>
-              <td style="text-align: left">
-                <input type="checkbox" name="include-report" id="include-report" checked="checked" value="true" />
-                <label for="include-report">Include Basic System Report</label>
-              </td>
-              <td style="text-align: right">
-                <input type="reset" value="Clear" />
-                <input type="submit" value="Create Ticket" />
-              </td>
-            </tr>
-          </table>
+        <form method="post" action="support/index.htm" id="signout">
+	      <input type="hidden" name="operation" value="logout" />
+        </form>
+        <form role="form" class="form-horizontal" method="post" action="support/index.htm">
+          <div class="form-group">
+            <div class="col-md-2">
+              <label for="sign-out" class="control-label">Username:</label>
+	        </div>
+            <div class="col-md-2">
+              <p class="form-control-static"><c:out value="${results.username}" /></p>
+	        </div>
+            <div class="col-md-8">
+	          <input id="sign-out" class="btn btn-default pull-right" value="Sign Out" onClick="document.forms['signout'].submit();"/>
+	        </div>
+          </div>
+          <div class="form-group">
+          	<div class="col-md-2">
+              <label class="control-label">Queue:</label>
+	        </div>
+	        <div class="col-md-2">
+              <p class="form-control-static"><c:out value="${results.queue}" /></p>
+	        </div>
+          </div>
+          <div class="form-group">
+          	<div class="col-md-12">
+              <label for="subject" class="control-label">Subject:</label>
+			  <input id="subject" class="form-control" type="text" name="subject" value="${sessionScope.errorReportSubject}" />
+			</div>
+          </div>
+          <div class="form-group">
+            <div class="col-md-12">
+              <label for="details" class="control-label">Details:</label>
+              <textarea id="details" class="form-control" name="text" rows="15" >${sessionScope.errorReportDetails}</textarea>
+            </div>
+          </div>
+          <div class="form-group">
+            <div class="col-md-12">
+              <div class="checkbox pull-left">
+          	    <label>
+                  <input type="checkbox" name="include-report" id="include-report" checked="checked" value="true">Include Basic System Report
+                </label>
+              </div>
+          	  <div class="pull-right">
+                <input class="btn btn-default" type="reset" value="Clear" />
+                <input class="btn btn-default" type="submit" value="Create Ticket" />
+              </div>
+            </div>
+          </div>
           <input type="hidden" name="operation" value="createTicket" />
         </form>
-        
-        <hr />
 
         <p>
         	Your newest tickets are listed below.  For a complete list, log in to the
@@ -142,13 +135,17 @@ session="true"
           </tr>
         </c:forEach>
         </table>
+        </div>
+        </div>
       </c:when>
 
       <c:otherwise>
         <!-- no account session found, ask for login -->
-        
-        <h3>Commercial Support</h3>
-        <div class="boxWrapper">
+        <div class="panel panel-default">
+        <div class="panel-heading">
+        	<h3 class="panel-title">Commercial Support</h3>
+        </div>
+        <div class="panel-body">
 
         <p>
           Enter your OpenNMS Group commercial support login to open a support ticket or view your open
@@ -158,53 +155,53 @@ session="true"
           If you do not have a commercial support agreement, see
           <a href="http://www.opennms.com/support/">the OpenNMS.com support page</a> for more details.
         </p>
-        <form method="post" action="support/index.htm">
-          <table class="top">
-            <tr>
-              <td>Username:</td>
-              <td colspan="2">
-                <input type="text" name="username" width="30" />
-              </td>
-            </tr>
-            <tr>
-              <td>Password:</td>
-              <td colspan="2">
-                <input type="password" name="password" width="30" />
-              </td>
-            </tr>
-            <tr>
-              <td colspan="2"></td>
-              <td style="text-align: right">
-                <input type="reset" value="Clear" />
-                <input type="submit" value="Log In" />
-              </td>
-            </tr>
-          </table>
-          <input type="hidden" name="operation" value="login" />
+        <form role="form" method="post" action="support/index.htm">
+			<div class="form-group">
+    					<label for="username" class="control-label">Username:</label>
+      					<input type="text" name="username" class="form-control" id="username" placeholder="Username">
+  			</div>
+  			<div class="form-group">
+    			<label for="password" class="control-label">Password:</label>
+      			<input type="password" name="password" class="form-control" id="password" placeholder="Password">
+  			</div>
+  			<div class="form-group">
+  				<button type="reset" class="btn btn-default">Clear</button>
+  				<button type="submit" class="btn btn-default">Log in</button>
+  				<input type="hidden" name="operation" value="login" />
+  			</div>
         </form>
+        </div>
+        </div>
       </c:otherwise>
 
     </c:choose>
-  </div>
 </div>
-<div class="TwoColRight">
-  <h3>About</h3>
-  <div class="boxWrapper">
-    <ul class="plain">
+
+<div class="col-md-6">
+  <div class="panel panel-default">
+  <div class="panel-heading">
+  	<h3 class="panel-title">About</h3>
+  </div>
+  <div class="panel-body">
+    <ul class="list-unstyled">
       <li><a href="support/about.jsp">About the OpenNMS Web Console</a></li>
       <li><a href="http://www.opennms.org/documentation/ReleaseNotesStable.html#whats-new">Release Notes</a></li>
       <li><a href="http://www.opennms.org/wiki/">Online Documentation</a></li>
     </ul>
   </div>
-  <hr />
-  <h3>Other Support Options</h3>
-  <div class="boxWrapper">
-    <ul class="plain">
+  </div>
+  <div class="panel panel-default">
+  <div class="panel-heading">
+  	<h3 class="panel-title">Other Support Options</h3>
+  </div>
+  <div class="panel-body">
+    <ul class="list-unstyled">
       <li><a href="admin/support/systemReport.htm">Generate a System Report</a></li>
       <li><a href="http://issues.opennms.org/">Open a Bug or Enhancement Request</a></li>
       <li><a href="irc://irc.freenode.net/%23opennms">Chat with Developers on IRC</a></li>
     </ul>
   </div>
 </div>
-<hr />
-<jsp:include page="/includes/footer.jsp" flush="false"/>
+</div><!-- col -->
+</div><!-- row -->
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="false"/>

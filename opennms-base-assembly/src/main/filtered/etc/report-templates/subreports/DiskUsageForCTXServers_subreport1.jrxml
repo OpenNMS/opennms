@@ -3,9 +3,13 @@
 	<property name="ireport.zoom" value="1.0"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
-	<template><![CDATA["${install.dir}/etc/report-templates/assets/styles/defaultStyles.jrtx"]]></template>
+	<template><![CDATA[$P{ONMS_REPORT_DIR} + "/assets/styles/defaultStyles.jrtx"]]></template>
 	<style name="Table_Header" hAlign="Center" vAlign="Middle" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
 	<style name="Table_Body" hAlign="Center" vAlign="Middle" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
+  <parameter name="ONMS_REPORT_DIR" class="java.lang.String" isForPrompting="false">
+    <parameterDescription><![CDATA[The directory where all reports can be found]]></parameterDescription>
+    <defaultValueExpression><![CDATA["${install.dir}/etc/report-templates"]]></defaultValueExpression>
+  </parameter>
 	<parameter name="rrdDir" class="java.lang.String" isForPrompting="false"/>
 	<parameter name="nodeid" class="java.lang.Integer" isForPrompting="false"/>
 	<parameter name="foreignsource" class="java.lang.String" isForPrompting="false"/>
@@ -127,13 +131,13 @@
 		</band>
 	</summary>
 	<noData>
-		<band height="50">
+		<band height="47">
 			<staticText>
-				<reportElement x="149" y="22" width="226" height="20"/>
+				<reportElement x="149" y="13" width="226" height="20"/>
 				<textElement textAlignment="Center">
 					<font size="14"/>
 				</textElement>
-				<text><![CDATA[No Data For this Disk]]></text>
+				<text><![CDATA[No data for this disk]]></text>
 			</staticText>
 		</band>
 	</noData>

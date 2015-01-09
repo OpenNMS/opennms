@@ -30,341 +30,341 @@
 <ui:UiBinder 
 	xmlns:ui="urn:ui:com.google.gwt.uibinder"
 	xmlns:g="urn:import:com.google.gwt.user.client.ui" 
+	xmlns:b="urn:import:org.gwtbootstrap3.client.ui"
+	xmlns:b.html="urn:import:org.gwtbootstrap3.client.ui.html"
 	xmlns:onms_fs='urn:import:org.opennms.gwt.web.ui.asset.client.tools.fieldsets' 
 	xmlns:onms='urn:import:org.opennms.gwt.web.ui.asset.client.tools'>
 	<ui:with field="con"
 		type="org.opennms.gwt.web.ui.asset.client.AssetPageConstants" />
 
-	<ui:style>
-		
-	</ui:style>
-
 	<g:HTMLPanel>
-		<h2>
-			<g:Label ui:field="nodeInfoLabel" text="" />
-		</h2>
+		<b:Heading size="H2" ui:field="nodeInfoLabel"/>
+
 		<p>
 			<g:Anchor ui:field="nodeInfoLink"></g:Anchor>
 		</p>
-		<g:VerticalPanel ui:field="mainPanel" styleName="mainPanel">
-			<g:Label ui:field="lInfoTop">Hallo Welt</g:Label>
 
-			<onms:DisclosurePanelCookie cookieName="snmp"
-				ui:field="snmpDiscPanel">
-				<g:HTMLPanel styleName="disclosureHeaderPanel">
-					<h3>
-						<g:Label ui:field="snmpHeader" text="{con.snmpHeader}" />
-					</h3>
-				</g:HTMLPanel>
-				<g:HTMLPanel styleName="disclosureBodyPanel">
-					<onms_fs:FieldSetTextDisplay ui:field="sSystemId"
-						name="{con.systemId}" value="" helpText="{con.systemIdHelp}" />
-					<onms_fs:FieldSetTextDisplay ui:field="sSystemName"
-						name="{con.systemName}" value="" helpText="{con.systemNameHelp}" />
-						<onms_fs:FieldSetTextDisplay ui:field="sSystemLocation"
-						name="{con.systemLocation}" value="" helpText="{con.systemLocationHelp}" />
-					<onms_fs:FieldSetTextDisplay ui:field="sSystemContact"
-						name="{con.systemContact}" value="" helpText="{con.systemContactHelp}" />
-					<onms_fs:FieldSetTextDisplay ui:field="sSystemDescription"
-						name="{con.systemDescription}" value="" helpText="{con.systemDescriptionHelp}" />
-				</g:HTMLPanel>
-			</onms:DisclosurePanelCookie>
+		<g:FlowPanel ui:field="mainPanel">
+			<b:Row>
+				<b:Column size="MD_12">
+					<b:Heading size="H4" ui:field="lInfoTop"/>
+				</b:Column>
+			</b:Row>
 
-			<onms:DisclosurePanelCookie cookieName="confCat"
-				ui:field="confCatDiscPanel">
+			<b:Row>
+				<b:Column size="MD_6">
+					<b:Panel type="DEFAULT" ui:field="snmpDiscPanel">
+						<b:PanelHeader>
+						  <b:Heading size="H3" ui:field="snmpHeader" text="{con.snmpHeader}"/>
+						</b:PanelHeader>
+						<b:PanelBody>
+							<onms_fs:FieldSetTextDisplay ui:field="sSystemId"
+								name="{con.systemId}" value="" helpText="{con.systemIdHelp}" />
+							<onms_fs:FieldSetTextDisplay ui:field="sSystemName"
+								name="{con.systemName}" value="" helpText="{con.systemNameHelp}" />
+								<onms_fs:FieldSetTextDisplay ui:field="sSystemLocation"
+								name="{con.systemLocation}" value="" helpText="{con.systemLocationHelp}" />
+							<onms_fs:FieldSetTextDisplay ui:field="sSystemContact"
+								name="{con.systemContact}" value="" helpText="{con.systemContactHelp}" />
+							<onms_fs:FieldSetTextDisplay ui:field="sSystemDescription"
+								name="{con.systemDescription}" value="" helpText="{con.systemDescriptionHelp}" />
+						</b:PanelBody>
+					</b:Panel>
+				</b:Column>
+			</b:Row>
 
-				<g:HTMLPanel styleName="disclosureBodyPanel">
-					<h3>
-						<g:Label ui:field="confCatHeader" text="{con.configurationCatHeader}" />
-					</h3>
-				</g:HTMLPanel>
+			<b:Row>
+				<b:Column size="MD_6">
+					<b:Panel type="DEFAULT" ui:field="identDiscPanel">
+						<b:PanelHeader>
+							<b:Heading size="H3" ui:field="identHeader" text="{con.identificationHeader}" />
+						</b:PanelHeader>
+						<b:PanelBody>
+							<onms_fs:FieldSetSuggestBox ui:field="sDescription"
+								name="{con.description}" value="" helpText="{con.descriptionHelp}"
+								maxLength="0" />
+							<onms_fs:FieldSetSuggestBox ui:field="sAssetCategory"
+								name="{con.category}" value="" helpText="{con.categoryHelp}"
+								maxLength="0" />
+							<onms_fs:FieldSetSuggestBox ui:field="sManufacturer"
+								name="{con.manufacturer}" value="" helpText="{con.manufacturerHelp}"
+								maxLength="0" />
+							<onms_fs:FieldSetSuggestBox ui:field="sModelNumber"
+								name="{con.modelNumber}" value="" helpText="{con.modelNumberHelp}"
+								maxLength="0" />
+							<onms_fs:FieldSetTextBox ui:field="sSerialNumber"
+								name="{con.serialNumber}" value="" helpText="{con.serialNumberHelp}"
+								maxLength="0" />
+							<onms_fs:FieldSetTextBox ui:field="sAssetNumber"
+								name="{con.assetNumber}" value="" helpText="{con.assetNumberHelp}"
+								maxLength="0" />
+							<onms_fs:FieldSetDateBox ui:field="sDateInstalled"
+								name="{con.dateInstalled}" value="" helpText="{con.dateInstalledHelp}"
+								maxLength="64" />
+							<onms_fs:FieldSetSuggestBox ui:field="sOperatingSystem"
+								name="{con.operatingSystem}" value="" helpText="{con.operatingSystemHelp}"
+								maxLength="0" />
+						</b:PanelBody>
+					</b:Panel>
+				</b:Column>
+				<b:Column size="MD_6">
+					<b:Panel type="DEFAULT" ui:field="confCatDiscPanel">
+						<b:PanelHeader>
+							<b:Heading size="H3" ui:field="confCatHeader" text="{con.configurationCatHeader}" />
+						</b:PanelHeader>
+						<b:PanelBody>
+							<onms_fs:FieldSetSuggestBox ui:field="sDisplayCat"
+								name="{con.displayCat}" value="" helpText="{con.displayCatHelp}"
+								maxLength="0" />
+							<onms_fs:FieldSetSuggestBox ui:field="sNotificationCat"
+								name="{con.notificationCat}" value="" helpText="{con.notificationCatHelp}"
+								maxLength="0" />
+							<onms_fs:FieldSetSuggestBox ui:field="sPollerCat"
+								name="{con.pollerCat}" value="" helpText="{con.pollerCatHelp}"
+								maxLength="0" />
+							<onms_fs:FieldSetSuggestBox ui:field="sThresholdCat"
+								name="{con.thresholdCat}" value="" helpText="{con.thresholdCatHelp}"
+								maxLength="0" />
+						</b:PanelBody>
+					</b:Panel>
+				</b:Column>
+			</b:Row>
 
-				<g:HTMLPanel styleName="disclosureBodyPanel">
-					<onms_fs:FieldSetSuggestBox ui:field="sDisplayCat"
-						name="{con.displayCat}" value="" helpText="{con.displayCatHelp}"
-						maxLength="64" />
-					<onms_fs:FieldSetSuggestBox ui:field="sNotificationCat"
-						name="{con.notificationCat}" value="" helpText="{con.notificationCatHelp}"
-						maxLength="64" />
-					<onms_fs:FieldSetSuggestBox ui:field="sPollerCat"
-						name="{con.pollerCat}" value="" helpText="{con.pollerCatHelp}"
-						maxLength="64" />
-					<onms_fs:FieldSetSuggestBox ui:field="sThresholdCat"
-						name="{con.thresholdCat}" value="" helpText="{con.thresholdCatHelp}"
-						maxLength="64" />
-				</g:HTMLPanel>
-			</onms:DisclosurePanelCookie>
+			<b:Row>
+				<b:Column size="MD_6">
+					<b:Panel type="DEFAULT" ui:field="locationDiscPanel">
+						<b:PanelHeader>
+							<b:Heading size="H3" ui:field="locationHeader" text="{con.locationHeader}" />
+						</b:PanelHeader>
+						<b:PanelBody>
+							<onms_fs:FieldSetSuggestBox ui:field="sState"
+								name="{con.state}" value="" helpText="{con.stateHelp}"
+								maxLength="0" />
+							<onms_fs:FieldSetSuggestBox ui:field="sRegion"
+								name="{con.region}" value="" helpText="{con.regionHelp}"
+								maxLength="0" />
+							<onms_fs:FieldSetSuggestBox ui:field="sAddress1"
+								name="{con.address1}" value="" helpText="{con.address1Help}"
+								maxLength="0" />
+							<onms_fs:FieldSetSuggestBox ui:field="sAddress2"
+								name="{con.address2}" value="" helpText="{con.address2Help}"
+								maxLength="0" />
+							<onms_fs:FieldSetSuggestBox ui:field="sCity"
+								name="{con.city}" value="" helpText="{con.cityHelp}" maxLength="0" />
+							<onms_fs:FieldSetSuggestBox ui:field="sZip"
+								name="{con.zip}" value="" helpText="{con.zipHelp}" maxLength="0" />
+							<onms_fs:FieldSetSuggestBox ui:field="sCountry"
+								name="{con.country}" value="" helpText="{con.countryHelp}" maxLength="0" />
+							<onms_fs:FieldSetTextBox ui:field="sLongitude"
+								name="{con.longitude}" value="" helpText="{con.longitudeHelp}"
+								maxLength="0" />
+							<onms_fs:FieldSetTextBox ui:field="sLatitude"
+								name="{con.latitude}" value="" helpText="{con.latitudeHelp}"
+								maxLength="0" />
+							<!-- <br /> -->
+							<onms_fs:FieldSetSuggestBox ui:field="sDivision"
+								name="{con.division}" value="" helpText="{con.divisionHelp}"
+								maxLength="0" />
+							<onms_fs:FieldSetSuggestBox ui:field="sDepartment"
+								name="{con.department}" value="" helpText="{con.departmentHelp}"
+								maxLength="0" />
+							<onms_fs:FieldSetSuggestBox ui:field="sBuilding"
+								name="{con.building}" value="" helpText="{con.buildingHelp}"
+								maxLength="0" />
+							<onms_fs:FieldSetSuggestBox ui:field="sFloor"
+								name="{con.floor}" value="" helpText="{con.floorHelp}"
+								maxLength="0" />
+							<onms_fs:FieldSetSuggestBox ui:field="sRoom"
+								name="{con.room}" value="" helpText="{con.roomHelp}" maxLength="0" />
+							<!-- <br /> -->
+							<onms_fs:FieldSetSuggestBox ui:field="sRack"
+								name="{con.rack}" value="" helpText="{con.rackHelp}" maxLength="0" />
+							<onms_fs:FieldSetTextBox ui:field="sRackUnitHight"
+								name="{con.rackUnitHeight}" value="" helpText="{con.rackUnitHeightHelp}"
+								maxLength="2" />
+							<onms_fs:FieldSetTextBox ui:field="sSlot"
+								name="{con.slot}" value="" helpText="{con.slotHelp}" maxLength="0" />
+							<onms_fs:FieldSetTextBox ui:field="sPort"
+								name="{con.port}" value="" helpText="{con.portHelp}" maxLength="0" />
+							<onms_fs:FieldSetSuggestBox ui:field="sCircuitId"
+								name="{con.circuitId}" value="" helpText="{con.circuitIdHelp}"
+								maxLength="0" />
+							<onms_fs:FieldSetSuggestBox ui:field="sAdmin"
+								name="{con.admin}" value="" helpText="{con.adminHelp}"
+								maxLength="0" />
+						</b:PanelBody>
+					</b:Panel>
+				</b:Column>
+				<b:Column size="MD_6">
+					<b:Panel type="DEFAULT" ui:field="hardwareDiscPanel">
+						<b:PanelHeader>
+							<b:Heading size="H3" ui:field="hardwareHeader" text="{con.hardwareHeader}" />
+						</b:PanelHeader>
+						<b:PanelBody>
+							<onms_fs:FieldSetSuggestBox ui:field="sCpu"
+								name="{con.cpu}" value="" helpText="{con.cpuHelp}" maxLength="0" />
+							<onms_fs:FieldSetSuggestBox ui:field="sRam"
+								name="{con.ram}" value="" helpText="{con.ramHelp}" maxLength="0" />
+							<onms_fs:FieldSetSuggestBox ui:field="sAdditionalhardware"
+								name="{con.additionalhardware}" value=""
+								helpText="{con.additionalhardwareHelp}" maxLength="0" />
+							<onms_fs:FieldSetSuggestBox ui:field="sNumpowersupplies"
+								name="{con.numpowersupplies}" value=""
+								helpText="{con.numpowersuppliesHelp}" maxLength="1" />
+							<onms_fs:FieldSetSuggestBox ui:field="sInputpower"
+								name="{con.inputpower}" value="" helpText="{con.inputpowerHelp}"
+								maxLength="6" />
+							<onms_fs:FieldSetSuggestBox ui:field="sStoragectrl"
+								name="{con.storagectrl}" value="" helpText="{con.storagectrlHelp}"
+								maxLength="0" />
+							<onms_fs:FieldSetSuggestBox ui:field="sHdd1"
+								name="{con.hdd} 1" value="" helpText="{con.hddHelp}" maxLength="0" />
+							<onms_fs:FieldSetSuggestBox ui:field="sHdd2"
+								name="{con.hdd} 2" value="" helpText="{con.hddHelp}" maxLength="0" />
+							<onms_fs:FieldSetSuggestBox ui:field="sHdd3"
+								name="{con.hdd} 3" value="" helpText="{con.hddHelp}" maxLength="0" />
+							<onms_fs:FieldSetSuggestBox ui:field="sHdd4"
+								name="{con.hdd} 4" value="" helpText="{con.hddHelp}" maxLength="0" />
+							<onms_fs:FieldSetSuggestBox ui:field="sHdd5"
+								name="{con.hdd} 5" value="" helpText="{con.hddHelp}" maxLength="0" />
+							<onms_fs:FieldSetSuggestBox ui:field="sHdd6"
+								name="{con.hdd} 6" value="" helpText="{con.hddHelp}" maxLength="0" />
+						</b:PanelBody>
+					</b:Panel>
+					<b:Panel type="DEFAULT" ui:field="authDiscPanel">
+						<b:PanelHeader>
+							<b:Heading size="H3" ui:field="authHeader" text="{con.authenticationHeader}" />
+						</b:PanelHeader>
+						<b:PanelBody>
+							<onms_fs:FieldSetTextBox ui:field="sUserName"
+								name="{con.username}" value="" helpText="{con.usernameHelp}"
+								maxLength="0" />
+							<onms_fs:FieldSetPasswordBox ui:field="sPassword"
+								name="{con.password}" value="" helpText="{con.passwordHelp}"
+								maxLength="0" />
+							<onms_fs:FieldSetPasswordBox ui:field="sEnablePassword"
+								name="{con.enablePassword}" value="" helpText="{con.enablePasswordHelp}"
+								maxLength="0" />
+							<onms_fs:FieldSetListBox ui:field="sConnection"
+								name="{con.connection}" value="" helpText="{con.connectionHelp}" />
+							<onms_fs:FieldSetListBox ui:field="sAutoEnable"
+								name="{con.autoEnable}" value="" helpText="{con.autoEnableHelp}" />
+							<onms_fs:FieldSetSuggestBox ui:field="sSnmpcommunity"
+								name="{con.snmpcommunity}" value="" helpText="{con.snmpcommunityHelp}"
+								maxLength="32" />
+						</b:PanelBody>
+					</b:Panel>
+				</b:Column>
+			</b:Row>
 
-			<onms:DisclosurePanelCookie cookieName="ident"
-				ui:field="identDiscPanel">
-				<g:HTMLPanel styleName="disclosureBodyPanel">
-					<h3>
-						<g:Label ui:field="identHeader" text="{con.identificationHeader}" />
-					</h3>
-				</g:HTMLPanel>
-				<g:HTMLPanel styleName="disclosureBodyPanel">
-					<onms_fs:FieldSetSuggestBox ui:field="sDescription"
-						name="{con.description}" value="" helpText="{con.descriptionHelp}"
-						maxLength="128" />
-					<onms_fs:FieldSetSuggestBox ui:field="sAssetCategory"
-						name="{con.category}" value="" helpText="{con.categoryHelp}"
-						maxLength="64" />
-					<onms_fs:FieldSetSuggestBox ui:field="sManufacturer"
-						name="{con.manufacturer}" value="" helpText="{con.manufacturerHelp}"
-						maxLength="64" />
-					<onms_fs:FieldSetSuggestBox ui:field="sModelNumber"
-						name="{con.modelNumber}" value="" helpText="{con.modelNumberHelp}"
-						maxLength="64" />
-					<onms_fs:FieldSetTextBox ui:field="sSerialNumber"
-						name="{con.serialNumber}" value="" helpText="{con.serialNumberHelp}"
-						maxLength="64" />
-					<onms_fs:FieldSetTextBox ui:field="sAssetNumber"
-						name="{con.assetNumber}" value="" helpText="{con.assetNumberHelp}"
-						maxLength="64" />
-					<onms_fs:FieldSetDateBox ui:field="sDateInstalled"
-						name="{con.dateInstalled}" value="" helpText="{con.dateInstalledHelp}"
-						maxLength="64" />
-					<onms_fs:FieldSetSuggestBox ui:field="sOperatingSystem"
-						name="{con.operatingSystem}" value="" helpText="{con.operatingSystemHelp}"
-						maxLength="64" />
-				</g:HTMLPanel>
-			</onms:DisclosurePanelCookie>
+			<b:Row>
+				<b:Column size="MD_6">
+					<b:Panel type="DEFAULT" ui:field="vendorDiscPanel">
+						<b:PanelHeader>
+							<b:Heading size="H3" ui:field="vendorHeader" text="{con.vendorHeader}" />
+						</b:PanelHeader>
+						<b:PanelBody>
+							<onms_fs:FieldSetSuggestBox ui:field="sVendorName"
+								name="{con.vendorName}" value="" helpText="{con.vendorNameHelp}"
+								maxLength="0" />
+							<onms_fs:FieldSetSuggestBox ui:field="sPhone"
+								name="{con.phone}" value="" helpText="{con.phoneHelp}"
+								maxLength="0" />
+							<onms_fs:FieldSetSuggestBox ui:field="sFax"
+								name="{con.fax}" value="" helpText="{con.faxHelp}" maxLength="0" />
+							<onms_fs:FieldSetSuggestBox ui:field="sLease"
+								name="{con.lease}" value="" helpText="{con.leaseHelp}"
+								maxLength="0" />
+							<onms_fs:FieldSetDateBox ui:field="sLeaseExpires"
+								name="{con.leaseExpires}" value="" helpText="{con.leaseExpiresHelp}"
+								maxLength="64" />
+							<onms_fs:FieldSetTextBox ui:field="sVendorAsset"
+								name="{con.vendorAsset}" value="" helpText="{con.vendorAssetHelp}"
+								maxLength="0" />
+							<onms_fs:FieldSetSuggestBox ui:field="sMaintContract"
+								name="{con.maintContract}" value="" helpText="{con.maintContractHelp}"
+								maxLength="0" />
+							<onms_fs:FieldSetDateBox ui:field="sContractExpires"
+								name="{con.contractExpires}" value="" helpText="{con.contractExpiresHelp}"
+								maxLength="64" />
+							<onms_fs:FieldSetSuggestBox ui:field="sMaintPhone"
+								name="{con.maintPhone}" value="" helpText="{con.maintPhoneHelp}"
+								maxLength="0" />
+						</b:PanelBody>
+					</b:Panel>
+				</b:Column>
+				<b:Column size="MD_6">
+					<b:Panel type="DEFAULT" ui:field="vmwareDiscPanel">
+						<b:PanelHeader>
+							<b:Heading size="H3" ui:field="vmwareHeader" text="{con.vmwareHeader}" />
+						</b:PanelHeader>
+						<b:PanelBody>
+		                    <onms_fs:FieldSetSuggestBox ui:field="sVmwareManagedObjectId"
+		                                              name="{con.vmwareManagedObjectId}" value="" helpText="{con.vmwareManagedObjectIdHelp}"
+		                                              maxLength="0" />
+		                    <onms_fs:FieldSetSuggestBox ui:field="sVmwareManagedEntityType"
+		                                              name="{con.vmwareManagedEntityType}" value="" helpText="{con.vmwareManagedEntityType}"
+		                                              maxLength="0" />
+		                    <onms_fs:FieldSetSuggestBox ui:field="sVmwareManagementServer"
+		                                              name="{con.vmwareManagementServer}" value="" helpText="{con.vmwareManagementServerHelp}"
+		                                              maxLength="0" />
+		                    <onms_fs:FieldSetSuggestBox ui:field="sVmwareTopologyInfo"
+		                                                name="{con.vmwareTopologyInfo}" value="" helpText="{con.vmwareTopologyInfoHelp}"
+		                                                maxLength="0" />
+		                    <onms_fs:FieldSetSuggestBox ui:field="sVmwareState"
+		                                                name="{con.vmwareState}" value="" helpText="{con.vmwareStateHelp}"
+		                                                maxLength="0" />
+						</b:PanelBody>
+					</b:Panel>
+				</b:Column>
+			</b:Row>
 
-			<onms:DisclosurePanelCookie cookieName="location"
-				ui:field="locationDiscPanel">
+			<b:Row>
+				<b:Column size="MD_6">
+					<b:Panel type="DEFAULT" ui:field="commentsDiscPanel">
+						<b:PanelHeader>
+							<b:Heading size="H3" ui:field="commentsHeader" text="{con.commentsHeader}" />
+						</b:PanelHeader>
+						<b:PanelBody>
+							<onms_fs:FieldSetTextArea ui:field="sComment"
+								name="{con.comment}" value="" helpText="{con.commentHelp}"
+								maxLength="-1" />
+						</b:PanelBody>
+					</b:Panel>
+				</b:Column>
+			</b:Row>
 
-				<g:HTMLPanel styleName="disclosureBodyPanel">
-					<h3>
-						<g:Label ui:field="locationHeader" text="{con.locationHeader}" />
-					</h3>
-				</g:HTMLPanel>
+			<b:Row>
+				<b:Column size="MD_6">
+					<b:Row styleName="text-center">
+						<b:Column size="MD_4">
+							<b:Button type="DEFAULT" size="LARGE" ui:field="saveButton" text="{con.saveButton}"/>
+						</b:Column>
+						<b:Column size="MD_4">
+							<b:Button type="DEFAULT" size="LARGE" ui:field="resetButton" text="{con.resetButton}"/>
+						</b:Column>
+						<b:Column size="MD_4">
+							<g:Label ui:field="lastModified" text="{con.lastModified}" />
+						</b:Column>
 
-				<g:HTMLPanel styleName="disclosureBodyPanel">
-					<onms_fs:FieldSetSuggestBox ui:field="sState"
-						name="{con.state}" value="" helpText="{con.stateHelp}"
-						maxLength="64" />
-					<onms_fs:FieldSetSuggestBox ui:field="sRegion"
-						name="{con.region}" value="" helpText="{con.regionHelp}"
-						maxLength="64" />
-					<onms_fs:FieldSetSuggestBox ui:field="sAddress1"
-						name="{con.address1}" value="" helpText="{con.address1Help}"
-						maxLength="256" />
-					<onms_fs:FieldSetSuggestBox ui:field="sAddress2"
-						name="{con.address2}" value="" helpText="{con.address2Help}"
-						maxLength="256" />
-					<onms_fs:FieldSetSuggestBox ui:field="sCity"
-						name="{con.city}" value="" helpText="{con.cityHelp}" maxLength="64" />
-					<onms_fs:FieldSetSuggestBox ui:field="sZip"
-						name="{con.zip}" value="" helpText="{con.zipHelp}" maxLength="64" />
-					<onms_fs:FieldSetSuggestBox ui:field="sCountry"
-						name="{con.country}" value="" helpText="{con.countryHelp}" maxLength="32" />
-					<onms_fs:FieldSetTextBox ui:field="sLongitude"
-						name="{con.longitude}" value="" helpText="{con.longitudeHelp}"
-						maxLength="0" />
-					<onms_fs:FieldSetTextBox ui:field="sLatitude"
-						name="{con.latitude}" value="" helpText="{con.latitudeHelp}"
-						maxLength="0" />
-					<br />
-					<onms_fs:FieldSetSuggestBox ui:field="sDivision"
-						name="{con.division}" value="" helpText="{con.divisionHelp}"
-						maxLength="64" />
-					<onms_fs:FieldSetSuggestBox ui:field="sDepartment"
-						name="{con.department}" value="" helpText="{con.departmentHelp}"
-						maxLength="64" />
-					<onms_fs:FieldSetSuggestBox ui:field="sBuilding"
-						name="{con.building}" value="" helpText="{con.buildingHelp}"
-						maxLength="64" />
-					<onms_fs:FieldSetSuggestBox ui:field="sFloor"
-						name="{con.floor}" value="" helpText="{con.floorHelp}"
-						maxLength="64" />
-					<onms_fs:FieldSetSuggestBox ui:field="sRoom"
-						name="{con.room}" value="" helpText="{con.roomHelp}" maxLength="64" />
-					<br />
-					<onms_fs:FieldSetSuggestBox ui:field="sRack"
-						name="{con.rack}" value="" helpText="{con.rackHelp}" maxLength="64" />
-					<onms_fs:FieldSetTextBox ui:field="sRackUnitHight"
-						name="{con.rackUnitHeight}" value="" helpText="{con.rackUnitHeightHelp}"
-						maxLength="2" />
-					<onms_fs:FieldSetTextBox ui:field="sSlot"
-						name="{con.slot}" value="" helpText="{con.slotHelp}" maxLength="64" />
-					<onms_fs:FieldSetTextBox ui:field="sPort"
-						name="{con.port}" value="" helpText="{con.portHelp}" maxLength="64" />
-					<onms_fs:FieldSetSuggestBox ui:field="sCircuitId"
-						name="{con.circuitId}" value="" helpText="{con.circuitIdHelp}"
-						maxLength="64" />
-					<onms_fs:FieldSetSuggestBox ui:field="sAdmin"
-						name="{con.admin}" value="" helpText="{con.adminHelp}"
-						maxLength="32" />
-				</g:HTMLPanel>
-			</onms:DisclosurePanelCookie>
+						<b:Modal title="Error" closable="true" fade="true" dataBackdrop="STATIC" dataKeyboard="true" ui:field="errorModal">
+							<b:ModalBody>
+								<g:HTML ui:field="errorModalHtml"></g:HTML>
+							</b:ModalBody>
+							<b:ModalFooter>
+								<b:Button type="PRIMARY" dataDismiss="MODAL">OK</b:Button>
+							</b:ModalFooter>
+						</b:Modal>
+					</b:Row>
+				</b:Column>
+			</b:Row>
 
-			<onms:DisclosurePanelCookie cookieName="vendor"
-				ui:field="vendorDiscPanel">
-				<g:HTMLPanel styleName="disclosureBodyPanel">
-					<h3>
-						<g:Label ui:field="vendorHeader" text="{con.vendorHeader}" />
-					</h3>
-				</g:HTMLPanel>
-				<g:HTMLPanel styleName="disclosureBodyPanel">
-					<onms_fs:FieldSetSuggestBox ui:field="sVendorName"
-						name="{con.vendorName}" value="" helpText="{con.vendorNameHelp}"
-						maxLength="64" />
-					<onms_fs:FieldSetSuggestBox ui:field="sPhone"
-						name="{con.phone}" value="" helpText="{con.phoneHelp}"
-						maxLength="64" />
-					<onms_fs:FieldSetSuggestBox ui:field="sFax"
-						name="{con.fax}" value="" helpText="{con.faxHelp}" maxLength="64" />
-					<onms_fs:FieldSetSuggestBox ui:field="sLease"
-						name="{con.lease}" value="" helpText="{con.leaseHelp}"
-						maxLength="64" />
-					<onms_fs:FieldSetDateBox ui:field="sLeaseExpires"
-						name="{con.leaseExpires}" value="" helpText="{con.leaseExpiresHelp}"
-						maxLength="64" />
-					<onms_fs:FieldSetTextBox ui:field="sVendorAsset"
-						name="{con.vendorAsset}" value="" helpText="{con.vendorAssetHelp}"
-						maxLength="64" />
-					<onms_fs:FieldSetSuggestBox ui:field="sMaintContract"
-						name="{con.maintContract}" value="" helpText="{con.maintContractHelp}"
-						maxLength="64" />
-					<onms_fs:FieldSetDateBox ui:field="sContractExpires"
-						name="{con.contractExpires}" value="" helpText="{con.contractExpiresHelp}"
-						maxLength="64" />
-					<onms_fs:FieldSetSuggestBox ui:field="sMaintPhone"
-						name="{con.maintPhone}" value="" helpText="{con.maintPhoneHelp}"
-						maxLength="64" />
-				</g:HTMLPanel>
-			</onms:DisclosurePanelCookie>
-
-
-			<onms:DisclosurePanelCookie cookieName="auth"
-				ui:field="authDiscPanel">
-				<g:HTMLPanel styleName="disclosureBodyPanel">
-					<h3>
-						<g:Label ui:field="authHeader" text="{con.authenticationHeader}" />
-					</h3>
-				</g:HTMLPanel>
-				<g:HTMLPanel styleName="disclosureBodyPanel">
-					<onms_fs:FieldSetTextBox ui:field="sUserName"
-						name="{con.username}" value="" helpText="{con.usernameHelp}"
-						maxLength="32" />
-					<onms_fs:FieldSetPasswordBox ui:field="sPassword"
-						name="{con.password}" value="" helpText="{con.passwordHelp}"
-						maxLength="32" />
-					<onms_fs:FieldSetPasswordBox ui:field="sEnablePassword"
-						name="{con.enablePassword}" value="" helpText="{con.enablePasswordHelp}"
-						maxLength="32" />
-					<onms_fs:FieldSetListBox ui:field="sConnection"
-						name="{con.connection}" value="" helpText="{con.connectionHelp}" />
-					<onms_fs:FieldSetListBox ui:field="sAutoEnable"
-						name="{con.autoEnable}" value="" helpText="{con.autoEnableHelp}" />
-					<onms_fs:FieldSetSuggestBox ui:field="sSnmpcommunity"
-						name="{con.snmpcommunity}" value="" helpText="{con.snmpcommunityHelp}"
-						maxLength="32" />
-				</g:HTMLPanel>
-			</onms:DisclosurePanelCookie>
-
-			<onms:DisclosurePanelCookie cookieName="hardware"
-				ui:field="hardwareDiscPanel">
-
-				<g:HTMLPanel styleName="disclosureBodyPanel">
-					<h3>
-						<g:Label ui:field="hardwareHeader" text="{con.hardwareHeader}" />
-					</h3>
-				</g:HTMLPanel>
-
-				<g:HTMLPanel styleName="disclosureBodyPanel">
-					<onms_fs:FieldSetSuggestBox ui:field="sCpu"
-						name="{con.cpu}" value="" helpText="{con.cpuHelp}" maxLength="64" />
-					<onms_fs:FieldSetSuggestBox ui:field="sRam"
-						name="{con.ram}" value="" helpText="{con.ramHelp}" maxLength="10" />
-					<onms_fs:FieldSetSuggestBox ui:field="sAdditionalhardware"
-						name="{con.additionalhardware}" value=""
-						helpText="{con.additionalhardwareHelp}" maxLength="64" />
-					<onms_fs:FieldSetSuggestBox ui:field="sNumpowersupplies"
-						name="{con.numpowersupplies}" value=""
-						helpText="{con.numpowersuppliesHelp}" maxLength="1" />
-					<onms_fs:FieldSetSuggestBox ui:field="sInputpower"
-						name="{con.inputpower}" value="" helpText="{con.inputpowerHelp}"
-						maxLength="11" />
-					<onms_fs:FieldSetSuggestBox ui:field="sStoragectrl"
-						name="{con.storagectrl}" value="" helpText="{con.storagectrlHelp}"
-						maxLength="64" />
-					<onms_fs:FieldSetSuggestBox ui:field="sHdd1"
-						name="{con.hdd} 1" value="" helpText="{con.hddHelp}" maxLength="64" />
-					<onms_fs:FieldSetSuggestBox ui:field="sHdd2"
-						name="{con.hdd} 2" value="" helpText="{con.hddHelp}" maxLength="64" />
-					<onms_fs:FieldSetSuggestBox ui:field="sHdd3"
-						name="{con.hdd} 3" value="" helpText="{con.hddHelp}" maxLength="64" />
-					<onms_fs:FieldSetSuggestBox ui:field="sHdd4"
-						name="{con.hdd} 4" value="" helpText="{con.hddHelp}" maxLength="64" />
-					<onms_fs:FieldSetSuggestBox ui:field="sHdd5"
-						name="{con.hdd} 5" value="" helpText="{con.hddHelp}" maxLength="64" />
-					<onms_fs:FieldSetSuggestBox ui:field="sHdd6"
-						name="{con.hdd} 6" value="" helpText="{con.hddHelp}" maxLength="64" />
-				</g:HTMLPanel>
-			</onms:DisclosurePanelCookie>
-
-            <onms:DisclosurePanelCookie cookieName="VMWare"
-                                        ui:field="vmwareDiscPanel">
-
-                <g:HTMLPanel styleName="disclosureBodyPanel">
-                    <h3>
-                        <g:Label ui:field="vmwareHeader" text="{con.vmwareHeader}" />
-                    </h3>
-                </g:HTMLPanel>
-                <g:HTMLPanel styleName="disclosureBodyPanel">
-                    <onms_fs:FieldSetSuggestBox ui:field="sVmwareManagedObjectId"
-                                              name="{con.vmwareManagedObjectId}" value="" helpText="{con.vmwareManagedObjectIdHelp}"
-                                              maxLength="70" />
-                    <onms_fs:FieldSetSuggestBox ui:field="sVmwareManagedEntityType"
-                                              name="{con.vmwareManagedEntityType}" value="" helpText="{con.vmwareManagedEntityType}"
-                                              maxLength="70" />
-                    <onms_fs:FieldSetSuggestBox ui:field="sVmwareManagementServer"
-                                              name="{con.vmwareManagementServer}" value="" helpText="{con.vmwareManagementServerHelp}"
-                                              maxLength="70" />
-                    <onms_fs:FieldSetSuggestBox ui:field="sVmwareTopologyInfo"
-                                                name="{con.vmwareTopologyInfo}" value="" helpText="{con.vmwareTopologyInfoHelp}"
-                                                maxLength="1023" />
-                    <onms_fs:FieldSetSuggestBox ui:field="sVmwareState"
-                                                name="{con.vmwareState}" value="" helpText="{con.vmwareStateHelp}"
-                                                maxLength="255" />
-                </g:HTMLPanel>
-            </onms:DisclosurePanelCookie>
-
-			<onms:DisclosurePanelCookie cookieName="comments"
-				ui:field="commentsDiscPanel">
-
-				<g:HTMLPanel styleName="disclosureBodyPanel">
-					<h3>
-						<g:Label ui:field="commentsHeader" text="{con.commentsHeader}" />
-					</h3>
-				</g:HTMLPanel>
-				<g:HTMLPanel styleName="disclosureBodyPanel">
-					<onms_fs:FieldSetTextArea ui:field="sComment"
-						name="{con.comment}" value="" helpText="{con.commentHelp}"
-						maxLength="-1" />
-				</g:HTMLPanel>
-			</onms:DisclosurePanelCookie>
-
-			<g:HorizontalPanel>
-				<g:Button ui:field="saveButton" text="{con.saveButton}" />
-				<g:Button ui:field="resetButton" text="{con.resetButton}" />
-				<g:Label ui:field="lastModified" text="{con.lastModified}" />
-			</g:HorizontalPanel>
-
-			<g:Label ui:field="lInfoBottom">Hallo Welt</g:Label>
-			
-			<g:Label styleName="legendHeadline" text="{con.legendHeadline}" />
-			<g:HTMLPanel styleName="legendContent">
-				<g:Label styleName="grey" text="{con.legendGrey}" />
-				<g:Label styleName="green" text="{con.legendGreen}" />
-				<g:Label styleName="yellow" text="{con.legendYellow}" />
-				<g:Label styleName="red" text="{con.legendRed}" />
-			</g:HTMLPanel>
-			
-		</g:VerticalPanel>
+			<b:Row>
+				<b:Column size="MD_12">
+					<b:Heading size="H4" ui:field="lInfoBottom"/>
+				</b:Column>
+			</b:Row>
+		</g:FlowPanel>
 
 	</g:HTMLPanel>
 </ui:UiBinder>
-
- 

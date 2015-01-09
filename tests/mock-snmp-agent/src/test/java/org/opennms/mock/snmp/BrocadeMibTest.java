@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -45,6 +45,7 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 import org.snmp4j.CommunityTarget;
 import org.snmp4j.PDU;
+import org.snmp4j.SNMP4JSettings;
 import org.snmp4j.ScopedPDU;
 import org.snmp4j.Snmp;
 import org.snmp4j.TransportMapping;
@@ -133,7 +134,7 @@ public class BrocadeMibTest  {
     @Before
     public void setUp() throws Exception {
         // Create a global USM that all client calls will use
-        MPv3.setEnterpriseID(5813);
+        SNMP4JSettings.setEnterpriseID(5813);
         m_usm = new USM(SecurityProtocols.getInstance(), new OctetString(MPv3.createLocalEngineID()), 0);
         SecurityModels.getInstance().addSecurityModel(m_usm);
 
@@ -280,7 +281,7 @@ public class BrocadeMibTest  {
         target.setAddress(new UdpAddress(InetAddress.getByName("127.0.0.1"), 1691));
 		target.setVersion(version);
 
-        TransportMapping transport = null;
+        TransportMapping<UdpAddress> transport = null;
         try {
             transport = new DefaultUdpTransportMapping();
             Snmp snmp = new Snmp(transport);
@@ -309,7 +310,7 @@ public class BrocadeMibTest  {
         target.setVersion(SnmpConstants.version3);
         target.setTimeout(5000);
         
-        TransportMapping transport = null;
+        TransportMapping<UdpAddress> transport = null;
         try {
             USM usm = new USM(SecurityProtocols.getInstance(), new OctetString(MPv3.createLocalEngineID()), 0);
             SecurityModels.getInstance().addSecurityModel(usm);

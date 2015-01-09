@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2005-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -39,13 +39,13 @@ import java.util.List;
 import java.util.Map;
 
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.capsd.plugins.IcmpPlugin;
 import org.opennms.netmgt.config.OpennmsServerConfigFactory;
 import org.opennms.netmgt.config.PollerConfig;
+import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.events.api.EventIpcManager;
+import org.opennms.netmgt.events.api.EventListener;
 import org.opennms.netmgt.model.events.EventBuilder;
-import org.opennms.netmgt.model.events.EventIpcManager;
-import org.opennms.netmgt.model.events.EventListener;
 import org.opennms.netmgt.poller.pollables.PendingPollEvent;
 import org.opennms.netmgt.poller.pollables.PollContext;
 import org.opennms.netmgt.poller.pollables.PollEvent;
@@ -92,7 +92,7 @@ public class DefaultPollContext implements PollContext, EventListener {
     /**
      * <p>getEventManager</p>
      *
-     * @return a {@link org.opennms.netmgt.model.events.EventIpcManager} object.
+     * @return a {@link org.opennms.netmgt.events.api.EventIpcManager} object.
      */
     public EventIpcManager getEventManager() {
         return m_eventManager;
@@ -101,7 +101,7 @@ public class DefaultPollContext implements PollContext, EventListener {
     /**
      * <p>setEventManager</p>
      *
-     * @param eventManager a {@link org.opennms.netmgt.model.events.EventIpcManager} object.
+     * @param eventManager a {@link org.opennms.netmgt.events.api.EventIpcManager} object.
      */
     public void setEventManager(EventIpcManager eventManager) {
         m_eventManager = eventManager;
@@ -258,9 +258,9 @@ public class DefaultPollContext implements PollContext, EventListener {
         
         if (uei.equals(EventConstants.NODE_DOWN_EVENT_UEI)
                 && this.getPollerConfig().isPathOutageEnabled()) {
-            String[] criticalPath = PathOutageFactory.getCriticalPath(nodeId);
+            String[] criticalPath = PathOutageManagerJdbcImpl.getInstance().getCriticalPath(nodeId);
             
-            if (criticalPath[0] != null && !"".equals(criticalPath[0])) {
+            if (criticalPath[0] != null && !"".equals(criticalPath[0].trim())) {
                 if (!this.testCriticalPath(criticalPath)) {
                     LOG.debug("Critical path test failed for node {}", nodeId);
                     
@@ -310,7 +310,7 @@ public class DefaultPollContext implements PollContext, EventListener {
 
                 final int eventId = svcLostEvent.getEventId();
                 if (eventId > 0) {
-                    getQueryManager().openOutage(getPollerConfig().getNextOutageIdSql(), nodeId, ipAddr, svcName, eventId, EventConstants.formatToString(svcLostEvent.getDate()));
+                    getQueryManager().openOutage(getPollerConfig().getNextOutageIdSql(), nodeId, ipAddr, svcName, eventId, svcLostEvent.getDate());
                 } else {
                     LOG.warn("run: Failed to determine an eventId for service outage for: {} with event: {}", svc, svcLostEvent);
                 }
@@ -340,7 +340,7 @@ public class DefaultPollContext implements PollContext, EventListener {
             public void run() {
                 final int eventId = svcRegainEvent.getEventId();
                 if (eventId > 0) {
-                    getQueryManager().resolveOutage(nodeId, ipAddr, svcName, eventId, EventConstants.formatToString(svcRegainEvent.getDate()));
+                    getQueryManager().resolveOutage(nodeId, ipAddr, svcName, eventId, svcRegainEvent.getDate());
                 } else {
                     LOG.warn("run: Failed to determine an eventId for service regained for: {} with event: {}", svc, svcRegainEvent);
                 }

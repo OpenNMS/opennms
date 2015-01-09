@@ -1,0 +1,365 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.12356.100.1.3</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>101</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/fortinet/traps/fortinet-core/fnTrapCpuThreshold</uei>
+        <event-label>FORTINET-CORE-MIB defined trap event: fnTrapCpuThreshold</event-label>
+        <descr>
+&lt;p&gt;Indicates that the CPU usage has exceeded the configured threshold.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	fnSysSerial&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sysName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+	fnTrapCpuThreshold trap received
+	fnSysSerial=%parm[#1]%
+	sysName=%parm[#2]%&lt;/p&gt;
+	</logmsg>
+        <severity>Indeterminate</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.12356.100.1.3</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>102</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/fortinet/traps/fortinet-core/fnTrapMemThreshold</uei>
+        <event-label>FORTINET-CORE-MIB defined trap event: fnTrapMemThreshold</event-label>
+        <descr>
+&lt;p&gt;Indicates memory usage has exceeded the configured threshold.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	fnSysSerial&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sysName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+	fnTrapMemThreshold trap received
+	fnSysSerial=%parm[#1]%
+	sysName=%parm[#2]%&lt;/p&gt;
+	</logmsg>
+        <severity>Indeterminate</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.12356.100.1.3</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>103</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/fortinet/traps/fortinet-core/fnTrapLogDiskThreshold</uei>
+        <event-label>FORTINET-CORE-MIB defined trap event: fnTrapLogDiskThreshold</event-label>
+        <descr>
+&lt;p&gt;Log disk usage has exceeded the configured threshold. Only available
+        on devices with log disks.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	fnSysSerial&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sysName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+	fnTrapLogDiskThreshold trap received
+	fnSysSerial=%parm[#1]%
+	sysName=%parm[#2]%&lt;/p&gt;
+	</logmsg>
+        <severity>Indeterminate</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.12356.100.1.3</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>104</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/fortinet/traps/fortinet-core/fnTrapTempHigh</uei>
+        <event-label>FORTINET-CORE-MIB defined trap event: fnTrapTempHigh</event-label>
+        <descr>
+&lt;p&gt;A temperature sensor on the device has exceeded its threshold.
+        Not all devices have thermal sensors. See manual for specifications.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	fnSysSerial&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sysName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+	fnTrapTempHigh trap received
+	fnSysSerial=%parm[#1]%
+	sysName=%parm[#2]%&lt;/p&gt;
+	</logmsg>
+        <severity>Indeterminate</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.12356.100.1.3</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>105</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/fortinet/traps/fortinet-core/fnTrapVoltageOutOfRange</uei>
+        <event-label>FORTINET-CORE-MIB defined trap event: fnTrapVoltageOutOfRange</event-label>
+        <descr>
+&lt;p&gt;Power levels have fluctuated outside of normal levels. Not all devices
+        have voltage monitoring instrumentation. See manual for specifications.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	fnSysSerial&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sysName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+	fnTrapVoltageOutOfRange trap received
+	fnSysSerial=%parm[#1]%
+	sysName=%parm[#2]%&lt;/p&gt;
+	</logmsg>
+        <severity>Indeterminate</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.12356.100.1.3</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>106</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/fortinet/traps/fortinet-core/fnTrapPowerSupplyFailure</uei>
+        <event-label>FORTINET-CORE-MIB defined trap event: fnTrapPowerSupplyFailure</event-label>
+        <descr>
+&lt;p&gt;Power supply failure detected. Not available on all models. Available
+        on some devices which support redundant power supplies. See manual
+        for specifications.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	fnSysSerial&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sysName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+	fnTrapPowerSupplyFailure trap received
+	fnSysSerial=%parm[#1]%
+	sysName=%parm[#2]%&lt;/p&gt;
+	</logmsg>
+        <severity>Indeterminate</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.12356.100.1.3</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>107</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/fortinet/traps/fortinet-core/fnTrapAmcIfBypassMode</uei>
+        <event-label>FORTINET-CORE-MIB defined trap event: fnTrapAmcIfBypassMode</event-label>
+        <descr>
+&lt;p&gt;An AMC interface entered bypass mode. Available on models with an AMC
+        expansion slot. Used with the ASM-CX4 and ASM-FX2 cards.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	fnSysSerial&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sysName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+	fnTrapAmcIfBypassMode trap received
+	fnSysSerial=%parm[#1]%
+	sysName=%parm[#2]%&lt;/p&gt;
+	</logmsg>
+        <severity>Indeterminate</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.12356.100.1.3</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>108</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/fortinet/traps/fortinet-core/fnTrapFanFailure</uei>
+        <event-label>FORTINET-CORE-MIB defined trap event: fnTrapFanFailure</event-label>
+        <descr>
+&lt;p&gt;A fan failure has been detected. Not all devices have fan sensors.
+        See manual for specifications.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	fnSysSerial&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sysName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+	fnTrapFanFailure trap received
+	fnSysSerial=%parm[#1]%
+	sysName=%parm[#2]%&lt;/p&gt;
+	</logmsg>
+        <severity>Indeterminate</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.12356.100.1.3</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>201</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/fortinet/traps/fortinet-core/fnTrapIpChange</uei>
+        <event-label>FORTINET-CORE-MIB defined trap event: fnTrapIpChange</event-label>
+        <descr>
+&lt;p&gt;Indicates that the IP address of the specified interface has been changed.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	fnSysSerial&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sysName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ifIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+	fnTrapIpChange trap received
+	fnSysSerial=%parm[#1]%
+	sysName=%parm[#2]%
+	ifIndex=%parm[#3]%&lt;/p&gt;
+	</logmsg>
+        <severity>Indeterminate</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.12356.100.1.3</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>999</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/fortinet/traps/fortinet-core/fnTrapTest</uei>
+        <event-label>FORTINET-CORE-MIB defined trap event: fnTrapTest</event-label>
+        <descr>
+&lt;p&gt;Trap sent for diagnostic purposes by an administrator.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	fnSysSerial&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sysName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+	fnTrapTest trap received
+	fnSysSerial=%parm[#1]%
+	sysName=%parm[#2]%&lt;/p&gt;
+	</logmsg>
+        <severity>Indeterminate</severity>
+    </event>
+</events>

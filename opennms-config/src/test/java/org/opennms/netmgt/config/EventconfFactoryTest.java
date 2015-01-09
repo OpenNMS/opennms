@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2004-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -62,7 +62,7 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.opennms.core.xml.JaxbUtils;
-import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.snmp.SyntaxToEvent;
 import org.opennms.netmgt.snmp.SnmpObjId;
@@ -264,6 +264,42 @@ public class EventconfFactoryTest {
         
         assertNotNull("returned event configuration for event with known UEI '" + knownUEI1 + "' should not be null", eventConf);
         assertEquals("uei.opennms.org/traps/eventTrap", eventConf.getUei());
+    }
+    @Test
+    public void testFindByTrapWithWildcard() throws Exception {
+        String enterpriseId = ".1.3.6.1.4.1.253.1.2.3";
+                int generic = 6;
+                int specific = 1;
+        String ip = "127.0.0.1";
+
+        EventBuilder bldr = new EventBuilder(null, "trapd");
+                bldr.setSnmpVersion("v2");
+        bldr.setCommunity("public");
+                bldr.setHost(ip);
+        bldr.setSnmpHost(ip);
+                bldr.setInterface(InetAddress.getByName("127.0.0.1"));
+    
+        // time-stamp (units is hundreths of a second
+                bldr.setSnmpTimeStamp(System.currentTimeMillis()/10);
+    
+        bldr.setGeneric(generic);
+                bldr.setSpecific(specific);
+                bldr.setEnterpriseId(enterpriseId);
+                
+                for(int i = 0; i < 19; i++) {
+                        bldr.addParam(".1.3.6."+(i+1), "parm" + (i+1) );
+                }
+                
+                
+        DefaultEventConfDao eventConfDao = loadConfiguration("eventconf-wildcard/eventconf.xml");
+
+        
+                org.opennms.netmgt.xml.event.Event event = bldr.getEvent();
+                Event eventConf = eventConfDao.findByEvent(event);
+
+        
+        assertNotNull("returned event configuration for eclipsed trap '" + enterpriseId + "' should not be null", eventConf);
+        assertEquals("uei.opennms.org/vendor/Xerox/traps/EnterpriseDefault", eventConf.getUei());
     }
     @Test
     public void testFindByTrap1000Times() throws Exception {

@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2010-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -28,6 +28,7 @@
 
 package org.opennms.reporting.jasperreports.svclayer;
 
+import java.io.File;
 import java.io.OutputStream;
 import java.sql.Connection;
 import java.text.SimpleDateFormat;
@@ -118,11 +119,11 @@ public class JasperReportService implements ReportService {
                     final ReportParameters reportParameters = new ReportParameters();
 
                     JasperReport jasperReport = null;
-                    Map<?, ?> defaultValues = null;
+                    Map<String, Object> defaultValues = null;
 
                     try {
                         jasperReport = JasperCompileManager.compileReport(m_globalReportRepository.getTemplateStream(reportId));
-                        defaultValues = JRParameterDefaultValuesEvaluator.evaluateParameterDefaultValues(jasperReport, null);
+                        defaultValues = JRParameterDefaultValuesEvaluator.evaluateParameterDefaultValues(jasperReport, new HashMap<String, Object>());
                     } catch (final JRException e) {
                         LOG.error("unable to compile jasper report", e);
                         throw new ReportException("unable to compile jasperReport", e);
@@ -190,7 +191,7 @@ public class JasperReportService implements ReportService {
                                 if (defaultValues.containsKey(reportParm.getName()) && (defaultValues.get(reportParm.getName()) != null)) {
                                     intParm.setValue((Integer) defaultValues.get(reportParm.getName()));
                                 } else {
-                                    intParm.setValue(new Integer(0));
+                                    intParm.setValue(Integer.valueOf(0));
                                 }
                                 intParms.add(intParm);
                                 continue;
@@ -242,7 +243,7 @@ public class JasperReportService implements ReportService {
                                     dateParm.setDisplayName(reportParm.getName());
                                 }
                                 dateParm.setName(reportParm.getName());
-                                dateParm.setCount(new Integer(1));
+                                dateParm.setCount(Integer.valueOf(1));
                                 dateParm.setInterval("day");
                                 dateParm.setHours(0);
                                 dateParm.setMinutes(0);
@@ -274,7 +275,7 @@ public class JasperReportService implements ReportService {
                                     dateParm.setDisplayName(reportParm.getName());
                                 }
                                 dateParm.setName(reportParm.getName());
-                                dateParm.setCount(new Integer(1));
+                                dateParm.setCount(Integer.valueOf(1));
                                 dateParm.setInterval("day");
                                 dateParm.setHours(0);
                                 dateParm.setMinutes(0);
@@ -350,7 +351,7 @@ public class JasperReportService implements ReportService {
         if (location.contains("jrpxml")) {
             return JRPrintXmlLoader.load(location);
         } else {
-            return (JasperPrint) JRLoader.loadObject(location);
+            return (JasperPrint) JRLoader.loadObject(new File(location));
         }
     }
 
@@ -358,7 +359,7 @@ public class JasperReportService implements ReportService {
      * {@inheritDoc}
      */
     @Override
-    public String run(final HashMap<String, Object> reportParms, final String reportId) throws ReportException {
+    public String run(final Map<String, Object> reportParms, final String reportId) throws ReportException {
         try {
             return Logging.withPrefix(LOG4J_CATEGORY, new Callable<String>() {
                 @Override public String call() throws Exception {
@@ -374,7 +375,7 @@ public class JasperReportService implements ReportService {
                         throw new ReportException("Unable to compile jasperReport " + reportId, e);
                     }
 
-                    final HashMap<String, Object> jrReportParms = buildJRparameters(reportParms, jasperReport.getParameters());
+                    final Map<String, Object> jrReportParms = buildJRparameters(reportParms, jasperReport.getParameters());
 
                     // Find sub reports and provide sub reports as parameter
                     jrReportParms.putAll(buildSubreport(reportId, jasperReport));
@@ -420,9 +421,10 @@ public class JasperReportService implements ReportService {
      * @param mainReport   JasperReport a compiled main report
      * @return a sub report parameter map as {@link java.util.HashMap<String,Object>} object
      */
-    private HashMap<String, Object> buildSubreport(final String mainReportId, final JasperReport mainReport) {
-        String repositoryId = mainReportId.substring(0, mainReportId.indexOf('_'));
-        HashMap<String, Object> subreportMap = new HashMap<String, Object>();
+    private Map<String, Object> buildSubreport(final String mainReportId, final JasperReport mainReport) {
+        int idx = mainReportId.indexOf('_');
+        String repositoryId = idx > -1 ? mainReportId.substring(0, idx) : "local";
+        Map<String, Object> subreportMap = new HashMap<String, Object>();
 
         // Filter parameter for sub reports
         for (JRParameter parameter : mainReport.getParameters()) {
@@ -451,7 +453,7 @@ public class JasperReportService implements ReportService {
      * {@inheritDoc}
      */
     @Override
-    public void runAndRender(final HashMap<String, Object> reportParms, final String reportId, final ReportFormat format, final OutputStream outputStream) throws ReportException {
+    public void runAndRender(final Map<String, Object> reportParms, final String reportId, final ReportFormat format, final OutputStream outputStream) throws ReportException {
         try {
             Logging.withPrefix(LOG4J_CATEGORY, new Callable<Void>() {
                 @Override public Void call() throws Exception {
@@ -464,7 +466,7 @@ public class JasperReportService implements ReportService {
                         throw new ReportException("unable to compile jasperReport", e);
                     }
 
-                    final HashMap<String, Object> jrReportParms = buildJRparameters(reportParms, jasperReport.getParameters());
+                    final Map<String, Object> jrReportParms = buildJRparameters(reportParms, jasperReport.getParameters());
                     jrReportParms.putAll(buildSubreport(reportId, jasperReport));
 
                     if ("jdbc".equalsIgnoreCase(m_globalReportRepository.getEngine(reportId))) {
@@ -523,8 +525,8 @@ public class JasperReportService implements ReportService {
         exporter.exportReport();
     }
 
-    private HashMap<String, Object> buildJRparameters(final HashMap<String, Object> onmsReportParms, final JRParameter[] reportParms) throws ReportException {
-        final HashMap<String, Object> jrReportParms = new HashMap<String, Object>();
+    private Map<String, Object> buildJRparameters(final Map<String, Object> onmsReportParms, final JRParameter[] reportParms) throws ReportException {
+        final Map<String, Object> jrReportParms = new HashMap<String, Object>();
 
         for (final JRParameter reportParm : reportParms) {
             LOG.debug("found report parm {} of class {}", reportParm.getValueClassName(), reportParm.getName());
@@ -589,7 +591,7 @@ public class JasperReportService implements ReportService {
      * {@inheritDoc}
      */
     @Override
-    public boolean validate(final HashMap<String, Object> reportParms, final String reportId) {
+    public boolean validate(final Map<String, Object> reportParms, final String reportId) {
         // returns true until we can take parameters
         return true;
     }

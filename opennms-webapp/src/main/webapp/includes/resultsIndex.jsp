@@ -2,22 +2,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -108,34 +108,31 @@
     endIndex = (endIndex > highestPossibleIndex) ? highestPossibleIndex : endIndex;    
 %>
 
-<p class="pager">
  <% if (limit > 0 ) { %> 
-  Results: (<%=startResult%>-<%=endResult%> of <%=count%>)
+  <strong>Results <%=startResult%>-<%=endResult%> of <%=count%></strong>
  <% } else { %>
-  All Results
+  <strong>All Results</strong>
  <% } %> 
-	
-  <% if( count > limit ) { %>  
-    <span>
-<% if( multiple > 0 ) { %>
-      <a href="<%=baseUrl%>&amp;<%=multipleName%>=0&amp;<%=limitName%>=<%=limit%>">First</a>&nbsp;  
-      <a href="<%=baseUrl%>&amp;<%=multipleName%>=<%=multiple-1%>&amp;<%=limitName%>=<%=limit%>">Previous</a>&nbsp;  
+
+<% if( count > limit ) { %>  
+  <nav>
+    <ul class="pagination pagination-sm">
+    <% if( multiple > 0 ) { %>
+      <li><a href="<%=baseUrl%>&amp;<%=multipleName%>=0&amp;<%=limitName%>=<%=limit%>">First</a></li>
+      <li><a href="<%=baseUrl%>&amp;<%=multipleName%>=<%=multiple-1%>&amp;<%=limitName%>=<%=limit%>">Previous</a></li>
     <% } %>
     
     <% for( int i=startIndex; i <= endIndex; i++ ) { %>
       <% if( multiple == i ) { %>
-         <strong><%=i+1%></strong>
+         <li class="active"><span><%=i+1%></span></li>
       <% } else { %>
-        <a href="<%=baseUrl%>&amp;<%=multipleName%>=<%=i%>&amp;<%=limitName%>=<%=limit%>"><%=i+1%></a>
+        <li><a href="<%=baseUrl%>&amp;<%=multipleName%>=<%=i%>&amp;<%=limitName%>=<%=limit%>"><%=i+1%></a></li>
       <% } %>
-      &nbsp;
     <% } %>
-      
     <% if( multiple < highestPossibleIndex ) { %>
-      <a href="<%=baseUrl%>&amp;<%=multipleName%>=<%=multiple+1%>&amp;<%=limitName%>=<%=limit%>">Next</a>&nbsp;
-      <a href="<%=baseUrl%>&amp;<%=multipleName%>=<%=highestPossibleIndex%>&amp;<%=limitName%>=<%=limit%>">Last</a>
+      <li><a href="<%=baseUrl%>&amp;<%=multipleName%>=<%=multiple+1%>&amp;<%=limitName%>=<%=limit%>">Next</a></li>
+      <li><a href="<%=baseUrl%>&amp;<%=multipleName%>=<%=highestPossibleIndex%>&amp;<%=limitName%>=<%=limit%>">Last</a></li>
     <% } %>
-		</span>
-   <% } %>      
-</p>
-
+    </ul>
+  </nav>
+<% } %>

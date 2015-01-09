@@ -3,7 +3,7 @@
   <parent>
     <artifactId>opennms</artifactId>
     <groupId>org.opennms</groupId>
-    <version>1.13.4-SNAPSHOT</version>
+    <version>15.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-webapp</artifactId>
@@ -19,6 +19,20 @@
   </properties>
   <build>
     <plugins>
+      <plugin>
+        <groupId>org.jasig.maven</groupId>
+        <artifactId>sass-maven-plugin</artifactId>
+        <version>${sass.maven.plugin.version}</version>
+        <executions>
+          <execution>
+            <goals><goal>update-stylesheets</goal></goals>
+          </execution>
+        </executions>
+        <configuration>
+          <sassSourceDirectory>${basedir}/src/main/scss</sassSourceDirectory>
+          <destination>${project.build.directory}/${project.build.finalName}/css</destination>
+        </configuration>
+      </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-dependency-plugin</artifactId>
@@ -129,35 +143,6 @@
         </configuration>
       </plugin>
 
-<!--
-      <plugin>
-        <groupId>com.sun.tools.jxc.maven2</groupId>
-        <artifactId>maven-jaxb-schemagen-plugin</artifactId>
-        <version>1.2</version>
-        <configuration>
-          <destdir>${project.build.directory}/xsds</destdir>
-          <srcdir>${basedir}/src/main/java</srcdir>
-          <verbose>false</verbose>
-          <includes>
-            <include>org/opennms/web/snmpinfo/*.java</include>
-          </includes>
-          <schemas>
-            <schema>
-              <namespace>http://xmlns.opennms.org/xsd/config/snmp-info</namespace>
-              <file>snmp-info.xsd</file>
-            </schema>
-          </schemas>
-        </configuration>
-        <executions>
-          <execution>
-            <phase>process-sources</phase>
-            <goals>
-              <goal>generate</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
--->
       <plugin>
         <artifactId>maven-assembly-plugin</artifactId>
         <configuration>
@@ -240,20 +225,21 @@
     					<pluginExecutions>
     						<pluginExecution>
     							<pluginExecutionFilter>
-    								<groupId>
-    									org.apache.maven.plugins
-    								</groupId>
-    								<artifactId>
-    									maven-dependency-plugin
-    								</artifactId>
+    								<groupId>org.apache.maven.plugins</groupId>
+    								<artifactId>maven-dependency-plugin</artifactId>
     								<versionRange>[2.4,)</versionRange>
-    								<goals>
-    									<goal>copy</goal>
-    								</goals>
+    								<goals><goal>copy</goal></goals>
     							</pluginExecutionFilter>
-    							<action>
-    								<ignore></ignore>
-    							</action>
+    							<action><ignore/></action>
+    						</pluginExecution>
+    						<pluginExecution>
+    							<pluginExecutionFilter>
+    								<groupId>org.jasig.maven</groupId>
+    								<artifactId>sass-maven-plugin</artifactId>
+    								<versionRange>[${sass.maven.plugin.version},)</versionRange>
+    								<goals><goal>update-stylesheets</goal></goals>
+    							</pluginExecutionFilter>
+    							<action><ignore/></action>
     						</pluginExecution>
     					</pluginExecutions>
     				</lifecycleMappingMetadata>
@@ -358,6 +344,11 @@
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-dao</artifactId>
+      <scope>${onmsLibScope}</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-services</artifactId>
       <scope>${onmsLibScope}</scope>
     </dependency>
     <dependency>
@@ -605,6 +596,12 @@
       <groupId>org.apache.xmlgraphics</groupId>
       <artifactId>batik-transcoder</artifactId>
       <scope>${onmsLibScope}</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>commons-logging</groupId>
+          <artifactId>commons-logging</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.apache.xmlgraphics</groupId>
@@ -671,6 +668,7 @@
         </exclusion>
       </exclusions>
     </dependency>
+
     <!--
 
       JMesa is the latest version of the extremecomponents library. We
@@ -698,6 +696,19 @@
         <groupId>net.sf.jung</groupId>
         <artifactId>jung-visualization</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.freemarker</groupId>
+      <artifactId>freemarker</artifactId>
+      <version>${freemarkerVersion}</version>
+    </dependency>
+
+    <!-- CORS support -->
+    <dependency>
+      <groupId>org.ebaysf.web</groupId>
+      <artifactId>cors-filter</artifactId>
+      <version>1.0.1</version>
+      <scope>compile</scope>
+    </dependency>
 
     <!-- test dependencies -->
     <dependency>
@@ -708,12 +719,6 @@
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-dao</artifactId>
-      <type>test-jar</type>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-services</artifactId>
       <type>test-jar</type>
       <scope>test</scope>
     </dependency>
@@ -731,6 +736,11 @@
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-test</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-icmp-jna</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>

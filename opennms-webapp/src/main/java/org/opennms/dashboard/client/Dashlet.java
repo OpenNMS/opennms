@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -28,12 +28,12 @@
 
 package org.opennms.dashboard.client;
 
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.DockPanel;
-import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.VerticalPanel;
-import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.ui.*;
 import com.google.gwt.user.client.ui.DockPanel.DockLayoutConstant;
+import org.gwtbootstrap3.client.ui.*;
+import org.gwtbootstrap3.client.ui.Panel;
+import org.gwtbootstrap3.client.ui.constants.ColumnSize;
+import org.gwtbootstrap3.client.ui.constants.HeadingSize;
 
 /**
  * <p>Abstract Dashlet class.</p>
@@ -45,42 +45,53 @@ import com.google.gwt.user.client.ui.DockPanel.DockLayoutConstant;
 public abstract class Dashlet extends Composite {
     
     class DashletTitle extends Composite {
-        private DockPanel m_panel = new DockPanel();
-        private Label m_label = new Label();
-        
+        private PanelHeader m_panelHeader = new PanelHeader();
+        private Heading m_heading = new Heading(HeadingSize.H3);
+
+
         DashletTitle(String title, DashletLoader loader) {
-            
-            m_label.setText(title);
-            
 
-            m_label.addStyleName("dashletTitle");
-            m_panel.addStyleName("dashletTitlePanel");
-            m_panel.add(m_label, DockPanel.WEST);
-            m_panel.add(m_loader, DockPanel.EAST);
+            m_heading.setText(title);
 
-            m_panel.setCellVerticalAlignment(m_loader, DockPanel.ALIGN_MIDDLE);
-            m_panel.setCellHorizontalAlignment(m_loader, DockPanel.ALIGN_RIGHT);
+            m_panelHeader.add(m_heading);
+            m_panelHeader.add(m_loader);
 
-            initWidget(m_panel);
+            initWidget(m_panelHeader);
         }
         
         @Override
         public void setTitle(String title) {
-            m_label.setText(title);
+            m_heading.setText(title);
         }
         
         public void add(Widget widget, DockLayoutConstant constraint) {
-            m_panel.add(widget, constraint);
+            widget.addStyleName("pull-right");
+            m_panelHeader.add(widget);
         }
         
     }
+
+    class DashletFooter extends Composite{
+        private PanelFooter m_panelFooter  = new PanelFooter();
+
+        DashletFooter(){
+            initWidget(m_panelFooter);
+        }
+
+        public void add(Widget widget) {
+            m_panelFooter.add(widget);
+        }
+
+    }
     
-    private VerticalPanel m_panel = new VerticalPanel();
+    private Panel m_panel = new Panel();
     private String m_title;
     private DashletTitle m_titleWidget;
     private DashletView m_view;
     private DashletLoader m_loader;
+    private DashletFooter m_footer;
     private Dashboard m_dashboard;
+    private boolean m_hasFooter = true;
 
     /**
      * <p>Constructor for Dashlet.</p>
@@ -92,6 +103,12 @@ public abstract class Dashlet extends Composite {
         m_title = title;
         m_dashboard = dashboard;
         initWidget(m_panel);
+
+    }
+
+    public Dashlet(Dashboard dashboard, String title, boolean hasFooter){
+        this(dashboard, title);
+        m_hasFooter = hasFooter;
     }
 
     /**
@@ -136,7 +153,16 @@ public abstract class Dashlet extends Composite {
      * @param constraint a {@link com.google.gwt.user.client.ui.DockPanel.DockLayoutConstant} object.
      */
     public void addToTitleBar(Widget widget, DockLayoutConstant constraint) {
-        m_titleWidget.add(widget, constraint);
+        addToFooter(widget, constraint);
+    }
+
+    /**
+     * <p>addToFooter</p>
+     * @param widget
+     * @param constraint
+     */
+    public void addToFooter(Widget widget, DockLayoutConstant constraint) {
+        m_footer.add(widget);
     }
     
     /**
@@ -157,12 +183,15 @@ public abstract class Dashlet extends Composite {
             m_loader = new DashletLoader();
         }
         m_titleWidget = new DashletTitle(m_title, m_loader);
-        
-        m_panel.setStyleName("dashletPanel");
-        
+
         m_panel.add(m_titleWidget);
         m_panel.add(m_view);
-        
+
+        if(m_hasFooter){
+            m_footer = new DashletFooter();
+            m_panel.add(m_footer);
+        }
+
         m_view.onDashLoad();
         
     }

@@ -2,22 +2,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2005-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -41,9 +41,9 @@
         org.opennms.core.utils.DBUtils,
         org.opennms.core.utils.WebSecurityUtils,
         org.opennms.web.element.*,
-        org.opennms.netmgt.poller.PathOutageFactory,
+        org.opennms.netmgt.poller.PathOutageManagerDaoImpl,
         org.opennms.netmgt.model.OnmsNode,
-        org.opennms.netmgt.EventConstants,
+        org.opennms.netmgt.events.api.EventConstants,
         org.opennms.netmgt.xml.event.Event,
         org.opennms.web.api.Util,
         org.exolab.castor.xml.ValidationException,
@@ -130,76 +130,13 @@
 
     private static final String GET_NODES_IN_PATH = "SELECT DISTINCT pathoutage.nodeid FROM pathoutage, ipinterface WHERE pathoutage.criticalpathip=? AND pathoutage.nodeid=ipinterface.nodeid AND ipinterface.ismanaged!='D' ORDER BY nodeid";
 
-    private static Set<Integer> getAllDependencyNodesByCriticalPath(String criticalpathip) throws SQLException {
-	    Set<Integer> allPathNodes = getDependencyNodesByCriticalPath(criticalpathip);
-	    Set<Integer> currentNodes=allPathNodes;
-	    while (currentNodes.size() > 0) {
-	        Set<Integer> nextIterationNodes=new TreeSet<Integer>();
-	        for (Integer pathnodeid : currentNodes ) {
-	            nextIterationNodes.addAll(getDependencyNodesByNodeid(pathnodeid));
-	        }
-	        allPathNodes.addAll(nextIterationNodes);
-	        currentNodes=nextIterationNodes;
-	    }
-	    return allPathNodes;        
-    }
-    
-
-    private static Set<Integer> getDependencyNodesByCriticalPath(String criticalpathip) throws SQLException {
-	    final Connection conn = DataSourceFactory.getInstance().getConnection();
-	    final DBUtils d = new DBUtils(PathOutageFactory.class, conn);
-	    Set<Integer> pathNodes = new TreeSet<Integer>();
-        try {
-            PreparedStatement stmt = conn.prepareStatement(GET_NODES_IN_PATH);
-            d.watch(stmt);
-            stmt.setString(1, criticalpathip);
-
-            ResultSet rs = stmt.executeQuery();
-            d.watch(rs);
-            while (rs.next()) {
-                pathNodes.add(rs.getInt(1));
-            }
-        } finally {
-            d.cleanUp();
-        }
-	    return pathNodes;
+    private static Set<Integer> getAllNodesDependentOnAnyServiceOnInterface(String criticalpathip) throws SQLException {
+	    return PathOutageManagerDaoImpl.getInstance().getAllNodesDependentOnAnyServiceOnInterface(criticalpathip);
         
     }
-    
-	private static Set<Integer> getAllDependencyNodesByNodeid(int nodeid) throws SQLException {
-	    Set<Integer> allPathNodes = getDependencyNodesByNodeid(nodeid);
-	    Set<Integer> currentNodes=allPathNodes;
-	    while (currentNodes.size() > 0) {
-	        Set<Integer> nextIterationNodes=new TreeSet<Integer>();
-	        for (Integer pathnodeid : currentNodes ) {
-	            nextIterationNodes.addAll(getDependencyNodesByNodeid(pathnodeid));
-	        }
-	        allPathNodes.addAll(nextIterationNodes);
-	        currentNodes=nextIterationNodes;
-	    }
-	    return allPathNodes;
-	}
 	
-	private static Set<Integer> getDependencyNodesByNodeid(int nodeid) throws SQLException {
-	    final Connection conn = DataSourceFactory.getInstance().getConnection();
-	    final DBUtils d = new DBUtils(PathOutageFactory.class, conn);
-
-	    Set<Integer> pathNodes = new TreeSet<Integer>();
-        try {
-            PreparedStatement stmt = conn.prepareStatement(GET_DEPENDENCY_NODES_BY_NODEID);
-            d.watch(stmt);
-            stmt.setInt(1, nodeid);
-
-            ResultSet rs = stmt.executeQuery();
-            d.watch(rs);
-            while (rs.next()) {
-                pathNodes.add(rs.getInt(1));
-            }
-        } finally {
-            d.cleanUp();
-        }
-	    
-	    return pathNodes;
+	private static Set<Integer> getAllNodesDependentOnAnyServiceOnNode(int nodeid) throws SQLException {
+	    return PathOutageManagerDaoImpl.getInstance().getAllNodesDependentOnAnyServiceOnNode(nodeid);
 	}
 	
 	public void sendOutagesChangedEvent() throws ServletException {
@@ -212,7 +149,7 @@
 			event.setHost("unresolved.host");
 		}
 
-		event.setTime(EventConstants.formatToString(new java.util.Date()));
+		event.setTime(new java.util.Date());
 		try {
 			Util.createEventProxy().send(event);
 		} catch (Throwable e) {
@@ -288,28 +225,37 @@
 		request.getSession().setAttribute("opennms.editoutage", theOutage);
 		request.getSession().setAttribute("opennms.editoutage.origname", nameParam);
 	} else if ("true".equals(request.getParameter("addNew"))) {
-		theOutage = new Outage();
-		String nodes[] = request.getParameterValues("nodeID");
-		String interfaces[] = request.getParameterValues("ipAddr");
+		nameParam = request.getParameter("newName");
+		Outage tempOutage = pollFactory.getOutage(nameParam);
+		if (tempOutage != null) { //there is an outage with that name, forcing edit existing
+			CharArrayWriter writer = new CharArrayWriter();
+			tempOutage.marshal(writer);
+			theOutage = (Outage) Outage.unmarshal(new CharArrayReader(writer.toCharArray()));
+			request.getSession().setAttribute("opennms.editoutage", theOutage);
+			request.getSession().setAttribute("opennms.editoutage.origname", nameParam);
+		} else {
+			theOutage = new Outage();
+			String nodes[] = request.getParameterValues("nodeID");
+			String interfaces[] = request.getParameterValues("ipAddr");
 
+			//Nuke whitespace - it messes with all sorts of things
+			theOutage.setName(nameParam.trim());
 
-		//Nuke whitespace - it messes with all sorts of things
-		theOutage.setName(request.getParameter("newName").trim());
-		
-		request.getSession().setAttribute("opennms.editoutage", theOutage);
-		request.getSession().removeAttribute("opennms.editoutage.origname");
-		if (nodes != null) {
-			for(int i = 0 ; i < nodes.length; i++ ) {
-				int node = WebSecurityUtils.safeParseInt(nodes[i]);
-				addNode(theOutage, node);
+			request.getSession().setAttribute("opennms.editoutage", theOutage);
+			request.getSession().removeAttribute("opennms.editoutage.origname");
+			if (nodes != null) {
+				for(int i = 0 ; i < nodes.length; i++ ) {
+					int node = WebSecurityUtils.safeParseInt(nodes[i]);
+					addNode(theOutage, node);
+				}
 			}
-		}
-		if (interfaces != null) {
-			for(int i = 0 ; i < interfaces.length; i++ ) {
-				org.opennms.netmgt.config.poller.outages.Interface newInterface = new org.opennms.netmgt.config.poller.outages.Interface();
-				// hope this has builtin safeParseStuff
-				newInterface.setAddress(interfaces[i]);
-				addInterface(theOutage, newInterface);
+			if (interfaces != null) {
+				for(int i = 0 ; i < interfaces.length; i++ ) {
+					org.opennms.netmgt.config.poller.outages.Interface newInterface = new org.opennms.netmgt.config.poller.outages.Interface();
+					// hope this has builtin safeParseStuff
+					newInterface.setAddress(interfaces[i]);
+					addInterface(theOutage, newInterface);
+				}
 			}
 		}
 	} else {
@@ -520,7 +466,7 @@ Could not find an outage to edit because no outage name parameter was specified 
 					int newNodeId = WebSecurityUtils.safeParseInt(newNode);
 					addNode(theOutage, newNodeId);
 					if (request.getParameter("addPathOutageNodeRadio") != null) {
-						for (Integer pathOutageNodeid: getAllDependencyNodesByNodeid(newNodeId)) {
+						for (Integer pathOutageNodeid: getAllNodesDependentOnAnyServiceOnNode(newNodeId)) {
 						    addNode(theOutage,pathOutageNodeid.intValue());
 						}
 					}
@@ -535,7 +481,7 @@ Could not find an outage to edit because no outage name parameter was specified 
 					newInterface.setAddress(newIface);
 					addInterface(theOutage, newInterface);
 					if (request.getParameter("addPathOutageInterfaceRadio") != null) {
-						for (Integer pathOutageNodeid: getAllDependencyNodesByCriticalPath(newIface)) {
+						for (Integer pathOutageNodeid: getAllNodesDependentOnAnyServiceOnInterface(newIface)) {
 						    addNode(theOutage,pathOutageNodeid.intValue());
 						}
 					}
@@ -657,7 +603,7 @@ Could not find an outage to edit because no outage name parameter was specified 
 	boolean hasMatchAny = theOutage.getInterfaceCollection().contains(matchAnyInterface);
 %>
 
-<jsp:include page="/includes/header.jsp" flush="false">
+<jsp:include page="/includes/bootstrap.jsp" flush="false">
 	<jsp:param name="title" value="Edit Outage" />
 	<jsp:param name="headTitle" value="Edit" />
 	<jsp:param name="headTitle" value="Scheduled Outages" />
@@ -682,29 +628,6 @@ Could not find an outage to edit because no outage name parameter was specified 
 	.ui-button { margin-left: -1px; }
 	.ui-button-icon-only .ui-button-text { padding: 0em; } 
 	.ui-autocomplete-input { margin: 0; padding: 0.12em 0 0.12em 0.20em; }
-</style>
-
-<style type="text/css">
-TD {
-	font-size: 0.8em;
-}
-
-UL
-{
-	margin-top: 0px;
-}
-
-P
-{
-	font-size: 0.8em;
-	margin: 0px;
-}
-
-LABEL 
-{
-	font-weight: bold;
-	font-size: small;
-}
 </style>
 
 <script type="text/javascript">
@@ -826,10 +749,10 @@ function updateOutageTypeDisplay(selectElement) {
     }
 %>
 
-<h2>Editing Outage: <%=theOutage.getName()%></h2>
+<h3>Editing Outage: <%=theOutage.getName()%></h3>
 
 		<label>Nodes and Interfaces:</label>
-			<table class="normal">
+			<table class="table table-condensed table-borderless">
 				<tr>
 					<th valign="top">Node Labels</th>
 					<th valign="top">Interfaces</th>
@@ -842,7 +765,7 @@ function updateOutageTypeDisplay(selectElement) {
 							<div class="ui-widget">
 								<select id="newNodeSelect" name="newNodeSelect" style="display: none"></select>
 								<input type="radio"  value="addPathOutageDependency" name="addPathOutageNodeRadio"/> Add with path outage dependency
-								<input type="submit" value="Add" name="addNodeButton"/>
+								<input type="submit" class="btn btn-default" value="Add" name="addNodeButton"/>
 							</div>
 						</form>
 						<p style="font-weight: bold; margin: 10px 0px 2px 0px;">Current selection:</p>
@@ -888,7 +811,7 @@ function updateOutageTypeDisplay(selectElement) {
 							<div class="ui-widget">
 								<select id="newInterfaceSelect" name="newInterfaceSelect" style="display: none"></select>
 								<input type="radio"  value="addPathOutageDependency" name="addPathOutageInterfaceRadio"/> Add with path outage dependency
-								<input type="submit" value="Add" name="addInterfaceButton"/>
+								<input type="submit" class="btn btn-default" value="Add" name="addInterfaceButton"/>
 							</div>
 						</form>
 						<p style="font-weight: bold; margin: 10px 0px 2px 0px;">Current selection:</p>
@@ -944,21 +867,23 @@ function updateOutageTypeDisplay(selectElement) {
 						</script>
 						<form onsubmit="return verifyAddAll();" id="matchAnyForm" action="admin/sched-outages/editoutage.jsp" method="post">
 							<input type="hidden" name="formSubmission" value="true" />
-							<input type="submit" name="matchAny" value="Select all nodes and interfaces" />
+							<input type="submit" class="btn btn-default" name="matchAny" value="Select all nodes and interfaces" />
 						</form>
 					</td>
 				</tr>
 				<% } %>
 				<% if (!hasMatchAny && theOutage.getInterfaceCount() == 0 && theOutage.getNodeCount() == 0) { %>
 					<tr>
-						<td colspan="2"><span style="color: #ff0000">You must select at least one node or interface for this scheduled outage.</span></td>
+						<td colspan="2"><span class="text-danger">You must select at least one node or interface for this scheduled outage.</span></td>
 					</tr>
 				<% } %>
 			</table>
 		<form id="editOutage" action="admin/sched-outages/editoutage.jsp" method="post">
 		<input type="hidden" name="formSubmission" value="true" />
+          <div class="row">
+            <div class="col-md-6">
 		<label>Outage Type:</label>
-			<table class="normal">
+			<table class="table table-condensed table-borderless">
 				<tr>
 					<td>
 						<% if (theOutage.getType() != null) { %>
@@ -978,15 +903,14 @@ function updateOutageTypeDisplay(selectElement) {
 				</tr>
 			</table>
 		<label>Time:</label>
-			<table class="normal">
+			<table class="table table-condensed table-borderless">
 				<%
 				org.opennms.netmgt.config.poller.outages.Time[] outageTimes = theOutage.getTime();
 					for (int i = 0; i < outageTimes.length; i++) {
 						org.opennms.netmgt.config.poller.outages.Time thisTime = outageTimes[i];
 				%>
 				<tr>
-					<td> <input type="image" src="images/redcross.gif" name="deleteTime<%=i%>" /> </td>
-					<td>
+					<td> <input type="image" src="images/redcross.gif" name="deleteTime<%=i%>" />
 						<%
 							StringBuffer outputBuffer = new StringBuffer();
 							if (thisTime.getDay() != null) {
@@ -1017,7 +941,7 @@ function updateOutageTypeDisplay(selectElement) {
 					}
 				%>
 			</table>
-			<table class="normal">
+			<table class="table table-condensed table-borderless">
 				<tr id="chooseDay" style="display: none">
 					<td>
 						<span id="chooseDayOfMonth" style="display: none">
@@ -1080,26 +1004,28 @@ function updateOutageTypeDisplay(selectElement) {
 				</tr>
 				<tr>
 					<td>
-						<input type="submit" value="Add Outage" name="addOutage" />
+						<input type="submit" class="btn btn-default" value="Add Outage" name="addOutage" />
 					</td>
 				</tr>
 				<% if (theOutage.getTimeCount() == 0) { %>
 					<tr>
-						<td><span style="color: #ff0000">You must have at least one time span defined.</span></td>
+						<td><span class="text-danger">You must have at least one time span defined.</span></td>
 					</tr>
 				<% } %>
 			</table>
+              </div> <!-- column -->
+              <div class="col-md-6">
 		<label>Applies To:</label>
-			<ul class="treeview">
+			<ul class="list-unstyled">
 				<li>
 					<p>Notifications:</p>
-					<ul>
+					<ul class="list-no-bullet">
 						<li><input type="checkbox" <%=(enabledOutages.contains("notifications"))?"checked=\"checked\"":""%> name="notifications" id="notifications"/> <label for="notifications">All Notifications</label> </li>
 					</ul>
 				</li>
 				<li>
 					<p>Status Polling:</p>
-					<ul>
+					<ul class="list-no-bullet">
 						<% List<org.opennms.netmgt.config.poller.Package> pollerSorted = new ArrayList<org.opennms.netmgt.config.poller.Package>(pollingOutages.keySet());
 					       Collections.sort(pollerSorted, new Comparator<org.opennms.netmgt.config.poller.Package>() {
 					           @Override
@@ -1116,7 +1042,7 @@ function updateOutageTypeDisplay(selectElement) {
 				</li>
 				<li>
 					<p>Threshold Checking:</p>
-					<ul>
+					<ul class="list-no-bullet">
 						<% List<org.opennms.netmgt.config.threshd.Package> threshdSorted = new ArrayList<org.opennms.netmgt.config.threshd.Package>(thresholdOutages.keySet());
 					       Collections.sort(threshdSorted, new Comparator<org.opennms.netmgt.config.threshd.Package>() {
 					           @Override
@@ -1133,7 +1059,7 @@ function updateOutageTypeDisplay(selectElement) {
 				</li>
 				<li>
 					<p>Data Collection:</p>
-					<ul>
+					<ul class="list-no-bullet">
 						<% List<org.opennms.netmgt.config.collectd.Package> collectdSorted = new ArrayList<org.opennms.netmgt.config.collectd.Package>(collectionOutages.keySet());
 					       Collections.sort(collectdSorted, new Comparator<org.opennms.netmgt.config.collectd.Package>() {
 					           @Override
@@ -1149,18 +1075,24 @@ function updateOutageTypeDisplay(selectElement) {
 					</ul>
 				</li>
 			</ul>
+                    </div> <!-- column -->
+                 </div> <!-- row -->
+                 <div class="row">
+                   <div class="col-md-12">
 			<%
 				if (theOutage != null
 						&& theOutage.getTimeCount() > 0
 						&& theOutage.getType() != null
 						&& (hasMatchAny || (theOutage.getInterfaceCount() > 0) || (theOutage.getNodeCount() > 0))
 						) {
-			%><input type="submit" value="Save" name="saveButton" /><% } %>
-			<input type="submit" value="Cancel" name="cancelButton" />
+			%><input type="submit" class="btn btn-default" value="Save" name="saveButton" /><% } %>
+			<input type="submit" class="btn btn-default" value="Cancel" name="cancelButton" />
+                    </div> <!-- column -->
+                  </div> <!-- row -->
 </form>
 
 <script type="text/javascript">
 updateOutageTypeDisplay(null);
 </script>
 
-<jsp:include page="/includes/footer.jsp" flush="true" />
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="true" />

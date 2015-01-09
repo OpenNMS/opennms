@@ -2,22 +2,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -48,6 +48,7 @@
 <%@page import="java.util.List"%>
 <%@page import="org.opennms.web.api.Util" %>
 <%@page import="org.opennms.web.tags.FavoriteTag" %>
+<%@page import="org.opennms.core.utils.WebSecurityUtils"%>
 
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
@@ -95,7 +96,7 @@
 
 
 
-<jsp:include page="/includes/header.jsp" flush="false" >
+<jsp:include page="/includes/bootstrap.jsp" flush="false" >
   <jsp:param name="title" value="Event List" />
   <jsp:param name="headTitle" value="List" />
   <jsp:param name="headTitle" value="Events" />
@@ -182,20 +183,47 @@
         var selectedOption = selectElement.options[selectElement.selectedIndex];
         var favoriteId = selectedOption.value.split(';')[0];
         var filter = selectedOption.value.split(';')[1];
+        changeFavorite(favoriteId, filter);
+    }
+
+    function changeFavorite(favoriteId, filter) {
         window.location.href = "<%=req.getContextPath()%>/event/list?favoriteId=" + favoriteId + '&' + filter;
     }
   </script>
 
-      <!-- menu -->
-      <div id="linkbar">
-      <ul>
-        <li><a href="<%=this.makeLink(callback, parms, new ArrayList<Filter>(), favorite)%>" title="Remove all search constraints" >View all events</a></li>
-        <li><a href="<%=org.opennms.web.api.Util.calculateUrlBase(req, "event/advsearch.jsp")%>" title="More advanced searching and sorting options">Advanced Search</a></li>
-        <li><a onclick="javascript:window.open('<%=Util.calculateUrlBase(req, "event/severity.jsp")%>','event_severity_legend', 'fullscreen=no,toolbar=no,status=no,menubar=no,scrollbars=no,resizable=yes,directories=no,location=no,width=525,height=330');" title="Open a window explaining the event severities">Severity Legend</a></li>
+	  <!-- hidden form for adding a new Notification -->
+	  <form action="admin/notification/noticeWizard/notificationWizard" method="post" name="add_notification_form">
+	  	<input type="hidden" name="sourcePage" value="<%=NotificationWizardServlet.SOURCE_PAGE_OTHER_WEBUI%>" />
+	  	<input type="hidden" name="uei" id="uei" value="" /> <!-- Set by java script -->
+	  </form>
 
+<div id="advancedSearchModal" class="modal fade" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-body">
+        <jsp:include page="/includes/event-advquerypanel.jsp" flush="false" />
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="severityLegendModal" class="modal fade" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+        <jsp:include page="/event/severity.jsp" flush="false" />
+    </div>
+  </div>
+</div>
+
+
+<div class="row">
+<div class="col-md-12">
+  <!-- start menu -->
+  <a class="btn btn-default" href="<%=this.makeLink(callback, parms, new ArrayList<Filter>(), favorite)%>">View all events</a>
+  <button type="button" class="btn btn-default" onClick="$('#advancedSearchModal').modal()">Search</button>
+  <button type="button" class="btn btn-default" onClick="$('#severityLegendModal').modal()">Severity Legend</button>
         <% if( req.isUserInRole( Authentication.ROLE_ADMIN ) || !req.isUserInRole( Authentication.ROLE_READONLY ) ) { %>
           <% if ( eventCount > 0 ) { %>
-            <li>
               <!-- hidden form for acknowledging the result set -->
               <form style="display:inline" action="event/acknowledgeByFilter" method="post" name="acknowledge_by_filter_form">
                 <input type="hidden" name="redirectParms" value="<c:out value="<%=req.getQueryString()%>"/>" />
@@ -204,42 +232,79 @@
               </form>
 
               <% if( AcknowledgeType.UNACKNOWLEDGED.toNormalizedAcknowledgeType().equals(parms.getAckType()) ) { %>
-                <a href="javascript:void()" onclick="if (confirm('Are you sure you want to acknowledge all events in the current search including those not shown on your screen?  (<%=eventCount%> total events)')) {  document.acknowledge_by_filter_form.submit(); }" title="Acknowledge all events that match the current search constraints, even those not shown on the screen">Acknowledge entire search</a>
+                <button type="button" class="btn btn-default" onclick="if (confirm('Are you sure you want to acknowledge all events in the current search including those not shown on your screen?  (<%=eventCount%> total events)')) {  document.acknowledge_by_filter_form.submit(); }" title="Acknowledge all events that match the current search constraints, even those not shown on the screen">Acknowledge entire search</button>
               <% } else { %>
-                <a href="javascript:void()" onclick="if (confirm('Are you sure you want to unacknowledge all events in the current search including those not shown on your screen)?  (<%=eventCount%> total events)')) { document.acknowledge_by_filter_form.submit(); }" title="Unacknowledge all events that match the current search constraints, even those not shown on the screen">Unacknowledge entire search</a>
+                <button type="button" class="btn btn-default" onclick="if (confirm('Are you sure you want to unacknowledge all events in the current search including those not shown on your screen)?  (<%=eventCount%> total events)')) { document.acknowledge_by_filter_form.submit(); }" title="Unacknowledge all events that match the current search constraints, even those not shown on the screen">Unacknowledge entire search</button>
               <% } %>
-            </li>
           <% } %>
         <% } %>
-      </ul>
-      </div>
       <!-- end menu -->
+</div>
+<div class="text-right hidden">
+  <jsp:include page="/includes/event-querypanel.jsp" flush="false" />
+</div>
+</div>
 
-	  <!-- hidden form for adding a new Notification -->
-	  <form action="admin/notification/noticeWizard/notificationWizard" method="post" name="add_notification_form">
-	  	<input type="hidden" name="sourcePage" value="<%=NotificationWizardServlet.SOURCE_PAGE_OTHER_WEBUI%>" />
-	  	<input type="hidden" name="uei" id="uei" value="" /> <!-- Set by java script -->
-	  </form>
+<%-- This tag writes out the createFavorite(), deleteFavorite(), and clearFilters() methods --%>
+<onms:favorite
+  favorite="${favorite}"
+  parameters="${parms}"
+  callback="${callback}"
+  context="/event/list"
+  createFavoriteController="/event/createFavorite"
+  deleteFavoriteController="/event/deleteFavorite"
+/>
 
+<div class="row">
+<br/>
+</div>
 
-          
+<div class="row">
+  <div class="col-sm-6 col-md-3">
+  <div class="input-group">
+    <span class="input-group-addon">
+      <c:choose>
+      <c:when test="${favorite == null}">
+      <a onclick="createFavorite()">
+        <!-- Star outline -->
+        <i class="fa fa-lg fa-star-o"></i>
+      </a>
+      </c:when>
+      <c:otherwise>
+      <a onclick="deleteFavorite(${favorite.id})">
+        <i class="fa fa-lg fa-star"></i>
+      </a>
+      </c:otherwise>
+      </c:choose>
+    </span>
+    <input type="text" class="form-control" placeholder="Unsaved filter" value="<c:out value="${favorite.name}"/>"/>
+    <div class="input-group-btn">
+      <div class="dropdown">
+        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+          <span class="caret"></span>
+        </button>
+        <!-- I put margin: 0px here because the margin gap was causing the menu to disappear before you could get the mouse on it -->
+        <ul class="dropdown-menu dropdown-menu-right" style="margin: 0px;" role="menu">
+          <c:forEach var="fave" items="${favorites}">
+            <c:if test="${favorite.id != fave.id}">
+              <li>
+                <a onclick="changeFavorite(${fave.id}, '${fave.filter}')">
+                  <c:out value="${fave.name}"/>
+                </a>
+              </li>
+              <c:set var="showDivider" value="${true}"/>
+            </c:if>
+          </c:forEach>
+          <c:if test="${showDivider}"><li class="divider"/></c:if>
+          <li><a onclick="clearFilters()">Clear filters</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  </div>
+
             <% if( parms.getFilters().size() > 0 || AcknowledgeType.UNACKNOWLEDGED.toNormalizedAcknowledgeType().equals(parms.getAckType()) || AcknowledgeType.ACKNOWLEDGED.toNormalizedAcknowledgeType().equals(parms.getAckType()) ) { %>
-                <div>
-                <p>
-                    Favorites:
-                    <onms:select
-                            defaultText="All Events"
-                            elements='${favorites}'
-                            selected='${favorite}'
-                            handler='${filterFavoriteSelectTagHandler}'
-                            onChange='changeFavorite(this)'/>
-                </p>
-            <% } %>
-
-            <jsp:include page="/includes/event-querypanel.jsp" flush="false" />
-
-            <% if( parms.getFilters().size() > 0 || AcknowledgeType.UNACKNOWLEDGED.toNormalizedAcknowledgeType().equals(parms.getAckType()) || AcknowledgeType.ACKNOWLEDGED.toNormalizedAcknowledgeType().equals(parms.getAckType()) ) { %>
-                <p>
+              <div class="col-sm-6 col-md-9">
                     <onms:filters
                             context="/event/list"
                             favorite="${favorite}"
@@ -249,19 +314,14 @@
                             acknowledgeFilterPrefix="Event(s)"
                             acknowledgeFilterSuffix="event(s)"
                             callback="${callback}" />
-
-                    <onms:favorite
-                            favorite="${favorite}"
-                            parameters="${parms}"
-                            callback="${callback}"
-                            context="/event/list"
-                            createFavoriteController="/event/createFavorite"
-                            deleteFavoriteController="/event/deleteFavorite"
-                            onDeselect="<%=FavoriteTag.Action.CLEAR_FILTERS%>"/>
-
-                </p>
-                </div>
+              </div>
             <% } %>
+</div>
+
+<div class="row">
+<br/>
+</div>
+
             <onms:alert/>
 
             <% if( events.length > 0 ) { %>
@@ -289,11 +349,10 @@
         <input type="hidden" name="actionCode" value="<%=action%>" />
         <%=org.opennms.web.api.Util.makeHiddenTags(req)%>
     <% } %>
-                <jsp:include page="/includes/key.jsp" flush="false" />
 
     <% String acknowledgeEvent = System.getProperty("opennms.eventlist.acknowledge"); %>
 
-      <table>
+      <table class="table table-condensed severity">
         <thead>
         <tr>
           <% if( "true".equals(acknowledgeEvent) ) { %>
@@ -320,7 +379,7 @@
       	pageContext.setAttribute("event", event);
       %>
       
-        <tr valign="top" class="<%=events[i].getSeverity().getLabel()%>">
+        <tr valign="top" class="severity-<%=events[i].getSeverity().getLabel()%>">
           <% if( "true".equals(acknowledgeEvent) ) { %>
 						<% if( request.isUserInRole( Authentication.ROLE_ADMIN ) || !req.isUserInRole( Authentication.ROLE_READONLY ) ) { %>
 						<td valign="top" rowspan="3" class="divider">
@@ -344,7 +403,7 @@
             <% } %>
           </td>
           <td class="divider">
-            <nobr><fmt:formatDate value="${event.time}" type="date" dateStyle="short"/>&nbsp;<fmt:formatDate value="${event.time}" type="time" pattern="HH:mm:ss"/></nobr>
+            <nobr><fmt:formatDate value="${event.time}" type="BOTH" /></nobr>
             <nobr>
               <a href="<%=this.makeLink(callback, parms, new AfterDateFilter(events[i].getTime()), true, favorite)%>"  class="filterLink" title="Only show events occurring after this one">${addAfterFilter}</a>
               <a href="<%=this.makeLink(callback, parms, new BeforeDateFilter(events[i].getTime()), true, favorite)%>" class="filterLink" title="Only show events occurring before this one">${addBeforeFilter}</a>
@@ -414,7 +473,7 @@
           
         </tr>
         
-        <tr valign="top" class="<%= events[i].getSeverity().getLabel() %>">
+        <tr valign="top" class="severity-<%= events[i].getSeverity().getLabel() %>">
           <td colspan="4">
             <% if(events[i].getUei() != null) { %>
               <% Filter exactUEIFilter = new ExactUEIFilter(events[i].getUei()); %>
@@ -434,8 +493,8 @@
           </td>
         </tr>
        
-        <tr valign="top" class="<%= events[i].getSeverity().getLabel() %>">
-          <td colspan="5"><%=events[i].getLogMessage()%></td>
+        <tr valign="top" class="severity-<%= events[i].getSeverity().getLabel() %>">
+          <td colspan="5"><%=WebSecurityUtils.sanitizeString(events[i].getLogMessage(), true)%></td>
         </tr>
        
       <% } /*end for*/%>
@@ -476,9 +535,7 @@
               <% } %>
             <% } %>          
 
-    <jsp:include page="/includes/bookmark.jsp" flush="false" />
-
-    <jsp:include page="/includes/footer.jsp" flush="false" />
+    <jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />
 
 <%!
     final String urlBase = "event/list";

@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2013 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -31,6 +31,7 @@ package org.opennms.features.vaadin.nodemaps.internal;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.URL;
 import java.security.Principal;
 import java.util.Collections;
 import java.util.Enumeration;
@@ -51,15 +52,17 @@ import com.vaadin.server.VaadinRequest;
  * This class creates an {@link HttpServletRequest} object that delegates all calls to
  * a {@link VaadinRequest} instance. This is used so that we can fetch the header HTML
  * from an {@link OnmsHeaderProvider}.
- * 
+ *
  * TODO: Refactor into a common class.
  */
 public class HttpServletRequestVaadinImpl implements HttpServletRequest {
 
     private final VaadinRequest m_request;
+    private URL m_url;
 
-    public HttpServletRequestVaadinImpl(VaadinRequest request) {
+    public HttpServletRequestVaadinImpl(VaadinRequest request, URL url) {
         m_request = request;
+        m_url = url;
     }
 
     @Override
@@ -333,28 +336,19 @@ public class HttpServletRequestVaadinImpl implements HttpServletRequest {
         return null;
     }
 
-    /**
-     * @throws UnsupportedOperationException
-     */
     @Override
     public String getScheme() {
-        throw new UnsupportedOperationException("Unimplemented: " + this.getClass().getName() + ".getScheme()");
+        return m_url.getProtocol();
     }
 
-    /**
-     * @throws UnsupportedOperationException
-     */
     @Override
     public String getServerName() {
-        throw new UnsupportedOperationException("Unimplemented: " + this.getClass().getName() + ".getServerName()");
+        return m_url.getHost();
     }
 
-    /**
-     * @throws UnsupportedOperationException
-     */
     @Override
     public int getServerPort() {
-        throw new UnsupportedOperationException("Unimplemented: " + this.getClass().getName() + ".getServerPort()");
+        return m_url.getPort();
     }
 
     @Override

@@ -1,3 +1,31 @@
+/*******************************************************************************
+ * This file is part of OpenNMS(R).
+ *
+ * Copyright (C) 2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * OpenNMS(R) is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with OpenNMS(R).  If not, see:
+ *      http://www.gnu.org/licenses/
+ *
+ * For more information contact:
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
+ *******************************************************************************/
+
 /*
  * This class was automatically generated with 
  * <a href="http://www.castor.org">Castor 1.1.2.1</a>, using an XML
@@ -126,6 +154,14 @@ public class SendmailTest implements Serializable {
         super();
     }
 
+    public SendmailTest(final Long attemptInternal, final Boolean debug, final Boolean useAuthentication, final Boolean useJmta) {
+        super();
+        m_attemptInterval = attemptInternal;
+        m_debug = debug;
+        m_useAuthentication = useAuthentication;
+        m_useJmta = useJmta;
+    }
+
     /**
      * 
      * 
@@ -147,6 +183,10 @@ public class SendmailTest implements Serializable {
      */
     public void addJavamailProperty(final int index, final JavamailProperty javamailProperty) throws IndexOutOfBoundsException {
         m_javamailProperties.add(index, javamailProperty);
+    }
+
+    public void addJavamailProperty(final String name, final String value) {
+        m_javamailProperties.add(new JavamailProperty(name, value));
     }
 
     public void deleteAttemptInterval() {
@@ -680,6 +720,10 @@ public class SendmailTest implements Serializable {
         m_sendmailHost = sendmailHost;
     }
 
+    public void setSendmailHost(final String host, final Long port) {
+        m_sendmailHost = new SendmailHost(host, port);
+    }
+
     /**
      * Sets the value of field 'sendmailMessage'. The field
      * 'sendmailMessage' has the following description: Define the
@@ -739,6 +783,10 @@ public class SendmailTest implements Serializable {
      */
     public void setUserAuth(final UserAuth userAuth) {
         m_userAuth = userAuth;
+    }
+
+    public void setUserAuth(final String username, final String password) {
+        m_userAuth = new UserAuth(username, password);
     }
 
     /**

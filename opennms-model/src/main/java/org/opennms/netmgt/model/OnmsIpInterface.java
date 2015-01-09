@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -65,9 +65,9 @@ import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.hibernate.annotations.Type;
 import org.opennms.core.network.InetAddressXmlAdapter;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.model.events.AddEventVisitor;
 import org.opennms.netmgt.model.events.DeleteEventVisitor;
-import org.opennms.netmgt.model.events.EventForwarder;
 import org.springframework.core.style.ToStringCreator;
 
 /**
@@ -79,8 +79,7 @@ import org.springframework.core.style.ToStringCreator;
 @XmlAccessorType(XmlAccessType.NONE)
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class OnmsIpInterface extends OnmsEntity implements Serializable {
-    
-    private static final long serialVersionUID = 7750043250236397014L;
+    private static final long serialVersionUID = 5202941338689399917L;
 
     private Integer m_id;
 
@@ -355,8 +354,18 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
         m_node = node;
     }
 
+    @XmlTransient
+    @Transient
+    @JsonIgnore
+    public Integer getNodeId() {
+        if (m_node != null) {
+            return m_node.getId();
+        }
+        return null;
+    }
+
     /**
-     * The services on this node
+     * The services on this interface
      *
      * @return a {@link java.util.Set} object.
      */
@@ -376,6 +385,15 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
         m_monitoredServices = ifServices;
     }
 
+    @Transient
+    @JsonIgnore
+    public void addMonitoredService(final OnmsMonitoredService svc) {
+        m_monitoredServices.add(svc);
+    }
+
+    public void removeMonitoredService(final OnmsMonitoredService svc) {
+        m_monitoredServices.remove(svc);
+    }
 
     /**
      * The SnmpInterface associated with this interface if any
@@ -413,6 +431,7 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
         .append("isManaged", m_isManaged)
         .append("isSnmpPrimary", m_isSnmpPrimary)
         .append("ipLastCapsdPoll", m_ipLastCapsdPoll)
+        .append("nodeId", getNodeId())
         .toString();
     }
 
@@ -470,7 +489,6 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
     
     @Transient 
     @XmlAttribute
-    @JsonIgnore
     public int getMonitoredServiceCount () {
     	return m_monitoredServices.size();
     }
@@ -532,7 +550,7 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
      * <p>mergeMonitoredServices</p>
      *
      * @param scannedIface a {@link org.opennms.netmgt.model.OnmsIpInterface} object.
-     * @param eventForwarder a {@link org.opennms.netmgt.model.events.EventForwarder} object.
+     * @param eventForwarder a {@link org.opennms.netmgt.events.api.EventForwarder} object.
      * @param deleteMissing a boolean.
      */
     public void mergeMonitoredServices(OnmsIpInterface scannedIface, EventForwarder eventForwarder, boolean deleteMissing) {
@@ -606,13 +624,33 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
      * <p>mergeInterface</p>
      *
      * @param scannedIface a {@link org.opennms.netmgt.model.OnmsIpInterface} object.
-     * @param eventForwarder a {@link org.opennms.netmgt.model.events.EventForwarder} object.
+     * @param eventForwarder a {@link org.opennms.netmgt.events.api.EventForwarder} object.
      * @param deleteMissing a boolean.
      */
     public void mergeInterface(OnmsIpInterface scannedIface, EventForwarder eventForwarder, boolean deleteMissing) {
         mergeInterfaceAttributes(scannedIface);
         updateSnmpInterface(scannedIface);
         mergeMonitoredServices(scannedIface, eventForwarder, deleteMissing);
+    }
+
+    @Transient
+    @XmlTransient
+    @JsonIgnore
+    public String getForeignSource() {
+        if (getNode() != null) {
+            return getNode().getForeignSource();
+        }
+        return null;
+    }
+
+    @Transient
+    @XmlTransient
+    @JsonIgnore
+    public String getForeignId() {
+        if (getNode() != null) {
+            return getNode().getForeignId();
+        }
+        return null;
     }
 
 }

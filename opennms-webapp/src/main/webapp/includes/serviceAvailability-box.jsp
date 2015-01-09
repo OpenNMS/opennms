@@ -2,22 +2,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -137,8 +137,11 @@
     String timelineUrl = "/opennms/rest/timeline/html/" + String.valueOf(nodeId) + "/" + ipAddr + "/" + service.getServiceName() + "/" + timelineStart + "/" + timelineEnd + "/" + timelineWidth;
 %>
 
-<h3>Overall Availability</h3>
-<table>
+<div class="panel panel-default">
+<div class="panel-heading">
+    <h3 class="panel-title">Overall Availability</h3>
+</div>
+<table class="table table-condensed severity">
   <tr class="CellStatus">
     <td class="Cleared nobright" colspan="2"><%=ipAddr%></td>
     <td class="Cleared nobright"><img src="/opennms/rest/timeline/header/<%=timelineStart%>/<%=timelineEnd%>/<%=timelineWidth%>"></td>
@@ -146,7 +149,7 @@
   </tr>
   <tr class="CellStatus"/>
     <td class="Cleared nobright"></td>
-    <td class="<%=warnClass%> bright"><%=service.getServiceName()%></td>
+    <td class="severity-<%=warnClass%> bright"><%=service.getServiceName()%></td>
     <%
         if (service.isManaged()) {
     %>
@@ -161,3 +164,4 @@
     <td class="<%= styleClass %> nobright"><%= statusContent %></td>
   </tr>
 </table>
+</div>

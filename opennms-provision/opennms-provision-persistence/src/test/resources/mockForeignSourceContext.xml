@@ -10,44 +10,56 @@
 
   <context:annotation-config/>
 
-  <bean id="pendingForeignSourceRepository" class="org.opennms.netmgt.provision.persist.MockForeignSourceRepository">
+  <bean id="selectedPendingForeignSourceRepository" class="org.opennms.netmgt.provision.persist.MockForeignSourceRepository">
   	<qualifier value="pending" />
   </bean>
 
-  <bean id="deployedForeignSourceRepository" class="org.opennms.netmgt.provision.persist.MockForeignSourceRepository">
+  <bean id="selectedDeployedForeignSourceRepository" class="org.opennms.netmgt.provision.persist.MockForeignSourceRepository">
   	<qualifier value="deployed" />
   </bean>
 
-  <bean id="fusedForeignSourceRepository" class="org.opennms.netmgt.provision.persist.FusedForeignSourceRepository">
-  	<qualifier value="fused" />
-  	<property name="pendingForeignSourceRepository" ref="pendingForeignSourceRepository" />
-  	<property name="deployedForeignSourceRepository" ref="deployedForeignSourceRepository" />
+  <bean id="pendingForeignSourceRepository" class="org.opennms.netmgt.provision.persist.MockForeignSourceRepository">
+    <qualifier value="filePending" />
+  </bean>
+
+  <bean id="deployedForeignSourceRepository" class="org.opennms.netmgt.provision.persist.MockForeignSourceRepository">
+    <qualifier value="fileDeployed" />
   </bean>
 
   <bean id="fastPendingForeignSourceRepository" class="org.opennms.netmgt.provision.persist.MockForeignSourceRepository">
-  	<qualifier value="fastPending" />
+    <qualifier value="fastFilePending" />
   </bean>
 
   <bean id="fastDeployedForeignSourceRepository" class="org.opennms.netmgt.provision.persist.MockForeignSourceRepository">
-  	<qualifier value="fastDeployed" />
+    <qualifier value="fastFileDeployed" />
+  </bean>
+
+  <bean id="fusedForeignSourceRepository" class="org.opennms.netmgt.provision.persist.FusedForeignSourceRepository">
+    <qualifier value="fused" />
+    <property name="pendingForeignSourceRepository" ref="pendingForeignSourceRepository" />
+    <property name="deployedForeignSourceRepository" ref="deployedForeignSourceRepository" />
   </bean>
 
   <bean id="fastFusedForeignSourceRepository" class="org.opennms.netmgt.provision.persist.FusedForeignSourceRepository">
-  	<qualifier value="fastFused" />
-  	<property name="pendingForeignSourceRepository" ref="fastPendingForeignSourceRepository" />
-  	<property name="deployedForeignSourceRepository" ref="fastDeployedForeignSourceRepository" />
+    <qualifier value="fastFused" />
+    <property name="pendingForeignSourceRepository" ref="fastPendingForeignSourceRepository" />
+    <property name="deployedForeignSourceRepository" ref="fastDeployedForeignSourceRepository" />
   </bean>
 
   <bean id="cachingForeignSourceRepository" class="org.opennms.netmgt.provision.persist.MockForeignSourceRepository">
-  	<qualifier value="caching" />
+    <qualifier value="caching" />
+  </bean>
+
+  <bean id="fastCachingForeignSourceRepository" class="org.opennms.netmgt.provision.persist.MockForeignSourceRepository">
+    <qualifier value="fastCaching" />
   </bean>
 
   <bean id="queueingForeignSourceRepository" class="org.opennms.netmgt.provision.persist.MockForeignSourceRepository">
-  	<qualifier value="queueing" />
+    <qualifier value="queueing" />
   </bean>
-  
-  <bean id="fastForeignSourceRepository" class="org.opennms.netmgt.provision.persist.MockForeignSourceRepository">
-  	<qualifier value="fast" />
+
+  <bean id="fastQueueingForeignSourceRepository" class="org.opennms.netmgt.provision.persist.MockForeignSourceRepository">
+    <qualifier value="fastQueueing" />
   </bean>
 
 </beans>

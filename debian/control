@@ -119,7 +119,7 @@ Description: Enterprise-grade Open-source Network Management Platform (NCS)
 Package: opennms-common
 Architecture: all
 Depends: ${perl:Depends}, libdbi-perl, libdbd-pg-perl, libgetopt-mixed-perl
-Recommends: libnet-snmp-perl, libxml2-utils
+Recommends: libnet-snmp-perl, libxml2-utils, libwww-perl, libxml-twig-perl
 Description: Enterprise-grade Open-source Network Management Platform (Common Files)
  OpenNMS is an enterprise-grade network management system written in Java.
  .
@@ -178,7 +178,7 @@ Description: Enterprise-grade Open-source Network Management Platform (Documenta
 
 Package: opennms-contrib
 Architecture: all
-Depends: opennms-common (=${binary:Version}), ${perl:Depends}, libwww-perl, libxml-twig-perl
+Depends: opennms-common (=${binary:Version}), ${perl:Depends}
 Description: Enterprise-grade Open-source Network Management Platform (Contrib)
  OpenNMS is an enterprise-grade network management system written in Java.
  .
@@ -193,7 +193,7 @@ Description: Enterprise-grade Open-source Network Management Platform (Contrib)
 
 Package: opennms-plugins
 Architecture: all
-Depends: opennms-plugin-provisioning-dns (=${binary:Version}), opennms-plugin-provisioning-link (=${binary:Version}), opennms-plugin-provisioning-map (=${binary:Version}), opennms-plugin-provisioning-rancid (=${binary:Version}), opennms-plugin-protocol-cifs (=${binary:Version}), opennms-plugin-protocol-dhcp (=${binary:Version}), opennms-plugin-protocol-nsclient (=${binary:Version}), opennms-plugin-protocol-radius (=${binary:Version}), opennms-plugin-protocol-xml (=${binary:Version}), opennms-plugin-protocol-xmp (=${binary:Version}), opennms-plugin-ticketer-jira (=${binary:Version}), opennms-plugin-ticketer-otrs (=${binary:Version}), opennms-plugin-ticketer-rt (=${binary:Version})
+Depends: opennms-plugin-provisioning-dns (=${binary:Version}), opennms-plugin-provisioning-link (=${binary:Version}), opennms-plugin-provisioning-map (=${binary:Version}), opennms-plugin-provisioning-rancid (=${binary:Version}), opennms-plugin-provisioning-snmp-asset (=${binary:Version}), opennms-plugin-provisioning-snmp-hardware-inventory (=${binary:Version}), opennms-plugin-protocol-cifs (=${binary:Version}), opennms-plugin-protocol-dhcp (=${binary:Version}), opennms-plugin-protocol-nsclient (=${binary:Version}), opennms-plugin-protocol-radius (=${binary:Version}), opennms-plugin-protocol-xml (=${binary:Version}), opennms-plugin-protocol-xmp (=${binary:Version}), opennms-plugin-collector-vtdxml-handler (=${binary:Version}), opennms-plugin-ticketer-jira (=${binary:Version}), opennms-plugin-ticketer-otrs (=${binary:Version}), opennms-plugin-ticketer-rt (=${binary:Version})
 Description: Enterprise-grade Open-source Network Management Platform (All Plugins)
  OpenNMS is an enterprise-grade network management system written in Java.
  .
@@ -285,6 +285,23 @@ Description: Enterprise-grade Open-source Network Management Platform (SNMP Asse
  .
  The SNMP asset provisioning adapter responds to provisioning events by updating asset
  fields with data fetched from SNMP GET requests.
+
+Package: opennms-plugin-provisioning-snmp-hardware-inventory
+Architecture: all
+Depends: opennms-server (=${binary:Version})
+Replaces: opennms-common (<<${binary:Version})
+Description: Enterprise-grade Open-source Network Management Platform (SNMP Hardware Inventory Provisioning Adapter)
+ OpenNMS is an enterprise-grade network management system written in Java.
+ .
+ OpenNMS can monitor various network services to determine status and service
+ level availability.  Data collection is performed using protocols such as SNMP
+ to generate reports and alert on thresholds.  An extensible event management
+ and notification system handles both internally and externally generated
+ events (such as SNMP traps), and generates notices via email, pager, SMS, etc.
+ .
+ The SNMP Hardware Inventory provisioning adapter responds to provisioning events by
+ updating hardware fields with data fetched from the ENTITY-MIB and vendor extensions
+ of this MIB.
 
 Package: opennms-plugin-protocol-cifs
 Architecture: all

@@ -2,22 +2,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -32,57 +32,60 @@
 <%@page language="java" contentType="text/html" session="true"
 	import="java.sql.Connection,
 			java.util.List,
+			java.util.Set,
 			org.opennms.core.db.DataSourceFactory,
 			org.opennms.core.utils.DBUtils,
-			org.opennms.netmgt.poller.PathOutageFactory
+			org.opennms.netmgt.poller.PathOutageManager,
+			org.opennms.netmgt.poller.PathOutageManagerDaoImpl
 " %>
 
-<jsp:include page="/includes/header.jsp" flush="false">
-  <jsp:param name="title" value="Show Path Outage Nodes" />
-  <jsp:param name="headTitle" value="Show Path Outage Nodes" />
-  <jsp:param name="breadcrumb" value="Show Path Outage Nodes" />
-
+<jsp:include page="/includes/bootstrap.jsp" flush="false">
+  <jsp:param name="title" value="Path Outage Nodes" />
+  <jsp:param name="headTitle" value="Path Outage Nodes" />
+  <jsp:param name="breadcrumb" value="<a href=&quot;pathOutage/index.jsp&quot;>Path Outages</a>" />
+  <jsp:param name="breadcrumb" value="Nodes" />
 </jsp:include>
 
 <% 
       String critIp = request.getParameter("critIp");
       String critSvc = request.getParameter("critSvc");
-      String[] pthData = PathOutageFactory.getCriticalPathData(critIp, critSvc);
-      List<String> nodeList = PathOutageFactory.getNodesInPath(critIp, critSvc); %>
+      PathOutageManager pathOutageManager = PathOutageManagerDaoImpl.getInstance();
+      String[] pthData = pathOutageManager.getCriticalPathData(critIp, critSvc);
+      Set<Integer> nodeList = pathOutageManager.getNodesInPath(critIp, critSvc);
+%>
   
-      <h3>Path Outage Node List</h3>
-      <table>
+<div class="panel panel-default fix-subpixel">
+    <div class="panel-heading">
+        <h3 class="panel-title">Path Outage Node List</h3>
+    </div>
+    <table class="table table-condensed severity">
+          <thead class="dark">
           <tr>
           <th>Critical Path</th>
           <th>Status</th>
           </tr>
+          </thead>
 
-          <tr class="CellStatus">
+          <tr>
           <td><%= critIp %></td>
-          <td class="<%= pthData[3] %>"><%= critSvc %></td>
+          <td class="bright severity-<%= pthData[3].toLowerCase() %>"><%= critSvc %></td>
           </tr>
 
+          <thead class="dark">
           <tr>
           <th>Node</th>
           <th>Status</th>
           </tr>
+          </thead>
 
-<%        final Connection conn = DataSourceFactory.getInstance().getConnection();
-          final DBUtils d = new DBUtils(PathOutageFactory.class, conn);
-          try {
-              for (String nodeid : nodeList) {
-                  String labelColor[] = PathOutageFactory.getLabelAndStatus(nodeid, conn); %>
-                  <tr class="CellStatus">
-                  <td><a href="element/node.jsp?node=<%= nodeid %>"><%= labelColor[0] %></a></td>
-                  <td class="<%= labelColor[1] %>"><%= labelColor[2] %></td>
-                  </tr>
-              <% } %>
-          <% } finally {
-            d.cleanUp();
-          } %>
+          <% for (Integer nodeid : nodeList) {
+              String labelColor[] = PathOutageManagerDaoImpl.getInstance().getLabelAndStatus(nodeid.toString(), null); %>
+              <tr>
+              <td><a href="element/node.jsp?node=<%= nodeid %>"><%= labelColor[0] %></a></td>
+              <td class="bright severity-<%= labelColor[1].toLowerCase() %>"><%= labelColor[2] %></td>
+              </tr>
+          <% } %>
+    </table>
+</div>
 
-      </table>
-
-<jsp:include page="/includes/footer.jsp" flush="false" />
-
-
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />

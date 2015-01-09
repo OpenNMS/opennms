@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -36,6 +36,7 @@ import java.net.URL;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.SortedMap;
@@ -83,7 +84,7 @@ public class PropertiesBackedManagedObject implements ManagedObject, MockSnmpMOL
 	 * Cache the dynamic variable types to speed things up.
 	 * This removes the need to search the class-path and use reflection at every call.
 	 */
-	HashMap<String,DynamicVariable> m_dynamicVariableCache = new HashMap<String,DynamicVariable>();
+	Map<String,DynamicVariable> m_dynamicVariableCache = new HashMap<String,DynamicVariable>();
     
     /** {@inheritDoc} */
         @Override
@@ -93,7 +94,12 @@ public class PropertiesBackedManagedObject implements ManagedObject, MockSnmpMOL
     	// Clear cache on reload
     	m_dynamicVariableCache.clear();
 
-        m_vars = new TreeMap<OID, Object>();
+    	if (props.isEmpty()) {
+            m_scope = new DefaultMOScope(new OID(".1"), false, new OID(".1"), false);
+            return Collections.singletonList((ManagedObject)this);
+    	}
+
+    	m_vars = new TreeMap<OID, Object>();
 
         for(final Entry<Object, Object> e : props.entrySet()) {
             final String key = (String)e.getKey();
@@ -111,7 +117,6 @@ public class PropertiesBackedManagedObject implements ManagedObject, MockSnmpMOL
                 throw nfe;
             }
         }
-
 
         m_scope = new DefaultMOScope(m_vars.firstKey(), true, m_vars.lastKey(), true);
         
@@ -319,6 +324,13 @@ public class PropertiesBackedManagedObject implements ManagedObject, MockSnmpMOL
 	 */
 	private Variable getVariableFromValueString(String oidStr, String valStr) {
 	    Variable newVar;
+	    
+	    if (valStr.startsWith("Wrong Type")) {
+	        String newVal = valStr.replaceFirst("Wrong Type \\(should be .*\\): ", "");
+	        s_log.error("Bad Mib walk has value: '"+ valStr + "' using '"+newVal+"'");
+	        valStr = newVal;
+	    }
+
 	
 	    if ("\"\"".equals(valStr)) {
 	        newVar = new Null();

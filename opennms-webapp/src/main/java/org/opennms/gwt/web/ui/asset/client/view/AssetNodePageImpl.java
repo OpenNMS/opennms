@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -29,10 +29,14 @@
 package org.opennms.gwt.web.ui.asset.client.view;
 
 import java.util.ArrayList;
+import java.util.List;
 
+import org.gwtbootstrap3.client.ui.Button;
+import org.gwtbootstrap3.client.ui.Heading;
+import org.gwtbootstrap3.client.ui.Modal;
+import org.gwtbootstrap3.client.ui.Panel;
 import org.opennms.gwt.web.ui.asset.client.AssetPageConstants;
 import org.opennms.gwt.web.ui.asset.client.presenter.AssetPagePresenter;
-import org.opennms.gwt.web.ui.asset.client.tools.DisclosurePanelCookie;
 import org.opennms.gwt.web.ui.asset.client.tools.fieldsets.FieldSet;
 import org.opennms.gwt.web.ui.asset.client.tools.fieldsets.FieldSetDateBox;
 import org.opennms.gwt.web.ui.asset.client.tools.fieldsets.FieldSetListBox;
@@ -47,23 +51,17 @@ import org.opennms.gwt.web.ui.asset.shared.AssetCommand;
 import org.opennms.gwt.web.ui.asset.shared.AssetSuggCommand;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.i18n.client.DateTimeFormat.PredefinedFormat;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiTemplate;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Anchor;
-import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.DialogBox;
-import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.SimplePanel;
-import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
@@ -90,20 +88,20 @@ public class AssetNodePageImpl extends Composite implements AssetPagePresenter.D
     AssetCommand m_asset;
 
     @UiField
-    Label nodeInfoLabel;
+    Heading nodeInfoLabel;
     @UiField
     Anchor nodeInfoLink;
 
     @UiField
-    VerticalPanel mainPanel;
+    FlowPanel mainPanel;
 
     @UiField
-    Label lInfoTop;
+    Heading lInfoTop;
     @UiField
-    Label lInfoBottom;
+    Heading lInfoBottom;
 
     @UiField
-    DisclosurePanelCookie snmpDiscPanel;
+    Panel snmpDiscPanel;
 
     @UiField
     FieldSetTextDisplay sSystemId;
@@ -263,9 +261,15 @@ public class AssetNodePageImpl extends Composite implements AssetPagePresenter.D
     Button resetButton;
 
     @UiField
+    Modal errorModal;
+
+    @UiField
+    HTML errorModalHtml;
+
+    @UiField
     Label lastModified;
 
-    private ArrayList<FieldSet> fieldSetList = new ArrayList<FieldSet>();
+    private List<FieldSet> fieldSetList = new ArrayList<FieldSet>();
 
     public AssetNodePageImpl() {
         initWidget(uiBinder.createAndBindUi(this));
@@ -741,30 +745,8 @@ public class AssetNodePageImpl extends Composite implements AssetPagePresenter.D
         if (throwable != null) {
             error = throwable.toString();
         }
-        final DialogBox dialog = new DialogBox();
-        dialog.setText(description);
-        VerticalPanel panel = new VerticalPanel();
-        HTMLPanel html = new HTMLPanel(error);
-        html.setStyleName("Message");
-        panel.add(html);
-
-        Button ok = new Button("OK");
-        SimplePanel buttonPanel = new SimplePanel();
-        buttonPanel.setWidget(ok);
-        buttonPanel.setStyleName("Button");
-        panel.add(buttonPanel);
-
-        dialog.setPopupPosition(Window.getScrollLeft() + 100, Window.getScrollTop() + 100);
-        dialog.setWidget(panel);
-        ok.addClickHandler(new ClickHandler() {
-
-            @Override
-            public void onClick(ClickEvent arg0) {
-                dialog.hide();
-            }
-        });
-
-        dialog.show();
+        errorModalHtml.setHTML(description + error);
+        errorModal.show();
     }
 
     @Override

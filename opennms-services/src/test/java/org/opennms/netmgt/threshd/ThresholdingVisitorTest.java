@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -62,7 +62,6 @@ import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.db.MockDatabase;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.collectd.AliasedResource;
 import org.opennms.netmgt.collectd.GenericIndexResource;
 import org.opennms.netmgt.collectd.GenericIndexResourceType;
@@ -90,6 +89,9 @@ import org.opennms.netmgt.config.ThreshdConfigManager;
 import org.opennms.netmgt.config.ThresholdingConfigFactory;
 import org.opennms.netmgt.dao.mock.EventAnticipator;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
+import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.events.api.EventIpcManager;
+import org.opennms.netmgt.events.api.EventIpcManagerFactory;
 import org.opennms.netmgt.filter.FilterDao;
 import org.opennms.netmgt.filter.FilterDaoFactory;
 import org.opennms.netmgt.filter.JdbcFilterDao;
@@ -99,8 +101,6 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.ResourceTypeUtils;
 import org.opennms.netmgt.model.events.EventBuilder;
-import org.opennms.netmgt.model.events.EventIpcManager;
-import org.opennms.netmgt.model.events.EventIpcManagerFactory;
 import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpUtils;
@@ -543,6 +543,8 @@ public class ThresholdingVisitorTest {
                 network.addService("HTTP"); // Adding HTTP on node 5
             }
         }
+        network.addPathOutage(1, InetAddressUtils.addr("192.168.1.1"), "ICMP");
+
         MockDatabase db = new MockDatabase();
         db.populate(network);
         db.update("insert into categories (categoryid, categoryname) values (?, ?)", 10, "CAT1");
@@ -1128,6 +1130,7 @@ public class ThresholdingVisitorTest {
         MockNetwork network = new MockNetwork();
         network.setCriticalService("ICMP");
 
+
         for (int i=1; i<=numOfNodes; i++) {
             String ipAddress = baseIpAddress + i;
             network.addNode(i, "testNode-" + ipAddress);
@@ -1136,6 +1139,7 @@ public class ThresholdingVisitorTest {
             network.addService("ICMP");
             network.addService("SNMP");
         }
+        network.addPathOutage(1, InetAddressUtils.addr("192.168.1.1"), "ICMP");
 
         MockDatabase db = new MockDatabase();
         db.populate(network);
@@ -1983,6 +1987,7 @@ public class ThresholdingVisitorTest {
         network.addService("ICMP");
         network.addService("SNMP");
         network.addService("HTTP");
+        network.addPathOutage(1, InetAddressUtils.addr("192.168.1.1"), "ICMP");
         MockDatabase db = new MockDatabase();
         db.populate(network);
         if (ifName != null)

@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2013 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
+ * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -28,162 +28,103 @@
 
 package org.opennms.smoketest;
 
-import org.junit.Before;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.openqa.selenium.Alert;
+import org.openqa.selenium.By;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class MenuHeaderTest extends OpenNMSSeleniumTestCase {
-    private static final Logger LOG = LoggerFactory.getLogger(MenuHeaderTest.class);
+    @Test
+    public void testMenuEntries() throws Exception {
+        clickMenuItem("Search", null, "element/index.jsp");
+        findElementByXpath("//h3[text()='Search for Nodes']");
 
-    @Before
-    public void setUp() throws Exception {
-        super.setUp();
+        clickMenuItem("Info", "Events", "event/index");
+        findElementByXpath("//h3[text()='Event Queries']");
+
+        clickMenuItem("Info", "Alarms", "alarm/index.htm");
+        findElementByXpath("//h3[text()='Alarm Queries']");
+
+        clickMenuItem("Info", "Notifications", "notification/index.jsp");
+        findElementByXpath("//h3[text()='Notification queries']");
+
+        clickMenuItem("Info", "Assets", "asset/index.jsp");
+        findElementByXpath("//h3[text()='Search Asset Information']");
+
+        clickMenuItem("Info", "Nodes", "element/nodeList.htm");
+        findElementByXpath("//h3//span[text()='Nodes' or text()='Availability']");
+
+        clickMenuItem("Status", "Outages", "outage/index.jsp");
+        findElementByXpath("//h3[text()='Outage Menu']");
+
+        clickMenuItem("Status", "Path Outages", "pathOutage/index.jsp");
+        findElementByXpath("//h3[text()='All Path Outages']");
+
+        clickMenuItem("Status", "Distributed Status", "distributedStatusSummary.htm");
+        findElementByXpath("//h3[contains(text(), 'Distributed Status Summary')]");
+
+        clickMenuItem("Status", "Surveillance", "surveillanceView.htm?viewName=default");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//h3[text()='Surveillance View: default']")));
+
+        clickMenuItem("Reports", "Charts", "charts/index.jsp");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("include-charts")));
+
+        clickMenuItem("Reports", "Resource Graphs", "graph/index.jsp");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//h3[contains(text(), 'Standard Resource')]")));
+
+        clickMenuItem("Reports", "KSC Reports", "KSC/index.htm");
+        findElementByXpath("//h3[text()='Customized Reports']");
+
+        clickMenuItem("Reports", "Statistics", "statisticsReports/index.htm");
+        findElementByXpath("//h3[text()='Statistics Report List']");
+
+        clickMenuItem("Dashboards", "Dashboard", "dashboard.jsp");
+        findElementByXpath("//h3[text()='Surveillance View: default']");
+
+        clickMenuItem("Dashboards", "Ops Board", "vaadin-wallboard");
+        findElementByXpath("//select[@class='v-select-select']");
+
         frontPage();
-    }
+        clickMenuItem("Maps", "Distributed", "RemotePollerMap/index.jsp");
+        m_driver.switchTo().frame("app");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("gwt-uid-1")));
 
-    @Test
-    public void a_testNodeLink() throws Exception {
-        clickAndWait("link=Node List");
-        assertTrue(selenium.isTextPresent("/ Node List") || selenium.isTextPresent("Node Interfaces"));
-    }
+        frontPage();
+        clickMenuItem("Maps", "Topology", "topology");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[contains(text(), 'Last update time')]")));
 
-    @Test
-    public void b_testSearchLink() throws Exception {
-        clickAndVerifyText("link=Search", "Search for Nodes");
-    }
+        frontPage();
+        clickMenuItem("Maps", "Geographical", "node-maps");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[text()='Show Severity >=']")));
 
-    @Test
-    public void c_testOutagesLink() throws Exception {
-        clickAndVerifyText("link=Outages", "Outage Menu");
-    }
-
-    @Test
-    public void d_testPathOutagesLink() throws Exception {
-        clickAndVerifyText("link=Path Outages", "All path outages");
-    }
-
-    @Test
-    public void e_testDashboardLink() throws Exception {
-        if (selenium.isElementPresent("//a[@href='dashboards.htm']")) {
-            // new style dashboard menu
-            clickAndWait("//a[@href='dashboards.htm']");
-            waitForText("OpenNMS Dashboards");
-
-            clickAndWait("//div[@id='content']//a[@href='dashboard.jsp']");
-            waitForText("Surveillance View:", LOAD_TIMEOUT);
-
-            frontPage();
-            clickAndWait("//a[@href='dashboards.htm']");
-            waitForText("OpenNMS Dashboards");
-
-            clickAndWait("//div[@id='content']//a[@href='vaadin-wallboard']");
-            waitForElement("//span[@class='v-button-caption' and text() = 'Ops Board']");
-        } else if (selenium.isElementPresent("//a[@href='dashboard.jsp']")) {
-            // old style dashboard menu
-            clickAndWait("//a[@href='dashboard.jsp']");
-            waitForText("Surveillance View:", LOAD_TIMEOUT);
-        } else {
-            fail("No dashboard link found.");
+        frontPage();
+        clickMenuItem("Maps", "SVG", "map/index.jsp");
+        findElementById("opennmsSVGMaps");
+        try {
+            final Alert alert = wait.until(ExpectedConditions.alertIsPresent());
+            alert.dismiss();
+        } catch (final Exception e) {
         }
-    }
 
-    @Test
-    public void f_testEventsLink() {
-        clickAndVerifyText("link=Events", "Event Queries");
-    }
-
-    @Test
-    public void g_testAlarmsLink() {
-        clickAndVerifyText("link=Alarms", "Alarm Queries");
-    }
-
-    @Test
-    public void h_testNotificationsLink() {
-        clickAndVerifyText("link=Notifications", "Notification queries");
-    }
-
-    @Test
-    public void i_testAssetsLink() {
-        clickAndVerifyText("link=Assets", "Search Asset Information");
-    }
-
-    @Test
-    public void j_testReportsLink() {
-        clickAndVerifyText("link=Reports", "Resource Graphs");
-    }
-
-    @Test
-    public void k_testChartsLink() {
-        clickAndVerifyText("link=Charts", "/ Charts");
-    }
-
-    @Test
-    public void l_testSurveillanceLink() throws InterruptedException {
-        clickAndWait("link=Surveillance");
-        waitForText("Surveillance View:", LOAD_TIMEOUT);
-    }
-
-    @Test
-    public void m_testDistributedStatusLink() {
-        clickAndWait("link=Distributed Status");
-        assertTrue(selenium.isTextPresent("Distributed Status Summary") || selenium.isTextPresent("No applications have been defined for this system"));
-    }
-
-    private void goToMapsPage() throws Exception {
-        LOG.debug("goToMapsPage()");
         frontPage();
-        clickAndVerifyText("//a[@href='maps.htm']", "OpenNMS Maps");
-    }
+        clickMenuItem("name=nav-admin-top", "Configure OpenNMS", BASE_URL + "opennms/admin/index.jsp");
+        findElementByXpath("//h3[text()='OpenNMS System']");
+        findElementByXpath("//h3[text()='Operations']");
 
-    @Test
-    public void n_testDistributedMapLink() throws Exception {
-        goToMapsPage();
-        clickAndWait("//div[@id='content']//a[contains(text(), 'Distributed')]");
-        Thread.sleep(1000);
-        waitForHtmlSource("RemotePollerMap");
-        waitForText("Last update:");
-    }
-    
-    @Test
-    public void o_testTopologyMapLink() throws Exception {
-        // the vaadin apps are finicky
-        goToMapsPage();
-        clickAndWait("//div[@id='content']//a[contains(text(), 'Topology')]");
-        waitForHtmlSource("vaadin", 20000, true);
-        waitForHtmlSource("opennmstopology", 20000, true);
-        // Make sure that the alarm browser has loaded
-        waitForText("Select All", 20000, true);
-        handleVaadinErrorButtons();
-    }
-    
-    @Test
-    public void p_testGeographicalMapLink() throws Exception {
-        goToMapsPage();
-        clickAndWait("//div[@id='content']//a[contains(text(), 'Geographical')]");
-        waitForHtmlSource("vaadin", 20000, true);
-        waitForHtmlSource("opennmsnodemaps", 20000, true);
-        handleVaadinErrorButtons();
-    }
-    
-    @Test
-    public void q_testSvgMapLink() throws Exception {
-        goToMapsPage();
-        clickAndWait("//div[@id='content']//a[contains(text(), 'SVG')]");
-        waitForText("/ Network Topology Maps", LOAD_TIMEOUT);
-    }
+        frontPage();
+        clickMenuItem("name=nav-admin-top", "Quick-Add Node", BASE_URL + "opennms/admin/node/add.htm");
+        findElementByXpath("//h3[text()='Node Quick-Add']");
 
-    @Test
-    public void r_testAdminLink() {
-        clickAndVerifyText("link=Admin", "Configure Users, Groups and On-Call Roles");
-    }
+        frontPage();
+        clickMenuItem("name=nav-admin-top", "Help/Support", BASE_URL + "opennms/support/index.htm");
+        findElementByXpath("//h3[text()='Commercial Support']");
 
-    @Test
-    public void s_testSupportLink() throws Exception {
-        clickAndVerifyText("link=Support", "Enter your OpenNMS Group commercial support login");
+        frontPage();
+        clickMenuItem("name=nav-admin-top", "Log Out", BASE_URL + "opennms/j_spring_security_logout");
+        findElementById("input_j_username");
     }
 
 }

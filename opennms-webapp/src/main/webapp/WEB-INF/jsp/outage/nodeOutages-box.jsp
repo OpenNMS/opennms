@@ -2,22 +2,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -52,8 +52,11 @@
 <c:url var="outageLink" value="outage/list.htm">
   <c:param name="filter" value="node=${nodeId}"/>
 </c:url>
-<h3 class="o-box"><a href="${outageLink}">Recent&nbsp;Outages</a></h3>
-<table class="o-box">
+<div class="panel panel-default">
+<div class="panel-heading">
+<h3 class="panel-title"><a href="${outageLink}">Recent&nbsp;Outages</a></h3>
+</div>
+<table class="table table-condensed severity">
 <% if(outages.length == 0) { %>
   <tr>
     <td>There have been no outages on this node in the last 24 hours.</td>
@@ -73,9 +76,9 @@
      pageContext.setAttribute("outage", outage);
   %>
 		<% if( outages[i].getRegainedServiceTime() == null ) { %>
-      <tr class="Critical">
+      <tr class="severity-Critical">
     <% } else { %>
-      <tr class="Cleared">
+      <tr class="severity-Cleared">
     <% } %>
       <c:url var="interfaceLink" value="element/interface.jsp">
         <c:param name="node" value="<%=String.valueOf(nodeId)%>"/>
@@ -101,3 +104,4 @@
 <% } %>
 
 </table>
+</div>

@@ -18,6 +18,20 @@
 
     <context:annotation-config />
 
+    <bean id="propertyPlaceholderConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+    <property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE" />
+    <!-- 
+      We need to ignore unresolvable placeholders since if multiple PropertyPlaceholderConfigurer
+      preprocessors are in use in a single context (such as inside unit tests), Spring will encounter
+      the issue documented here:
+
+      https://jira.springsource.org/browse/SPR-6428
+
+      TODO: Fix this behavior after upgrading to Spring 3.1.
+    -->
+    <property name="ignoreUnresolvablePlaceholders" value="true"/>
+  </bean>
+
 	<bean id="init-onmsServerConfig-factory" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
 		<property name="staticMethod"><value>org.opennms.netmgt.config.OpennmsServerConfigFactory.init</value></property>
 	</bean>
@@ -30,20 +44,25 @@
 
     <bean id="pollOutagesConfig" class="org.opennms.netmgt.config.PollOutagesConfigFactory" depends-on="init-pollOutagesConfig-factory" factory-method="getInstance"/>
 
+	<onmsgi:service interface="org.opennms.netmgt.config.PollOutagesConfig" ref="pollOutagesConfig" />
+
 	<bean id="init-pollerConfig-factory" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
 		<property name="staticMethod"><value>org.opennms.netmgt.config.PollerConfigFactory.init</value></property>
 	</bean>
 
 	<bean id="pollerConfig" class="org.opennms.netmgt.config.PollerConfigFactory" depends-on="init-pollerConfig-factory" factory-method="getInstance"/>
 
-	<!--  collectd config factory is now init'd in the dao context -->
+	<onmsgi:service interface="org.opennms.netmgt.config.PollerConfig" ref="pollerConfig" />
 
+	<!--  collectd config factory is now init'd in the dao context -->
 
 	<bean id="init-capsdConfig-factory" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
 		<property name="staticMethod"><value>org.opennms.netmgt.config.CapsdConfigFactory.init</value></property>
 	</bean>
 
 	<bean id="capsdConfig" class="org.opennms.netmgt.config.CapsdConfigFactory" depends-on="init-capsdConfig-factory" factory-method="getInstance"/>
+	
+	<onmsgi:service interface="org.opennms.netmgt.config.CapsdConfig" ref="capsdConfig" />
 	
     <bean id="init-wmiPeerFactory" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
 		<property name="staticMethod"><value>org.opennms.netmgt.config.WmiPeerFactory.init</value></property>
@@ -68,10 +87,89 @@
 
   <bean id="groupManager" class="org.opennms.netmgt.config.GroupFactory" depends-on="groupManager-init" factory-method="getInstance"/>
 
+  <onmsgi:service interface="org.opennms.netmgt.config.api.GroupConfig" ref="groupManager" />
+
   <bean id="userManager-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
     <property name="staticMethod"><value>org.opennms.netmgt.config.UserFactory.init</value></property>
   </bean>
 
   <bean id="userManager" class="org.opennms.netmgt.config.UserFactory" depends-on="userManager-init" factory-method="getInstance"/>
+  
+  <onmsgi:service interface="org.opennms.netmgt.config.api.UserConfig" ref="userManager" />
+  
+   <bean id="discoveryConfig-factory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+    <property name="staticMethod"><value>org.opennms.netmgt.config.DiscoveryConfigFactory.init</value></property>
+  </bean>
+
+  <bean id="discoveryFactory" class="org.opennms.netmgt.config.DiscoveryConfigFactory" depends-on="discoveryConfig-factory-init" factory-method="getInstance"/>
+  
+  <onmsgi:service interface="org.opennms.netmgt.config.api.DiscoveryConfigurationFactory" ref="discoveryFactory" />
+  
+  <bean id="databaseSchemaConfigFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+    <property name="staticMethod"><value>org.opennms.netmgt.config.DatabaseSchemaConfigFactory.init</value></property>
+  </bean>
+
+  <bean id="databaseSchemaConfigFactory" class="org.opennms.netmgt.config.DatabaseSchemaConfigFactory" depends-on="databaseSchemaConfigFactory-init" factory-method="getInstance"/>
+  
+  <onmsgi:service interface="org.opennms.netmgt.config.api.DatabaseSchemaConfig" ref="databaseSchemaConfigFactory" />
+  
+  <bean id="collectdConfig" class="org.opennms.netmgt.config.CollectdConfigFactory"/>
+  
+  <onmsgi:service interface="org.opennms.netmgt.config.api.CollectdConfigFactory" ref="collectdConfig" />
+  
+   <bean id="dataCollectionConfigDao" class="org.opennms.netmgt.config.DefaultDataCollectionConfigDao">
+    <property name="configResource" ref="dataCollectionConfigResourceLocation" />
+    <property name="configDirectory" ref="dataCollectionConfigDirectoryLocation" />
+    <property name="reloadCheckInterval" ref="dataCollectionConfigReloadCheckInterval" />
+  </bean>
+
+  <bean id="dataCollectionConfig-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+    <property name="staticMethod">
+      <value>org.opennms.netmgt.config.DataCollectionConfigFactory.setInstance</value>
+    </property>
+    <property name="arguments">
+      <list>
+        <ref bean="dataCollectionConfigDao" />
+      </list>
+    </property>
+  </bean>
+
+  <bean id="dataCollectionConfig" class="org.opennms.netmgt.config.DataCollectionConfigFactory" depends-on="dataCollectionConfig-init" factory-method="getInstance" />
+
+  <onmsgi:service interface="org.opennms.netmgt.config.DataCollectionConfigDao" ref="dataCollectionConfigDao" />
+  
+  <bean id="snmpPeerFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+    <property name="staticMethod"><value>org.opennms.netmgt.config.SnmpPeerFactory.init</value></property>
+  </bean>
+
+  <bean id="snmpPeerFactory" class="org.opennms.netmgt.config.SnmpPeerFactory" depends-on="snmpPeerFactory-init" factory-method="getInstance"/>
+
+  <onmsgi:service interface="org.opennms.netmgt.config.api.SnmpAgentConfigFactory" ref="snmpPeerFactory"/>
+  
+  <bean id="eventdConfigManager" class="org.opennms.netmgt.config.EventdConfigManager"/>
+  
+  <onmsgi:service interface="org.opennms.netmgt.config.api.EventdConfig" ref="eventdConfigManager" />
+  
+  <bean id="trapdConfig-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" lazy-init="true">
+    <property name="staticMethod"><value>org.opennms.netmgt.config.TrapdConfigFactory.init</value></property>
+  </bean>
+
+  <bean id="trapdConfig" class="org.opennms.netmgt.config.TrapdConfigFactory" depends-on="trapdConfig-init" lazy-init="true" factory-method="getInstance"/>
+  
+  <onmsgi:service interface="org.opennms.netmgt.config.TrapdConfig" ref="trapdConfig" />
+  
+  <bean id="dataCollectionConfigResourceLocation" class="java.lang.String">
+    <constructor-arg value="file:${opennms.home}/etc/datacollection-config.xml" />
+  </bean>
+
+  <bean id="dataCollectionConfigDirectoryLocation" class="java.lang.String">
+    <constructor-arg value="${opennms.home}/etc/datacollection" />
+  </bean>
+
+  <bean id="dataCollectionConfigReloadCheckInterval" class="java.lang.Long">
+    <constructor-arg value="${org.opennms.snmp.dataCollectionConfig.reloadCheckInterval:30000}" />
+  </bean>
+  
+  
   
 </beans>

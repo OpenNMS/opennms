@@ -7,16 +7,16 @@
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -138,6 +138,8 @@ public class DefaultNodeListService implements NodeListService, InitializingBean
             addCriteriaForService(criteria, command.getService());
         } else if (command.hasMaclike()) {
             addCriteriaForMaclike(criteria, command.getMaclike());
+        } else if (command.hasMib2Parm() &&command.hasMib2ParmValue() && command.hasMib2ParmMatchType()) {
+            addCriteriaForMib2Parm(criteria, command.getMib2Parm(), command.getMib2ParmValue(), command.getMib2ParmMatchType());
         } else if (command.hasSnmpParm() &&command.hasSnmpParmValue() && command.hasSnmpParmMatchType()) {
             addCriteriaForSnmpParm(criteria, command.getSnmpParm(), command.getSnmpParmValue(), command.getSnmpParmMatchType());
         } else if (command.hasCategory1() && command.hasCategory2()) {
@@ -157,8 +159,16 @@ public class DefaultNodeListService implements NodeListService, InitializingBean
         }
     }
 
+    private static void addCriteriaForMib2Parm(OnmsCriteria criteria, String mib2Parm, String mib2ParmValue, String mib2ParmMatchType) {
+        // All of the MIB-II system attributes are in the node table
+        if(mib2ParmMatchType.equals("contains")) {
+            criteria.add(Restrictions.ilike("node.".concat(mib2Parm), mib2ParmValue, MatchMode.ANYWHERE));
+        } else if(mib2ParmMatchType.equals("equals")) {
+            criteria.add(Restrictions.eq("node.".concat(mib2Parm), mib2ParmValue));
+        }
+    }
 
-    private void addCriteriaForSnmpParm(OnmsCriteria criteria,
+    private static void addCriteriaForSnmpParm(OnmsCriteria criteria,
             String snmpParm, String snmpParmValue, String snmpParmMatchType) {
         criteria.createAlias("node.ipInterfaces", "ipInterface");
         criteria.add(Restrictions.ne("ipInterface.isManaged", "D"));
@@ -173,7 +183,7 @@ public class DefaultNodeListService implements NodeListService, InitializingBean
         }
     }
 
-    private void addCriteriaForCurrentOutages(OnmsCriteria criteria) {
+    private static void addCriteriaForCurrentOutages(OnmsCriteria criteria) {
         /*
          * This doesn't work properly if ipInterfaces and/or
          * monitoredServices have other restrictions.  If we are
@@ -192,19 +202,19 @@ public class DefaultNodeListService implements NodeListService, InitializingBean
         criteria.add(Restrictions.sqlRestriction("{alias}.nodeId in (select o.nodeId from outages o where o.ifregainedservice is null and o.suppresstime is null or o.suppresstime < now())"));
     }
 
-    private void addCriteriaForNodename(OnmsCriteria criteria, String nodeName) {
+    private static void addCriteriaForNodename(OnmsCriteria criteria, String nodeName) {
         criteria.add(Restrictions.ilike("node.label", nodeName, MatchMode.ANYWHERE));
     }
     
-    private void addCriteriaForNodeId(OnmsCriteria criteria, int nodeId) {
+    private static void addCriteriaForNodeId(OnmsCriteria criteria, int nodeId) {
         criteria.add(Restrictions.idEq(nodeId));
     }
     
-    private void addCriteriaForForeignSource(OnmsCriteria criteria, String foreignSource) {
+    private static void addCriteriaForForeignSource(OnmsCriteria criteria, String foreignSource) {
         criteria.add(Restrictions.ilike("node.foreignSource", foreignSource, MatchMode.ANYWHERE));
     }
 
-    private void addCriteriaForIpLike(OnmsCriteria criteria, String iplike) {
+    private static void addCriteriaForIpLike(OnmsCriteria criteria, String iplike) {
         OnmsCriteria ipInterface = criteria.createCriteria("node.ipInterfaces", "ipInterface");
         ipInterface.add(Restrictions.ne("isManaged", "D"));
         
@@ -212,7 +222,7 @@ public class DefaultNodeListService implements NodeListService, InitializingBean
     }
     
 
-    private void addCriteriaForService(OnmsCriteria criteria, int serviceId) {
+    private static void addCriteriaForService(OnmsCriteria criteria, int serviceId) {
         criteria.createAlias("node.ipInterfaces", "ipInterface");
         criteria.add(Restrictions.ne("ipInterface.isManaged", "D"));
 
@@ -222,7 +232,7 @@ public class DefaultNodeListService implements NodeListService, InitializingBean
         criteria.add(Restrictions.ne("monitoredService.status", "D"));
     }
 
-    private void addCriteriaForMaclike(OnmsCriteria criteria, String macLike) {
+    private static void addCriteriaForMaclike(OnmsCriteria criteria, String macLike) {
         String macLikeStripped = macLike.replaceAll("[:-]", "");
         
         criteria.createAlias("node.snmpInterfaces", "snmpInterface", OnmsCriteria.LEFT_JOIN);
@@ -288,7 +298,7 @@ public class DefaultNodeListService implements NodeListService, InitializingBean
     }
     
 
-    private RowDef getRowDef(View view, String rowLabel) {
+    private static RowDef getRowDef(View view, String rowLabel) {
         Rows rows = view.getRows();
         Collection<RowDef> rowDefs = rows.getRowDefCollection();
         for (RowDef rowDef : rowDefs) {
@@ -300,7 +310,7 @@ public class DefaultNodeListService implements NodeListService, InitializingBean
         throw new DataRetrievalFailureException("Unable to locate row: "+rowLabel+" for status view: "+view.getName());
     }
     
-    private Set<String> getCategoryNamesForRowDef(RowDef rowDef) {
+    private static Set<String> getCategoryNamesForRowDef(RowDef rowDef) {
         Set<String> categories = new LinkedHashSet<String>();
         
         List<Category> cats = rowDef.getCategoryCollection();
@@ -310,7 +320,7 @@ public class DefaultNodeListService implements NodeListService, InitializingBean
         return categories;
     }
 
-    private NodeListModel createModelForNodes(NodeListCommand command, Collection<OnmsNode> onmsNodes) {
+    private static NodeListModel createModelForNodes(NodeListCommand command, Collection<OnmsNode> onmsNodes) {
         int interfaceCount = 0;
         List<NodeModel> displayNodes = new LinkedList<NodeModel>();
         for (OnmsNode node : onmsNodes) {

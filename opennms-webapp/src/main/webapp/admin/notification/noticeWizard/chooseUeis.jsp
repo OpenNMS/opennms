@@ -2,22 +2,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -64,7 +64,7 @@
     Notification newNotice = (Notification)user.getAttribute("newNotice");
 %>
 
-<jsp:include page="/includes/header.jsp" flush="false" >
+<jsp:include page="/includes/bootstrap.jsp" flush="false" >
   <jsp:param name="title" value="Choose Event" />
   <jsp:param name="headTitle" value="Choose Event" />
   <jsp:param name="headTitle" value="Admin" />
@@ -120,25 +120,34 @@ $(document).ready(function() {
 
 <h2><%=(newNotice.getName()!=null ? "Editing notice: " + newNotice.getName() + "<br/>" : "")%></h2>
 
-<h3>Choose the event uei that will trigger this notification.</h3>
-
 <form method="post" name="events"
       action="admin/notification/noticeWizard/notificationWizard" >
-      <input type="hidden" name="sourcePage" value="<%=NotificationWizardServlet.SOURCE_PAGE_UEIS%>"/>
-      <table width="50%">
+<input type="hidden" name="sourcePage" value="<%=NotificationWizardServlet.SOURCE_PAGE_UEIS%>"/>
+
+<div class="row">
+  <div class="col-md-6">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Choose the event uei that will trigger this notification.</h3>
+      </div>
+      <table class="table table-condensed">
         <tr>
           <td valign="top" align="left">
-            <h4>Events</h4>
-            <select id="uei" NAME="uei" SIZE="20" >
-             <%=buildEventSelect(newNotice)%>
-            </select><br />
-            REGEX FIELD:
-            <input id="regexp" name="regexp" type="text" size="96" value="<%=(newNotice.getUei()!=null ? newNotice.getUei() : "")%>" />
+            <div class="form-group">
+              <label for="uei" class="control-label">Events</label>
+              <select id="uei" name="uei" class="form-control" size="20" >
+              <%=buildEventSelect(newNotice)%>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="regexp" class="control-label">Regular Expression Field</label>
+              <input id="regexp" name="regexp" type="text" class="form-control" size="96" value="<%=(newNotice.getUei()!=null ? newNotice.getUei() : "")%>" />
+            </div>
           </td>
         </tr>
         <tr>
           <td colspan="2">
-            <input type="reset"/>
+            <input type="reset" class="btn btn-default"/>
           </td>
         </tr>
         <tr>
@@ -147,9 +156,12 @@ $(document).ready(function() {
           </td>
         </tr>
       </table>
-    </form>
+  </div> <!-- column -->
+</div> <!-- row -->
 
-<jsp:include page="/includes/footer.jsp" flush="false" />
+</form>
+
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />
 
 <%!
     public String buildEventSelect(Notification notice)
@@ -160,6 +172,7 @@ $(document).ready(function() {
         
         List<String> excludeList = getExcludeList();
         TreeMap<String, String> sortedMap = new TreeMap<String, String>();
+        List<Event> disappearingList = new ArrayList<Event>();
 
         if (notice.getUei() != null && notice.getUei().startsWith("~")) {
             buffer.append("<option selected value=\""+notice.getUei()+"\">REGEX_FIELD</option>\n");
@@ -177,8 +190,11 @@ $(document).ready(function() {
             String trimmedUei = stripUei(uei);
             //System.out.println(trimmedUei);
             
-            if (!excludeList.contains(trimmedUei)) {
+            if (!excludeList.contains(trimmedUei) && !isDisappearingEvent(e)) {
                 sortedMap.put(label,uei);
+            }
+            if (isDisappearingEvent(e)) {
+                disappearingList.add(e);
             }
         }
 
@@ -190,6 +206,18 @@ $(document).ready(function() {
 			buffer.append("<option value=" + uei + ">" + label + "</option>");
 		}
         }
+
+	if (!disappearingList.isEmpty()) {
+	    buffer.append("<optgroup label=\"Events not eligible for notifications\" disabled=\"true\">");
+	    for (Event e : disappearingList) {
+	        String selected = " ";
+	        if (e.getUei().equals(notice.getUei())) {
+	            selected = " selected ";
+	        }
+	        buffer.append("<option" + selected + "value=\"" + e.getUei() + "\">" + e.getEventLabel() + "</option>");
+	    }
+	    buffer.append("</optgroup>");
+	}
         
         return buffer.toString();
     }
@@ -221,5 +249,15 @@ $(document).ready(function() {
         }
         
         return excludes;
+     }
+
+     public boolean isDisappearingEvent(Event e) {
+         if ("donotpersist".equalsIgnoreCase(e.getLogmsg().getDest())) {
+             return true;
+         }
+         if (e.getAlarmData() != null && e.getAlarmData().getAutoClean() == true) {
+             return true;
+         }
+         return false;
      }
 %>

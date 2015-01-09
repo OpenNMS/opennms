@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2005-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -61,6 +61,7 @@ import org.springframework.test.context.ContextConfiguration;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
+        "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
         "classpath*:/META-INF/opennms/component-dao.xml",
@@ -70,7 +71,7 @@ import org.springframework.test.context.ContextConfiguration;
 @JUnitTemporaryDatabase(dirtiesContext=false)
 public class ChartUtilsTest {
     private static final Logger LOG = LoggerFactory.getLogger(ChartUtilsTest.class);
-    
+
     private static final String CHART_CONFIG = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + 
             "<tns:chart-configuration xmlns:tns=\"http://xmlns.opennms.org/xsd/config/charts\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://xmlns.opennms.org/xsd/config/charts ../src/services/org/opennms/netmgt/config/chart-configuration.xsd \">\n" + 
             "\n" + 
@@ -140,7 +141,7 @@ public class ChartUtilsTest {
             "  </tns:bar-chart>\n" + 
             "</tns:chart-configuration>\n" + 
             "";
-//    private ChartConfiguration m_config;
+    //    private ChartConfiguration m_config;
 
     @Before
     public void setUp() throws Exception {
@@ -154,11 +155,11 @@ public class ChartUtilsTest {
 
     @Test
     public void testGetBarChartConfig() throws MarshalException, ValidationException, FileNotFoundException, IOException {
-        
+
         assertNotNull(ChartUtils.getBarChartConfigByName("sample-bar-chart"));
         assertTrue(ChartUtils.getBarChartConfigByName("sample-bar-chart").getClass() == BarChart.class);
     }
-    
+
     @Test
     public void testGetBarChart() throws MarshalException, ValidationException, IOException, SQLException {
         JFreeChart barChart = ChartUtils.getBarChart("sample-bar-chart");
@@ -169,7 +170,7 @@ public class ChartUtilsTest {
 
     @Test
     public void testGetChartWithInvalidChartName() throws MarshalException, ValidationException, IOException, SQLException {
-        
+
         JFreeChart chart = null;
         try {
             chart = ChartUtils.getBarChart("opennms-rules!");
@@ -181,12 +182,12 @@ public class ChartUtilsTest {
 
     @Test
     public void testGetChartAsFileOutputStream() throws FileNotFoundException, IOException, SQLException, ValidationException, MarshalException {
-    	final File tempFile = File.createTempFile("sample-bar-chart", "png");
+        final File tempFile = File.createTempFile("sample-bar-chart", "png");
         OutputStream stream = new FileOutputStream(tempFile);
         ChartUtils.getBarChart("sample-bar-chart", stream);
         stream.close();
     }
-    
+
     @Test
     public void testGetChartAsBufferedImage() throws MarshalException, ValidationException, IOException, SQLException {
         BufferedImage bi = ChartUtils.getChartAsBufferedImage("sample-bar-chart");
@@ -198,7 +199,7 @@ public class ChartUtilsTest {
         ByteArrayInputStream rdr = new ByteArrayInputStream(CHART_CONFIG.getBytes("UTF-8"));
         ChartConfigFactory.parseXml(rdr);
         rdr.close();        
-//        m_config = ChartConfigFactory.getInstance().getConfiguration();
+        //        m_config = ChartConfigFactory.getInstance().getConfiguration();
     }
 
 }

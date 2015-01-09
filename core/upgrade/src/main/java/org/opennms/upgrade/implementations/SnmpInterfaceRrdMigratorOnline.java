@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2013 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
+ * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -25,6 +25,7 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
+
 package org.opennms.upgrade.implementations;
 
 import java.io.File;
@@ -42,14 +43,13 @@ import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.utils.DBUtils;
 import org.opennms.netmgt.config.DataCollectionConfigFactory;
 import org.opennms.netmgt.config.DefaultDataCollectionConfigDao;
-import org.opennms.netmgt.config.KSC_PerformanceReportFactory;
-import org.opennms.netmgt.config.kscReports.Graph;
-import org.opennms.netmgt.config.kscReports.Report;
 import org.opennms.netmgt.rrd.model.RrdConvertUtils;
 import org.opennms.netmgt.rrd.model.v1.RRDv1;
 import org.opennms.netmgt.rrd.model.v3.RRDv3;
 import org.opennms.upgrade.api.AbstractOnmsUpgrade;
 import org.opennms.upgrade.api.OnmsUpgradeException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.io.FileSystemResource;
 
 /**
@@ -70,6 +70,8 @@ import org.springframework.core.io.FileSystemResource;
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a> 
  */
 public class SnmpInterfaceRrdMigratorOnline extends AbstractOnmsUpgrade {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(SnmpInterfaceRrdMigratorOnline.class);
 
     /** The interfaces to merge. */
     private List<SnmpInterfaceUpgrade> interfacesToMerge;
@@ -123,11 +125,6 @@ public class SnmpInterfaceRrdMigratorOnline extends AbstractOnmsUpgrade {
         } catch (Exception e) {
             throw new OnmsUpgradeException("Can't initialize datacollection-config.xml because " + e.getMessage());
         }
-        try {
-            KSC_PerformanceReportFactory.init();
-        } catch (Exception e) {
-            throw new OnmsUpgradeException("Can't initialize ksc-performance-reports.xml because " + e.getMessage());
-        }
         interfacesToMerge = getInterfacesToMerge();
         for (SnmpInterfaceUpgrade intf : interfacesToMerge) {
             File[] targets = { intf.getOldInterfaceDir(), intf.getNewInterfaceDir() };
@@ -150,7 +147,9 @@ public class SnmpInterfaceRrdMigratorOnline extends AbstractOnmsUpgrade {
                 File zip = new File(target.getAbsolutePath() + ZIP_EXT);
                 if (zip.exists()) {
                     log("Removing backup: %s\n", zip);
-                    zip.delete();
+                    if (!zip.delete()) {
+                    	LOG.warn("Could not delete file: {}", zip.getPath());
+                    }
                 }
             }
         }
@@ -185,41 +184,14 @@ public class SnmpInterfaceRrdMigratorOnline extends AbstractOnmsUpgrade {
                     } catch (IOException e1) {
                         log("Warning: can't delete directory %s\n", target);
                     }
-                    target.mkdirs();
+                    if(!target.mkdirs()) {
+                    	LOG.warn("Could not make directory: {}", target.getPath());
+                    }
                     unzipFile(zip, target);
-                    zip.delete();
-                }
-            }
-        }
-        fixKscReports();
-    }
-
-    /**
-     * Fix KSC reports.
-     *
-     * @throws OnmsUpgradeException the onms upgrade exception
-     */
-    protected void fixKscReports()  throws OnmsUpgradeException {
-        log("Fixing KSC Reports.\n");
-        boolean changed = false;
-        for (Integer reportId : KSC_PerformanceReportFactory.getInstance().getReportList().keySet()) {
-            Report report = KSC_PerformanceReportFactory.getInstance().getReportByIndex(reportId);
-            log("  Checking report %s\n", report.getTitle());
-            for (Graph graph : report.getGraphCollection()) {
-                for (SnmpInterfaceUpgrade intf : interfacesToMerge) {
-                    if (intf.shouldUpdate(graph.getResourceId())) {
-                        changed = true;
-                        graph.setResourceId(intf.getNewResourceId());
+                    if(!zip.delete()) {
+                    	LOG.warn("Could not delete file: {}", zip.getPath());
                     }
                 }
-            }
-        }
-        if (changed) {
-            log("Updating KSC reports.\n");
-            try {
-                KSC_PerformanceReportFactory.getInstance().saveCurrent();
-            } catch (Exception e) {
-                log("Warning: can't save KSC Reports because %s\n", e.getMessage());
             }
         }
     }

@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2013 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
+ * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -31,6 +31,7 @@ package org.opennms.features.vaadin.nodemaps.internal;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -56,6 +57,7 @@ import com.vaadin.annotations.JavaScript;
 import com.vaadin.annotations.StyleSheet;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.Title;
+import com.vaadin.server.Page;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Alignment;
@@ -122,7 +124,8 @@ import com.vaadin.ui.VerticalSplitPanel;
 })
 public class NodeMapsApplication extends UI {
     private static final Logger LOG = LoggerFactory.getLogger(NodeMapsApplication.class);
-    private static final int REFRESH_INTERVAL = 5 * 60 * 1000;
+    // private static final int REFRESH_INTERVAL = 5 * 60 * 1000;
+    private static final int REFRESH_INTERVAL = 10 * 1000;
     private VerticalLayout m_rootLayout;
     private VerticalLayout m_layout;
 
@@ -166,7 +169,6 @@ public class NodeMapsApplication extends UI {
                 bottomLayoutBar.setSizeFull();
                 bottomLayoutBar.setSecondComponent(getTabSheet());
                 m_layout.addComponent(bottomLayoutBar);
-
                 m_layout.markAsDirty();
             }
         } else {
@@ -293,6 +295,7 @@ public class NodeMapsApplication extends UI {
     private void createRootLayout() {
         m_rootLayout = new VerticalLayout();
         m_rootLayout.setSizeFull();
+        m_rootLayout.addStyleName("root-layout");
         setContent(m_rootLayout);
         addHeader();
 
@@ -311,10 +314,10 @@ public class NodeMapsApplication extends UI {
     private void addHeader() {
         if (m_headerProvider != null) {
             try {
-                setHeaderHtml(m_headerProvider.getHeaderHtml(new HttpServletRequestVaadinImpl(m_request)));
+                URL pageUrl = Page.getCurrent().getLocation().toURL();
+                setHeaderHtml(m_headerProvider.getHeaderHtml(new HttpServletRequestVaadinImpl(m_request, pageUrl)));
             } catch (final Exception e) {
-                LOG.warn("failed to get header HTML for request " + m_request.getPathInfo(), e.getCause());
-
+                LOG.error("failed to get header HTML for request " + m_request.getPathInfo(), e.getCause());
             }
         }
         if (m_headerHtml != null) {
@@ -346,6 +349,10 @@ public class NodeMapsApplication extends UI {
         final Refresher refresher = new Refresher();
         refresher.setRefreshInterval(REFRESH_INTERVAL);
         addExtension(refresher);
+    }
+
+    public void refresh() {
+        m_mapWidgetComponent.refresh();
     }
 
     public void setFocusedNodes(final List<Integer> nodeIds) {

@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -69,9 +69,12 @@ import org.opennms.netmgt.linkd.snmp.OspfIfTable;
 import org.opennms.netmgt.linkd.snmp.OspfIfTableEntry;
 import org.opennms.netmgt.linkd.snmp.OspfNbrTable;
 import org.opennms.netmgt.linkd.snmp.OspfNbrTableEntry;
+import org.opennms.netmgt.linkd.snmp.QBridgeDot1dTpFdbTable;
+import org.opennms.netmgt.linkd.snmp.QBridgeDot1dTpFdbTableEntry;
 import org.opennms.netmgt.model.IsIsElement.IsisAdminState;
 import org.opennms.netmgt.model.IsIsLink.IsisISAdjNeighSysType;
 import org.opennms.netmgt.model.IsIsLink.IsisISAdjState;
+import org.opennms.netmgt.model.topology.OspfNbrInterface;
 import org.opennms.netmgt.nb.Nms10205bNetworkBuilder;
 import org.opennms.netmgt.nb.TestNetworkBuilder;
 import org.opennms.netmgt.snmp.CollectionTracker;
@@ -245,7 +248,7 @@ public class LinkdSnmpTest extends TestNetworkBuilder implements InitializingBea
             @JUnitSnmpAgent(host = FROH_IP, port = 161, resource = "classpath:linkd/nms0001/" + FROH_NAME + "-"+FROH_IP + "-walk.txt"),
             @JUnitSnmpAgent(host = OEDIPUS_IP, port = 161, resource = "classpath:linkd/nms0001/" + OEDIPUS_NAME + "-"+OEDIPUS_IP + "-walk.txt"),
             @JUnitSnmpAgent(host = SIEGFRIE_IP, port = 161, resource = "classpath:linkd/nms0001/" + SIEGFRIE_NAME + "-"+SIEGFRIE_IP + "-walk.txt")
-    })
+    }, forceMockStrategy=true)
     public void testIsisCircTableCollection() throws Exception {
 
         String name = "isisCircTable";
@@ -534,7 +537,7 @@ public class LinkdSnmpTest extends TestNetworkBuilder implements InitializingBea
 
 	@Test
     @JUnitSnmpAgents(value={
-        @JUnitSnmpAgent(host=MIKROTIK_IP, port=161, resource="classpath:linkd/nms102/"+MIKROTIK_NAME+"-"+MIKROTIK_IP+"-walk.txt")
+        @JUnitSnmpAgent(host=MIKROTIK_IP, port=161, resource=MIKROTIK_SNMP_RESOURCE)
     })
     public void testMtxrWlRtabTableCollection() throws Exception {
         
@@ -1604,6 +1607,45 @@ public class LinkdSnmpTest extends TestNetworkBuilder implements InitializingBea
             checkSwitch5Row(lldpLocTableEntry);
         }
     }
+
+    @Test
+    @JUnitSnmpAgents(value={
+            @JUnitSnmpAgent(host="10.1.1.2", port=161, resource="classpath:linkd/nms4930/dlink_DES-3026.properties")
+    })
+    public void testDot1qTpFdbTableWalk() throws Exception {
+
+    	String trackerName = "dot1qTpFdbTable";
+    	QBridgeDot1dTpFdbTable dot1qTpFdbTable = new QBridgeDot1dTpFdbTable(InetAddressUtils.addr("10.1.1.2"));
+        CollectionTracker[] tracker = new CollectionTracker[0];
+        tracker = new CollectionTracker[] {dot1qTpFdbTable};
+    	SnmpAgentConfig  config = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName("10.1.1.2"));
+
+        SnmpWalker walker =  SnmpUtils.createWalker(config, trackerName, tracker);
+
+        walker.start();
+
+        try {
+            walker.waitFor();
+            if (walker.timedOut()) {
+                assertEquals(false, true);
+            }  else if (walker.failed()) {
+                assertEquals(false, true);
+           }
+        } catch (final InterruptedException e) {
+            assertEquals(false, true);
+            return;
+        }
+
+        final Collection<QBridgeDot1dTpFdbTableEntry> entries = dot1qTpFdbTable.getEntries();
+        assertEquals(61, entries.size());
+
+        for (QBridgeDot1dTpFdbTableEntry link: entries) {
+        	System.out.println(link.getQBridgeDot1dTpFdbAddress());
+        	System.out.println(link.getQBridgeDot1dTpFdbPort());
+        	System.out.println(link.getQBridgeDot1dTpFdbStatus());
+        }
+    }
+
 
     private void checkSwitch1Row(LldpLocTableEntry lldpLocTableEntry) {
         final Integer lldpLocPortNum = lldpLocTableEntry.getLldpLocPortNum();

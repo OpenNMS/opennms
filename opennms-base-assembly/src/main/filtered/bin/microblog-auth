@@ -1,11 +1,16 @@
 #!/bin/sh
 
 OPENNMS_HOME="${install.dir}"
+OPENNMS_BINDIR="${install.bin.dir}"
 
 if [ -f "$OPENNMS_HOME/etc/opennms.conf" ]; then
 	. "$OPENNMS_HOME/etc/opennms.conf"
 fi
 
-exec /Users/ranger/rcs/opennms-1.12/target/opennms-1.11.95-SNAPSHOT/bin/runjava -r -- \
-	$ADDITIONAL_MANAGER_OPTIONS -Dopennms.home="$OPENNMS_HOME" -Dopennms.manager.class=org.opennms.netmgt.notifd.MicroblogClient \
-	-jar "${OPENNMS_HOME}"/lib/opennms_bootstrap.jar "$@"
+exec "$OPENNMS_BINDIR"/runjava -r -- \
+	$ADDITIONAL_MANAGER_OPTIONS \
+	-Dopennms.home="$OPENNMS_HOME" \
+	-Dlog4j.configurationFile="$OPENNMS_HOME"/etc/log4j2-tools.xml \
+	-Dopennms.manager.class=org.opennms.netmgt.notifd.MicroblogClient \
+	-jar "$OPENNMS_HOME"/lib/opennms_bootstrap.jar \
+	"$@"

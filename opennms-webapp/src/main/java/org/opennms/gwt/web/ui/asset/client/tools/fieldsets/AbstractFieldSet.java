@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -29,22 +29,21 @@
 package org.opennms.gwt.web.ui.asset.client.tools.fieldsets;
 
 import java.util.ArrayList;
+import java.util.List;
 
+import org.gwtbootstrap3.client.ui.Form;
+import org.gwtbootstrap3.client.ui.FormGroup;
+import org.gwtbootstrap3.client.ui.FormLabel;
+import org.gwtbootstrap3.client.ui.Tooltip;
+import org.gwtbootstrap3.client.ui.constants.ColumnSize;
+import org.gwtbootstrap3.client.ui.constants.FormType;
+import org.gwtbootstrap3.client.ui.constants.Placement;
 import org.opennms.gwt.web.ui.asset.client.tools.validation.Validator;
 
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.FocusEvent;
-import com.google.gwt.event.dom.client.MouseOutEvent;
-import com.google.gwt.event.dom.client.MouseOutHandler;
-import com.google.gwt.event.dom.client.MouseOverEvent;
-import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.DecoratedPopupPanel;
-import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.VerticalPanel;
-import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.ui.FlowPanel;
 
 /**
  * @author <a href="mailto:MarkusNeumannMarkus@gmail.com">Markus Neumann</a>
@@ -60,67 +59,52 @@ import com.google.gwt.user.client.ui.Widget;
  */
 public abstract class AbstractFieldSet extends Composite implements FieldSet {
 
-	protected VerticalPanel mainPanel = new VerticalPanel();
-	protected HorizontalPanel panel = new HorizontalPanel();
-	protected Label label = new Label();
+	protected Form form = new Form();
+	protected FlowPanel panel = new FlowPanel();
+	protected FormGroup formGroup = new FormGroup();
+	protected Tooltip tooltip = new Tooltip();
+	protected FormLabel label = new FormLabel();
 	protected Boolean enabled = true;
 	protected Boolean changed = false;
-	protected Label errorLabel = new Label();
-	protected Label warningLabel = new Label();
+	protected FormLabel errorLabel = new FormLabel();
+	protected FormLabel warningLabel = new FormLabel();
 	protected String helpText = "";
-	protected DecoratedPopupPanel popPanel = new DecoratedPopupPanel(true);
-	protected ArrayList<Validator> errorValidators = new ArrayList<Validator>();
-	protected ArrayList<Validator> warningValidators = new ArrayList<Validator>();
+	protected List<Validator> errorValidators = new ArrayList<Validator>();
+	protected List<Validator> warningValidators = new ArrayList<Validator>();
 	protected Object inititalValue;
 
 	public AbstractFieldSet(String name, final String helpText) {
+		label.setText(name);
+		label.addStyleName(ColumnSize.MD_3.getCssName());
 
-		// helpText popup preperation
+		/*
+		 * If helpText is set, then wrap the label in a tooltip, otherwise
+		 * add it directly to the form group.
+		 */
 		this.helpText = helpText;
-		popPanel.setWidth("400px");
 		if ((helpText != null) && (!helpText.equals(""))) {
-			label.addMouseOverHandler(new MouseOverHandler() {
-				@Override
-				public void onMouseOver(MouseOverEvent event) {
-					Widget source = ((Widget) event.getSource()).getParent();
-					int left = source.getAbsoluteLeft() + 10;
-					int top = source.getAbsoluteTop() + source.getOffsetHeight();
-					popPanel.setPopupPosition(left, top);
-					popPanel.setWidget(new HTML(helpText));
-					popPanel.show();
-				}
-			});
-
-			label.addMouseOutHandler(new MouseOutHandler() {
-				@Override
-				public void onMouseOut(MouseOutEvent event) {
-					popPanel.hide();
-				}
-			});
+			tooltip.setPlacement(Placement.RIGHT);
+			tooltip.setText(helpText);
+			tooltip.add(label);
+			formGroup.add(tooltip);
+		} else {
+			formGroup.add(label);
 		}
 
-		label.setText(name);
-		label.setStyleName("label");
-
-		panel.addStyleName("FieldSetHorizontalPanel");
-		panel.add(label);
+		panel.addStyleName(ColumnSize.MD_9.getCssName());
+		formGroup.add(panel);
 
 		errorLabel.setVisible(false);
 		errorLabel.setText(null);
-		errorLabel.setStyleName("FieldSetErrorLabel");
 
 		warningLabel.setVisible(false);
 		warningLabel.setText(null);
-		warningLabel.setStyleName("FieldSetWarningLabel");
 
-		mainPanel.add(errorLabel);
-		mainPanel.add(warningLabel);
-		mainPanel.add(panel);
-
-		mainPanel.setStyleName("FieldSet");
+		form.setType(FormType.HORIZONTAL);
+		form.add(formGroup);
 
 		// All composites must call initWidget() in their constructors.
-		initWidget(mainPanel);
+		initWidget(form);
 	}
 
 	public void addErrorValidator(Validator validator) {
@@ -144,7 +128,7 @@ public abstract class AbstractFieldSet extends Composite implements FieldSet {
 		// inititalValue);
 		if (this.getValue() != null) {
 			if (!this.getValue().equals(inititalValue)) {
-				mainPanel.setStyleDependentName("changed", true);
+				form.setStyleName("has-success", true);
 				changed = true;
 				validate(this.getValue());
 				return true;
@@ -158,7 +142,7 @@ public abstract class AbstractFieldSet extends Composite implements FieldSet {
 				}
 			}
 		}
-		mainPanel.setStyleDependentName("changed", false);
+		form.setStyleName("has-success", false);
 		changed = false;
 		return false;
 	}
@@ -166,13 +150,13 @@ public abstract class AbstractFieldSet extends Composite implements FieldSet {
 	@Override
 	public void clearChanged() {
 		changed = false;
-		mainPanel.setStyleDependentName("changed", false);
+		form.setStyleName("has-success", false);
 	}
 
 	@Override
 	public void clearErrors() {
 		errorLabel.setText(null);
-		mainPanel.setStyleDependentName("error", false);
+		form.setStyleName("has-error", false);
 	}
 
 	public void clearErrorValidators() {
@@ -182,7 +166,7 @@ public abstract class AbstractFieldSet extends Composite implements FieldSet {
 	@Override
 	public void clearWarnings() {
 		warningLabel.setText(null);
-		mainPanel.setStyleDependentName("warning", false);
+		form.setStyleName("has-warning", false);
 	}
 
 	public void clearWarningValidators() {
@@ -199,7 +183,7 @@ public abstract class AbstractFieldSet extends Composite implements FieldSet {
 		return errorLabel.getText();
 	}
 
-	public ArrayList<Validator> getErrorValidators() {
+	public List<Validator> getErrorValidators() {
 		return errorValidators;
 	}
 
@@ -227,20 +211,20 @@ public abstract class AbstractFieldSet extends Composite implements FieldSet {
 	public void setError(String error) {
 		errorLabel.setText(error);
 		errorLabel.setVisible(true);
-		mainPanel.setStyleDependentName("error", true);
+		form.setStyleName("has-error", true);
 	}
 
-	public void setErrors(ArrayList<String> errors) {
+	public void setErrors(List<String> errors) {
 		String allErrors = "";
 		for (String error : errors) {
 			allErrors += error + " ";
 		}
 		errorLabel.setText(allErrors);
 		errorLabel.setVisible(true);
-		mainPanel.setStyleDependentName("error", true);
+		form.setStyleName("has-error", true);
 	}
 
-	public void setErrorValidators(ArrayList<Validator> validators) {
+	public void setErrorValidators(List<Validator> validators) {
 		errorValidators = validators;
 	}
 
@@ -253,20 +237,20 @@ public abstract class AbstractFieldSet extends Composite implements FieldSet {
 	public void setWarning(String warning) {
 		warningLabel.setText(warning);
 		warningLabel.setVisible(true);
-		mainPanel.setStyleDependentName("warning", true);
+		form.setStyleName("has-warning", true);
 	}
 
-	public void setWarnings(ArrayList<String> warnings) {
+	public void setWarnings(List<String> warnings) {
 		String allWarnings = "";
 		for (String warning : warnings) {
 			allWarnings += warning + " ";
 		}
 		warningLabel.setText(allWarnings);
 		warningLabel.setVisible(true);
-		mainPanel.setStyleDependentName("warning", true);
+		form.setStyleName("has-warning", true);
 	}
 
-	public void setWarningValidators(ArrayList<Validator> validators) {
+	public void setWarningValidators(List<Validator> validators) {
 		warningValidators = validators;
 	}
 

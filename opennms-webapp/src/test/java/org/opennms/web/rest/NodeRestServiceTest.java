@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -35,6 +35,8 @@ import static org.junit.Assert.assertTrue;
 import static org.opennms.core.test.xml.XmlTest.assertXpathMatches;
 
 import java.io.StringReader;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
@@ -451,6 +453,44 @@ public class NodeRestServiceTest extends AbstractSpringJerseyRestTestCase {
         xml = sendRequest(GET, url, parseParamData("comparator=ilike&match=any&label=8%25&ipInterface.ipAddress=8%25&ipInterface.ipHostName=8%25"), 200);
         // Make sure that there were no matches
         assertTrue(xml, xml.contains("totalCount=\"0\""));
+    }
+
+    @Test
+    @JUnitTemporaryDatabase
+    public void testNodeWithoutHardwareInventory() throws Exception {
+        createIpInterface();
+        sendRequest(GET, "/nodes/1/hardwareInventory", 400); // node doesn't have a root entity
+    }
+
+    @Test
+    @JUnitTemporaryDatabase
+    public void testHardwareInventory() throws Exception {
+        createIpInterface();
+        byte[] encoded = Files.readAllBytes(Paths.get("src/test/resources/hardware-inventory.xml"));
+        String entity = new String(encoded, "UTF-8");
+        sendPost("/nodes/1/hardwareInventory", entity, 303, null);
+        String xml = sendRequest(GET, "/nodes/1/hardwareInventory", 200);
+        assertTrue(xml, xml.contains("Cisco 7206VXR, 6-slot chassis"));
+
+        xml = sendRequest(GET, "/nodes/1/hardwareInventory/42", 200);
+        assertTrue(xml, xml.contains("Cisco 7200 AC Power Supply"));
+
+        Map<String, String> params = new HashMap<String,String>();
+        params.put("entPhysicalSerialNum", "123456789");
+        params.put("ceExtProcessorRam", "256MB");
+        sendRequest(PUT, "/nodes/1/hardwareInventory/9", params, 303);
+        xml = sendRequest(GET, "/nodes/1/hardwareInventory/9", 200);
+        assertTrue(xml, xml.contains("<entPhysicalSerialNum>123456789</entPhysicalSerialNum>"));
+        assertTrue(xml, xml.contains("value=\"256MB\""));
+
+        sendPost("/nodes/1/hardwareInventory/9", "<hwEntity entPhysicalIndex=\"200\"><entPhysicalName>Sample1</entPhysicalName></hwEntity>", 303, null);
+        sendPost("/nodes/1/hardwareInventory/9", "<hwEntity entPhysicalIndex=\"17\"><entPhysicalName>Sample2</entPhysicalName></hwEntity>", 303, null);
+        xml = sendRequest(GET, "/nodes/1/hardwareInventory/9", 200);
+        assertTrue(xml, xml.contains("Sample1"));
+        assertTrue(xml, xml.contains("Sample2"));
+
+        sendRequest(DELETE, "/nodes/1/hardwareInventory/9", 303);
+        sendRequest(GET, "/nodes/1/hardwareInventory/9", 400);
     }
 
     @Override

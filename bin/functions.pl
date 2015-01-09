@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 use Config;
-use Cwd;
+use Cwd qw(abs_path getcwd);
 use File::Basename;
 use File::Find;
 use File::Path qw(rmtree);
@@ -26,17 +26,19 @@ use vars qw(
 	$OOSNMP_TRUSTSTORE
 	$PATHSEP
 	$PREFIX
+	$SKIP_OPENJDK
 	$TESTS
 	$VERBOSE
 	@ARGS
 );
+@ARGS          = ();
 $BUILD_PROFILE = "default";
 $HELP          = undef;
 $JAVA_HOME     = undef;
-$PATHSEP       = $Config{'path_sep'};
-$VERBOSE       = undef;
 $LOGLEVEL      = 'debug' unless (defined $LOGLEVEL);
-@ARGS          = ();
+$PATHSEP       = $Config{'path_sep'};
+$SKIP_OPENJDK  = $ENV{'SKIP_OPENJDK'};
+$VERBOSE       = undef;
 
 @JAVA_SEARCH_DIRS = qw(
 	/usr/lib/jvm
@@ -47,6 +49,7 @@ $LOGLEVEL      = 'debug' unless (defined $LOGLEVEL);
 	/opt
 	/opt/ci/java
 );
+unshift(@JAVA_SEARCH_DIRS, File::Spec->catdir($ENV{'HOME'}, 'ci', 'java'));
 
 push(@JAVA_SEARCH_DIRS, File::Spec->catdir($ENV{'HOME'}, 'ci', 'java'));
 
@@ -144,8 +147,8 @@ if ((defined $JAVA_HOME and -d $JAVA_HOME) or (exists $ENV{'JAVA_HOME'} and -d $
 	my $minimumversion = get_minimum_java();
 
 	if ($shortversion < $minimumversion) {
-		warning("You specified a Java home of $JAVA_HOME, but it does not meet minimum java version $minimumversion!  Will try detecting instead.");
-		undef $JAVA_HOME;
+		warning("You specified a Java home of $JAVA_HOME, but it does not meet minimum java version $minimumversion!  Will attempt to search for one instead.");
+		$JAVA_HOME = undef;
 		delete $ENV{'JAVA_HOME'};
 	}
 }
@@ -169,7 +172,7 @@ if (not exists $ENV{'JAVA_VENDOR'}) {
 	warning("you might need to set it, eg, to 'Sun' or 'openjdk'.");
 }
 
-$MAVEN_VERSION = `$MVN --version`;
+$MAVEN_VERSION = `'$MVN' --version`;
 $MAVEN_VERSION =~ s/^.*Apache Maven ([\d\.]+).*?$/$1/gs;
 chomp($MAVEN_VERSION);
 if ($MAVEN_VERSION =~ /^[12]/) {
@@ -309,7 +312,14 @@ sub find_java_home {
 
 		for my $java (@javas) {
 			if (-x $java and ! -d $java) {
+				$java = abs_path($java);
 				my ($shortversion, $version, $build, $java_home) = get_version_from_java($java);
+
+				if ($SKIP_OPENJDK) {
+					next if ($java  =~ /openjdk/i);
+					next if ($build =~ /openjdk/i);
+				}
+
 				next if (exists $versions->{$shortversion}->{$version}->{$build});
 
 				$versions->{$shortversion}->{$version}->{$build} = $java_home;
@@ -330,7 +340,13 @@ sub find_java_home {
 			for my $build (sort keys %{$versions->{$majorversion}->{$version}}) {
 				my $java_home = $versions->{$majorversion}->{$version}->{$build};
 				#print STDERR "    ", $build, ": ", $java_home, "\n";
-				if ($build =~ /^\d/) {
+				if ($build =~ /^(\d+)/) {
+					my $buildnumber = $1 || 0;
+					if ($majorversion eq "1.7" and $buildnumber >= 65 and defined $highest_valid) {
+						# if we've already found an older Java 7, skip build 65 and higher because of bytecode verification issues
+						next;
+					}
+
 					$highest_valid = $java_home;
 				} elsif (defined $highest_valid) {
 					last JDK_SEARCH;
