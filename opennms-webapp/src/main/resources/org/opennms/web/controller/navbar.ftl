@@ -49,7 +49,7 @@
 		        </li>
 		      <#else>
 		        <#if item.url?has_content >
-		          <a name="nav-${item.name}-top" href="${item.url}">${item.name}</a>
+		          <li><a name="nav-${item.name}-top" href="${item.url}">${item.name}</a></li>
 		        <#else>
 		          <a name="nav-${item.name}-top" href="#">${item.name}</a>
 		        </#if>
