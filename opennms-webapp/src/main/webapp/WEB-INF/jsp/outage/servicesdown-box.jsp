@@ -68,13 +68,13 @@
           </c:forEach>
         </ul>
     
-        <c:if test="${moreCount > 0}">
-          <div class="panel-footer text-right">
-            <c:url var="moreLink" value="outage/list.htm"/>
-            <a href="${moreLink}">${moreCount} more nodes with outages...</a>
-          </div>
-        </c:if>
       </c:otherwise>
     </c:choose>
   </div>
+  <c:if test="${moreCount > 0}">
+    <div class="panel-footer text-right">
+      <c:url var="moreLink" value="outage/list.htm"/>
+      <a href="${moreLink}">${moreCount} more nodes with outages...</a>
+    </div>
+  </c:if>
 </div>

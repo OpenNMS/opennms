@@ -71,7 +71,7 @@
     <form class="form-inline" action="element/nodeList.htm" method="get">
       <label for="service">Providing service:</label><br/>
       <input type="hidden" name="listInterfaces" value="false"/>
-      <select class="form-control input-sm" name="service" size="1">
+      <select class="form-control input-sm" name="service">
       <c:forEach var="serviceNameId" items="${serviceNameMap}">
         <option value="${serviceNameId.value}">${serviceNameId.key}</option>
       </c:forEach>
