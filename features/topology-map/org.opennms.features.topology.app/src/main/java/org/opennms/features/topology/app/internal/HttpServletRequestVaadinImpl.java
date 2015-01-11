@@ -32,16 +32,25 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.security.Principal;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Locale;
 import java.util.Map;
 
+import javax.servlet.AsyncContext;
+import javax.servlet.DispatcherType;
 import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
 import javax.servlet.ServletInputStream;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import javax.servlet.http.Part;
 
 import org.opennms.web.api.OnmsHeaderProvider;
 
@@ -86,12 +95,12 @@ public class HttpServletRequestVaadinImpl implements HttpServletRequest {
 	}
 
 	@Override
-	public Enumeration getHeaderNames() {
+	public Enumeration<String> getHeaderNames() {
 		return m_request.getHeaderNames();
 	}
 
 	@Override
-	public Enumeration getHeaders(String name) {
+	public Enumeration<String> getHeaders(String name) {
 		return m_request.getHeaders(name);
 	}
 
@@ -211,7 +220,7 @@ public class HttpServletRequestVaadinImpl implements HttpServletRequest {
 	}
 
 	@Override
-	public Enumeration getAttributeNames() {
+	public Enumeration<String> getAttributeNames() {
 		return m_request.getAttributeNames();
 	}
 
@@ -265,7 +274,7 @@ public class HttpServletRequestVaadinImpl implements HttpServletRequest {
 	}
 
 	@Override
-	public Enumeration getLocales() {
+	public Enumeration<Locale> getLocales() {
 		return m_request.getLocales();
 	}
 
@@ -275,13 +284,13 @@ public class HttpServletRequestVaadinImpl implements HttpServletRequest {
 	}
 
 	@Override
-	public Map getParameterMap() {
+	public Map<String,String[]> getParameterMap() {
 		return m_request.getParameterMap();
 	}
 
 	@Override
-	public Enumeration getParameterNames() {
-		return Collections.enumeration(Collections.emptyList());
+	public Enumeration<String> getParameterNames() {
+		return Collections.enumeration(Collections.<String>emptyList());
 	}
 
 	@Override
@@ -372,5 +381,67 @@ public class HttpServletRequestVaadinImpl implements HttpServletRequest {
 	@Override
 	public void setCharacterEncoding(String env) throws UnsupportedEncodingException {
 		// Do nothing
+	}
+
+	@Override
+	public AsyncContext getAsyncContext() {
+		throw new IllegalStateException("Asynchronous operations not supported.");
+	}
+
+	@Override
+	public DispatcherType getDispatcherType() {
+		return DispatcherType.REQUEST;
+	}
+
+	@Override
+	public ServletContext getServletContext() {
+		// TODO Not sure how to implement this
+		return null;
+	}
+
+	@Override
+	public boolean isAsyncStarted() {
+		return false;
+	}
+
+	@Override
+	public boolean isAsyncSupported() {
+		return false;
+	}
+
+	@Override
+	public AsyncContext startAsync() throws IllegalStateException {
+		throw new IllegalStateException("Asynchronous operations not supported");
+	}
+
+	@Override
+	public AsyncContext startAsync(ServletRequest arg0, ServletResponse arg1) throws IllegalStateException {
+		throw new IllegalStateException("Asynchronous operations not supported");
+	}
+
+	@Override
+	public boolean authenticate(HttpServletResponse arg0) throws IOException, ServletException {
+		// TODO: Not sure what to do here, I think return true?
+		return true;
+	}
+
+	@Override
+	public Part getPart(String arg0) throws IOException, ServletException {
+		throw new ServletException("Request is not of type multipart/form-data");
+	}
+
+	@Override
+	public Collection<Part> getParts() throws IOException, ServletException {
+		return Collections.emptyList();
+	}
+
+	@Override
+	public void login(String arg0, String arg1) throws ServletException {
+		throw new ServletException("Already logged in");
+	}
+
+	@Override
+	public void logout() throws ServletException {
+		throw new ServletException("Cannot log out");
 	}
 }
