@@ -1126,7 +1126,7 @@
     <httpclientVersion>4.3.4</httpclientVersion>
     <jacksonVersion>1.9.13</jacksonVersion>
     <jasperreportsVersion>5.6.1</jasperreportsVersion>
-    <jettyVersion>7.6.15.v20140411</jettyVersion>
+    <jettyVersion>8.1.10.v20130312</jettyVersion>
     <karafVersion>2.4.0</karafVersion>
     <karafPaxExamVersion>2.3.8</karafPaxExamVersion>
     <felixVersion>2.3.0</felixVersion>
@@ -2974,17 +2974,17 @@
       <dependency>
         <groupId>javax.servlet</groupId>
         <artifactId>jstl</artifactId>
-        <version>1.2</version>
+        <version>99.99.99-exclude-and-use-opennms-servlet-instead</version>
       </dependency>
       <dependency>
         <groupId>javax.servlet.jsp</groupId>
         <artifactId>jsp-api</artifactId>
-        <version>2.1</version>
+        <version>99.99.99-exclude-and-use-opennms-servlet-instead</version>
       </dependency>
       <dependency>
         <groupId>javax.servlet</groupId>
         <artifactId>servlet-api</artifactId>
-        <version>2.5</version>
+        <version>99.99.99-exclude-and-use-org.eclipse.jetty.orbit-javax.servlet-instead</version>
       </dependency>
       <dependency>
         <groupId>javax.validation</groupId>
@@ -3077,10 +3077,16 @@
         <artifactId>jetty-all-server</artifactId>
         <version>${jettyVersion}</version>
       </dependency>
+      <!-- Make sure that this version matches the version from Jetty -->
       <dependency>
         <groupId>org.eclipse.jetty.orbit</groupId>
         <artifactId>org.apache.taglibs.standard.glassfish</artifactId>
         <version>1.2.0.v201112081803</version>
+      </dependency>
+      <dependency>
+        <groupId>org.eclipse.jetty.orbit</groupId>
+        <artifactId>javax.servlet</artifactId>
+        <version>3.0.0.v201112011016</version>
       </dependency>
       <dependency>
         <groupId>com.jcraft</groupId>
