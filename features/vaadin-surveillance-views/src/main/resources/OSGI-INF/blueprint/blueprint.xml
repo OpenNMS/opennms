@@ -1,0 +1,49 @@
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0 http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd">
+
+    <bean id="surveillanceViewsUI" class="org.opennms.features.vaadin.surveillanceviews.ui.SurveillanceViewsUI" scope="prototype">
+    </bean>
+
+    <bean id="surveillanceViewsUIFactory" class="org.opennms.features.vaadin.surveillanceviews.ui.SurveillanceViewsUIFactory">
+        <!-- Blueprint container bean -->
+        <argument ref="blueprintContainer"/>
+        <!-- Bean id of the Vaadin application prototype -->
+        <argument value="surveillanceViewsUI"/>
+    </bean>
+
+    <service id="surveillanceViewsService" interface="org.opennms.vaadin.extender.ApplicationFactory" ref="surveillanceViewsUIFactory">
+        <service-properties>
+            <entry key="alias" value="/vaadin-surveillance-views"/>
+            <entry key="init.widgetset" value="org.opennms.features.vaadin.surveillanceviews.SurveillanceViewsWidgetSet"/>
+        </service-properties>
+    </service>
+
+    <bean id="surveillanceViewsConfigUI" class="org.opennms.features.vaadin.surveillanceviews.ui.SurveillanceViewsConfigUI" scope="prototype">
+    </bean>
+
+    <bean id="surveillanceViewsConfigUILink" class="org.opennms.features.vaadin.surveillanceviews.ui.AdminPageNavEntry">
+        <property name="url" value="admin/surveillanceViewsConfig.jsp"/>
+        <property name="name" value="Surveillance Views Config Web UI"/>
+    </bean>
+
+    <bean id="surveillanceViewsConfigUIFactory" class="org.opennms.features.vaadin.surveillanceviews.ui.SurveillanceViewsConfigUIFactory">
+        <!-- Blueprint container bean -->
+        <argument ref="blueprintContainer"/>
+        <!-- Bean id of the Vaadin application prototype -->
+        <argument value="surveillanceViewsConfigUI"/>
+    </bean>
+
+    <service interface="org.opennms.vaadin.extender.ApplicationFactory" ref="surveillanceViewsConfigUIFactory">
+        <service-properties>
+            <entry key="alias" value="/vaadin-surveillance-views-config"/>
+        </service-properties>
+    </service>
+
+    <service id="surveillanceViewsConfigService" interface="org.opennms.web.navigate.PageNavEntry" ref="surveillanceViewsConfigUILink">
+        <service-properties>
+            <entry key="Page" value="admin"/>
+            <entry key="Category" value="operations"/>
+            <entry key="registration.export" value="true"/>
+        </service-properties>
+    </service>
+
+</blueprint>
