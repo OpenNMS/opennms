@@ -29,6 +29,10 @@
 package org.opennms.netmgt.ticketd;
 
 import java.util.Properties;
+import org.drools.compiler.builder.impl.KnowledgeBuilderConfigurationImpl;
+import org.drools.core.builder.conf.impl.ResourceConfigurationImpl;
+import org.kie.api.PropertiesConfiguration;
+import org.kie.api.io.ResourceConfiguration;
 
 import org.opennms.api.integration.ticketing.*;
 import org.opennms.netmgt.model.OnmsAlarm;
@@ -37,9 +41,9 @@ import org.slf4j.LoggerFactory;
 
 import org.kie.internal.KnowledgeBase;
 import org.kie.internal.KnowledgeBaseFactory;
-import org.drools.compiler.compiler.PackageBuilderConfiguration;
 import org.kie.api.io.ResourceType;
 import org.kie.internal.builder.KnowledgeBuilder;
+import org.kie.internal.builder.KnowledgeBuilderConfiguration;
 import org.kie.internal.builder.KnowledgeBuilderFactory;
 import org.kie.internal.io.ResourceFactory;
 import org.kie.internal.runtime.StatefulKnowledgeSession;
@@ -83,9 +87,8 @@ public class DroolsTicketerServiceLayer extends DefaultTicketerServiceLayer {
         final Properties props = new Properties();
         props.setProperty("drools.dialect.java.compiler.lnglevel", "1.6");
 
-        final PackageBuilderConfiguration conf = new PackageBuilderConfiguration(props);
+        final KnowledgeBuilderConfiguration conf = new KnowledgeBuilderConfigurationImpl(props);
         KnowledgeBuilder builder = KnowledgeBuilderFactory.newKnowledgeBuilder(conf);
-        
         // Use the rules file defined in the configuration file
         // We will not throw an exception if the rules failed to be parsed
         builder.add(ResourceFactory.newFileResource(m_configDao.getRulesFile()), ResourceType.DRL);

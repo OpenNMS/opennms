@@ -28,8 +28,11 @@ package org.opennms.netmgt.correlation.drools;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import org.drools.core.WorkingMemory;
 
 import org.kie.api.KieServices;
 import org.kie.api.builder.KieBuilder;
@@ -62,7 +65,7 @@ public class DroolsCorrelationEngine extends AbstractCorrelationEngine {
     private List<Resource> m_rulesResouces;
     private Map<String, Object> m_globals = new HashMap<>();
     private String m_name;
-    
+
     //TODO this assertBehaviour setting is not implemented for now
     private String m_assertBehaviour;
 
@@ -128,7 +131,8 @@ public class DroolsCorrelationEngine extends AbstractCorrelationEngine {
     }
 
     /**
-     * <p>getMemorySize</p>
+     * <p>
+     * getMemorySize</p>
      *
      * @return a int.
      */
@@ -142,8 +146,16 @@ public class DroolsCorrelationEngine extends AbstractCorrelationEngine {
      *
      * @return a {@link java.util.List} object.
      */
-    public Collection<? extends Object> getMemoryObjects() {
-        return kieSession.getObjects();
+    public List<Object> getMemoryObjects() {
+        final List<Object> objects = new LinkedList<>();
+        for (Iterator<?> it = ((WorkingMemory)kieSession).iterateObjects(); it.hasNext();) {
+            objects.add(it.next());
+        }
+        return objects;
+    }
+
+    public KieSession getKieSession() {
+        return kieSession;
     }
 
     /**
@@ -206,7 +218,7 @@ public class DroolsCorrelationEngine extends AbstractCorrelationEngine {
 
         KieContainer kieContainer = kieServices.newKieContainer(kieServices.getRepository().getDefaultReleaseId());
         kieSession = kieContainer.newKieSession();
-        
+
         kieSession.setGlobal("engine", this);
         for (final Map.Entry<String, Object> entry : m_globals.entrySet()) {
             kieSession.setGlobal(entry.getKey(), entry.getValue());
