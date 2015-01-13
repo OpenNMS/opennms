@@ -1,3 +1,5 @@
+// Allow GitHub image rendering
+:imagesdir: ../images
 
 [opennms-provisioning]
 = OpenNMS Provisioning

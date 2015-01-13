@@ -1,3 +1,5 @@
+// Allow GitHub image rendering
+:imagesdir: ../../images
 
 === StrafePingMonitor
 This monitor is used to monitor http://en.wikipedia.org/wiki/Packet_delay_variation[packet delay variation] to a specific endpoint using _ICMP_.
