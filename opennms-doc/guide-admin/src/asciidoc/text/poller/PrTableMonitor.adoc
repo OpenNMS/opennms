@@ -1,5 +1,5 @@
 
-=== PrTableMonitor
+==== PrTableMonitor
 
 The PrTableMonitor monitor tests the link:http://www.net-snmp.org/docs/mibs/ucdavis.html#prTable[prTable] of a net-snmp SNMP agent.
 
@@ -20,7 +20,7 @@ A Error flag to indicate trouble with a process.
 It goes to 1 if there is an error, 0 if no error.
 ____
 
-==== Monitor facts
+===== Monitor facts
 
 [options="autowidth"]
 |===
@@ -28,7 +28,7 @@ ____
 | Remote Enabled | false
 |===
 
-==== Configuration and Usage
+===== Configuration and Usage
 
 .Monitor specific parameters for the PrTableMonitor
 [options="header, autowidth"]
@@ -42,7 +42,7 @@ ____
 | `timeout` | Time in milliseconds to wait before receiving the SNMP response.   | optional | from 'snmp-config.xml'
 |===
 
-==== Examples
+===== Examples
 
 [source, xml]
 ----
@@ -55,5 +55,6 @@ ____
 <monitor service="Process-Table" class-name="org.opennms.netmgt.poller.monitors.PrTableMonitor" />
 ----
 
-==== UCD-SNMP-MIB
+===== UCD-SNMP-MIB
+
 The UCD-SNMP-MIB may be found link:http://www.net-snmp.org/docs/mibs/UCD-SNMP-MIB.txt[here].

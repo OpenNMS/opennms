@@ -1,5 +1,5 @@
 
-=== BgpSessionMonitor
+==== BgpSessionMonitor
 
 This monitor checks if a BGP-Session to a peering partner (peer-ip) is functional.
 To monitor the BGP-Session the RFC1269 SNMP MIB is used and test the status of the session using the following OIDs is used:
@@ -26,7 +26,7 @@ The servicestates for OpenNMS are mapped as follows:
 | `6`    | _Established_     |  UP
 |===
 
-==== Monitor facts
+===== Monitor facts
 
 [options="autowidth"]
 |===
@@ -36,8 +36,7 @@ The servicestates for OpenNMS are mapped as follows:
 
 To define the mapping I used the description from http://www.freesoft.org/CIE/RFC/1771/31.htm[RFC1771 BGP Finite State Machine].
 
-==== Configuration and Usage
-
+===== Configuration and Usage
 
 [options="header, autowidth"]
 |===
@@ -47,7 +46,7 @@ To define the mapping I used the description from http://www.freesoft.org/CIE/RF
 | `timeout`   | Time to wait for the SNMP agents response before trying a next attempt. | required | `-`
 |===
 
-==== Examples
+===== Examples
 
 To monitor the session state _Established_ it is necessary to add a service to your poller configuration in '$OPENNMS_HOME/etc/poller-configuration.xml', for example:
 
@@ -65,7 +64,7 @@ To monitor the session state _Established_ it is necessary to add a service to y
 <monitor service="BGP-Peer-99.99.99.99-AS65423" class-name="org.opennms.netmgt.poller.monitors.BgpSessionMonitor" />
 ----
 
-==== Error code mapping
+===== Error code mapping
 
 The _BGP_PEER_LAST_ERROR_OID_ gives an error in HEX-code.
 To make it human readable a codemapping table is implemented:
@@ -116,7 +115,7 @@ To give some additional informations the logmessage contains also
  BGP-Peer Remote AS
  BGP-Peer established time in seconds
 
-==== Debugging
+===== Debugging
 
 If you have problems to detect or monitor the BGP Session you can use the following command to figure out where the problem come from.
 

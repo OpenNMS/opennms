@@ -1,5 +1,5 @@
 
-=== SystemExecuteMonitor
+==== SystemExecuteMonitor
 
 If it is required to execute a system call or run a script to determine a service status, the SystemExecuteMonitor can be used.
 It is calling a script or system command, if required it provides additional arguments to the call.
@@ -8,7 +8,7 @@ As an alternative, the output of the system call can be matched against a banner
 If the banner is part of the output the status is interpreted as up.
 If the banner is not available in the output the status is determined as down.
 
-==== Monitor facts
+===== Monitor facts
 
 [options="autowidth"]
 |===
@@ -16,7 +16,7 @@ If the banner is not available in the output the status is determined as down.
 | Remote Enabled | true
 |===
 
-==== Configuration and Usage
+===== Configuration and Usage
 
 .Monitor specific parameters for the SystemExecuteMonitor
 [options="header, autowidth"]
@@ -45,7 +45,7 @@ The parameter `args` supports variable replacement for the following set of vari
 | `${nodelabel}`  | Nodelabel of the node the monitor is associated to.
 |===
 
-==== Examples
+===== Examples
 
 [source, xml]
 ----
@@ -53,7 +53,7 @@ The parameter `args` supports variable replacement for the following set of vari
 <parameter key="args" value="http://${nodelabel}/${svcname}/static"/>
 ----
 
-==== SystemExecuteMonitor vs GpMonitor
+===== SystemExecuteMonitor vs GpMonitor
 
 The SystemExecuteMonitor is the successor of the GpMonitor. The main differences are:
 
