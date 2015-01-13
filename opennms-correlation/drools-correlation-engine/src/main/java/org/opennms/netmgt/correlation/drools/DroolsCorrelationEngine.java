@@ -202,7 +202,8 @@ public class DroolsCorrelationEngine extends AbstractCorrelationEngine {
             LOG.info("Loading ruleFile: " + ruleFile.getFilename());
             kieFileSystem.write(ResourceFactory.newFileResource(ruleFile.getFile()));
         }
-
+        
+        // some google protobuf stuff is missing as a dependecy and kills the step with an exceptoin
         KieBuilder kieBuilder = kieServices.newKieBuilder(kieFileSystem).buildAll();
 
         if (kieBuilder.getResults().hasMessages(Level.ERROR)) {
