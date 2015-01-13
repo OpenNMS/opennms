@@ -121,4 +121,4 @@ The _Dashboard_ shows only *_one_* link:http://www.opennms.org/wiki/Dashboard[co
 To give different users the possibility using their _Surveillance View_ fitting there requirements it is possible to map a logged in user to a given _Surveillance View_ used in the _Dashboard_.
 
 The selected nodes from the _Surveillance View_ are also aware of link:http://www.opennms.org/wiki/User_Restriction_Filters[User Restriction Filter].
-If you have a group of users, which should see just a subset of nodes the __Surveillance View_ will filter nodes which are not related to the assigned user group.
+If you have a group of users, which should see just a subset of nodes the _Surveillance View_ will filter nodes which are not related to the assigned user group.
