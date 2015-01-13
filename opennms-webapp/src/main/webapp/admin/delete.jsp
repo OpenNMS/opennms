@@ -185,10 +185,10 @@
 	<div class="col-md-6" id="contentright">
           <table class="table table-condensed">
             <tr>
-              <th class="text-center" width="5%">Delete?</td>
-              <th class="text-center" width="5%">Data?</td>
-              <th class="text-center" width="5%">Node ID</td>
-              <th width="10%">Node Label</td>
+              <th class="text-center" width="5%">Delete?</th>
+              <th class="text-center" width="5%">Data?</th>
+              <th class="text-center" width="5%">Node ID</th>
+              <th width="10%">Node Label</th>
             </tr>
 
             <%=buildTableRows(nodes, midNodeIndex, nodes.size())%>
