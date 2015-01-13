@@ -179,7 +179,7 @@ public class DroolsCorrelationEngineBuilder extends PropertyEditorRegistrySuppor
     }
 
 	private PluginConfiguration[] locatePluginConfigurations() throws Exception {
-		List<PluginConfiguration> pluginConfigs = new LinkedList<PluginConfiguration>();
+		List<PluginConfiguration> pluginConfigs = new LinkedList<>();
 		
 		// first we see if the config is etc exists 
     	if (m_configResource != null && m_configResource.isReadable()) {
