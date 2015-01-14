@@ -112,8 +112,6 @@ public class BroadcastEventProcessor implements InitializingBean {
         LOG.debug("About to start processing recd. event");
 
         try {
-            // check on timertasks and events counter
-            m_rtcd.checkTimerTasksOnEventReceipt();
 
             String uei = event.getUei();
             if (uei == null) {
@@ -124,8 +122,6 @@ public class BroadcastEventProcessor implements InitializingBean {
 
             LOG.debug("Event {} added to updater queue", uei);
 
-            // Reset the user timer
-            m_rtcd.resetUserTimer();
         } catch (RejectedExecutionException ex) {
             LOG.error("Failed to process event", ex);
             return;

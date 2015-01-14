@@ -48,16 +48,13 @@ import org.springframework.test.context.ContextConfiguration;
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
 public class RTCManagerTest {
-	
+
 	@Autowired
 	RTCManager rtc;
 
 	@Test
 	public void testStart() throws Exception {
-
 		rtc.init();
 		rtc.start();
-
-		Thread.sleep(60000);
 	}
 }

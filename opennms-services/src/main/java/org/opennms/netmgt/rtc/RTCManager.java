@@ -39,31 +39,27 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
- * Maintains calculations for categories.
+ * <p>Maintains calculations for categories.</p>
+ * 
  * <P>
  * The RTCManager maintains data required so as to calculate availability for
- * the different categories configured in categories.xml
+ * the different categories configured in categories.xml.
  * </P>
  *
  * <P>
  * The RTC initializes its data from the database when it comes up. It then
  * subscribes to the Events subsystem to receive events of interest to keep the
- * data up-to-date
+ * data up-to-date.
  * </P>
  *
  * <P>
  * Availability data is sent out to listeners who indicate that they are
  * listening by sending an RTC 'subscribe' event. The subscribe event has an URL
- * and user/passwd info. so RTC can post data to the URL
+ * and user/passwd info. so RTC can post data to the URL.
  * </P>
  *
  * <P>
- * The RTC has two timers(a low threshold and a high threshold) and a counter
- * that can run upto a configurable max number of events - these are used to
- * determine when availability information is to be sent out when event streams
- * are coming in at normal rates. When no events are received, a timer
- * configured with a user configured time(defaulting to one minute) decides the
- * interval at which data is sent
+ * A timer defaulting to two minutes determines the interval at which data is sent.
  * </P>
  *
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
@@ -80,79 +76,9 @@ public final class RTCManager extends AbstractServiceDaemon {
     private Logger log() { return LOG; }
 
     /**
-     * The id for the low threshold timer task
-     */
-    private static final String LOWT_TASK = "lowTtask";
-
-    /**
-     * The id for the high threshold timer task
-     */
-    private static final String HIGHT_TASK = "highTtask";
-
-    /**
-     * The id for the user refresh timer task
-     */
-    private static final String USERTIMER = "userTimer";
-
-    /**
-     * The initial number of updater threads
-     */
-    @SuppressWarnings("unused")
-    private static final int NUM_UPDATERS = 5;
-
-    /**
-     * The configurable rolling window read from the properties file
-     */
-    private static long m_rollingWindow = -1;
-
-    /**
      * The RTC timer
      */
     private Timer m_timer;
-
-    /**
-     * The low threshold timer task
-     */
-    private TimerTask m_lowTtask;
-
-    /**
-     * The low threshold refresh interval. The low threshold at which data is
-     * sent out
-     */
-    private long m_lowThresholdInterval = -1;
-
-    /**
-     * The high threshold timer task
-     */
-    private TimerTask m_highTtask;
-
-    /**
-     * The high threshold refresh interval. The high threshold at which data is
-     * sent out
-     */
-    private long m_highThresholdInterval = -1;
-
-    /**
-     * The user refresh timer task
-     */
-    private TimerTask m_userTask;
-
-    /**
-     * The user refresh interval. The interval at which data is sent even if no
-     * events are received
-     */
-    private long m_userRefreshInterval = -1;
-
-    /**
-     * The counter keeping track of the number of messages
-     */
-    private int m_counter = -1;
-
-    /**
-     * The maximum number of events that are received before a resend. Note that
-     * this or the timers going off, whichever occurs first triggers a resend
-     */
-    private int MAX_EVENTS_BEFORE_RESEND = -1;
 
     /**
      * The DataSender
@@ -169,118 +95,15 @@ public final class RTCManager extends AbstractServiceDaemon {
     private RTCConfigFactory m_configFactory;
 
     /**
-     * The timer scheduled task that runs and informs the RTCManager when the
-     * timer goes off
+     * The scheduled task that runs and triggers the {@link DataSender}.
      */
     private class RTCTimerTask extends TimerTask {
-        /**
-         * The timer id
-         */
-        private String m_id;
-
-        /**
-         * Constructor for the timer task
-         * 
-         * @param id
-         *            the timertask ID
-         */
-        RTCTimerTask(String id) {
-            m_id = id;
-        }
-
-        /**
-         * Return the ID
-         * 
-         * @return the ID
-         */
-        public String getID() {
-            return m_id;
-        }
-
-        /**
-         * Starts the task. When run, simply inform the manager that this has
-         * been called by the timer
-         */
         @Override
         public void run() {
-            timerTaskComplete(this);
-        }
-    }
-
-    /**
-     * Handles a completed task.
-     * 
-     * <P>
-     * If the low threshold or high threshold timers expire, send category data
-     * out and set both timer(task)s to null so they can be reset when the next
-     * event comes in
-     * <P>
-     * 
-     * <P>
-     * If the user refresh timer is the one that expired, send category data out
-     * and reset the user timer(task)
-     * <P>
-     * 
-     * @param tt
-     *            the task that is finishing.
-     */
-    private synchronized void timerTaskComplete(RTCTimerTask tt) {
-        LOG.debug("TimerTask \'{}\' complete, status: {}", tt.getID(), getStatus());
-
-        if (tt.getID().equals(LOWT_TASK)) {
-            // cancel user timer
-            boolean ret = m_userTask.cancel();
-            LOG.debug("timerTaskComplete: {} cancelled: {}", USERTIMER, ret);
-
-            // send out the info and reset both timers
-            if (m_highTtask != null) {
-                ret = m_highTtask.cancel();
-                LOG.debug("timerTaskComplete: {} cancelled: {}", HIGHT_TASK, ret);
-
-                m_highTtask = null;
-            }
-
+            // send if not paused
             if (isRunning()) {
                 m_dataSender.notifyToSend();
             }
-
-            m_lowTtask = null;
-
-            m_counter = -1;
-
-            // reset the user timer
-            m_timer.schedule((m_userTask = new RTCTimerTask(USERTIMER)), 0, m_userRefreshInterval);
-            LOG.debug("timerTaskComplete: {} scheduled", USERTIMER);
-        } else if (tt.getID().equals(HIGHT_TASK)) {
-            // cancel user timer
-            boolean ret = m_userTask.cancel();
-            LOG.debug("timerTaskComplete: {} cancelled: {}", USERTIMER, ret);
-
-            // send the category information out reset all timers
-            if (m_lowTtask != null) {
-                ret = m_lowTtask.cancel();
-                LOG.debug("timerTaskComplete: {} cancelled: {}", LOWT_TASK, ret);
-
-                m_lowTtask = null;
-            }
-
-            if (isRunning()) {
-                m_dataSender.notifyToSend();
-            }
-
-            m_highTtask = null;
-
-            m_counter = -1;
-
-            // reset the user timer
-            m_timer.schedule((m_userTask = new RTCTimerTask(USERTIMER)), 0, m_userRefreshInterval);
-            LOG.debug("timerTaskComplete: {} scheduled", USERTIMER);
-        } else if (tt.getID().equals(USERTIMER)) {
-            // send if not pasued
-            if (isRunning()) {
-                m_dataSender.notifyToSend();
-            }
-
         }
     }
 
@@ -293,110 +116,6 @@ public final class RTCManager extends AbstractServiceDaemon {
     }
 
     /**
-     * Check the timer tasks. Reset any of the timer tasks if they need to be
-     * reset (indicated by their being set to null on timer task completion). If
-     * the events counter has exceeded maxEventsBeforeResend, send data out and
-     * reset timers
-     */
-    public synchronized void checkTimerTasksOnEventReceipt() {
-        LOG.debug("checkTimerTasksOnEventReceipt: Checking if timer tasks need to be reset or data needs to be sent out");
-
-        // cancel user timer
-        boolean ret = m_userTask.cancel();
-        LOG.debug("checkTimerTasksOnEventReceipt: {} cancelled: {}", USERTIMER, ret);
-
-        // Check the counter to see if timers need to be started afresh
-        if (m_counter == -1) {
-            m_counter = 0;
-
-            //
-            // set timers
-            //
-
-            // set the low threshold timer task
-            if (m_lowTtask == null) {
-                try {
-
-                    m_timer.schedule((m_lowTtask = new RTCTimerTask(LOWT_TASK)), m_lowThresholdInterval);
-                    LOG.debug("checkTimerTasksOnEventReceipt: {} scheduled", LOWT_TASK);
-                } catch (IllegalStateException isE) {
-                    LOG.error("checkTimerTasksOnEventReceipt: Illegal State adding new RTCTimerTask", isE);
-                }
-            }
-
-            // set the high threshold timer task only if currently null
-            if (m_highTtask == null) {
-                try {
-                    m_timer.schedule((m_highTtask = new RTCTimerTask(HIGHT_TASK)), m_highThresholdInterval);
-                    LOG.debug("checkTimerTasksOnEventReceipt: {} scheduled", HIGHT_TASK);
-                } catch (IllegalStateException isE) {
-                    LOG.error("checkTimerTasksOnEventReceipt: Illegal State adding new RTCTimerTask", isE);
-                }
-            }
-        }
-
-        if (MAX_EVENTS_BEFORE_RESEND > 0 && m_counter >= MAX_EVENTS_BEFORE_RESEND) {
-            LOG.debug("checkTimerTasksOnEventReceipt: max events before resend limit reached, resetting timers");
-
-            // send the category information out and reset all timers
-            if (m_lowTtask != null) {
-                ret = m_lowTtask.cancel();
-                LOG.debug("checkTimerTasksOnEventReceipt: {} cancelled: {}", LOWT_TASK, ret);
-
-                m_lowTtask = null;
-            }
-
-            if (m_highTtask != null) {
-                ret = m_highTtask.cancel();
-                LOG.debug("checkTimerTasksOnEventReceipt: {} cancelled: {}", HIGHT_TASK, ret);
-                m_highTtask = null;
-            }
-
-            LOG.debug("checkTimerTasksOnEventReceipt: max events before resend limit reached, sending data to listeners");
-
-            m_dataSender.notifyToSend();
-
-            LOG.debug("checkTimerTasksOnEventReceipt: max events before resend limit reached, datasender notified to send data");
-
-            m_counter = -1;
-        } else if (m_counter != 0) {
-            // reset the low threshold timer since getting here means
-            // we got an event before the low threshold timer
-            // went off
-            if (m_lowTtask != null) {
-                ret = m_lowTtask.cancel();
-                LOG.debug("checkTimerTasksOnEventReceipt: {} cancelled: {}", LOWT_TASK, ret);
-                m_lowTtask = null;
-            }
-
-            try {
-                m_timer.schedule((m_lowTtask = new RTCTimerTask(LOWT_TASK)), m_lowThresholdInterval);
-                LOG.debug("checkTimerTasksOnEventReceipt: {} scheduled", LOWT_TASK);
-            } catch (IllegalStateException isE) {
-                LOG.error("checkTimerTasksOnEventReceipt: Illegal State adding new RTCTimerTask", isE);
-            }
-        }
-
-    }
-
-    /**
-     * Reset the user timer.
-     */
-    public synchronized void resetUserTimer() {
-        // Reset the user timer
-        if (m_userTask != null)
-            return;
-
-        try {
-            m_timer.schedule((m_userTask = new RTCTimerTask(USERTIMER)), 0, m_userRefreshInterval);
-            LOG.debug("resetUserTimer: {} scheduled", USERTIMER);
-        } catch (IllegalStateException isE) {
-            LOG.error("dataReceived: Illegal State adding new RTCTimerTask", isE);
-        }
-
-    }
-
-    /**
      * <p>onInit</p>
      */
     @Override
@@ -405,50 +124,6 @@ public final class RTCManager extends AbstractServiceDaemon {
         //
         // Get the required attributes
         //
-
-        // parse the rolling window info
-        m_rollingWindow = m_configFactory.getRollingWindow();
-
-        // get maxEventsBeforeResend
-        MAX_EVENTS_BEFORE_RESEND = m_configFactory.getMaxEventsBeforeResend();
-
-        // parse the low threshold interval
-        m_lowThresholdInterval = m_configFactory.getLowThresholdInterval();
-
-        // parse the high threshold interval
-        m_highThresholdInterval = m_configFactory.getHighThresholdInterval();
-
-        // parse the user threshold interval
-        String ur = m_configFactory.getUserRefreshIntervalStr();
-        if (ur != null) {
-            try {
-                m_userRefreshInterval = m_configFactory.getUserRefreshInterval();
-            } catch (Throwable nfE) {
-                log().warn("User refresh time has an incorrect format - using 1 minute instead");
-                m_userRefreshInterval = 60 * 1000;
-            }
-        } else {
-            log().warn("User refresh time not specified - using 1 minute instead");
-            m_userRefreshInterval = 60 * 1000;
-        }
-
-        // high and low thresholds cannot be the same
-        if (m_highThresholdInterval == m_lowThresholdInterval) {
-            throw new RuntimeException("The values for the high and low threshold intervals CANNOT BE EQUAL");
-        }
-
-        // if high threshold is smaller than the low threshold, swap 'em
-        if (m_highThresholdInterval < m_lowThresholdInterval) {
-            log().warn("Swapping high and low threshold intervals..");
-            long tmp = m_highThresholdInterval;
-            m_highThresholdInterval = m_lowThresholdInterval;
-            m_lowThresholdInterval = tmp;
-        }
-
-        log().info("Rolling Window: " + m_rollingWindow + "(milliseconds)");
-        log().info("Low Threshold Refresh Interval: " + m_lowThresholdInterval + "(milliseconds)");
-        log().info("High Threshold Refresh Interval: " + m_highThresholdInterval + "(milliseconds)");
-        log().info("User Refresh Interval: " + m_userRefreshInterval + "(milliseconds)");
 
         // create the data sender
         m_dataSender = new DataSender(m_dataMgr, m_configFactory);
@@ -481,11 +156,12 @@ public final class RTCManager extends AbstractServiceDaemon {
             log().debug("Updater threads and datasender started");
         }
 
-        // set the user refresh timer
-        m_timer.schedule((m_userTask = new RTCTimerTask(USERTIMER)), 0, m_userRefreshInterval);
-        if (log().isDebugEnabled())
-            log().debug(USERTIMER + " scheduled");
+        // Set the user refresh timer
+        m_timer.schedule(new RTCTimerTask(), 0, 120000);
 
+        if (log().isDebugEnabled())
+            log().debug("userTimer" + " scheduled");
+        
         if (log().isDebugEnabled()) {
             log().debug("RTC ready to receive events");
         }
@@ -509,42 +185,15 @@ public final class RTCManager extends AbstractServiceDaemon {
             if (log().isDebugEnabled())
                 log().debug("DataSender shutdown");
 
-            if (log().isDebugEnabled())
-                log().debug("sending shutdown to updaters");
-
-            if (log().isDebugEnabled())
-                log().debug("RTC Updaters shutdown");
-
-            // cancel the timer and the timer tasks
-            if (m_lowTtask != null)
-                m_lowTtask.cancel();
-
-            if (m_highTtask != null)
-                m_highTtask.cancel();
-
-            if (m_userTask != null)
-                m_userTask.cancel();
-
-            if (log().isDebugEnabled())
-                log().debug("shutdown: Timer tasks Canceled");
-
             m_timer.cancel();
 
             if (log().isDebugEnabled())
-                log().debug("shutdown: Timer Canceled");
+                log().debug("Timer Cancelled");
 
         } catch (Throwable e) {
             log().error(e.getLocalizedMessage(), e);
         }
 	}
-
-    /**
-     * Updates the number of events received. Increment the counter that keeps
-     * track of number of events received since data was last sent out
-     */
-    public synchronized void incrementCounter() {
-        m_counter++;
-    }
 
     /**
      * Gets the data manager.
@@ -563,14 +212,4 @@ public final class RTCManager extends AbstractServiceDaemon {
     public DataSender getDataSender() {
         return m_dataSender;
     }
-
-    /**
-     * Gets the rolling window.
-     *
-     * @return the configured rolling window
-     */
-    public static long getRollingWindow() {
-        return m_rollingWindow;
-    }
-
 }

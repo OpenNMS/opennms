@@ -338,7 +338,7 @@ public class DataManager implements InitializingBean {
     			" order by " + 
     			"       ifsvc.nodeid, ifsvc.ipAddr, ifsvc.serviceid, o.ifLostService ";
     	
-		long window = (new Date()).getTime() - RTCManager.getRollingWindow();
+		long window = (new Date()).getTime() - (24L * 60L * 60L * 1000L);
 		Timestamp windowTS = new Timestamp(window);
 
     	RowCallbackHandler rowHandler = new RTCNodeProcessor();

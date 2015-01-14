@@ -467,8 +467,6 @@ final class DataUpdater implements Runnable {
 
             LOG.debug("Event subscribed for not handled?!: {}", eventUEI);
         }
-
-        m_rtcMgr.incrementCounter();
     }
 
     /**

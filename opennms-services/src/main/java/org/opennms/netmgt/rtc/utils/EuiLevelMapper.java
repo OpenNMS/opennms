@@ -84,7 +84,7 @@ public class EuiLevelMapper extends Object {
         long curTime = curDate.getTime();
 
         // get the rolling window
-        long rWindow = RTCManager.getRollingWindow();
+        long rWindow = 24L * 60L * 60L * 1000L;
 
         LOG.debug("curdate: {}", curDate);
 
