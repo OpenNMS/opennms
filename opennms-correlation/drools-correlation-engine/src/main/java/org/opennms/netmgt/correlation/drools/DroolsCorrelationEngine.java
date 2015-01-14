@@ -47,6 +47,7 @@ import org.drools.core.RuleBaseConfiguration;
 import org.drools.core.RuleBaseConfiguration.AssertBehaviour;
 import org.drools.core.RuleBaseFactory;
 import org.drools.core.WorkingMemory;
+import org.kie.api.conf.EventProcessingOption;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -140,7 +141,7 @@ public class DroolsCorrelationEngine extends AbstractCorrelationEngine {
         AssertBehaviour behaviour = AssertBehaviour.determineAssertBehaviour(m_assertBehaviour);
         RuleBaseConfiguration ruleBaseConfig = new RuleBaseConfiguration();
         ruleBaseConfig.setAssertBehaviour(behaviour);
-
+        ruleBaseConfig.setEventProcessingMode(EventProcessingOption.STREAM);
         final RuleBase ruleBase = RuleBaseFactory.newRuleBase( ruleBaseConfig );
 
         if (builder.hasErrors()) {
