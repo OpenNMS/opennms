@@ -24,7 +24,7 @@ The configuration section is in admin area of OpenNMS and named 'Ops Board Confi
 .Navigation to the _Ops Board_ configuration
 image::webui/opsboard/03_admin-configure-opsboard.png[]
 
-Create or modifiy _Ops Boards_ is described in the following screenshot.
+Create or modify _Ops Boards_ is described in the following screenshot.
 
 .Adding a Dashlet to an existing _Ops Board_
 image::webui/opsboard/04_add-dashlet.png[]
