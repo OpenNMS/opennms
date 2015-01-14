@@ -26,14 +26,14 @@ public class View {
         return m_columns;
     }
 
-    @XmlAttribute(name = "name")
+    @XmlAttribute(name = "name", required = true)
     private java.lang.String m_name = "default";
 
     public String getName() {
         return m_name;
     }
 
-    @XmlAttribute(name = "refresh-seconds")
+    @XmlAttribute(name = "refresh-seconds", required = false)
     private java.lang.Integer m_refreshSeconds = 300;
 
     public int getRefreshSeconds() {

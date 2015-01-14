@@ -5,7 +5,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
 public class Category {
-    @XmlAttribute(name = "name")
+    @XmlAttribute(name = "name", required = true)
     private java.lang.String m_name;
 
     public String getName() {

@@ -52,5 +52,5 @@
 
     
 
-    <inherits name="org.opennms.features.vaadin.surveillanceviews.ui.SurveillanceViewsWidgetSet" />
+    
 </module>

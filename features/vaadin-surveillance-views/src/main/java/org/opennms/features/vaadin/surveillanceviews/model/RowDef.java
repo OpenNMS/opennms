@@ -7,14 +7,14 @@ import java.util.List;
 
 public class RowDef {
 
-    @XmlAttribute(name = "label")
+    @XmlAttribute(name = "label", required = true)
     private java.lang.String m_label = "default";
 
     public String getLabel() {
         return m_label;
     }
 
-    @XmlAttribute(name = "report-category")
+    @XmlAttribute(name = "report-category", required = false)
     private java.lang.String m_reportCategory;
 
     public String getReportCetegory() {

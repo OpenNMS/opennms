@@ -14,7 +14,7 @@ import java.util.List;
 @SuppressWarnings("all")
 public class SurveillanceViewConfiguration implements java.io.Serializable {
 
-    @XmlAttribute(name = "default-view")
+    @XmlAttribute(name = "default-view", required = false)
     private java.lang.String m_defaultView = "default";
 
     private List<View> m_views = new LinkedList<View>();
