@@ -38,7 +38,7 @@ The result should look like:
 
 CORS support is provided by the *org.ebaysf.web.cors.CORSFilter* servlet filter.
 
-Parameters can be configured by modifiying the filter definition in the 'web.xml' file referenced above.
+Parameters can be configured by modifying the filter definition in the 'web.xml' file referenced above.
 
 By default, the allowed origins parameter is set to '*'.
 
