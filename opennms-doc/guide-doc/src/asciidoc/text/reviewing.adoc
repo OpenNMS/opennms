@@ -38,7 +38,7 @@ Todo Review:
 
 * The JIRA issue should be in status "Resolved"
 
-=== Review criterias
+=== Review criteria
 
 . Check for typos and grammar, normally a native speaker can help here
 . Check <<doc-guidelines-conventions, Conventions for text formatting>>

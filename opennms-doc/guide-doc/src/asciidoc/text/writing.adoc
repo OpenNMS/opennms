@@ -1,8 +1,8 @@
 
 [[doc-guidelines-writing]]
 == Writing
-The following rules wil help you to commit correctly formatted and prepared documentation for inclusion in the OpenNMS project.
-It is important that we maintain a level of consistency across all of our commiters and the documentation they produce.
+The following rules will help you to commit correctly formatted and prepared documentation for inclusion in the OpenNMS project.
+It is important that we maintain a level of consistency across all of our committers and the documentation they produce.
 
 When writing place a single sentence on each line.
 This makes it easy to move content around, and also easy to spot long, or fragmented, sentences.
@@ -55,7 +55,7 @@ and this a forced 2nd line
 Each document starts over with headings from level zero (the document title).
 Each document should have an id.
 In some cases sections in the document need to have id's as well, this depends on where they fit in the overall structure.
-If you wish to have a link to specific content that content has to have an id. 
+If you wish to have a link to specific content that content has to have an id.
 A missing id in a mandatory place will cause the build to fail.
 
 To start a document:
@@ -109,7 +109,7 @@ If you need to link to another document with your own link text, then follow thi
 <<target-id, link text that fits in the context>>
 ----
 
-NOTE: Having lots of linked text may work well in a web context but is a distracting in print. 
+NOTE: Having lots of linked text may work well in a web context but is a distracting in print.
 The documentation we are creating is intended for both mediums so be considerate of this in your usage.
 
 If you wish to use an external link, they are are added as:
@@ -121,7 +121,7 @@ http://www.opennms.org/[Link text here]
 
 This will render in the output as: http://www.opennms.org/[Link text here]
 
-For short links it may be benificial not to use accompanying link text:
+For short links it may be beneficial not to use accompanying link text:
 
 [source]
 ----
@@ -133,10 +133,10 @@ Which renders as: http://www.opennms.org/
 NOTE: It is acceptable to have a period trailing after the URL, it will not render as a part of the link.
 
 [[doc-guideline-admonitions-notes]]
-== Admonitions and usefull notes
+== Admonitions and useful notes
 
 These are useful for defining specific sections, such as Notes, Tips and Important information.
-We encourage the use of them in the documenatation as long as they are used appropriately.
+We encourage the use of them in the documentation as long as they are used appropriately.
 Choose from the following:
 
 .Source template for making a note for additional hints
@@ -270,7 +270,7 @@ This is rendered as:
 |===
 
 NOTE: Please align your columns in the AsciiDoc source in order to give better readability when editing in text view.
-If you have a very long description, break at 120 characters and allign the text to improve source readability.
+If you have a very long description, break at 120 characters and align the text to improve source readability.
 
 .Example in AsciiDoc source for very long table descriptions
 image::../images/01_long-table-formatting.png[]
