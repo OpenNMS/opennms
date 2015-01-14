@@ -14,7 +14,7 @@
 
 		<para>
 			Additionally, there has been significant refactoring of the remote pollers, and
-			you should upgrade all remote pollers to 14.0.0.
+			you should upgrade all remote pollers to 14.0.0 or higher.
 		</para>
 
 	</section>

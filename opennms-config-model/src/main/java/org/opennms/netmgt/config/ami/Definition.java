@@ -52,14 +52,11 @@ import javax.xml.bind.annotation.XmlRootElement;
  * Provides a mechanism for associating one or more specific IP addresses
  * and/or IP address ranges with a set of AMI parms which will be used in
  * place of the default values during AMI operations.
- *
- *
- * @version $Revision$ $Date$
  */
 @XmlRootElement(name = "definition")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Definition implements Serializable {
-    private static final long serialVersionUID = -3587970504491170237L;
+    private static final long serialVersionUID = -5866885462906545340L;
 
     // --------------------------/
     // - Class/Member Variables -/
@@ -322,8 +319,7 @@ public class Definition implements Serializable {
      *             if the index given is outside the bounds of the collection
      * @return the value of the String at the given index
      */
-    public String getIpMatch(final int index)
-            throws IndexOutOfBoundsException {
+    public String getIpMatch(final int index) throws IndexOutOfBoundsException {
         // check bounds for index
         if (index < 0 || index >= this._ipMatchList.size()) {
             throw new IndexOutOfBoundsException("getIpMatch: Index value '"
@@ -364,7 +360,7 @@ public class Definition implements Serializable {
      *
      * @return the size of this collection
      */
-    public int getIpMatchCount() {
+    public Integer getIpMatchCount() {
         return this._ipMatchList.size();
     }
 
@@ -382,7 +378,7 @@ public class Definition implements Serializable {
      *
      * @return the value of field 'Port'.
      */
-    public int getPort() {
+    public Integer getPort() {
         return this._port;
     }
 
@@ -435,7 +431,7 @@ public class Definition implements Serializable {
      *
      * @return the size of this collection
      */
-    public int getRangeCount() {
+    public Integer getRangeCount() {
         return this._rangeList.size();
     }
 
@@ -444,7 +440,7 @@ public class Definition implements Serializable {
      *
      * @return the value of field 'Retry'.
      */
-    public int getRetry() {
+    public Integer getRetry() {
         return this._retry;
     }
 
@@ -498,7 +494,7 @@ public class Definition implements Serializable {
      *
      * @return the size of this collection
      */
-    public int getSpecificCount() {
+    public Integer getSpecificCount() {
         return this._specificList.size();
     }
 
@@ -507,7 +503,7 @@ public class Definition implements Serializable {
      *
      * @return the value of field 'Timeout'.
      */
-    public int getTimeout() {
+    public Integer getTimeout() {
         return this._timeout;
     }
 
@@ -517,7 +513,7 @@ public class Definition implements Serializable {
      * @return the value of field 'UseSsl'.
      */
     public boolean getUseSsl() {
-        return this._useSsl;
+        return this._useSsl == null? false : this._useSsl;
     }
 
     /**
@@ -602,7 +598,7 @@ public class Definition implements Serializable {
      * @return the value of field 'UseSsl'.
      */
     public boolean isUseSsl() {
-        return this._useSsl;
+        return this._useSsl == null? false : this._useSsl;
     }
 
     /**
