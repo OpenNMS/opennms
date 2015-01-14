@@ -6,6 +6,36 @@
 
 	<!-- Start 14.0 -->
 
+	<section id="opennms-14.0.3">
+		<title>Changes in OpenNMS 14.0.3</title>
+
+		<section id="opennms-14.0.3-bug">
+			<title>Bug</title>
+
+			<itemizedlist>
+				<listitem><para>(En)Linkd sends too many logged events re: scanning (Issue <ulink url='http://issues.opennms.org/browse/NMS-7252'>NMS-7252</ulink>)</para></listitem>
+				<listitem><para>Cannot Clear alarms in STUI - Acknowledge works (Issue <ulink url='http://issues.opennms.org/browse/NMS-7255'>NMS-7255</ulink>)</para></listitem>
+				<listitem><para>TopReportPlugin fails on FreeBSD (Issue <ulink url='http://issues.opennms.org/browse/NMS-7260'>NMS-7260</ulink>)</para></listitem>
+				<listitem><para>Authenticiation in MailTransportMonitor not working (Issue <ulink url='http://issues.opennms.org/browse/NMS-7265'>NMS-7265</ulink>)</para></listitem>
+				<listitem><para>The OpenNMS Web User Interface Has Experienced an Error (Issue <ulink url='http://issues.opennms.org/browse/NMS-7266'>NMS-7266</ulink>)</para></listitem>
+				<listitem><para>Error attempting to get SnmpInterfaces (IpInterfaces) on node page (Issue <ulink url='http://issues.opennms.org/browse/NMS-7271'>NMS-7271</ulink>)</para></listitem>
+				<listitem><para>NullPointerException when selecting KSC reports (Issue <ulink url='http://issues.opennms.org/browse/NMS-7274'>NMS-7274</ulink>)</para></listitem>
+				<listitem><para>linkDown event is confusing users (Issue <ulink url='http://issues.opennms.org/browse/NMS-7285'>NMS-7285</ulink>)</para></listitem>
+				<listitem><para>ConcurrentModificationException thrown when adding/modifying graph templates for resource types that are being used (Issue <ulink url='http://issues.opennms.org/browse/NMS-7289'>NMS-7289</ulink>)</para></listitem>
+				<listitem><para>Authenticated XXE Vulnerability (Issue <ulink url='http://issues.opennms.org/browse/NMS-7291'>NMS-7291</ulink>)</para></listitem>
+			</itemizedlist>
+		</section>
+		<section id="opennms-14.0.3-enhancement">
+			<title>Enhancement</title>
+
+			<itemizedlist>
+				<listitem><para>Datacollection for Terminal Services on W2K8+ (Issue <ulink url='http://issues.opennms.org/browse/NMS-4763'>NMS-4763</ulink>)</para></listitem>
+				<listitem><para>Add WMI data collection and graphs for paging, disk I/O, and total memory (Issue <ulink url='http://issues.opennms.org/browse/NMS-6822'>NMS-6822</ulink>)</para></listitem>
+				<listitem><para>The Wallboard app makes OpenNMS unusable after a few days even if it is not used. (Issue <ulink url='http://issues.opennms.org/browse/NMS-7230'>NMS-7230</ulink>)</para></listitem>
+			</itemizedlist>
+		</section>
+	</section>
+
 	<section id="opennms-14.0.2">
 		<title>Changes in OpenNMS 14.0.2</title>
 
