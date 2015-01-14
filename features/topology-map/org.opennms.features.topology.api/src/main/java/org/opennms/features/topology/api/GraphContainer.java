@@ -28,12 +28,16 @@
 
 package org.opennms.features.topology.api;
 
-import com.vaadin.data.Property;
 import java.util.Collection;
-import java.util.List;
 import java.util.Set;
 
-import org.opennms.features.topology.api.topo.*;
+import org.opennms.features.topology.api.topo.Criteria;
+import org.opennms.features.topology.api.topo.EdgeStatusProvider;
+import org.opennms.features.topology.api.topo.GraphProvider;
+import org.opennms.features.topology.api.topo.StatusProvider;
+import org.opennms.features.topology.api.topo.VertexRef;
+
+import com.vaadin.data.Property;
 
 public interface GraphContainer extends DisplayState {
 

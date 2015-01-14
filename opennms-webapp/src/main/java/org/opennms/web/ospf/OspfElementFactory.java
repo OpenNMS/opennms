@@ -28,22 +28,18 @@
 
 package org.opennms.web.ospf;
 
+import static org.opennms.core.utils.InetAddressUtils.str;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.ServletContext;
 
 import org.opennms.core.spring.BeanUtils;
-import org.opennms.netmgt.dao.api.LldpElementDao;
-import org.opennms.netmgt.dao.api.LldpLinkDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.OspfElementDao;
 import org.opennms.netmgt.dao.api.OspfLinkDao;
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
-import org.opennms.netmgt.model.LldpElement;
-import org.opennms.netmgt.model.LldpElement.LldpChassisIdSubType;
-import org.opennms.netmgt.model.LldpLink;
-import org.opennms.netmgt.model.LldpLink.LldpPortIdSubType;
 import org.opennms.netmgt.model.OspfElement;
 import org.opennms.netmgt.model.OspfElement.Status;
 import org.opennms.netmgt.model.OspfLink;
@@ -54,8 +50,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.support.WebApplicationContextUtils;
-
-import static org.opennms.core.utils.InetAddressUtils.str;
 
 @Transactional(readOnly=true)
 public class OspfElementFactory implements InitializingBean, OspfElementFactoryInterface{

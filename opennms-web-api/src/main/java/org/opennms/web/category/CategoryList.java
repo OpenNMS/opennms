@@ -29,12 +29,9 @@
 package org.opennms.web.category;
 
 import java.io.IOException;
-import java.io.Writer;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -44,7 +41,6 @@ import java.util.Map.Entry;
 import java.util.TreeMap;
 
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletResponse;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;

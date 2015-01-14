@@ -153,15 +153,15 @@ public class JmxConfigGeneratorApplication extends UI implements ModelChangeList
 				break;
 			case ServiceConfigurationView:
 				component = new ConfigForm(app);
-				registerListener(UiModel.class, (ModelChangeListener) component);
+				registerListener(UiModel.class, (ModelChangeListener<?>) component);
 				break;
 			case MbeansView:
 				component = new MBeansView(app);
-				registerListener(UiModel.class, (ModelChangeListener) component);
+				registerListener(UiModel.class, (ModelChangeListener<?>) component);
 				break;
 			case ResultView:
 				component = new ConfigResultView(app);
-				registerListener(UiModel.class, (ModelChangeListener) component);
+				registerListener(UiModel.class, (ModelChangeListener<?>) component);
 				break;
 		}
 		return component;

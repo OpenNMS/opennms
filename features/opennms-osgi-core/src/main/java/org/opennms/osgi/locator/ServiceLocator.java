@@ -41,7 +41,7 @@ public class ServiceLocator {
         if (bundleContext == null) throw new IllegalArgumentException("BundleContext must not be null!");
         if (lookupClass == null) throw new IllegalArgumentException("LookupClass must not be null!");
         try {
-            ServiceReference[] serviceReferences = bundleContext.getAllServiceReferences(
+            ServiceReference<?>[] serviceReferences = bundleContext.getAllServiceReferences(
                     lookupClass.getName(),
                     String.format("(bundleId=%d)", bundleContext.getBundle().getBundleId()));
             if (serviceReferences == null || serviceReferences.length == 0) {
