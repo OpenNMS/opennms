@@ -39,9 +39,9 @@ import java.util.List;
 
 import javax.xml.bind.JAXBException;
 
+import org.drools.core.FactHandle;
 import org.junit.Before;
 import org.junit.Test;
-import org.kie.api.runtime.rule.FactHandle;
 import org.opennms.netmgt.correlation.drools.DroolsCorrelationEngine;
 import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.dao.api.NodeDao;
@@ -75,7 +75,7 @@ public class ImpactProgagationRulesTest extends CorrelationRulesTestCase {
 	
 	private DroolsCorrelationEngine m_engine;
 	
-	private final List<Object> m_anticipatedWorkingMemory = new ArrayList<>();
+	private List<Object> m_anticipatedWorkingMemory = new ArrayList<Object>();
 	
 	@Before
 	public void setUp() throws JAXBException, UnsupportedEncodingException {
@@ -217,7 +217,7 @@ public class ImpactProgagationRulesTest extends CorrelationRulesTestCase {
 
 	}
 	
-    @Test
+	@Test
     @DirtiesContext
     public void testSimpleDownUpCase() throws Exception {
 
@@ -268,7 +268,7 @@ public class ImpactProgagationRulesTest extends CorrelationRulesTestCase {
 	
 	
 	
-    @Test
+	@Test
     @DirtiesContext
     public void testSimpleALLRulesPropagation() throws Exception {
 		// 1. Assert empty workspace
@@ -298,10 +298,10 @@ public class ImpactProgagationRulesTest extends CorrelationRulesTestCase {
         anticipateEvent(createComponentImpactedEvent("ServiceElement", "PE2,SE1", "NA-SvcElement", "9876", 17));
         
         // Insert facts and fire rules
-		FactHandle impactHandle = m_engine.getKieSession().insert( componentImpacted );
-		FactHandle depHandle = m_engine.getKieSession().insert( dep );
-		FactHandle eventSentHandle = m_engine.getKieSession().insert( eventSent );
-		m_engine.getKieSession().fireAllRules();
+		FactHandle impactHandle = m_engine.getWorkingMemory().insert( componentImpacted );
+		FactHandle depHandle = m_engine.getWorkingMemory().insert( dep );
+		FactHandle eventSentHandle = m_engine.getWorkingMemory().insert( eventSent );
+		m_engine.getWorkingMemory().fireAllRules();
         
         // pretend to be a using rule that inserts the DependenciesNeeded fact
 		verifyFacts();
@@ -321,12 +321,12 @@ public class ImpactProgagationRulesTest extends CorrelationRulesTestCase {
         Event upEvent = createVpnPwUpEvent(18, m_pe2NodeId, "10.1.1.1", "5", "ge-3/1/4.50");
         ComponentUpEvent cue = new ComponentUpEvent(c, upEvent);
         
-        m_engine.getKieSession().retract(impactHandle);
-        m_engine.getKieSession().retract(depHandle);
-        m_engine.getKieSession().retract(eventSentHandle);
-        m_engine.getKieSession().insert(new ComponentEventResolved(cde, cue) );
+        m_engine.getWorkingMemory().retract(impactHandle);
+        m_engine.getWorkingMemory().retract(depHandle);
+        m_engine.getWorkingMemory().retract(eventSentHandle);
+        m_engine.getWorkingMemory().insert(new ComponentEventResolved(cde, cue) );
         
-        m_engine.getKieSession().fireAllRules();
+        m_engine.getWorkingMemory().fireAllRules();
         
        // insertFactAndFireRules(cue);
 		
@@ -424,14 +424,14 @@ public class ImpactProgagationRulesTest extends CorrelationRulesTestCase {
 	}
 	
 	private FactHandle insertFactAndFireRules(Object fact) {
-		FactHandle handle = m_engine.getKieSession().insert( fact );
-        m_engine.getKieSession().fireAllRules();
+		FactHandle handle = m_engine.getWorkingMemory().insert( fact );
+        m_engine.getWorkingMemory().fireAllRules();
 		return handle;
 	}
 	
 	private void retractFactAndFireRules(FactHandle fact) {
-		m_engine.getKieSession().retract( fact );
-		m_engine.getKieSession().fireAllRules();
+		m_engine.getWorkingMemory().retract( fact );
+		m_engine.getWorkingMemory().fireAllRules();
 	}
     
 	

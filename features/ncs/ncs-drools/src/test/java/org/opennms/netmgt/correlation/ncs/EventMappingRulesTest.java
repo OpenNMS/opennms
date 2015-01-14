@@ -491,7 +491,7 @@ public class EventMappingRulesTest extends CorrelationRulesTestCase {
     }
     
     private Set<String> findSubcomponentsOnNode(NCSComponent svc, String nodeForeignSource, String nodeForeignId) {
-        final Set<String> expectedIds = new HashSet<>();
+        final Set<String> expectedIds = new HashSet<String>();
 
         final NodeIdentification nodeIdent = new NodeIdentification(nodeForeignSource, nodeForeignId);
         
