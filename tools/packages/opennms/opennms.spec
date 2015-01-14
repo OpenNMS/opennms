@@ -582,7 +582,6 @@ install -m 640 $RPM_BUILD_ROOT%{instprefix}/contrib/remote-poller/remote-poller.
 rm -rf $RPM_BUILD_ROOT%{instprefix}/contrib/remote-poller
 
 if [ '%{name}' != 'opennms' ]; then
-	ln -sf '%{name}'               $RPM_BUILD_ROOT%{_initrddir}/opennms
 	ln -sf '%{name}-remote-poller' $RPM_BUILD_ROOT%{_initrddir}/opennms-remote-poller
 fi
 
@@ -963,7 +962,8 @@ fi
 rm -f $RPM_INSTALL_PREFIX0/etc/configured
 for dir in /etc /etc/rc.d; do
 	if [ -d "$dir" ]; then
-		ln -sf $RPM_INSTALL_PREFIX0/bin/opennms $dir/init.d/opennms
+		ln -sf $RPM_INSTALL_PREFIX0/bin/%{name} $dir/init.d/%{name}
+		ln -sf $RPM_INSTALL_PREFIX0/bin/%{name} $dir/init.d/opennms
 		break
 	fi
 done
