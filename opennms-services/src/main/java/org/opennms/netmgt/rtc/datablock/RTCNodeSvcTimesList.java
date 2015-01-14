@@ -34,7 +34,6 @@ import java.util.ListIterator;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.opennms.netmgt.config.RTCConfigFactory;
 
 /**
  * List of service times. This contains a list of service lost/regained set/pair
@@ -49,13 +48,15 @@ import org.opennms.netmgt.config.RTCConfigFactory;
  *
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
  * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
- * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
- * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
- * @version $Id: $
  */
 public class RTCNodeSvcTimesList extends LinkedList<RTCNodeSvcTime> {
     private static final Logger LOG = LoggerFactory.getLogger(RTCNodeSvcTimesList.class);
     private static final long serialVersionUID = 2606739258065019820L;
+
+    /**
+     * The time from which the current outtime 'm_outTime' is calculated
+     */
+    private final long m_rollingWindow;
 
     /**
      * The time from which the current outtime 'm_outTime' is calculated
@@ -73,9 +74,8 @@ public class RTCNodeSvcTimesList extends LinkedList<RTCNodeSvcTime> {
      */
     private void removeExpiredOutages() {
         long curTime = System.currentTimeMillis();
-        long rollingWindow = RTCConfigFactory.getInstance().getRollingWindow();
 
-        removeExpiredOutages(curTime, rollingWindow);
+        removeExpiredOutages(curTime, m_rollingWindow);
     }
 
     /**
@@ -111,8 +111,10 @@ public class RTCNodeSvcTimesList extends LinkedList<RTCNodeSvcTime> {
     /**
      * Default constructor.
      */
-    public RTCNodeSvcTimesList() {
+    public RTCNodeSvcTimesList(long rollingWindow) {
         super();
+
+        m_rollingWindow = rollingWindow;
 
         m_outTimeSince = -1;
 

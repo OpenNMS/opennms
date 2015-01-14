@@ -28,64 +28,26 @@
 
 package org.opennms.netmgt.rtc.jmx;
 
+import org.opennms.netmgt.daemon.AbstractSpringContextJmxServiceDaemon;
+
 /**
  * <p>Rtcd class.</p>
  *
  * @author ranger
  * @version $Id: $
  */
-public class Rtcd implements RtcdMBean {
-    /**
-     * <p>init</p>
-     */
+public class Rtcd extends AbstractSpringContextJmxServiceDaemon<org.opennms.netmgt.rtc.RTCManager> implements RtcdMBean {
+
+    /** {@inheritDoc} */
     @Override
-    public void init() {
-        org.opennms.netmgt.rtc.RTCManager.getInstance().init();
+    protected String getLoggingPrefix() {
+        return "OpenNMS.Rtcd";
     }
 
-    /**
-     * <p>start</p>
-     */
+    /** {@inheritDoc} */
     @Override
-    public void start() {
-        org.opennms.netmgt.rtc.RTCManager.getInstance().start();
+    protected String getSpringContext() {
+        return "rtcContext";
     }
 
-    /**
-     * <p>stop</p>
-     */
-    @Override
-    public void stop() {
-        org.opennms.netmgt.rtc.RTCManager.getInstance().stop();
-    }
-
-    /**
-     * <p>getStatus</p>
-     *
-     * @return a int.
-     */
-    @Override
-    public int getStatus() {
-        return org.opennms.netmgt.rtc.RTCManager.getInstance().getStatus();
-    }
-
-    /**
-     * <p>status</p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    @Override
-    public String status() {
-        return org.opennms.core.fiber.Fiber.STATUS_NAMES[getStatus()];
-    }
-
-    /**
-     * <p>getStatusText</p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    @Override
-    public String getStatusText() {
-        return org.opennms.core.fiber.Fiber.STATUS_NAMES[getStatus()];
-    }
 }

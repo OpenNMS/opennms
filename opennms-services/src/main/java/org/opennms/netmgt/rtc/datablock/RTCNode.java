@@ -85,8 +85,8 @@ public class RTCNode {
      *
      * @param key a {@link org.opennms.netmgt.rtc.datablock.RTCNodeKey} object.
      */
-    public RTCNode(RTCNodeKey key) {
-    	this(key.getNodeID(), key.getIP(), key.getSvcName());
+    public RTCNode(RTCNodeKey key, long rollingWindow) {
+    	this(key.getNodeID(), key.getIP(), key.getSvcName(), rollingWindow);
     }
 
     /**
@@ -99,14 +99,14 @@ public class RTCNode {
      * @param svcName
      *            the service
      */
-    public RTCNode(long nodeid, InetAddress inetAddress, String svcName) {
+    public RTCNode(long nodeid, InetAddress inetAddress, String svcName, long rollingWindow) {
         m_nodeID = nodeid;
 
         m_ip = inetAddress;
 
         m_svcName = svcName;
 
-        m_svcTimesList = new RTCNodeSvcTimesList();
+        m_svcTimesList = new RTCNodeSvcTimesList(rollingWindow);
         m_categories = new ArrayList<String>();
     }
 

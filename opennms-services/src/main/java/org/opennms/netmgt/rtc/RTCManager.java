@@ -28,23 +28,15 @@
 
 package org.opennms.netmgt.rtc;
 
-import java.io.IOException;
-import java.lang.reflect.UndeclaredThrowableException;
-import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
-import org.opennms.core.concurrent.LogPreservingThreadFactory;
 import org.opennms.core.logging.Logging;
 import org.opennms.netmgt.config.RTCConfigFactory;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
-import org.opennms.netmgt.rtc.datablock.RTCCategory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Maintains calculations for categories.
@@ -86,11 +78,6 @@ public final class RTCManager extends AbstractServiceDaemon {
     private static final Logger LOG = LoggerFactory.getLogger(RTCManager.class);
     
     private Logger log() { return LOG; }
-
-    /**
-     * Singleton instance of this class
-     */
-    private static final RTCManager m_singleton = new RTCManager();
 
     /**
      * The id for the low threshold timer task
@@ -168,17 +155,6 @@ public final class RTCManager extends AbstractServiceDaemon {
     private int MAX_EVENTS_BEFORE_RESEND = -1;
 
     /**
-     * The events receiver
-     */
-    private BroadcastEventProcessor m_eventReceiver;
-
-    /**
-     * The {@link ExecutorService} that runs updaters that interpret and
-     * update the data
-     */
-    private ExecutorService m_updaterPool;
-
-    /**
      * The DataSender
      */
     private DataSender m_dataSender;
@@ -186,7 +162,11 @@ public final class RTCManager extends AbstractServiceDaemon {
     /**
      * manager of the data maintained by the RTC
      */
-    private static DataManager m_dataMgr;
+    @Autowired
+    private DataManager m_dataMgr;
+
+    @Autowired
+    private RTCConfigFactory m_configFactory;
 
     /**
      * The timer scheduled task that runs and informs the RTCManager when the
@@ -422,44 +402,27 @@ public final class RTCManager extends AbstractServiceDaemon {
     @Override
     protected synchronized void onInit() {
 
-        // load the rtc configuration
-        RTCConfigFactory rFactory = null;
-        try {
-            RTCConfigFactory.reload();
-            rFactory = RTCConfigFactory.getInstance();
-
-        } catch (IOException ex) {
-            log().error("Failed to load rtc configuration", ex);
-            throw new UndeclaredThrowableException(ex);
-        } catch (MarshalException ex) {
-            log().error("Failed to load rtc configuration", ex);
-            throw new UndeclaredThrowableException(ex);
-        } catch (ValidationException ex) {
-            log().error("Failed to load rtc configuration", ex);
-            throw new UndeclaredThrowableException(ex);
-        }
-
         //
         // Get the required attributes
         //
 
         // parse the rolling window info
-        m_rollingWindow = rFactory.getRollingWindow();
+        m_rollingWindow = m_configFactory.getRollingWindow();
 
         // get maxEventsBeforeResend
-        MAX_EVENTS_BEFORE_RESEND = rFactory.getMaxEventsBeforeResend();
+        MAX_EVENTS_BEFORE_RESEND = m_configFactory.getMaxEventsBeforeResend();
 
         // parse the low threshold interval
-        m_lowThresholdInterval = rFactory.getLowThresholdInterval();
+        m_lowThresholdInterval = m_configFactory.getLowThresholdInterval();
 
         // parse the high threshold interval
-        m_highThresholdInterval = rFactory.getHighThresholdInterval();
+        m_highThresholdInterval = m_configFactory.getHighThresholdInterval();
 
         // parse the user threshold interval
-        String ur = rFactory.getUserRefreshIntervalStr();
+        String ur = m_configFactory.getUserRefreshIntervalStr();
         if (ur != null) {
             try {
-                m_userRefreshInterval = rFactory.getUserRefreshInterval();
+                m_userRefreshInterval = m_configFactory.getUserRefreshInterval();
             } catch (Throwable nfE) {
                 log().warn("User refresh time has an incorrect format - using 1 minute instead");
                 m_userRefreshInterval = 60 * 1000;
@@ -487,27 +450,8 @@ public final class RTCManager extends AbstractServiceDaemon {
         log().info("High Threshold Refresh Interval: " + m_highThresholdInterval + "(milliseconds)");
         log().info("User Refresh Interval: " + m_userRefreshInterval + "(milliseconds)");
 
-        // Intialize the data from the database
-        try {
-            m_dataMgr = new DataManager();
-        } catch (Throwable ex) {
-            throw new UndeclaredThrowableException(ex);
-        }
-
-        m_updaterPool = Executors.newFixedThreadPool(
-            rFactory.getUpdaters(),
-            new LogPreservingThreadFactory(getClass().getSimpleName(), rFactory.getUpdaters())
-        );
-
-        if (log().isDebugEnabled())
-            log().debug("Created updater pool");
-
-        m_eventReceiver = new BroadcastEventProcessor(m_updaterPool);
-        if (log().isDebugEnabled())
-            log().debug("Created event receiver");
-
         // create the data sender
-        m_dataSender = new DataSender(getCategories(), rFactory.getSenders());
+        m_dataSender = new DataSender(m_dataMgr, m_configFactory);
         log().debug("Created DataSender");
 
         // create the timer
@@ -542,28 +486,6 @@ public final class RTCManager extends AbstractServiceDaemon {
         if (log().isDebugEnabled())
             log().debug(USERTIMER + " scheduled");
 
-        //
-        // Subscribe to events
-        //
-        try {
-            m_eventReceiver.start();
-        } catch (Throwable t) {
-            m_dataSender.stop();
-            if (log().isDebugEnabled())
-                log().debug("DataSender shutdown");
-
-            m_updaterPool.shutdown();
-            if (log().isDebugEnabled())
-                log().debug("Updater pool shutdown");
-
-            m_timer.cancel();
-            if (log().isDebugEnabled())
-                log().debug("Timer cancelled");
-
-            throw new UndeclaredThrowableException(t);
-        }
-
-
         if (log().isDebugEnabled()) {
             log().debug("RTC ready to receive events");
         }
@@ -578,12 +500,6 @@ public final class RTCManager extends AbstractServiceDaemon {
             if (log().isDebugEnabled())
                 log().debug("Beginning shutdown process");
 
-            //
-            // Close connection to the event subsystem and free associated
-            // resources.
-            //
-            m_eventReceiver.close();
-
             if (log().isDebugEnabled())
                 log().debug("Shutting down the data sender");
 
@@ -595,8 +511,6 @@ public final class RTCManager extends AbstractServiceDaemon {
 
             if (log().isDebugEnabled())
                 log().debug("sending shutdown to updaters");
-
-            m_updaterPool.shutdown();
 
             if (log().isDebugEnabled())
                 log().debug("RTC Updaters shutdown");
@@ -633,6 +547,15 @@ public final class RTCManager extends AbstractServiceDaemon {
     }
 
     /**
+     * Gets the data manager.
+     *
+     * @return the data manager
+     */
+    public DataManager getDataManager() {
+        return m_dataMgr;
+    }
+
+    /**
      * Get the data sender.
      *
      * @return the data sender
@@ -642,48 +565,12 @@ public final class RTCManager extends AbstractServiceDaemon {
     }
 
     /**
-     * Gets the categories.
-     *
-     * @return the categories
-     */
-    public static Map<String, RTCCategory> getCategories() {
-        return m_dataMgr.getCategories();
-    }
-
-    /**
-     * Gets the data manager.
-     *
-     * @return the data manager
-     */
-    public static DataManager getDataManager() {
-        return m_dataMgr;
-    }
-
-    /**
-     * Sets the data manager.
-     *
-     * @param dataMgr a {@link org.opennms.netmgt.rtc.DataManager} object.
-     */
-    public static void setDataManager(DataManager dataMgr) {
-        m_dataMgr = dataMgr;
-    }
-
-    /**
      * Gets the rolling window.
      *
      * @return the configured rolling window
      */
     public static long getRollingWindow() {
         return m_rollingWindow;
-    }
-
-    /**
-     * Gets the instance of the RTCmanager.
-     *
-     * @return the RTCManager singleton.
-     */
-    public static RTCManager getInstance() {
-        return m_singleton;
     }
 
 }

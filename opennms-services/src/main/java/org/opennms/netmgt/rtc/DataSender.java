@@ -78,7 +78,7 @@ final class DataSender implements Fiber {
      * The listeners like the WebUI that send a URL to which the data is to be
      * sent
      */
-    private final Map<String, Set<HttpPostInfo>> m_catUrlMap;
+    private final Map<String, Set<HttpPostInfo>> m_catUrlMap = new HashMap<String, Set<HttpPostInfo>>();
 
     /**
      * The data sender thread pool
@@ -101,6 +101,8 @@ final class DataSender implements Fiber {
      */
     private int m_status;
 
+	private final DataManager m_dataMgr;
+
     /**
      * Inner class to send data to all the categories - this runnable prevents
      * the RTCManager from having to block until data is computed, converted to
@@ -117,22 +119,6 @@ final class DataSender implements Fiber {
     }
 
     /**
-     * Set the current thread's priority to the passed value and return the old
-     * priority
-     */
-    private int setCurrentThreadPriority(final int priority) {
-        final Thread currentThread = Thread.currentThread();
-        final int oldPriority = currentThread.getPriority();
-        try {
-            currentThread.setPriority(priority);
-        } catch (final Throwable t) {
-            LOG.debug("Error setting thread priority: ", t);
-        }
-
-        return oldPriority;
-    }
-
-    /**
      * The constructor for this object
      *
      * @param categories
@@ -140,22 +126,20 @@ final class DataSender implements Fiber {
      * @param numSenders
      *            The number of senders.
      */
-    public DataSender(final Map<String, RTCCategory> categories, final int numSenders) {
-        m_categories = categories;
-
-        // create the category URL map
-        m_catUrlMap = new HashMap<String, Set<HttpPostInfo>>();
+    public DataSender(final DataManager dataMgr, final RTCConfigFactory configFactory) {
+        m_dataMgr = dataMgr;
+        m_categories = m_dataMgr.getCategories();
 
         // create and start the data sender pool
-        m_dsrPool = Executors.newFixedThreadPool(numSenders,
-                                                 new LogPreservingThreadFactory(getClass().getSimpleName(), numSenders)
-                );
+        m_dsrPool = Executors.newFixedThreadPool(configFactory.getSenders(),
+            new LogPreservingThreadFactory(getClass().getSimpleName(), configFactory.getSenders())
+        );
 
         // create category converter
-        m_euiMapper = new EuiLevelMapper();
+        m_euiMapper = new EuiLevelMapper(m_dataMgr);
 
         // get post error limit
-        POST_ERROR_LIMIT = RTCConfigFactory.getInstance().getErrorsBeforeUrlUnsubscribe();
+        POST_ERROR_LIMIT = configFactory.getErrorsBeforeUrlUnsubscribe();
     }
 
     /**
@@ -254,10 +238,6 @@ final class DataSender implements Fiber {
         try {
             LOG.debug("DataSender: posting data to: {}", url);
 
-            // Run at a higher than normal priority since we do have to send
-            // the update on time
-            final int oldPriority = setCurrentThreadPriority(Thread.MAX_PRIORITY);
-
             final EuiLevel euidata = m_euiMapper.convertToEuiLevelXML(cat);
             inr = new PipedMarshaller(euidata).getReader();
             inp = HttpUtils.post(postInfo.getURL(), inr, user, passwd, 8 * HttpUtils.DEFAULT_POST_BUFFER_SIZE);
@@ -272,13 +252,9 @@ final class DataSender implements Fiber {
                 }
             }
 
-            // return current thread to its previous priority
-            setCurrentThreadPriority(oldPriority);
-
             LOG.debug("DataSender: posted data for category: {}", catlabel);
         } catch (final Throwable t) {
             LOG.warn("DataSender:  Unable to send category '{}' to URL '{}'", catlabel, url, t);
-            setCurrentThreadPriority(Thread.NORM_PRIORITY);
         } finally {
             IOUtils.closeQuietly(inp);
             IOUtils.closeQuietly(inr);
@@ -342,16 +318,11 @@ final class DataSender implements Fiber {
 
             LOG.debug("DataSender: category '{}' has listeners - converting to xml...", catlabel);
 
-            // Run at a higher than normal priority since we do have to send
-            // the update on time
-            final int oldPriority = setCurrentThreadPriority(Thread.MAX_PRIORITY);
-
             final EuiLevel euidata;
             try {
                 euidata = m_euiMapper.convertToEuiLevelXML(cat);
             } catch (final Throwable t) {
                 LOG.warn("DataSender: unable to convert data to xml for category: '{}'", catlabel, t);
-                setCurrentThreadPriority(Thread.NORM_PRIORITY);
                 continue;
             }
 
@@ -385,7 +356,6 @@ final class DataSender implements Fiber {
                     } catch (final Throwable t) {
                         LOG.warn("DataSender: unable to send data for category: {} due to {}: {}", catlabel, t.getClass().getName(), t.getMessage(), t);
                         postInfo.incrementErrors();
-                        setCurrentThreadPriority(Thread.NORM_PRIORITY);
                     } finally {
                         IOUtils.closeQuietly(inp);
                         IOUtils.closeQuietly(inr);
@@ -400,9 +370,6 @@ final class DataSender implements Fiber {
                     }
                 }
             }
-
-            // return current thread to its previous priority
-            setCurrentThreadPriority(oldPriority);
         }
     }
 

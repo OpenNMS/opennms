@@ -56,7 +56,8 @@ final class DataUpdater implements Runnable {
     /**
      * The event from which data is to be read
      */
-    private Event m_event;
+    private final Event m_event;
+	private final RTCManager m_rtcMgr;
 
     /**
      * If it is a nodeGainedService, create a new entry in the map
@@ -68,7 +69,7 @@ final class DataUpdater implements Runnable {
             return;
         }
 
-        DataManager dataMgr = RTCManager.getDataManager();
+        DataManager dataMgr = m_rtcMgr.getDataManager();
         dataMgr.nodeGainedService(nodeid, ip, svcName);
 
         LOG.debug("{} added {}: {}: {} to data store", m_event.getUei(), nodeid, InetAddressUtils.str(ip), svcName);
@@ -85,7 +86,7 @@ final class DataUpdater implements Runnable {
             return;
         }
 
-        DataManager dataMgr = RTCManager.getDataManager();
+        DataManager dataMgr = m_rtcMgr.getDataManager();
         dataMgr.nodeLostService(nodeid, ip, svcName, eventTime);
 
 
@@ -102,7 +103,7 @@ final class DataUpdater implements Runnable {
             return;
         }
 
-        DataManager dataMgr = RTCManager.getDataManager();
+        DataManager dataMgr = m_rtcMgr.getDataManager();
         dataMgr.interfaceDown(nodeid, ip, eventTime);
 
 
@@ -119,7 +120,7 @@ final class DataUpdater implements Runnable {
             return;
         }
 
-        DataManager dataMgr = RTCManager.getDataManager();
+        DataManager dataMgr = m_rtcMgr.getDataManager();
         dataMgr.nodeDown(nodeid, eventTime);
 
 
@@ -136,7 +137,7 @@ final class DataUpdater implements Runnable {
             return;
         }
 
-        DataManager dataMgr = RTCManager.getDataManager();
+        DataManager dataMgr = m_rtcMgr.getDataManager();
         dataMgr.nodeUp(nodeid, eventTime);
 
 
@@ -153,7 +154,7 @@ final class DataUpdater implements Runnable {
             return;
         }
 
-        DataManager dataMgr = RTCManager.getDataManager();
+        DataManager dataMgr = m_rtcMgr.getDataManager();
         dataMgr.interfaceUp(nodeid, ip, eventTime);
 
 
@@ -170,7 +171,7 @@ final class DataUpdater implements Runnable {
             return;
         }
 
-        DataManager dataMgr = RTCManager.getDataManager();
+        DataManager dataMgr = m_rtcMgr.getDataManager();
         dataMgr.nodeRegainedService(nodeid, ip, svcName, eventTime);
 
 
@@ -187,7 +188,7 @@ final class DataUpdater implements Runnable {
             return;
         }
 
-        DataManager dataMgr = RTCManager.getDataManager();
+        DataManager dataMgr = m_rtcMgr.getDataManager();
         dataMgr.serviceDeleted(nodeid, ip, svcName);
 
 
@@ -250,7 +251,7 @@ final class DataUpdater implements Runnable {
         if (oldNodeId == -1 || newNodeId == -1) {
             LOG.warn("{} did not have all required information for {} Values contained old nodeid: {} new nodeid: {}", m_event.getUei(), InetAddressUtils.str(ip), oldNodeId, newNodeId);
         } else {
-            DataManager dataMgr = RTCManager.getDataManager();
+            DataManager dataMgr = m_rtcMgr.getDataManager();
             dataMgr.interfaceReparented(ip, oldNodeId, newNodeId);
 
             LOG.debug("{} reparented ip: {} from {} to {}", m_event.getUei(), InetAddressUtils.str(ip), oldNodeId, newNodeId);
@@ -309,7 +310,7 @@ final class DataUpdater implements Runnable {
             LOG.warn("{} did not have all required information. Values contained url: {} catlabel: {} user: {} passwd: {}", m_event.getUei(), url, clabel, user, passwd);
 
         } else {
-            RTCManager.getInstance().getDataSender().subscribe(url, clabel, user, passwd);
+            m_rtcMgr.getDataSender().subscribe(url, clabel, user, passwd);
 
             LOG.debug("{} subscribed {}: {}: {}", m_event.getUei(), url, clabel, user);
 
@@ -349,7 +350,7 @@ final class DataUpdater implements Runnable {
         if (url == null) {
             LOG.warn("{} did not have required information.  Value of url: {}", m_event.getUei(), url);
         } else {
-            RTCManager.getInstance().getDataSender().unsubscribe(url);
+            m_rtcMgr.getDataSender().unsubscribe(url);
 
             LOG.debug("{} unsubscribed {}", m_event.getUei(), url);
         }
@@ -360,7 +361,7 @@ final class DataUpdater implements Runnable {
      */
     private void handleAssetInfoChangedEvent(long nodeid) {
 
-        DataManager dataMgr = RTCManager.getDataManager();
+        DataManager dataMgr = m_rtcMgr.getDataManager();
 
         dataMgr.assetInfoChanged(nodeid);
 
@@ -376,7 +377,7 @@ final class DataUpdater implements Runnable {
      */
     private void handleNodeCategoryMembershipChanged(long nodeid) {
 
-        DataManager dataMgr = RTCManager.getDataManager();
+        DataManager dataMgr = m_rtcMgr.getDataManager();
 
         dataMgr.nodeCategoryMembershipChanged(nodeid);
 
@@ -467,15 +468,17 @@ final class DataUpdater implements Runnable {
             LOG.debug("Event subscribed for not handled?!: {}", eventUEI);
         }
 
-        RTCManager.getInstance().incrementCounter();
+        m_rtcMgr.incrementCounter();
     }
 
     /**
      * Constructs the DataUpdater object
+     * @param dataManager 
      *
      * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
      */
-    public DataUpdater(Event event) {
+    public DataUpdater(RTCManager rtcManager, Event event) {
+    	m_rtcMgr = rtcManager;
         m_event = event;
     }
 
