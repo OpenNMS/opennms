@@ -33,6 +33,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.opennms.netmgt.rtc.NodeNotInCategoryException;
 
 /**
  * The main unit for the RTCManager.
@@ -50,6 +51,7 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
  *
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
  * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
+ * 
  * @see org.opennms.netmgt.rtc.datablock.RTCNodeSvcTime
  * @see org.opennms.netmgt.rtc.datablock.RTCNodeSvcTimesList
  */
@@ -272,40 +274,17 @@ public class RTCNode {
      * @param rollingWindow
      *            the window for which downtime is required
      * @return the total outage time for this node
+     * @throws NodeNotInCategoryException 
      */
-    public long getDownTime(String cat, long curTime, long rollingWindow) {
+    public long[] getDownTime(String cat, long curTime, long rollingWindow) throws NodeNotInCategoryException {
         // get the down time for this node in the context of the
-        // category
-        // if the service is not in 'context', return a negative value
+        // category.
+        // if the service is not in 'context', throw an exception
         if (!m_categories.contains(cat)) {
-            return -1L;
+            throw new NodeNotInCategoryException();
         }
 
         return m_svcTimesList.getDownTime(curTime, rollingWindow);
-    }
-
-    /**
-     * Get the avaialability. Return the total availability for this node in the
-     * last 'rollingWindow' milliseconds since 'curTime' for the category
-     *
-     * @param cat
-     *            the category in the context which of which availability is
-     *            needed
-     * @param curTime
-     *            the start time (or current time) from which we go back
-     *            rollinWindow interval
-     * @param rollingWindow
-     *            the window for which availability is required
-     * @return the value for this node
-     */
-    public double getValue(String cat, long curTime, long rollingWindow) {
-        // get the outages in the last 'rollingWindow'
-        double outageTime = getDownTime(cat, curTime, rollingWindow);
-        if (outageTime < 0) {
-            return outageTime;
-        }
-
-        return 100 * (1 - (outageTime / (double)rollingWindow));
     }
 
     /**
@@ -371,7 +350,7 @@ public class RTCNode {
     /**
      * {@inheritDoc}
      *
-     * String represenatation. Returns a string representation of this object
+     * String representation. Returns a string representation of this object
      * that has the nodeid/ip/servicename details
      */
     @Override

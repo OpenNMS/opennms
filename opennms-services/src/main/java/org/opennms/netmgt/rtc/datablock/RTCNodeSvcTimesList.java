@@ -59,16 +59,6 @@ public class RTCNodeSvcTimesList extends LinkedList<RTCNodeSvcTime> {
     private final long m_rollingWindow;
 
     /**
-     * The time from which the current outtime 'm_outTime' is calculated
-     */
-    private long m_outTimeSince;
-
-    /**
-     * The outage time computed since 'm_outTimeSince'
-     */
-    private long m_outTime;
-
-    /**
      * Remove expired outages. Remove all closed outages that are not in the the
      * last 'rollingWindow'
      */
@@ -91,8 +81,7 @@ public class RTCNodeSvcTimesList extends LinkedList<RTCNodeSvcTime> {
         // the start of the rolling window
         long startTime = curTime - rollingWindow;
 
-        ListIterator<RTCNodeSvcTime> iter = listIterator();
-        while (iter.hasNext()) {
+        for (ListIterator<RTCNodeSvcTime> iter = listIterator(); iter.hasNext();) {
             RTCNodeSvcTime svcTime = (RTCNodeSvcTime) iter.next();
 
             // since new outages are added at the end, if this outage
@@ -104,7 +93,6 @@ public class RTCNodeSvcTimesList extends LinkedList<RTCNodeSvcTime> {
             if (svcTime.hasExpired(startTime)) {
                 iter.remove();
             }
-
         }
     }
 
@@ -115,10 +103,6 @@ public class RTCNodeSvcTimesList extends LinkedList<RTCNodeSvcTime> {
         super();
 
         m_rollingWindow = rollingWindow;
-
-        m_outTimeSince = -1;
-
-        m_outTime = 0;
     }
 
     /**
@@ -163,29 +147,21 @@ public class RTCNodeSvcTimesList extends LinkedList<RTCNodeSvcTime> {
      *            the current time from which the down time is to be calculated
      * @param rollingWindow
      *            the last window for which the downtime is to be calculated
-     * @return total down time in service times in this list
+     * @return [ count of services, total down time for all services ]
      */
-    public long getDownTime(long curTime, long rollingWindow) {
-        // calculate effective start time
-        long startTime = curTime - rollingWindow;
-        if (m_outTimeSince == startTime) {
-            return m_outTime;
-        }
-
-        m_outTimeSince = startTime;
-
-        m_outTime = 0;
+    public long[] getDownTime(long curTime, long rollingWindow) {
 
         // remove expired outages
         removeExpiredOutages(curTime, rollingWindow);
 
-        Iterator<RTCNodeSvcTime> iter = iterator();
-        while (iter.hasNext()) {
-            RTCNodeSvcTime svcTime = (RTCNodeSvcTime) iter.next();
+        long outTime = 0;
+        long count = 0;
 
-            m_outTime += svcTime.getDownTime(curTime, rollingWindow);
+        for (RTCNodeSvcTime svcTime : this) {
+            outTime += svcTime.getDownTime(curTime, rollingWindow);
+            count++;
         }
 
-        return m_outTime;
+        return new long[] {count, outTime};
     }
 }

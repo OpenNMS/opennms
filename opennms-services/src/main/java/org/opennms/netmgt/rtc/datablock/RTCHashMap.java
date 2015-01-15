@@ -37,6 +37,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.opennms.netmgt.rtc.NodeNotInCategoryException;
+
 /**
  * The RTCHashMap has either a nodeid or a nodeid/ip as key and provides
  * convenience methods to add and remove 'RTCNodes' with these values - each key
@@ -209,32 +211,22 @@ public class RTCHashMap {
         // get all nodes in the hashtable
         for (Long key : getNodeIDs()) {
             List<RTCNode> valList = getRTCNodes(key.longValue());
-            if (valList == null || valList.size() == 0)
+            if (valList == null || valList.size() == 0) {
                 continue;
-
-            for (RTCNode node : valList) {
-                long downTime = node.getDownTime(catLabel, curTime, rollingWindow);
-                if (downTime < 0)
-                // node does not belong to category
-                // or RTCConstants.SERVICE_NOT_FOUND_VALUE
-                // or node / interface / service unmanaged
-                {
-                    continue;
-                }
-
-                outageTime += downTime;
-
-                count++;
-
             }
 
+            for (RTCNode node : valList) {
+                try {
+                    long[] downTime = node.getDownTime(catLabel, curTime, rollingWindow);
+                    count += downTime[0];
+                    outageTime += downTime[1];
+                } catch (NodeNotInCategoryException e) {
+                    continue;
+                }
+            }
         }
 
-        if (count > 0) {
-            return 100.0 * (1.0 - (outageTime / ((double)rollingWindow * (double)count)));
-        } else {
-            return 100.0;
-        }
+        return getOutagePercentage(outageTime, rollingWindow, count);
     }
 
     /**
@@ -261,24 +253,30 @@ public class RTCHashMap {
         // get nodeslist
         for (RTCNode node : getRTCNodes(nodeid)) {
             if (node.getNodeID() == nodeid) {
-                long downTime = node.getDownTime(catLabel, curTime, rollingWindow);
-                if (downTime < 0)
-                // node does not belong to category
-                // or RTCConstants.SERVICE_NOT_FOUND_VALUE
-                // or node / interface / service unmanaged
-                {
+                try {
+                    long[] downTime = node.getDownTime(catLabel, curTime, rollingWindow);
+                    count += downTime[0];
+                    outageTime += downTime[1];
+                } catch (NodeNotInCategoryException e) {
                     continue;
                 }
-
-                outageTime += downTime;
-
-                count++;
-
             }
         }
 
-        if (count > 0) {
-            return 100 * (1 - (outageTime / ((double)rollingWindow * (double)count)));
+        return getOutagePercentage(outageTime, rollingWindow, count);
+    }
+
+    /**
+     * Calculate the uptime percentage for an outage window.
+     * 
+     * @param totalOutageTime Total outage time over the window in milliseconds
+     * @param outageWindow Length of the outage window in milliseconds
+     * @param numberOfServices Number of services that were managed over this time period
+     * @return An outage percentage between 0.0 and 100.0.
+     */
+    public static double getOutagePercentage(double totalOutageTime, long outageWindow, long numberOfServices) {
+        if (numberOfServices > 0) {
+            return 100 * (1 - (totalOutageTime / ((double)outageWindow * (double)numberOfServices)));
         } else {
             return 100.0;
         }

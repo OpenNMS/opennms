@@ -33,7 +33,6 @@ import java.util.Iterator;
 
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.rtc.DataManager;
-import org.opennms.netmgt.rtc.RTCManager;
 import org.opennms.netmgt.rtc.datablock.RTCCategory;
 import org.opennms.netmgt.xml.rtc.EuiLevel;
 import org.opennms.netmgt.xml.rtc.Header;
@@ -71,8 +70,7 @@ public class EuiLevelMapper extends Object {
     }
 
     /**
-     * Convert the 'RTCCategory' object to a 'EuiLevel' object and marshall to
-     * XML
+     * Convert the 'RTCCategory' object to a 'EuiLevel' object.
      *
      * @param rtcCat
      *            the RTCCategory to be converted
@@ -125,7 +123,6 @@ public class EuiLevelMapper extends Object {
                 // add the node
                 levelCat.addNode(levelNode);
             }
-
         }
 
         // add category
