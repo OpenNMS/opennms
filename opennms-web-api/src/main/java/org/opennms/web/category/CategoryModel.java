@@ -92,8 +92,6 @@ public class CategoryModel extends Object {
     /** A reference to the CategoryFactory to get to category definitions. */
     private CatFactory m_factory = null;
 
-    /** The Log4J category for logging status and debug messages. */
-
     /**
      * Create the instance of the CategoryModel.
      */
@@ -220,7 +218,7 @@ public class CategoryModel extends Object {
      * @return a double.
      * @throws java.sql.SQLException if any.
      */
-    public double getNodeAvailability(int nodeId) throws SQLException {
+    public static double getNodeAvailability(int nodeId) throws SQLException {
         Calendar cal = new GregorianCalendar();
         Date now = cal.getTime();
         cal.add(Calendar.DATE, -1);
@@ -240,7 +238,7 @@ public class CategoryModel extends Object {
      * @return a double.
      * @throws java.sql.SQLException if any.
      */
-    public double getNodeAvailability(int nodeId, Date start, Date end) throws SQLException {
+    private static double getNodeAvailability(int nodeId, Date start, Date end) throws SQLException {
         if (start == null || end == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
@@ -255,7 +253,7 @@ public class CategoryModel extends Object {
 
         double avail = -1;
 
-        final DBUtils d = new DBUtils(getClass());
+        final DBUtils d = new DBUtils(CategoryModel.class);
         try {
             Connection conn = DataSourceFactory.getInstance().getConnection();
             d.watch(conn);
@@ -287,19 +285,22 @@ public class CategoryModel extends Object {
      * Return the availability percentage for all managed services on the given
      * nodes for the last 24 hours. If there are no managed services on these
      * nodes, then a value of -1 is returned.
+     * 
+     * @deprecated Appears to be unused?
      *
      * @param nodeIds a {@link java.util.Set} object.
      * @return a {@link java.util.Map} object.
      * @throws java.sql.SQLException if any.
      */
-    public Map<Integer, Double> getNodeAvailability(Set<Integer> nodeIds) throws SQLException {
+    private static Map<Integer, Double> getNodeAvailability(Set<Integer> nodeIds) throws SQLException {
         Calendar cal = new GregorianCalendar();
         Date now = cal.getTime();
         cal.add(Calendar.DATE, -1);
         Date yesterday = cal.getTime();
 
         return getNodeAvailability(nodeIds, yesterday, now);
-    }    
+    }
+
     /**
      * Return the availability percentage for all managed services on the given
      * nodes from the given start time until the given end time. If there are no
@@ -311,7 +312,7 @@ public class CategoryModel extends Object {
      * @return a {@link java.util.Map} object.
      * @throws java.sql.SQLException if any.
      */
-    public Map<Integer, Double> getNodeAvailability(Set<Integer> nodeIds, Date start, Date end) throws SQLException {
+    private static Map<Integer, Double> getNodeAvailability(Set<Integer> nodeIds, Date start, Date end) throws SQLException {
     	if(nodeIds==null || nodeIds.size()==0){
     		throw new IllegalArgumentException("Cannot take nodeIds null or with length 0.");
     	}
@@ -331,7 +332,7 @@ public class CategoryModel extends Object {
         int nodeid = 0;
         Map<Integer, Double> retMap = new TreeMap<Integer, Double>();
 
-        final DBUtils d = new DBUtils(getClass());
+        final DBUtils d = new DBUtils(CategoryModel.class);
         try {
             Connection conn = DataSourceFactory.getInstance().getConnection();
             d.watch(conn);
@@ -378,7 +379,7 @@ public class CategoryModel extends Object {
      * @return a double.
      * @throws java.sql.SQLException if any.
      */
-    public double getInterfaceAvailability(int nodeId, String ipAddr) throws SQLException {
+    public static double getInterfaceAvailability(int nodeId, String ipAddr) throws SQLException {
         if (ipAddr == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
@@ -404,7 +405,7 @@ public class CategoryModel extends Object {
      * @return a double.
      * @throws java.sql.SQLException if any.
      */
-    public double getInterfaceAvailability(int nodeId, String ipAddr, Date start, Date end) throws SQLException {
+    private static double getInterfaceAvailability(int nodeId, String ipAddr, Date start, Date end) throws SQLException {
         if (ipAddr == null || start == null || end == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
@@ -419,7 +420,7 @@ public class CategoryModel extends Object {
 
         double avail = -1;
 
-        final DBUtils d = new DBUtils(getClass());
+        final DBUtils d = new DBUtils(CategoryModel.class);
         try {
             Connection conn = DataSourceFactory.getInstance().getConnection();
             d.watch(conn);
@@ -458,7 +459,7 @@ public class CategoryModel extends Object {
      * @return a double.
      * @throws java.sql.SQLException if any.
      */
-    public double getServiceAvailability(int nodeId, String ipAddr, int serviceId) throws SQLException {
+    public static double getServiceAvailability(int nodeId, String ipAddr, int serviceId) throws SQLException {
         if (ipAddr == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
@@ -484,7 +485,7 @@ public class CategoryModel extends Object {
      * @return a double.
      * @throws java.sql.SQLException if any.
      */
-    public double getServiceAvailability(int nodeId, String ipAddr, int serviceId, Date start, Date end) throws SQLException {
+    private static double getServiceAvailability(int nodeId, String ipAddr, int serviceId, Date start, Date end) throws SQLException {
         if (ipAddr == null || start == null || end == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
@@ -499,7 +500,7 @@ public class CategoryModel extends Object {
 
         double avail = -1;
 
-        final DBUtils d = new DBUtils(getClass());
+        final DBUtils d = new DBUtils(CategoryModel.class);
         try {
             Connection conn = DataSourceFactory.getInstance().getConnection();
             d.watch(conn);
