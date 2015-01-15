@@ -33,7 +33,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang.builder.HashCodeBuilder;
-import org.opennms.netmgt.rtc.RTCConstants;
 
 /**
  * The main unit for the RTCManager.
@@ -63,12 +62,12 @@ public class RTCNode {
     /**
      * The ip address of the interface of the node.
      */
-    private InetAddress m_ip;
+    private final InetAddress m_ip;
 
     /**
      * The service name.
      */
-    private String m_svcName;
+    private final String m_svcName;
 
     /**
      * List of the lost/regained service times for this node.
@@ -78,7 +77,7 @@ public class RTCNode {
     /**
      * List of the categories this node belongs to
      */
-    private List<String> m_categories;
+    private final List<String> m_categories;
 
     /**
      * <p>Constructor for RTCNode.</p>
@@ -118,26 +117,6 @@ public class RTCNode {
      */
     public void setNodeID(long id) {
         m_nodeID = id;
-    }
-
-    /**
-     * Set the service name.
-     *
-     * @param svcName
-     *            the service name
-     */
-    public void setSvcName(String svcName) {
-        m_svcName = svcName;
-    }
-
-    /**
-     * Set the IP address.
-     *
-     * @param ip
-     *            the ip address
-     */
-    public void setIP(InetAddress ip) {
-        m_ip = ip;
     }
 
     /**
@@ -298,8 +277,9 @@ public class RTCNode {
         // get the down time for this node in the context of the
         // category
         // if the service is not in 'context', return a negative value
-        if (!m_categories.contains(cat))
-            return (long) RTCConstants.NODE_NOT_IN_CATEGORY;
+        if (!m_categories.contains(cat)) {
+            return -1L;
+        }
 
         return m_svcTimesList.getDownTime(curTime, rollingWindow);
     }
@@ -319,20 +299,13 @@ public class RTCNode {
      * @return the value for this node
      */
     public double getValue(String cat, long curTime, long rollingWindow) {
-        double value = 0.0;
-
         // get the outages in the last 'rollingWindow'
-        long outageTime = getDownTime(cat, curTime, rollingWindow);
-        if (outageTime < 0)
+        double outageTime = getDownTime(cat, curTime, rollingWindow);
+        if (outageTime < 0) {
             return outageTime;
+        }
 
-        double dOut = outageTime * 1.0;
-        double dRoll = rollingWindow * 1.0;
-
-        value = 100 * (1 - (dOut / dRoll));
-
-        return value;
-
+        return 100 * (1 - (outageTime / (double)rollingWindow));
     }
 
     /**

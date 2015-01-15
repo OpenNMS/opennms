@@ -52,6 +52,7 @@ import org.opennms.netmgt.config.CategoryFactory;
 import org.opennms.netmgt.config.RTCConfigFactory;
 import org.opennms.netmgt.config.categories.CatFactory;
 import org.opennms.netmgt.config.categories.Categorygroup;
+import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.filter.FilterDao;
 import org.opennms.netmgt.filter.FilterParseException;
@@ -102,6 +103,9 @@ public class DataManager implements InitializingBean {
 
     @Autowired
 	private JdbcTemplate m_jdbcTemplate;
+
+	@Autowired
+	private MonitoredServiceDao m_monitoredServiceDao;
 
 	private class RTCNodeProcessor implements RowCallbackHandler {
 		RTCNodeKey m_currentKey = null;
@@ -202,27 +206,6 @@ public class DataManager implements InitializingBean {
      * map keyed using the RTCNodeKey or node ID or node ID/IP address
      */
     private RTCHashMap m_map;
-
-    /**
-     * Get the 'ismanaged' status for the node ID, IP address combination
-     * 
-     * @param nodeid
-     *            the node ID of the interface
-     * @param ip
-     *            the interface for which the status is required
-     * @param svc
-     *            the service for which status is required
-     * 
-     * @return the 'status' from the ifServices table
-     */
-    private char getServiceStatus(long nodeid, InetAddress ip, String svc) {
-    	
-    	String status= (String)m_jdbcTemplate.queryForObject(RTCConstants.DB_GET_SERVICE_STATUS, new Object[] { Long.valueOf(nodeid), InetAddressUtils.str(ip), svc }, String.class);
-
-    	if (status == null) return '\0';
-    	return status.charAt(0);
-    	
-    }
 
 	private void addOutageToRTCNode(RTCNode rtcN, Timestamp lostTimeTS, Timestamp regainedTimeTS) {
 		if (lostTimeTS == null) return;
@@ -349,7 +332,7 @@ public class DataManager implements InitializingBean {
     	
     }
 
-	private Object[] createArgs(Object arg1, Object arg2, Object[] remaining) {
+	private static Object[] createArgs(Object arg1, Object arg2, Object[] remaining) {
 		LinkedList<Object> args = new LinkedList<Object>();
 		args.add(arg1);
 		args.add(arg2);
@@ -425,12 +408,12 @@ public class DataManager implements InitializingBean {
         //
         // check the 'status' flag for the service
         //
-        char svcStatus = getServiceStatus(nodeid, ip, svcName);
+        String svcStatus = m_monitoredServiceDao.get((int)nodeid, ip, svcName).getStatus();
 
         //
         // Include only service status 'A' and where service is not SNMP
         //
-        if (svcStatus != 'A') {
+        if (!"A".equals(svcStatus)) {
             LOG.info("nodeGainedSvc: {}/{}/{} IGNORED because status is not active: {}", nodeid, ip, svcName, svcStatus);
         } else {
             LOG.debug("nodeGainedSvc: {}/{}/{}/{}", nodeid, ip, svcName, svcStatus);
