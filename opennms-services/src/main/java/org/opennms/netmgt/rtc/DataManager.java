@@ -291,7 +291,7 @@ public class DataManager implements InitializingBean {
     }
 
     /**
-     * Poplulates nodes from the database. For each category in the categories
+     * Populates nodes from the database. For each category in the categories
      * list, this reads the services and outage tables to get the initial data,
      * creates 'RTCNode' objects that are added to the map and and to the
      * appropriate category.

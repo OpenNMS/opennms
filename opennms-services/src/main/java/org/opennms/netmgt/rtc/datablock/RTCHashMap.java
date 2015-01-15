@@ -49,7 +49,7 @@ import java.util.Map;
 // FIXME: 2011-05-18 Seth: OK it is less insane now... but still insane
 public class RTCHashMap {
 	
-    Map<RTCNodeKey,List<RTCNode>> m_map;
+    private final Map<RTCNodeKey,List<RTCNode>> m_map;
 	
     /**
      * constructor
@@ -188,28 +188,6 @@ public class RTCHashMap {
     }
 
     /**
-     * Check if this IP has already been validated for this category
-     *
-     * @param nodeid
-     *            the node id whose interface is to be validated
-     * @param ip
-     *            the ip to be validated
-     * @param catLabel
-     *            the category whose rule this ip is to pass
-     * @return true if ip has already been validated, false otherwise
-     */
-    public boolean isIpValidated(long nodeid, InetAddress ip, String catLabel) {
-        for (RTCNode node : getRTCNodes(nodeid, ip)) {
-            if (node.belongsTo(catLabel)) {
-                return true;
-            }
-        }
-
-        return false;
-
-    }
-
-    /**
      * Get the value (uptime) for a category in the last 'rollingWindow'
      * starting at current time
      *
@@ -222,17 +200,11 @@ public class RTCHashMap {
      * @return the value(uptime) for the node
      */
     public double getValue(String catLabel, long curTime, long rollingWindow) {
-        // the value (uptime)
-        double value = 0.0;
-
         // total outage time
-        long outageTime = 0;
+        double outageTime = 0.0;
 
         // number of entries for this node
         int count = 0;
-
-        // downtime for a node
-        long downTime = 0;
 
         // get all nodes in the hashtable
         for (Long key : getNodeIDs()) {
@@ -241,7 +213,7 @@ public class RTCHashMap {
                 continue;
 
             for (RTCNode node : valList) {
-                downTime = node.getDownTime(catLabel, curTime, rollingWindow);
+                long downTime = node.getDownTime(catLabel, curTime, rollingWindow);
                 if (downTime < 0)
                 // node does not belong to category
                 // or RTCConstants.SERVICE_NOT_FOUND_VALUE
@@ -258,16 +230,11 @@ public class RTCHashMap {
 
         }
 
-        double dOut = outageTime * 1.0;
-        double dRoll = rollingWindow * 1.0;
-
         if (count > 0) {
-            value = 100 * (1 - (dOut / (dRoll * count)));
+            return 100.0 * (1.0 - (outageTime / ((double)rollingWindow * (double)count)));
         } else {
-            value = 100.0;
+            return 100.0;
         }
-
-        return value;
     }
 
     /**
@@ -285,22 +252,16 @@ public class RTCHashMap {
      * @return the value(uptime) for the node
      */
     public double getValue(long nodeid, String catLabel, long curTime, long rollingWindow) {
-        // the value (uptime)
-        double value = 0.0;
-
         // total outage time
-        long outageTime = 0;
+        double outageTime = 0.0;
 
         // number of entries for this node
         int count = 0;
 
-        // downtime for a node
-        long downTime = 0;
-
         // get nodeslist
         for (RTCNode node : getRTCNodes(nodeid)) {
             if (node.getNodeID() == nodeid) {
-                downTime = node.getDownTime(catLabel, curTime, rollingWindow);
+                long downTime = node.getDownTime(catLabel, curTime, rollingWindow);
                 if (downTime < 0)
                 // node does not belong to category
                 // or RTCConstants.SERVICE_NOT_FOUND_VALUE
@@ -316,16 +277,11 @@ public class RTCHashMap {
             }
         }
 
-        double dOut = outageTime * 1.0;
-        double dRoll = rollingWindow * 1.0;
-
         if (count > 0) {
-            value = 100 * (1 - (dOut / (dRoll * count)));
+            return 100 * (1 - (outageTime / ((double)rollingWindow * (double)count)));
         } else {
-            value = 100.0;
+            return 100.0;
         }
-
-        return value;
     }
 
     /**
@@ -391,19 +347,7 @@ public class RTCHashMap {
 		}
 		return nodes.get(0);
 	}
-	
-	/**
-	 * <p>getRTCNode</p>
-	 *
-	 * @param nodeid a long.
-	 * @param ipaddr a {@link java.lang.String} object.
-	 * @param svcname a {@link java.lang.String} object.
-	 * @return a {@link org.opennms.netmgt.rtc.datablock.RTCNode} object.
-	 */
-	public RTCNode getRTCNode(long nodeid, InetAddress ipaddr, String svcname) {
-		return getRTCNode(new RTCNodeKey(nodeid, ipaddr, svcname));
-	}
-	
+
 	/**
 	 * <p>getRTCNodes</p>
 	 *

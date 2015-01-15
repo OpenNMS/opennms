@@ -258,15 +258,6 @@ public class RTCNode {
     }
 
     /**
-     * Return the list of service times for this node.
-     *
-     * @return the list of service times for this node
-     */
-    public List<RTCNodeSvcTime> getServiceTimes() {
-        return m_svcTimesList;
-    }
-
-    /**
      * Check if this node belongs to the category.
      *
      * @param catLabel

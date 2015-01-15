@@ -34,11 +34,8 @@ package org.opennms.netmgt.rtc.datablock;
  *
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
  * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
- * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
- * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
- * @version $Id: $
  */
-public class RTCNodeSvcTime extends Object {
+public class RTCNodeSvcTime {
     /**
      * Time at which service was lost
      */
