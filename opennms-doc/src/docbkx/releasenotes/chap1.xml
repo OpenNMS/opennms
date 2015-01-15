@@ -6,6 +6,26 @@
 
 	<!-- Start 14.0 -->
 
+	<section id="introduction-14.0.3">
+		<title>Release 14.0.3</title>
+
+		<para>
+			Release 14.0.3 is the latest stable release of OpenNMS.  It provides
+			a few small fixes and enhancements over OpenNMS 14.0.2, and we believe
+			we have truly squashed the wallboard memory leak this time. ;)  It also
+			includes an important security fix which affects all previous versions
+			of OpenNMS for CVE-2015-0975, which can provide remote access to local
+			system files. This upgrade is the STRONGLY recommended for all OpenNMS
+			14.x users.  For an overview of the major changes since OpenNMS 1.12.x,
+			see the <ulink
+			url='https://github.com/OpenNMS/opennms/blob/release-14.0.2/WHATSNEW.md'>What's
+			New in OpenNMS 14</ulink> page.
+		</para>
+		<para>
+			The codename for 14.0.3 is <emphasis>Surge</emphasis>
+		</para>
+	</section>
+
 	<section id="introduction-14.0.2">
 		<title>Release 14.0.2</title>
 
