@@ -448,7 +448,12 @@ public class AmiPeerFactory {
      * @return a string containing the username. will return the default if none is set.
      */
     private String determineUsername(final Definition def) {
-        return (def.getPassword() == null ? (m_config.getUsername() == null ? AmiAgentConfig.DEFAULT_USERNAME :m_config.getUsername()) : def.getUsername());
+        if (def.getUsername() != null) {
+            return def.getUsername();
+        } else if (m_config.getUsername() != null) {
+            return m_config.getUsername();
+        }
+        return AmiAgentConfig.DEFAULT_USERNAME;
     }
 
      /**
@@ -457,7 +462,12 @@ public class AmiPeerFactory {
      * @return a string containing the password. will return the default if none is set.
      */
     private String determinePassword(final Definition def) {
-        return (def.getPassword() == null ? (m_config.getPassword() == null ? AmiAgentConfig.DEFAULT_PASSWORD :m_config.getPassword()) : def.getPassword());
+        if (def.getPassword() != null) {
+            return def.getPassword();
+        } else if (m_config.getPassword() != null) {
+            return def.getPassword();
+        }
+        return AmiAgentConfig.DEFAULT_PASSWORD;
     }
 
     /**
@@ -466,13 +476,21 @@ public class AmiPeerFactory {
      * @return a long containing the timeout, AmiAgentConfig.DEFAULT_TIMEOUT if not specified.
      */
     private long determineTimeout(final Definition def) {
-        final long timeout = AmiAgentConfig.DEFAULT_TIMEOUT;
-        return (long)(def.getTimeout() == 0 ? (m_config.getTimeout() == 0 ? timeout : m_config.getTimeout()) : def.getTimeout());
+        if (def.hasTimeout() && def.getTimeout() != 0) {
+            return def.getTimeout().longValue();
+        } else if (m_config.getTimeout() != 0) {
+            return (long)m_config.getTimeout();
+        }
+        return (long) AmiAgentConfig.DEFAULT_TIMEOUT;
     }
 
     private int determineRetries(final Definition def) {        
-        final int retries = AmiAgentConfig.DEFAULT_RETRIES;
-        return (def.getRetry() == 0 ? (m_config.getRetry() == 0 ? retries : m_config.getRetry()) : def.getRetry());
+        if (def.hasRetry() && def.getRetry() != 0) {
+            return def.getRetry();
+        } else if (m_config.getRetry() != 0) {
+            return m_config.getRetry();
+        }
+        return AmiAgentConfig.DEFAULT_RETRIES;
     }
 
     /**

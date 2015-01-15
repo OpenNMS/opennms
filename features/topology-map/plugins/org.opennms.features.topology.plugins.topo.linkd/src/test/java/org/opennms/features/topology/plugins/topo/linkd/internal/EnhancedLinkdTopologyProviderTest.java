@@ -38,7 +38,6 @@ import org.opennms.features.topology.api.OperationContext;
 import org.opennms.features.topology.api.topo.*;
 import org.opennms.netmgt.dao.api.DataLinkInterfaceDao;
 import org.opennms.netmgt.dao.api.LldpLinkDao;
-import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.OspfLinkDao;
 import org.opennms.netmgt.model.*;
 import org.springframework.beans.factory.annotation.Autowired;

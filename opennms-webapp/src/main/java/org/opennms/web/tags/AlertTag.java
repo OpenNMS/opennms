@@ -95,7 +95,7 @@ public class AlertTag extends SimpleTagSupport {
         Object alertsObject = getJspContext().findAttribute(REQUEST_PARAMETER_NAME);
         if (alertsObject == null) return;
         if (!(alertsObject instanceof Collection)) return;
-        Collection<Alert> alerts = (Collection)alertsObject;
+        Collection<Alert> alerts = (Collection<Alert>)alertsObject;
         for (Alert eachAlert : alerts) {
             String alertOutput = MessageFormat.format(
                     TEMPLATE,

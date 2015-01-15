@@ -1,15 +1,17 @@
 
-=== BSFMonitor
+==== BSFMonitor
+
 This monitor runs a _Bean Scripting Framework_ http://commons.apache.org/proper/commons-bsf/[BSF] compatible script to determine the status of a service.
 Users can write scripts to perform highly custom service checks.
 This monitor is not optimised for scale.
 It's intended for a small number of custom checks or prototyping of monitors.
 
-==== BSFMonitor vs SystemExecuteMonitor
+===== BSFMonitor vs SystemExecuteMonitor
+
 The _BSFMonitor_ avoids the overhead of _fork(2)_ that is used by the _SystemExecuteMonitor_.
 _BSFMonitor_ also grants access to a selection of _OpenNMS_ internal methods and classes that can be used in the script.
 
-==== Monitor facts
+===== Monitor facts
 
 [options="autowidth"]
 |===
@@ -17,14 +19,14 @@ _BSFMonitor_ also grants access to a selection of _OpenNMS_ internal methods and
 | Remote Enabled | false
 |===
 
-==== Configuration and Usage
+===== Configuration and Usage
 
 .Monitor specific parameters for the _BSFMonitor_
 [options="header, autowidth"]
 |===
 | Parameter         | Description                                                    | Required | Default value
 | `file-name`       | Path to the script file.                                       | required | `-`
-| `bsf-engine`      | The BSF Engine to run the script in different languages like + 
+| `bsf-engine`      | The BSF Engine to run the script in different languages like +
                       _Bean Shell_: `bsh.util.BeanShellBSFEngine` +
                       _Groovy_: `org.codehaus.groovy.bsf.GroovyEngine`  +
                       _Jython_: `org.apache.bsf.engines.jython.JythonEngine`         | required | `-`
@@ -43,7 +45,7 @@ _BSFMonitor_ also grants access to a selection of _OpenNMS_ internal methods and
 | `node_id`     | int                           | The Node ID of the node the `ip_addr` belongs to.
 | `node_label`  | String                        | The Node Label of the node the `ip_addr` and service belongs to.
 | `svc_name`    | String                        | The name of the service that is being polled.
-| `bsf_monitor` | _BSFMonitor_                    | The instance of the _BSFMonitor_ object calling the script. 
+| `bsf_monitor` | _BSFMonitor_                    | The instance of the _BSFMonitor_ object calling the script.
                                                   Useful for logging via its +log(String sev, String fmt, Object... args)+ method.
 | `results`     | HashMap<String, String>       | The script is expected to put its results into this object.
                                                   The status indication should be set into the entry with key `status`.
@@ -56,9 +58,10 @@ The key attribute of the parameter represents the name of the _String_ object an
 
 NOTE: Please keep in mind, that these parameters are also accessible via the _map_ bean.
 
-CAUTION: Avoid non-character names for parameters to avoid problems in the script languages.  
+CAUTION: Avoid non-character names for parameters to avoid problems in the script languages.
 
-==== Response Codes
+===== Response Codes
+
 The script has to provide a status code that represents the status of the associated service.
 The following status codes are defined:
 
@@ -72,7 +75,8 @@ The following status codes are defined:
 | `NOK` | Service is unavailable
 |===
 
-==== Response time tracking
+===== Response time tracking
+
 By default the _BSFMonitor_ tracks the whole time the script file consumes as the response time.
 If the response time should be persisted the response time add the following parameters:
 
@@ -95,11 +99,13 @@ To add custom response times or override the default one, add entries to the _ti
 The entries are keyed with a _String_ that names the datasource and have as values a number that represents the response time.
 To override the default response time datasource add an entry into `times` named `response-time`.
 
-==== Timeout and Retry
+===== Timeout and Retry
+
 The _BSFMonitor_ does not perform any timeout or retry processing on its own.
 If retry and or timeout behaviour is required, it has to be implemented in the script itself.
 
-==== Requirements for the script (run-types)
+===== Requirements for the script (run-types)
+
 Depending on the `run-type` the script has to provide its results in different ways.
 For minimal scripts with very simple logic `run-type` `eval` is the simple option.
 Scripts running in `eval` mode have to return a _String_ matching one of the `status codes`.
@@ -108,21 +114,21 @@ If your script is more than a one-liner, `run-type` `exec` is essentially requir
 Scripts running in `exec` mode need not return anything, but they have to add a `status` entry with a `status code` to the _results_ object.
 Additionally, the _results_ object can also carry a "reason":"message" entry that is used in non `OK` states.
 
-==== Commonly used language settings
+===== Commonly used language settings
+
 The _BSF_ supports many languages, the following table provides the required setup for commonly used languages.
 
 ._BSF_ language setups
 [options="header, autowidth"]
 |===
-| Language                            | lang-class  | bsf-engine                                    | required library 
+| Language                            | lang-class  | bsf-engine                                    | required library
 | http://www.beanshell.org[BeanShell] | _beanshell_ | `bsh.util.BeanShellBSFEngine`                 | supported by default
 | http://groovy.codehaus.org[Groovy]  | _groovy_    | `org.codehaus.groovy.bsf.GroovyEngine`        | +groovy-all-[version].jar+
 | http://www.jython.org[Jython]       | _jython_    | `org.apache.bsf.engines.jython.JythonEngine`  | +jython-[version].jar+
 |===
 
-==== Minimal Examples
+===== Example Bean Shell
 
-===== Minimal Bean Shell Example
 ._BeanShell_ example 'poller-configuration.xml'
 [source, xml]
 ----
@@ -147,7 +153,8 @@ if (testFile.exists()) {
 }
 ----
 
-===== Minimal Groovy Example
+===== Example Groovy
+
 To use the Groovy language an additional library is required.
 Copy a compatible +groovy-all.jar+ into to 'opennms/lib' folder and restart _OpenNMS_.
 That makes _Groovy_ available for the _BSFMonitor_.
@@ -201,7 +208,8 @@ if (testFile.exists()) {
 }
 ----
 
-===== Minimal Jython Example
+===== Example Jython
+
 To use the _Jython_ (_Java_ implementation of _Python_) language an additional library is required.
 Copy a compatible `jython-x.y.z.jar` into the 'opennms/lib' folder and restart _OpenNMS_.
 That makes _Jython_ available for the _BSFMonitor_.
@@ -235,7 +243,7 @@ NOTE: We have to use `run-type` `exec` here because _Jython_ chokes on the +impo
 
 NOTE: As profit that this is really _Python_, notice the substitution of _Python's_ +None+ value for Java's +null+ in the log call.
 
-===== Additional examples
+===== Advanced examples
 
 The following example references all beans that are exposed to the script, including a custom parameter.
 
@@ -245,7 +253,7 @@ The following example references all beans that are exposed to the script, inclu
 <service name="MinimalGroovy" interval="30000" user-defined="true" status="on">
   <parameter key="file-name"  value="/tmp/MinimalGroovy.groovy"/>
   <parameter key="bsf-engine" value="org.codehaus.groovy.bsf.GroovyEngine"/>
-  
+
   <!-- custom parameters (passed to the script) -->
   <parameter key="myParameter" value="Hello Groovy" />
 
@@ -307,7 +315,7 @@ if (testFile.exists()) {
   bsf_monitor.log("ERROR", "Done MinimalGroovy ---- OK ----", null);
   return "OK";
 } else {
-  
+
   results.put("reason", "file does not exist");
   bsf_monitor.log("ERROR", "Done MinimalGroovy ---- NOK ----", null);
   return "NOK";
