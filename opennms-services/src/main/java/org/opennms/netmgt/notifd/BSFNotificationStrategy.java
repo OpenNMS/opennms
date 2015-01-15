@@ -224,19 +224,19 @@ public class BSFNotificationStrategy implements NotificationStrategy {
     }
 
     private String getFileName() {
-        return getSwitchSubstitution("file-name");
+        return getSwitchValue("file-name");
     }
 
     private String getLangClass() {
-        return getSwitchSubstitution("lang-class");
+        return getSwitchValue("lang-class");
     }
 
     private String getBsfEngine() {
-        return getSwitchSubstitution("bsf-engine");
+        return getSwitchValue("bsf-engine");
     }
 
     private String[] getFileExtensions() {
-        String exts = getSwitchSubstitution("file-extensions");
+        String exts = getSwitchValue("file-extensions");
         if (exts == null) return null;
         return exts.split(",");
     }
