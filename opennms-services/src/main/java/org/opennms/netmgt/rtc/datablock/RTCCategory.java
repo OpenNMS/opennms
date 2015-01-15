@@ -48,12 +48,12 @@ public class RTCCategory extends Category {
     /**
      * The 'effective' rule
      */
-    private String m_effectiveRule;
+    private final String m_effectiveRule;
 
     /**
      * The nodes list - list of node IDs
      */
-    private List<Long> m_nodes;
+    private final List<Long> m_nodes = Collections.synchronizedList(new ArrayList<Long>());
 
     /**
      * The default constructor - initializes the values
@@ -70,8 +70,6 @@ public class RTCCategory extends Category {
         setService(cat.getService());
 
         m_effectiveRule = "(" + commonRule + ") & (" + cat.getRule() + ")";
-
-        m_nodes = Collections.synchronizedList(new ArrayList<Long>());
     }
 
     /**

@@ -102,7 +102,7 @@ public class EuiLevelMapper extends Object {
             // category label
             levelCat.setCatlabel(rtcCat.getLabel());
 
-            // value for this category
+            // availability value for this category
             levelCat.setCatvalue(m_dataMgr.getValue(rtcCat.getLabel(), curTime, rWindow));
 
             // nodes in this category

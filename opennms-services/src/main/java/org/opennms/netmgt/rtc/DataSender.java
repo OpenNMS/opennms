@@ -70,11 +70,6 @@ final class DataSender implements Fiber {
     private static final Logger LOG = LoggerFactory.getLogger(DataSender.class);
 
     /**
-     * The category map
-     */
-    private final Map<String,RTCCategory> m_categories;
-
-    /**
      * The listeners like the WebUI that send a URL to which the data is to be
      * sent
      */
@@ -128,7 +123,6 @@ final class DataSender implements Fiber {
      */
     public DataSender(final DataManager dataMgr, final RTCConfigFactory configFactory) {
         m_dataMgr = dataMgr;
-        m_categories = m_dataMgr.getCategories();
 
         // create and start the data sender pool
         m_dsrPool = Executors.newFixedThreadPool(configFactory.getSenders(),
@@ -203,7 +197,7 @@ final class DataSender implements Fiber {
     public synchronized void subscribe(final String url, final String catlabel, final String user, final String passwd) {
         // send category data to the newly subscribed URL
         // look up info for this category
-        final RTCCategory cat = m_categories.get(catlabel);
+        final RTCCategory cat = m_dataMgr.getCategories().get(catlabel);
         if (cat == null) {
             // oops! category for which we have no info!
             LOG.warn("RTC: No information available for category: {}", catlabel);
@@ -303,7 +297,7 @@ final class DataSender implements Fiber {
         LOG.debug("In DataSender sendData()");
 
         // loop through and send info
-        for (final RTCCategory cat : m_categories.values()) {
+        for (final RTCCategory cat : m_dataMgr.getCategories().values()) {
             // get label
             final String catlabel = cat.getLabel();
             LOG.debug("DataSender:sendData(): Category '{}'", catlabel);
