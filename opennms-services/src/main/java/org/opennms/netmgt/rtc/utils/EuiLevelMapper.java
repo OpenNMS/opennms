@@ -32,7 +32,7 @@ import java.util.Date;
 import java.util.Iterator;
 
 import org.opennms.netmgt.events.api.EventConstants;
-import org.opennms.netmgt.rtc.DataManager;
+import org.opennms.netmgt.rtc.AvailabilityService;
 import org.opennms.netmgt.rtc.datablock.RTCCategory;
 import org.opennms.netmgt.xml.rtc.EuiLevel;
 import org.opennms.netmgt.xml.rtc.Header;
@@ -57,12 +57,12 @@ public class EuiLevelMapper extends Object {
      * The header to be sent out for the availability xml(rtceui.xsd)
      */
     private final Header m_header;
-    private final DataManager m_dataMgr;
+    private final AvailabilityService m_dataMgr;
 
     /**
      * Constructor
      */
-    public EuiLevelMapper(DataManager dataMgr) {
+    public EuiLevelMapper(AvailabilityService dataMgr) {
         m_dataMgr = dataMgr;
         m_header = new Header();
         m_header.setVer("1.9a");

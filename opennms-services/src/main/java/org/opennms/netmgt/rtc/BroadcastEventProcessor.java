@@ -61,7 +61,7 @@ public class BroadcastEventProcessor implements InitializingBean {
     private ExecutorService m_updater;
 
     @Autowired
-    private RTCManager m_rtcd;
+    private DataManager m_dataManager;
 
     @Autowired
     private RTCConfigFactory m_configFactory;
@@ -97,10 +97,6 @@ public class BroadcastEventProcessor implements InitializingBean {
         EventConstants.SERVICE_UNMANAGED_EVENT_UEI,
         // add the interfaceReparented event
         EventConstants.INTERFACE_REPARENTED_EVENT_UEI,
-        // add the rtc subscribe event
-        EventConstants.RTC_SUBSCRIBE_EVENT_UEI,
-        // add the rtc unsubscribe event
-        EventConstants.RTC_UNSUBSCRIBE_EVENT_UEI,
         // add the asset info changed event
         EventConstants.ASSET_INFO_CHANGED_EVENT_UEI
     })
@@ -118,7 +114,7 @@ public class BroadcastEventProcessor implements InitializingBean {
                 return;
             }
 
-            m_updater.execute(new DataUpdater(m_rtcd, event));
+            m_updater.execute(new DataUpdater(m_dataManager, event));
 
             LOG.debug("Event {} added to updater queue", uei);
 

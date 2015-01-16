@@ -67,7 +67,6 @@ import org.springframework.beans.factory.annotation.Autowired;
  *
  * @see org.opennms.netmgt.rtc.RTCConstants
  * @see org.opennms.netmgt.rtc.DataSender
- * @see org.opennms.netmgt.rtc.DataManager
  */
 public final class RTCManager extends AbstractServiceDaemon {
     
@@ -83,13 +82,8 @@ public final class RTCManager extends AbstractServiceDaemon {
     /**
      * The DataSender
      */
-    private DataSender m_dataSender;
-
-    /**
-     * manager of the data maintained by the RTC
-     */
     @Autowired
-    private DataManager m_dataMgr;
+    private DataSender m_dataSender;
 
     @Autowired
     private RTCConfigFactory m_configFactory;
@@ -124,10 +118,6 @@ public final class RTCManager extends AbstractServiceDaemon {
         //
         // Get the required attributes
         //
-
-        // create the data sender
-        m_dataSender = new DataSender(m_dataMgr, m_configFactory);
-        log().debug("Created DataSender");
 
         // create the timer
         m_timer = new Timer();
@@ -172,7 +162,7 @@ public final class RTCManager extends AbstractServiceDaemon {
      */
     @Override
     protected synchronized void onStop() {
-		try {
+        try {
             if (log().isDebugEnabled())
                 log().debug("Beginning shutdown process");
 
@@ -193,23 +183,5 @@ public final class RTCManager extends AbstractServiceDaemon {
         } catch (Throwable e) {
             log().error(e.getLocalizedMessage(), e);
         }
-	}
-
-    /**
-     * Gets the data manager.
-     *
-     * @return the data manager
-     */
-    public DataManager getDataManager() {
-        return m_dataMgr;
-    }
-
-    /**
-     * Get the data sender.
-     *
-     * @return the data sender
-     */
-    public DataSender getDataSender() {
-        return m_dataSender;
     }
 }

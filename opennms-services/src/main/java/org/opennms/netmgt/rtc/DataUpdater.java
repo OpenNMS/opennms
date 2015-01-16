@@ -57,7 +57,7 @@ final class DataUpdater implements Runnable {
      * The event from which data is to be read
      */
     private final Event m_event;
-	private final RTCManager m_rtcMgr;
+	private final DataManager m_dataManager;
 
     /**
      * If it is a nodeGainedService, create a new entry in the map
@@ -69,8 +69,7 @@ final class DataUpdater implements Runnable {
             return;
         }
 
-        DataManager dataMgr = m_rtcMgr.getDataManager();
-        dataMgr.nodeGainedService(nodeid, ip, svcName);
+        m_dataManager.nodeGainedService(nodeid, ip, svcName);
 
         LOG.debug("{} added {}: {}: {} to data store", m_event.getUei(), nodeid, InetAddressUtils.str(ip), svcName);
 
@@ -86,8 +85,7 @@ final class DataUpdater implements Runnable {
             return;
         }
 
-        DataManager dataMgr = m_rtcMgr.getDataManager();
-        dataMgr.nodeLostService(nodeid, ip, svcName, eventTime);
+        m_dataManager.nodeLostService(nodeid, ip, svcName, eventTime);
 
 
         LOG.debug("Added nodeLostService to nodeid: {} ip: {} svcName: {}", svcName, nodeid, InetAddressUtils.str(ip));
@@ -103,8 +101,7 @@ final class DataUpdater implements Runnable {
             return;
         }
 
-        DataManager dataMgr = m_rtcMgr.getDataManager();
-        dataMgr.interfaceDown(nodeid, ip, eventTime);
+        m_dataManager.interfaceDown(nodeid, ip, eventTime);
 
 
         LOG.debug("Recorded interfaceDown for nodeid: {} ip: {}", InetAddressUtils.str(ip), nodeid);
@@ -120,8 +117,7 @@ final class DataUpdater implements Runnable {
             return;
         }
 
-        DataManager dataMgr = m_rtcMgr.getDataManager();
-        dataMgr.nodeDown(nodeid, eventTime);
+        m_dataManager.nodeDown(nodeid, eventTime);
 
 
         LOG.debug("Recorded nodeDown for nodeid: {}", nodeid);
@@ -137,8 +133,7 @@ final class DataUpdater implements Runnable {
             return;
         }
 
-        DataManager dataMgr = m_rtcMgr.getDataManager();
-        dataMgr.nodeUp(nodeid, eventTime);
+        m_dataManager.nodeUp(nodeid, eventTime);
 
 
         LOG.debug("Recorded nodeUp for nodeid: {}", nodeid);
@@ -154,8 +149,7 @@ final class DataUpdater implements Runnable {
             return;
         }
 
-        DataManager dataMgr = m_rtcMgr.getDataManager();
-        dataMgr.interfaceUp(nodeid, ip, eventTime);
+        m_dataManager.interfaceUp(nodeid, ip, eventTime);
 
 
         LOG.debug("Recorded interfaceUp for nodeid: {} ip: {}", InetAddressUtils.str(ip), nodeid);
@@ -171,8 +165,7 @@ final class DataUpdater implements Runnable {
             return;
         }
 
-        DataManager dataMgr = m_rtcMgr.getDataManager();
-        dataMgr.nodeRegainedService(nodeid, ip, svcName, eventTime);
+        m_dataManager.nodeRegainedService(nodeid, ip, svcName, eventTime);
 
 
         LOG.debug("Added nodeRegainedService to nodeid: {} ip: {} svcName: {}", svcName, nodeid, InetAddressUtils.str(ip));
@@ -188,8 +181,7 @@ final class DataUpdater implements Runnable {
             return;
         }
 
-        DataManager dataMgr = m_rtcMgr.getDataManager();
-        dataMgr.serviceDeleted(nodeid, ip, svcName);
+        m_dataManager.serviceDeleted(nodeid, ip, svcName);
 
 
         LOG.debug("{} deleted {}: {}: {} from data store", m_event.getUei(), nodeid, InetAddressUtils.str(ip), svcName);
@@ -251,8 +243,7 @@ final class DataUpdater implements Runnable {
         if (oldNodeId == -1 || newNodeId == -1) {
             LOG.warn("{} did not have all required information for {} Values contained old nodeid: {} new nodeid: {}", m_event.getUei(), InetAddressUtils.str(ip), oldNodeId, newNodeId);
         } else {
-            DataManager dataMgr = m_rtcMgr.getDataManager();
-            dataMgr.interfaceReparented(ip, oldNodeId, newNodeId);
+            m_dataManager.interfaceReparented(ip, oldNodeId, newNodeId);
 
             LOG.debug("{} reparented ip: {} from {} to {}", m_event.getUei(), InetAddressUtils.str(ip), oldNodeId, newNodeId);
 
@@ -261,110 +252,11 @@ final class DataUpdater implements Runnable {
     }
 
     /**
-     * Inform the data sender of the new listener
-     */
-    private void handleRtcSubscribe(List<Parm> list) {
-
-        if (list == null) {
-            LOG.warn("{} ignored - info incomplete (null event parms)", m_event.getUei());
-            return;
-        }
-
-        String url = null;
-        String clabel = null;
-        String user = null;
-        String passwd = null;
-
-        String parmName = null;
-        Value parmValue = null;
-        String parmContent = null;
-
-        for (Parm parm : list) {
-            parmName = parm.getParmName();
-            parmValue = parm.getValue();
-            if (parmValue == null)
-                continue;
-            else
-                parmContent = parmValue.getContent();
-
-            if (parmName.equals(EventConstants.PARM_URL)) {
-                url = parmContent;
-            }
-
-            else if (parmName.equals(EventConstants.PARM_CAT_LABEL)) {
-                clabel = parmContent;
-            }
-
-            else if (parmName.equals(EventConstants.PARM_USER)) {
-                user = parmContent;
-            }
-
-            else if (parmName.equals(EventConstants.PARM_PASSWD)) {
-                passwd = parmContent;
-            }
-
-        }
-
-        // check that we got all required parms
-        if (url == null || clabel == null || user == null || passwd == null) {
-            LOG.warn("{} did not have all required information. Values contained url: {} catlabel: {} user: {} passwd: {}", m_event.getUei(), url, clabel, user, passwd);
-
-        } else {
-            m_rtcMgr.getDataSender().subscribe(url, clabel, user, passwd);
-
-            LOG.debug("{} subscribed {}: {}: {}", m_event.getUei(), url, clabel, user);
-
-        }
-    }
-
-    /**
-     * Inform the data sender of the listener unsubscribing
-     */
-    private void handleRtcUnsubscribe(List<Parm> list) {
-
-        if (list == null) {
-            LOG.warn("{} ignored - info incomplete (null event parms)", m_event.getUei());
-            return;
-        }
-
-        String url = null;
-
-        String parmName = null;
-        Value parmValue = null;
-        String parmContent = null;
-
-        for (Parm parm : list) {
-            parmName = parm.getParmName();
-            parmValue = parm.getValue();
-            if (parmValue == null)
-                continue;
-            else
-                parmContent = parmValue.getContent();
-
-            if (parmName.equals(EventConstants.PARM_URL)) {
-                url = parmContent;
-            }
-        }
-
-        // check that we got the required parameter
-        if (url == null) {
-            LOG.warn("{} did not have required information.  Value of url: {}", m_event.getUei(), url);
-        } else {
-            m_rtcMgr.getDataSender().unsubscribe(url);
-
-            LOG.debug("{} unsubscribed {}", m_event.getUei(), url);
-        }
-    }
-
-    /**
      * If it is a assetInfoChanged method, update RTC
      */
     private void handleAssetInfoChangedEvent(long nodeid) {
 
-        DataManager dataMgr = m_rtcMgr.getDataManager();
-
-        dataMgr.assetInfoChanged(nodeid);
-
+        m_dataManager.assetInfoChanged(nodeid);
 
         LOG.debug("{} asset info changed for node {}", m_event.getUei(), nodeid);
 
@@ -377,10 +269,7 @@ final class DataUpdater implements Runnable {
      */
     private void handleNodeCategoryMembershipChanged(long nodeid) {
 
-        DataManager dataMgr = m_rtcMgr.getDataManager();
-
-        dataMgr.nodeCategoryMembershipChanged(nodeid);
-
+        m_dataManager.nodeCategoryMembershipChanged(nodeid);
 
         LOG.debug("{} surveillance category membership changed for node {}", m_event.getUei(), nodeid);
     }
@@ -455,16 +344,11 @@ final class DataUpdater implements Runnable {
             handleServiceDeleted(nodeid, ip, svcName);
         } else if (eventUEI.equals(EventConstants.INTERFACE_REPARENTED_EVENT_UEI)) {
             handleInterfaceReparented(ip, m_event.getParmCollection());
-        } else if (eventUEI.equals(EventConstants.RTC_SUBSCRIBE_EVENT_UEI)) {
-            handleRtcSubscribe(m_event.getParmCollection());
-        } else if (eventUEI.equals(EventConstants.RTC_UNSUBSCRIBE_EVENT_UEI)) {
-            handleRtcUnsubscribe(m_event.getParmCollection());
         } else if (eventUEI.equals(EventConstants.ASSET_INFO_CHANGED_EVENT_UEI)) {
             handleAssetInfoChangedEvent(nodeid);
         } else if (eventUEI.equals(EventConstants.NODE_CATEGORY_MEMBERSHIP_CHANGED_EVENT_UEI)) {
-        	handleNodeCategoryMembershipChanged(nodeid);
+            handleNodeCategoryMembershipChanged(nodeid);
         } else {
-
             LOG.debug("Event subscribed for not handled?!: {}", eventUEI);
         }
     }
@@ -475,8 +359,8 @@ final class DataUpdater implements Runnable {
      *
      * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
      */
-    public DataUpdater(RTCManager rtcManager, Event event) {
-    	m_rtcMgr = rtcManager;
+    public DataUpdater(DataManager dataManager, Event event) {
+    	m_dataManager = dataManager;
         m_event = event;
     }
 

@@ -19,12 +19,23 @@
 
   <bean name="dataManager" class="org.opennms.netmgt.rtc.DataManager"/>
 
+  <bean name="dataSender" class="org.opennms.netmgt.rtc.DataSender">
+    <constructor-arg ref="dataManager"/>
+    <constructor-arg ref="rtcConfigFactory"/>
+  </bean>
+
+  <bean name="broadcastEventProcessor" class="org.opennms.netmgt.rtc.BroadcastEventProcessor"/>
+
   <bean id="daemonListener" class="org.opennms.netmgt.events.api.AnnotationBasedEventListenerAdapter">
     <property name="annotatedListener" ref="broadcastEventProcessor" />
     <property name="eventSubscriptionService" ref="eventSubscriptionService" />
   </bean>
 
-  <bean name="broadcastEventProcessor" class="org.opennms.netmgt.rtc.BroadcastEventProcessor"/>
+  <!-- This EventListener listens for subscribe and unsubscribe events -->
+  <bean id="dataSenderListener" class="org.opennms.netmgt.events.api.AnnotationBasedEventListenerAdapter">
+    <property name="annotatedListener" ref="dataSender" />
+    <property name="eventSubscriptionService" ref="eventSubscriptionService" />
+  </bean>
 
   <bean name="daemon" class="org.opennms.netmgt.rtc.RTCManager"/>
 

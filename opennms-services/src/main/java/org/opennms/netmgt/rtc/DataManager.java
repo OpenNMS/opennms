@@ -88,7 +88,7 @@ import org.springframework.transaction.support.TransactionTemplate;
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Nataraj </A>
  * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
  */
-public class DataManager implements InitializingBean {
+public class DataManager implements AvailabilityService, InitializingBean {
     
     private static final Logger LOG = LoggerFactory.getLogger(DataManager.class);
 
