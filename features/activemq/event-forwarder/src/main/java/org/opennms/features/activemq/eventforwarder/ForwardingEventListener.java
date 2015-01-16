@@ -42,6 +42,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.util.Assert;
 
+import javax.naming.event.EventContext;
+
 /**
  * This event sends incoming events to an {@link EventForwarder} that uses Camel+ActiveMQ to 
  * forward events to an external ActiveMQ broker. 
@@ -160,6 +162,19 @@ public class ForwardingEventListener implements EventListener {
 		ueiList.add(EventConstants.UPDATE_SERVICE_EVENT_UEI);
 		
 		ueiList.add(EventConstants.XMLRPC_NOTIFICATION_EVENT_UEI);
+
+        //Remote Poller Events
+        ueiList.add(EventConstants.REMOTE_NODE_LOST_SERVICE_UEI);
+        ueiList.add(EventConstants.REMOTE_NODE_REGAINED_SERVICE_UEI);
+        ueiList.add(EventConstants.LOCATION_MONITOR_REGISTERED_UEI);
+        ueiList.add(EventConstants.LOCATION_MONITOR_STARTED_UEI);
+        ueiList.add(EventConstants.LOCATION_MONITOR_STOPPED_UEI);
+        ueiList.add(EventConstants.LOCATION_MONITOR_PAUSED_UEI);
+        ueiList.add(EventConstants.LOCATION_MONITOR_DISCONNECTED_UEI);
+        ueiList.add(EventConstants.LOCATION_MONITOR_RECONNECTED_UEI);
+        ueiList.add(EventConstants.LOCATION_MONITOR_CONFIG_CHANGE_DETECTED_UEI);
+        ueiList.add(EventConstants.LOCATION_MONITOR_CONNECTION_ADDRESS_CHANGED_UEI);
+
 
 		getEventIpcManager().addEventListener(this, ueiList);
 	}

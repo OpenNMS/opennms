@@ -30,7 +30,7 @@
   </cm:property-placeholder>
 
   <!-- TODO: Fetch EventIpcManager using service registry? -->
-  <bean id="eventIpcManager" class="org.opennms.netmgt.model.events.EventIpcManagerFactory" factory-method="getIpcManager"/>
+  <bean id="eventIpcManager" class="org.opennms.netmgt.events.api.EventIpcManagerFactory" factory-method="getIpcManager"/>
 
   <bean id="eventListener" class="org.opennms.features.activemq.eventforwarder.ForwardingEventListener" init-method="init">
     <property name="eventIpcManager" ref="eventIpcManager" />
