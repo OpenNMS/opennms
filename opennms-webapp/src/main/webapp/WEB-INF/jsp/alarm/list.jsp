@@ -197,11 +197,22 @@
         var selectedOption = selectElement.options[selectElement.selectedIndex];
         var favoriteId = selectedOption.value.split(';')[0];
         var filter = selectedOption.value.split(';')[1];
+        changeFavorite(favoriteId, filter);
+    }
+
+    function changeFavorite(favoriteId, filter) {
         window.location.href = "<%=req.getContextPath()%>/alarm/list?display=<%=parms.getDisplay()%>&favoriteId=" + favoriteId + '&' + filter;
     }
 
   </script>
 
+<div id="severityLegendModal" class="modal fade" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+        <jsp:include page="/alarm/severity.jsp" flush="false" />
+    </div>
+  </div>
+</div>
 
       <!-- menu -->
       <ul class="list-inline">
@@ -215,7 +226,7 @@
       <li><a href="<%=this.makeLink(callback, parms, "long", favorite)%>" title="Detailed List of Alarms">Long Listing</a></li>
         </c:otherwise>
       </c:choose>
-      <li><a onclick="javascript:window.open('<%=Util.calculateUrlBase(req, "alarm/severity.jsp")%>','alarm_severity_legend', 'fullscreen=no,toolbar=no,status=no,menubar=no,scrollbars=no,resizable=yes,directories=no,location=no,width=525,height=330')" title="Open a window explaining the alarm severities">Severity Legend</a></li>
+      <li><a onclick="$('#severityLegendModal').modal()">Severity Legend</a></li>
       
       <% if( req.isUserInRole( Authentication.ROLE_ADMIN ) || !req.isUserInRole( Authentication.ROLE_READONLY ) ) { %>
         <% if ( alarmCount > 0 ) { %>
@@ -237,24 +248,71 @@
       </ul>
       <!-- end menu -->
 
-            <% if( parms.getFilters().size() > 0 || AcknowledgeType.UNACKNOWLEDGED.toNormalizedAcknowledgeType().equals(parms.getAckType()) || AcknowledgeType.ACKNOWLEDGED.toNormalizedAcknowledgeType().equals(parms.getAckType()) ) { %>
-                <div>
-               	  <form class="form-inline">
-               		<div class="form-group">
-                        <label for="favorite-select">Favorites:</label>
-                        <onms:select
-                            defaultText="All Alarms"
-                            elements='${favorites}'
-                            selected='${favorite}'
-                            handler='${filterFavoriteSelectTagHandler}'
-                            onChange='changeFavorite(this)'/>
-                    </div>
-                </form>
-            <% } %>
-            <jsp:include page="/includes/alarm-querypanel.jsp" flush="false" />
+<div class="hidden">
+  <jsp:include page="/includes/alarm-querypanel.jsp" flush="false" />
+</div>
+
+<%-- This tag writes out the createFavorite(), deleteFavorite(), and clearFilters() methods --%>
+<onms:favorite
+  favorite="${favorite}"
+  parameters="${parms}"
+  callback="${callback}"
+  context="/alarm/list"
+  createFavoriteController="/alarm/createFavorite"
+  deleteFavoriteController="/alarm/deleteFavorite"
+/>
+
+<div class="row">
+  <br/>
+</div>
+
+<div class="row">
+  <div class="col-sm-6 col-md-3">
+  <div class="input-group">
+    <span class="input-group-addon">
+      <c:choose>
+      <c:when test="${favorite == null}">
+      <a onclick="createFavorite()">
+        <!-- Star outline -->
+        <i class="fa fa-lg fa-star-o"></i>
+      </a>
+      </c:when>
+      <c:otherwise>
+      <a onclick="deleteFavorite(${favorite.id})">
+        <i class="fa fa-lg fa-star"></i>
+      </a>
+      </c:otherwise>
+      </c:choose>
+    </span>
+    <!-- Use background-color:white to make it look less disabled -->
+    <input type="text" class="form-control" style="background-color:white;" readonly placeholder="Unsaved filter" value="<c:out value="${favorite.name}"/>"/>
+    <div class="input-group-btn">
+      <div class="dropdown">
+        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+          <span class="caret"></span>
+        </button>
+        <!-- I put margin: 0px here because the margin gap was causing the menu to disappear before you could get the mouse on it -->
+        <ul class="dropdown-menu dropdown-menu-right" style="margin: 0px;" role="menu">
+          <c:forEach var="fave" items="${favorites}">
+            <c:if test="${favorite.id != fave.id}">
+              <li>
+                <a onclick="changeFavorite(${fave.id}, '${fave.filter}')">
+                  <c:out value="${fave.name}"/>
+                </a>
+              </li>
+              <c:set var="showDivider" value="${true}"/>
+            </c:if>
+          </c:forEach>
+          <c:if test="${showDivider}"><li class="divider"/></c:if>
+          <li><a onclick="clearFilters()">Clear filters</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  </div>
 
             <% if( parms.getFilters().size() > 0 || AcknowledgeType.UNACKNOWLEDGED.toNormalizedAcknowledgeType().equals(parms.getAckType()) || AcknowledgeType.ACKNOWLEDGED.toNormalizedAcknowledgeType().equals(parms.getAckType()) ) { %>
-                <p>
+                <div class="col-sm-6 col-md-9">
                     <onms:filters
                             context="/alarm/list"
                             favorite="${favorite}"
@@ -264,18 +322,15 @@
                             acknowledgeFilterPrefix="Alarm(s)"
                             acknowledgeFilterSuffix="alarm(s)"
                             callback="${callback}" />
-
-                    <onms:favorite
-                            favorite="${favorite}"
-                            parameters="${parms}"
-                            callback="${callback}"
-                            context="/alarm/list"
-                            createFavoriteController="/alarm/createFavorite"
-                            deleteFavoriteController="/alarm/deleteFavorite"/>
-                </p>
                 </div>
             <% } %>
-            <onms:alert/>
+</div>
+
+<div class="row">
+  <br/>
+</div>
+
+<onms:alert/>
 
             <% if( alarmCount > 0 ) { %>
               <% String baseUrl = this.makeLink(callback, parms, favorite); %>
@@ -293,7 +348,7 @@
           <input type="hidden" name="actionCode" value="<%=action%>" />
           <%=Util.makeHiddenTags(req)%>
       <% } %>
-			<jsp:include page="/includes/key.jsp" flush="false" />
+
       <table class="table table-condensed severity">
 				<thead>
 					<tr>
