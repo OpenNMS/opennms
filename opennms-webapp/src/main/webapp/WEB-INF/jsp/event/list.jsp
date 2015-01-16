@@ -277,7 +277,8 @@
       </c:otherwise>
       </c:choose>
     </span>
-    <input type="text" class="form-control" placeholder="Unsaved filter" value="<c:out value="${favorite.name}"/>"/>
+    <!-- Use background-color:white to make it look less disabled -->
+    <input type="text" class="form-control" style="background-color:white;" readonly placeholder="Unsaved filter" value="<c:out value="${favorite.name}"/>"/>
     <div class="input-group-btn">
       <div class="dropdown">
         <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
