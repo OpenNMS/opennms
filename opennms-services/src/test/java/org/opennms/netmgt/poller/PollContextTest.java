@@ -33,13 +33,19 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.util.Date;
+import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.opennms.core.test.MockLogAppender;
+import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.MockDatabase;
+import org.opennms.core.test.db.TemporaryDatabaseAware;
+import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.dao.mock.EventAnticipator;
@@ -52,13 +58,32 @@ import org.opennms.netmgt.poller.pollables.PollEvent;
 import org.opennms.netmgt.poller.pollables.PollableNetwork;
 import org.opennms.netmgt.poller.pollables.PollableService;
 import org.opennms.netmgt.xml.event.Event;
+import org.opennms.test.JUnitConfigurationEnvironment;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
 
 /**
  * Represents a PollContextTest 
  *
  * @author brozow
  */
-public class PollContextTest {
+@RunWith(OpenNMSJUnit4ClassRunner.class)
+@ContextConfiguration(locations={
+        "classpath:/META-INF/opennms/applicationContext-soa.xml",
+        "classpath:/META-INF/opennms/applicationContext-dao.xml",
+        "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
+        "classpath*:/META-INF/opennms/component-dao.xml",
+        "classpath*:/META-INF/opennms/component-service.xml",
+        "classpath:/META-INF/opennms/applicationContext-daemon.xml",
+        "classpath:/META-INF/opennms/mockEventIpcManager.xml",
+        "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
+
+        // Override the default QueryManager with the DAO version
+        "classpath:/META-INF/opennms/applicationContext-pollerdTest.xml"
+})
+@JUnitConfigurationEnvironment
+@JUnitTemporaryDatabase(tempDbClass=MockDatabase.class,reuseDatabase=false)
+public class PollContextTest implements TemporaryDatabaseAware<MockDatabase> {
 
     private MockNetwork m_mNetwork;
     private MockDatabase m_db;
@@ -70,6 +95,14 @@ public class PollContextTest {
     private EventAnticipator m_anticipator;
     private OutageAnticipator m_outageAnticipator;
     private MockEventIpcManager m_eventMgr;
+    
+    @Autowired
+    QueryManager m_queryManager;
+
+	@Override
+	public void setTemporaryDatabase(MockDatabase database) {
+		m_db = database;
+	}
 
     @Before
     public void setUp() throws Exception {
@@ -98,11 +131,7 @@ public class PollContextTest {
         
         m_mSvc = m_mNetwork.getService(1, "192.168.1.1", "ICMP");
 
-        m_db = new MockDatabase();
         m_db.populate(m_mNetwork);
-        
-        DefaultQueryManager qm = new DefaultQueryManager();
-        qm.setDataSource(m_db);
         
         m_pollerConfig = new MockPollerConfig(m_mNetwork);
         m_pollerConfig.setNodeOutageProcessingEnabled(true);
@@ -130,7 +159,7 @@ public class PollContextTest {
         m_pollContext.setLocalHostName("localhost");
         m_pollContext.setName("PollContextTest.DefaultPollContext");
         m_pollContext.setPollerConfig(m_pollerConfig);
-        m_pollContext.setQueryManager(qm);
+        m_pollContext.setQueryManager(m_queryManager);
         
        m_pNetwork = new PollableNetwork(m_pollContext);
        m_pSvc = m_pNetwork.createService(1, "Router", InetAddressUtils.addr("192.168.1.1"), "ICMP");
@@ -263,6 +292,70 @@ public class PollContextTest {
         m_pollerConfig.setServiceUnresponsiveEnabled(true);
         
         assertTrue(m_pollContext.isServiceUnresponsiveEnabled());
+    }
+
+    @Test
+    public void testGetNodeServices() {
+        List<String[]> services = m_queryManager.getNodeServices(1);
+        assertEquals(4, services.size());
+        for (String[] findMe : new String[][] {
+            new String[] { "192.168.1.1", "ICMP" },
+            new String[] { "192.168.1.1", "SMTP" },
+            new String[] { "192.168.1.2", "ICMP" },
+            new String[] { "192.168.1.2", "SMTP" }
+        }) {
+            boolean foundIt = false;
+            for (String[] service : services) {
+                if (service[0].equals(findMe[0]) && service[1].equals(findMe[1])) {
+                    foundIt = true;
+                    break;
+                }
+            }
+
+            if (!foundIt) {
+                fail("Could not find service: " + findMe[0] + " " + findMe[1]);
+            }
+        }
+
+        services = m_queryManager.getNodeServices(2);
+        assertEquals(2, services.size());
+        for (String[] findMe : new String[][] {
+            new String[] { "192.168.1.3", "ICMP" },
+            new String[] { "192.168.1.3", "HTTP" }
+        }) {
+            boolean foundIt = false;
+            for (String[] service : services) {
+                if (service[0].equals(findMe[0]) && service[1].equals(findMe[1])) {
+                    foundIt = true;
+                    break;
+                }
+            }
+
+            if (!foundIt) {
+                fail("Could not find service: " + findMe[0] + " " + findMe[1]);
+            }
+        }
+
+        services = m_queryManager.getNodeServices(3);
+        assertEquals(4, services.size());
+        for (String[] findMe : new String[][] {
+            new String[] { "192.168.1.4", "HTTP" },
+            new String[] { "192.168.1.4", "SMTP" },
+            new String[] { "192.168.1.5", "HTTP" },
+            new String[] { "192.168.1.5", "SMTP" }
+        }) {
+            boolean foundIt = false;
+            for (String[] service : services) {
+                if (service[0].equals(findMe[0]) && service[1].equals(findMe[1])) {
+                    foundIt = true;
+                    break;
+                }
+            }
+
+            if (!foundIt) {
+                fail("Could not find service: " + findMe[0] + " " + findMe[1]);
+            }
+        }
     }
 
 }
