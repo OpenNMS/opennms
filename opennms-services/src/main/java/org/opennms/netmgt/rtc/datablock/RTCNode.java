@@ -79,7 +79,7 @@ public class RTCNode {
     /**
      * List of the categories this node belongs to
      */
-    private final List<String> m_categories;
+    private final List<String> m_categories = new ArrayList<String>();
 
     /**
      * <p>Constructor for RTCNode.</p>
@@ -108,7 +108,6 @@ public class RTCNode {
         m_svcName = svcName;
 
         m_svcTimesList = new RTCNodeSvcTimesList(rollingWindow);
-        m_categories = new ArrayList<String>();
     }
 
     /**
@@ -276,7 +275,7 @@ public class RTCNode {
      * @return the total outage time for this node
      * @throws NodeNotInCategoryException 
      */
-    public long[] getDownTime(String cat, long curTime, long rollingWindow) throws NodeNotInCategoryException {
+    public long getDownTime(String cat, long curTime, long rollingWindow) throws NodeNotInCategoryException {
         // get the down time for this node in the context of the
         // category.
         // if the service is not in 'context', throw an exception
@@ -288,9 +287,9 @@ public class RTCNode {
     }
 
     /**
-     * Return if the service is currently up/down.
+     * Return if the service is currently down.
      *
-     * @return if the service is currently up/down
+     * @return true if the service is currently down
      */
     public boolean isServiceCurrentlyDown() {
         int size = m_svcTimesList.size();

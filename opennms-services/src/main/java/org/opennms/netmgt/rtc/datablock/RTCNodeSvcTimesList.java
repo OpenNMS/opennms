@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.rtc.datablock;
 
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.ListIterator;
 
@@ -147,21 +146,19 @@ public class RTCNodeSvcTimesList extends LinkedList<RTCNodeSvcTime> {
      *            the current time from which the down time is to be calculated
      * @param rollingWindow
      *            the last window for which the downtime is to be calculated
-     * @return [ count of services, total down time for all services ]
+     * @return total down time for all outages for this service
      */
-    public long[] getDownTime(long curTime, long rollingWindow) {
+    public long getDownTime(long curTime, long rollingWindow) {
 
         // remove expired outages
         removeExpiredOutages(curTime, rollingWindow);
 
         long outTime = 0;
-        long count = 0;
 
         for (RTCNodeSvcTime svcTime : this) {
             outTime += svcTime.getDownTime(curTime, rollingWindow);
-            count++;
         }
 
-        return new long[] {count, outTime};
+        return outTime;
     }
 }

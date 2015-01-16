@@ -207,7 +207,7 @@ public class DataManager implements InitializingBean {
      */
     private RTCHashMap m_map;
 
-	private void addOutageToRTCNode(RTCNode rtcN, Timestamp lostTimeTS, Timestamp regainedTimeTS) {
+	private static void addOutageToRTCNode(RTCNode rtcN, Timestamp lostTimeTS, Timestamp regainedTimeTS) {
 		if (lostTimeTS == null) return;
 		long lostTime = lostTimeTS.getTime();
 		long regainedTime = -1;
@@ -225,7 +225,7 @@ public class DataManager implements InitializingBean {
 		m_map.add(rtcN);
 	}
 
-	private void addNodeToCategory(RTCCategory cat, RTCNode rtcN) {
+	private static void addNodeToCategory(RTCCategory cat, RTCNode rtcN) {
 
 		// add the category info to the node
         rtcN.addCategory(cat.getLabel());

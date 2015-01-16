@@ -217,9 +217,9 @@ public class RTCHashMap {
 
             for (RTCNode node : valList) {
                 try {
-                    long[] downTime = node.getDownTime(catLabel, curTime, rollingWindow);
-                    count += downTime[0];
-                    outageTime += downTime[1];
+                    long downTime = node.getDownTime(catLabel, curTime, rollingWindow);
+                    count++;
+                    outageTime += downTime;
                 } catch (NodeNotInCategoryException e) {
                     continue;
                 }
@@ -254,9 +254,9 @@ public class RTCHashMap {
         for (RTCNode node : getRTCNodes(nodeid)) {
             if (node.getNodeID() == nodeid) {
                 try {
-                    long[] downTime = node.getDownTime(catLabel, curTime, rollingWindow);
-                    count += downTime[0];
-                    outageTime += downTime[1];
+                    long downTime = node.getDownTime(catLabel, curTime, rollingWindow);
+                    count++;
+                    outageTime += downTime;
                 } catch (NodeNotInCategoryException e) {
                     continue;
                 }
