@@ -215,22 +215,22 @@
 </div>
 
       <!-- menu -->
-      <ul class="list-inline">
-      <li><a href="<%=this.makeLink(callback, parms, new ArrayList<Filter>(), favorite)%>" title="Remove all search constraints" >View all alarms</a></li>
-      <li><a href="alarm/advsearch.jsp" title="More advanced searching and sorting options">Advanced Search</a></li>
+      <div class="row">
+      <div class="col-md-12">
+      <a class="btn btn-default" href="<%=this.makeLink(callback, parms, new ArrayList<Filter>(), favorite)%>" title="Remove all search constraints" >View all alarms</a>
+      <a class="btn btn-default" href="alarm/advsearch.jsp" title="More advanced searching and sorting options">Advanced Search</a>
       <c:choose>
         <c:when test="${param.display == 'long'}">
-      <li><a href="<%=this.makeLink(callback, parms, "short", favorite)%>" title="Summary List of Alarms">Short Listing</a></li>
+      <a class="btn btn-default" href="<%=this.makeLink(callback, parms, "short", favorite)%>" title="Summary List of Alarms">Short Listing</a>
         </c:when>
         <c:otherwise>
-      <li><a href="<%=this.makeLink(callback, parms, "long", favorite)%>" title="Detailed List of Alarms">Long Listing</a></li>
+      <a class="btn btn-default" href="<%=this.makeLink(callback, parms, "long", favorite)%>" title="Detailed List of Alarms">Long Listing</a>
         </c:otherwise>
       </c:choose>
-      <li><a onclick="$('#severityLegendModal').modal()">Severity Legend</a></li>
+      <a class="btn btn-default" onclick="$('#severityLegendModal').modal()">Severity Legend</a>
       
       <% if( req.isUserInRole( Authentication.ROLE_ADMIN ) || !req.isUserInRole( Authentication.ROLE_READONLY ) ) { %>
         <% if ( alarmCount > 0 ) { %>
-          <li>
             <!-- hidden form for acknowledging the result set -->
             <form style="display:inline" method="post" action="<%= Util.calculateUrlBase(req, "alarm/acknowledgeByFilter") %>" name="acknowledge_by_filter_form">
               <input type="hidden" name="redirectParms" value="<c:out value="<%=req.getQueryString()%>"/>" />
@@ -238,14 +238,14 @@
               <%=Util.makeHiddenTags(req)%>
             </form>
             <% if( parms.getAckType().equals(AcknowledgeType.UNACKNOWLEDGED.toNormalizedAcknowledgeType()) ) { %>
-              <a href="javascript:void()" onclick="if (confirm('Are you sure you want to acknowledge all alarms in the current search including those not shown on your screen?  (<%=alarmCount%> total alarms)')) { document.acknowledge_by_filter_form.submit(); }" title="Acknowledge all alarms that match the current search constraints, even those not shown on the screen">Acknowledge entire search</a>
+              <a class="btn btn-default" href="javascript:void()" onclick="if (confirm('Are you sure you want to acknowledge all alarms in the current search including those not shown on your screen?  (<%=alarmCount%> total alarms)')) { document.acknowledge_by_filter_form.submit(); }" title="Acknowledge all alarms that match the current search constraints, even those not shown on the screen">Acknowledge entire search</a>
             <% } else { %>
-              <a href="#javascript:void()" onclick="if (confirm('Are you sure you want to unacknowledge all alarms in the current search including those not shown on your screen)?  (<%=alarmCount%> total alarms)')) { document.acknowledge_by_filter_form.submit(); }" title="Unacknowledge all alarms that match the current search constraints, even those not shown on the screen">Unacknowledge entire search</a>
+              <a class="btn btn-default" href="#javascript:void()" onclick="if (confirm('Are you sure you want to unacknowledge all alarms in the current search including those not shown on your screen)?  (<%=alarmCount%> total alarms)')) { document.acknowledge_by_filter_form.submit(); }" title="Unacknowledge all alarms that match the current search constraints, even those not shown on the screen">Unacknowledge entire search</a>
             <% } %>
-          </li>
         <% } %>
       <% } %>
-      </ul>
+      </div>
+      </div>
       <!-- end menu -->
 
 <div class="hidden">
