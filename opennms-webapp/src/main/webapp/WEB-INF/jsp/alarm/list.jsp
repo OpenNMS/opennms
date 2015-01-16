@@ -248,24 +248,71 @@
       </ul>
       <!-- end menu -->
 
-            <% if( parms.getFilters().size() > 0 || AcknowledgeType.UNACKNOWLEDGED.toNormalizedAcknowledgeType().equals(parms.getAckType()) || AcknowledgeType.ACKNOWLEDGED.toNormalizedAcknowledgeType().equals(parms.getAckType()) ) { %>
-                <div>
-               	  <form class="form-inline">
-               		<div class="form-group">
-                        <label for="favorite-select">Favorites:</label>
-                        <onms:select
-                            defaultText="All Alarms"
-                            elements='${favorites}'
-                            selected='${favorite}'
-                            handler='${filterFavoriteSelectTagHandler}'
-                            onChange='changeFavorite(this)'/>
-                    </div>
-                </form>
-            <% } %>
-            <jsp:include page="/includes/alarm-querypanel.jsp" flush="false" />
+<div class="hidden">
+  <jsp:include page="/includes/alarm-querypanel.jsp" flush="false" />
+</div>
+
+<%-- This tag writes out the createFavorite(), deleteFavorite(), and clearFilters() methods --%>
+<onms:favorite
+  favorite="${favorite}"
+  parameters="${parms}"
+  callback="${callback}"
+  context="/alarm/list"
+  createFavoriteController="/alarm/createFavorite"
+  deleteFavoriteController="/alarm/deleteFavorite"
+/>
+
+<div class="row">
+  <br/>
+</div>
+
+<div class="row">
+  <div class="col-sm-6 col-md-3">
+  <div class="input-group">
+    <span class="input-group-addon">
+      <c:choose>
+      <c:when test="${favorite == null}">
+      <a onclick="createFavorite()">
+        <!-- Star outline -->
+        <i class="fa fa-lg fa-star-o"></i>
+      </a>
+      </c:when>
+      <c:otherwise>
+      <a onclick="deleteFavorite(${favorite.id})">
+        <i class="fa fa-lg fa-star"></i>
+      </a>
+      </c:otherwise>
+      </c:choose>
+    </span>
+    <!-- Use background-color:white to make it look less disabled -->
+    <input type="text" class="form-control" style="background-color:white;" readonly placeholder="Unsaved filter" value="<c:out value="${favorite.name}"/>"/>
+    <div class="input-group-btn">
+      <div class="dropdown">
+        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+          <span class="caret"></span>
+        </button>
+        <!-- I put margin: 0px here because the margin gap was causing the menu to disappear before you could get the mouse on it -->
+        <ul class="dropdown-menu dropdown-menu-right" style="margin: 0px;" role="menu">
+          <c:forEach var="fave" items="${favorites}">
+            <c:if test="${favorite.id != fave.id}">
+              <li>
+                <a onclick="changeFavorite(${fave.id}, '${fave.filter}')">
+                  <c:out value="${fave.name}"/>
+                </a>
+              </li>
+              <c:set var="showDivider" value="${true}"/>
+            </c:if>
+          </c:forEach>
+          <c:if test="${showDivider}"><li class="divider"/></c:if>
+          <li><a onclick="clearFilters()">Clear filters</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  </div>
 
             <% if( parms.getFilters().size() > 0 || AcknowledgeType.UNACKNOWLEDGED.toNormalizedAcknowledgeType().equals(parms.getAckType()) || AcknowledgeType.ACKNOWLEDGED.toNormalizedAcknowledgeType().equals(parms.getAckType()) ) { %>
-                <p>
+                <div class="col-sm-6 col-md-9">
                     <onms:filters
                             context="/alarm/list"
                             favorite="${favorite}"
@@ -275,18 +322,15 @@
                             acknowledgeFilterPrefix="Alarm(s)"
                             acknowledgeFilterSuffix="alarm(s)"
                             callback="${callback}" />
-
-                    <onms:favorite
-                            favorite="${favorite}"
-                            parameters="${parms}"
-                            callback="${callback}"
-                            context="/alarm/list"
-                            createFavoriteController="/alarm/createFavorite"
-                            deleteFavoriteController="/alarm/deleteFavorite"/>
-                </p>
                 </div>
             <% } %>
-            <onms:alert/>
+</div>
+
+<div class="row">
+  <br/>
+</div>
+
+<onms:alert/>
 
             <% if( alarmCount > 0 ) { %>
               <% String baseUrl = this.makeLink(callback, parms, favorite); %>
