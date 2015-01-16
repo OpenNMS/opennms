@@ -8,8 +8,6 @@
 %{!?releasenumber:%define releasenumber 0}
 # The install prefix becomes $OPENMS_HOME in the finished package
 %{!?instprefix:%define instprefix /opt/opennms}
-# I think this is the directory where the package will be built
-%{!?packagedir:%define packagedir opennms-%version-%{releasenumber}}
 # This is where the OPENNMS_HOME variable will be set on the remote 
 # operating system. Not sure this is needed anymore.
 %{!?profiledir:%define profiledir /etc/profile.d}
@@ -23,6 +21,11 @@
 %{!?servletdir:%define servletdir opennms}
 # Where OpenNMS binaries live
 %{!?bindir:%define bindir %instprefix/bin}
+
+# Description
+%{!?_name:%define _name "opennms"}
+%{!?_descr:%define _descr "OpenNMS"}
+%{!?packagedir:%define packagedir %{_name}-%version-%{releasenumber}}
 
 %{!?jdk:%define jdk jdk >= 2000:1.7}
 
@@ -45,7 +48,7 @@ AutoProv: no
 %define with_tests	0%{nil}
 %define with_docs	1%{nil}
 
-Name:			opennms
+Name:			%{_name}
 Summary:		Enterprise-grade Network Management Platform (Easy Install)
 Release:		%releasenumber
 Version:		%version
@@ -72,7 +75,7 @@ Prefix: %{sharedir}
 Prefix: %{logdir}
 
 %description
-OpenNMS is an enterprise-grade network management platform.
+%{_descr} is an enterprise-grade network management platform.
 
 This package used to contain what is now in the "%{name}-core" package.
 It now exists to give a reasonable default installation of OpenNMS.
@@ -96,9 +99,9 @@ Requires:	%{jdk}
 Obsoletes:	%{name} < 1.3.11
 
 %description core
-The core OpenNMS backend.  This package contains the main OpenNMS
-daemon responsible for discovery, polling, data collection, and
-notifications (ie, anything that is not part of the web UI).
+The core backend.  This package contains the main daemon responsible
+for discovery, polling, data collection, and notifications (ie,
+anything that is not part of the web UI).
 
 If you want to be able to view your data, you will need to install
 the webapp package.
@@ -119,12 +122,11 @@ option, like so:
 
 %if %{with_docs}
 %package docs
-Summary:	Documentation for the OpenNMS network management platform
+Summary:	Documentation for the %{_descr} network management platform
 Group:		Applications/System
 
 %description docs
-This package contains the API and user documentation
-for OpenNMS.
+This package contains the API and user documentation.
 
 %{extrainfo}
 %{extrainfo2}
@@ -132,13 +134,13 @@ for OpenNMS.
 %endif
 
 %package remote-poller
-Summary:	Remote (Distributed) Poller for OpenNMS
+Summary:	Remote (Distributed) Poller for %{_descr}
 Group:		Applications/System
 Requires(pre):	%{jdk}
 Requires:	%{jdk}
 
 %description remote-poller
-The OpenNMS distributed monitor.  For details, see:
+The distributed monitor.  For details, see:
   http://www.opennms.org/index.php/Distributed_Monitoring
 
 %{extrainfo}
@@ -160,7 +162,7 @@ the Java Management Extensions.
 
 
 %package webapp-jetty
-Summary:	Embedded web interface for OpenNMS
+Summary:	Embedded web interface
 Group:		Applications/System
 Requires(pre):	%{name}-core = %{version}-%{release}
 Requires:	%{name}-core = %{version}-%{release}
@@ -168,15 +170,15 @@ Provides:	%{name}-webui = %{version}-%{release}
 Obsoletes:	%{name}-webapp < 1.3.11
 
 %description webapp-jetty
-The web UI for OpenNMS.  This is the Jetty version, which runs
-embedded in the main OpenNMS core process.
+The web UI.  This is the Jetty version, which runs
+embedded in the main core process.
 
 %{extrainfo}
 %{extrainfo2}
 
 
 %package ncs
-Summary:	Network Component Services for OpenNMS
+Summary:	Network Component Services
 Group:		Applications/System
 Requires:	%{name}-webapp-jetty = %{version}-%{release}
 
@@ -189,7 +191,7 @@ disparate nodes.
 
 
 %package plugins
-Summary:	All Plugins for OpenNMS
+Summary:	All Plugins
 Group:		Applications/System
 Requires(pre):	%{name}-plugin-provisioning-dns
 Requires:	%{name}-plugin-provisioning-dns
@@ -227,14 +229,14 @@ Requires(pre):	%{name}-plugin-collector-vtdxml-handler
 Requires:	%{name}-plugin-collector-vtdxml-handler
 
 %description plugins
-This installs all optional plugins for OpenNMS.
+This installs all optional plugins.
 
 %{extrainfo}
 %{extrainfo2}
 
 
 %package plugin-provisioning-dns
-Summary:	DNS Provisioning Adapter for OpenNMS
+Summary:	DNS Provisioning Adapter
 Group:		Applications/System
 Requires(pre):	%{name}-core = %{version}-%{release}
 Requires:	%{name}-core = %{version}-%{release}
@@ -248,7 +250,7 @@ provisioned nodes.
 
 
 %package plugin-provisioning-link
-Summary:	Link Provisioning Adapter for OpenNMS
+Summary:	Link Provisioning Adapter
 Group:		Applications/System
 Requires(pre):	%{name}-core = %{version}-%{release}
 Requires:	%{name}-core = %{version}-%{release}
@@ -263,35 +265,35 @@ status of the map links based on data link events.
 
 
 %package plugin-provisioning-map
-Summary:	Map Provisioning Adapter for OpenNMS
+Summary:	Map Provisioning Adapter
 Group:		Applications/System
 Requires(pre):	%{name}-core = %{version}-%{release}
 Requires:	%{name}-core = %{version}-%{release}
 
 %description plugin-provisioning-map
 The map provisioning adapter will automatically create maps when nodes are provisioned
-in OpenNMS.
+in %{_descr}.
 
 %{extrainfo}
 %{extrainfo2}
 
 
 %package plugin-provisioning-rancid
-Summary:	RANCID Provisioning Adapter for OpenNMS
+Summary:	RANCID Provisioning Adapter
 Group:		Applications/System
 Requires(pre):	%{name}-core = %{version}-%{release}
 Requires:	%{name}-core = %{version}-%{release}
 
 %description plugin-provisioning-rancid
 The RANCID provisioning adapter coordinates with the RANCID Web Service by updating
-RANCID's device database when OpenNMS provisions nodes.
+RANCID's device database when %{_descr} provisions nodes.
 
 %{extrainfo}
 %{extrainfo2}
 
 
 %package plugin-provisioning-snmp-asset
-Summary:	SNMP Asset Provisioning Adapter for OpenNMS
+Summary:	SNMP Asset Provisioning Adapter
 Group:		Applications/System
 Requires(pre):	%{name}-core = %{version}-%{release}
 Requires:	%{name}-core = %{version}-%{release}
@@ -305,7 +307,7 @@ fields with data fetched from SNMP GET requests.
 
 
 %package plugin-provisioning-snmp-hardware-inventory
-Summary:	SNMP Hardware Inventory Provisioning Adapter for OpenNMS
+Summary:	SNMP Hardware Inventory Provisioning Adapter
 Group:		Applications/System
 Requires(pre):	%{name}-core = %{version}-%{release}
 Requires:	%{name}-core = %{version}-%{release}
@@ -319,49 +321,49 @@ hardware fields with data fetched from the ENTITY-MIB and vendor extensions of t
 
 
 %package plugin-ticketer-jira
-Summary:	JIRA Ticketer Plugin for OpenNMS
+Summary:	JIRA Ticketer Plugin
 Group:		Applications/System
 Requires(pre):	%{name}-core = %{version}-%{release}
 Requires:	%{name}-core = %{version}-%{release}
 
 %description plugin-ticketer-jira
 The JIRA ticketer plugin provides the ability to automatically create JIRA
-issues from OpenNMS alarms.
+issues from %{_descr} alarms.
 
 %{extrainfo}
 %{extrainfo2}
 
 
 %package plugin-ticketer-otrs
-Summary:	OTRS Ticketer Plugin for OpenNMS
+Summary:	OTRS Ticketer Plugin
 Group:		Applications/System
 Requires(pre):	%{name}-core = %{version}-%{release}
 Requires:	%{name}-core = %{version}-%{release}
 
 %description plugin-ticketer-otrs
 The OTRS ticketer plugin provides the ability to automatically create OTRS
-issues from OpenNMS alarms.
+issues from %{_descr} alarms.
 
 %{extrainfo}
 %{extrainfo2}
 
 
 %package plugin-ticketer-rt
-Summary:	RT Ticketer Plugin for OpenNMS
+Summary:	RT Ticketer Plugin
 Group:		Applications/System
 Requires(pre):	%{name}-core = %{version}-%{release}
 Requires:	%{name}-core = %{version}-%{release}
 
 %description plugin-ticketer-rt
 The RT ticketer plugin provides the ability to automatically create RT
-tickets from OpenNMS alarms.
+tickets from %{_descr} alarms.
 
 %{extrainfo}
 %{extrainfo2}
 
 
 %package plugin-protocol-cifs
-Summary:	CIFS Poller Plugin for OpenNMS
+Summary:	CIFS Poller Plugin
 Group:		Applications/System
 Requires(pre):	%{name}-core = %{version}-%{release}
 Requires:	%{name}-core = %{version}-%{release}
@@ -374,7 +376,7 @@ The CIFS protocol plugin provides a poller monitor for CIFS network shares.
 
 
 %package plugin-protocol-dhcp
-Summary:	DHCP Poller and Detector Plugin for OpenNMS
+Summary:	DHCP Poller and Detector Plugin
 Group:		Applications/System
 Requires(pre):	%{name}-core = %{version}-%{release}
 Requires:	%{name}-core = %{version}-%{release}
@@ -388,7 +390,7 @@ poller monitor for DHCP.
 
 
 %package plugin-protocol-nsclient
-Summary:	NSCLIENT Plugin Support for OpenNMS
+Summary:	NSCLIENT Plugin Support
 Group:		Applications/System
 Requires(pre):	%{name}-core = %{version}-%{release}
 Requires:	%{name}-core = %{version}-%{release}
@@ -402,7 +404,7 @@ and NSClient++.
 
 
 %package plugin-protocol-radius
-Summary:	RADIUS Plugin Support for OpenNMS
+Summary:	RADIUS Plugin Support
 Group:		Applications/System
 Requires(pre):	%{name}-core = %{version}-%{release}
 Requires:	%{name}-core = %{version}-%{release}
@@ -416,7 +418,7 @@ monitor, and Spring Security authorization mechanism for RADIUS.
 
 
 %package plugin-protocol-xml
-Summary:	XML Collector for OpenNMS
+Summary:	XML Collector
 Group:		Applications/System
 Requires(pre):	%{name}-core = %{version}-%{release}
 Requires:	%{name}-core = %{version}-%{release}
@@ -429,7 +431,7 @@ The XML protocol plugin provides a collector for XML data.
 
 
 %package plugin-protocol-xmp
-Summary:	XMP Poller for OpenNMS
+Summary:	XMP Poller
 Group:		Applications/System
 Requires(pre):	%{name}-core = %{version}-%{release}
 Requires:	%{name}-core = %{version}-%{release}
@@ -442,7 +444,7 @@ The XMP protocol plugin provides a capsd plugin and poller monitor for XMP.
 
 
 %package plugin-collector-juniper-tca
-Summary:	Juniper TCA Collector for OpenNMS
+Summary:	Juniper TCA Collector
 Group:		Applications/System
 Requires(pre):	%{name}-core = %{version}-%{release}
 Requires:	%{name}-core = %{version}-%{release}
@@ -455,7 +457,7 @@ The Juniper JCA collector provides a collector plugin for Collectd to collect da
 
 
 %package plugin-collector-vtdxml-handler
-Summary:	VTD-XML Collection Handler for OpenNMS
+Summary:	VTD-XML Collection Handler
 Group:		Applications/System
 License:	GPL
 Requires(pre):	%{name}-plugin-protocol-xml = %{version}-%{release}
@@ -498,34 +500,35 @@ rm -rf $RPM_BUILD_ROOT
 DONT_GPRINTIFY="yes, please do not"
 export DONT_GPRINTIFY
 
-export EXTRA_OPTIONS=""
+declare -a EXTRA_OPTIONS
+EXTRA_OPTIONS=("${EXTRA_OPTIONS[@]}" "-Dinstall.package.name=%{name}" "-Dinstall.package.description=%{_descr}")
 if [ -e "settings.xml" ]; then
-	export EXTRA_OPTIONS="-s `pwd`/settings.xml"
+	EXTRA_OPTIONS=("${EXTRA_OPTIONS[@]}" "-s `pwd`/settings.xml")
 fi
 
 if [ "%{skip_compile}" = 1 ]; then
 	echo "=== SKIPPING COMPILE ==="
 	if [ "%{enable_snapshots}" = 1 ]; then
-		export EXTRA_OPTIONS="$EXTRA_OPTIONS -Denable.snapshots=true -DupdatePolicy=always"
+		EXTRA_OPTIONS=("${EXTRA_OPTIONS[@]}" "-Denable.snapshots=true" "-DupdatePolicy=always")
 	fi
 	TOPDIR=`pwd`
 	for dir in . opennms-tools; do
 		cd $dir
-			"$TOPDIR"/compile.pl -N $EXTRA_OPTIONS -Dinstall.version="%{version}-%{release}" -Ddist.name="$RPM_BUILD_ROOT" -Dopennms.home="%{instprefix}" install
+			"$TOPDIR"/compile.pl -N "${EXTRA_OPTIONS[@]}" -Dinstall.version="%{version}-%{release}" -Ddist.name="$RPM_BUILD_ROOT" -Dopennms.home="%{instprefix}" install
 		cd -
 	done
 else
 	echo "=== RUNNING COMPILE ==="
-	./compile.pl $EXTRA_OPTIONS -Dbuild=all -Dinstall.version="%{version}-%{release}" -Ddist.name="$RPM_BUILD_ROOT" \
+	./compile.pl "${EXTRA_OPTIONS[@]}" -Dbuild=all -Dinstall.version="%{version}-%{release}" -Ddist.name="$RPM_BUILD_ROOT" \
 	    -Dopennms.home="%{instprefix}" install
 fi
 
 echo "=== BUILDING ASSEMBLIES ==="
-./assemble.pl $EXTRA_OPTIONS -Dbuild=all -Dinstall.version="%{version}-%{release}" -Ddist.name="$RPM_BUILD_ROOT" \
+./assemble.pl "${EXTRA_OPTIONS[@]}" -Dbuild=all -Dinstall.version="%{version}-%{release}" -Ddist.name="$RPM_BUILD_ROOT" \
 	-Dopennms.home="%{instprefix}" -Dbuild.profile=full install
 
 cd opennms-tools
-	../compile.pl $EXTRA_OPTIONS -N -Dinstall.version="%{version}-%{release}" -Ddist.name="$RPM_BUILD_ROOT" \
+	../compile.pl "${EXTRA_OPTIONS[@]}" -N -Dinstall.version="%{version}-%{release}" -Ddist.name="$RPM_BUILD_ROOT" \
         -Dopennms.home="%{instprefix}" install
 cd -
 
@@ -582,6 +585,7 @@ install -m 640 $RPM_BUILD_ROOT%{instprefix}/contrib/remote-poller/remote-poller.
 rm -rf $RPM_BUILD_ROOT%{instprefix}/contrib/remote-poller
 
 if [ '%{name}' != 'opennms' ]; then
+	ln -sf "%{name}" $RPM_BUILD_ROOT%{instprefix}/bin/opennms
 	ln -sf '%{name}-remote-poller' $RPM_BUILD_ROOT%{_initrddir}/opennms-remote-poller
 fi
 
@@ -904,9 +908,9 @@ fi
 for prefix in lib lib64; do
 	if [ -d "/usr/$prefix/systemd" ]; then
 		SYSTEMDDIR="/usr/$prefix/systemd/system"
-		printf -- "- installing opennms.service into $SYSTEMDDIR... "
+		printf -- "- installing service into $SYSTEMDDIR... "
 		install -d -m 755 "$SYSTEMDDIR"
-		install -m 655 "%{instprefix}/etc/opennms.service" "$SYSTEMDDIR"/
+		install -m 655 "%{instprefix}/etc/%{name}.service" "$SYSTEMDDIR"/
 		echo "done"
 	fi
 done
@@ -915,7 +919,7 @@ if [ "$RPM_INSTALL_PREFIX0/logs" != "$RPM_INSTALL_PREFIX2" ]; then
 	printf -- "- making symlink for $RPM_INSTALL_PREFIX0/logs... "
 	if [ -e "$RPM_INSTALL_PREFIX0/logs" ] && [ ! -L "$RPM_INSTALL_PREFIX0/logs" ]; then
 		echo "failed: $RPM_INSTALL_PREFIX0/logs is a real directory or file, but it should be a symlink to $RPM_INSTALL_PREFIX2."
-		echo "Your OpenNMS install may not function properly."
+		echo "Your %{_descr} install may not function properly."
 	else
 		rm -rf "$RPM_INSTALL_PREFIX0/logs"
 		ln -sf "$RPM_INSTALL_PREFIX2" "$RPM_INSTALL_PREFIX0/logs"
@@ -927,7 +931,7 @@ if [ "$RPM_INSTALL_PREFIX0/share" != "$RPM_INSTALL_PREFIX1" ]; then
 	printf -- "- making symlink for $RPM_INSTALL_PREFIX0/share... "
 	if [ -e "$RPM_INSTALL_PREFIX0/share" ] && [ ! -L "$RPM_INSTALL_PREFIX0/share" ]; then
 		echo "failed: $RPM_INSTALL_PREFIX0/share is a real directory, but it should be a symlink to $RPM_INSTALL_PREFIX1."
-		echo "Your OpenNMS install may not function properly."
+		echo "Your %{_descr} install may not function properly."
 	else
 		rm -rf "$RPM_INSTALL_PREFIX0/share"
 		ln -sf "$RPM_INSTALL_PREFIX1" "$RPM_INSTALL_PREFIX0/share"
@@ -963,7 +967,6 @@ rm -f $RPM_INSTALL_PREFIX0/etc/configured
 for dir in /etc /etc/rc.d; do
 	if [ -d "$dir" ]; then
 		ln -sf $RPM_INSTALL_PREFIX0/bin/%{name} $dir/init.d/%{name}
-		ln -sf $RPM_INSTALL_PREFIX0/bin/%{name} $dir/init.d/opennms
 		break
 	fi
 done
@@ -987,7 +990,7 @@ echo "done"
 echo ""
 echo " *** Installation complete.  You must still run the installer at"
 echo " *** \$OPENNMS_HOME/bin/install to be sure your database is up"
-echo " *** to date before you start OpenNMS.  See the install guide at"
+echo " *** to date before you start %{_descr}.  See the install guide at"
 echo " *** http://www.opennms.org/wiki/Installation:RPM and the"
 echo " *** release notes for details."
 echo ""
