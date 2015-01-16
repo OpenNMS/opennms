@@ -197,11 +197,22 @@
         var selectedOption = selectElement.options[selectElement.selectedIndex];
         var favoriteId = selectedOption.value.split(';')[0];
         var filter = selectedOption.value.split(';')[1];
+        changeFavorite(favoriteId, filter);
+    }
+
+    function changeFavorite(favoriteId, filter) {
         window.location.href = "<%=req.getContextPath()%>/alarm/list?display=<%=parms.getDisplay()%>&favoriteId=" + favoriteId + '&' + filter;
     }
 
   </script>
 
+<div id="severityLegendModal" class="modal fade" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+        <jsp:include page="/alarm/severity.jsp" flush="false" />
+    </div>
+  </div>
+</div>
 
       <!-- menu -->
       <ul class="list-inline">
@@ -215,7 +226,7 @@
       <li><a href="<%=this.makeLink(callback, parms, "long", favorite)%>" title="Detailed List of Alarms">Long Listing</a></li>
         </c:otherwise>
       </c:choose>
-      <li><a onclick="javascript:window.open('<%=Util.calculateUrlBase(req, "alarm/severity.jsp")%>','alarm_severity_legend', 'fullscreen=no,toolbar=no,status=no,menubar=no,scrollbars=no,resizable=yes,directories=no,location=no,width=525,height=330')" title="Open a window explaining the alarm severities">Severity Legend</a></li>
+      <li><a onclick="$('#severityLegendModal').modal()">Severity Legend</a></li>
       
       <% if( req.isUserInRole( Authentication.ROLE_ADMIN ) || !req.isUserInRole( Authentication.ROLE_READONLY ) ) { %>
         <% if ( alarmCount > 0 ) { %>
@@ -293,7 +304,7 @@
           <input type="hidden" name="actionCode" value="<%=action%>" />
           <%=Util.makeHiddenTags(req)%>
       <% } %>
-			<jsp:include page="/includes/key.jsp" flush="false" />
+
       <table class="table table-condensed severity">
 				<thead>
 					<tr>
