@@ -152,6 +152,7 @@ Summary:	Generate JMX Configuration
 Group:		Applications/System
 Requires(pre):	%{jdk}
 Requires:	%{jdk}
+Requires:	%{name}-core = %{version}-%{release}
 
 %description jmx-config-generator
 Generates configuration files for monitoring/collecting from
@@ -586,7 +587,6 @@ rm -rf $RPM_BUILD_ROOT%{instprefix}/contrib/remote-poller
 
 if [ '%{name}' != 'opennms' ]; then
 	ln -sf "%{name}" $RPM_BUILD_ROOT%{instprefix}/bin/opennms
-	ln -sf '%{name}-remote-poller' $RPM_BUILD_ROOT%{_initrddir}/opennms-remote-poller
 fi
 
 rm -rf $RPM_BUILD_ROOT%{instprefix}/lib/*.tar.gz
@@ -596,7 +596,6 @@ cd $RPM_BUILD_ROOT
 # core package files
 find $RPM_BUILD_ROOT%{instprefix}/etc ! -type d | \
 	sed -e "s,^$RPM_BUILD_ROOT,%config(noreplace) ," | \
-	grep -v '%{_initrddir}/opennms-remote-poller' | \
 	grep -v '%{_initrddir}/%{name}-remote-poller' | \
 	grep -v '%{_sysconfdir}/sysconfig/%{name}-remote-poller' | \
 	grep -v 'ncs-northbounder-configuration.xml' | \
@@ -621,7 +620,6 @@ find $RPM_BUILD_ROOT%{instprefix}/etc ! -type d | \
 	sort > %{_tmppath}/files.main
 find $RPM_BUILD_ROOT%{sharedir}/etc-pristine ! -type d | \
 	sed -e "s,^$RPM_BUILD_ROOT,," | \
-	grep -v '%{_initrddir}/opennms-remote-poller' | \
 	grep -v '%{_initrddir}/%{name}-remote-poller' | \
 	grep -v '%{_sysconfdir}/sysconfig/%{name}-remote-poller' | \
 	grep -v 'ncs-northbounder-configuration.xml' | \
@@ -739,7 +737,6 @@ rm -rf $RPM_BUILD_ROOT
 
 %files remote-poller
 %attr(755,root,root) %{_initrddir}/%{name}-remote-poller
-%attr(755,root,root) %{_initrddir}/opennms-remote-poller
 %attr(755,root,root) %config(noreplace) %{_sysconfdir}/sysconfig/%{name}-remote-poller
 %attr(755,root,root) %{bindir}/remote-poller.sh
 %{instprefix}/bin/remote-poller.jar
