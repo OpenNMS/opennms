@@ -67,8 +67,8 @@ public class PropertiesWindow extends DashletConfigurationWindow {
 
         table.setTableFieldFactory(new DefaultFieldFactory() {
             @Override
-            public Field createField(Container container, Object itemId, Object propertyId, Component uiContext) {
-                Field field = super.createField(container, itemId, propertyId, uiContext);
+            public Field<?> createField(Container container, Object itemId, Object propertyId, Component uiContext) {
+                Field<?> field = super.createField(container, itemId, propertyId, uiContext);
                 if (propertyId.equals("Key")) {
                     field.setReadOnly(true);
                 } else {

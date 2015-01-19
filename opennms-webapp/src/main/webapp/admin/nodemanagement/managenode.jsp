@@ -252,9 +252,9 @@
       <div class="col-md-6">
         <table class="table table-condensed">
           <tr>
-            <th class="text-center" width="5%">Managed</td>
-            <th class="text-center" width="10%">Interface</td>
-            <th class="text-center" width="10%">Service</td>
+            <th class="text-center" width="5%">Managed</th>
+            <th class="text-center" width="10%">Interface</th>
+            <th class="text-center" width="10%">Service</th>
           </tr>
 
           <%=buildManageTableRows(interfaces, midInterfaceIndex, interfaces.size())%>

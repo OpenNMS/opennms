@@ -73,7 +73,7 @@ In the 'poller-configuration.xml' tag the part as the following:
   <rra>RRA:MAX:0.5:288:366</rra>
   <rra>RRA:MIN:0.5:288:366</rra>
 </rrd>
-<!-- // tag::IcmpServiceConfig[] -->
+# tag::IcmpServiceConfig[] -->
 <service name="ICMP" interval="300000" user-defined="false" status="on">
   <parameter key="retry" value="2" />
   <parameter key="timeout" value="3000" />
@@ -81,7 +81,7 @@ In the 'poller-configuration.xml' tag the part as the following:
   <parameter key="rrd-base-name" value="icmp" />
   <parameter key="ds-name" value="icmp" />
 </service>
-<!-- // end::IcmpServiceConfig[] -->
+# end::IcmpServiceConfig[] -->
 <service name="DNS" interval="300000" user-defined="false" status="on">
   <parameter key="retry" value="2" />
   <parameter key="timeout" value="5000" />

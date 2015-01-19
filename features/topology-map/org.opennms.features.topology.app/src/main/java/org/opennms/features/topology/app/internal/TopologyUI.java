@@ -29,7 +29,6 @@
 package org.opennms.features.topology.app.internal;
 
 import com.github.wolfie.refresher.Refresher;
-import com.vaadin.annotations.JavaScript;
 import com.vaadin.annotations.PreserveOnRefresh;
 import com.vaadin.annotations.Theme;
 import com.vaadin.data.Property;

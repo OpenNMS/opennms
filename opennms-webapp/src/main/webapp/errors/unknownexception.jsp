@@ -186,43 +186,43 @@ userSession.setAttribute("errorReportDetails", errorDetails);
   </div>
   <table class="table table-condensed table-bordered">
     <tr>
-      <th>Locale</td>
+      <th>Locale</th>
       <td><%=request.getLocale()%></td>
     </tr>
     <tr>
-      <th>Method</td>
+      <th>Method</th>
       <td><%=request.getMethod()%></td>
     </tr>
     <tr>
-      <th>Path Info</td>
+      <th>Path Info</th>
       <td><%=request.getPathInfo()%></td>
     </tr>
     <tr>
-      <th>Path Info (translated)</td>
+      <th>Path Info (translated)</th>
       <td><%=request.getPathTranslated()%></td>
     </tr>
     <tr>
-      <th>Protocol</td>
+      <th>Protocol</th>
       <td><%=request.getProtocol()%></td>
     </tr>
     <tr>
-      <th>URI</td>
+      <th>URI</th>
       <td><%=request.getRequestURI()%></td>
     </tr>
     <tr>
-      <th>URL</td>
+      <th>URL</th>
       <td><%=request.getRequestURL()%></td>
     </tr>
     <tr>
-      <th>Scheme</td>
+      <th>Scheme</th>
       <td><%=request.getScheme()%></td>
     </tr>
     <tr>
-      <th>Server Name</td>
+      <th>Server Name</th>
       <td><%=request.getServerName()%></td>
     </tr>
     <tr>
-      <th>Server Port</td>
+      <th>Server Port</th>
       <td><%=request.getServerPort()%></td>
     </tr>
   </table>
@@ -234,27 +234,27 @@ userSession.setAttribute("errorReportDetails", errorDetails);
   </div>
   <table class="table table-condensed table-bordered">
     <tr>
-      <th>OpenNMS Version:</td>
+      <th>OpenNMS Version:</th>
       <td><%=Vault.getProperty("version.display")%></td>
     </tr>
     <tr>
-      <th>Java Version:</td>
+      <th>Java Version:</th>
       <td><%=System.getProperty( "java.version" )%> <%=System.getProperty( "java.vendor" )%></td>
     </tr>
     <tr>
-      <th>Java Virtual Machine:</td>
+      <th>Java Virtual Machine:</th>
       <td><%=System.getProperty( "java.vm.version" )%> <%=System.getProperty( "java.vm.vendor" )%></td>
     </tr>
     <tr>
-      <th>Operating System:</td>
+      <th>Operating System:</th>
       <td><%=System.getProperty( "os.name" )%> <%=System.getProperty( "os.version" )%> (<%=System.getProperty( "os.arch" )%>)</td>
     </tr>
     <tr>
-      <th>Servlet Container:</td>
+      <th>Servlet Container:</th>
       <td><%=application.getServerInfo()%> (Servlet Spec <%=application.getMajorVersion()%>.<%=application.getMinorVersion()%>)</td>
     </tr>
     <tr>
-      <th>User Agent:</td>
+      <th>User Agent:</th>
       <td><%=request.getHeader( "User-Agent" )%></td>
     </tr>
   </table>

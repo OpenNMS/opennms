@@ -30,7 +30,6 @@ package org.opennms.features.topology.plugins.topo.linkd.internal;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
-import org.apache.commons.collections.MultiMap;
 import org.opennms.core.criteria.restrictions.InRestriction;
 import org.opennms.features.topology.api.topo.*;
 import org.opennms.netmgt.dao.api.OspfLinkDao;

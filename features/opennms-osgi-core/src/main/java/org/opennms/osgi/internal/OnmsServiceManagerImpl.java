@@ -47,7 +47,7 @@ public class OnmsServiceManagerImpl implements OnmsServiceManager {
     private static final Logger LOG = LoggerFactory.getLogger(OnmsServiceManagerImpl.class);
 
     // key: Service
-    private final Map<Object, ServiceRegistration> serviceRegistrations = Collections.synchronizedMap(new HashMap<Object, ServiceRegistration>());
+    private final Map<Object, ServiceRegistration<?>> serviceRegistrations = Collections.synchronizedMap(new HashMap<Object, ServiceRegistration<?>>());
     private final BundleContext bundleContext;
 
     public OnmsServiceManagerImpl(BundleContext bundleContext) {
@@ -62,7 +62,7 @@ public class OnmsServiceManagerImpl implements OnmsServiceManager {
     @Override
     public <T> void registerAsService(Class<T> serviceClass, T serviceBean, VaadinApplicationContext applicationContext, Properties properties) {
         if (serviceBean == null || serviceClass == null) return;
-        ServiceRegistration serviceRegistration = bundleContext.registerService(serviceClass, serviceBean, (Dictionary) getProperties(applicationContext, properties));
+        ServiceRegistration<T> serviceRegistration = bundleContext.registerService(serviceClass, serviceBean, (Dictionary) getProperties(applicationContext, properties));
         serviceRegistrations.put(serviceBean, serviceRegistration);
     }
 
@@ -85,12 +85,12 @@ public class OnmsServiceManagerImpl implements OnmsServiceManager {
         }
         List<T> services = new ArrayList<T>();
         try {
-            ServiceReference[] serviceReferences = bundleContext.getServiceReferences(clazz.getName(), getFilter(applicationContext, additionalProperties));
+            Collection<ServiceReference<T>> serviceReferences = bundleContext.getServiceReferences(clazz, getFilter(applicationContext, additionalProperties));
             if (serviceReferences != null) {
-                for (ServiceReference eachServiceReference : serviceReferences) {
-                    Object service = bundleContext.getService(eachServiceReference);
+                for (ServiceReference<T> eachServiceReference : serviceReferences) {
+                    T service = bundleContext.getService(eachServiceReference);
                     if (service == null) continue;
-                    services.add((T)service);
+                    services.add(service);
                 }
             }
         } catch (InvalidSyntaxException e) {
@@ -111,9 +111,9 @@ public class OnmsServiceManagerImpl implements OnmsServiceManager {
     public void sessionDestroyed(String sessionId) {
         final String sessionIdFilter = "(sessionId=%s)";
         try {
-            ServiceReference[] allServiceReferences = bundleContext.getAllServiceReferences(null, String.format(sessionIdFilter, sessionId));
+            ServiceReference<?>[] allServiceReferences = bundleContext.getAllServiceReferences(null, String.format(sessionIdFilter, sessionId));
             if (allServiceReferences != null) {
-                for (ServiceReference eachReference : allServiceReferences) {
+                for (ServiceReference<?> eachReference : allServiceReferences) {
                     Object service = bundleContext.getService(eachReference);
                     if (service == null) continue;
                     if (serviceRegistrations.get(service) == null) continue; // wrong bundleContext/OnmsServiceManager

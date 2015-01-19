@@ -4,7 +4,7 @@
 :lang: en
 :icons: font
 :toc: left
-:toclevels: 8
+:toclevels: 3
 :numbered:
 
 = Administrators Guide
@@ -17,10 +17,10 @@
 // include::text/myFile.adoc[]
 
 // Include monitor documentation here
-= Service Assurance
+== Service Assurance
 
 // Included in alphabetical order
-== Service monitors
+=== Service monitors
 include::text/poller/AvailabilityMonitor.adoc[]
 include::text/poller/BgpSessionMonitor.adoc[]
 include::text/poller/BSFMonitor.adoc[]

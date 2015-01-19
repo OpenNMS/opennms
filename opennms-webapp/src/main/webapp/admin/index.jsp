@@ -167,7 +167,7 @@
                 } catch (Throwable e) { /*if factory can't be initialized, status is already 'Unknown'*/ }
             %>
             <div class="form-group">
-              <label class="control-label">Notification Status:<%if (status.equals("Unknown")) {%> Unknown<% }%>
+              <label class="control-label">Notification Status:<%if (status.equals("Unknown")) {%> Unknown<% }%></label>
               <input class="form-control" type="radio" name="status" id="on" value="on" <%=(status.equals("On") ? "checked" : "")%> /> <label for="on">On</label>&nbsp;&nbsp;&nbsp;
               <input class="form-control" type="radio" name="status" id="off" value="off" <%=(status.equals("Off") ? "checked" : "")%> /> <label for="off">Off</label>
             </div>

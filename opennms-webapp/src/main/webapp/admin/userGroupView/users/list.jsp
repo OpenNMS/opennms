@@ -127,6 +127,7 @@
    <div class="panel panel-default">
      <table class="table table-condensed table-bordered">
         <thead>
+          <tr>
           <th width="5%">Delete</th>
           <th width="5%">Modify</th>
           <th width="5%">Rename</th>
@@ -135,6 +136,7 @@
           <th width="15%">Email</th>
           <th width="15%">Pager Email</th>
           <th width="15%">XMPP Address</th>
+          </tr>
         </thead>
         <tbody>
         <% 

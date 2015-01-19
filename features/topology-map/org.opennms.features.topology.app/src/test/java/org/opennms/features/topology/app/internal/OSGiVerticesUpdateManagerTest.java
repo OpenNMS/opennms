@@ -392,7 +392,7 @@ public class OSGiVerticesUpdateManagerTest {
 
         @Override
         public Set<EdgeStatusProvider> getEdgeStatusProviders() {
-            return Collections.EMPTY_SET;
+            return Collections.emptySet();
         }
 
         @Override

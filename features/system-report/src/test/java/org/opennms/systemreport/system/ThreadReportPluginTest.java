@@ -32,7 +32,6 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.util.Map;
-import java.util.TreeMap;
 
 import javax.annotation.Resource;
 
