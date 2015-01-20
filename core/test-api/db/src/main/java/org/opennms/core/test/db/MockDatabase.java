@@ -120,14 +120,15 @@ public class MockDatabase extends TemporaryDatabasePostgreSQL implements EventWr
     }
     
     public void writeNode(MockNode node) {
+        LOG.info("Inserting node \"{}\" into database with ID {}", node.getLabel(), node.getNodeId());
         Object[] values = { Integer.valueOf(node.getNodeId()), node.getLabel(), new Timestamp(System.currentTimeMillis()), "A" };
         update("insert into node (dpName, nodeID, nodeLabel, nodeCreateTime, nodeType) values ('localhost', ?, ?, ?, ?);", values);
-        
     }
 
     public void writeInterface(MockInterface iface) {
+        LOG.info("Inserting interface into database with IP address {}", iface.getAddress());
         writeSnmpInterface(iface);
-		Object[] values = { Integer.valueOf(iface.getNodeId()), str(iface.getAddress()), iface.getIfIndex(), (iface.getIfIndex() == 1 ? "P" : "N"), "A" };
+        Object[] values = { Integer.valueOf(iface.getNodeId()), str(iface.getAddress()), iface.getIfIndex(), (iface.getIfIndex() == 1 ? "P" : "N"), "M" };
         update("insert into ipInterface (nodeID, ipAddr, ifIndex, isSnmpPrimary, isManaged) values (?, ?, ?, ?, ?);", values);
     }
 
@@ -143,8 +144,8 @@ public class MockDatabase extends TemporaryDatabasePostgreSQL implements EventWr
         if (serviceId == null) {
             svc.setId(getNextServiceId());
             Object[] svcValues = { svc.getId(), svcName };
-            update("insert into service (serviceID, serviceName) values (?, ?);", svcValues);
             LOG.info("Inserting service \"{}\" into database with ID {}", svcName, svc.getId());
+            update("insert into service (serviceID, serviceName) values (?, ?);", svcValues);
         } else {
             svc.setId(serviceId);
         }
@@ -154,9 +155,9 @@ public class MockDatabase extends TemporaryDatabasePostgreSQL implements EventWr
     }
 
     public void writePathOutage(MockPathOutage out) {
-    	LOG.info("Inserting into pathoutage {} {} {}" ,out.getNodeId(), InetAddressUtils.str(out.getIpAddress()), out.getServiceName());
-    	Object[] values = { Integer.valueOf(out.getNodeId()), InetAddressUtils.str(out.getIpAddress()), out.getServiceName() };
-    	update("insert into pathoutage (nodeid, criticalpathip, criticalpathservicename) values (?, ?, ?);", values);
+        LOG.info("Inserting into pathoutage {} {} {}" ,out.getNodeId(), InetAddressUtils.str(out.getIpAddress()), out.getServiceName());
+        Object[] values = { Integer.valueOf(out.getNodeId()), InetAddressUtils.str(out.getIpAddress()), out.getServiceName() };
+        update("insert into pathoutage (nodeid, criticalpathip, criticalpathservicename) values (?, ?, ?);", values);
     }
 
     public String getNextOutageIdStatement() {
