@@ -39,10 +39,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
@@ -280,94 +277,6 @@ public class CategoryModel extends Object {
 
         return avail;
     }
-    
-    /**
-     * Return the availability percentage for all managed services on the given
-     * nodes for the last 24 hours. If there are no managed services on these
-     * nodes, then a value of -1 is returned.
-     * 
-     * @deprecated Appears to be unused?
-     *
-     * @param nodeIds a {@link java.util.Set} object.
-     * @return a {@link java.util.Map} object.
-     * @throws java.sql.SQLException if any.
-     */
-    private static Map<Integer, Double> getNodeAvailability(Set<Integer> nodeIds) throws SQLException {
-        Calendar cal = new GregorianCalendar();
-        Date now = cal.getTime();
-        cal.add(Calendar.DATE, -1);
-        Date yesterday = cal.getTime();
-
-        return getNodeAvailability(nodeIds, yesterday, now);
-    }
-
-    /**
-     * Return the availability percentage for all managed services on the given
-     * nodes from the given start time until the given end time. If there are no
-     * managed services on these nodes, then a value of -1 is returned.
-     *
-     * @param nodeIds a {@link java.util.Set} object.
-     * @param start a {@link java.util.Date} object.
-     * @param end a {@link java.util.Date} object.
-     * @return a {@link java.util.Map} object.
-     * @throws java.sql.SQLException if any.
-     */
-    private static Map<Integer, Double> getNodeAvailability(Set<Integer> nodeIds, Date start, Date end) throws SQLException {
-    	if(nodeIds==null || nodeIds.size()==0){
-    		throw new IllegalArgumentException("Cannot take nodeIds null or with length 0.");
-    	}
-        if (start == null || end == null) {
-            throw new IllegalArgumentException("Cannot take null parameters.");
-        }
-
-        if (end.before(start)) {
-            throw new IllegalArgumentException("Cannot have an end time before the start time.");
-        }
-
-        if (end.equals(start)) {
-            throw new IllegalArgumentException("Cannot have an end time equal to the start time.");
-        }
-
-        double avail = -1;
-        int nodeid = 0;
-        Map<Integer, Double> retMap = new TreeMap<Integer, Double>();
-
-        final DBUtils d = new DBUtils(CategoryModel.class);
-        try {
-            Connection conn = DataSourceFactory.getInstance().getConnection();
-            d.watch(conn);
-        	StringBuffer sb = new StringBuffer("select nodeid, getManagePercentAvailNodeWindow(nodeid, ?, ?)  from node where nodeid in (");
-        	Iterator<Integer> it = nodeIds.iterator();
-        	while (it.hasNext()){
-        		sb.append(it.next());
-        		if (it.hasNext()) {
-        			sb.append(", ");
-        		}
-        	}
-        	sb.append(")");
-            PreparedStatement stmt = conn.prepareStatement(sb.toString());
-            d.watch(stmt);
-            
-            // yes, these are supposed to be backwards, the end time first
-            stmt.setTimestamp(1, new Timestamp(end.getTime()));
-            stmt.setTimestamp(2, new Timestamp(start.getTime()));
-
-            ResultSet rs = stmt.executeQuery();
-            d.watch(rs);
-
-            while (rs.next()) {
-            	nodeid = rs.getInt(1);
-                avail = rs.getDouble(2);
-                retMap.put(Integer.valueOf(nodeid), Double.valueOf(avail));
-            }
-        } catch (final SQLException e) {
-            LOG.warn("Failed to get node availability for nodeIds {}", nodeIds, e);
-        } finally {
-            d.cleanUp();
-        }
-
-        return Collections.unmodifiableMap(retMap);
-    }    
 
     /**
      * Return the availability percentage for all managed services on the given
@@ -475,8 +384,8 @@ public class CategoryModel extends Object {
     /**
      * Return the availability percentage for a managed service from the given
      * start time until the given end time. If the service is not managed, then
-     * a value of -1 is returned.
-     *
+     * a value of -1.0 is returned.
+     * 
      * @param nodeId a int.
      * @param ipAddr a {@link java.lang.String} object.
      * @param serviceId a int.
@@ -498,14 +407,12 @@ public class CategoryModel extends Object {
             throw new IllegalArgumentException("Cannot have an end time equal to the start time.");
         }
 
-        double avail = -1;
-
         final DBUtils d = new DBUtils(CategoryModel.class);
         try {
             Connection conn = DataSourceFactory.getInstance().getConnection();
             d.watch(conn);
             
-            PreparedStatement stmt = conn.prepareStatement("select getPercentAvailabilityInWindow(?, ?, ?, ?, ?) as avail from ifservices, ipinterface where ifservices.ipaddr = ipinterface.ipaddr and ifservices.nodeid = ipinterface.nodeid and ipinterface.ismanaged='M' and ifservices.nodeid=? and ifservices.ipaddr=? and serviceid=?");
+            PreparedStatement stmt = conn.prepareStatement("select getPercentAvailabilityInWindow(?, ?, ?, ?, ?) as avail from ifservices, ipinterface where ifservices.ipaddr = ipinterface.ipaddr and ifservices.nodeid = ipinterface.nodeid and ifservices.status='A' and ipinterface.ismanaged='M' and node.nodetype='A' and ifservices.nodeid=? and ifservices.ipaddr=? and serviceid=?");
             d.watch(stmt);
             
             stmt.setInt(1, nodeId);
@@ -522,7 +429,7 @@ public class CategoryModel extends Object {
             d.watch(rs);
             
             if (rs.next()) {
-                avail = rs.getDouble("avail");
+                return rs.getDouble("avail");
             }
         } catch (final SQLException e) {
             LOG.warn("Failed to get service availability for nodeId {}, interface {}, serviceId {}", nodeId, ipAddr, serviceId, e);
@@ -530,6 +437,6 @@ public class CategoryModel extends Object {
             d.cleanUp();
         }
 
-        return avail;
+        return -1.0;
     }
 }

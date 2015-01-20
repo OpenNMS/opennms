@@ -88,7 +88,7 @@
     if (service.isManaged()) {
         //find the availability value for this node
         double rtcValue =
-            m_model.getServiceAvailability(service.getNodeId(),
+            CategoryModel.getServiceAvailability(service.getNodeId(),
 	                                       service.getIpAddress(),
                                            service.getServiceId());
         
