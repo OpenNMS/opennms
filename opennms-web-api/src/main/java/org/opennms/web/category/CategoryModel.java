@@ -235,7 +235,7 @@ public class CategoryModel extends Object {
      * @return a double.
      * @throws java.sql.SQLException if any.
      */
-    private static double getNodeAvailability(int nodeId, Date start, Date end) throws SQLException {
+    static double getNodeAvailability(int nodeId, Date start, Date end) throws SQLException {
         if (start == null || end == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
@@ -314,7 +314,7 @@ public class CategoryModel extends Object {
      * @return a double.
      * @throws java.sql.SQLException if any.
      */
-    private static double getInterfaceAvailability(int nodeId, String ipAddr, Date start, Date end) throws SQLException {
+    static double getInterfaceAvailability(int nodeId, String ipAddr, Date start, Date end) throws SQLException {
         if (ipAddr == null || start == null || end == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
@@ -394,7 +394,7 @@ public class CategoryModel extends Object {
      * @return a double.
      * @throws java.sql.SQLException if any.
      */
-    private static double getServiceAvailability(int nodeId, String ipAddr, int serviceId, Date start, Date end) throws SQLException {
+    static double getServiceAvailability(int nodeId, String ipAddr, int serviceId, Date start, Date end) throws SQLException {
         if (ipAddr == null || start == null || end == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
@@ -412,7 +412,7 @@ public class CategoryModel extends Object {
             Connection conn = DataSourceFactory.getInstance().getConnection();
             d.watch(conn);
             
-            PreparedStatement stmt = conn.prepareStatement("select getPercentAvailabilityInWindow(?, ?, ?, ?, ?) as avail from ifservices, ipinterface where ifservices.ipaddr = ipinterface.ipaddr and ifservices.nodeid = ipinterface.nodeid and ifservices.status='A' and ipinterface.ismanaged='M' and node.nodetype='A' and ifservices.nodeid=? and ifservices.ipaddr=? and serviceid=?");
+            PreparedStatement stmt = conn.prepareStatement("select getPercentAvailabilityInWindow(?, ?, ?, ?, ?) as avail from ifservices, ipinterface, node where ifservices.ipaddr = ipinterface.ipaddr and ifservices.nodeid = ipinterface.nodeid and ifservices.status='A' and ipinterface.ismanaged='M' and ifservices.nodeid = node.nodeid and node.nodetype='A' and ifservices.nodeid=? and ifservices.ipaddr=? and serviceid=?");
             d.watch(stmt);
             
             stmt.setInt(1, nodeId);
