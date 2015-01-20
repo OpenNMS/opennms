@@ -501,36 +501,36 @@ rm -rf $RPM_BUILD_ROOT
 DONT_GPRINTIFY="yes, please do not"
 export DONT_GPRINTIFY
 
-declare -a EXTRA_OPTIONS
-EXTRA_OPTIONS=("${EXTRA_OPTIONS[@]}" "-Dinstall.package.name=%{name}" "-Dinstall.package.description=%{_descr}")
 if [ -e "settings.xml" ]; then
-	EXTRA_OPTIONS=("${EXTRA_OPTIONS[@]}" "-s `pwd`/settings.xml")
+	export OPTS_SETTINGS_XML="-s `pwd`/settings.xml"
 fi
 
 if [ "%{skip_compile}" = 1 ]; then
 	echo "=== SKIPPING COMPILE ==="
 	if [ "%{enable_snapshots}" = 1 ]; then
-		EXTRA_OPTIONS=("${EXTRA_OPTIONS[@]}" "-Denable.snapshots=true" "-DupdatePolicy=always")
+		OPTS_ENABLE_SNAPSHOTS="-Denable.snapshots=true"
+		OPTS_UPDATE_POLICY="-DupdatePolicy=always"
+		export EXTRA_OPTIONS="$EXTRA_OPTIONS -Denable.snapshots=true -DupdatePolicy=always"
 	fi
 	TOPDIR=`pwd`
 	for dir in . opennms-tools; do
 		cd $dir
-			"$TOPDIR"/compile.pl -N "${EXTRA_OPTIONS[@]}" -Dinstall.version="%{version}-%{release}" -Ddist.name="$RPM_BUILD_ROOT" -Dopennms.home="%{instprefix}" install
+			"$TOPDIR"/compile.pl -N "$OPTS_SETTINGS_XML" "$OPTS_ENABLE_SNAPSHOTS" "$OPTS_UPDATE_POLICY" -Dinstall.version="%{version}-%{release}" -Ddist.name="$RPM_BUILD_ROOT" -Dopennms.home="%{instprefix}" install
 		cd -
 	done
 else
 	echo "=== RUNNING COMPILE ==="
-	./compile.pl "${EXTRA_OPTIONS[@]}" -Dbuild=all -Dinstall.version="%{version}-%{release}" -Ddist.name="$RPM_BUILD_ROOT" \
+	./compile.pl "$OPTS_SETTINGS_XML" "$OPTS_ENABLE_SNAPSHOTS" "$OPTS_UPDATE_POLICY" -Dbuild=all -Dinstall.version="%{version}-%{release}" -Ddist.name="$RPM_BUILD_ROOT" \
 	    -Dopennms.home="%{instprefix}" install
 fi
 
 echo "=== BUILDING ASSEMBLIES ==="
-./assemble.pl "${EXTRA_OPTIONS[@]}" -Dbuild=all -Dinstall.version="%{version}-%{release}" -Ddist.name="$RPM_BUILD_ROOT" \
+./assemble.pl "$OPTS_SETTINGS_XML" "$OPTS_ENABLE_SNAPSHOTS" "$OPTS_UPDATE_POLICY" -Dbuild=all -Dinstall.version="%{version}-%{release}" -Ddist.name="$RPM_BUILD_ROOT" \
 	-Dopennms.home="%{instprefix}" -Dbuild.profile=full install
 
 cd opennms-tools
-	../compile.pl "${EXTRA_OPTIONS[@]}" -N -Dinstall.version="%{version}-%{release}" -Ddist.name="$RPM_BUILD_ROOT" \
-        -Dopennms.home="%{instprefix}" install
+	../compile.pl "$OPTS_SETTINGS_XML" "$OPTS_ENABLE_SNAPSHOTS" "$OPTS_UPDATE_POLICY" -N -Dinstall.version="%{version}-%{release}" -Ddist.name="$RPM_BUILD_ROOT" \
+	-Dopennms.home="%{instprefix}" install
 cd -
 
 echo "=== INSTALL COMPLETED ==="
