@@ -71,6 +71,8 @@ public class WmiMultiInstanceCollectionResource extends WmiCollectionResource {
     @Override
     public File getResourceDir(final RrdRepository repository) {
         String resourcePath = m_resourceType.getStorageStrategy().getRelativePathForAttribute(getParent(), getInterfaceLabel());
+        //WMI instances can have special characters in them. See NMS-6924.
+        resourcePath.replaceAll("\\s+", "_").replaceAll(":", "_").replaceAll("\\\\", "_").replaceAll("[\\[\\]]", "_");
         File resourceDir = new File(repository.getRrdBaseDir(), resourcePath);
         LOG.debug("getResourceDir: {}", resourceDir);
         return resourceDir;
