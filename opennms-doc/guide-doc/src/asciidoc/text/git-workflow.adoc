@@ -180,5 +180,3 @@ image::../images/11_merged-pull-request.png[]
 
 The OpenNMS Continuous Integration system based on _Bamboo_ picks up the merged pull request and starts a build and deploys a version with your changes automatically.
 You can see the build jobs on the public available link:http://bamboo.internal.opennms.com:8085/allPlans.action[Bamboo system].
-
-This is my contribution to fix or enhance something.
