@@ -28,14 +28,12 @@
 
 package org.opennms.netmgt.rtc;
 
-import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.net.InetAddress;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -45,13 +43,8 @@ import java.util.ListIterator;
 import java.util.Map;
 import java.util.Set;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.config.CategoryFactory;
 import org.opennms.netmgt.config.RTCConfigFactory;
-import org.opennms.netmgt.config.categories.CatFactory;
-import org.opennms.netmgt.config.categories.Categorygroup;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.filter.FilterDao;
@@ -113,7 +106,7 @@ public class DataManager implements AvailabilityService, InitializingBean {
 		Map<String,Set<Integer>> m_categoryNodeIdLists = new HashMap<String,Set<Integer>>();
 
 
-                @Override
+		@Override
 		public void processRow(ResultSet rs) throws SQLException {
 			RTCNodeKey key = new RTCNodeKey(rs.getLong("nodeid"), InetAddressUtils.addr(rs.getString("ipaddr")), rs.getString("servicename"));
 			processKey(key);
@@ -133,7 +126,7 @@ public class DataManager implements AvailabilityService, InitializingBean {
 
 		// This is called exactly once for each unique (node ID, IP address, service name) tuple
 		public synchronized void processIfService(RTCNodeKey key) {
-		    for (RTCCategory cat : m_categories.values()) {
+			for (RTCCategory cat : m_categories.values()) {
 				if (catContainsIfService(cat, key)) {
 					RTCNode rtcN = getRTCNode(key);
 					addNodeToCategory(cat, rtcN);
@@ -163,27 +156,10 @@ public class DataManager implements AvailabilityService, InitializingBean {
 		private Set<Integer> catGetNodeIds(RTCCategory cat) {
 			Set<Integer> nodeIds = m_categoryNodeIdLists.get(cat.getLabel());
 			if(nodeIds == null) {
-				nodeIds = catConstructNodeIds(cat);
+				nodeIds = RTCUtils.getNodeIdsForCategory(m_filterDao, cat);
 				m_categoryNodeIdLists.put(cat.getLabel(), nodeIds);
 			}
 			return nodeIds;
-		}
-		
-		private Set<Integer> catConstructNodeIds (RTCCategory cat) {
-			String filterRule = cat.getEffectiveRule();
-			try {
-				LOG.debug("Category: {}\t{}", cat.getLabel(), filterRule);
-		
-				Set<Integer> nodeIds = m_filterDao.getNodeMap(filterRule).keySet();
-				
-		        LOG.debug("Number of nodes satisfying rule: {}", nodeIds.size());
-		
-		        return nodeIds;
-		        
-			} catch (FilterParseException e) {
-				LOG.error("Unable to parse filter rule {} ignoring category {}", filterRule, cat.getLabel(), e);
-				return Collections.emptySet();
-			}
 		}
 		
 		// This is processed for each outage, passing two null means there is not outage
@@ -193,11 +169,10 @@ public class DataManager implements AvailabilityService, InitializingBean {
 			if (rtcN == null) return;
 			
 			addOutageToRTCNode(rtcN, ifLostService, ifRegainedService);
-			
 		}
 	}
 
-	/**
+    /**
      * The RTC categories
      */
     private Map<String, RTCCategory> m_categories;
@@ -235,43 +210,6 @@ public class DataManager implements AvailabilityService, InitializingBean {
 
 		LOG.debug("rtcN : {}/{}/{} added to cat: {}", rtcN.getNodeID(), rtcN.getIP(), rtcN.getSvcName(), cat.getLabel());
 	}
-
-    /**
-     * Creates the categories map. Reads the categories from the categories.xml
-     * and creates the 'RTCCategory's map
-     */
-    private void createCategoriesMap() {
-        CatFactory cFactory = null;
-        try {
-            CategoryFactory.init();
-            cFactory = CategoryFactory.getInstance();
-
-        } catch (IOException ex) {
-            LOG.error("Failed to load categories information", ex);
-            throw new UndeclaredThrowableException(ex);
-        } catch (MarshalException ex) {
-            LOG.error("Failed to load categories information", ex);
-            throw new UndeclaredThrowableException(ex);
-        } catch (ValidationException ex) {
-            LOG.error("Failed to load categories information", ex);
-            throw new UndeclaredThrowableException(ex);
-        }
-
-        m_categories = new HashMap<String, RTCCategory>();
-
-        cFactory.getReadLock().lock();
-        try {
-            for (Categorygroup cg : cFactory.getConfig().getCategorygroupCollection()) {
-                final String commonRule = cg.getCommon().getRule();
-    
-                for (final org.opennms.netmgt.config.categories.Category cat : cg.getCategories().getCategoryCollection()) {
-                    m_categories.put(new RTCCategory(cat, commonRule).getLabel(), new RTCCategory(cat, commonRule));
-                }
-            }
-        } finally {
-            cFactory.getReadLock().unlock();
-        }
-    }
 
     /**
      * Populates nodes from the database. For each category in the categories
@@ -364,7 +302,7 @@ public class DataManager implements AvailabilityService, InitializingBean {
 	@Override
 	public void afterPropertiesSet() throws Exception {
     	// read the categories.xml to get all the categories
-    	createCategoriesMap();
+    	m_categories = RTCUtils.createCategoriesMap();
 
     	if (m_categories == null || m_categories.isEmpty()) {
     		throw new RTCException("No categories found in categories.xml");
