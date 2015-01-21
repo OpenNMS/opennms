@@ -44,9 +44,13 @@ import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsOutage;
 import org.opennms.netmgt.model.ServiceSelector;
 import org.opennms.netmgt.model.outage.OutageSummary;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.orm.hibernate3.HibernateCallback;
 
 public class OutageDaoHibernate extends AbstractDaoHibernate<OnmsOutage, Integer> implements OutageDao {
+
+    private static final Logger LOG = LoggerFactory.getLogger(OutageDaoHibernate.class);
 
     /**
      * <p>Constructor for OutageDaoHibernate.</p>
@@ -77,7 +81,16 @@ public class OutageDaoHibernate extends AbstractDaoHibernate<OnmsOutage, Integer
 
     @Override
     public OnmsOutage currentOutageForService(OnmsMonitoredService service) {
-        return findUnique("from OnmsOutage as o where o.monitoredService = ? and o.ifRegainedService is null", service);
+        // TODO: I was seeing multiple open outages for a service on my system so we
+        // can't use findUnique() until we fix the data integrity issues
+        Collection<OnmsOutage> outages = find("from OnmsOutage as o where o.monitoredService = ? and o.ifRegainedService is null order by o.ifLostService desc", service);
+        if (outages != null && outages.size() > 0) {
+            if (outages.size() > 1) {
+                LOG.warn("More than one open outage found for service: " + service.toString());
+            }
+            return outages.iterator().next();
+        }
+        return null;
     }
 
     /** {@inheritDoc} */
