@@ -100,7 +100,7 @@ public class EuiLevelMapper extends Object {
             levelCat.setCatlabel(rtcCat.getLabel());
 
             // availability value for this category
-            levelCat.setCatvalue(m_dataMgr.getValue(rtcCat.getLabel(), curTime, rWindow));
+            levelCat.setCatvalue(m_dataMgr.getValue(rtcCat, curTime, rWindow));
 
             // nodes in this category
             for (int nodeID : m_dataMgr.getNodes(rtcCat)) {
@@ -109,13 +109,14 @@ public class EuiLevelMapper extends Object {
                 levelNode.setNodeid(nodeID);
 
                 // value for this node for this category
-                levelNode.setNodevalue(m_dataMgr.getValue(nodeID, rtcCat.getLabel(), curTime, rWindow));
+                levelNode.setNodevalue(m_dataMgr.getValue(nodeID, rtcCat, curTime, rWindow));
 
                 // node service count
-                levelNode.setNodesvccount(m_dataMgr.getServiceCount(nodeID, rtcCat.getLabel()));
+                levelNode.setNodesvccount(m_dataMgr.getServiceCount(nodeID, rtcCat));
 
                 // node service down count
-                levelNode.setNodesvcdowncount(m_dataMgr.getServiceDownCount(nodeID, rtcCat.getLabel()));
+                levelNode.setNodesvcdowncount(m_dataMgr.getServiceDownCount(nodeID, rtcCat));
+
                 // add the node
                 levelCat.addNode(levelNode);
             }

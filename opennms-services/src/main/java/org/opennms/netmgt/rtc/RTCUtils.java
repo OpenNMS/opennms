@@ -102,7 +102,8 @@ public abstract class RTCUtils {
 				final String commonRule = cg.getCommon().getRule();
 
 				for (final org.opennms.netmgt.config.categories.Category cat : cg.getCategories().getCategoryCollection()) {
-					retval.put(new RTCCategory(cat, commonRule).getLabel(), new RTCCategory(cat, commonRule));
+					RTCCategory rtcCat = new RTCCategory(cat, commonRule);
+					retval.put(rtcCat.getLabel(), rtcCat);
 				}
 			}
 		} finally {

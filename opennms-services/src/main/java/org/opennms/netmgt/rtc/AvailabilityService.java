@@ -54,7 +54,7 @@ public interface AvailabilityService {
      * @return the value(uptime) for the category in the last 'rollingWindow'
      *         starting at current time
      */
-    double getValue(String catLabel, long curTime, long rollingWindow);
+    double getValue(RTCCategory category, long curTime, long rollingWindow);
 
     /**
      * Get the value(uptime) for the nodeid in the last 'rollingWindow' starting
@@ -71,7 +71,7 @@ public interface AvailabilityService {
      * @return the value(uptime) for the node in the last 'rollingWindow'
      *         starting at current time in the context of the passed category
      */
-    double getValue(int nodeid, String catLabel, long curTime, long rollingWindow);
+    double getValue(int nodeid, RTCCategory category, long curTime, long rollingWindow);
 
     /**
      * Get the service count for the nodeid in the context of the passed
@@ -84,7 +84,7 @@ public interface AvailabilityService {
      * @return the service count for the nodeid in the context of the passed
      *         category
      */
-    int getServiceCount(int nodeid, String catLabel);
+    int getServiceCount(int nodeid, RTCCategory category);
 
     /**
      * Get the service down count for the nodeid in the context of the passed
@@ -97,7 +97,7 @@ public interface AvailabilityService {
      * @return the service down count for the nodeid in the context of the
      *         passed category
      */
-    int getServiceDownCount(int nodeid, String catLabel);
+    int getServiceDownCount(int nodeid, RTCCategory category);
 
     /**
      * <p>getCategories</p>

@@ -695,8 +695,8 @@ public class DataManager implements AvailabilityService, InitializingBean {
      *         starting at current time
      */
     @Override
-    public synchronized double getValue(String catLabel, long curTime, long rollingWindow) {
-        return m_map.getValue(catLabel, curTime, rollingWindow);
+    public synchronized double getValue(RTCCategory category, long curTime, long rollingWindow) {
+        return m_map.getValue(category.getLabel(), curTime, rollingWindow);
     }
 
     /**
@@ -715,8 +715,8 @@ public class DataManager implements AvailabilityService, InitializingBean {
      *         starting at current time in the context of the passed category
      */
     @Override
-    public synchronized double getValue(int nodeid, String catLabel, long curTime, long rollingWindow) {
-        return m_map.getValue(nodeid, catLabel, curTime, rollingWindow);
+    public synchronized double getValue(int nodeid, RTCCategory category, long curTime, long rollingWindow) {
+        return m_map.getValue(nodeid, category.getLabel(), curTime, rollingWindow);
     }
 
     /**
@@ -731,8 +731,8 @@ public class DataManager implements AvailabilityService, InitializingBean {
      *         category
      */
     @Override
-    public synchronized int getServiceCount(int nodeid, String catLabel) {
-        return m_map.getServiceCount(nodeid, catLabel);
+    public synchronized int getServiceCount(int nodeid, RTCCategory category) {
+        return m_map.getServiceCount(nodeid, category.getLabel());
     }
 
     /**
@@ -747,8 +747,8 @@ public class DataManager implements AvailabilityService, InitializingBean {
      *         passed category
      */
     @Override
-    public synchronized int getServiceDownCount(int nodeid, String catLabel) {
-        return m_map.getServiceDownCount(nodeid, catLabel);
+    public synchronized int getServiceDownCount(int nodeid, RTCCategory category) {
+        return m_map.getServiceDownCount(nodeid, category.getLabel());
     }
 
     /**

@@ -88,9 +88,9 @@ public class AvailabilityServiceJdbcImpl implements AvailabilityService {
 	 *         starting at current time
 	 */
 	@Override
-	public double getValue(String catLabel, long curTime, long rollingWindow) {
+	public double getValue(RTCCategory category, long curTime, long rollingWindow) {
 		double outageTime = 0.0;
-		Criteria criteria = createServiceCriteriaForCategory(getCategories().get(catLabel));
+		Criteria criteria = createServiceCriteriaForCategory(category);
 		List<OnmsMonitoredService> services = m_monitoredServiceDao.findMatching(criteria);
 		for (OnmsMonitoredService service : services) {
 			try {
@@ -118,9 +118,9 @@ public class AvailabilityServiceJdbcImpl implements AvailabilityService {
 	 *         starting at current time in the context of the passed category
 	 */
 	@Override
-	public double getValue(int nodeid, String catLabel, long curTime, long rollingWindow) {
+	public double getValue(int nodeid, RTCCategory category, long curTime, long rollingWindow) {
 		double outageTime = 0.0;
-		Criteria criteria = createServiceCriteriaForNodeInCategory(nodeid, getCategories().get(catLabel));
+		Criteria criteria = createServiceCriteriaForNodeInCategory(nodeid, category);
 		List<OnmsMonitoredService> services = m_monitoredServiceDao.findMatching(criteria);
 		for (OnmsMonitoredService service : services) {
 			try {
@@ -144,8 +144,8 @@ public class AvailabilityServiceJdbcImpl implements AvailabilityService {
 	 *         category
 	 */
 	@Override
-	public int getServiceCount(int nodeid, String catLabel) {
-		Criteria criteria = createServiceCriteriaForNodeInCategory(nodeid, getCategories().get(catLabel));
+	public int getServiceCount(int nodeid, RTCCategory category) {
+		Criteria criteria = createServiceCriteriaForNodeInCategory(nodeid, category);
 		return m_monitoredServiceDao.countMatching(criteria);
 	}
 
@@ -161,9 +161,9 @@ public class AvailabilityServiceJdbcImpl implements AvailabilityService {
 	 *         passed category
 	 */
 	@Override
-	public int getServiceDownCount(int nodeid, String catLabel) {
+	public int getServiceDownCount(int nodeid, RTCCategory category) {
 		int retval = 0;
-		Criteria criteria = createServiceCriteriaForNodeInCategory(nodeid, getCategories().get(catLabel));
+		Criteria criteria = createServiceCriteriaForNodeInCategory(nodeid, category);
 		for (OnmsMonitoredService service : m_monitoredServiceDao.findMatching(criteria)) {
 			if (m_outageDao.currentOutageForService(service) != null) {
 				retval++;
