@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.rtc;
 
+import java.util.Collection;
 import java.util.Map;
 
 import org.opennms.netmgt.rtc.datablock.RTCCategory;
@@ -70,7 +71,7 @@ public interface AvailabilityService {
      * @return the value(uptime) for the node in the last 'rollingWindow'
      *         starting at current time in the context of the passed category
      */
-    double getValue(long nodeid, String catLabel, long curTime, long rollingWindow);
+    double getValue(int nodeid, String catLabel, long curTime, long rollingWindow);
 
     /**
      * Get the service count for the nodeid in the context of the passed
@@ -83,7 +84,7 @@ public interface AvailabilityService {
      * @return the service count for the nodeid in the context of the passed
      *         category
      */
-    int getServiceCount(long nodeid, String catLabel);
+    int getServiceCount(int nodeid, String catLabel);
 
     /**
      * Get the service down count for the nodeid in the context of the passed
@@ -96,7 +97,7 @@ public interface AvailabilityService {
      * @return the service down count for the nodeid in the context of the
      *         passed category
      */
-    int getServiceDownCount(long nodeid, String catLabel);
+    int getServiceDownCount(int nodeid, String catLabel);
 
     /**
      * <p>getCategories</p>
@@ -104,4 +105,9 @@ public interface AvailabilityService {
      * @return the categories
      */
     Map<String, RTCCategory> getCategories();
+
+    /**
+     * 
+     */
+    Collection<Integer> getNodes(RTCCategory rtcCat);
 }

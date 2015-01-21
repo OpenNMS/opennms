@@ -62,7 +62,7 @@ final class DataUpdater implements Runnable {
     /**
      * If it is a nodeGainedService, create a new entry in the map
      */
-    private void handleNodeGainedService(long nodeid, InetAddress ip, String svcName) {
+    private void handleNodeGainedService(int nodeid, InetAddress ip, String svcName) {
 
         if (nodeid == -1 || ip == null || svcName == null) {
             LOG.warn("{} ignored - info incomplete - nodeid/ip/svc: {}/{}/{}", m_event.getUei(), nodeid, InetAddressUtils.str(ip), svcName);
@@ -78,7 +78,7 @@ final class DataUpdater implements Runnable {
     /**
      * If it is a nodeLostService, update downtime on the rtcnode
      */
-    private void handleNodeLostService(long nodeid, InetAddress ip, String svcName, long eventTime) {
+    private void handleNodeLostService(int nodeid, InetAddress ip, String svcName, long eventTime) {
 
         if (nodeid == -1 || ip == null || svcName == null || eventTime == -1) {
             LOG.warn("{} ignored - info incomplete - nodeid/ip/svc/eventtime: {}/{}/{}/{}", m_event.getUei(), nodeid, InetAddressUtils.str(ip), svcName, eventTime);
@@ -94,7 +94,7 @@ final class DataUpdater implements Runnable {
     /**
      * If it is an interfaceDown, update downtime on the appropriate rtcnodes
      */
-    private void handleInterfaceDown(long nodeid, InetAddress ip, long eventTime) {
+    private void handleInterfaceDown(int nodeid, InetAddress ip, long eventTime) {
 
         if (nodeid == -1 || ip == null || eventTime == -1) {
             LOG.warn("{} ignored - info incomplete - nodeid/ip/eventtime: {}/{}/{}", m_event.getUei(), nodeid, InetAddressUtils.str(ip), eventTime);
@@ -110,7 +110,7 @@ final class DataUpdater implements Runnable {
     /**
      * If it is an nodeDown, update downtime on the appropriate rtcnodes
      */
-    private void handleNodeDown(long nodeid, long eventTime) {
+    private void handleNodeDown(int nodeid, long eventTime) {
 
         if (nodeid == -1 || eventTime == -1) {
             LOG.warn("{} ignored - info incomplete - nodeid/eventtime: {}/{}", m_event.getUei(), nodeid, eventTime);
@@ -126,7 +126,7 @@ final class DataUpdater implements Runnable {
     /**
      * If it is a nodeUp, update regained time on the appropriate rtcnodes
      */
-    private void handleNodeUp(long nodeid, long eventTime) {
+    private void handleNodeUp(int nodeid, long eventTime) {
 
         if (nodeid == -1 || eventTime == -1) {
             LOG.warn("{} ignored - info incomplete - nodeid/eventtime: {}/{}", m_event.getUei(), nodeid, eventTime);
@@ -142,7 +142,7 @@ final class DataUpdater implements Runnable {
     /**
      * If it is an interfaceUp, update regained time on the appropriate rtcnodes
      */
-    private void handleInterfaceUp(long nodeid, InetAddress ip, long eventTime) {
+    private void handleInterfaceUp(int nodeid, InetAddress ip, long eventTime) {
 
         if (nodeid == -1 || ip == null || eventTime == -1) {
             LOG.warn("{} ignored - info incomplete - nodeid/ip/eventtime: {}/{}/{}", m_event.getUei(), nodeid, InetAddressUtils.str(ip), eventTime);
@@ -158,7 +158,7 @@ final class DataUpdater implements Runnable {
     /**
      * If it is a nodeRegainedService, update downtime on the rtcnode
      */
-    private void handleNodeRegainedService(long nodeid, InetAddress ip, String svcName, long eventTime) {
+    private void handleNodeRegainedService(int nodeid, InetAddress ip, String svcName, long eventTime) {
 
         if (nodeid == -1 || ip == null || svcName == null || eventTime == -1) {
             LOG.warn("{} ignored - info incomplete - nodeid/ip/svc/eventtime: {}/{}/{}/{}", m_event.getUei(), nodeid, InetAddressUtils.str(ip), svcName, eventTime);
@@ -174,7 +174,7 @@ final class DataUpdater implements Runnable {
     /**
      * If it is a serviceDeleted, remove corresponding RTC nodes from the map
      */
-    private void handleServiceDeleted(long nodeid, InetAddress ip, String svcName) {
+    private void handleServiceDeleted(int nodeid, InetAddress ip, String svcName) {
 
         if (nodeid == -1 || ip == null || svcName == null) {
             LOG.warn("{} ignored - info incomplete - nodeid/ip/svc: {}/{}/{}", m_event.getUei(), nodeid, InetAddressUtils.str(ip), svcName);
@@ -199,10 +199,10 @@ final class DataUpdater implements Runnable {
         }
 
         // old node ID
-        long oldNodeId = -1;
+        int oldNodeId = -1;
 
         // new node ID
-        long newNodeId = -1;
+        int newNodeId = -1;
 
         String parmName = null;
         Value parmValue = null;
@@ -220,7 +220,7 @@ final class DataUpdater implements Runnable {
             if (parmName.equals(EventConstants.PARM_OLD_NODEID)) {
                 String temp = parmContent;
                 try {
-                    oldNodeId = Long.valueOf(temp).longValue();
+                    oldNodeId = Integer.parseInt(temp);
                 } catch (NumberFormatException nfe) {
                     LOG.warn("Parameter {} cannot be non-numeric", EventConstants.PARM_OLD_NODEID, nfe);
                     oldNodeId = -1;
@@ -231,7 +231,7 @@ final class DataUpdater implements Runnable {
             else if (parmName.equals(EventConstants.PARM_NEW_NODEID)) {
                 String temp = parmContent;
                 try {
-                    newNodeId = Long.valueOf(temp).longValue();
+                    newNodeId = Integer.parseInt(temp);
                 } catch (NumberFormatException nfe) {
                     LOG.warn("Parameter {} cannot be non-numeric", EventConstants.PARM_NEW_NODEID, nfe);
                     newNodeId = -1;
@@ -254,7 +254,7 @@ final class DataUpdater implements Runnable {
     /**
      * If it is a assetInfoChanged method, update RTC
      */
-    private void handleAssetInfoChangedEvent(long nodeid) {
+    private void handleAssetInfoChangedEvent(int nodeid) {
 
         m_dataManager.assetInfoChanged(nodeid);
 
@@ -267,7 +267,7 @@ final class DataUpdater implements Runnable {
      * update RTC since RTC categories may include surveillance
      * categories via "categoryName" or "catinc*" rules
      */
-    private void handleNodeCategoryMembershipChanged(long nodeid) {
+    private void handleNodeCategoryMembershipChanged(int nodeid) {
 
         m_dataManager.nodeCategoryMembershipChanged(nodeid);
 
@@ -295,9 +295,9 @@ final class DataUpdater implements Runnable {
             return;
         }
 
-        long nodeid = -1;
+        int nodeid = -1;
         if (m_event.hasNodeid()) {
-            nodeid = m_event.getNodeid();
+            nodeid = m_event.getNodeid().intValue();
         }
 
         InetAddress ip = m_event.getInterfaceAddress();

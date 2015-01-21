@@ -58,6 +58,22 @@ public abstract class RTCUtils {
 	private static final Logger LOG = LoggerFactory.getLogger(RTCUtils.class);
 
 	/**
+	 * Calculate the uptime percentage for an outage window.
+	 * 
+	 * @param totalOutageTime Total outage time over the window in milliseconds
+	 * @param outageWindow Length of the outage window in milliseconds
+	 * @param numberOfServices Number of services that were managed over this time period
+	 * @return An outage percentage between 0.0 and 100.0.
+	 */
+	public static double getOutagePercentage(double totalOutageTime, long outageWindow, long numberOfServices) {
+		if (numberOfServices > 0) {
+			return 100.0 * (1.0 - (totalOutageTime / ((double)outageWindow * (double)numberOfServices)));
+		} else {
+			return 100.0;
+		}
+	}
+
+	/**
 	 * Creates the categories map. Reads the categories from the categories.xml
 	 * and creates the 'RTCCategory's map
 	 */
@@ -138,7 +154,7 @@ public abstract class RTCUtils {
 			Connection conn = DataSourceFactory.getInstance().getConnection();
 			d.watch(conn);
 
-			PreparedStatement stmt = conn.prepareStatement("select getOutageTimeInWindow(?, ?, ?, ?, ?) as avail from ifservices, ipinterface where ifservices.ipaddr = ipinterface.ipaddr and ifservices.nodeid = ipinterface.nodeid and ifservices.status='A' and ipinterface.ismanaged='M' and node.nodetype='A' and ifservices.nodeid=? and ifservices.ipaddr=? and serviceid=?");
+			PreparedStatement stmt = conn.prepareStatement("select getOutageTimeInWindow(?, ?, ?, ?, ?) as avail from ifservices, ipinterface, node where ifservices.ipaddr = ipinterface.ipaddr and ifservices.nodeid = ipinterface.nodeid and ifservices.status='A' and ipinterface.ismanaged='M' and ifservices.nodeid = node.nodeid and node.nodetype='A' and ifservices.nodeid=? and ifservices.ipaddr=? and serviceid=?");
 			d.watch(stmt);
 
 			stmt.setInt(1, nodeId);

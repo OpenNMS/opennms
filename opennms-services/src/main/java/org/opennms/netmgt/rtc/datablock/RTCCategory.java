@@ -53,7 +53,7 @@ public class RTCCategory extends Category {
     /**
      * The nodes list - list of node IDs
      */
-    private final List<Long> m_nodes = Collections.synchronizedList(new ArrayList<Long>());
+    private final List<Integer> m_nodes = Collections.synchronizedList(new ArrayList<Integer>());
 
     /**
      * The default constructor - initializes the values
@@ -79,7 +79,7 @@ public class RTCCategory extends Category {
      *            the node to add
      */
     public void addNode(RTCNode node) {
-        Long longnodeid = node.getNodeID();
+        Integer longnodeid = node.getNodeID();
 
         if (!m_nodes.contains(longnodeid))
             m_nodes.add(longnodeid);
@@ -91,11 +91,10 @@ public class RTCCategory extends Category {
      * @param nodeid
      *            the node ID to add
      */
-    public void addNode(long nodeid) {
-        Long longnodeid = Long.valueOf(nodeid);
-
-        if (!m_nodes.contains(longnodeid))
-            m_nodes.add(longnodeid);
+    public void addNode(int nodeid) {
+        if (!m_nodes.contains(nodeid)) {
+            m_nodes.add(nodeid);
+        }
     }
 
     /**
@@ -104,10 +103,8 @@ public class RTCCategory extends Category {
      * @param nodeid
      *            the node ID to delete
      */
-    public void deleteNode(long nodeid) {
-        Long longnodeid = Long.valueOf(nodeid);
-
-        m_nodes.remove(longnodeid);
+    public void deleteNode(int nodeid) {
+        m_nodes.remove(nodeid);
     }
 
     /**
@@ -152,7 +149,7 @@ public class RTCCategory extends Category {
      *
      * @return the list of node IDs in this category
      */
-    public List<Long> getNodes() {
+    public List<Integer> getNodes() {
         return m_nodes;
     }
 }

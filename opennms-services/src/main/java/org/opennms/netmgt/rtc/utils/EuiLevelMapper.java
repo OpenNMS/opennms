@@ -29,7 +29,6 @@
 package org.opennms.netmgt.rtc.utils;
 
 import java.util.Date;
-import java.util.Iterator;
 
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.rtc.AvailabilityService;
@@ -104,10 +103,7 @@ public class EuiLevelMapper extends Object {
             levelCat.setCatvalue(m_dataMgr.getValue(rtcCat.getLabel(), curTime, rWindow));
 
             // nodes in this category
-            Iterator<Long> nodeIter = rtcCat.getNodes().iterator();
-            while (nodeIter.hasNext()) {
-                Long rtcNodeid = nodeIter.next();
-                long nodeID = rtcNodeid.longValue();
+            for (int nodeID : m_dataMgr.getNodes(rtcCat)) {
 
                 Node levelNode = new Node();
                 levelNode.setNodeid(nodeID);

@@ -34,6 +34,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -108,7 +109,7 @@ public class DataManager implements AvailabilityService, InitializingBean {
 
 		@Override
 		public void processRow(ResultSet rs) throws SQLException {
-			RTCNodeKey key = new RTCNodeKey(rs.getLong("nodeid"), InetAddressUtils.addr(rs.getString("ipaddr")), rs.getString("servicename"));
+			RTCNodeKey key = new RTCNodeKey(rs.getInt("nodeid"), InetAddressUtils.addr(rs.getString("ipaddr")), rs.getString("servicename"));
 			processKey(key);
 			processOutage(key, rs.getTimestamp("ifLostService"), rs.getTimestamp("ifRegainedService"));
 		}
@@ -155,6 +156,7 @@ public class DataManager implements AvailabilityService, InitializingBean {
 		
 		private Set<Integer> catGetNodeIds(RTCCategory cat) {
 			Set<Integer> nodeIds = m_categoryNodeIdLists.get(cat.getLabel());
+			// TODO: Put an expiration on this value so that it can reload when categories change
 			if(nodeIds == null) {
 				nodeIds = RTCUtils.getNodeIdsForCategory(m_filterDao, cat);
 				m_categoryNodeIdLists.put(cat.getLabel(), nodeIds);
@@ -342,7 +344,7 @@ public class DataManager implements AvailabilityService, InitializingBean {
      * @param svcName
      *            the service name
      */
-    public synchronized void nodeGainedService(long nodeid, InetAddress ip, String svcName) {
+    public synchronized void nodeGainedService(int nodeid, InetAddress ip, String svcName) {
         //
         // check the 'status' flag for the service
         //
@@ -403,7 +405,7 @@ public class DataManager implements AvailabilityService, InitializingBean {
      * @param t
      *            the time at which service was lost
      */
-    public synchronized void nodeLostService(long nodeid, InetAddress ip, String svcName, long t) {
+    public synchronized void nodeLostService(int nodeid, InetAddress ip, String svcName, long t) {
         RTCNodeKey key = new RTCNodeKey(nodeid, ip, svcName);
         RTCNode rtcN = m_map.getRTCNode(key);
         if (rtcN == null) {
@@ -427,7 +429,7 @@ public class DataManager implements AvailabilityService, InitializingBean {
      * @param t
      *            the time at which service was lost
      */
-    public synchronized void interfaceDown(long nodeid, InetAddress ip, long t) {
+    public synchronized void interfaceDown(int nodeid, InetAddress ip, long t) {
         for (RTCNode rtcN : (List<RTCNode>) m_map.getRTCNodes(nodeid, ip)) {
             rtcN.nodeLostService(t);
         }
@@ -441,7 +443,7 @@ public class DataManager implements AvailabilityService, InitializingBean {
      * @param t
      *            the time at which service was lost
      */
-    public synchronized void nodeDown(long nodeid, long t) {
+    public synchronized void nodeDown(int nodeid, long t) {
     	for (RTCNode rtcN : (List<RTCNode>) m_map.getRTCNodes(nodeid)) {
             rtcN.nodeLostService(t);
         }
@@ -455,7 +457,7 @@ public class DataManager implements AvailabilityService, InitializingBean {
      * @param t
      *            the time at which service was regained
      */
-    public synchronized void nodeUp(long nodeid, long t) {
+    public synchronized void nodeUp(int nodeid, long t) {
     	for (RTCNode rtcN : (List<RTCNode>) m_map.getRTCNodes(nodeid)) {
             rtcN.nodeRegainedService(t);
         }
@@ -471,7 +473,7 @@ public class DataManager implements AvailabilityService, InitializingBean {
      * @param t
      *            the time at which service was regained
      */
-    public synchronized void interfaceUp(long nodeid, InetAddress ip, long t) {
+    public synchronized void interfaceUp(int nodeid, InetAddress ip, long t) {
         for (RTCNode rtcN : (List<RTCNode>) m_map.getRTCNodes(nodeid, ip)) {
             rtcN.nodeRegainedService(t);
         }
@@ -489,7 +491,7 @@ public class DataManager implements AvailabilityService, InitializingBean {
      * @param t
      *            the time at which service was regained
      */
-    public synchronized void nodeRegainedService(long nodeid, InetAddress ip, String svcName, long t) {
+    public synchronized void nodeRegainedService(int nodeid, InetAddress ip, String svcName, long t) {
         RTCNodeKey key = new RTCNodeKey(nodeid, ip, svcName);
         RTCNode rtcN = m_map.getRTCNode(key);
         if (rtcN == null) {
@@ -512,7 +514,7 @@ public class DataManager implements AvailabilityService, InitializingBean {
      * @param svcName
      *            the service that was deleted
      */
-    public synchronized void serviceDeleted(long nodeid, InetAddress ip, String svcName) {
+    public synchronized void serviceDeleted(int nodeid, InetAddress ip, String svcName) {
         // create lookup key
         RTCNodeKey key = new RTCNodeKey(nodeid, ip, svcName);
 
@@ -536,7 +538,7 @@ public class DataManager implements AvailabilityService, InitializingBean {
             RTCCategory cat = (RTCCategory) m_categories.get(catlabel);
 
             // get nodes in this category
-            List<Long> catNodes = cat.getNodes();
+            List<Integer> catNodes = cat.getNodes();
 
             // check if the category contains this node
             Long tmpNodeid = Long.valueOf(rtcN.getNodeID());
@@ -564,7 +566,7 @@ public class DataManager implements AvailabilityService, InitializingBean {
      *
      * @param nodeid a long.
      */
-    public synchronized void assetInfoChanged(long nodeid) {
+    public synchronized void assetInfoChanged(int nodeid) {
         try {
         	rtcNodeRescan(nodeid);
         } catch (FilterParseException ex) {
@@ -586,7 +588,7 @@ public class DataManager implements AvailabilityService, InitializingBean {
      *
      * @param nodeid a long.
      */
-    public synchronized void nodeCategoryMembershipChanged(long nodeid) {
+    public synchronized void nodeCategoryMembershipChanged(int nodeid) {
         try {
         	rtcNodeRescan(nodeid);
         } catch (FilterParseException ex) {
@@ -616,7 +618,7 @@ public class DataManager implements AvailabilityService, InitializingBean {
      *             if the database read or filtering the data against the
      *             category rule fails for some reason
      */
-    public synchronized void rtcNodeRescan(long nodeid) throws SQLException, FilterParseException, RTCException {
+    public synchronized void rtcNodeRescan(int nodeid) throws SQLException, FilterParseException, RTCException {
     	
     	for (Iterator<RTCCategory> it = m_categories.values().iterator(); it.hasNext();) {
 			RTCCategory cat = it.next();
@@ -649,7 +651,7 @@ public class DataManager implements AvailabilityService, InitializingBean {
      * @param newNodeId
      *            the node that the IP now belongs to
      */
-    public synchronized void interfaceReparented(InetAddress ip, long oldNodeId, long newNodeId) {
+    public synchronized void interfaceReparented(InetAddress ip, int oldNodeId, int newNodeId) {
         // get all RTCNodes with the IP/old node ID
     	List<RTCNode> nodesList = m_map.getRTCNodes(oldNodeId, ip);
         ListIterator<RTCNode> listIter = new LinkedList<RTCNode>(nodesList).listIterator();
@@ -692,6 +694,7 @@ public class DataManager implements AvailabilityService, InitializingBean {
      * @return the value(uptime) for the category in the last 'rollingWindow'
      *         starting at current time
      */
+    @Override
     public synchronized double getValue(String catLabel, long curTime, long rollingWindow) {
         return m_map.getValue(catLabel, curTime, rollingWindow);
     }
@@ -711,7 +714,8 @@ public class DataManager implements AvailabilityService, InitializingBean {
      * @return the value(uptime) for the node in the last 'rollingWindow'
      *         starting at current time in the context of the passed category
      */
-    public synchronized double getValue(long nodeid, String catLabel, long curTime, long rollingWindow) {
+    @Override
+    public synchronized double getValue(int nodeid, String catLabel, long curTime, long rollingWindow) {
         return m_map.getValue(nodeid, catLabel, curTime, rollingWindow);
     }
 
@@ -726,7 +730,8 @@ public class DataManager implements AvailabilityService, InitializingBean {
      * @return the service count for the nodeid in the context of the passed
      *         category
      */
-    public synchronized int getServiceCount(long nodeid, String catLabel) {
+    @Override
+    public synchronized int getServiceCount(int nodeid, String catLabel) {
         return m_map.getServiceCount(nodeid, catLabel);
     }
 
@@ -741,7 +746,8 @@ public class DataManager implements AvailabilityService, InitializingBean {
      * @return the service down count for the nodeid in the context of the
      *         passed category
      */
-    public synchronized int getServiceDownCount(long nodeid, String catLabel) {
+    @Override
+    public synchronized int getServiceDownCount(int nodeid, String catLabel) {
         return m_map.getServiceDownCount(nodeid, catLabel);
     }
 
@@ -750,7 +756,13 @@ public class DataManager implements AvailabilityService, InitializingBean {
      *
      * @return the categories
      */
+    @Override
     public synchronized Map<String, RTCCategory> getCategories() {
         return m_categories;
+    }
+
+    @Override
+    public Collection<Integer> getNodes(RTCCategory category) {
+        return category.getNodes();
     }
 }

@@ -59,7 +59,7 @@ public class RTCNode {
     /**
      * The node ID.
      */
-    private long m_nodeID;
+    private int m_nodeID;
 
     /**
      * The ip address of the interface of the node.
@@ -100,7 +100,7 @@ public class RTCNode {
      * @param svcName
      *            the service
      */
-    public RTCNode(long nodeid, InetAddress inetAddress, String svcName, long rollingWindow) {
+    public RTCNode(int nodeid, InetAddress inetAddress, String svcName, long rollingWindow) {
         m_nodeID = nodeid;
 
         m_ip = inetAddress;
@@ -116,7 +116,7 @@ public class RTCNode {
      * @param id
      *            the node ID
      */
-    public void setNodeID(long id) {
+    public void setNodeID(int id) {
         m_nodeID = id;
     }
 
@@ -215,7 +215,7 @@ public class RTCNode {
      *
      * @return the node ID
      */
-    public long getNodeID() {
+    public Integer getNodeID() {
         return m_nodeID;
     }
 
