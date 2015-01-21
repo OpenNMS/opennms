@@ -535,8 +535,18 @@ $header-background-image: url("../images/headerbg.png") !default;
 	border-top-left-radius: 0;
 	border-top-right-radius: 0;
 	background-image: url(../images/headingbg.png);
-	background-repeat: repeat-x;
-	background-position: center center;
+
+    background: $color_header_no_gradient; /* Old browsers */
+    background: -moz-linear-gradient(top,  $color_header_stop_top 0%, $color_header_stop_middle_top 50%, $color_header_stop_bottom_top 51%, $color_header_stop_bottom 100%); /* FF3.6+ */
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,$color_header_stop_top), color-stop(50%,$color_header_stop_middle_top), color-stop(51%,$color_header_stop_bottom), color-stop(100%,#3c6f02)); /* Chrome,Safari4+ */
+    background: -webkit-linear-gradient(top,  $color_header_stop_top 0%,$color_header_stop_middle_top 50%, $color_header_stop_bottom_top 51%,$color_header_stop_bottom 100%); /* Chrome10+,Safari5.1+ */
+    background: -o-linear-gradient(top,  $color_header_stop_top 0%,$color_header_stop_middle_top 50%,$color_header_stop_bottom_top 51%,$color_header_stop_bottom 100%); /* Opera 11.10+ */
+    background: -ms-linear-gradient(top,  $color_header_stop_top 0%,$color_header_stop_middle_top 50%,$color_header_stop_bottom_top 51%,$color_header_stop_bottom 100%); /* IE10+ */
+    background: linear-gradient(to bottom,  $color_header_stop_top 0%, $color_header_stop_middle_top 50%,$color_header_stop_bottom_top 51%,$color_header_stop_bottom 100%); /* W3C */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#6e9f30', endColorstr='#3c6f02',GradientType=0 ); /* IE6-9 */
+
+//	background-repeat: repeat-x;
+//	background-position: center center;
 	padding: $panel-heading-padding;
 }
 
