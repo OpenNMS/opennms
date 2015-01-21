@@ -54,9 +54,9 @@ public class View {
         return m_columns;
     }
 
-    @XmlAttribute(name = "name", required = true)
     private java.lang.String m_name = "untitled";
 
+    @XmlAttribute(name = "name", required = true)
     public String getName() {
         return m_name;
     }
@@ -65,9 +65,9 @@ public class View {
         this.m_name = name;
     }
 
-    @XmlAttribute(name = "refresh-seconds", required = false)
     private java.lang.Integer m_refreshSeconds = 300;
 
+    @XmlAttribute(name = "refresh-seconds", required = false)
     public int getRefreshSeconds() {
         return m_refreshSeconds;
     }

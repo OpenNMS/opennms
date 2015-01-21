@@ -28,82 +28,188 @@ package org.opennms.features.vaadin.surveillanceviews.ui;
  *     http://www.opennms.com/
  *******************************************************************************/
 
+import com.vaadin.data.Property;
+import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.FormLayout;
+import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
 import org.opennms.features.vaadin.surveillanceviews.config.SurveillanceViewProvider;
+import org.opennms.features.vaadin.surveillanceviews.model.ColumnDef;
+import org.opennms.features.vaadin.surveillanceviews.model.RowDef;
 import org.opennms.features.vaadin.surveillanceviews.model.SurveillanceViewConfiguration;
 import org.opennms.features.vaadin.surveillanceviews.model.View;
 
-import java.util.List;
-
 public class SurveillanceViewsConfigList extends VerticalLayout {
-    private VerticalLayout m_verticalLayout = new VerticalLayout();
+
+    /**
+     * The {@link Table} this component uses to display {@link View} configurations
+     */
+    private Table m_table;
+
+    /**
+     * The {@link com.vaadin.data.util.BeanItemContainer} this component uses for {@link View} configurations
+     */
+    BeanItemContainer<View> m_beanItemContainer;
+
     private SurveillanceViewConfiguration m_surveillanceViewConfiguration = SurveillanceViewProvider.getInstance().getSurveillanceViewConfiguration();
 
     public SurveillanceViewsConfigList() {
 
-        HorizontalLayout upperHorizontalLayout = new HorizontalLayout();
-        Label label = new Label("Surveillance views configurations");
+        /**
+         * Setting the member fields
+         */
+        m_beanItemContainer = SurveillanceViewProvider.getInstance().getBeanContainer();
+
+        /**
+         * Setting up the layout component
+         */
+        setSizeFull();
+        setMargin(true);
+        setSpacing(true);
+
+        Label label = new Label("Surveillance View Configurations");
         label.addStyleName("configuration-title");
-        upperHorizontalLayout.addComponent(label);
 
-        upperHorizontalLayout.addComponent(label);
-        Button helpButton = new Button("Help");
-        helpButton.setDescription("Display help and usage");
+        Button button = new Button("Help");
+        button.setStyleName("small");
+        button.setDescription("Display help and usage");
 
-        helpButton.setStyleName("small");
+        //button.addClickListener(new HelpClickListener(this, m_wallboardConfigView.getDashletSelector()));
 
-/*
-        helpButton.addClickListener();
-*/
-        upperHorizontalLayout.addComponent(helpButton);
-        upperHorizontalLayout.setWidth(100, Unit.PERCENTAGE);
-
-        upperHorizontalLayout.setComponentAlignment(label, Alignment.MIDDLE_LEFT);
-        upperHorizontalLayout.setComponentAlignment(helpButton, Alignment.MIDDLE_RIGHT);
-
-        addComponent(upperHorizontalLayout);
-
-        HorizontalLayout horizontalLayout = new HorizontalLayout();
-
-        final Button addButton = new Button("Add surveillance view");
-
+        Button addButton = new Button("Add");
         addButton.setStyleName("small");
-        addButton.setDescription("Add a new dashlet instance");
+        addButton.setDescription("Add surveillance view configuration");
 
         addButton.addClickListener(new Button.ClickListener() {
+            @Override
             public void buttonClick(Button.ClickEvent clickEvent) {
-                View view = new View();
+                String newName;
+                int i = 0;
 
-                if (!m_surveillanceViewConfiguration.getViews().contains(view)) {
-                    m_surveillanceViewConfiguration.getViews().add(view);
-
-                    SurveillanceViewProvider.getInstance().save();
+                do {
+                    i++;
+                    newName = "Untitled #" + i;
                 }
+                while (SurveillanceViewProvider.getInstance().containsView(newName));
 
-                m_verticalLayout.addComponent(new SurveillanceViewConfigEntry(view));
+                View view = new View();
+                view.setName(newName);
+
+                view.getColumns().add(new ColumnDef());
+                view.getRows().add(new RowDef());
+
+                m_surveillanceViewConfiguration.getViews().add(view);
+
+                SurveillanceViewProvider.getInstance().save();
+
+                m_beanItemContainer.addItem(view);
+
+                //m_beanItemContainer = SurveillanceViewProvider.getInstance().getBeanContainer();
+
+                getUI().addWindow(new SurveillanceViewConfigurationWindow(view));
+
+                m_table.refreshRowCache();
             }
         });
 
-        List<View> views = m_surveillanceViewConfiguration.getViews();
+        HorizontalLayout horizontalLayout = new HorizontalLayout();
+        horizontalLayout.addComponent(label);
+        horizontalLayout.addComponent(button);
+        horizontalLayout.setWidth(100, Unit.PERCENTAGE);
 
-        for (View view : views) {
-            m_verticalLayout.addComponent(new SurveillanceViewConfigEntry(view));
-        }
-
-/**
- * Adding the layout components to this component
- */
-        FormLayout formLayout = new FormLayout();
-        formLayout.addComponent(addButton);
-        horizontalLayout.addComponent(formLayout);
+        horizontalLayout.setComponentAlignment(label, Alignment.MIDDLE_LEFT);
+        horizontalLayout.setComponentAlignment(button, Alignment.MIDDLE_RIGHT);
 
         addComponent(horizontalLayout);
-        addComponent(m_verticalLayout);
+        addComponent(addButton);
 
+        /**
+         * Adding the table with the required {@link com.vaadin.ui.Table.ColumnGenerator} objects
+         */
+        m_table = new Table();
+        m_table.setContainerDataSource(m_beanItemContainer);
+        m_table.setSizeFull();
+
+        m_table.addGeneratedColumn("Edit", new Table.ColumnGenerator() {
+            public Object generateCell(Table source, final Object itemId, Object columnId) {
+                Button button = new Button("Edit");
+                button.setDescription("Edit this Ops Board configuration");
+                button.setStyleName("small");
+                button.addClickListener(new Button.ClickListener() {
+                    public void buttonClick(Button.ClickEvent clickEvent) {
+                        getUI().addWindow(new SurveillanceViewConfigurationWindow(m_beanItemContainer.getItem(itemId).getBean()));
+                    }
+                });
+                return button;
+            }
+        });
+
+        m_table.addGeneratedColumn("Remove", new Table.ColumnGenerator() {
+            public Object generateCell(Table source, final Object itemId, Object columnId) {
+                Button button = new Button("Remove");
+                button.setDescription("Delete this Ops Board configuration");
+                button.setStyleName("small");
+                button.addClickListener(new Button.ClickListener() {
+                    public void buttonClick(Button.ClickEvent clickEvent) {
+                        SurveillanceViewProvider.getInstance().removeView((View) itemId);
+                        m_beanItemContainer.removeItem(itemId);
+                    }
+                });
+                return button;
+            }
+        });
+
+        m_table.addGeneratedColumn("Preview", new Table.ColumnGenerator() {
+            public Object generateCell(Table source, final Object itemId, Object columnId) {
+                Button button = new Button("Preview");
+                button.setDescription("Preview this Ops Board configuration");
+                button.setStyleName("small");
+                //button.addClickListener(new PreviewClickListener(WallboardOverview.this, (Wallboard) itemId));
+                return button;
+            }
+        });
+
+        m_table.addGeneratedColumn("Default", new Table.ColumnGenerator() {
+            public Object generateCell(Table source, final Object itemId, Object columnId) {
+                CheckBox checkBox = new CheckBox();
+                checkBox.setImmediate(true);
+                checkBox.setDescription("Make this Ops Board configuration the default");
+
+                final View view = m_beanItemContainer.getItem(itemId).getBean();
+
+                checkBox.setValue(m_surveillanceViewConfiguration.getDefaultView().equals(view.getName()));
+
+                checkBox.addValueChangeListener(new Property.ValueChangeListener() {
+                    @Override
+                    public void valueChange(Property.ValueChangeEvent valueChangeEvent) {
+                        boolean newValue = ((Boolean) valueChangeEvent.getProperty().getValue());
+
+
+                        if (newValue) {
+                            m_surveillanceViewConfiguration.setDefaultView(view.getName());
+                        }
+
+                        m_table.refreshRowCache();
+
+                        SurveillanceViewProvider.getInstance().save();
+                    }
+                });
+                return checkBox;
+            }
+        });
+
+        m_table.setVisibleColumns(new Object[]{"name", "Edit", "Remove", "Preview", "Default"});
+        m_table.setColumnHeader("name", "Name");
+
+        /**
+         * Adding the table
+         */
+        addComponent(m_table);
+
+        setExpandRatio(m_table, 1.0f);
     }
 }

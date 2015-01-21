@@ -45,12 +45,29 @@ public class SurveillanceViewConfiguration implements java.io.Serializable {
     @XmlAttribute(name = "default-view", required = false)
     private java.lang.String m_defaultView = "default";
 
-    private List<View> m_views = new LinkedList<View>();
+    public String getDefaultView() {
+        return m_defaultView;
+    }
+
+    public void setDefaultView(String defaultView) {
+        this.m_defaultView = defaultView;
+    }
 
     @XmlElement(name = "view")
     @XmlElementWrapper(name = "views")
+    private List<View> m_views = new LinkedList<View>();
+
     public List<View> getViews() {
         return m_views;
+    }
+
+    public boolean containsView(String name) {
+        for (View view : getViews()) {
+            if (name.equals(view.getName())) {
+                return true;
+            }
+        }
+        return false;
     }
 
 }
