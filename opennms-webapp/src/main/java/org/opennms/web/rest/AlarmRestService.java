@@ -51,7 +51,6 @@ import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsAlarmCollection;
 import org.opennms.netmgt.model.alarm.AlarmSummaryCollection;
 import org.opennms.web.api.Authentication;
-import org.opennms.netmgt.model.acknowledgments.AckService;
 import org.opennms.netmgt.model.alarm.AlarmSummaryCollection;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;

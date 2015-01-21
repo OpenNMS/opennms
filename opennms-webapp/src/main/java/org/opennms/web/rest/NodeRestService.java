@@ -118,6 +118,7 @@ public class NodeRestService extends OnmsRestService {
             final MultivaluedMap<String, String> params = m_uriInfo.getQueryParameters();
             final String type = params.getFirst("type");
 
+            final CriteriaBuilder builder = getCriteriaBuilder(params);
             Criteria crit = null;
 
             if (params.size() == 1 && params.getFirst("nodeId") != null && params.getFirst("nodeId").contains(",")) {
