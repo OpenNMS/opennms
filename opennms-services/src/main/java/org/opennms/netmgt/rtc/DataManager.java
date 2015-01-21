@@ -37,7 +37,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
@@ -541,8 +540,7 @@ public class DataManager implements AvailabilityService, InitializingBean {
             List<Integer> catNodes = cat.getNodes();
 
             // check if the category contains this node
-            Long tmpNodeid = Long.valueOf(rtcN.getNodeID());
-            int nIndex = catNodes.indexOf(tmpNodeid);
+            int nIndex = catNodes.indexOf(rtcN.getNodeID());
             if (nIndex != -1) {
                 // remove from the category if it is the only service left.
                 if (m_map.getServiceCount(nodeid, catlabel) == 1) {
@@ -620,8 +618,7 @@ public class DataManager implements AvailabilityService, InitializingBean {
      */
     public synchronized void rtcNodeRescan(int nodeid) throws SQLException, FilterParseException, RTCException {
     	
-    	for (Iterator<RTCCategory> it = m_categories.values().iterator(); it.hasNext();) {
-			RTCCategory cat = it.next();
+    	for (RTCCategory cat : m_categories.values()) {
 			cat.deleteNode(nodeid);
 		}
     	
@@ -653,10 +650,7 @@ public class DataManager implements AvailabilityService, InitializingBean {
      */
     public synchronized void interfaceReparented(InetAddress ip, int oldNodeId, int newNodeId) {
         // get all RTCNodes with the IP/old node ID
-    	List<RTCNode> nodesList = m_map.getRTCNodes(oldNodeId, ip);
-        ListIterator<RTCNode> listIter = new LinkedList<RTCNode>(nodesList).listIterator();
-        while (listIter.hasNext()) {
-            RTCNode rtcN = listIter.next();
+        for (RTCNode rtcN : m_map.getRTCNodes(oldNodeId, ip)) {
 
             // remove the node with the old node id from the map
             m_map.delete(rtcN);
@@ -669,10 +663,7 @@ public class DataManager implements AvailabilityService, InitializingBean {
 
             // remove old node ID from the categories it belonged to
             // and the new node ID
-            Iterator<String> catIter = rtcN.getCategories().listIterator();
-            while (catIter.hasNext()) {
-                String catlabel = catIter.next();
-
+            for (String catlabel : rtcN.getCategories()) {
                 RTCCategory rtcCat = m_categories.get(catlabel);
                 rtcCat.deleteNode(oldNodeId);
                 rtcCat.addNode(newNodeId);

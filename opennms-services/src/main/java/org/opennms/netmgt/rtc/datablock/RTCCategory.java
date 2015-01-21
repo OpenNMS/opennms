@@ -29,6 +29,7 @@
 package org.opennms.netmgt.rtc.datablock;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
@@ -105,6 +106,20 @@ public class RTCCategory extends Category {
      */
     public void deleteNode(int nodeid) {
         m_nodes.remove(nodeid);
+    }
+
+    /**
+     * Delete all nodes in this category
+     */
+    public void clearNodes() {
+        m_nodes.clear();
+    }
+
+    /**
+     * Delete all nodes in this category
+     */
+    public void addAllNodes(Collection<Integer> nodes) {
+        m_nodes.addAll(nodes);
     }
 
     /**

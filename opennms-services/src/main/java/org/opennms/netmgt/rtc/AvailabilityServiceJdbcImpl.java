@@ -71,7 +71,10 @@ public class AvailabilityServiceJdbcImpl implements AvailabilityService {
 
 	@Override
 	public Collection<Integer> getNodes(RTCCategory category) {
-		return RTCUtils.getNodeIdsForCategory(m_filterDao,  category);
+		// Refresh the list of nodes contained inside the RTCCategory
+		category.clearNodes();
+		category.addAllNodes(RTCUtils.getNodeIdsForCategory(m_filterDao,  category));
+		return category.getNodes();
 	}
 
 	/**
@@ -207,7 +210,11 @@ public class AvailabilityServiceJdbcImpl implements AvailabilityService {
 		.alias("ipInterface.node", "node")
 		.eq("node.id", nodeId); // Add an extra restriction on the node ID
 
-		Set<Integer> nodes = RTCUtils.getNodeIdsForCategory(m_filterDao, category);
+		/*
+		 * NOTE: This assumes that the category contains the current list of nodes.
+		 * This value is added as a side-effect of calling {@link #getNodes(RTCCategory)}.
+		 */
+		Collection<Integer> nodes = category.getNodes();
 		if (nodes != null && nodes.size() > 0) {
 			builder.in("node.id", nodes);
 		}

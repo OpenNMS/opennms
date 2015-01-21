@@ -17,12 +17,12 @@
 
   <bean name="rtcConfigFactory" class="org.opennms.netmgt.config.RTCConfigFactory"/>
 
-  <!-- 
+  <!--
     LEGACY IMPLEMENTATION: This implementation uses dataManager to accumulate
     state based on events to calculate availability. It is attached to the event
     channel with the broadcastEventProcessor bean.
   -->
-
+  <!--
   <bean name="dataManager" class="org.opennms.netmgt.rtc.DataManager"/>
 
   <bean name="broadcastEventProcessor" class="org.opennms.netmgt.rtc.BroadcastEventProcessor"/>
@@ -31,8 +31,8 @@
     <property name="annotatedListener" ref="broadcastEventProcessor" />
     <property name="eventSubscriptionService" ref="eventSubscriptionService" />
   </bean>
-
-  <!-- 
+  -->
+  <!--
     END LEGACY IMPLEMENTATION
   -->
 
@@ -45,7 +45,7 @@
   </bean>
 
   <bean name="dataSender" class="org.opennms.netmgt.rtc.DataSender">
-    <!-- <constructor-arg ref="dataManager"/> -->
+    <!-- LEGACY IMPLEMENTATION: <constructor-arg ref="dataManager"/> -->
     <constructor-arg ref="availabilityServiceJdbcImpl"/>
     <constructor-arg ref="rtcConfigFactory"/>
   </bean>
