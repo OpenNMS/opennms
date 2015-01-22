@@ -42,6 +42,7 @@ import org.opennms.features.vaadin.surveillanceviews.model.ColumnDef;
 import org.opennms.features.vaadin.surveillanceviews.model.RowDef;
 import org.opennms.features.vaadin.surveillanceviews.model.SurveillanceViewConfiguration;
 import org.opennms.features.vaadin.surveillanceviews.model.View;
+import org.opennms.features.vaadin.surveillanceviews.service.SurveillanceViewService;
 
 public class SurveillanceViewsConfigList extends VerticalLayout {
 
@@ -55,9 +56,12 @@ public class SurveillanceViewsConfigList extends VerticalLayout {
      */
     BeanItemContainer<View> m_beanItemContainer;
 
+    private SurveillanceViewService m_surveillanceViewService;
+
     private SurveillanceViewConfiguration m_surveillanceViewConfiguration = SurveillanceViewProvider.getInstance().getSurveillanceViewConfiguration();
 
-    public SurveillanceViewsConfigList() {
+    public SurveillanceViewsConfigList(SurveillanceViewService surveillanceViewService) {
+        this.m_surveillanceViewService = surveillanceViewService;
 
         /**
          * Setting the member fields
@@ -110,7 +114,7 @@ public class SurveillanceViewsConfigList extends VerticalLayout {
 
                 //m_beanItemContainer = SurveillanceViewProvider.getInstance().getBeanContainer();
 
-                getUI().addWindow(new SurveillanceViewConfigurationWindow(view));
+                getUI().addWindow(new SurveillanceViewConfigurationWindow(m_surveillanceViewService, view));
 
                 m_table.refreshRowCache();
             }
@@ -141,7 +145,7 @@ public class SurveillanceViewsConfigList extends VerticalLayout {
                 button.setStyleName("small");
                 button.addClickListener(new Button.ClickListener() {
                     public void buttonClick(Button.ClickEvent clickEvent) {
-                        getUI().addWindow(new SurveillanceViewConfigurationWindow(m_beanItemContainer.getItem(itemId).getBean()));
+                        getUI().addWindow(new SurveillanceViewConfigurationWindow(m_surveillanceViewService, m_beanItemContainer.getItem(itemId).getBean()));
                     }
                 });
                 return button;

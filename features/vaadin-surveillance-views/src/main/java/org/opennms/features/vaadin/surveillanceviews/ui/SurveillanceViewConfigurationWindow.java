@@ -14,10 +14,14 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import org.opennms.features.vaadin.surveillanceviews.config.SurveillanceViewProvider;
 import org.opennms.features.vaadin.surveillanceviews.model.View;
+import org.opennms.features.vaadin.surveillanceviews.service.SurveillanceViewService;
+import org.opennms.netmgt.model.OnmsCategory;
+
+import java.util.List;
 
 public class SurveillanceViewConfigurationWindow extends Window {
 
-    public SurveillanceViewConfigurationWindow(final View view) {
+    public SurveillanceViewConfigurationWindow(final SurveillanceViewService surveillanceViewService, final View view) {
         /**
          * Setting the title
          */
@@ -74,8 +78,10 @@ public class SurveillanceViewConfigurationWindow extends Window {
          * Columns table
          */
         Table columnsTable = new Table();
+
         columnsTable.setSortEnabled(false);
-        columnsTable.addContainerProperty("Column categories", String.class, "Hallo");
+        columnsTable.addContainerProperty("name", String.class, "");
+        columnsTable.setColumnHeader("name", "Column categories");
         columnsTable.setColumnExpandRatio("Column categories", 1.0f);
         columnsTable.setWidth(25, Unit.PERCENTAGE);
 
@@ -109,10 +115,17 @@ public class SurveillanceViewConfigurationWindow extends Window {
          */
 
         Table rowsTable = new Table();
+
         rowsTable.setSortEnabled(false);
-        rowsTable.addContainerProperty("Row categories", String.class, "Hallo");
+        rowsTable.addContainerProperty("name", String.class, "");
+        rowsTable.setColumnHeader("name", "Row categories");
         rowsTable.setColumnExpandRatio("Row categories", 1.0f);
         rowsTable.setWidth(25, Unit.PERCENTAGE);
+
+        List<OnmsCategory> categories = surveillanceViewService.getOnmsCategories();
+        for (OnmsCategory onmsCategory : categories) {
+            rowsTable.addItem(new Object[]{onmsCategory.getName()}, onmsCategory.getId());
+        }
 
         /**
          * Adding the buttons...

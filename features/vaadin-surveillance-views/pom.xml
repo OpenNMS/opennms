@@ -215,6 +215,25 @@
             <scope>provided</scope>
         </dependency>
 
+        <dependency>
+            <groupId>org.opennms</groupId>
+            <artifactId>opennms-dao</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.opennms</groupId>
+            <artifactId>opennms-config</artifactId>
+            <scope>provided</scope>
+        </dependency>
+<!--
+        <dependency>
+            <groupId>org.opennms</groupId>
+            <artifactId>opennms-config-model</artifactId>
+            <scope>provided</scope>
+        </dependency>
+-->
+
     </dependencies>
 
 </project>

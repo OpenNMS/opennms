@@ -34,24 +34,25 @@ import com.vaadin.server.VaadinRequest;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
+import org.opennms.features.vaadin.surveillanceviews.service.SurveillanceViewService;
 
 @SuppressWarnings("serial")
 @Theme("dashboard")
 @Title("OpenNMS Surveillance Views")
 public class SurveillanceViewsConfigUI extends UI {
 
+    private SurveillanceViewService m_surveillanceViewService;
     /**
      * A {@link com.vaadin.ui.Notification} instance for displaying messages
      */
     private static Notification m_notification = new Notification("Message", Notification.Type.TRAY_NOTIFICATION);
-
 
     @Override
     protected void init(VaadinRequest request) {
         VerticalLayout rootLayout = new VerticalLayout();
         rootLayout.setSizeFull();
         rootLayout.setSpacing(true);
-        rootLayout.addComponent(new SurveillanceViewsConfigList());
+        rootLayout.addComponent(new SurveillanceViewsConfigList(m_surveillanceViewService));
         setContent(rootLayout);
     }
 
@@ -70,5 +71,9 @@ public class SurveillanceViewsConfigUI extends UI {
                 m_notification.show(getUI().getPage());
             }
         }
+    }
+
+    public void setSurveillanceViewService(SurveillanceViewService surveillanceViewService) {
+        this.m_surveillanceViewService = surveillanceViewService;
     }
 }
