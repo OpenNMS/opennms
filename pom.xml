@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms</groupId>
   <artifactId>opennms</artifactId>
-  <version>14.0.3</version>
+  <version>14.0.4-POWEREDBY-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>OpenNMS</name>
   <url>http://opennms.org/</url>
@@ -14,7 +14,6 @@
   <licenses>
     <license>
       <name>GNU General Public License</name>
-      <url>http://www.gnu.org/licenses/gpl.html</url>
       <comments>
         This Maven metadata is provided for informational purposes only. For specific licensing 
         questions, please contact: OpenNMS(R) Licensing (license@opennms.org)
@@ -1026,7 +1025,7 @@
     <install.version>${project.version}</install.version>
     <display.version>${install.version}</display.version>
     <opennms.home>${dist.dir}/${dist.name}</opennms.home>
-    <opennms.osgi.version>14.0.3</opennms.osgi.version>
+    <opennms.osgi.version>14.0.4.POWEREDBY-SNAPSHOT</opennms.osgi.version>
     <maven.metadata.legacy>true</maven.metadata.legacy>
     <root.dir>${project.basedir}</root.dir>
     <dist.dir>${root.dir}/target</dist.dir>
