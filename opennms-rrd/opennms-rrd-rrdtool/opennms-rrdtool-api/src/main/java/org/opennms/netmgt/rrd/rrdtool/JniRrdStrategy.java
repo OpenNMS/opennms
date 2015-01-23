@@ -305,7 +305,7 @@ public class JniRrdStrategy implements RrdStrategy<JniRrdStrategy.CreateCommand 
         //
         String[] dsValues = fetchStrings[2].split("\\s");
         Double dsValue = null;
-        if (dsValues[dsIndex].trim().equalsIgnoreCase("nan")) {
+        if (dsValues[dsIndex].trim().toLowerCase().endsWith("nan")) {
             dsValue = new Double(Double.NaN);
         } else {
             try {

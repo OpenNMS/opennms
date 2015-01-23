@@ -761,6 +761,7 @@
            <phase>process-resources</phase>
            <goals><goal>single</goal></goals>
            <configuration>
+             <finalName>${install.package.name}-${project.version}</finalName>
              <descriptor>src/assembly/source.xml</descriptor>
              <classifier>source</classifier>
              <skipAssembly>${build.skip.tarball}</skipAssembly>
