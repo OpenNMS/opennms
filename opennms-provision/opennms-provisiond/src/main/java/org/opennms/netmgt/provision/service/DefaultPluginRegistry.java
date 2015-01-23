@@ -131,13 +131,17 @@ public class DefaultPluginRegistry implements PluginRegistry, InitializingBean {
     /** {@inheritDoc} */
     @Override
     public <T> T getPluginInstance(Class<T> pluginClass, PluginConfig pluginConfig) {
+
+	System.out.println("getPluginInstance: looking for "+pluginClass+", "+pluginConfig);
+	
         T pluginInstance = beanWithNameOfType(pluginConfig.getPluginClass(), pluginClass);
+
         if (pluginInstance == null) {
+	    System.out.println("getPluginInstance: beanWithNameOfType failed");
             return null;
         }
         
         Map<String, String> parameters = new HashMap<String, String>(pluginConfig.getParameterMap());
-
         
         BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(pluginInstance);
         try {
@@ -150,13 +154,30 @@ public class DefaultPluginRegistry implements PluginRegistry, InitializingBean {
     }
 
     private <T> Map<String, T> beansOfType(Class<T> pluginClass) {
+        System.out.println("beansOfType: looking for class "+pluginClass+" with applicationContext "+m_applicationContext);
+		
         return BeanFactoryUtils.beansOfTypeIncludingAncestors(m_applicationContext, pluginClass, true, true);
     }
     
     private <T> T beanWithNameOfType(String beanName, Class<T> pluginClass) {
+
+        System.out.println("beanWithNameOfType: looking for "+beanName+" of class "+pluginClass);
+	
         Map<String, T> beans = beansOfType(pluginClass);
+
         T bean = beans.get(beanName);
-        if (bean != null) debug("Found bean {} with name {} of type {}", bean, beanName, pluginClass);
+
+	System.out.println("beanWithNameOfType: searching within "+beans);
+	
+        if (bean != null) {
+	    debug("Found bean {} with name {} of type {}", bean, beanName, pluginClass);
+            System.out.println("beanWithNameOfType found "+beanName+
+			       " of type "+pluginClass);
+	}
+	else {
+            System.out.println("beanWithNameOfType failed to find "+beanName+
+			       " of type "+pluginClass);
+	}
         return bean;
     }
     

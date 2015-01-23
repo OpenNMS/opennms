@@ -27,7 +27,9 @@
 package org.opennms.protocols.xmp.detector;
 
 import java.net.InetAddress;
+import java.util.Date;
 import org.opennms.netmgt.provision.support.BasicDetector;
+import org.opennms.netmgt.provision.support.AbstractDetector;
 import org.opennms.netmgt.provision.ServiceDetector;
 import org.opennms.netmgt.provision.SyncServiceDetector;
 import org.krupczak.xmp.*;
@@ -36,19 +38,26 @@ import org.opennms.netmgt.protocols.xmp.config.XmpConfigFactory;
 import org.opennms.netmgt.protocols.xmp.collector.XmpCollector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
+@Component
 /**
- * @author rdk
+ * XmpDetector class
+ * @author rdk <rdk@krupczak.org>
  * @version $Id: $
  *
  */
-
-public class XmpDetector implements SyncServiceDetector  
+@Scope("prototype")
+public class XmpDetector extends AbstractDetector implements SyncServiceDetector
 {
     // class variables
 
     private static final String DEFAULT_SERVICE_NAME = "XMP";
     private static final Logger LOG = LoggerFactory.getLogger(XmpDetector.class);
+    private static int XMP_DEFAULT_TIMEOUT = 3000;
+    private static int XMP_DEFAULT_RETRIES = 1;
+    
     // instance variables
     SocketOpts sockopts;
     XmpConfig protoConfig;
@@ -56,16 +65,24 @@ public class XmpDetector implements SyncServiceDetector
     int xmpTimeout;
     int xmpRetries;
     String xmpAuthenUser;
-    String xmpServiceName;
+    String xmpServiceName; 
     String m_ipMatch;
+    Date createTimeDate;
 
+    /* 
+     * @param serviceName a {@link java.lang.String} object
+     * @param port an int specifying tcp port number
+     */
+    
     public XmpDetector(String serviceName, int port)
     {
+	super(serviceName,port,XMP_DEFAULT_TIMEOUT,XMP_DEFAULT_RETRIES);
+	
         // set default config
         xmpPort = port;
         xmpAuthenUser = new String("xmpUser"); 
-        xmpTimeout = 3000; /* millseconds */
-        xmpRetries = 1;
+        xmpTimeout = XMP_DEFAULT_TIMEOUT; /* millseconds */
+        xmpRetries = XMP_DEFAULT_RETRIES;
 
         // get socket opts
         sockopts = new SocketOpts();
@@ -74,7 +91,13 @@ public class XmpDetector implements SyncServiceDetector
 
 	m_ipMatch = new String("");
 
-        System.out.println("XmpDetector created");
+	createTimeDate = new Date();
+
+        System.out.println("XmpDetector created, service "+xmpServiceName+" at "+createTimeDate);
+
+	if (LOG == null) {
+	   System.out.println("XmpDetector created, but null LOG");
+	}
 
     } /* XmpDetector */
 
@@ -84,14 +107,15 @@ public class XmpDetector implements SyncServiceDetector
         
     } /* XmpDetector */
 
-    public String getServiceName() { return xmpServiceName; }
+    //public String getServiceName() { return xmpServiceName; }
   
-    public void setServiceName(String newServiceName) 
-    {
-	xmpServiceName = new String(newServiceName);         
-    }      
+    //public void setServiceName(String newServiceName) 
+    //{
+    //	xmpServiceName = new String(newServiceName);         
+    //}      
 
-    public void init()
+    @Override
+    public void onInit()
     {
         // try to get configuration
         try { 
@@ -114,21 +138,21 @@ public class XmpDetector implements SyncServiceDetector
         }
     }
 
-    public int getPort() { return xmpPort; }
+    //public int getPort() { return xmpPort; }
 
-    public void setPort(int newPort) { xmpPort = newPort; }
+    //public void setPort(int newPort) { xmpPort = newPort; }
 
     public void setIpMatch(String ipMatch) { m_ipMatch = ipMatch; }
 
     public String getIpMatch() { return m_ipMatch; }
 
-    public int getTimeout() { return xmpTimeout; }
+    //public int getTimeout() { return xmpTimeout; }
 
-    public void setTimeout(int newTimeout) 
-    { 
-        xmpTimeout = newTimeout; 
-        sockopts.setConnectTimeout(xmpTimeout);
-    }
+    //public void setTimeout(int newTimeout) 
+    //{ 
+    //    xmpTimeout = newTimeout; 
+    //    sockopts.setConnectTimeout(xmpTimeout);
+    //}
 
     public void dispose()
     {
@@ -147,6 +171,8 @@ public class XmpDetector implements SyncServiceDetector
         else 
 	   System.out.println("XmpDetector: isServiceDetected starting with null LOG to query "+address);
 
+	System.out.println("XmpDetector: isServiceDetected starting to query "+address);
+	
         // try to establish session
         aSession = new XmpSession(sockopts,address,xmpPort,xmpAuthenUser);
         if (aSession == null) {
@@ -160,6 +186,8 @@ public class XmpDetector implements SyncServiceDetector
         else 
            System.out.println("XmpDetector: isServiceDetected session established with "+address);
 
+        System.out.println("XmpDetector: isServiceDetected session established with "+address);
+	
         // query for core.sysName, core.sysDescr, 
         // core.sysUpTime, core.xmpdVersion
         vars = new XmpVar[] {
@@ -193,6 +221,8 @@ public class XmpDetector implements SyncServiceDetector
 	      System.out.println("XmpDetector: isServiceDetected no replyVars for"+address);
            }
 
+           System.out.println("XmpDetector: isServiceDetected no replyVars for"+address);
+	   
            return false;
 
         } /* if replyVars == null */
@@ -210,6 +240,8 @@ public class XmpDetector implements SyncServiceDetector
            System.out.println("XmpDetector: isServiceDetected true for "+address);
         }
 
+        System.out.println("XmpDetector: isServiceDetected true for "+address);
+	
 	return true;
 
     } /* isServiceDetected */
