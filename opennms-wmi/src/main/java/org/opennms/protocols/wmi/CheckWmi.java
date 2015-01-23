@@ -69,7 +69,7 @@ public abstract class CheckWmi {
 
 	    @SuppressWarnings("unchecked")
 		List<String> arguments = (List<String>)cmd.getArgList();
-		if (arguments.size() < 2) {
+		if (arguments.size() < 3) {
 			usage(options, cmd);
 			System.exit(1);
 		}
