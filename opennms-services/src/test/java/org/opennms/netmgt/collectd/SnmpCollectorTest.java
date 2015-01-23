@@ -29,6 +29,7 @@
 package org.opennms.netmgt.collectd;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertNotNull;
 
 import java.io.File;
@@ -37,6 +38,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 
 import org.junit.After;
@@ -59,6 +61,7 @@ import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.ResourceTypeUtils;
 import org.opennms.netmgt.rrd.RrdDataSource;
 import org.opennms.netmgt.rrd.RrdStrategy;
 import org.opennms.netmgt.rrd.RrdUtils;
@@ -466,6 +469,78 @@ public class SnmpCollectorTest implements InitializingBean, TestContextAware {
 
         // release the agent
         m_collectionSpecification.release(m_collectionAgent);
+    }
+
+    @Test
+    @Transactional
+    @JUnitCollector(
+                    datacollectionConfig = "/org/opennms/netmgt/config/datacollection-brocade-no-ifaces-config.xml",
+                    datacollectionType = "snmp",
+                    anticipateRrds={
+                            "1/brocadeFCPortIndex/1/swFCPortTxWords",
+                            "1/brocadeFCPortIndex/1/swFCPortRxWords",
+                            "1/brocadeFCPortIndex/2/swFCPortTxWords",
+                            "1/brocadeFCPortIndex/2/swFCPortRxWords",
+                            "1/brocadeFCPortIndex/3/swFCPortTxWords",
+                            "1/brocadeFCPortIndex/3/swFCPortRxWords",
+                            "1/brocadeFCPortIndex/4/swFCPortTxWords",
+                            "1/brocadeFCPortIndex/4/swFCPortRxWords",
+                            "1/brocadeFCPortIndex/5/swFCPortTxWords",
+                            "1/brocadeFCPortIndex/5/swFCPortRxWords",
+                            "1/brocadeFCPortIndex/6/swFCPortTxWords",
+                            "1/brocadeFCPortIndex/6/swFCPortRxWords",
+                            "1/brocadeFCPortIndex/7/swFCPortTxWords",
+                            "1/brocadeFCPortIndex/7/swFCPortRxWords",
+                            "1/brocadeFCPortIndex/8/swFCPortTxWords",
+                            "1/brocadeFCPortIndex/8/swFCPortRxWords"
+                    },
+                    anticipateFiles={
+                            "1",
+                            "1/brocadeFCPortIndex",
+                            "1/brocadeFCPortIndex/1/strings.properties",
+                            "1/brocadeFCPortIndex/1",
+                            "1/brocadeFCPortIndex/2/strings.properties",
+                            "1/brocadeFCPortIndex/2",
+                            "1/brocadeFCPortIndex/3/strings.properties",
+                            "1/brocadeFCPortIndex/3",
+                            "1/brocadeFCPortIndex/4/strings.properties",
+                            "1/brocadeFCPortIndex/4",
+                            "1/brocadeFCPortIndex/5/strings.properties",
+                            "1/brocadeFCPortIndex/5",
+                            "1/brocadeFCPortIndex/6/strings.properties",
+                            "1/brocadeFCPortIndex/6",
+                            "1/brocadeFCPortIndex/7/strings.properties",
+                            "1/brocadeFCPortIndex/7",
+                            "1/brocadeFCPortIndex/8/strings.properties",
+                            "1/brocadeFCPortIndex/8"
+                    }
+            )
+    @JUnitSnmpAgent(resource = "/org/opennms/netmgt/snmp/brocadeTestData1.properties")
+    public void verifyPersistedStringProperties() throws Exception {
+        // Initialize the agent
+        m_collectionSpecification.initialize(m_collectionAgent);
+
+        // Perform the collection
+        CollectionSet collectionSet = m_collectionSpecification.collect(m_collectionAgent);
+        assertEquals("collection status",
+                ServiceCollector.COLLECTION_SUCCEEDED,
+                collectionSet.getStatus());
+
+        // Persist
+        CollectorTestUtils.persistCollectionSet(m_collectionSpecification, collectionSet);
+
+        // Verify results on disk
+        File snmpDir = (File)m_context.getAttribute("rrdDirectory");
+        Properties properties = ResourceTypeUtils.getStringProperties(snmpDir, "1/brocadeFCPortIndex/1");
+
+        // "string" attributes should convert the octets directly to a string
+        String value = properties.getProperty("swFCPortName");
+        assertTrue(value.startsWith("..3DUfw"));
+
+        // "hexstring" attributes should convert the octets to a hex string
+        // see http://issues.opennms.org/browse/NMS-7367
+        value = properties.getProperty("swFCPortWwn");
+        assertEquals("1100334455667788", value);
     }
 
     private static String rrd(String file) {
