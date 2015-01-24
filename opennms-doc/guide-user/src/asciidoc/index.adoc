@@ -4,7 +4,7 @@
 :lang: en
 :icons: font
 :toc: left
-:toclevels: 8
+:toclevels: 3
 :numbered:
 
 = Users Guide
@@ -13,5 +13,3 @@
 :revdate: {last-update-label} {docdatetime}
 :version-label!:
 
-== REST API
-include::text/rest/CORS.adoc[]
