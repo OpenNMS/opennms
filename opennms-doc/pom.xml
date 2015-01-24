@@ -67,6 +67,9 @@
               <sourceHighlighter>prettify</sourceHighlighter>
               <backend>html5</backend>
               <doctype>book</doctype>
+              <attributes>
+                <stylesheet>../../../asciidoctor-default.css</stylesheet>
+              </attributes>
             </configuration>
           </execution>
         </executions>
