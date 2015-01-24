@@ -40,17 +40,17 @@ public class LogPrefixPreservingPingResponseCallback implements PingResponseCall
     private static final Logger LOG = LoggerFactory.getLogger(LogPrefixPreservingPingResponseCallback.class);
 	
     private final PingResponseCallback m_cb;
-    private final Map m_mdc = getCopyOfContextMap();
+    private final Map<String, String> m_mdc = getCopyOfContextMap();
     
     public LogPrefixPreservingPingResponseCallback(PingResponseCallback cb) {
         m_cb = cb;
     }
     
-    private static Map getCopyOfContextMap() {
+    private static Map<String, String> getCopyOfContextMap() {
         return MDC.getCopyOfContextMap();
     }
     
-    private static void setContextMap(Map map) {
+    private static void setContextMap(Map<String, String> map) {
         if (map == null) {
             MDC.clear();
         } else {
@@ -61,7 +61,7 @@ public class LogPrefixPreservingPingResponseCallback implements PingResponseCall
     @Override
     public void handleError(InetAddress address, EchoPacket request, Throwable t) {
     	
-    	Map mdc = getCopyOfContextMap();
+    	Map<String, String> mdc = getCopyOfContextMap();
         try {
             setContextMap(m_mdc);
             m_cb.handleError(address, request, t);
@@ -72,7 +72,7 @@ public class LogPrefixPreservingPingResponseCallback implements PingResponseCall
 
     @Override
     public void handleResponse(InetAddress address, EchoPacket response) {
-    	Map mdc = getCopyOfContextMap();
+    	Map<String, String> mdc = getCopyOfContextMap();
         try {
             setContextMap(m_mdc);
             m_cb.handleResponse(address, response);
@@ -83,7 +83,7 @@ public class LogPrefixPreservingPingResponseCallback implements PingResponseCall
 
     @Override
     public void handleTimeout(InetAddress address, EchoPacket request) {
-    	Map mdc = getCopyOfContextMap();
+    	Map<String, String> mdc = getCopyOfContextMap();
         try {
             setContextMap(m_mdc);
             m_cb.handleTimeout(address, request);

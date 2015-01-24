@@ -44,7 +44,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
-import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.snmp.joesnmp.JoeSnmpStrategy;
 import org.opennms.netmgt.snmp.mock.MockSnmpStrategy;
 import org.opennms.netmgt.snmp.snmp4j.MockSnmpAgentTestCase;

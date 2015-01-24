@@ -34,7 +34,7 @@
 	session="true"
 %>
 
-<jsp:include page="/includes/header.jsp" flush="false" >
+<jsp:include page="/includes/bootstrap.jsp" flush="false" >
   <jsp:param name="title" value="Change Password" />
   <jsp:param name="headTitle" value="Change Password" />
   <jsp:param name="breadcrumb" value="<a href='account/selfService/index.jsp'>Self-Service</a>" />
@@ -58,53 +58,35 @@
 }
 </script>
 
-<% if ("redo".equals(request.getParameter("action"))) { %>
-<h3>Incorrect value for current password. Please try again.</h3>
-<% } else { %>
-<h3>Please enter the old and new passwords and confirm.</h3>
-<% } %>
 
-<br/>
-<form method="post" name="goForm" onSubmit="verifyGoForm()">
-<input type="hidden" name="currentPassword" value="">
-<input type="hidden" name="newPassword" value="">
+<div class="row">
+  <div class="col-md-4">
+    <div class="panel panel-default">
+       <div class="panel-heading">
+        <h3 class="panel-title">Please enter the old and new passwords and confirm.</h3>
+      </div>
+      <div class="panel-body">
+        <form role="form" method="post" name="goForm" onSubmit="verifyGoForm()">
+          <input type="hidden" name="currentPassword" value="">
+          <input type="hidden" name="newPassword" value="">
+          <div class="form-group <% if ("redo".equals(request.getParameter("action"))) { %>has-error<% } %>">
+            <label class="control-label" for="input_oldpass">Current Password:</label>
+            <input type="password" class="form-control" id="input_oldpass" name="oldpass">
+          </div>
+          <div class="form-group">
+            <label class="control-label" for="input_pass1">New Password:</label>
+            <input type="password" class="form-control" name="pass1">
+          </div>
+          <div class="form-group">
+            <label class="control-label" for="input_pass2">Confirm New Password:</label>
+            <input type="password" class="form-control" name="pass2">
+          </div>
+          <button type="submit" class="btn btn-default">Submit</button>
+          <a href="account/selfService/index.jsp" class="btn btn-default">Cancel</a>
+        </form>
+      </div> <!-- panel-body -->
+    </div> <!-- panel -->
+  </div> <!-- column -->
+</div> <!-- row -->
 
-<table>
-  <tr>
-    <td width="10%">
-      Current Password:
-    </td>
-    <td width="100%">
-      <input type="password" name="oldpass">
-    </td>
-  </tr>
-
-  <tr>
-    <td width="10%">
-      Confirm New Password:
-    </td>
-    <td width="100%">
-      <input type="password" name="pass1">
-    </td>
-  </tr>
-  
-  <tr>
-    <td width="10%">
-      Confirm Password:
-    </td>
-    <td width="100%">
-      <input type="password" name="pass2">
-    </td>
-  </tr>
-  
-  <tr>
-    <td>
-      <input type="submit" value="OK"/>
-    </td>
-    <td>
-      <a href="account/selfService/index.jsp">Cancel</a>
-    </tr>
-</table>
-</form>
-
-<jsp:include page="/includes/footer.jsp" flush="false" />
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />

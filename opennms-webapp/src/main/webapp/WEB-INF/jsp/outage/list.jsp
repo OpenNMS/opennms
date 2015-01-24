@@ -90,7 +90,7 @@
 %>
 
 
-<jsp:include page="/includes/header.jsp" flush="false" >
+<jsp:include page="/includes/bootstrap.jsp" flush="false" >
   <jsp:param name="title" value="Outage List" />
   <jsp:param name="headTitle" value="List" />
   <jsp:param name="headTitle" value="Outage" />
@@ -100,6 +100,9 @@
 
 <link rel="stylesheet" href="css/font-awesome-4.0.3/css/font-awesome.min.css">
 
+    <jsp:include page="/includes/search-constraints-box.jsp" />
+    <br/>
+
     <% if( outageCount > 0 ) { %>
       <% String baseUrl = OutageUtil.makeLink(request, parms); %>
       <jsp:include page="/includes/resultsIndex.jsp" flush="false" >
@@ -108,9 +111,10 @@
         <jsp:param name="limit"    value="<%=parms.limit%>" />
         <jsp:param name="multiple" value="<%=parms.multiple%>" />
       </jsp:include>
-    <% } %>           
-    <jsp:include page="/includes/search-constraints-box.jsp" />
-    <table>
+    <% } %>
+
+<div class="panel panel-default">
+    <table class="table table-bordered table-condensed">
       <tr>
         <th><%=this.makeSortLink(request, parms, SortStyle.ID,                SortStyle.REVERSE_ID,                "id",                        "ID" )%></th>
         <th><%=this.makeSortLink(request, parms, SortStyle.FOREIGNSOURCE,     SortStyle.REVERSE_FOREIGNSOURCE,     "foreignsource",             "Foreign Source" )%></th>
@@ -137,11 +141,15 @@
           <td class="noWrap">
             <% if(outages[i].getNodeId() != 0 ) { %>
               <% OnmsNode node = NetworkElementFactory.getInstance(getServletContext()).getNode(outages[i].getNodeId()); %>
-              <%=node.getForeignSource()%></a>
+              <% if(node.getForeignSource() != null) { %>
+              <%=node.getForeignSource()%>
               <% Filter foreignSourceFilter = new ForeignSourceFilter(node.getForeignSource(), getServletContext()); %>
               <% if( !parms.filters.contains(foreignSourceFilter) ) { %>
                   <a href="<%=OutageUtil.makeLink( request, parms, foreignSourceFilter, true)%>" title="Show only outages for this foreign source"><%=ZOOM_IN_ICON%></a>
                   <a href="<%=OutageUtil.makeLink( request, parms, new NegativeForeignSourceFilter(node.getForeignSource(), getServletContext()), true)%>" title="Do not show outages for this foreign source"><%=DISCARD_ICON%></a>
+              <% } %>
+              <% } else { %>
+                &nbsp;
               <% } %>
             <% } %>
           </td>
@@ -205,7 +213,7 @@
             
           <!-- lost service time -->
           <td class="noWrap">
-	    <fmt:formatDate value="${outage.lostServiceTime}" type="date" dateStyle="short"/>&nbsp;<fmt:formatDate value="${outage.lostServiceTime}" type="time" pattern="HH:mm:ss"/>
+              <fmt:formatDate value="${outage.lostServiceTime}" type="BOTH" />
               <a href="<%=OutageUtil.makeLink( request, parms, new LostServiceDateAfterFilter(outages[i].getLostServiceTime()), true)%>" title="Only show outages beginning after this one"><%=AFTER_ICON%></a>            
               <a href="<%=OutageUtil.makeLink( request, parms, new LostServiceDateBeforeFilter(outages[i].getLostServiceTime()), true)%>" title="Only show outages beginning before this one"><%=BEFORE_ICON%></a>            
           </td>
@@ -214,7 +222,7 @@
           <% Date regainedTime = outages[i].getRegainedServiceTime(); %>
           <% if(regainedTime != null ) { %>
             <td class="noWrap">
-	    <fmt:formatDate value="${outage.regainedServiceTime}" type="date" dateStyle="short"/>&nbsp;<fmt:formatDate value="${outage.regainedServiceTime}" type="time" pattern="HH:mm:ss"/>
+                <fmt:formatDate value="${outage.regainedServiceTime}" type="BOTH" />
                 <a href="<%=OutageUtil.makeLink( request, parms, new RegainedServiceDateAfterFilter(outages[i].getRegainedServiceTime()), true)%>" title="Only show outages resolving after this one"><%=AFTER_ICON%></a>            
                 <a href="<%=OutageUtil.makeLink( request, parms, new RegainedServiceDateBeforeFilter(outages[i].getRegainedServiceTime()), true)%>" title="Only show outages resolving before this one"><%=BEFORE_ICON%></a>            
             </td>
@@ -224,6 +232,7 @@
         </tr>
       <% } %>
     </table>
+</div>
  
      <% if( outageCount > 0 ) { %>
        <% String baseUrl = OutageUtil.makeLink(request, parms); %>
@@ -236,8 +245,7 @@
      <% } %>           
  
 
-<jsp:include page="/includes/bookmark.jsp" flush="false" />
-<jsp:include page="/includes/footer.jsp" flush="false" />
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />
 
 <%!
     protected String makeSortLink(HttpServletRequest request, OutageQueryParms parms, SortStyle style, SortStyle revStyle, String sortString, String title ) {

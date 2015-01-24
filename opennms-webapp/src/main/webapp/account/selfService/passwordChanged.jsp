@@ -33,7 +33,7 @@
 	contentType="text/html"
 	session="true"
 %>
-<jsp:include page="/includes/header.jsp" flush="false" >
+<jsp:include page="/includes/bootstrap.jsp" flush="false" >
   <jsp:param name="title" value="Password Changed" />
   <jsp:param name="headTitle" value="Password Changed" />
   <jsp:param name="breadcrumb" value="<a href='account/selfService/index.jsp'>Self-Service</a>" />
@@ -42,5 +42,5 @@
 
 <h3>Password successfully changed.</h3>
 
-<jsp:include page="/includes/footer.jsp" flush="false" />
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />
 

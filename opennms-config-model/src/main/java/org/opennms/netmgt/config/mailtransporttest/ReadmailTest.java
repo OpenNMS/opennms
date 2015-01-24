@@ -135,6 +135,15 @@ public class ReadmailTest implements Serializable {
         setMailFolder("INBOX");
     }
 
+    public ReadmailTest(final Long attemptInterval, final Boolean debug, final String mailFolder, final String subjectMatch, final Boolean deleteAllMail) {
+        super();
+        m_attemptInterval = attemptInterval;
+        m_debug = debug;
+        m_mailFolder = mailFolder;
+        m_subjectMatch = subjectMatch;
+        m_deleteAllMail = deleteAllMail;
+    }
+
     /**
      * 
      * 
@@ -156,6 +165,10 @@ public class ReadmailTest implements Serializable {
      */
     public void addJavamailProperty(final int index, final JavamailProperty javamailProperty) throws IndexOutOfBoundsException {
         m_javamailProperties.add(index, javamailProperty);
+    }
+
+    public void addJavamailProperty(final String name, final String value) {
+        m_javamailProperties.add(new JavamailProperty(name, value));
     }
 
     /**
@@ -678,6 +691,10 @@ public class ReadmailTest implements Serializable {
      */
     public void setUserAuth(final UserAuth userAuth) {
         m_userAuth = userAuth;
+    }
+
+    public void setUserAuth(final String username, final String password) {
+        m_userAuth = new UserAuth(username, password);
     }
 
     /**

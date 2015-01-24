@@ -32,11 +32,10 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.sprin
     <property name="categoryDao" ref="categoryDao"/>
     <property name="siteStatusViewConfigDao" ref="siteStatusViewConfigDao"/>
   </bean>
-  <!-- Suppress Outage Service beans -->
+  <!-- Outage Service beans -->
   <bean id="outageService" class="org.opennms.web.svclayer.outage.DefaultOutageService">
     <property name="dao" ref="outageDao"/>
   </bean>
-  <bean id="outageTable" class="org.opennms.web.svclayer.outage.OutageTable"/>
   <!-- Category Status View beans (note: categoryConfigDao is different that the DAO for the categories table -->
   <bean id="categoryConfigDao" class="org.opennms.web.svclayer.dao.support.DefaultCategoryConfigDao"/>
   <bean id="viewDisplayDao" class="org.opennms.web.svclayer.dao.support.DefaultViewDisplayDao"/>
@@ -54,23 +53,9 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.sprin
     <property name="eventProxy" ref="eventProxy"/>
   </bean>
   <bean name="nodeProvisionService" class="org.opennms.netmgt.provision.persist.DefaultNodeProvisionService">
-    <property name="foreignSourceRepository" ref="deployedForeignSourceRepository"/>
+    <property name="foreignSourceRepository" ref="selectedDeployedForeignSourceRepository"/>
     <property name="eventProxy" ref="eventProxy"/>
   </bean>
-  <!-- Daemon Status Service beans -->
-  <!--
-  <bean id="mbeanServer" class="org.springframework.jmx.support.MBeanServerFactoryBean">
-    <property name="locateExistingServerIfPossible" value="true"/>
-  </bean>
-
-  <bean id="daemonStatusDao" class="org.opennms.netmgt.dao.jmx.JmxDaemonStatusDao">
-    <property name="mbeanServer" ref="mbeanServer" />
-  </bean>
-  
-  <bean id="daemonStatusService" class="org.opennms.web.svclayer.daemonstatus.support.DefaultDaemonStatusService">
-    <property name="daemonStatusDao" ref="daemonStatusDao" />
-  </bean>
-  -->
   <!-- Category Service Status beans -->
   <bean id="categoryStatusService" class="org.opennms.web.svclayer.catstatus.support.DefaultCategoryStatusService">
     <property name="categoryConfigDao" ref="categoryConfigDao"/>
@@ -124,8 +109,8 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.sprin
     <property name="importFileDirectory" value="${importer.requisition.dir}"/>
   </bean>
   <bean id="manualProvisioningService" class="org.opennms.web.svclayer.support.DefaultManualProvisioningService">
-    <property name="deployedForeignSourceRepository" ref="deployedForeignSourceRepository"/>
-    <property name="pendingForeignSourceRepository" ref="pendingForeignSourceRepository"/>
+    <property name="deployedForeignSourceRepository" ref="selectedDeployedForeignSourceRepository"/>
+    <property name="pendingForeignSourceRepository" ref="selectedPendingForeignSourceRepository"/>
     <property name="nodeDao" ref="nodeDao"/>
     <property name="categoryDao" ref="categoryDao"/>
     <property name="serviceTypeDao" ref="serviceTypeDao"/>

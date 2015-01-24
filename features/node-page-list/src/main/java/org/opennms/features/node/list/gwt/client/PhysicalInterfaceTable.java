@@ -43,10 +43,10 @@ import com.google.gwt.view.client.SingleSelectionModel;
 public class PhysicalInterfaceTable extends CellTable<PhysicalInterface> {
     
     SimpleEventBus m_eventBus = new SimpleEventBus();
-    
 
     public PhysicalInterfaceTable() {
         super(15, (CellTable.Resources) GWT.create(OnmsTableResources.class));
+        setStyleName("table table-condensed table-bordered severity");
         initialize();
     }
     

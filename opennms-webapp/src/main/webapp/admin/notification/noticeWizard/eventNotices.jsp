@@ -64,7 +64,7 @@
 	}
 %>
 
-<jsp:include page="/includes/header.jsp" flush="false" >
+<jsp:include page="/includes/bootstrap.jsp" flush="false" >
   <jsp:param name="title" value="Event Notifications" />
   <jsp:param name="headTitle" value="Event Notifications" />
   <jsp:param name="headTitle" value="Admin" />
@@ -109,33 +109,36 @@
 
 <h2>Event Notifications</h2>
 
-
-<h3>Add a notification to an event or edit an existing event notification</h3>
 <form method="post" name="notices" action="admin/notification/noticeWizard/notificationWizard">
-  <input type="hidden" name="userAction" value=""/>
-  <input type="hidden" name="notice" value=""/>
-  <input type="hidden" name="sourcePage" value="<%=NotificationWizardServlet.SOURCE_PAGE_NOTICES%>"/>
-  <table>
+<input type="hidden" name="userAction" value=""/>
+<input type="hidden" name="notice" value=""/>
+<input type="hidden" name="sourcePage" value="<%=NotificationWizardServlet.SOURCE_PAGE_NOTICES%>"/>
+
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title">Add a notification to an event or edit an existing event notification</h3>
+  </div>
+  <table class="table table-condensed">
     <tr>
-      <td> <input type="button" value="Add New Event Notification" onclick="javascript:newNotice()"/>
+      <td> <input type="button" class="btn btn-default" value="Add New Event Notification" onclick="javascript:newNotice()"/>
     </tr>
     <tr>
       <td valign="top">
         <h4>Event Notifications</h4>
-        <table width="100%" border="1">
-          <tr bgcolor="#999999">
-            <td colspan="3">
-              <b>Actions</b>
-            </td>
-            <td>
-              <b>Notification</b>
-            </td>
-            <td>
-              <b>Event</b>
-            </td>
-            <td>
-              <b>UEI</b>
-            </td>
+        <table class="table table-condensed table-striped">
+          <tr>
+            <th colspan="3">
+              Actions
+            </th>
+            <th>
+              Notification
+            </th>
+            <th>
+              Event
+            </th>
+            <th>
+              UEI
+            </th>
           </tr>
           <% Map<String, Notification> noticeMap = new TreeMap<String, Notification>(m_notificationFactory.getNotifications());
              for(String key : noticeMap.keySet()) {
@@ -144,10 +147,10 @@
           %>
           <tr>
             <td>
-              <input type="button" value="Edit" onclick="javascript:editNotice('<%=ekey%>')"/>
+              <input type="button" class="btn btn-default" value="Edit" onclick="javascript:editNotice('<%=ekey%>')"/>
             </td>
             <td>
-              <input type="button" value="Delete"  onclick="javascript:deleteNotice('<%=ekey%>')"/>
+              <input type="button" class="btn btn-default" value="Delete"  onclick="javascript:deleteNotice('<%=ekey%>')"/>
             </td>
             <td>
               <%if (curNotif.getStatus().equals("on")) { %>
@@ -165,7 +168,7 @@
               <%=m_eventconfFactory.getEventLabel(curNotif.getUei())%>
             </td>
             <td>
-              <% if (curNotif.getUei().startsWith("~")) { %>REGEX: <%=curNotif.getUei().substring(1)%><% } else { %><%=curNotif.getUei()%><% } %>
+              <% if (curNotif.getUei() != null && curNotif.getUei().startsWith("~")) { %>REGEX: <%=curNotif.getUei().substring(1)%><% } else { %><%=curNotif.getUei()%><% } %>
             </td>
           </tr>
           <% } %>
@@ -173,9 +176,11 @@
       </td>
     </tr>
   </table>
+</div> <!-- panel -->
+
 </form>
 
-<jsp:include page="/includes/footer.jsp" flush="false" />
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />
 
 <%!
   public String stripUei(String uei)

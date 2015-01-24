@@ -253,7 +253,7 @@ public class NodeMapWidget extends AbsolutePanel implements MarkerProvider, Filt
         searchStyle.setPosition(Position.ABSOLUTE);
         searchStyle.setTop(5, Unit.PX);
         searchStyle.setLeft(5, Unit.PX);
-        searchStyle.setZIndex(2000);
+        searchStyle.setZIndex(1000);
         mapParent.add(m_searchControl);
     }
 
@@ -273,7 +273,7 @@ public class NodeMapWidget extends AbsolutePanel implements MarkerProvider, Filt
         searchStyle.setPosition(Position.ABSOLUTE);
         searchStyle.setTop(5, Unit.PX);
         searchStyle.setRight(5, Unit.PX);
-        searchStyle.setZIndex(2000);
+        searchStyle.setZIndex(1000);
         mapParent.add(m_alarmControl);
     }
 

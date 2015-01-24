@@ -34,9 +34,7 @@ import org.junit.Test;
 import org.opennms.features.topology.api.topo.*;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.IsIsLinkDao;
-import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.*;
-import org.opennms.netmgt.model.topology.EdgeAlarmStatusSummary;
 
 import java.util.*;
 

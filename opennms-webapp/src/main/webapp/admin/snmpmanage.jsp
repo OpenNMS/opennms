@@ -64,7 +64,7 @@
     }
 %>
 
-<jsp:include page="/includes/header.jsp" flush="false" >
+<jsp:include page="/includes/bootstrap.jsp" flush="false" >
   <jsp:param name="title" value="Manage SNMP by Interface" />
   <jsp:param name="headTitle" value="Admin" />
   <jsp:param name="location" value="admin" />
@@ -81,59 +81,62 @@
   }
 %>
 
-<h3>Manage SNMP Data Collection per Interface</h3>
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title">Manage SNMP Data Collection per Interface</h3>
+  </div>
+  <div class="panel-body">
+    <p>
+      In the datacollection-config.xml file, for each different collection
+      scheme there is a parameter called <code>snmpStorageFlag</code>.  If
+      this value is set to "primary", then only values pertaining to the
+      node as a whole or the primary SNMP interface will be stored in the
+      system. If this value is set to "all", then all interfaces for which
+      values are collected will be stored.
+    </p>
 
-<p>
-  In the datacollection-config.xml file, for each different collection
-  scheme there is a parameter called <code>snmpStorageFlag</code>.  If
-  this value is set to "primary", then only values pertaining to the
-  node as a whole or the primary SNMP interface will be stored in the
-  system. If this value is set to "all", then all interfaces for which
-  values are collected will be stored.
-</p>
+    <p>
+      If this parameter is set to "select", then the interfaces for which
+      data is stored can be selected.  By default, only information from
+      Primary and Secondary SNMP interfaces will be stored, but by using
+      this interface, other non-IP interfaces can be chosen.
+    </p>
 
-<p>
-  If this parameter is set to "select", then the interfaces for which
-  data is stored can be selected.  By default, only information from
-  Primary and Secondary SNMP interfaces will be stored, but by using
-  this interface, other non-IP interfaces can be chosen.
-</p>
+    <p>
+      Simply select the node of interest below, and follow the instructions
+      on the following page.
+    </p>
 
-<p>
-  Simply select the node of interest below, and follow the instructions
-  on the following page.
-</p>
+    <div class="row">
+       <% if (nodes.size() > 0) { %>
+       <div class="col-md-6">
+              <table class="table table-condensed table-bordered">
+                <tr class="text-center">
+                  <th>Node ID</th>
+                  <th>Node Label</th>
+                </tr>
+                <%=buildTableRows(nodes, 0, midNodeIndex)%>
+              </table>
+       </div>
+              <% } /*end if*/ %>
 
-      
-   <% if (nodes.size() > 0) { %>
-	<div id="contentleft">
-          <table class="standardfirst">
-            <tr>
-              <td class="standardheader" width="5%" align="center">Node ID</td>
-              <td class="standardheader" width="10%" align="center">Node Label</td>
-            </tr>
-            <%=buildTableRows(nodes, 0, midNodeIndex)%>
-            
-          </table>
-	</div>
-          <% } /*end if*/ %>
-        
-      <!--see if there is a second column to draw-->
-      <% if (midNodeIndex < nodes.size()) { %>
-	<div id="contentright">
-          <table class="standardfirst">
-            <tr>
-              <td class="standardheader" width="5%" align="center">Node ID</td>
-              <td class="standardheader" width="10%" align="center">Node Label</td>
-            </tr>
-            
-            <%=buildTableRows(nodes, midNodeIndex, nodes.size())%>
-               
-          </table>
-	</div>
-        <% } /*end if */ %>
+          <!--see if there is a second column to draw-->
+          <% if (midNodeIndex < nodes.size()) { %>
+        <div class="col-md-6">
+              <table class="table table-condensed table-bordered">
+                <tr class="text-center">
+                  <th>Node ID</th>
+                  <th>Node Label</th>
+                </tr>
+                <%=buildTableRows(nodes, midNodeIndex, nodes.size())%>
+              </table>
+        </div>
+            <% } /*end if */ %>
+    </div> <!-- row -->
+  </div> <!-- panel-body -->
+</div> <!-- panel -->
 
-<jsp:include page="/includes/footer.jsp" flush="true"/>
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="true"/>
 
 <%!
       public String buildTableRows(List<SnmpManagedNode> nodes, int start, int stop)
@@ -149,10 +152,10 @@
 		int nodeid = curNode.getNodeID();
                  
           row.append("<tr>\n");
-          row.append("<td class=\"standard\" width=\"5%\" align=\"center\">");
+          row.append("<td class=\"text-center\">");
 	  row.append(nodeid);
           row.append("</td>\n");
-          row.append("<td class=\"standard\" width=\"10%\" align=\"left\">");
+          row.append("<td>");
           row.append("<a href=\"admin/snmpGetInterfaces?node=");
 	  row.append(nodeid);
           row.append("&nodelabel=");

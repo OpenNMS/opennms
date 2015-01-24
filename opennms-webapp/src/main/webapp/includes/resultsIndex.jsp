@@ -108,34 +108,31 @@
     endIndex = (endIndex > highestPossibleIndex) ? highestPossibleIndex : endIndex;    
 %>
 
-<p class="pager">
  <% if (limit > 0 ) { %> 
-  Results: (<%=startResult%>-<%=endResult%> of <%=count%>)
+  <strong>Results <%=startResult%>-<%=endResult%> of <%=count%></strong>
  <% } else { %>
-  All Results
+  <strong>All Results</strong>
  <% } %> 
-	
-  <% if( count > limit ) { %>  
-    <span>
-<% if( multiple > 0 ) { %>
-      <a href="<%=baseUrl%>&amp;<%=multipleName%>=0&amp;<%=limitName%>=<%=limit%>">First</a>&nbsp;  
-      <a href="<%=baseUrl%>&amp;<%=multipleName%>=<%=multiple-1%>&amp;<%=limitName%>=<%=limit%>">Previous</a>&nbsp;  
+
+<% if( count > limit ) { %>  
+  <nav>
+    <ul class="pagination pagination-sm">
+    <% if( multiple > 0 ) { %>
+      <li><a href="<%=baseUrl%>&amp;<%=multipleName%>=0&amp;<%=limitName%>=<%=limit%>">First</a></li>
+      <li><a href="<%=baseUrl%>&amp;<%=multipleName%>=<%=multiple-1%>&amp;<%=limitName%>=<%=limit%>">Previous</a></li>
     <% } %>
     
     <% for( int i=startIndex; i <= endIndex; i++ ) { %>
       <% if( multiple == i ) { %>
-         <strong><%=i+1%></strong>
+         <li class="active"><span><%=i+1%></span></li>
       <% } else { %>
-        <a href="<%=baseUrl%>&amp;<%=multipleName%>=<%=i%>&amp;<%=limitName%>=<%=limit%>"><%=i+1%></a>
+        <li><a href="<%=baseUrl%>&amp;<%=multipleName%>=<%=i%>&amp;<%=limitName%>=<%=limit%>"><%=i+1%></a></li>
       <% } %>
-      &nbsp;
     <% } %>
-      
     <% if( multiple < highestPossibleIndex ) { %>
-      <a href="<%=baseUrl%>&amp;<%=multipleName%>=<%=multiple+1%>&amp;<%=limitName%>=<%=limit%>">Next</a>&nbsp;
-      <a href="<%=baseUrl%>&amp;<%=multipleName%>=<%=highestPossibleIndex%>&amp;<%=limitName%>=<%=limit%>">Last</a>
+      <li><a href="<%=baseUrl%>&amp;<%=multipleName%>=<%=multiple+1%>&amp;<%=limitName%>=<%=limit%>">Next</a></li>
+      <li><a href="<%=baseUrl%>&amp;<%=multipleName%>=<%=highestPossibleIndex%>&amp;<%=limitName%>=<%=limit%>">Last</a></li>
     <% } %>
-		</span>
-   <% } %>      
-</p>
-
+    </ul>
+  </nav>
+<% } %>

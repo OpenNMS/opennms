@@ -29,165 +29,64 @@
 package org.opennms.smoketest;
 
 import org.junit.Before;
-import org.junit.FixMethodOrder;
 import org.junit.Test;
-import org.junit.runners.MethodSorters;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class AdminPageTest extends OpenNMSSeleniumTestCase {
+    private static final Logger LOG = LoggerFactory.getLogger(AdminPageTest.class);
 
     @Before
     public void setUp() throws Exception {
-        super.setUp();
-        clickAndWait("link=Admin");
+        adminPage();
     }
 
     @Test
-    public void a_testAllTextIsPresent() throws Exception {
-        waitForText("OpenNMS System");
-        waitForText("Operations");
-        waitForText("Nodes");
-        waitForText("Distributed Monitoring");
-        waitForText("Descriptions");
-        waitForText("Scheduled Outages: Add");
-        waitForText("Notification Status:");
+    public void testAllTextIsPresent() throws Exception {
+        findElementByXpath("//h3[text()='OpenNMS System']");
+        findElementByXpath("//h3[text()='Operations']");
+        findElementByXpath("//h3[text()='Node Provisioning']");
+        findElementByXpath("//h3[text()='Distributed Monitoring']");
     }
 
     @Test
-    public void b_testAllLinksArePresent() throws Exception  {
+    public void testAllLinks() throws Exception {
+        for (final String[] entry : new String[][] {
+                // OpenNMS System
+                new String[] { "Configure Users, Groups and On-Call Roles", "//h3[text()='Users and Groups']" },
+                new String[] { "System Information", "//h3[text()='OpenNMS Configuration']" },
+                new String[] { "Instrumentation Log Reader", "//h3[text()='Filtering']" },
 
-        waitForElement("link=Configure Users, Groups and On-Call Roles");
-        waitForElement("link=System Information");
-        waitForElement("link=Instrumentation Log Reader");
-        waitForElement("link=Configure Discovery");
-        waitForElement("link=Configure SNMP Community Names by IP");
-        waitForElement("link=Configure SNMP Data Collection per Interface");
-        waitForElement("link=Manage and Unmanage Interfaces and Services");
-        waitForElement("link=Manage Thresholds");
-        waitForElement("link=Configure Notifications");
-        waitForElement("link=Scheduled Outages");
-        waitForElement("link=Add Interface for Scanning");
-        waitForElement("link=Manage Provisioning Requisitions");
-        waitForElement("link=Import and Export Asset Information");
-        waitForElement("link=Manage Surveillance Categories");
-        waitForElement("link=Delete Nodes");
-        waitForElement("link=Manage Applications");
-        waitForElement("link=Manage Remote Pollers");
-        waitForElement("link=the OpenNMS wiki");
-    }
+                // Operations
+                new String[] { "Configure Discovery", "//h3[text()='General Settings']" },
+                new String[] { "Configure SNMP Community Names by IP", "//h3[text()='SNMP Config Lookup']" },
+                new String[] { "Configure SNMP Data Collection per Interface", "//h3[text()='Manage SNMP Data Collection per Interface']" },
+                new String[] { "Manage and Unmanage Interfaces and Services", "//h3[text()='Manage and Unmanage Interfaces and Services']" },
+                new String[] { "Manage Thresholds", "//h3[text()='Threshold Configuration']" },
+                new String[] { "Send Event", "//h3[text()='Send Event to OpenNMS']" },
+                new String[] { "Configure Notifications", "//h3[text()='Configure Notifications']" },
+                new String[] { "Scheduled Outages", "//form//input[@value='New Name']" },
+                new String[] { "Manage Events Configuration", "//div[@id='content']//iframe" },
+                new String[] { "Manage SNMP Collections and Data Collection Groups", "//div[@id='content']//iframe" },
+                new String[] { "SNMP MIB Compiler", "//div[@id='content']//iframe" },
+                new String[] { "Ops Board Config Web UI", "//div[@id='content']//iframe" },
+                new String[] { "JMX Config Generator Web UI ALPHA", "//div[@id='content']//iframe" },
 
-    @Test
-    public void c_testLinkGroupOne() throws Exception {
-        clickAndWait("link=Configure Users, Groups and On-Call Roles");
-        waitForText("Users and Groups");
-        waitForText("Users");
-        waitForText("Groups");
-        waitForText("Roles");
-        clickAndWait("link=Admin");
-        clickAndWait("link=System Information");
-        waitForText("OpenNMS Configuration");
-        waitForText("System Configuration");
-        waitForText("Reports directory:");
-        clickAndWait("link=Admin");
-    }
+                // Node Provisioning
+                new String[] { "Add Interface for Scanning", "//h3[text()='Enter IP Address']" },
+                new String[] { "Manage Provisioning Requisitions", "//h3[text()='Default Foreign Source Definition']" },
+                new String[] { "Import and Export Asset Information", "//h3[text()='Import and Export Assets']" },
+                new String[] { "Manage Surveillance Categories", "//h3[text()='Surveillance Categories']" },
+                new String[] { "Delete Nodes", "//h3[text()='Delete Nodes']" },
 
-    @Test
-    public void d_testLinkGroupTwo() throws Exception {
-        clickAndWait("link=Configure Discovery");
-        waitForText("General settings");
-        waitForText("Specifics");
-        waitForText("Include URLs");
-        waitForText("Include Ranges");
-        waitForText("Exclude Ranges");
-        clickAndWait("link=Admin");
-        clickAndWait("link=Configure SNMP Community Names by IP");
-        waitForText("SNMP Config Lookup");
-        waitForText("Updating SNMP Configuration");
-        waitForText("Descriptions");
-        waitForText("optimize this list");
-        clickAndWait("link=Admin");
-        clickAndWait("link=Configure SNMP Data Collection per Interface");
-        waitForText("Manage SNMP Data Collection per Interface");
-        waitForText("datacollection-config.xml file");
-        clickAndWait("link=Admin");
-        clickAndWait("link=Manage and Unmanage Interfaces and Services");
-        waitForText("Manage and Unmanage Interfaces and Services");
-        waitForText("unchecked meaning");
-        waitForText("mark each service");
-        clickAndWait("link=Admin");
-        clickAndWait("link=Manage Thresholds");
-        waitForText("Threshold Configuration");
-        waitForText("Name");
-        waitForText("RRD Repository");
-        clickAndWait("//div[@id='content']/div/h2/a[2]");
-        clickAndWait("link=Configure Notifications");
-        waitForText("Configure Notifications");
-        waitForText("Event Notifications");
-        waitForText("Destination Paths");
-        waitForText("Path Outages");
-        clickAndWait("//div[@id='content']/div/h2/a[2]");
-        clickAndWait("link=Scheduled Outages");
-        waitForText("Affects...");
-        waitForText("Notifications");
-        waitForText("Data collection");
-        clickAndWait("link=Admin");
-    }
-
-    @Test
-    public void e_testLinkGroupThree() throws Exception {
-        clickAndWait("link=Add Interface for Scanning");
-        waitForText("Enter IP address");
-        waitForText("Add Interface");
-        waitForText("valid IP address");
-        clickAndWait("link=Admin");
-        clickAndWait("link=Manage Provisioning Requisitions");
-        assertEquals("Add New Requisition", selenium.getValue("css=input[type=submit]"));
-        assertEquals("Edit Default Foreign Source Definition", selenium.getValue("css=input[type=button]"));
-        assertEquals("Reset Default Foreign Source Definition", selenium.getValue("//input[@value='Reset Default Foreign Source Definition']"));
-        clickAndWait("//div[@id='content']/div/h2/a[2]");
-        clickAndWait("link=Import and Export Asset Information");
-        waitForText("Import and Export Assets");
-        waitForText("Importing Asset Information");
-        waitForText("Exporting Asset Information");
-        clickAndWait("//div[@id='content']/div/h2/a[2]");
-        clickAndWait("link=Manage Surveillance Categories");
-        waitForText("Surveillance Categories");
-        waitForText("Category");
-        assertEquals("Add New Category", selenium.getValue("css=input[type=submit]"));
-        clickAndWait("//div[@id='content']/div/h2/a[2]");
-        clickAndWait("link=Delete Nodes");
-        long endTime = System.currentTimeMillis() + 30000;
-        while(System.currentTimeMillis() < endTime){
-            if("Delete Nodes | Admin | OpenNMS Web Console".equals(selenium.getTitle())){
-                break;
-            }
-            if(endTime - System.currentTimeMillis() < 5000){
-                fail ("25 second timeout trying to reach \"Admin/Delete Nodes\" Page");
-            }
-        }
-        waitForText("Delete Nodes");
-        assertEquals("Delete Nodes | Admin | OpenNMS Web Console", selenium.getTitle());
-        clickAndWait("link=Admin");
-    }
-
-    @Test
-    public void f_testLinkGroupFour() throws Exception {
-        clickAndWait("link=Manage Applications");
-        waitForText("Applications");
-        waitForText("Edit");
-        assertEquals("Add New Application", selenium.getValue("css=input[type=submit]"));
-        clickAndWait("//div[@id='content']/div/h2/a[2]");
-        /* FIXME add location monitors so this link works
-        clickAndWait("link=Manage Location Monitors");
-        waitForText("Distributed Poller Status");
-        waitForText("Hostname");
-        assertEquals("Resume All", selenium.getValue("//input[@value='Resume All']"));
-        clickAndWait("link=Admin");
-        */
-    }
-
-    @Test
-    public void g_testLinkGroupFive() throws Exception {
-        waitForElement("//a[@href='http://www.opennms.org']");
+                // Distributed Monitoring
+                new String[] { "Manage Applications", "//h3[text()='Applications']" },
+                new String[] { "Manage Remote Pollers", "//h3[contains(text(),'Remote Poller Status')]" }
+        }) {
+            LOG.debug("clicking: '{}', expecting: '{}'", entry[0], entry[1]);
+            adminPage();
+            findElementByLink(entry[0]).click();
+            findElementByXpath(entry[1]);
+        };
     }
 }

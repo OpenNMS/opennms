@@ -312,7 +312,7 @@ public class XmlrpcAnticipator implements XmlRpcHandler {
     }
 
     // Implements Apache XMLRPC API
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked","rawtypes"})
     @Override
     public Object execute(String method, Vector vector) {
         if (m_webServer == null) {

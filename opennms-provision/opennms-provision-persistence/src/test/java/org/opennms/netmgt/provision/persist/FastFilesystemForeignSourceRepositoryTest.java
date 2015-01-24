@@ -50,7 +50,7 @@ public class FastFilesystemForeignSourceRepositoryTest extends ForeignSourceRepo
     private String m_defaultForeignSourceName;
 
     @Autowired
-    @Qualifier("fast")
+    @Qualifier("fastFilePending")
     private ForeignSourceRepository m_foreignSourceRepository;
 
     @Before
@@ -62,6 +62,7 @@ public class FastFilesystemForeignSourceRepositoryTest extends ForeignSourceRepo
         Requisition r = m_foreignSourceRepository.importResourceRequisition(new ClassPathResource("/requisition-test.xml"));
         m_foreignSourceRepository.save(r);
         m_foreignSourceRepository.flush();
+        Thread.sleep(2000); // Give enough time to watcher's thread to cache the requisition
         return r;
     }
 
@@ -71,6 +72,7 @@ public class FastFilesystemForeignSourceRepositoryTest extends ForeignSourceRepo
         fs.addPolicy(new PluginConfig("all-ipinterfaces", "org.opennms.netmgt.provision.persist.policies.InclusiveInterfacePolicy"));
         m_foreignSourceRepository.save(fs);
         m_foreignSourceRepository.flush();
+        Thread.sleep(2000); // Give enough time to watcher's thread to cache the requisition
         return fs;
     }
 

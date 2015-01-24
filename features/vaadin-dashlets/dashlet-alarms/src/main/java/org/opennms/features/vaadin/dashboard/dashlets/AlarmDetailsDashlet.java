@@ -227,7 +227,7 @@ public class AlarmDetailsDashlet extends AbstractDashlet {
                         List<Restriction> restrictions = new LinkedList<Restriction>();
                         restrictions.add(new InRestriction("id", alarmIds));
 
-                        ((OnmsDaoContainer) m_alarmTable.getContainerDataSource()).setRestrictions(restrictions);
+                        ((OnmsDaoContainer<?,?>) m_alarmTable.getContainerDataSource()).setRestrictions(restrictions);
                     }
 
                     setBoosted(checkBoosted(alarms));
@@ -312,7 +312,6 @@ public class AlarmDetailsDashlet extends AbstractDashlet {
                     }
                 }
 
-                String s = "";
                 sb.append("<tr class='" + onmsAlarm.getSeverity().getLabel() + " onms'>");
                 sb.append("<td class='divider bright onms' valign='middle' rowspan='1'><nobr>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + onmsAlarm.getId() + "</nobr></td>");
                 sb.append("<td class='divider onms' valign='middle' rowspan='1'><nobr>" + onmsAlarm.getSeverity().getLabel() + "</nobr></td>");

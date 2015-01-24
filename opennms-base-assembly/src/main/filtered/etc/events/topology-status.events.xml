@@ -8,7 +8,7 @@ Events for topology linkDown and linkUp
     <descr>
       &lt;p&gt;node: %nodeid% with ifindex: %ifindex% is down &lt;/p&gt;
     </descr>
-    <logmsg dest='logndisplay'>
+    <logmsg dest='donotpersist'>
       node: %nodeid% with ifindex: %ifindex% is down
     </logmsg>
     <severity>Minor</severity>
@@ -20,7 +20,7 @@ Events for topology linkDown and linkUp
     <descr>
       &lt;p&gt;node: %nodeid% with ifindex: %ifindex% is up &lt;/p&gt;
     </descr>
-    <logmsg dest='logndisplay'>
+    <logmsg dest='donotpersist'>
       node: %nodeid% with ifindex: %ifindex% is up
     </logmsg>
     <severity>Normal</severity>

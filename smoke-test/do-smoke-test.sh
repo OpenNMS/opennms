@@ -12,7 +12,7 @@ if [ -z "$MATCH_RPM" ]; then
 	MATCH_RPM=no
 fi
 OPENNMS_HOME=/opt/opennms
-SOURCEDIR="$ME/opennms-source"
+SOURCEDIR="$ME/.."
 
 PACKAGES="$@"; shift
 if [ -z "$PACKAGES" ]; then
@@ -56,10 +56,10 @@ get_hash_from_rpm() {
 }
 
 clean_maven() {
-	banner "Cleaning out old Maven files"
+	banner "Cleaning out old Maven files that can conflict or have issues."
 
 	if [ -d "$HOME/.m2/repository" ]; then
-		rm -rf "${HOME}"/.m2/repository
+		rm -rf "${HOME}"/.m2/repository/org/opennms "${HOME}"/.m2/repository/org/springframework
 	fi
 }
 
@@ -91,6 +91,7 @@ reset_opennms() {
 	banner "Resetting OpenNMS Installation"
 
 	do_log "opennms stop"
+	/sbin/service opennms stop
 	ps auxwww | grep opennms_bootstrap | awk '{ print $2 }' | xargs kill -9
 
 	do_log "clean_yum"
@@ -111,33 +112,12 @@ reset_opennms() {
 	fi
 }
 
-get_source() {
-	banner "Getting OpenNMS Source"
-
-	do_log "rsync source from $ME to $SOURCEDIR"
-	rsync -ar --exclude=target --exclude=smoke-test --delete "$ME"/../  "$SOURCEDIR"/ || die "Unable to create source dir."
-
-	pushd "$SOURCEDIR"
-		do_log "cleaning git"
-		git clean -fdx || die "Unable to clean source tree."
-		git reset --hard HEAD
-
-		# if $MATCH_RPM is set to "yes", then reset the code to the git hash the RPM was built from
-		case $MATCH_RPM in
-			yes|y)
-				do_log "resetting git hash"
-				git reset --hard `get_hash_from_rpm` || die "Unable to reset git tree."
-				;;
-		esac
-	popd
-}
-
 build_tests() {
 	banner "Compiling Tests"
 
 	pushd "$SOURCEDIR"
-		do_log "bin/bamboo.pl -Psmoke --projects :smoke-test --also-make install"
-		bin/bamboo.pl -Psmoke --projects :smoke-test --also-make install
+		do_log "./compile.pl -Psmoke --projects :smoke-test --also-make clean install"
+		./compile.pl -Psmoke --projects :smoke-test --also-make clean install || die "failed to compile smoke tests"
 	popd
 
 }
@@ -158,19 +138,45 @@ configure_opennms() {
 	popd
 
 	do_log "runjava -s"
-	$OPENNMS_HOME/bin/runjava -s || die "'runjava -s' failed."
+	"$OPENNMS_HOME/bin/runjava" -s || die "'runjava -s' failed."
 
 	do_log "install -dis"
-	$OPENNMS_HOME/bin/install -dis || die "Unable to run OpenNMS install."
+	"$OPENNMS_HOME/bin/install" -dis || die "Unable to run OpenNMS install."
 }
 
 start_opennms() {
 	banner "Starting OpenNMS"
 
+	do_log "find \*.rpmorig -o -name \*.rpmnew"
+	find "$OPENNMS_HOME" -type f -name \*.rpmorig -o -name \*.rpmnew
+
 	do_log "opennms start"
-	/etc/init.d/opennms start || die "Unable to start OpenNMS."
-	# wait a little longer for OSGi to settle down after we know OpenNMS came up
-	sleep 20
+	/sbin/service opennms restart
+	RETVAL=$?
+
+	if [ $? -gt 0 ]; then
+		if [ -x /usr/bin/systemctl ]; then
+			/usr/bin/systemctl status opennms.service
+		fi
+		die "OpenNMS failed to start."
+	fi
+
+#	COUNT=0
+#	do_log "Waiting for OpenNMS to start..."
+#	while true; do
+#		if [ $COUNT -gt 300 ]; then
+#			do_log "We've waited 5 minutes and OpenNMS still hasn't started.  Bailing."
+#			exit 1
+#		fi
+#		COUNT=`expr $COUNT + 1`
+#		MANAGER_LOG=`find "$OPENNMS_HOME"/logs -name manager.log 2>/dev/nul`
+#		if [ -n "$MANAGER_LOG" ] && [ -e "$MANAGER_LOG" ]; then
+#			if [ `grep -c "Startup complete" "$MANAGER_LOG"` -gt 0 ]; then
+#				do_log "OpenNMS startup complete."
+#				break
+#			fi
+#		fi
+#	done
 }
 
 clean_firefox() {
@@ -182,20 +188,35 @@ run_tests() {
 
 	local RETVAL=0
 
+	EXTRA_ARGS=""
+#	CHROMEDRIVER="/usr/local/bin/chromedriver"
+#	CHROME="/usr/bin/google-chrome"
+#
+#	if [ -e "$CHROMEDRIVER" ] && [ -e "$CHROME" ]; then
+#		do_log "found Chrome and ChromeDriver, using it instead"
+#		EXTRA_ARGS="-Dorg.opennms.smoketest.webdriver.class=org.openqa.selenium.chrome.ChromeDriver -Dwebdriver.chrome.driver=$CHROMEDRIVER"
+#	else
+#		do_log "no Chrome found, using defaults"
+#	fi
+
+	EXTRA_ARGS=""
+#	CHROMEDRIVER="/usr/local/bin/chromedriver"
+#	CHROME="/usr/bin/google-chrome"
+#
+#	if [ -e "$CHROMEDRIVER" ] && [ -e "$CHROME" ]; then
+#		do_log "found Chrome and ChromeDriver, using it instead"
+#		EXTRA_ARGS="-Dorg.opennms.smoketest.webdriver.class=org.openqa.selenium.chrome.ChromeDriver -Dwebdriver.chrome.driver=$CHROMEDRIVER"
+#	else
+#		do_log "no Chrome found, using defaults"
+#	fi
+
 	do_log "compile.pl test"
 	pushd "$SOURCEDIR/smoke-test"
-		../compile.pl -t -Dorg.opennms.smoketest.logLevel=INFO test
+		../compile.pl -t -Dorg.opennms.smoketest.logLevel=INFO $EXTRA_ARGS test
 		RETVAL=$?
 	popd
 
 	return $RETVAL
-}
-
-post_clean() {
-	rsync -ar "${SOURCEDIR}/smoke-test/target/" target/ || :
-	rm -rf "${SOURCEDIR}" || :
-	rm -rf "${HOME}"/.m2/repository || :
-	rm -rf "${ME}"/../target || :
 }
 
 stop_opennms() {
@@ -213,16 +234,14 @@ stop_opennms() {
 clean_maven
 reset_opennms
 reset_database
-get_source
-build_tests
 configure_opennms
 start_opennms
 clean_firefox
 
+build_tests
 run_tests
 RETVAL=$?
 
-post_clean
 stop_opennms
 
 exit $RETVAL

@@ -574,7 +574,6 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
         private final Map<String, Object> m_parameterMap;
         private final HttpPageSequence m_pageSequence;
 
-        @SuppressWarnings("unchecked")
         PageSequenceMonitorParameters(final Map<String, Object> parameterMap) {
             m_parameterMap = parameterMap;
 

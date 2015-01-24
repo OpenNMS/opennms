@@ -34,7 +34,7 @@
 	session="true"
 %>
 
-<jsp:include page="/includes/header.jsp" flush="false" >
+<jsp:include page="/includes/bootstrap.jsp" flush="false" >
   <jsp:param name="title" value="Service Level Monitoring" />
   <jsp:param name="headTitle" value="Service Level Monitoring" />
   <jsp:param name="breadcrumb" value="SLM" />
@@ -42,4 +42,4 @@
 
 <jsp:include page="/includes/categories-box.jsp" flush="false" />
 
-<jsp:include page="/includes/footer.jsp" flush="false" />
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />

@@ -51,7 +51,7 @@ public class DirectoryWatcherTest {
 	private DirectoryWatcher<String> m_watcher;
 
 	@Before
-	public void setUp() throws IOException {
+	public void setUp() throws Exception {
 		
 		m_bldr = new FileSystemBuilder("target", "DirectoryWatcherTest");
 		m_bldr.file("file1.xml", "file1Contents").file("file2.xml", "file2Contents");
@@ -70,8 +70,9 @@ public class DirectoryWatcherTest {
 	}
 	
 	@After
-	public void tearDown() throws IOException {
+	public void tearDown() throws Exception {
 		m_bldr.cleanup();
+		m_watcher.stop();
 	}
 
 	@Test
@@ -113,12 +114,12 @@ public class DirectoryWatcherTest {
 	public void testGetFilesNames() {
 		assertEquals(set("file1.xml", "file2.xml"), m_watcher.getFileNames());
 		assertEquals(set("file1", "file2"), m_watcher.getBaseNamesWithExtension(".xml"));
-		assertEquals(set(), m_watcher.getBaseNamesWithExtension(".txt"));
+		assertEquals(Collections.emptySet(), m_watcher.getBaseNamesWithExtension(".txt"));
 	}
 	
 	
-	public <T> Set<T> set(T... items) {
-		Set<T> set = new LinkedHashSet<T>();
+	private static Set<String> set(String... items) {
+		Set<String> set = new LinkedHashSet<String>();
 		Collections.addAll(set, items);
 		return set;
 	}

@@ -36,16 +36,16 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 
 
-<div id="category-box">
-
-<h3 class="o-box">
-  Surveillance Category Memberships
-  <c:if test="${isAdmin == 'true'}">
-    (<a href="<c:url value="admin/categories.htm?edit&amp;node=${param.node}"/>">Edit</a>)
-  </c:if>
-</h3>
-
-<table class="o-box">
+<div id="category-box" class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title">
+  	  Surveillance Category Memberships
+  	  <c:if test="${isAdmin == 'true'}">
+  	     (<a href="<c:url value="admin/categories.htm?edit&amp;node=${param.node}"/>">Edit</a>)
+      </c:if>
+    </h3>
+  </div>
+  <table class="table table-condensed">
   <c:if test="${empty categories}">
     <tr>
       <td>This node is not a member of any categories.</td>

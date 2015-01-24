@@ -91,6 +91,12 @@ public class ReadmailHost implements Serializable {
         super();
     }
 
+    public ReadmailHost(final String host, final Long port) {
+        super();
+        m_host = host;
+        m_port = port;
+    }
+
     public void deletePort() {
         m_port = null;
     }

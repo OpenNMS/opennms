@@ -35,7 +35,7 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="ec" uri="http://www.extremecomponents.org" %>
 
-<jsp:include page="/includes/header.jsp" flush="false" >
+<jsp:include page="/includes/bootstrap.jsp" flush="false" >
   <jsp:param name="title" value="Statistics Reports List" />
   <jsp:param name="headTitle" value="Statistics Reports List" />
   <jsp:param name="location" value="reports" />
@@ -44,14 +44,15 @@
   <jsp:param name="breadcrumb" value="List"/>
 </jsp:include>
 
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title">Statistics Report List</h3>
+  </div>
+  <div class="panel-body">
+
 <c:choose>
   <c:when test="${empty model}">
-    <h3>Report List</h3>
-    <div class="boxWrapper">
-      <p>
-        None found.
-      </p>
-    </div>
+    <p>None found.</p>
   </c:when>
 
   <c:otherwise>
@@ -65,7 +66,6 @@
         action="${relativeRequestPath}?${pageContext.request.queryString}"
         filterable="true"
         imagePath="images/table/compact/*.gif"
-        title="Statistics Report List"
         tableId="reportList"
         form="form"
         rowsDisplayed="25"
@@ -119,6 +119,7 @@
     </form>
   </c:otherwise>
 </c:choose>
+  </div> <!-- panel-body -->
+</div> <!-- panel -->
 
-
-<jsp:include page="/includes/footer.jsp" flush="false"/>
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="false"/>

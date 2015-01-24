@@ -407,7 +407,7 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
         }
 
 	s_log.info("MockSnmpAgent: Shutdown called stopping agent.");
-        for (final TransportMapping transportMapping : transportMappings) {
+        for (final TransportMapping<?> transportMapping : transportMappings) {
             try {
                 if (transportMapping != null) {
                 	transportMapping.close();
@@ -641,12 +641,12 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
     }
 
     public InetAddress getInetAddress() {
-        final TransportMapping mapping = transportMappings[0];
+        final TransportMapping<?> mapping = transportMappings[0];
         return ((MockUdpTransportMapping)mapping).getInetAddress();
     }
 
     public int getPort() {
-        final TransportMapping mapping = transportMappings[0];
+        final TransportMapping<?> mapping = transportMappings[0];
         return ((MockUdpTransportMapping)mapping).getPort();
     }
 

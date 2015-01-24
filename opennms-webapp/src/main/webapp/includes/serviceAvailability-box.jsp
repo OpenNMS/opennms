@@ -137,8 +137,11 @@
     String timelineUrl = "/opennms/rest/timeline/html/" + String.valueOf(nodeId) + "/" + ipAddr + "/" + service.getServiceName() + "/" + timelineStart + "/" + timelineEnd + "/" + timelineWidth;
 %>
 
-<h3>Overall Availability</h3>
-<table>
+<div class="panel panel-default">
+<div class="panel-heading">
+    <h3 class="panel-title">Overall Availability</h3>
+</div>
+<table class="table table-condensed severity">
   <tr class="CellStatus">
     <td class="Cleared nobright" colspan="2"><%=ipAddr%></td>
     <td class="Cleared nobright"><img src="/opennms/rest/timeline/header/<%=timelineStart%>/<%=timelineEnd%>/<%=timelineWidth%>"></td>
@@ -146,7 +149,7 @@
   </tr>
   <tr class="CellStatus"/>
     <td class="Cleared nobright"></td>
-    <td class="<%=warnClass%> bright"><%=service.getServiceName()%></td>
+    <td class="severity-<%=warnClass%> bright"><%=service.getServiceName()%></td>
     <%
         if (service.isManaged()) {
     %>
@@ -161,3 +164,4 @@
     <td class="<%= styleClass %> nobright"><%= statusContent %></td>
   </tr>
 </table>
+</div>

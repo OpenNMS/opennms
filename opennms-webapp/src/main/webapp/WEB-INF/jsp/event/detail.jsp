@@ -45,7 +45,6 @@
 <%@page import="org.opennms.core.utils.WebSecurityUtils"%>
 
 <%
-
 	XssRequestWrapper req = new XssRequestWrapper(request);
 	Event[] events = (Event[])req.getAttribute("events");
 	Event event = null;
@@ -76,7 +75,7 @@
 				Matcher m = p.matcher(parmString);
 				if (!m.matches()) {
 					log("Could not match event parameter string element '"
-						+ parmString + "' in event ID " + event.getId());
+						+ parmString + "' in event ID " + (event == null? "NULL" : event.getId()) );
 					continue;
 				}
 				
@@ -87,45 +86,53 @@
 
 %>
 
-<jsp:include page="/includes/header.jsp" flush="false" >
+<% boolean provisioned = parms.containsKey(EventConstants.PARM_LOCATION_MONITOR_ID); %>
+<% boolean acknowledgeEvent = "true".equals(System.getProperty("opennms.eventlist.acknowledge")); %>
+<% boolean canAck = (request.isUserInRole(org.opennms.web.api.Authentication.ROLE_ADMIN) || !request.isUserInRole(org.opennms.web.api.Authentication.ROLE_READONLY)); %>
+
+<c:set var="provisioned" value="<%=provisioned%>"/>
+<c:set var="acknowledgeEvent" value="<%=acknowledgeEvent%>"/>
+
+<jsp:include page="/includes/bootstrap.jsp" flush="false" >
   <jsp:param name="title" value="Event Detail" />
   <jsp:param name="headTitle" value="Detail" />
   <jsp:param name="headTtitle" value="Events" />
   <jsp:param name="breadcrumb" value="<a href='event/index'>Events</a>" />
-  <jsp:param name="breadcrumb" value="Detail" />
+  <jsp:param name="breadcrumb" value="<%="Event " + (event == null? "Not Found" : event.getId()) %>" />
 </jsp:include>
-	 <% if (event == null ) { %>
-      <h3>Event Not Found in Database</h3>
-	<% } else { %>
-      <h3>Event <%=event.getId()%></h3>
 
-      <% String acknowledgeEvent = System.getProperty("opennms.eventlist.acknowledge"); %>
+<% if (event == null ) { %>
+    <p>Event not found in database.</p>
+<% } else { %>
 
-      <table>
-        <tr class="<%= event.getSeverity().getLabel() %>">
-          <th class="divider" width="100em">Severity</th>
-          <td class="divider" width="28%"><%= event.getSeverity().getLabel() %></td>
-          <th class="divider" width="100em">Node</th>
-          <td class="divider" width="28%">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Event <%=event.getId()%></h3>
+      </div>
+
+      <table class="table table-condensed severity">
+        <tr class="severity-<%= event.getSeverity().getLabel().toLowerCase() %>">
+          <th class="col-md-1">Severity</th>
+          <td class="col-md-3 bright"><%= event.getSeverity().getLabel() %></td>
+          <th class="col-md-1">Node</th>
+          <td ${acknowledgeEvent ? '' : 'colspan="3"'} class="${acknowledgeEvent ? 'col-md-3' : 'col-md-7'}">
             <% if( event.getNodeId() > 0 ) { %>
               <a href="element/node.jsp?node=<%=event.getNodeId()%>"><%=event.getNodeLabel()%></a>
             <% } else {%>
               &nbsp;
             <% } %>
           </td>
-          <% if ("true".equals(acknowledgeEvent)) { %>
-          <th class="divider" width="100em">Acknowledged&nbsp;By</th>
-          <td class="divider" width="28%"><%=event.getAcknowledgeUser()!=null ? event.getAcknowledgeUser() : "&nbsp;"%></td>
-          <% } else { %>
-          <td class="divider" colspan="2">&nbsp;</td>
-          <% } %>
+          <c:if test="${acknowledgeEvent}">
+            <th class="col-md-1">Acknowledged&nbsp;By</th>
+            <td class="col-md-3"><%=event.getAcknowledgeUser()!=null ? event.getAcknowledgeUser() : "&nbsp;"%></td>
+          </c:if>
         </tr>
-        
-        <tr  class="<%= event.getSeverity().getLabel() %>">
-          <th>Time</th>
-          <td><fmt:formatDate value="<%=event.getTime()%>" type="BOTH" /></td>
-          <th>Interface</th>
-          <td>
+
+        <tr class="severity-<%= event.getSeverity().getLabel().toLowerCase() %>">
+          <th class="col-md-1">Time</th>
+          <td class="col-md-3"><fmt:formatDate value="<%=event.getTime()%>" type="BOTH" /></td>
+          <th class="col-md-1">Interface</th>
+          <td ${acknowledgeEvent ? '' : 'colspan="3"'} class="${acknowledgeEvent ? 'col-md-3' : 'col-md-7'}">
             <% if( event.getIpAddress() != null ) { %>
               <% if( event.getNodeId() > 0 ) { %>
                 <c:url var="interfaceLink" value="element/interface.jsp">
@@ -140,9 +147,9 @@
               &nbsp;
             <% } %>
           </td>
-          <% if ("true".equals(acknowledgeEvent)) { %>
-          <th>Time&nbsp;Acknowledged</th>
-          <td>
+          <c:if test="${acknowledgeEvent}">
+          <th class="col-md-1">Time&nbsp;Acknowledged</th>
+          <td class="col-md-3">
           <c:choose>
             <c:when test="<%=event.getAcknowledgeTime() != null%>">
               <fmt:formatDate value="<%=event.getAcknowledgeTime()%>" type="BOTH" />
@@ -152,14 +159,13 @@
             </c:otherwise>
           </c:choose>
           </td>
-          <% } else { %>
-          <td colspan="2">&nbsp;</td>
-          <% } %>
+          </c:if>
         </tr>
         
-        <tr class="<%= event.getSeverity().getLabel() %>">
-          <th>Service</th>
-          <td>
+        <tr class="severity-<%= event.getSeverity().getLabel().toLowerCase() %>">
+          <th class="col-md-1">Service</th>
+          <!-- If the node is not provisioned, then expand the service row out with colspan 5, col-md-11 -->
+          <td ${provisioned ? '' : 'colspan="5"'} class="${provisioned ? 'col-md-3' : 'col-md-11'}">
             <% if( event.getServiceName() != null ) { %>
               <% if( event.getIpAddress() != null && event.getNodeId() > 0 ) { %>
                 <c:url var="serviceLink" value="element/service.jsp">
@@ -175,69 +181,65 @@
               &nbsp;
             <% } %>
           </td>
-          <% if (parms.containsKey(EventConstants.PARM_LOCATION_MONITOR_ID)) { %>
-            <th>Location&nbsp;Monitor&nbsp;ID</th>
-            <td><a href="distributed/locationMonitorDetails.htm?monitorId=<%= parms.get(EventConstants.PARM_LOCATION_MONITOR_ID)%>"><%= parms.get(EventConstants.PARM_LOCATION_MONITOR_ID) %></a></td>
-            <td colspan="2">&nbsp;</td>
-          <% } else { %>
-            <td colspan="4">&nbsp;</td>
-          <% } %>
+          <c:if test="${provisioned}">
+            <th class="col-md-1">Location&nbsp;Monitor&nbsp;ID</th>
+            <td colspan="3" class="col-md-7"><a href="distributed/locationMonitorDetails.htm?monitorId=<%= parms.get(EventConstants.PARM_LOCATION_MONITOR_ID)%>"><%= parms.get(EventConstants.PARM_LOCATION_MONITOR_ID) %></a></td>
+          </c:if>
         </tr> 
           
-        <tr class="<%= event.getSeverity().getLabel() %>">
-          	<th>UEI</th>
-                <td>
+        <tr class="severity-<%= event.getSeverity().getLabel().toLowerCase() %>">
+          	<th class="col-md-1">UEI</th>
+                <td colspan="5" class="col-md-11">
           	<% if( event.getUei() != null ) { %>
           	      <%=event.getUei()%>
           	<% } else {%>
                 	&nbsp;
           	<% } %>
                 </td>
-                <td colspan="4">&nbsp;</td>
         </tr>
       </table>
+    </div>
 
-      <table>
-        <tr class="<%= event.getSeverity().getLabel() %>">
-          <th>Log&nbsp;Message</th>
-        </tr>
-        <tr class="<%= event.getSeverity().getLabel() %>">
-          <td><%=WebSecurityUtils.sanitizeString(event.getLogMessage(), true)%></td>
-        </tr>
-      </table>
+    <div class="panel panel-default severity">
+      <div class="panel-heading">
+        <h3 class="panel-title">Log&nbsp;Message</h3>
+      </div>
+      <div class="panel-body severity-<%= event.getSeverity().getLabel().toLowerCase() %>">
+        <%=WebSecurityUtils.sanitizeString(event.getLogMessage(), true)%>
+      </div>
+    </div>
 
-      <table>
-        <tr class="<%= event.getSeverity().getLabel() %>">
-          <th>Description</th>
-        </tr>
-        <tr class="<%= event.getSeverity().getLabel() %>">
-          <td><%=WebSecurityUtils.sanitizeString(event.getDescription(), true)%></td>
-        </tr>
-      </table>
-      
-      <table>
-        <tr class="<%= event.getSeverity().getLabel() %>">
-          <th>Operator&nbsp;Instructions</th>
-        </tr>
-        <tr class="<%= event.getSeverity().getLabel() %>">
-          <td>
-	    <%if (event.getOperatorInstruction()==null) { %>
-              No instructions available
-            <% } else { %>
-              <%=event.getOperatorInstruction()%>
-            <% } %>
-	  </td>
-        </tr>
-      </table>
+    <div class="panel panel-default severity">
+      <div class="panel-heading">
+        <h3 class="panel-title">Description</h3>
+      </div>
+      <div class="panel-body severity-<%= event.getSeverity().getLabel().toLowerCase() %>">
+        <%=WebSecurityUtils.sanitizeString(event.getDescription(), true)%>
+      </div>
+    </div>
 
-      <% 
-      if( ( request.isUserInRole( org.opennms.web.api.Authentication.ROLE_ADMIN ) || !request.isUserInRole( org.opennms.web.api.Authentication.ROLE_READONLY ) ) && "true".equals(acknowledgeEvent)) { %>
-        <form method="post" action="event/acknowledge">
-          <input type="hidden" name="actionCode" value="<%=action%>" />
-          <input type="hidden" name="event" value="<%=event.getId()%>"/>
-          <input type="hidden" name="redirect" value="<%= "detail.jsp?" + request.getQueryString()%>" />
-          <input type="submit" value="<%=buttonName%>"/>
-        </form>
-      <% } %>
-   <% } %>   
-<jsp:include page="/includes/footer.jsp" flush="false" />
+    <div class="panel panel-default severity">
+      <div class="panel-heading">
+        <h3 class="panel-title">Operator&nbsp;Instructions</h3>
+      </div>
+      <div class="panel-body severity-<%= event.getSeverity().getLabel().toLowerCase() %>">
+        <% if (event.getOperatorInstruction()==null) { %>
+          No instructions available.
+        <% } else { %>
+          <%=event.getOperatorInstruction()%>
+        <% } %>
+      </div>
+    </div>
+ 
+    <c:if test="<%=canAck && acknowledgeEvent %>">
+      <form method="post" action="event/acknowledge">
+        <input type="hidden" name="actionCode" value="<%=action%>" />
+        <input type="hidden" name="event" value="<%=event.getId()%>"/>
+        <input type="hidden" name="redirect" value="<%= "detail.jsp?" + request.getQueryString()%>" />
+        <input type="submit" value="<%=buttonName%>"/>
+      </form>
+    </c:if>
+
+<% } %>
+
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />
