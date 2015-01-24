@@ -89,7 +89,7 @@ class SyslogReceiver implements Runnable {
 
     private final HideMessage m_HideMessages;
 
-    private final List<ExecutorService> m_executors = new ArrayList<ExecutorService>();
+    private final ExecutorService m_executor;
 
     /**
      * construct a new receiver
@@ -110,24 +110,15 @@ class SyslogReceiver implements Runnable {
         m_UeiList = ueiList;
         m_HideMessages = hideMessages;
 
-        m_executors.add(new ThreadPoolExecutor(
+        m_executor = new ThreadPoolExecutor(
             1,
             Integer.MAX_VALUE,
             100L,
             TimeUnit.MILLISECONDS,
             new LinkedBlockingQueue<Runnable>(),
             new LogPreservingThreadFactory(getClass().getSimpleName(), Integer.MAX_VALUE)
-        ));
-
-        m_executors.add(new ThreadPoolExecutor(
-            1,
-            Integer.MAX_VALUE,
-            100L,
-            TimeUnit.MILLISECONDS,
-            new LinkedBlockingQueue<Runnable>(),
-            new LogPreservingThreadFactory(getClass().getSimpleName(), Integer.MAX_VALUE)
-        ));
-}
+        );
+    }
 
     /*
      * stop the current receiver
@@ -138,9 +129,7 @@ class SyslogReceiver implements Runnable {
         m_stop = true;
 
         // Shut down the thread pools that are executing SyslogConnection and SyslogProcessor tasks
-        for (ExecutorService service : m_executors) {
-            service.shutdown();
-        }
+        m_executor.shutdown();
 
         if (m_context != null) {
             LOG.debug("Stopping and joining thread context {}", m_context.getName());
@@ -205,7 +194,7 @@ class SyslogReceiver implements Runnable {
                 m_dgSock.receive(pkt);
 
                 //SyslogConnection *Must* copy packet data and InetAddress as DatagramPacket is a mutable type
-                WaterfallExecutor.waterfall(m_executors, new SyslogConnection(pkt, m_matchPattern, m_hostGroup, m_messageGroup, m_UeiList, m_HideMessages, m_discardUei));
+                WaterfallExecutor.waterfall(m_executor, new SyslogConnection(pkt, m_matchPattern, m_hostGroup, m_messageGroup, m_UeiList, m_HideMessages, m_discardUei));
                 ioInterrupted = false; // reset the flag
             } catch (SocketTimeoutException e) {
                 ioInterrupted = true;

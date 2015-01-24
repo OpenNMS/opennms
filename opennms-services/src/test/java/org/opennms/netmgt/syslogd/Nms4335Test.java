@@ -37,7 +37,6 @@ import java.lang.reflect.UndeclaredThrowableException;
 import java.net.BindException;
 import java.net.DatagramPacket;
 import java.net.UnknownHostException;
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -91,10 +90,7 @@ public class Nms4335Test implements InitializingBean {
     @Autowired
     private MockEventIpcManager m_eventIpcManager;
 
-    private final List<ExecutorService> m_executorServices = Arrays.asList(new ExecutorService[] {
-            Executors.newFixedThreadPool(3),
-            Executors.newFixedThreadPool(3)
-    });
+    private final ExecutorService m_executorServices = Executors.newCachedThreadPool();
 
     @Override
     public void afterPropertiesSet() throws Exception {

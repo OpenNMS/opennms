@@ -32,12 +32,12 @@ import java.io.UnsupportedEncodingException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.concurrent.Callable;
 
-import org.opennms.core.concurrent.WaterfallCallable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.config.syslogd.HideMessage;
 import org.opennms.netmgt.config.syslogd.UeiList;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>SyslogConnection class.</p>
@@ -46,7 +46,7 @@ import org.opennms.netmgt.config.syslogd.UeiList;
  * @author <a href="mailto:joed@opennms.org">Johan Edstrom</a>
  * @author <a href="mailto:mhuot@opennms.org">Mike Huot</a>
  */
-public class SyslogConnection implements WaterfallCallable {
+public class SyslogConnection implements Callable<Callable<?>> {
     private static final Logger LOG = LoggerFactory.getLogger(SyslogConnection.class);
 
     private final DatagramPacket _packet;

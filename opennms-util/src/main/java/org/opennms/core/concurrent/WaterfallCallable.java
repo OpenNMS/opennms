@@ -29,5 +29,38 @@
 package org.opennms.core.concurrent;
 
 import java.util.concurrent.Callable;
+import java.util.concurrent.Executor;
 
-public interface WaterfallCallable extends Callable<Callable<?>> {}
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+public class WaterfallCallable implements Runnable {
+
+    private static Logger LOG = LoggerFactory.getLogger(WaterfallCallable.class);
+
+    private final Executor m_service;
+    private final Callable<Callable<?>> m_callable;
+
+    public WaterfallCallable(Executor service, Callable<Callable<?>> callable) {
+        m_service = service;
+        m_callable = callable;
+    }
+
+    /**
+     * This method will execute the given {@link Callable} and if it returns a subsequent
+     * {@link Callable}, it will enqueue the subsequent {@link Callable} on the same
+     * {@link ExecutorO}.
+     */
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    @Override
+    public void run() {
+        try {
+            Callable next = m_callable.call();
+            if (next != null) {
+                m_service.execute(new WaterfallCallable(m_service, next));
+            }
+        } catch (Throwable e) {
+            LOG.warn("Exception while executing callable: " + e.getMessage(), e);
+        }
+    }
+}
