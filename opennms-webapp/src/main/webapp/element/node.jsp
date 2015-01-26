@@ -44,6 +44,7 @@
         java.sql.SQLException,
         org.opennms.core.soa.ServiceRegistry,
         org.opennms.core.utils.InetAddressUtils,
+        org.opennms.core.utils.WebSecurityUtils,
         org.opennms.netmgt.config.PollOutagesConfigFactory,
         org.opennms.netmgt.config.poller.outages.Outage,
         org.opennms.netmgt.model.OnmsNode,
@@ -166,7 +167,7 @@
     Asset asset = m_model.getAsset(nodeId);
     nodeModel.put("asset", asset);
     if (asset != null && asset.getBuilding() != null && asset.getBuilding().length() > 0) {
-        nodeModel.put("statusSite", asset.getBuilding());
+        nodeModel.put("statusSite", WebSecurityUtils.sanitizeString(asset.getBuilding(),true));
     }
     
     nodeModel.put("lldp",    EnLinkdElementFactory.getInstance(getServletContext()).getLldpElement(nodeId));
@@ -205,6 +206,10 @@
     nodeModel.put("showRancid","true".equalsIgnoreCase(Vault.getProperty("opennms.rancidIntegrationEnabled")));
     
     nodeModel.put("node", node_db);
+    nodeModel.put("sysName", WebSecurityUtils.sanitizeString(node_db.getSysName()));
+    nodeModel.put("sysLocation", WebSecurityUtils.sanitizeString(node_db.getSysLocation()));
+    nodeModel.put("sysContact", WebSecurityUtils.sanitizeString(node_db.getSysContact(), true));
+    nodeModel.put("sysDescription", WebSecurityUtils.sanitizeString(node_db.getSysDescription()));
     
     if(!(node_db.getForeignSource() == null) && !(node_db.getForeignId() == null)) {
         nodeModel.put("parentRes", node_db.getForeignSource() + ":" + node_db.getForeignId());
@@ -454,7 +459,7 @@ function confirmAssetEdit() {
     <table class="o-box">
       <tr>
         <th>Name</th>
-        <td>${model.node.sysName}</td>
+        <td>${model.sysName}</td>
       </tr>
       <tr>
         <th>sysObjectID</th>
@@ -462,15 +467,15 @@ function confirmAssetEdit() {
       </tr>
       <tr>
         <th>Location</th>
-        <td>${model.node.sysLocation}</td>
+        <td>${model.sysLocation}</td>
       </tr>
       <tr>
         <th>Contact</th>
-        <td>${model.node.sysContact}</td>
+        <td>${model.sysContact}</td>
       </tr>
       <tr>
         <th valign="top">Description</th>
-        <td valign="top">${model.node.sysDescription}</td>
+        <td valign="top">${model.sysDescription}</td>
       </tr>
     </table>
   </c:if>
