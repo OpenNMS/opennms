@@ -28,9 +28,11 @@
 
 package org.opennms.protocols.xml.collector;
 
+import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.net.URLDecoder;
 
 import org.opennms.protocols.http.HttpUrlConnection;
 import org.opennms.protocols.http.HttpUrlHandler;
@@ -67,7 +69,17 @@ public class UrlFactory {
      * @throws MalformedURLException the malformed URL exception
      */
     public static URL getUrl(String urlStr, Request request) throws MalformedURLException {
+        // If the URL contains a username/password, it might need to be decoded
+        if(urlStr.contains("@")){
+            try {
+                urlStr = URLDecoder.decode(urlStr, "UTF-8");
+                LOG.debug("Decoded URL is: " + urlStr);
+            } catch (UnsupportedEncodingException e1) {
+                e1.printStackTrace();
+            }
+        }
         URL url = null;
+        
         String protocol = null;
         try {
             protocol = urlStr.substring(0, urlStr.indexOf("://")).toLowerCase();
