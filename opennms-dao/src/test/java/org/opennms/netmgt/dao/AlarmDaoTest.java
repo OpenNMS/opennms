@@ -37,7 +37,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.junit.Assert;
-
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.criteria.Alias;
@@ -208,6 +208,7 @@ public class AlarmDaoTest implements InitializingBean {
     
 	@Test
 	@Transactional
+	@Ignore
     public void testWithoutDistPoller() {
         OnmsEvent event = new OnmsEvent();
         event.setEventLog("Y");

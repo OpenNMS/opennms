@@ -81,14 +81,14 @@
   </filter>
 
   <filter>
-    <description>Allows "cross-site scripting" for the REST services.</description>
-    <filter-name>AccessControlAllowOrigin</filter-name>
-    <filter-class>org.opennms.web.servlet.AddAccessControlHeaderFilter</filter-class>
-    <!-- 
+    <filter-name>CORS Filter</filter-name>
+    <filter-class>org.ebaysf.web.cors.CORSFilter</filter-class>
+    <!-- See https://github.com/eBay/cors-filter for a full list of parameters -->
+    <!--
     <init-param>
-      <description>This parameter specifies what origins to allow.</description>
-      <param-name>origin</param-name>
-      <param-value>*</param-value>
+      <description>A comma separated list of allowed origins. Note: An '*' cannot be used for an allowed origin when using credentials.</description>
+      <param-name>cors.allowed.origins</param-name>
+      <param-value>http://localhost:8080</param-value>
     </init-param>
     -->
   </filter>
@@ -169,6 +169,12 @@
     <url-pattern>/*</url-pattern>
   </filter-mapping>
   
+  <!-- Uncomment this to enable CORS support -->
+  <filter-mapping>
+    <filter-name>CORS Filter</filter-name>
+    <url-pattern>/rest/*</url-pattern>
+  </filter-mapping>
+
   <filter-mapping>
     <filter-name>springSecurityFilterChain</filter-name>
     <url-pattern>/*</url-pattern>
@@ -179,11 +185,6 @@
     <url-pattern>/*</url-pattern>
   </filter-mapping>
 
-  <filter-mapping>
-    <filter-name>AccessControlAllowOrigin</filter-name>
-    <url-pattern>/rest/*</url-pattern>
-  </filter-mapping>
-  
   <filter-mapping>
     <filter-name>AddRefreshHeader-300</filter-name>
     <url-pattern>/index.jsp</url-pattern>
