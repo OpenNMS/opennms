@@ -171,6 +171,7 @@ public class HttpCollectionHandler extends AbstractXmlCollectionHandler {
         URLConnection c = null;
         try {
             URL url = UrlFactory.getUrl(urlString, request);
+            LOG.debug("url is: " + url.toExternalForm() + "; authority: " + url.getAuthority());
             c = url.openConnection();
             is = c.getInputStream();
             final Document doc = Jsoup.parse(is, "UTF-8", "/");
