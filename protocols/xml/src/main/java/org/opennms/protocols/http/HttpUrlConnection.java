@@ -191,15 +191,8 @@ public class HttpUrlConnection extends URLConnection {
             String[] userInfo = m_url.getUserInfo() == null ? null :  m_url.getUserInfo().split(":");
             if (userInfo != null && userInfo.length == 2) {
                 // If the URL contains a username/password, it might need to be decoded
-                LOG.debug("username before decoding: " + userInfo[0]);
-                LOG.debug("password before decoding: " + userInfo[1]);
-                
                 String uname = URLDecoder.decode(userInfo[0], "UTF-8");
                 String pwd = URLDecoder.decode(userInfo[1], "UTF-8");
-                
-                LOG.debug("username after decoding: " + uname);
-                LOG.debug("password after decoding: " + pwd);
-                
                 m_clientWrapper.addBasicCredentials(uname, pwd);
             }
 

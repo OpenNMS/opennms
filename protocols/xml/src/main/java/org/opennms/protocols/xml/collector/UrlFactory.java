@@ -28,11 +28,9 @@
 
 package org.opennms.protocols.xml.collector;
 
-import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
-import java.net.URLDecoder;
 
 import org.opennms.protocols.http.HttpUrlConnection;
 import org.opennms.protocols.http.HttpUrlHandler;
@@ -70,7 +68,6 @@ public class UrlFactory {
      */
     public static URL getUrl(String urlStr, Request request) throws MalformedURLException {
         URL url = null;
-        
         String protocol = null;
         try {
             protocol = urlStr.substring(0, urlStr.indexOf("://")).toLowerCase();

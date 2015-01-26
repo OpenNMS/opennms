@@ -95,7 +95,6 @@ public class HttpClientWrapper implements Closeable {
      */
     public HttpClientWrapper addBasicCredentials(final String username, final String password) {
         LOG.debug("addBasicCredentials: username={}", username);
-        LOG.debug("addBasicCredentials: password={}", password);
         assertNotInitialized();
         m_username = username;
         m_password = password;
