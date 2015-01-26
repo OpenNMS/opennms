@@ -69,15 +69,6 @@ public class UrlFactory {
      * @throws MalformedURLException the malformed URL exception
      */
     public static URL getUrl(String urlStr, Request request) throws MalformedURLException {
-        // If the URL contains a username/password, it might need to be decoded
-        if(urlStr.contains("@")){
-            try {
-                urlStr = URLDecoder.decode(urlStr, "UTF-8");
-                LOG.debug("Decoded URL is: " + urlStr);
-            } catch (UnsupportedEncodingException e1) {
-                e1.printStackTrace();
-            }
-        }
         URL url = null;
         
         String protocol = null;
