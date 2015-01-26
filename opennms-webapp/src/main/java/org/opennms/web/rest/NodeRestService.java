@@ -87,9 +87,7 @@ import com.sun.jersey.spi.resource.PerRequest;
 @Path("nodes")
 @Transactional
 public class NodeRestService extends OnmsRestService {
-	
-	private static final Logger LOG = LoggerFactory.getLogger(NodeRestService.class);
-
+    private static final Logger LOG = LoggerFactory.getLogger(NodeRestService.class);
     
     @Autowired
     private NodeDao m_nodeDao;
@@ -121,16 +119,33 @@ public class NodeRestService extends OnmsRestService {
             final String type = params.getFirst("type");
 
             final CriteriaBuilder builder = getCriteriaBuilder(params);
-            builder.orderBy("label").asc();
-            
-            final Criteria crit = builder.toCriteria();
-    
-            if (type == null) {
-                final List<Restriction> restrictions = new ArrayList<Restriction>(crit.getRestrictions());
-                restrictions.add(Restrictions.ne("type", "D"));
-                crit.setRestrictions(restrictions);
+            Criteria crit = null;
+
+            if (params.size() == 1 && params.getFirst("nodeId") != null && params.getFirst("nodeId").contains(",")) {
+                // we've been specifically asked for a list of nodes by ID
+
+                final List<Integer> nodeIds = new ArrayList<Integer>();
+                for (final String id : params.getFirst("nodeId").split(",")) {
+                    nodeIds.add(Integer.valueOf(id));
+                }
+                builder.ne("type", "D");
+                builder.in("id", nodeIds);
+                builder.distinct();
+
+                crit = builder.toCriteria();
+            } else {
+                applyQueryFilters(params, builder);
+                builder.orderBy("label").asc();
+
+                crit = builder.toCriteria();
+
+                if (type == null) {
+                    final List<Restriction> restrictions = new ArrayList<Restriction>(crit.getRestrictions());
+                    restrictions.add(Restrictions.ne("type", "D"));
+                    crit.setRestrictions(restrictions);
+                }
             }
-            
+
             final OnmsNodeList coll = new OnmsNodeList(m_nodeDao.findMatching(crit));
             
             crit.setLimit(null);
@@ -291,6 +306,17 @@ public class NodeRestService extends OnmsRestService {
     @Path("{nodeCriteria}/hardwareInventory")
     public HardwareInventoryResource getHardwareInventoryResource() {
         return m_context.getResource(HardwareInventoryResource.class);
+    }
+
+    /**
+     * <p>getMetricsResource</p>
+     *
+     * @return a {@link org.opennms.web.rest.MetricsResource} object.
+     */
+    @Path("{nodeCriteria}/metrics")
+    public MetricsResourceResource getMetricsResource() {
+        LOG.debug("getMetricsResource()");
+        return m_context.getResource(MetricsResourceResource.class);
     }
 
     @GET
