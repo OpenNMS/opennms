@@ -49,7 +49,7 @@ import org.springframework.stereotype.Component;
  *
  */
 @Scope("prototype")
-public class XmpDetector extends AbstractDetector implements SyncServiceDetector
+public class XmpDetector implements SyncServiceDetector
 {
     // class variables
 
@@ -76,7 +76,7 @@ public class XmpDetector extends AbstractDetector implements SyncServiceDetector
     
     public XmpDetector(String serviceName, int port)
     {
-	super(serviceName,port,XMP_DEFAULT_TIMEOUT,XMP_DEFAULT_RETRIES);
+	//super(serviceName,port,XMP_DEFAULT_TIMEOUT,XMP_DEFAULT_RETRIES);
 	
         // set default config
         xmpPort = port;
@@ -89,14 +89,20 @@ public class XmpDetector extends AbstractDetector implements SyncServiceDetector
 
         xmpServiceName = new String(serviceName);
 
-	m_ipMatch = new String("");
+	// very important to set to null, not 0-len string
+	// as provisiond's ip range matching functionality
+	// will not correctly match if 0-len instead of null
+	
+	//m_ipMatch = new String("");
+	m_ipMatch = null;  
 
 	createTimeDate = new Date();
 
-        System.out.println("XmpDetector created, service "+xmpServiceName+" at "+createTimeDate);
-
 	if (LOG == null) {
 	   System.out.println("XmpDetector created, but null LOG");
+	}
+	else {
+	    LOG.debug("XmpDetector created, service "+xmpServiceName+" at "+createTimeDate);
 	}
 
     } /* XmpDetector */
@@ -107,16 +113,23 @@ public class XmpDetector extends AbstractDetector implements SyncServiceDetector
         
     } /* XmpDetector */
 
-    //public String getServiceName() { return xmpServiceName; }
+    public String getServiceName() {
+	LOG.debug("XmpDetector: getServiceName");
+	return xmpServiceName;
+    }
   
-    //public void setServiceName(String newServiceName) 
-    //{
-    //	xmpServiceName = new String(newServiceName);         
-    //}      
+    public void setServiceName(String newServiceName) 
+    {
+	LOG.debug("XmpDetector: setServiceName to "+newServiceName);
+    	xmpServiceName = new String(newServiceName);         
+    }
 
-    @Override
+    public void init() { onInit(); }
+
     public void onInit()
     {
+        LOG.debug("XmpDetector: onInit starting");
+	
         // try to get configuration
         try { 
             XmpConfig protoConfig;
@@ -130,6 +143,8 @@ public class XmpDetector extends AbstractDetector implements SyncServiceDetector
             if (protoConfig.getAuthenUser() != null)
                xmpAuthenUser = protoConfig.getAuthenUser();
 
+            sockopts.setConnectTimeout(xmpTimeout);	    
+
         } catch (Throwable e) {
             if (LOG != null)
                LOG.error("XmpDetector: no config factory, using defaults");   
@@ -138,56 +153,69 @@ public class XmpDetector extends AbstractDetector implements SyncServiceDetector
         }
     }
 
-    //public int getPort() { return xmpPort; }
+    public int getPort()
+    {
+        LOG.debug("XmpDetector: getPort");
+	return xmpPort;
+    }
 
-    //public void setPort(int newPort) { xmpPort = newPort; }
+    public void setPort(int newPort)
+    {
+        LOG.debug("XmpDetector: setPort to "+newPort);
+	xmpPort = newPort;
+    }
 
-    public void setIpMatch(String ipMatch) { m_ipMatch = ipMatch; }
+    public void setIpMatch(String ipMatch)
+    {
+	LOG.debug("XmpDetector: setIpMatch to "+ipMatch);
+	
+	m_ipMatch = ipMatch;
+    }
 
-    public String getIpMatch() { return m_ipMatch; }
+    public String getIpMatch()
+    {
+        LOG.debug("XmpDetector: getIpMatch returning '"+m_ipMatch+"'");
+	return m_ipMatch;
+    }
 
-    //public int getTimeout() { return xmpTimeout; }
+    public int getTimeout()
+    {
+        LOG.debug("XmpDetector: getTimeout returning "+xmpTimeout);
+	return xmpTimeout;
+    }
 
-    //public void setTimeout(int newTimeout) 
-    //{ 
-    //    xmpTimeout = newTimeout; 
-    //    sockopts.setConnectTimeout(xmpTimeout);
-    //}
+    public void setTimeout(int newTimeout) 
+    {
+        LOG.debug("XmpDetector: setTimeout to "+newTimeout);
+        xmpTimeout = newTimeout; 
+        sockopts.setConnectTimeout(xmpTimeout);
+    }
 
     public void dispose()
     {
+	LOG.debug("XmpDetector: dispose invoked");
+	
 	// dispose of anything like sessions, etc.
         // no need to dispose SocketOpts
     }
 
-    public boolean isServiceDetected(InetAddress address)
+    @Override
+    public final boolean isServiceDetected(InetAddress address)
     {
         XmpSession aSession;
         XmpMessage aReply;
         XmpVar[] vars,replyVars;
 
-        if (LOG != null)
-           LOG.debug("XmpDetector: isServiceDetected checking out "+address);
-        else 
-	   System.out.println("XmpDetector: isServiceDetected starting with null LOG to query "+address);
-
-	System.out.println("XmpDetector: isServiceDetected starting to query "+address);
+	LOG.debug("XmpDetector: isServiceDetected starting to query "+address);
 	
         // try to establish session
         aSession = new XmpSession(sockopts,address,xmpPort,xmpAuthenUser);
         if (aSession == null) {
-	   System.out.println("XmpDetector: null session to "+address);
 	   LOG.debug("XmpDetector: null session to "+address);
 	   return false;
         }
 
-        if (LOG != null)
-           LOG.debug("XmpDetector: isServiceDetected session established with "+address);
-        else 
-           System.out.println("XmpDetector: isServiceDetected session established with "+address);
-
-        System.out.println("XmpDetector: isServiceDetected session established with "+address);
-	
+        LOG.debug("XmpDetector: isServiceDetected session established with "+address);
         // query for core.sysName, core.sysDescr, 
         // core.sysUpTime, core.xmpdVersion
         vars = new XmpVar[] {
@@ -198,14 +226,7 @@ public class XmpDetector extends AbstractDetector implements SyncServiceDetector
         };
       
         if ((aReply = aSession.queryVars(vars)) == null) {
-            if (LOG != null) {
-               LOG.debug("XmpDetector: isServiceDetected no vars from "+address);
-               LOG.debug("XmpDetector: isServiceDetected false for "+address);
-            }
-            else {
-               System.out.println("XmpDetector: isServiceDetected no vars from "+address);
-               System.out.println("XmpDetector: isServiceDetected false for "+address);
-            }
+            LOG.debug("XmpDetector: isServiceDetected no vars from "+address);
 	    aSession.closeSession();
             return false;
         }
@@ -214,33 +235,17 @@ public class XmpDetector extends AbstractDetector implements SyncServiceDetector
 
 	// log what we retrieved
         if ((replyVars = aReply.getMIBVars()) == null) {
-           if (LOG != null) {
-	      LOG.debug("XmpDetector: isServiceDetected no replyVars for "+address);
-   	   }
-           else {
-	      System.out.println("XmpDetector: isServiceDetected no replyVars for"+address);
-           }
-
-           System.out.println("XmpDetector: isServiceDetected no replyVars for"+address);
-	   
-           return false;
+            LOG.debug("XmpDetector: isServiceDetected no replyVars for "+address);
+            return false;
 
         } /* if replyVars == null */
 
-        if (LOG != null) {
-           LOG.debug("XmpDetector: isServiceDetected "+address+" reports "+
-                     replyVars[0].getValue()+","+
-                     replyVars[1].getValue());
-           LOG.debug("XmpDetector: isServiceDetected true for "+address);
-	}
-        else {
-           System.out.println("XmpDetector: isServiceDetected "+address+" reports "+
-                              replyVars[0].getValue()+","+
-                              replyVars[1].getValue());
-           System.out.println("XmpDetector: isServiceDetected true for "+address);
-        }
+        LOG.debug("XmpDetector: isServiceDetected "+address+" reports "+
+                   replyVars[0].getValue()+","+
+                   replyVars[1].getValue());
+        LOG.debug("XmpDetector: isServiceDetected true for "+address);
 
-        System.out.println("XmpDetector: isServiceDetected true for "+address);
+        LOG.debug("XmpDetector: isServiceDetected true for "+address);
 	
 	return true;
 

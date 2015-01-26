@@ -1170,8 +1170,6 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
     @Override
     public List<ServiceDetector> getDetectorsForForeignSource(final String foreignSourceName) {
 
-        System.out.println("getDetectorsForForeignSource: looking for detectors for "+foreignSourceName);
-	
         final ForeignSource foreignSource = m_foreignSourceRepository.getForeignSource(foreignSourceName);
         assertNotNull(foreignSource, "Expected a foreignSource with name %s", foreignSourceName);
 
@@ -1180,36 +1178,23 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
 	    ArrayList aList;
 	    aList = new ArrayList<ServiceDetector>(m_pluginRegistry.getAllPlugins(ServiceDetector.class));
 
-	    System.out.println("getDetectorsForForeignSource: returning arraylist here "+aList);
-
 	    return aList;
         }
 
-	System.out.println("getDetectorsForForeignSource: here is the ArrayList of detector configs"+
-			   detectorConfigs);
-
         final List<ServiceDetector> detectors = new ArrayList<ServiceDetector>(detectorConfigs.size());
 
-        System.out.println("getDetectorsForForeignSource: here is detectors list "+detectors);
-	
         for(final PluginConfig detectorConfig : detectorConfigs) {
 
-            System.out.println("getDetectorsForForeignSource: calling getPluginInstance with "+ServiceDetector.class+" and "+detectorConfig);
-	    System.out.println("getDetectorsForForeignSource: "+detectorConfig.getName() + " class "+detectorConfig.getPluginClass());
 	    
             final ServiceDetector detector = m_pluginRegistry.getPluginInstance(ServiceDetector.class, detectorConfig);
             if (detector == null) {
-		System.out.println("getDetectorsForForeignSource: configured plugin does not exist "+detectorConfig);
                 LOG.error("Configured plugin does not exist: {}", detectorConfig);
             } else {
-		System.out.println("getDetectorsForForeignSource: found detector "+detector);
                 detector.setServiceName(detectorConfig.getName());
                 detector.init();
                 detectors.add(detector);
             }
         }
-
-	System.out.println("getDetectorsForForeignSource: returning "+detectors);
 
         return detectors;
     }

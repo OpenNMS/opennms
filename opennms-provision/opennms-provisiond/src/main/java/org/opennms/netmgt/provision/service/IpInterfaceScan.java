@@ -179,6 +179,7 @@ public class IpInterfaceScan implements RunInBatch {
     }
 
     Runnable runDetector(final SyncServiceDetector detector, final Callback<Boolean> cb) {
+
         return new Runnable() {
             @Override
             public void run() {
@@ -213,10 +214,12 @@ public class IpInterfaceScan implements RunInBatch {
     }
 
     private Task createAsyncDetectorTask(final BatchTask currentPhase, final AsyncServiceDetector asyncDetector) {
+
         return currentPhase.getCoordinator().createTask(currentPhase, runDetector(asyncDetector), servicePersister(currentPhase, asyncDetector.getServiceName()));
     }
 
     private Task createSyncDetectorTask(final BatchTask currentPhase, final SyncServiceDetector syncDetector) {
+
         return currentPhase.getCoordinator().createTask(currentPhase, runDetector(syncDetector, servicePersister(currentPhase, syncDetector.getServiceName())));
     }
 
@@ -227,8 +230,12 @@ public class IpInterfaceScan implements RunInBatch {
 
         LOG.info("Detecting services for node {}/{} on address {}: found {} detectors", getNodeId(), getForeignSource(), str(getAddress()), detectors.size());
 
+
         for (final ServiceDetector detector : detectors) {
+
+	    
             if (shouldDetect(detector)) {
+
                 currentPhase.add(createDetectorTask(currentPhase, detector));
             }
         }
@@ -241,7 +248,10 @@ public class IpInterfaceScan implements RunInBatch {
 
     protected boolean shouldDetect(ServiceDetector detector) {
         String ipMatch = detector.getIpMatch();
-        if (ipMatch  == null) return true; // Execute the detector if the ipMatch is not provided.
+	// Execute the detector if the ipMatch is not provided.
+        if (ipMatch  == null) return true; 
+	if (ipMatch.isEmpty() == true) return true;
+	    
         // Regular Expression Matching
         if (ipMatch.startsWith("~")) {
             return getAddress().getHostAddress().matches(ipMatch.substring(1));
