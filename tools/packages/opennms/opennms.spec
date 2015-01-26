@@ -23,8 +23,8 @@
 %{!?bindir:%define bindir %instprefix/bin}
 
 # Description
-%{!?_name:%define _name "opennms"}
-%{!?_descr:%define _descr "OpenNMS"}
+%{!?_name:%define _name "meridian"}
+%{!?_descr:%define _descr "OpenNMS Meridian"}
 %{!?packagedir:%define packagedir %{_name}-%version-%{releasenumber}}
 
 %{!?jdk:%define jdk jdk >= 2000:1.7}
