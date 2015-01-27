@@ -1,0 +1,4 @@
+org.opennms.netmgt.jasper.analytics.HWForecastFactory
+org.opennms.netmgt.jasper.analytics.OutlierFilterFactory
+org.opennms.netmgt.jasper.analytics.TrendLineFactory
+org.opennms.netmgt.jasper.analytics.StripNaNsFactory

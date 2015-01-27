@@ -41,36 +41,42 @@
 <%
   pageContext.setAttribute("serviceNameMap", new TreeMap<String,Integer>(NetworkElementFactory.getInstance(getServletContext()).getServiceNameToIdMap()).entrySet());
 %>
-<h3 class="o-box">Quick Search</h3>
-<div class="boxWrapper">
-  <div class="searchHost" style="position:relative; left: 0px;">
-    <form action="element/nodeList.htm" method="get">
-      <font style="font-size: 70%; line-height: 1.25em; align=left">Node ID:</font><br />
+
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title">Quick Search</h3>
+  </div>
+  <div class="panel-body">
+    <form class="form-inline" action="element/nodeList.htm" method="get">
+      <label for="nodeId">Node ID:</label><br/>
       <input type="hidden" name="listInterfaces" value="false"/>
-      <input type="text" size="20" name="nodeId" />
-      <input type="submit" value="Search"/>
+      <input class="form-control input-sm" type="text" size="20" name="nodeId" />
+      <input class="form-control input-sm btn btn-default" type="submit" value="Search"/>
     </form>
-    <form action="element/nodeList.htm" method="get">
-      <font style="font-size: 70%; line-height: 1.25em; align=left">Node label like:</font><br />
+    <br/>
+    <form class="form-inline" action="element/nodeList.htm" method="get">
+      <label for="nodename">Node label like:</label><br/>
       <input type="hidden" name="listInterfaces" value="true"/>
-      <input type="text" size="20" name="nodename" />
-      <input type="submit" value="Search"/>
+      <input class="form-control input-sm" type="text" size="20" name="nodename" />
+      <input class="form-control input-sm btn btn-default" type="submit" value="Search"/>
     </form>
-    <form action="element/nodeList.htm" method="get">
-      <font style="font-size: 70%; line-height: 1.25em; align=left">TCP/IP Address like:</font><br />
+    <br/>
+    <form class="form-inline" action="element/nodeList.htm" method="get">
+      <label for="iplike">TCP/IP Address like:</label><br/>
       <input type="hidden" name="listInterfaces" value="false"/>
-      <input type="text" name="iplike" value="" placeholder="*.*.*.*" />
-      <input type="submit" value="Search"/>               
+      <input class="form-control input-sm" type="text" name="iplike" value="" placeholder="*.*.*.*" />
+      <input class="form-control input-sm btn btn-default" type="submit" value="Search"/>
     </form>
-    <form action="element/nodeList.htm" method="get">
-      <font style="font-size: 70%; line-height: 1.25em; align=left">Providing service:</font><br />
+    <br/>
+    <form class="form-inline" action="element/nodeList.htm" method="get">
+      <label for="service">Providing service:</label><br/>
       <input type="hidden" name="listInterfaces" value="false"/>
-      <select name="service" size="1">
+      <select class="form-control input-sm" name="service">
       <c:forEach var="serviceNameId" items="${serviceNameMap}">
         <option value="${serviceNameId.value}">${serviceNameId.key}</option>
       </c:forEach>
       </select>
-      <input type="submit" value="Search"/>               
+      <input class="form-control input-sm btn btn-default" type="submit" value="Search"/>
     </form>
   </div>
 </div>

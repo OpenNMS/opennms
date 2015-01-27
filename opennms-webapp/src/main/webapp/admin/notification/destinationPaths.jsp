@@ -49,7 +49,7 @@
     }
 %>
 
-<jsp:include page="/includes/header.jsp" flush="false" >
+<jsp:include page="/includes/bootstrap.jsp" flush="false" >
   <jsp:param name="title" value="Destination Paths" />
   <jsp:param name="headTitle" value="Destination Paths" />
   <jsp:param name="headTitle" value="Admin" />
@@ -105,24 +105,40 @@
   <input type="hidden" name="userAction" value=""/>
   <input type="hidden" name="sourcePage" value="destinationPaths.jsp"/>
 
-  <h3>Create a new Destination Path or edit an existing path.</h3>
+<div class="row">
+  <div class="col-md-2">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Create a new Destination Path</h3>
+      </div>
+      <div class="panel-body">
+        <input type="submit" class="btn btn-default" value="New Path"/>
+      </div>
+    </div> <!-- panel -->
+  </div> <!-- column -->
 
-  <input type="submit" value="New Path"/>
+  <div class="col-md-2">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Modify/Delete an existing Destination Path.</h3>
+      </div>
+      <div class="panel-body">
+        <select NAME="paths" class="form-control">
+          <% Map<String, Path> pathsMap = new TreeMap<String, Path>(DestinationPathFactory.getInstance().getPaths());
+             for (String key : pathsMap.keySet()) {
+          %>
+               <option VALUE=<%=key%>><%=key%></option>
+          <% } %>
+        </select>
+      </div>
+      <div class="panel-footer">
+        <input type="button" class="btn btn-default" value="Edit" onclick="editPath()"/>
+        <input type="button" class="btn btn-default" value="Delete" onclick="deletePath()"/>
+      </div>
+    </div> <!-- panel -->
+  </div> <!-- column -->
+</div> <!-- row -->
 
-  <h4>Existing Paths</h4>
- 
-  <select NAME="paths" SIZE="10">
-    <% Map<String, Path> pathsMap = new TreeMap<String, Path>(DestinationPathFactory.getInstance().getPaths());
-       for (String key : pathsMap.keySet()) {
-    %>
-         <option VALUE=<%=key%>><%=key%></option>
-    <% } %>
-  </select>
-
-  <br/>
-
-  <input type="button" value="Edit" onclick="editPath()"/>
-  <input type="button" value="Delete" onclick="deletePath()"/>
 </form>
     
-<jsp:include page="/includes/footer.jsp" flush="false" />
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />

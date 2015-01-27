@@ -7,6 +7,9 @@
   
   <!-- Only use BASIC auth for the RESTful APIs -->
   <http pattern="/rest/**" realm="OpenNMS Realm">
+    <!-- Provisioning-related stuff is all allowed as long as you're in the provision, rest, or admin roles. -->
+    <intercept-url pattern="/rest/foreignSources/**" access="ROLE_PROVISION,ROLE_REST,ROLE_ADMIN"/>
+    <intercept-url pattern="/rest/requisitions/**" access="ROLE_PROVISION,ROLE_REST,ROLE_ADMIN"/>
     <!-- Restrict access to SNMP configuration to ROLE_REST and ROLE_ADMIN only -->
     <intercept-url pattern="/rest/snmpConfig/**" access="ROLE_REST,ROLE_ADMIN"/>
     <intercept-url pattern="/rest/**" method="DELETE" access="ROLE_REST,ROLE_ADMIN"/>
@@ -14,7 +17,7 @@
     <intercept-url pattern="/rest/**" method="PUT" access="ROLE_REST,ROLE_ADMIN"/>
     <intercept-url pattern="/rest/**" method="GET" access="ROLE_REST,ROLE_ADMIN,ROLE_USER"/>
     <intercept-url pattern="/rest/**" method="HEAD" access="ROLE_REST,ROLE_ADMIN,ROLE_USER"/>
-    <intercept-url pattern="/rest/**" method="OPTIONS" access="ROLE_REST,ROLE_ADMIN,ROLE_USER"/>
+    <intercept-url pattern="/rest/**" method="OPTIONS" access="ROLE_ANONYMOUS,ROLE_REST,ROLE_ADMIN,ROLE_USER"/>
 
     <http-basic />
 
@@ -42,6 +45,7 @@
     <intercept-url pattern="/accessDenied.jsp*" access="ROLE_ANONYMOUS,ROLE_USER,ROLE_DASHBOARD" />
     <intercept-url pattern="/css/*.css" access="ROLE_ANONYMOUS,ROLE_USER,ROLE_DASHBOARD" />
     <intercept-url pattern="/js/global.js" access="ROLE_ANONYMOUS,ROLE_USER,ROLE_DASHBOARD" />
+    <intercept-url pattern="/lib/**" access="ROLE_ANONYMOUS,ROLE_USER,ROLE_DASHBOARD" />
     <intercept-url pattern="/images/**" access="ROLE_ANONYMOUS,ROLE_USER,ROLE_DASHBOARD" />
     <intercept-url pattern="/admin/node/add.htm" access="ROLE_PROVISION, ROLE_ADMIN" />
     <intercept-url pattern="/admin/provisioningGroups.htm" access="ROLE_PROVISION, ROLE_ADMIN" />
@@ -69,7 +73,7 @@
     
     <!--Commented out for custom authentication filter<form-login login-page="/login.jsp" authentication-failure-url="/login.jsp?login_error=1" />-->
     <http-basic />
-    <logout logout-success-url="/logoff.jsp" />
+    <logout logout-success-url="/" />
 
       <!-- added for custom authentication filter -->
     <custom-filter position="FORM_LOGIN_FILTER" ref="onmsUsernamePasswordAuthenticationFilter" />

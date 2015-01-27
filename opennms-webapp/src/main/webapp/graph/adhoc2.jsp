@@ -91,7 +91,7 @@
 
 %>
 
-<jsp:include page="/includes/header.jsp" flush="false" >
+<jsp:include page="/includes/bootstrap.jsp" flush="false" >
   <jsp:param name="title" value="Custom Resource Graphs" />
   <jsp:param name="headTitle" value="Custom" />
   <jsp:param name="headTitle" value="Resource Graphs" />
@@ -262,4 +262,4 @@
   <jsp:include page="/includes/footnote1.jsp" flush="false" />
 </c:if>
 
-<jsp:include page="/includes/footer.jsp" flush="false" />
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />

@@ -1,10 +1,10 @@
 
 // REMOVE ME!! Please keep first line an empty line to make sure, the ToC can be build correctly
-=== Name of the Monitor. Normally the name of the class without .java
+==== Name of the Monitor. Normally the name of the class without .java
 
 A summary what the monitor is doing. When is the monitor up or down.
 
-==== Monitor facts
+===== Monitor facts
 
 [options="autowidth"]
 |===
@@ -12,7 +12,7 @@ A summary what the monitor is doing. When is the monitor up or down.
 | Remote Enabled | true or false if the monitor can be used by the OpenNMS remote poller
 |===
 
-==== Configuration and Usage
+===== Configuration and Usage
 
 .Monitor specific parameters for the <MONITORNAME-HERE>
 [options="header, autowidth"]
@@ -34,7 +34,8 @@ This is optional just if you can use variables in the configuration
 | `${variable3}`  | Description for the third variable
 |===
 
-==== Examples
+===== Examples
+
 Some example configuration how to configure the monitor in the 'poller-configuration.xml'.
 
 [source, xml]
@@ -44,7 +45,7 @@ Some example configuration how to configure the monitor in the 'poller-configura
 ----
 
 .This section is optional and give some specific hints
-==== SystemExecuteMonitor vs GpMonitor
+===== SystemExecuteMonitor vs GpMonitor
 
 The SystemExecuteMonitor is the successor of the GpMonitor. The main differences are:
 

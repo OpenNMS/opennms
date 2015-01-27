@@ -52,7 +52,7 @@
 	}
 %>
 
-<jsp:include page="/includes/header.jsp" flush="false" >
+<jsp:include page="/includes/bootstrap.jsp" flush="false" >
   <jsp:param name="title" value="User Configuration" />
   <jsp:param name="headTitle" value="List" />
   <jsp:param name="headTitle" value="Users" />
@@ -61,8 +61,6 @@
   <jsp:param name="breadcrumb" value="<a href='admin/userGroupView/index.jsp'>Users and Groups</a>" />
   <jsp:param name="breadcrumb" value="User List" />
 </jsp:include>
-
-<link rel="stylesheet" href="css/font-awesome-4.0.3/css/font-awesome.min.css">
 
 <script type="text/javascript" >
 
@@ -115,8 +113,6 @@
 <input type="hidden" name="newID"/>
 <input type="hidden" name="password"/>
 
-<h3>User Configuration</h3>
-
 <p>
   Click on the <i>User ID</i> link to view detailed information about a
   user.
@@ -128,24 +124,21 @@
   </a>
 </p>
 
-     <table width="100%" border="1" bordercolor="black">
-
-         <tr bgcolor="#999999">
-          <td width="5%"><b>Delete</b></td>
-          <td width="5%"><b>Modify</b></td>
-          <td width="5%"><b>Rename</b></td>
-          <td width="5%"><b>User ID</b></td>
-          <td width="15%"><b>Full Name</b></td>
-          <td width="15%"><b>Email</b></td>
-          <td width="15%"><b>Pager Email</b></td>
-          <td width="15%"><b>XMPP Address</b></td>
-          <!--
-          <td width="10%"><b>Num Service</b></td>
-          <td width="10%"><b>Num PIN</b></td>
-          <td width="15%"><b>Text Service</b></td>
-          <td width="15%"><b>Text PIN</b></td>
-          -->
-        </tr>
+   <div class="panel panel-default">
+     <table class="table table-condensed table-bordered">
+        <thead>
+          <tr>
+          <th width="5%">Delete</th>
+          <th width="5%">Modify</th>
+          <th width="5%">Rename</th>
+          <th width="5%">User ID</th>
+          <th width="15%">Full Name</th>
+          <th width="15%">Email</th>
+          <th width="15%">Pager Email</th>
+          <th width="15%">XMPP Address</th>
+          </tr>
+        </thead>
+        <tbody>
         <% 
            int row = 0;
            for (User curUser : users.values()) {
@@ -158,75 +151,53 @@
 	      String numericPin = userFactory.getNumericPin(userid);
 	      String textPin = userFactory.getTextPin(userid);
          %>
-         <tr bgcolor=<%=row%2==0 ? "#ffffff" : "#cccccc"%> id="user-<%= userid %>">
+         <tr id="user-<%= userid %>">
           <% if (!curUser.getUserId().equals("admin")) { %>
-          <td width="5%" rowspan="2" align="center"> 
+          <td rowspan="2" class="text-center"> 
             <a id="<%= "users("+curUser.getUserId()+").doDelete" %>" href="javascript:deleteUser('<%=curUser.getUserId()%>')" onclick="return confirm('Are you sure you want to delete the user <%=curUser.getUserId()%>?')"><i class="fa fa-trash-o fa-2x"></i></a> 
           </td>
           <% } else { %>
-          <td width="5%" rowspan="2" align="center">
+          <td rowspan="2" class="text-center">
             <i class="fa fa-trash-o fa-2x" onclick="alert('Sorry, the admin user cannot be deleted.')"></i>
           </td>
           <% } %>
-          <td width="5%" rowspan="2" align="center">
+          <td rowspan="2" class="text-center">
             <a id="<%= "users("+curUser.getUserId()+").doModify" %>" href="javascript:modifyUser('<%=curUser.getUserId()%>')"><i class="fa fa-edit fa-2x"></i></a>
           </td>
-          <td width="5%" rowspan="2" align="center">
+          <td rowspan="2" class="text-center">
             <% if ( !curUser.getUserId().equals("admin")) { %>
-                <input id="<%= "users("+curUser.getUserId()+").doRename" %>" type="button" name="rename" value="Rename" onclick="renameUser('<%=curUser.getUserId()%>')">
+                <button id="<%= "users("+curUser.getUserId()+").doRename" %>" class="btn btn-default"  name="rename" onclick="renameUser('<%=curUser.getUserId()%>')">Rename</button>
               <% } else { %>
-                <input id="<%= "users("+curUser.getUserId()+").doRename" %>" type="button" name="rename" value="Rename" onclick="alert('Sorry, the admin user cannot be renamed.')">
+                <button id="<%= "users("+curUser.getUserId()+").doRename" %>" class="btn btn-default"  name="rename" onclick="alert('Sorry, the admin user cannot be renamed.')">Rename</button>
               <% } %>
           </td>
-          <td width="5%">
+          <td>
             <a id="<%= "users("+curUser.getUserId()+").doDetails" %>" href="javascript:detailUser('<%=curUser.getUserId()%>')"><%=curUser.getUserId()%></a>
           </td>
-          <td width="15%">
+          <td>
            <div id="<%= "users("+curUser.getUserId()+").fullName" %>">
 	    <% if(curUser.getFullName() != null){ %>
 		    <%= (curUser.getFullName().equals("") ? "&nbsp;" : curUser.getFullName()) %>
 	    <% } %>
 	      </div>
           </td>
-          <td width="15%">
+          <td>
             <div id="<%= "users("+curUser.getUserId()+").email" %>">
             <%= ((email == null || email.equals("")) ? "&nbsp;" : email) %>
             </div>
           </td>
-          <td width="15%">
+          <td>
            <div id="<%= "users("+curUser.getUserId()+").pagerEmail" %>">
             <%= ((pagerEmail == null || pagerEmail.equals("")) ? "&nbsp;" : pagerEmail) %>
             </div>
           </td>
-          <td width="15">
+          <td>
            <div id="<%= "users("+curUser.getUserId()+").xmppAddress" %>">
             <%= ((xmppAddress == null || xmppAddress.equals("")) ? "&nbsp;" : xmppAddress) %>
            </div>
           </td>
-          <!--
-          <td width="10%">
-            <div id="<%= "users("+curUser.getUserId()+").numericService" %>">
-            <%= ((numericService == null || numericService.equals("")) ? "&nbsp;" : numericService) %>
-            </div>
-          </td>
-          <td width="10%">
-            <div id="<%= "users("+curUser.getUserId()+").numericPin" %>">
-            <%= ((numericPin == null || numericPin.equals("")) ? "&nbsp;" : numericPin) %>
-            </div>
-          </td>
-          <td width="15%">
-           <div id="<%= "users("+curUser.getUserId()+").textService" %>">
-            <%= ((textService == null || textService.equals("")) ? "&nbsp;" : textService) %>
-            </div>
-          </td>
-          <td width="15%">
-           <div id="<%= "users("+curUser.getUserId()+").textPin" %>">
-            <%= ((textPin == null || textPin.equals("")) ? "&nbsp;" : textPin) %>
-           </div>
-          </td>
-          -->
           </tr>
-          <tr bgcolor=<%=row%2==0 ? "#ffffff" : "#cccccc"%>>
+          <tr>
             <td colspan="5">
              <div id="<%= "users("+curUser.getUserId()+").userComments" %>">
 	      <% if(curUser.getUserComments() != null){ %>
@@ -238,8 +209,9 @@
           </tr>
          <% row++;
             } %>
+       </tbody>
      </table>
-
+  </div> <!-- panel -->
 </form>
 
-<jsp:include page="/includes/footer.jsp" flush="false" />
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />

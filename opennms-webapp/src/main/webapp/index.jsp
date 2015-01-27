@@ -31,52 +31,44 @@
 
 <%@page language="java" contentType="text/html" session="true"  %>
 
-<jsp:include page="/includes/header.jsp" flush="false">
+<jsp:include page="/includes/bootstrap.jsp" flush="false">
 	<jsp:param name="title" value="Web Console" />
 </jsp:include>
 
+<div class="row">
 	<!-- Left Column -->
-	<div id="index-contentleft">
+	<div class="col-md-3" id="index-contentleft">
 		<!-- Problems box -->
 		<% String showNodesWithProblems = System.getProperty("opennms.nodesWithProblems.show", "true");
            if (Boolean.parseBoolean(showNodesWithProblems)) { %>
 		<jsp:include page="/alarm/summary-box.htm" flush="false" />
-		<hr />
         <% } %>
 		<!-- Services down box -->
 		<% String showNodesWithOutages = System.getProperty("opennms.nodesWithOutages.show", "true");
            if (Boolean.parseBoolean(showNodesWithOutages)) { %>
 		<jsp:include page="/outage/servicesdown-box.htm" flush="false" />
-		<hr />
         <% } %>
 	</div>
 
 	<!-- Middle Column -->
-	<div id="index-contentmiddle">
+	<div class="col-md-6" id="index-contentmiddle">
 		<% String centerUrl = System.getProperty("org.opennms.web.console.centerUrl", "/includes/categories-box.jsp"); %>
 		<jsp:include page="<%=centerUrl%>" flush="false" />
-		<hr />
 	</div>
 
 	<!-- Right Column -->
-	<div id="index-contentright">
+	<div class="col-md-3" id="index-contentright">
 		<!-- notification box -->    
 		<jsp:include page="/includes/notification-box.jsp" flush="false" />
-		<hr />
+
 		<!-- Performance box -->    
 		<jsp:include page="/includes/resourceGraphs-box.jsp" flush="false" />
-		<hr />
+
 		<!-- KSC Reports box -->    
 		<jsp:include page="/KSC/include-box.htm" flush="false" />
-		<hr />
+
 		<!-- Quick Search box -->
 		<jsp:include page="/includes/quicksearch-box.jsp" flush="false" />
-		<hr />
-		<%--
-		<!-- security box -->    
-		Commenting out the security box include until it is functional
-		<jsp:include page="/includes/security-box.jsp" flush="false" />
-		--%>
 	</div>
-
-<jsp:include page="/includes/footer.jsp" flush="false" />
+</div>
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />

@@ -33,7 +33,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
-import java.text.ParseException;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -44,7 +43,6 @@ import org.opennms.core.utils.DBUtils;
 import org.opennms.core.utils.Querier;
 import org.opennms.core.utils.SingleResultQuerier;
 import org.opennms.core.utils.Updater;
-import org.opennms.netmgt.events.api.EventConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

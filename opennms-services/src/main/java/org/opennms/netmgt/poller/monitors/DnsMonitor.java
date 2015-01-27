@@ -210,7 +210,7 @@ final public class DnsMonitor extends AbstractServiceMonitor {
                         return status;
                     }
                     if (tooManyAnswers) {
-                        status = PollStatus.unavailable("Response contained " + numAnswers + " answer(s), but " + minAnswers + " or fewer answers(s) are needed.");
+                        status = PollStatus.unavailable("Response contained " + numAnswers + " answer(s), but " + maxAnswers + " or fewer answers(s) are needed.");
                         LOG.warn(status.getReason());
                         return status;
                     }

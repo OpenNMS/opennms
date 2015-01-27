@@ -35,7 +35,7 @@
 %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
-<jsp:include page="/includes/header.jsp" flush="false" >
+<jsp:include page="/includes/bootstrap.jsp" flush="false" >
   <jsp:param name="title" value="Current Outages" />
   <jsp:param name="headTitle" value="Outages" />
   <jsp:param name="breadcrumb" value="<a href='outage/index.jsp'>Outages</a>" />
@@ -46,4 +46,4 @@ Redirecting you to <a href="outage/list.htm">the outage list</a>.
 
 <% response.sendRedirect("list.htm"); %>
 
-<jsp:include page="/includes/footer.jsp" flush="false"/>
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="false"/>

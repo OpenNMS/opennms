@@ -49,7 +49,7 @@
     
 %>
 
-<jsp:include page="/includes/header.jsp" flush="false" >
+<jsp:include page="/includes/bootstrap.jsp" flush="false" >
   <jsp:param name="title" value="Error" />
   <jsp:param name="headTitle" value="Category Not Found" />
   <jsp:param name="headTitle" value="Error" />
@@ -66,4 +66,4 @@
   calculated.  
 </p>
 
-<jsp:include page="/includes/footer.jsp" flush="false" />
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />

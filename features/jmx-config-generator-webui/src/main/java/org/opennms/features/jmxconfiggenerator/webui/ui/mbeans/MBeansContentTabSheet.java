@@ -158,14 +158,14 @@ public class MBeansContentTabSheet extends TabSheet implements ModelChangeListen
 			private final Table compositeTable;
 			private final FormButtonHandler<NameEditForm> formButtonHandler;
 			private final TableButtonHandler<Table> tableButtonHandler;
-			private final EditControls<AbstractField> footer;
+			private final EditControls<AbstractField<?>> footer;
 
 			private CompositeTabLayout(NameEditForm compositeForm, Table compositeTable) {
 				this.compositeForm = compositeForm;
 				this.compositeTable = compositeTable;
 				formButtonHandler = new FormButtonHandler<NameEditForm>(compositeForm);
 				tableButtonHandler = new TableButtonHandler<Table>(compositeTable);
-				footer = new EditControls<AbstractField>(this, new ButtonHandler<AbstractField>() {
+				footer = new EditControls<AbstractField<?>>(this, new ButtonHandler<AbstractField<?>>() {
 					@Override
 					public void handleSave() {
 						if (formButtonHandler.getOuter().isValid() && tableButtonHandler.getOuter().isValid()) {
@@ -246,7 +246,7 @@ public class MBeansContentTabSheet extends TabSheet implements ModelChangeListen
 				}
 			}
 			
-			private void addFooterHooks(final EditControls footer) {
+			private void addFooterHooks(final EditControls<?> footer) {
 				footer.addSaveHook(this);
 				footer.addCancelHook(this);
 				footer.addEditHook(this);

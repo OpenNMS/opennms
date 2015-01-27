@@ -711,7 +711,7 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
         return tooltipText.toString();
     }
 
-    private String getEdgeTooltipText(LinkDetail linkDetail) {
+    private String getEdgeTooltipText(LinkDetail<?> linkDetail) {
 
         StringBuffer tooltipText = new StringBuffer();
         Vertex source = linkDetail.getSource();

@@ -47,7 +47,7 @@ response.setDateHeader("Expires", startTime);
 
 %>
  
-<jsp:include page="/includes/header.jsp" flush="false">
+<jsp:include page="/includes/bootstrap.jsp" flush="false">
 	<jsp:param name="title" value="Progress" />
 	<jsp:param name="headTitle" value="Progress" />
 </jsp:include>
@@ -57,19 +57,20 @@ response.setDateHeader("Expires", startTime);
 	<fmt:formatNumber maxFractionDigits="0" value="${progress.phase / progress.phaseCount * 100}"/>
 </c:set>
 
-  <div align="center">
+<div class="row">
+  <div class="col-md-4 col-md-offset-4 text-center">
     <p style="margin-bottom: 0px; font-size: 80%;">
       ${label}...
     </p>
 
-    <div style="width: 400px; height: 25px; border-size: 1px; border-style: ridge; background-color: white;">
-      <div style="float: left; width: ${percentage}%; height: 25px; background-color: green;">&nbsp;</div>
+    <div class="center-block" style="width: 75%; height: 25px; border-width: 1px; border-style: ridge; background-color: white;">
+      <div style="width: ${percentage}%; height: 24px; background-color: green;">&nbsp;</div>
     </div>
-    
+
     <p>
       ${percentage}% completed
     </p>
-  </div>
+  </div> <!-- column -->
+</div> <!-- row -->
 
-<jsp:include page="/includes/footer.jsp" flush="false" />
-
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />

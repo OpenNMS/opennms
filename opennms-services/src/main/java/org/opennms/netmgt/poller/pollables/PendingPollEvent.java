@@ -28,15 +28,13 @@
 
 package org.opennms.netmgt.poller.pollables;
 
-import java.text.ParseException;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.opennms.netmgt.xml.event.Event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.opennms.netmgt.events.api.EventConstants;
-import org.opennms.netmgt.xml.event.Event;
 
 /**
  * Represents a PendingPollEvent

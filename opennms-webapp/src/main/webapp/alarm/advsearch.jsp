@@ -34,7 +34,7 @@
 	session="true"
 %>
 
-<jsp:include page="/includes/header.jsp" flush="false" >
+<jsp:include page="/includes/bootstrap.jsp" flush="false" >
   <jsp:param name="title" value="Advanced Alarm Search" />
   <jsp:param name="headTitle" value="Advanced Search" />
   <jsp:param name="headTitle" value="Alarms" />
@@ -42,24 +42,6 @@
   <jsp:param name="breadcrumb" value="Advanced Alarm Search" />
 </jsp:include>
 
-  <div id="contentleft">
-      <h3>Advanced Alarm Search</h3>
+<jsp:include page="/includes/alarm-advquerypanel.jsp" flush="false" />
 
-      <jsp:include page="/includes/alarm-advquerypanel.jsp" flush="false" />
-  </div> <!-- id="contentleft" -->
-
-  <div id="contentright">
-      <h3>Searching Instructions</h3>
-
-      <p>The <strong>Advanced Alarm Search</strong> page can be used to search the alarm list on
-      multiple fields. Fill in values for each field that you wish to use to narrow down
-      the search.</p>
-
-      <p>To select alarms by time, first check the box for the time range
-      that you wish to limit and then fill out the time in the boxes provided.</p>
-
-      <p>If you wish to select alarms within a specific time span, check <em>both</em>
-      boxes and enter the beginning and end of the range in the boxes provided.</p>
-  </div> <!-- id="contentright" -->
-
-<jsp:include page="/includes/footer.jsp" flush="false" />
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />

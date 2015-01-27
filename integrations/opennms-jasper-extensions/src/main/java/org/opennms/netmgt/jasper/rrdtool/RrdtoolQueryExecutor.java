@@ -31,11 +31,13 @@ package org.opennms.netmgt.jasper.rrdtool;
 import java.util.Map;
 
 import net.sf.jasperreports.engine.JRValueParameter;
+
+import org.opennms.netmgt.jasper.analytics.RrdDataSourceFilter;
 import org.opennms.netmgt.jasper.jrobin.JRobinQueryExecutor;
 
-import net.sf.jasperreports.engine.JRDataSource;
 import net.sf.jasperreports.engine.JRDataset;
 import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JRRewindableDataSource;
 
 public class RrdtoolQueryExecutor extends JRobinQueryExecutor {
 
@@ -44,12 +46,13 @@ public class RrdtoolQueryExecutor extends JRobinQueryExecutor {
 	}
 
 	@Override
-	public JRDataSource createDatasource() throws JRException {
-		try {
-			return new RrdtoolXportCmd().executeCommand(getQueryString());
-		} catch (Exception e) {
-			throw new JRException("Error creating RrdtoolDataSource", e);
-		}
+	public JRRewindableDataSource createDatasource() throws JRException {
+        RrdDataSourceFilter dse = new RrdDataSourceFilter(getQueryString());
+        try {
+            JRRewindableDataSource ds = new RrdtoolXportCmd().executeCommand(dse.getRrdQueryString());
+            return dse.filter(ds);
+        } catch (Exception e) {
+            throw new JRException("Error creating RrdtoolDataSource with command: " + getQueryString(), e);
+        }
 	}
-
 }

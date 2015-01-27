@@ -35,7 +35,7 @@
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 
-<jsp:include page="/includes/header.jsp" flush="false" >
+<jsp:include page="/includes/bootstrap.jsp" flush="false" >
   <jsp:param name="title" value="Database Reports" />
   <jsp:param name="headTitle" value="Database Reports" />
   <jsp:param name="breadcrumb" value="<a href='report/index.jsp'>Reports</a>" />
@@ -44,16 +44,27 @@
   <jsp:param name="breadcrumb" value="Run"/>
 </jsp:include>
 
-<h3>Report Running</h3>
-<div class="boxWrapper">
-    <form:form cssClass="stdform">
-        <p>
-            <span class="indent">Your report is being run.</span>
-        </p>
-        <span class="indent">
-            <input type="submit" id="proceed" name="_eventId_proceed" value="Finished" />&#160;
-        </span>
-    </form:form>
+<div class="row">
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Report Running</h3>
+            </div>
+            <div class="panel-body">
+                <form:form cssClass="stdform">
+                    <p>
+                        <span class="indent">Your report is being run.</span>
+                    </p>
+                    <span class="indent">
+                        <input type="submit" class="btn btn-default" id="proceed" name="_eventId_proceed" value="Finished" />&#160;
+                    </span>
+                </form:form>
+            </div>
+        </div>
+
+    </div>
 </div>
 
-<jsp:include page="/includes/footer.jsp" flush="false" />
+
+
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />

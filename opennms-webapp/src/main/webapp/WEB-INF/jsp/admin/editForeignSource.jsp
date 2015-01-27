@@ -41,7 +41,7 @@
 <%@ taglib tagdir="/WEB-INF/tags/tree" prefix="tree" %>
 <%@ taglib tagdir="/WEB-INF/tags/springx" prefix="springx" %>
 
-<jsp:include page="/includes/header.jsp" flush="false">
+<jsp:include page="/includes/bootstrap.jsp" flush="false">
 	<jsp:param name="title" value="Provisioning Requisitions" /> 
 	<jsp:param name="headTitle" value="Provisioning Requisitions" />
 	<jsp:param name="breadcrumb" value="<a href='admin/index.jsp'>Admin</a>" />
@@ -49,16 +49,18 @@
 	<jsp:param name="breadcrumb" value="Edit Foreign Source Definition" />
 </jsp:include>
 
-<h3>Foreign Source Name: ${fn:escapeXml(foreignSourceEditForm.foreignSourceName)}</h3>
-
 <tree:form commandName="foreignSourceEditForm"> 
+  <input type="hidden" id="foreignSourceName" name="foreignSourceName" value="${fn:escapeXml(foreignSourceEditForm.foreignSourceName)}"/>
 
-	<input type="hidden" id="foreignSourceName" name="foreignSourceName" value="${fn:escapeXml(foreignSourceEditForm.foreignSourceName)}"/> 
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title">Foreign Source Name: ${fn:escapeXml(foreignSourceEditForm.foreignSourceName)}</h3>
+  </div>
+  <div class="panel-footer">
 	<tree:actionButton label="Done" action="done" />
+  </div>
+</div> <!-- panel -->
 
-	<br />
-	<br />
-	
 	<c:set var="showDelete" value="false" scope="request" />
 	<tree:nodeForm>
     	<tree:field label="Scan Interval" property="scanInterval" />
@@ -131,4 +133,4 @@
 	</tree:tree>
 	  
 </tree:form> 
-<jsp:include page="/includes/footer.jsp" flush="false"/>
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="false"/>

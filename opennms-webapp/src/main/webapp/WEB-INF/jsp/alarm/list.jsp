@@ -97,7 +97,7 @@
 %>
 <c:set var="baseHref" value="<%=Util.calculateUrlBase(request)%>"/>
 
-<jsp:include page="/includes/header.jsp" flush="false" >
+<jsp:include page="/includes/bootstrap.jsp" flush="false" >
   <jsp:param name="title" value="Alarm List" />
   <jsp:param name="headTitle" value="List" />
   <jsp:param name="headTitle" value="Alarms" />
@@ -197,30 +197,40 @@
         var selectedOption = selectElement.options[selectElement.selectedIndex];
         var favoriteId = selectedOption.value.split(';')[0];
         var filter = selectedOption.value.split(';')[1];
+        changeFavorite(favoriteId, filter);
+    }
+
+    function changeFavorite(favoriteId, filter) {
         window.location.href = "<%=req.getContextPath()%>/alarm/list?display=<%=parms.getDisplay()%>&favoriteId=" + favoriteId + '&' + filter;
     }
 
   </script>
 
+<div id="severityLegendModal" class="modal fade" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+        <jsp:include page="/alarm/severity.jsp" flush="false" />
+    </div>
+  </div>
+</div>
 
       <!-- menu -->
-      <div id="linkbar">
-      <ul>
-      <li><a href="<%=this.makeLink(callback, parms, new ArrayList<Filter>(), favorite)%>" title="Remove all search constraints" >View all alarms</a></li>
-      <li><a href="alarm/advsearch.jsp" title="More advanced searching and sorting options">Advanced Search</a></li>
+      <div class="row">
+      <div class="col-md-12">
+      <a class="btn btn-default" href="<%=this.makeLink(callback, parms, new ArrayList<Filter>(), favorite)%>" title="Remove all search constraints" >View all alarms</a>
+      <a class="btn btn-default" href="alarm/advsearch.jsp" title="More advanced searching and sorting options">Advanced Search</a>
       <c:choose>
         <c:when test="${param.display == 'long'}">
-      <li><a href="<%=this.makeLink(callback, parms, "short", favorite)%>" title="Summary List of Alarms">Short Listing</a></li>
+      <a class="btn btn-default" href="<%=this.makeLink(callback, parms, "short", favorite)%>" title="Summary List of Alarms">Short Listing</a>
         </c:when>
         <c:otherwise>
-      <li><a href="<%=this.makeLink(callback, parms, "long", favorite)%>" title="Detailed List of Alarms">Long Listing</a></li>
+      <a class="btn btn-default" href="<%=this.makeLink(callback, parms, "long", favorite)%>" title="Detailed List of Alarms">Long Listing</a>
         </c:otherwise>
       </c:choose>
-      <li><a onclick="javascript:window.open('<%=Util.calculateUrlBase(req, "alarm/severity.jsp")%>','alarm_severity_legend', 'fullscreen=no,toolbar=no,status=no,menubar=no,scrollbars=no,resizable=yes,directories=no,location=no,width=525,height=330')" title="Open a window explaining the alarm severities">Severity Legend</a></li>
+      <a class="btn btn-default" onclick="$('#severityLegendModal').modal()">Severity Legend</a>
       
       <% if( req.isUserInRole( Authentication.ROLE_ADMIN ) || !req.isUserInRole( Authentication.ROLE_READONLY ) ) { %>
         <% if ( alarmCount > 0 ) { %>
-          <li>
             <!-- hidden form for acknowledging the result set -->
             <form style="display:inline" method="post" action="<%= Util.calculateUrlBase(req, "alarm/acknowledgeByFilter") %>" name="acknowledge_by_filter_form">
               <input type="hidden" name="redirectParms" value="<c:out value="<%=req.getQueryString()%>"/>" />
@@ -228,33 +238,81 @@
               <%=Util.makeHiddenTags(req)%>
             </form>
             <% if( parms.getAckType().equals(AcknowledgeType.UNACKNOWLEDGED.toNormalizedAcknowledgeType()) ) { %>
-              <a href="javascript:void()" onclick="if (confirm('Are you sure you want to acknowledge all alarms in the current search including those not shown on your screen?  (<%=alarmCount%> total alarms)')) { document.acknowledge_by_filter_form.submit(); }" title="Acknowledge all alarms that match the current search constraints, even those not shown on the screen">Acknowledge entire search</a>
+              <a class="btn btn-default" href="javascript:void()" onclick="if (confirm('Are you sure you want to acknowledge all alarms in the current search including those not shown on your screen?  (<%=alarmCount%> total alarms)')) { document.acknowledge_by_filter_form.submit(); }" title="Acknowledge all alarms that match the current search constraints, even those not shown on the screen">Acknowledge entire search</a>
             <% } else { %>
-              <a href="#javascript:void()" onclick="if (confirm('Are you sure you want to unacknowledge all alarms in the current search including those not shown on your screen)?  (<%=alarmCount%> total alarms)')) { document.acknowledge_by_filter_form.submit(); }" title="Unacknowledge all alarms that match the current search constraints, even those not shown on the screen">Unacknowledge entire search</a>
+              <a class="btn btn-default" href="#javascript:void()" onclick="if (confirm('Are you sure you want to unacknowledge all alarms in the current search including those not shown on your screen)?  (<%=alarmCount%> total alarms)')) { document.acknowledge_by_filter_form.submit(); }" title="Unacknowledge all alarms that match the current search constraints, even those not shown on the screen">Unacknowledge entire search</a>
             <% } %>
-          </li>
         <% } %>
       <% } %>
-      </ul>
+      </div>
       </div>
       <!-- end menu -->
 
-            <% if( parms.getFilters().size() > 0 || AcknowledgeType.UNACKNOWLEDGED.toNormalizedAcknowledgeType().equals(parms.getAckType()) || AcknowledgeType.ACKNOWLEDGED.toNormalizedAcknowledgeType().equals(parms.getAckType()) ) { %>
-                <div>
-                <p>
-                    Favorites:
-                    <onms:select
-                            defaultText="All Alarms"
-                            elements='${favorites}'
-                            selected='${favorite}'
-                            handler='${filterFavoriteSelectTagHandler}'
-                            onChange='changeFavorite(this)'/>
-                </p>
-            <% } %>
-            <jsp:include page="/includes/alarm-querypanel.jsp" flush="false" />
+<div class="hidden">
+  <jsp:include page="/includes/alarm-querypanel.jsp" flush="false" />
+</div>
+
+<%-- This tag writes out the createFavorite(), deleteFavorite(), and clearFilters() methods --%>
+<onms:favorite
+  favorite="${favorite}"
+  parameters="${parms}"
+  callback="${callback}"
+  context="/alarm/list"
+  createFavoriteController="/alarm/createFavorite"
+  deleteFavoriteController="/alarm/deleteFavorite"
+/>
+
+<div class="row">
+  <br/>
+</div>
+
+<div class="row">
+  <div class="col-sm-6 col-md-3">
+  <div class="input-group">
+    <span class="input-group-addon">
+      <c:choose>
+      <c:when test="${favorite == null}">
+      <a onclick="createFavorite()">
+        <!-- Star outline -->
+        <i class="fa fa-lg fa-star-o"></i>
+      </a>
+      </c:when>
+      <c:otherwise>
+      <a onclick="deleteFavorite(${favorite.id})">
+        <i class="fa fa-lg fa-star"></i>
+      </a>
+      </c:otherwise>
+      </c:choose>
+    </span>
+    <!-- Use background-color:white to make it look less disabled -->
+    <input type="text" class="form-control" style="background-color:white;" readonly placeholder="Unsaved filter" value="<c:out value="${favorite.name}"/>"/>
+    <div class="input-group-btn">
+      <div class="dropdown">
+        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+          <span class="caret"></span>
+        </button>
+        <!-- I put margin: 0px here because the margin gap was causing the menu to disappear before you could get the mouse on it -->
+        <ul class="dropdown-menu dropdown-menu-right" style="margin: 0px;" role="menu">
+          <c:forEach var="fave" items="${favorites}">
+            <c:if test="${favorite.id != fave.id}">
+              <li>
+                <a onclick="changeFavorite(${fave.id}, '${fave.filter}')">
+                  <c:out value="${fave.name}"/>
+                </a>
+              </li>
+              <c:set var="showDivider" value="${true}"/>
+            </c:if>
+          </c:forEach>
+          <c:if test="${showDivider}"><li class="divider"/></c:if>
+          <li><a onclick="clearFilters()">Clear filters</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  </div>
 
             <% if( parms.getFilters().size() > 0 || AcknowledgeType.UNACKNOWLEDGED.toNormalizedAcknowledgeType().equals(parms.getAckType()) || AcknowledgeType.ACKNOWLEDGED.toNormalizedAcknowledgeType().equals(parms.getAckType()) ) { %>
-                <p>
+                <div class="col-sm-6 col-md-9">
                     <onms:filters
                             context="/alarm/list"
                             favorite="${favorite}"
@@ -264,19 +322,15 @@
                             acknowledgeFilterPrefix="Alarm(s)"
                             acknowledgeFilterSuffix="alarm(s)"
                             callback="${callback}" />
-
-                    <onms:favorite
-                            favorite="${favorite}"
-                            parameters="${parms}"
-                            callback="${callback}"
-                            context="/alarm/list"
-                            createFavoriteController="/alarm/createFavorite"
-                            deleteFavoriteController="/alarm/deleteFavorite"
-                            onDeselect="<%=FavoriteTag.Action.CLEAR_FILTERS%>"/>
-                </p>
                 </div>
             <% } %>
-            <onms:alert/>
+</div>
+
+<div class="row">
+  <br/>
+</div>
+
+<onms:alert/>
 
             <% if( alarmCount > 0 ) { %>
               <% String baseUrl = this.makeLink(callback, parms, favorite); %>
@@ -289,13 +343,13 @@
             <% } %>
 
       <% if( req.isUserInRole( Authentication.ROLE_ADMIN ) || !req.isUserInRole( Authentication.ROLE_READONLY ) ) { %>
-          <form action="<%= Util.calculateUrlBase(request, "alarm/acknowledge") %>" method="post" name="alarm_action_form">
+          <form class="form-inline" action="<%= Util.calculateUrlBase(request, "alarm/acknowledge") %>" method="post" name="alarm_action_form">
           <input type="hidden" name="redirectParms" value="<c:out value="<%=req.getQueryString()%>"/>" />
           <input type="hidden" name="actionCode" value="<%=action%>" />
           <%=Util.makeHiddenTags(req)%>
       <% } %>
-			<jsp:include page="/includes/key.jsp" flush="false" />
-      <table>
+
+      <table class="table table-condensed severity">
 				<thead>
 					<tr>
                                              <% if( req.isUserInRole( Authentication.ROLE_ADMIN ) || !req.isUserInRole( Authentication.ROLE_READONLY ) ) { %>
@@ -348,7 +402,7 @@
       	pageContext.setAttribute("alarm", alarms[i]);
       %> 
 
-        <tr class="<%=alarms[i].getSeverity().getLabel()%>">
+        <tr class="severity-<%=alarms[i].getSeverity().getLabel()%>">
           <% if( parms.getAckType().equals(AcknowledgeType.BOTH.toNormalizedAcknowledgeType()) ) { %>
               <td class="divider" valign="middle" rowspan="1">
                 <nobr>
@@ -473,17 +527,15 @@
           <td class="divider">
             <nobr>
               <% if(alarms[i].getLastEvent() != null) { %><span title="Event <%= alarms[i].getLastEvent().getId()%>"><a href="event/detail.htm?id=<%= alarms[i].getLastEvent().getId()%>"><% } %>
-                <fmt:formatDate value="${alarm.lastEventTime}" type="date" dateStyle="short"/>&nbsp;<fmt:formatDate value="${alarm.lastEventTime}" type="time" pattern="HH:mm:ss"/>
+                <fmt:formatDate value="${alarm.lastEventTime}" type="BOTH" />
               <% if(alarms[i].getLastEvent() != null) { %></a></span><% } %>
-            </nobr>
-            <nobr>
               <a href="<%=this.makeLink(callback, parms, new AfterLastEventTimeFilter(alarms[i].getLastEventTime()), true, favorite)%>"  class="filterLink" title="Only show alarms occurring after this one">${addAfterFilter}</a>
               <a href="<%=this.makeLink(callback, parms, new BeforeLastEventTimeFilter(alarms[i].getLastEventTime()), true, favorite)%>" class="filterLink" title="Only show alarms occurring before this one">${addBeforeFilter}</a>
             </nobr>
           <c:if test="${param.display == 'long'}">
           <br />
-            <nobr><fmt:formatDate value="${alarm.firstEventTime}" type="date" dateStyle="short"/>&nbsp;<fmt:formatDate value="${alarm.firstEventTime}" type="time" pattern="HH:mm:ss"/></nobr>
             <nobr>
+              <fmt:formatDate value="${alarm.firstEventTime}" type="BOTH" />
               <a href="<%=this.makeLink(callback, parms, new AfterFirstEventTimeFilter(alarms[i].getFirstEventTime()), true, favorite)%>"  class="filterLink" title="Only show alarms occurring after this one">${addAfterFilter}</a>
               <a href="<%=this.makeLink(callback, parms, new BeforeFirstEventTimeFilter(alarms[i].getFirstEventTime()), true, favorite)%>" class="filterLink" title="Only show alarms occurring before this one">${addBeforeFilter}</a>
             </nobr>
@@ -505,9 +557,9 @@
 			<hr />
 			 <p><%=alarms.length%> alarms &nbsp;
       <% if( req.isUserInRole( Authentication.ROLE_ADMIN ) || !req.isUserInRole( Authentication.ROLE_READONLY ) ) { %>
-          <input TYPE="reset" />
-          <input TYPE="button" VALUE="Select All" onClick="checkAllCheckboxes()"/>
-          <select name="alarmAction">
+          <input class="btn btn-default" TYPE="reset" />
+          <input class="btn btn-default" TYPE="button" VALUE="Select All" onClick="checkAllCheckboxes()"/>
+          <select class="form-control" name="alarmAction">
         <% if( parms.getAckType().equals(AcknowledgeType.UNACKNOWLEDGED.toNormalizedAcknowledgeType()) ) { %>
           <option value="acknowledge">Acknowledge Alarms</option>
         <% } else if( parms.getAckType().equals(AcknowledgeType.ACKNOWLEDGED.toNormalizedAcknowledgeType()) ) { %>
@@ -516,7 +568,7 @@
           <option value="clear">Clear Alarms</option>
           <option value="escalate">Escalate Alarms</option>
           </select>
-          <input type="button" value="Go" onClick="submitForm(document.alarm_action_form.alarmAction.value)" />
+          <input class="btn btn-default" type="button" value="Go" onClick="submitForm(document.alarm_action_form.alarmAction.value)" />
       <% } %>
         </p>
       </form>
@@ -533,8 +585,7 @@
         <% } %>
 
 
-<jsp:include page="/includes/bookmark.jsp" flush="false" />
-<jsp:include page="/includes/footer.jsp" flush="false" />
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />
 
 
 <%!

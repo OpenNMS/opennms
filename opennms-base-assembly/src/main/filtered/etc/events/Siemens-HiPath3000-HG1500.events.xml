@@ -1,0 +1,264 @@
+<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.231.7.2.7</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>5</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/siemens/traps/hg1500/sendAlarmWithValues</uei>
+        <event-label>HG1500MIB defined trap event: sendAlarmWithValues</event-label>
+        <descr>
+            &lt;p>If an error occurs, there will be checked if the errorClass is configured&#xd;
+            to trigger a immediate signalling. If so, a trap will be send to the&#xd;
+            management station containing the information shown above.&lt;/p>&lt;table>
+            &lt;tr>&lt;td>&lt;b>
+
+            trapIndex&lt;/b>&lt;/td>&lt;td>
+            %parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+            &lt;tr>&lt;td>&lt;b>
+
+            trapDateTime&lt;/b>&lt;/td>&lt;td>
+            %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+            &lt;tr>&lt;td>&lt;b>
+
+            trapSeverity&lt;/b>&lt;/td>&lt;td>
+            %parm[#3]%;&lt;/td>&lt;td>&lt;p>
+            normal(1)
+            warning(2)
+            minor(3)
+            major(4)
+            critical(5)
+            &lt;/p>&lt;/td>&lt;/tr>
+            &lt;tr>&lt;td>&lt;b>
+
+            trapErrorClass&lt;/b>&lt;/td>&lt;td>
+            %parm[#4]%;&lt;/td>&lt;td>&lt;p>
+            general(1)
+            voice(2)
+            data(3)
+            security(4)
+            client(5)
+            &lt;/p>&lt;/td>&lt;/tr>
+            &lt;tr>&lt;td>&lt;b>
+
+            trapErrorCode&lt;/b>&lt;/td>&lt;td>
+            %parm[#5]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+            &lt;tr>&lt;td>&lt;b>
+
+            trapDescription&lt;/b>&lt;/td>&lt;td>
+            %parm[#6]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table>
+        </descr>
+        <logmsg dest="logndisplay">&lt;p>
+            sendAlarmWithValues trap received
+            trapIndex=%parm[#1]%
+            trapDateTime=%parm[#2]%
+            trapSeverity=%parm[#3]%
+            trapErrorClass=%parm[#4]%
+            trapErrorCode=%parm[#5]%
+            trapDescription=%parm[#6]%&lt;/p>
+        </logmsg>
+        <severity>Indeterminate</severity>
+        <varbindsdecode>
+            <parmid>parm[#3]</parmid>
+            <decode varbindvalue="1" varbinddecodedstring="normal"/>
+            <decode varbindvalue="2" varbinddecodedstring="warning"/>
+            <decode varbindvalue="3" varbinddecodedstring="minor"/>
+            <decode varbindvalue="4" varbinddecodedstring="major"/>
+            <decode varbindvalue="5" varbinddecodedstring="critical"/>
+        </varbindsdecode>
+        <varbindsdecode>
+            <parmid>parm[#4]</parmid>
+            <decode varbindvalue="1" varbinddecodedstring="general"/>
+            <decode varbindvalue="2" varbinddecodedstring="voice"/>
+            <decode varbindvalue="3" varbinddecodedstring="data"/>
+            <decode varbindvalue="4" varbinddecodedstring="security"/>
+            <decode varbindvalue="5" varbinddecodedstring="client"/>
+        </varbindsdecode>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.231.7.2.7</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/siemens/traps/hg1500/fileOverflowError</uei>
+        <event-label>HG1500MIB defined trap event: fileOverflowError</event-label>
+        <descr>
+            &lt;p>Inform the manager that the trap history table got too big. Unless the size of the&#xd;
+            table is reduced by the manager (by resetting numberOfTrapHistoryEntries), the oldest&#xd;
+            trap informations will be overridden from now on.&lt;/p>&lt;table>
+            &lt;tr>&lt;td>&lt;b>
+
+            numberOfTrapHistoryEntries&lt;/b>&lt;/td>&lt;td>
+            %parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table>
+        </descr>
+        <logmsg dest="logndisplay">&lt;p>
+            fileOverflowError trap received
+            numberOfTrapHistoryEntries=%parm[#1]%&lt;/p>
+        </logmsg>
+        <severity>Indeterminate</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.231.7.2.7.11</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/siemens/traps/hg1500/sendVoIPQualityNotification</uei>
+        <event-label>HG1500MIB defined trap event: sendVoIPQualityNotification</event-label>
+        <descr>
+            &lt;p>This notification will be sent when the latest voice over IP&#xd;
+            connection had quality problems.&lt;/p>&lt;table>
+            &lt;tr>&lt;td>&lt;b>
+
+            statIndVoiceCliIndex&lt;/b>&lt;/td>&lt;td>
+            %parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+            &lt;tr>&lt;td>&lt;b>
+
+            statIndVoiceConnectionConfId&lt;/b>&lt;/td>&lt;td>
+            %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+            &lt;tr>&lt;td>&lt;b>
+
+            statIndVoiceCliLocalIpAddress&lt;/b>&lt;/td>&lt;td>
+            %parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+            &lt;tr>&lt;td>&lt;b>
+
+            statIndVoiceCliRemoteIpAddress&lt;/b>&lt;/td>&lt;td>
+            %parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+            &lt;tr>&lt;td>&lt;b>
+
+            statIndVoiceConnectionQuality&lt;/b>&lt;/td>&lt;td>
+            %parm[#5]%;&lt;/td>&lt;td>&lt;p>
+            normal(1)
+            warning(2)
+            minor(3)
+            major(4)
+            critical(5)
+            &lt;/p>&lt;/td>&lt;/tr>
+            &lt;tr>&lt;td>&lt;b>
+
+            voIPQualityNotificationCounter&lt;/b>&lt;/td>&lt;td>
+            %parm[#6]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table>
+        </descr>
+        <logmsg dest="logndisplay">&lt;p>
+            sendVoIPQualityNotification trap received
+            statIndVoiceCliIndex=%parm[#1]%
+            statIndVoiceConnectionConfId=%parm[#2]%
+            statIndVoiceCliLocalIpAddress=%parm[#3]%
+            statIndVoiceCliRemoteIpAddress=%parm[#4]%
+            statIndVoiceConnectionQuality=%parm[#5]%
+            voIPQualityNotificationCounter=%parm[#6]%&lt;/p>
+        </logmsg>
+        <severity>Indeterminate</severity>
+        <varbindsdecode>
+            <parmid>parm[#5]</parmid>
+            <decode varbindvalue="1" varbinddecodedstring="normal"/>
+            <decode varbindvalue="2" varbinddecodedstring="warning"/>
+            <decode varbindvalue="3" varbinddecodedstring="minor"/>
+            <decode varbindvalue="4" varbinddecodedstring="major"/>
+            <decode varbindvalue="5" varbinddecodedstring="critical"/>
+        </varbindsdecode>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.231.7.2.7.11</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>2</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/siemens/traps/hg1500/sendIpPhoneTableNotification</uei>
+        <event-label>HG1500MIB defined trap event: sendIpPhoneTableNotification</event-label>
+        <descr>
+            &lt;p>This notification will be sent whenever the errorState of an ip phone&#xd;
+            table entry changes or when the configuration of ip phones is changed.&lt;/p>&lt;table>
+            &lt;tr>&lt;td>&lt;b>
+
+            indexOfLastIpPhoneNotification&lt;/b>&lt;/td>&lt;td>
+            %parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+            &lt;tr>&lt;td>&lt;b>
+
+            typeOfLastIpPhoneNotification&lt;/b>&lt;/td>&lt;td>
+            %parm[#2]%;&lt;/td>&lt;td>&lt;p>
+            configurationChanged(1)
+            errorStateChanged(2)
+            &lt;/p>&lt;/td>&lt;/tr>
+            &lt;tr>&lt;td>&lt;b>
+
+            subscriberNoOfLastIpPhoneNotification&lt;/b>&lt;/td>&lt;td>
+            %parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+            &lt;tr>&lt;td>&lt;b>
+
+            ipAddressOfLastIpPhoneNotification&lt;/b>&lt;/td>&lt;td>
+            %parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+            &lt;tr>&lt;td>&lt;b>
+
+            errorStateOfLastIpPhoneNotification&lt;/b>&lt;/td>&lt;td>
+            %parm[#5]%;&lt;/td>&lt;td>&lt;p>
+            normal(1)
+            warning(2)
+            minor(3)
+            major(4)
+            critical(5)
+            unknown(6)
+            &lt;/p>&lt;/td>&lt;/tr>&lt;/table>
+        </descr>
+        <logmsg dest="logndisplay">&lt;p>
+            sendIpPhoneTableNotification trap received
+            indexOfLastIpPhoneNotification=%parm[#1]%
+            typeOfLastIpPhoneNotification=%parm[#2]%
+            subscriberNoOfLastIpPhoneNotification=%parm[#3]%
+            ipAddressOfLastIpPhoneNotification=%parm[#4]%
+            errorStateOfLastIpPhoneNotification=%parm[#5]%&lt;/p>
+        </logmsg>
+        <severity>Indeterminate</severity>
+        <varbindsdecode>
+            <parmid>parm[#2]</parmid>
+            <decode varbindvalue="1" varbinddecodedstring="configurationChanged"/>
+            <decode varbindvalue="2" varbinddecodedstring="errorStateChanged"/>
+        </varbindsdecode>
+        <varbindsdecode>
+            <parmid>parm[#5]</parmid>
+            <decode varbindvalue="1" varbinddecodedstring="normal"/>
+            <decode varbindvalue="2" varbinddecodedstring="warning"/>
+            <decode varbindvalue="3" varbinddecodedstring="minor"/>
+            <decode varbindvalue="4" varbinddecodedstring="major"/>
+            <decode varbindvalue="5" varbinddecodedstring="critical"/>
+            <decode varbindvalue="6" varbinddecodedstring="unknown"/>
+        </varbindsdecode>
+    </event>
+</events>

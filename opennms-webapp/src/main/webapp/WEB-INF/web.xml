@@ -170,6 +170,11 @@
   </filter-mapping>
   
   <filter-mapping>
+    <filter-name>CORS Filter</filter-name>
+    <url-pattern>/rest/*</url-pattern>
+  </filter-mapping>
+
+  <filter-mapping>
     <filter-name>springSecurityFilterChain</filter-name>
     <url-pattern>/*</url-pattern>
   </filter-mapping>
@@ -178,14 +183,6 @@
     <filter-name>StoreRequestProperties</filter-name>
     <url-pattern>/*</url-pattern>
   </filter-mapping>
-
-  <!-- Uncomment this to enable CORS support -->
-  <!--
-  <filter-mapping>
-    <filter-name>CORS Filter</filter-name>
-    <url-pattern>/rest/*</url-pattern>
-  </filter-mapping>
-  -->
 
   <filter-mapping>
     <filter-name>AddRefreshHeader-300</filter-name>
@@ -670,32 +667,6 @@
     <servlet-class>org.opennms.web.admin.nodeManagement.SnmpConfigServlet</servlet-class>
   </servlet>
   
-  <!-- servlets for editing the poller configuration files -->
-  <servlet>
-    <servlet-name>pollerConfig</servlet-name>
-    <servlet-class>org.opennms.web.admin.pollerConfig.PollerConfigServlet</servlet-class>
-    <init-param>
-      <description>Redirect to this sibling URL on success.</description>
-      <param-name>redirect.success</param-name>
-      <param-value>finishPollerConfig.jsp</param-value>
-    </init-param>
-  </servlet>
-  <servlet>
-    <servlet-name>finishPollerConfig</servlet-name>
-    <servlet-class>org.opennms.web.admin.pollerConfig.FinishPollerConfigServlet</servlet-class>
-  </servlet>
-  
-  <servlet>
-    <!-- servlet for managing and unmanaging interfaces and services -->
-    <servlet-name>addPollerConfig</servlet-name>
-    <servlet-class>org.opennms.web.admin.pollerConfig.AddPollerConfigServlet</servlet-class>
-    <init-param>
-      <description>Redirect to this sibling URL on success.</description>
-      <param-name>redirect.success</param-name>
-      <param-value>index.jsp</param-value>
-    </init-param>
-  </servlet>
-
   <!--servlet for updating the notify flag in the ifservices table -->
   <servlet>
         <servlet-name>updateServiceNotify</servlet-name>
@@ -750,11 +721,6 @@
   </servlet-->
   
   <servlet>
-  	<servlet-name>scheduleEditor</servlet-name>
-  	<servlet-class>org.opennms.web.admin.schedule.ScheduleEditorServlet</servlet-class>
-  </servlet>
-  
-  <servlet>
   	<servlet-name>purdyChart</servlet-name>
   	<servlet-class>org.opennms.web.graph.PurdyChartServlet</servlet-class>
   	<init-param>
@@ -762,7 +728,6 @@
   		<param-value>sample-bar-chart</param-value>
   	</init-param>
   </servlet>
-
  
   <servlet>
         <servlet-name>dispatcher</servlet-name>
@@ -778,11 +743,6 @@
   	<url-pattern>/charts</url-pattern>
   </servlet-mapping>
   
-  <servlet-mapping>
-  	<servlet-name>scheduleEditor</servlet-name>
-  	<url-pattern>/admin/schedule/schedule-editor</url-pattern>
-  </servlet-mapping>
-
   <servlet-mapping>
     <servlet-name>queryEvent</servlet-name>
     <url-pattern>/event/query</url-pattern>
@@ -957,18 +917,6 @@
   <servlet-mapping>
     <servlet-name>snmpConfig</servlet-name>
     <url-pattern>/admin/snmpConfig</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>pollerConfig</servlet-name>
-    <url-pattern>/admin/pollerConfig/pollerConfig</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>finishPollerConfig</servlet-name>
-    <url-pattern>/admin/pollerConfig/finishPollerConfig</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>addPollerConfig</servlet-name>
-    <url-pattern>/admin/pollerConfig/addPollerConfig</url-pattern>
   </servlet-mapping>
 
   <servlet-mapping>

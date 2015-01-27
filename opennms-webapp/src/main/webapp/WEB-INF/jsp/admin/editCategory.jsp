@@ -33,7 +33,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 
-<jsp:include page="/includes/header.jsp" flush="false">
+<jsp:include page="/includes/bootstrap.jsp" flush="false">
 	<jsp:param name="title" value="Category" />
 	<jsp:param name="headTitle" value="Category" />
 	<jsp:param name="breadcrumb"
@@ -99,64 +99,55 @@ function toggleReqNodes() {
 }
 </script>
 
-<h3>Edit Surveillance Category ${model.category.name}</h3>
-
-<p>
-Category '${model.category.name}' has ${fn:length(model.sortedMemberNodes)} nodes  
-</p>
-
-<form action="admin/categories.htm" method="get">
-  <input type="hidden" name="categoryid" value="${model.category.id}"/>
-  <input type="hidden" name="edit" value=""/>
-  
-  <table class="normal">
-    <tr>
-      <td class="normal" align="center">
-		Available nodes
-      </td>
-      
-      <td class="normal">  
-      </td>
-
-      <td class="normal" align="center">
-      	Nodes on category
-      </td>
-    </tr>
-      
-    <tr>
-      <td class="normal">
-    <select id="toAdd" name="toAdd" size="20" multiple>
-        <optgroup id="toAddAutoGroup" label="Auto-Provisioned Nodes"></optgroup>
-	    <optgroup id="toAddReqGroup" disabled="true" label="Requisitioned Nodes"></optgroup>
-    </select>
-      </td>
-      
-      <td class="normal" style="text-align:center; vertical-align:middle;">  
-        <input type="submit" name="action" value="Add &#155;&#155;"/>
-        <br/>
-        <br/>
-        <input type="submit" name="action" value="&#139;&#139; Remove"/>
-      </td>
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title">Edit Surveillance Category ${model.category.name}</h3>
+  </div>
+  <div class="panel-body">
+    <p>
+    Category '${model.category.name}' has ${fn:length(model.sortedMemberNodes)} nodes
+    </p>
     
-      <td class="normal">
-    <select id="toDelete" name="toDelete" size="20" multiple>
-        <optgroup id="toDeleteAutoGroup" label="Auto-Provisioned Nodes"></optgroup>
-	    <optgroup id="toDeleteReqGroup" disabled="true" label="Requisitioned Nodes"></optgroup>
-    </select>
-      </td>
-    </tr>
-    <tr>
-      <td colspan="3">
+    <form action="admin/categories.htm" method="get">
+      <input type="hidden" name="categoryid" value="${model.category.id}"/>
+      <input type="hidden" name="edit" value=""/>
+
+      <div class="row form-group">
+        <div class="col-md-5">
+          <label for="toAdd">Available nodes</label>
+          <select id="toAdd" class="form-control" name="toAdd" size="20" multiple>
+            <optgroup id="toAddAutoGroup" label="Auto-Provisioned Nodes"></optgroup>
+            <optgroup id="toAddReqGroup" disabled="true" label="Requisitioned Nodes"></optgroup>
+          </select>
+        </div> <!-- column -->
+
+        <div class="col-md-2 text-center">
+          <input type="submit" class="btn btn-default" name="action" value="Add &#155;&#155;"/>
+          <br/>
+          <br/>
+          <input type="submit" class="btn btn-default" name="action" value="&#139;&#139; Remove"/>
+        </div>
+
+        <div class="col-md-5">
+          <label for="toDelete">Nodes on category</label>
+          <select id="toDelete" class="form-control" name="toDelete" size="20" multiple>
+            <optgroup id="toDeleteAutoGroup" label="Auto-Provisioned Nodes"></optgroup>
+            <optgroup id="toDeleteReqGroup" disabled="true" label="Requisitioned Nodes"></optgroup>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group">
         <input id="toggleCheckbox" type="checkbox" onchange="javascript:toggleReqNodes()" />
         <label for="toggleCheckbox">Check this box to enable requisitioned nodes (changes <strong>will</strong> be lost on next synchronization)</label>
-      </td>
-    </tr>
-  </table>
-</form>
+      </div>
+    </form>
+  </div> <!-- panel-body -->
+</div> <!-- panel -->
 
 <script type="text/javascript">
 populateAutoNodes();
 populateReqNodes();
 </script>
 
-<jsp:include page="/includes/footer.jsp" flush="false"/>
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="false"/>

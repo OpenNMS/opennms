@@ -96,16 +96,15 @@ public class FieldSetSuggestBox extends AbstractFieldSet implements FieldSet, Va
 
 		suggBox.setText(value);
 
-		suggBox.getTextBox().addFocusHandler(this);
-		suggBox.getTextBox().addChangeHandler(this);
-		suggBox.getTextBox().addValueChangeHandler(this);
-		suggBox.getTextBox().addMouseUpHandler(this);
+		suggBox.getValueBox().addFocusHandler(this);
+		suggBox.getValueBox().addChangeHandler(this);
+		suggBox.getValueBox().addValueChangeHandler(this);
+		suggBox.getValueBox().addMouseUpHandler(this);
 		suggBox.addValueChangeHandler(this);
 		suggBox.addKeyUpHandler(this);
 		suggBox.addSelectionHandler(this);
 
-		suggBox.setStyleName("suggBox");
-		suggBox.setSize("300px", "18px");
+		suggBox.addStyleName("form-control");
 		panel.add(suggBox);
 	}
 
@@ -152,7 +151,7 @@ public class FieldSetSuggestBox extends AbstractFieldSet implements FieldSet, Va
 
 	@Override
 	public void setEnabled(Boolean enabled) {
-		suggBox.getTextBox().setEnabled(enabled);
+		suggBox.getValueBox().setEnabled(enabled);
 	}
 	
 	/**
