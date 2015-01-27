@@ -159,21 +159,23 @@
             <li><a href="admin/manageSnmpCollections.jsp">Manage SNMP Collections and Data Collection Groups</a></li>
             <%=getAdminPageNavEntries("operations")%>
         </ul>
-        <form role="form" class="form-inline pull-right" method="post" name="notificationStatus" action="admin/updateNotificationStatus">
+      </div> <!-- panel-body -->
+      <div class="panel-footer text-right">
+        <form role="form" method="post" name="notificationStatus" action="admin/updateNotificationStatus">
             <%String status = "Unknown";
                 try {
                     NotifdConfigFactory.init();
                     status = NotifdConfigFactory.getPrettyStatus();
                 } catch (Throwable e) { /*if factory can't be initialized, status is already 'Unknown'*/ }
             %>
-            <div class="form-group">
-              <label class="control-label">Notification Status:<%if (status.equals("Unknown")) {%> Unknown<% }%>
-              <input class="form-control" type="radio" name="status" id="on" value="on" <%=(status.equals("On") ? "checked" : "")%> /> <label for="on">On</label>&nbsp;&nbsp;&nbsp;
-              <input class="form-control" type="radio" name="status" id="off" value="off" <%=(status.equals("Off") ? "checked" : "")%> /> <label for="off">Off</label>
-            </div>
-            <button type="submit" class="btn btn-default">Update</button>
+              <label class="control-label">Notification Status:<%if (status.equals("Unknown")) {%> Unknown<% }%></label>
+              &nbsp;
+              <label for="on" class="radio-inline"><input style="margin-top:0px;" type="radio" name="status" id="on" value="on" <%=("On".equals(status) ? "checked" : "")%> />On</label>
+              <label for="off" class="radio-inline"><input style="margin-top:0px;" type="radio" name="status" id="off" value="off" <%=("Off".equals(status) ? "checked" : "")%> />Off</label>
+              &nbsp;
+              <button type="submit" class="btn btn-default">Update</button>
         </form>
-      </div> <!-- panel-body -->
+      </div> <!-- panel-footer -->
     </div> <!-- panel -->
 
     <div class="panel panel-default">
