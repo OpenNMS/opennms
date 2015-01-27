@@ -131,27 +131,18 @@ public class EntityPhysicalTableRow extends SnmpRowResult {
         "sensor",
         "module",
         "port",
-        "stack"
+        "stack",
+        "cpu"
     };
-
-    /** The vendor attributes. */
-    private Map<SnmpObjId, HwEntityAttributeType> vendorAttributes;
-
-    /** The vendor attributes. */
-    private Map<String,String> replacementMap;
 
     /**
      * The Constructor.
      *
-     * @param vendorAttributes the vendor attributes
-     * @param replacementMap the replacement map
      * @param columnCount the column count
      * @param instance the instance
      */
-    public EntityPhysicalTableRow(Map<SnmpObjId, HwEntityAttributeType> vendorAttributes, Map<String,String> replacementMap, int columnCount, SnmpInstId instance) {
+    public EntityPhysicalTableRow(int columnCount, SnmpInstId instance) {
         super(columnCount, instance);
-        this.vendorAttributes = vendorAttributes;
-        this.replacementMap = replacementMap;
     }
 
     /**
@@ -166,12 +157,15 @@ public class EntityPhysicalTableRow extends SnmpRowResult {
     /**
      * Gets the hardware entity.
      *
+     * @param vendorAttributes the vendor attributes
+     * @param replacementMap the replacement map
      * @return the hardware entity
      */
-    public OnmsHwEntity getOnmsHwEntity() {
+    public OnmsHwEntity getOnmsHwEntity(Map<SnmpObjId, HwEntityAttributeType> vendorAttributes, Map<String,String> replacementMap) {
         SnmpValue v = null;
         final OnmsHwEntity entity = new OnmsHwEntity();
         entity.setEntPhysicalIndex(getEntPhysicalIndex());
+        entity.setEntPhysicalClass(getEntPhysicalClass());
         v = getValue(entPhysicalDescr);
         if (v != null && !v.toDisplayString().trim().isEmpty())
             entity.setEntPhysicalDescr(v.toDisplayString().trim());
@@ -181,9 +175,6 @@ public class EntityPhysicalTableRow extends SnmpRowResult {
         v = getValue(entPhysicalContainedIn);
         if (v != null)
             entity.setEntPhysicalContainedIn(v.toInt());
-        v = getValue(entPhysicalClass);
-        if (v != null)
-            entity.setEntPhysicalClass(CLASSES[v.toInt()]);
         v = getValue(entPhysicalParentRelPos);
         if (v != null)
             entity.setEntPhysicalParentRelPos(v.toInt());
@@ -239,4 +230,15 @@ public class EntityPhysicalTableRow extends SnmpRowResult {
         }
         return entity;
     }
-}   
+
+    private String getEntPhysicalClass() {
+        SnmpValue v = getValue(entPhysicalClass);
+        if (v != null) {
+            int index = v.toInt();
+            if (index < CLASSES.length) {
+                return CLASSES[index];
+            }
+        }
+        return CLASSES[2]; // Assuming unknown to avoid ArrayIndexOutOfBoundsException
+    }
+}
