@@ -206,8 +206,6 @@ Requires(pre):	%{name}-plugin-provisioning-snmp-asset
 Requires:	%{name}-plugin-provisioning-snmp-asset
 Requires(pre):	%{name}-plugin-provisioning-snmp-hardware-inventory
 Requires:	%{name}-plugin-provisioning-snmp-hardware-inventory
-Requires(pre):	%{name}-plugin-ticketer-centric
-Requires:	%{name}-plugin-ticketer-centric
 Requires(pre):	%{name}-plugin-ticketer-jira
 Requires:	%{name}-plugin-ticketer-jira
 Requires(pre):	%{name}-plugin-ticketer-otrs
