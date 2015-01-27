@@ -35,8 +35,10 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
+import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.net.URLEncoder;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -63,7 +65,6 @@ import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.jsoup.Jsoup;
-
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.netmgt.collectd.PersistAllSelectorStrategy;
 import org.opennms.netmgt.collection.api.AttributeGroupType;
@@ -435,8 +436,16 @@ public abstract class AbstractXmlCollectionHandler implements XmlCollectionHandl
             BeanWrapper wrapper = new BeanWrapperImpl(node.getAssetRecord());
             for (PropertyDescriptor p : wrapper.getPropertyDescriptors()) {
                 Object obj = wrapper.getPropertyValue(p.getName());
-                if (obj != null)
-                    formattedString = formattedString.replaceAll("[{](?i)" + p.getName() + "[}]", obj.toString());
+                if (obj != null){
+                    String objStr = obj.toString();
+                    try {
+                        //NMS-7381 - if pulling from asset info you'd expect to not have to encode reserved words yourself.  
+                        objStr = URLEncoder.encode(obj.toString(), "UTF-8");
+                    } catch (UnsupportedEncodingException e) {
+                        e.printStackTrace();
+                    }
+                    formattedString = formattedString.replaceAll("[{](?i)" + p.getName() + "[}]", objStr);
+                }
             }
         }
         if (formattedString.matches(".*[{].+[}].*"))
