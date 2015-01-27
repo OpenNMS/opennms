@@ -16,7 +16,7 @@
       <group name="brocade-switch-fctable" ifType="all">
         <mibObj oid=".1.3.6.1.4.1.1588.2.1.1.1.6.2.1.11" instance="brocadeFCPortIndex" alias="swFCPortTxWords" type="counter" />
         <mibObj oid=".1.3.6.1.4.1.1588.2.1.1.1.6.2.1.12" instance="brocadeFCPortIndex" alias="swFCPortRxWords" type="counter" />
-        <mibObj oid=".1.3.6.1.4.1.1588.2.1.1.1.6.2.1.34" instance="brocadeFCPortIndex" alias="swFCPortWwn" type="string" />
+        <mibObj oid=".1.3.6.1.4.1.1588.2.1.1.1.6.2.1.34" instance="brocadeFCPortIndex" alias="swFCPortWwn" type="hexstring" />
         <mibObj oid=".1.3.6.1.4.1.1588.2.1.1.1.6.2.1.36" instance="brocadeFCPortIndex" alias="swFCPortName" type="string" />
       </group>
     </groups>

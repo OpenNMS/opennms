@@ -54,10 +54,10 @@ import org.springframework.util.Assert;
  * @since 1.8.1
  */
 public class DefaultKscReportService implements KscReportService, InitializingBean {
-	
+
 	private static final Logger LOG = LoggerFactory.getLogger(DefaultKscReportService.class);
 
-    
+
     private ResourceService m_resourceService;
     private KSC_PerformanceReportFactory m_kscReportFactory;
 
@@ -79,7 +79,7 @@ public class DefaultKscReportService implements KscReportService, InitializingBe
         OnmsResource node = getResourceService().getResourceById(resourceId);
         return buildResourceReport(getResourceService(), node, "Node Report for Node Number " + node_id);
     }
-    
+
     /** {@inheritDoc} */
     @Override
     public Report buildNodeSourceReport(String nodeSource) {
@@ -87,7 +87,7 @@ public class DefaultKscReportService implements KscReportService, InitializingBe
         OnmsResource res = getResourceService().getResourceById(resourceId);
         return buildResourceReport(getResourceService(), res, "Node Report for Foreign Source:Id " + nodeSource);
     }
-    
+
     private static Report buildResourceReport(ResourceService service, OnmsResource parentResource, String title) {
         Report report = new Report();
         report.setTitle(title);
@@ -100,13 +100,13 @@ public class DefaultKscReportService implements KscReportService, InitializingBe
             if (graphs.length == 0) {
                 continue;
             }
-            
+
             Graph graph = new Graph();
             graph.setTitle("");
             graph.setResourceId(resource.getId());
             graph.setTimespan("7_day");
             graph.setGraphtype(graphs[0].getName());
-            
+
             report.addGraph(graph);
         }
         return report;
@@ -114,7 +114,7 @@ public class DefaultKscReportService implements KscReportService, InitializingBe
 
     private static String getResourceIdForGraph(Graph graph) {
         Assert.notNull(graph, "graph argument cannot be null");
-        
+
         String resourceId;
         if (graph.getResourceId() != null) {
             resourceId = graph.getResourceId();
@@ -123,7 +123,7 @@ public class DefaultKscReportService implements KscReportService, InitializingBe
             String parentResourceName;
             String resourceTypeName;
             String resourceName;
-            
+
             if (graph.getNodeId() != null && !graph.getNodeId().equals("null")) {
                 parentResourceTypeName = "node";
                 parentResourceName = graph.getNodeId();
@@ -136,7 +136,7 @@ public class DefaultKscReportService implements KscReportService, InitializingBe
             } else {
                 throw new IllegalArgumentException("Graph does not have a resourceId, nodeId, or domain.");
             }
-            
+
             String intf = graph.getInterfaceId();
             if (intf == null || "".equals(intf)) {
                 resourceTypeName = "nodeSnmp";
@@ -145,10 +145,10 @@ public class DefaultKscReportService implements KscReportService, InitializingBe
                 resourceTypeName = "interfaceSnmp";
                 resourceName = intf;
             }
-    
+
             resourceId = OnmsResource.createResourceId(parentResourceTypeName, parentResourceName, resourceTypeName, resourceName);
         }
-        
+
         return resourceId;
     }
 
@@ -157,7 +157,7 @@ public class DefaultKscReportService implements KscReportService, InitializingBe
     public OnmsResource getResourceFromGraph(Graph graph) {
         return getResourceService().getResourceById(getResourceIdForGraph(graph));
     }
-    
+
     /** {@inheritDoc} */
     @Override
     public List<OnmsResource> getResourcesFromGraphs(List<Graph> graphs) {
@@ -166,18 +166,18 @@ public class DefaultKscReportService implements KscReportService, InitializingBe
         HashMap<String, List<OnmsResource>> resourcesMap = new HashMap<String, List<OnmsResource>>();
         for(Graph graph : graphs) {
             String resourceId = getResourceIdForGraph(graph);
-            
+
             if (resourceId != null) {
                 String[] resourceParts = DefaultGraphResultsService.parseResourceId(resourceId);
                 if (resourceParts == null) {
                     LOG.warn("getResourcesFromGraphs: unparsable resourceId, skipping: {}", resourceId);
                     continue;
                 }
-                
+
                 String parent = resourceParts[0];
                 String childType = resourceParts[1];
                 String childName = resourceParts[2];
-                
+
                 List<OnmsResource> resourcesForParent = resourcesMap.get(parent);
                 if (resourcesForParent == null) {
                     try {
@@ -194,7 +194,7 @@ public class DefaultKscReportService implements KscReportService, InitializingBe
                         continue;
                     }
                 }
-                
+
                 for (OnmsResource r : resourcesForParent) {
                     if (childType.equals(r.getResourceType().getName()) && childName.equals(r.getName())) {
                         resources.add(r);
@@ -207,12 +207,12 @@ public class DefaultKscReportService implements KscReportService, InitializingBe
         return resources;
     }
 
-    
+
     private void initTimeSpans() {
         for (String timeSpan : KSC_PerformanceReportFactory.TIMESPAN_OPTIONS) {
             s_timeSpans.put(timeSpan, timeSpan);
         }
-        
+
         s_timeSpansWithNone.put("none", "none");
         s_timeSpansWithNone.putAll(s_timeSpans);
     }
@@ -226,7 +226,7 @@ public class DefaultKscReportService implements KscReportService, InitializingBe
             return s_timeSpans;
         }
     }
-    
+
     /**
      * <p>getReportList</p>
      *
@@ -234,7 +234,7 @@ public class DefaultKscReportService implements KscReportService, InitializingBe
      */
     @Override
     public Map<Integer, String> getReportList() {
-        return m_kscReportFactory.getReportList();  
+        return m_kscReportFactory.getReportList();
     }
 
     /**
@@ -282,9 +282,19 @@ public class DefaultKscReportService implements KscReportService, InitializingBe
     public void afterPropertiesSet() throws Exception {
         Assert.state(m_resourceService != null, "resourceService property has not been set");
         Assert.state(m_kscReportFactory != null, "kscReportFactory property has not been set");
-        
+
         initTimeSpans();
     }
-    
+
+    /**
+     * <p>getReportMap</p>
+     *
+     * @return a {@link java.util.Map} object.
+     */
+    @Override
+    public Map<Integer, Report> getReportMap() {
+        return m_kscReportFactory.getReportMap();
+    }
+
 
 }

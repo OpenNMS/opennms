@@ -18,6 +18,18 @@ PACKAGES="$@"; shift
 if [ -z "$PACKAGES" ]; then
 	PACKAGES="opennms opennms-plugins"
 fi
+PACKAGE_NAME=""
+for PACK in $PACKAGES; do
+	if [ `echo "$PACK" | grep -c -- -` -eq 0 ] && [ -z "$PACKAGE_NAME" ]; then
+		echo "Assuming '$PACK' is the 'main' package."
+		PACKAGE_NAME="$PACK"
+		break;
+	fi
+done
+if [ -z "$PACKAGE_NAME" ]; then
+	echo "Unable to determine main package name."
+	exit 1
+fi
 
 die() {
 	echo "exiting: $@"
@@ -48,11 +60,11 @@ get_branch_from_git() {
 }
 
 get_branch_from_rpm() {
-	rpm -qi opennms 2>&1 | grep 'This is an OpenNMS build from the' | sed -e 's,^.*build from the ,,' -e 's, branch.*$,,'
+	rpm -qi "$PACKAGE_NAME" 2>&1 | grep ' build from the' | sed -e 's,^.*build from the ,,' -e 's, branch.*$,,'
 }
 
 get_hash_from_rpm() {
-	rpm -qi opennms 2>&1 | grep http://opennms.git.sourceforge.net | sed -e 's,^.*shortlog;h=,,'
+	rpm -qi "$PACKAGE_NAME" 2>&1 | grep -E '(opennms.git.sourceforge.net|github.com)' | sed -e 's,^.*shortlog;h=,,'
 }
 
 clean_maven() {
@@ -90,15 +102,15 @@ reset_database() {
 reset_opennms() {
 	banner "Resetting OpenNMS Installation"
 
-	do_log "opennms stop"
-	/sbin/service opennms stop
+	do_log "$PACKAGE_NAME stop"
+	/sbin/service "$PACKAGE_NAME" stop
 	ps auxwww | grep opennms_bootstrap | awk '{ print $2 }' | xargs kill -9
 
 	do_log "clean_yum"
 	clean_yum || die "Unable to clean up old RPM files."
 
-	do_log "removing existing opennms RPMs"
-	rpm -qa --queryformat='%{name}\n' | grep -E '^opennms' | grep -v -E '^opennms-repo-' | xargs yum -y remove
+	do_log "removing existing RPMs"
+	rpm -qa --queryformat='%{name}\n' | grep -E "^(opennms|${PACKAGE_NAME})" | grep -v -E '^opennms-repo-' | xargs yum -y remove
 
 	do_log "wiping out \$OPENNMS_HOME"
 	rm -rf "$OPENNMS_HOME"/* /var/log/opennms /var/opennms
@@ -150,13 +162,13 @@ start_opennms() {
 	do_log "find \*.rpmorig -o -name \*.rpmnew"
 	find "$OPENNMS_HOME" -type f -name \*.rpmorig -o -name \*.rpmnew
 
-	do_log "opennms start"
-	/sbin/service opennms restart
+	do_log "$PACKAGE_NAME start"
+	/sbin/service "$PACKAGE_NAME" restart
 	RETVAL=$?
 
 	if [ $? -gt 0 ]; then
 		if [ -x /usr/bin/systemctl ]; then
-			/usr/bin/systemctl status opennms.service
+			/usr/bin/systemctl status "$PACKAGE_NAME".service
 		fi
 		die "OpenNMS failed to start."
 	fi
@@ -189,27 +201,6 @@ run_tests() {
 	local RETVAL=0
 
 	EXTRA_ARGS=""
-#	CHROMEDRIVER="/usr/local/bin/chromedriver"
-#	CHROME="/usr/bin/google-chrome"
-#
-#	if [ -e "$CHROMEDRIVER" ] && [ -e "$CHROME" ]; then
-#		do_log "found Chrome and ChromeDriver, using it instead"
-#		EXTRA_ARGS="-Dorg.opennms.smoketest.webdriver.class=org.openqa.selenium.chrome.ChromeDriver -Dwebdriver.chrome.driver=$CHROMEDRIVER"
-#	else
-#		do_log "no Chrome found, using defaults"
-#	fi
-
-	EXTRA_ARGS=""
-#	CHROMEDRIVER="/usr/local/bin/chromedriver"
-#	CHROME="/usr/bin/google-chrome"
-#
-#	if [ -e "$CHROMEDRIVER" ] && [ -e "$CHROME" ]; then
-#		do_log "found Chrome and ChromeDriver, using it instead"
-#		EXTRA_ARGS="-Dorg.opennms.smoketest.webdriver.class=org.openqa.selenium.chrome.ChromeDriver -Dwebdriver.chrome.driver=$CHROMEDRIVER"
-#	else
-#		do_log "no Chrome found, using defaults"
-#	fi
-
 	do_log "compile.pl test"
 	pushd "$SOURCEDIR/smoke-test"
 		../compile.pl -t -Dorg.opennms.smoketest.logLevel=INFO $EXTRA_ARGS test
@@ -222,8 +213,8 @@ run_tests() {
 stop_opennms() {
 	banner "Stopping OpenNMS"
 
-	do_log "opennms kill"
-	/etc/init.d/opennms kill
+	do_log "$PACKAGE_NAME kill"
+	/etc/init.d/"$PACKAGE_NAME" kill
 
 	#do_log "yum clean all"
 	#yum clean all || :
