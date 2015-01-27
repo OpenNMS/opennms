@@ -16,7 +16,7 @@ SOURCEDIR="$ME/.."
 
 PACKAGES="$@"; shift
 if [ -z "$PACKAGES" ]; then
-	PACKAGES="opennms opennms-plugins"
+	PACKAGES="meridian meridian-plugins"
 fi
 PACKAGE_NAME=""
 for PACK in $PACKAGES; do
