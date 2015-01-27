@@ -53,7 +53,16 @@ public interface NodeDao extends LegacyOnmsDao<OnmsNode, Integer> {
      * @return the node
      */
     OnmsNode get(String lookupCriteria);
-    
+
+    /**
+     * Retrieves all of node id/label tuples.
+     *
+     * Can be used as a lightweight alternative to findAll().
+     *
+     * @return a {@link java.util.Map} containing all node ids and their associated labels.
+     */
+    Map<Integer, String> getAllLabelsById();
+
     /**
      * Light weight call to simply get the node label without loading the entire node.
      * 
