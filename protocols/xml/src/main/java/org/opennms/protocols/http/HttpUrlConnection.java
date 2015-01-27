@@ -193,7 +193,8 @@ public class HttpUrlConnection extends URLConnection {
                 // If the URL contains a username/password, it might need to be decoded
                 String uname = URLDecoder.decode(userInfo[0], "UTF-8");
                 String pwd = URLDecoder.decode(userInfo[1], "UTF-8");
-                m_clientWrapper.addBasicCredentials(uname, pwd);
+                UsernamePasswordCredentials credentials = new UsernamePasswordCredentials(uname, pwd);
+                request.addHeader(BasicScheme.authenticate(credentials, "UTF-8", false));
             }
 
             // Get Response
