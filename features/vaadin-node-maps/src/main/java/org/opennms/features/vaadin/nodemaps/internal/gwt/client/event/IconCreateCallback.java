@@ -107,7 +107,7 @@ public class IconCreateCallback extends JSObjectWrapper {
     //this function returns the svg for a donut chart with the given parameters
     private String getChartSvg(double cx, double cy, double r, double innerR,
             double[] dataArray, String[] classArray, double total) {
-        String svg = "<svg xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\">";
+        String svg = "<svg xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" width=\"40px\" height=\"40px\">";
 
         double startangle = 0;
         for (int i = 0; i < dataArray.length; i++) {
