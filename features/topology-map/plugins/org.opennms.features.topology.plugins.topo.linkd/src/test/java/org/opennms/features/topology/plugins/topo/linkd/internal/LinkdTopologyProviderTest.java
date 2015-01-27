@@ -37,6 +37,7 @@ import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.xml.bind.JAXBException;
@@ -64,6 +65,7 @@ import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.api.topo.WrappedLeafVertex;
 import org.opennms.features.topology.api.topo.WrappedVertex;
 import org.opennms.netmgt.dao.api.DataLinkInterfaceDao;
+import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.DataLinkInterface;
 import org.opennms.netmgt.model.FilterManager;
 import org.opennms.netmgt.model.OnmsNode;
@@ -462,7 +464,7 @@ public class LinkdTopologyProviderTest {
         DataLinkInterfaceDao datalinkIfDaoMock = EasyMock.createNiceMock(DataLinkInterfaceDao.class);
         EasyMock.expect(datalinkIfDaoMock.findAll()).andReturn(new ArrayList<DataLinkInterface>()).anyTimes();
         EasyMock.replay(datalinkIfDaoMock);
-        
+
         topologyProvider.setDataLinkInterfaceDao(datalinkIfDaoMock);
         topologyProvider.setNodeDao(m_databasePopulator.getNodeDao());
         topologyProvider.setIpInterfaceDao(m_databasePopulator.getIpInterfaceDao());
@@ -471,7 +473,7 @@ public class LinkdTopologyProviderTest {
         topologyProvider.setConfigurationFile(getClass().getResource("/saved-linkd-graph2.xml").getFile());
         topologyProvider.setAddNodeWithoutLink(true);
         topologyProvider.load(null); // simulate refresh
-        
+
         // test if topology is loaded correctly results
         for (int i=0; i<topologyProvider.getGroups().size(); i++)  Assert.assertTrue(topologyProvider.containsVertexId("g" + i));
         Assert.assertFalse(topologyProvider.containsVertexId("g" + topologyProvider.getGroups().size()));
