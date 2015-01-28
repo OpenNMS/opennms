@@ -1,8 +1,12 @@
 package org.opennms.features.vaadin.surveillanceviews.ui;
 
+import com.vaadin.data.Property;
+import com.vaadin.data.util.BeanItemContainer;
+import com.vaadin.data.util.DefaultItemSorter;
 import com.vaadin.data.validator.AbstractStringValidator;
 import com.vaadin.event.ShortcutAction;
 import com.vaadin.server.Sizeable;
+import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.FormLayout;
@@ -13,15 +17,18 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import org.opennms.features.vaadin.surveillanceviews.config.SurveillanceViewProvider;
+import org.opennms.features.vaadin.surveillanceviews.model.ColumnDef;
+import org.opennms.features.vaadin.surveillanceviews.model.Def;
+import org.opennms.features.vaadin.surveillanceviews.model.RowDef;
 import org.opennms.features.vaadin.surveillanceviews.model.View;
 import org.opennms.features.vaadin.surveillanceviews.service.SurveillanceViewService;
-import org.opennms.netmgt.model.OnmsCategory;
 
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 public class SurveillanceViewConfigurationWindow extends Window {
 
-    public SurveillanceViewConfigurationWindow(final SurveillanceViewService surveillanceViewService, final View view) {
+    public SurveillanceViewConfigurationWindow(final SurveillanceViewService surveillanceViewService, final View view, final SaveActionListener saveActionListener) {
         /**
          * Setting the title
          */
@@ -33,8 +40,8 @@ public class SurveillanceViewConfigurationWindow extends Window {
         setModal(true);
         setClosable(false);
         setResizable(false);
-        setWidth(80, Sizeable.Unit.PERCENTAGE);
-        setHeight(70, Sizeable.Unit.PERCENTAGE);
+        setWidth(70, Sizeable.Unit.PERCENTAGE);
+        setHeight(66, Sizeable.Unit.PERCENTAGE);
 
         /**
          * Title and refresh seconds
@@ -77,74 +84,407 @@ public class SurveillanceViewConfigurationWindow extends Window {
         /**
          * Columns table
          */
-        Table columnsTable = new Table();
+        final Table columnsTable = new Table();
 
         columnsTable.setSortEnabled(false);
-        columnsTable.addContainerProperty("name", String.class, "");
-        columnsTable.setColumnHeader("name", "Column categories");
-        columnsTable.setColumnExpandRatio("Column categories", 1.0f);
         columnsTable.setWidth(25, Unit.PERCENTAGE);
+
+        final BeanItemContainer<ColumnDef> columns = new BeanItemContainer<ColumnDef>(ColumnDef.class, view.getColumns());
+
+        final Map<ColumnDef, Integer> columnOrder = new HashMap<>();
+
+        int c = 0;
+        for (ColumnDef columnDef : view.getColumns()) {
+            columnOrder.put(columnDef, c++);
+        }
+
+        columnsTable.setContainerDataSource(columns);
+
+        columnsTable.setVisibleColumns("label");
+        columnsTable.setColumnHeader("label", "Columns");
+        columnsTable.setColumnExpandRatio("label", 1.0f);
+        columnsTable.setSelectable(true);
+        columnsTable.setMultiSelect(false);
+
+        columns.setItemSorter(new DefaultItemSorter() {
+            @Override
+            public int compare(Object o1, Object o2) {
+                if (o1 == null) {
+                    if (o2 == null) {
+                        return 0;
+                    } else {
+                        return -1;
+                    }
+                }
+                if (o2 == null) {
+                    return 1;
+                }
+
+                if (columnOrder.get(o1).intValue() == columnOrder.get(o2).intValue()) {
+                    return 0;
+                } else {
+                    if (columnOrder.get(o1).intValue() > columnOrder.get(o2).intValue()) {
+                        return 1;
+                    } else {
+                        return -1;
+                    }
+                }
+            }
+        });
 
         /**
          * Adding the buttons...
          */
-        Button columnsAddButton = new Button("Add");
+        final Button columnsAddButton = new Button("Add");
         columnsAddButton.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent clickEvent) {
+                getUI().addWindow(new SurveillanceViewConfigurationCategoryWindow(surveillanceViewService, new ColumnDef(), new SurveillanceViewConfigurationCategoryWindow.SaveActionListener() {
+                    @Override
+                    public void save(Def def) {
+                        columns.addItem((ColumnDef) def);
+                        columnOrder.put((ColumnDef) def, columnOrder.size());
+
+                        columns.sort(new Object[]{"label"}, new boolean[]{true});
+                        columnsTable.refreshRowCache();
+                    }
+                }));
             }
         });
 
         columnsAddButton.setEnabled(true);
         columnsAddButton.setStyleName("small");
-        columnsAddButton.setDescription("Add column category");
+        columnsAddButton.setDescription("Add column");
+        columnsAddButton.setEnabled(true);
 
-        Button columnsRemoveButton = new Button("Remove");
+        final Button columnsEditButton = new Button("Edit");
+        columnsEditButton.addClickListener(new Button.ClickListener() {
+            @Override
+            public void buttonClick(Button.ClickEvent clickEvent) {
+                getUI().addWindow(new SurveillanceViewConfigurationCategoryWindow(surveillanceViewService, (ColumnDef) columnsTable.getValue(), new SurveillanceViewConfigurationCategoryWindow.SaveActionListener() {
+                    @Override
+                    public void save(Def def) {
+                        ColumnDef columnToBeReplaced = (ColumnDef) columnsTable.getValue();
+                        int index = columnOrder.get(columnToBeReplaced);
+
+                        columns.removeItem(columnToBeReplaced);
+                        columnOrder.remove(columnToBeReplaced);
+
+                        columns.addItem((ColumnDef) def);
+                        columnOrder.put((ColumnDef) def, index);
+
+                        columns.sort(new Object[]{"label"}, new boolean[]{true});
+                        columnsTable.refreshRowCache();
+                    }
+                }));
+            }
+        });
+
+        columnsEditButton.setEnabled(true);
+        columnsEditButton.setStyleName("small");
+        columnsEditButton.setDescription("Edit column");
+        columnsEditButton.setEnabled(false);
+
+        final Button columnsRemoveButton = new Button("Remove");
         columnsRemoveButton.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent clickEvent) {
+                ColumnDef columnDef = (ColumnDef) columnsTable.getValue();
+                if (columnDef != null) {
+                    columnsTable.unselect(columnDef);
+                    columns.removeItem(columnDef);
+                }
+
+                columnsTable.refreshRowCache();
             }
         });
 
         columnsRemoveButton.setEnabled(true);
         columnsRemoveButton.setStyleName("small");
-        columnsRemoveButton.setDescription("Remove column category");
+        columnsRemoveButton.setDescription("Remove column");
+        columnsRemoveButton.setEnabled(false);
+
+        final Button columnUpButton = new Button();
+        columnUpButton.setStyleName("small");
+        columnUpButton.setIcon(new ThemeResource("../runo/icons/16/arrow-up.png"));
+        columnUpButton.setDescription("Move this a column entry one position up");
+        columnUpButton.setEnabled(false);
+        columnUpButton.addClickListener(new Button.ClickListener() {
+            @Override
+            public void buttonClick(Button.ClickEvent clickEvent) {
+                ColumnDef columnDef = (ColumnDef) columnsTable.getValue();
+                if (columnDef != null) {
+                    int columnDefIndex = columnOrder.get(columnDef);
+
+                    ColumnDef columnDefToSwap = null;
+
+                    for (Map.Entry<ColumnDef, Integer> entry : columnOrder.entrySet()) {
+                        if (entry.getValue().intValue() == columnDefIndex - 1) {
+                            columnDefToSwap = entry.getKey();
+                            break;
+                        }
+                    }
+
+                    if (columnDefToSwap != null) {
+                        columnsTable.unselect(columnDef);
+                        columnOrder.remove(columnDef);
+                        columnOrder.remove(columnDefToSwap);
+                        columnOrder.put(columnDef, columnDefIndex - 1);
+                        columnOrder.put(columnDefToSwap, columnDefIndex);
+
+                        columns.sort(new Object[]{"label"}, new boolean[]{true});
+                        columnsTable.refreshRowCache();
+                        columnsTable.select(columnDef);
+                    }
+
+                }
+            }
+        });
+
+        final Button columnDownButton = new Button();
+        columnDownButton.setStyleName("small");
+        columnDownButton.setIcon(new ThemeResource("../runo/icons/16/arrow-down.png"));
+        columnDownButton.setDescription("Move this a column entry one position down");
+        columnDownButton.setEnabled(false);
+        columnDownButton.addClickListener(new Button.ClickListener() {
+            @Override
+            public void buttonClick(Button.ClickEvent clickEvent) {
+                ColumnDef columnDef = (ColumnDef) columnsTable.getValue();
+                if (columnDef != null) {
+                    int columnDefIndex = columnOrder.get(columnDef);
+
+                    ColumnDef columnDefToSwap = null;
+
+                    for (Map.Entry<ColumnDef, Integer> entry : columnOrder.entrySet()) {
+                        if (entry.getValue().intValue() == columnDefIndex + 1) {
+                            columnDefToSwap = entry.getKey();
+                            break;
+                        }
+                    }
+
+                    if (columnDefToSwap != null) {
+                        columnsTable.unselect(columnDef);
+                        columnOrder.remove(columnDef);
+                        columnOrder.remove(columnDefToSwap);
+                        columnOrder.put(columnDef, columnDefIndex + 1);
+                        columnOrder.put(columnDefToSwap, columnDefIndex);
+
+                        columns.sort(new Object[]{"label"}, new boolean[]{true});
+                        columnsTable.refreshRowCache();
+                        columnsTable.select(columnDef);
+                    }
+                }
+            }
+        });
+
+        columnUpButton.setSizeFull();
+        columnDownButton.setSizeFull();
+        columnsAddButton.setSizeFull();
+        columnsEditButton.setSizeFull();
+        columnsRemoveButton.setSizeFull();
+
+        columnsTable.setImmediate(true);
+        columnsTable.addValueChangeListener(new Property.ValueChangeListener() {
+            @Override
+            public void valueChange(Property.ValueChangeEvent valueChangeEvent) {
+                boolean somethingSelected = (columnsTable.getValue() != null);
+                columnsRemoveButton.setEnabled(somethingSelected);
+                columnsEditButton.setEnabled(somethingSelected);
+                columnsAddButton.setEnabled(true);
+                columnUpButton.setEnabled(somethingSelected && columnOrder.get(columnsTable.getValue()).intValue() > 0);
+                columnDownButton.setEnabled(somethingSelected && columnOrder.get(columnsTable.getValue()).intValue() < columnOrder.size() - 1);
+            }
+        });
 
         /**
          * Rows table
          */
 
-        Table rowsTable = new Table();
+        final Table rowsTable = new Table();
 
         rowsTable.setSortEnabled(false);
-        rowsTable.addContainerProperty("name", String.class, "");
-        rowsTable.setColumnHeader("name", "Row categories");
-        rowsTable.setColumnExpandRatio("Row categories", 1.0f);
         rowsTable.setWidth(25, Unit.PERCENTAGE);
 
-        List<OnmsCategory> categories = surveillanceViewService.getOnmsCategories();
-        for (OnmsCategory onmsCategory : categories) {
-            rowsTable.addItem(new Object[]{onmsCategory.getName()}, onmsCategory.getId());
+        final BeanItemContainer<RowDef> rows = new BeanItemContainer<RowDef>(RowDef.class, view.getRows());
+
+        final Map<RowDef, Integer> rowOrder = new HashMap<>();
+
+        int r = 0;
+        for (RowDef rowDef : view.getRows()) {
+            rowOrder.put(rowDef, r++);
         }
+
+        rowsTable.setContainerDataSource(rows);
+
+        rowsTable.setVisibleColumns("label");
+        rowsTable.setColumnHeader("label", "Rows");
+        rowsTable.setColumnExpandRatio("label", 1.0f);
+        rowsTable.setSelectable(true);
+        rowsTable.setMultiSelect(false);
+
+        rows.setItemSorter(new DefaultItemSorter() {
+            @Override
+            public int compare(Object o1, Object o2) {
+                if (o1 == null) {
+                    if (o2 == null) {
+                        return 0;
+                    } else {
+                        return -1;
+                    }
+                }
+                if (o2 == null) {
+                    return 1;
+                }
+
+                if (rowOrder.get(o1).intValue() == rowOrder.get(o2).intValue()) {
+                    return 0;
+                } else {
+                    if (rowOrder.get(o1).intValue() > rowOrder.get(o2).intValue()) {
+                        return 1;
+                    } else {
+                        return -1;
+                    }
+                }
+            }
+        });
 
         /**
          * Adding the buttons...
          */
-        Button rowsAddButton = new Button("Add");
+
+        final Button rowsAddButton = new Button("Add");
         rowsAddButton.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent clickEvent) {
+                getUI().addWindow(new SurveillanceViewConfigurationCategoryWindow(surveillanceViewService, new RowDef(), new SurveillanceViewConfigurationCategoryWindow.SaveActionListener() {
+                    @Override
+                    public void save(Def def) {
+                        rows.addItem((RowDef) def);
+                        rowOrder.put((RowDef) def, rowOrder.size());
+
+                        rows.sort(new Object[]{"label"}, new boolean[]{true});
+                        rowsTable.refreshRowCache();
+                    }
+                }));
             }
         });
 
         rowsAddButton.setEnabled(true);
         rowsAddButton.setStyleName("small");
-        rowsAddButton.setDescription("Add row category");
+        rowsAddButton.setDescription("Add row");
+        rowsAddButton.setEnabled(true);
 
-        Button rowsRemoveButton = new Button("Remove");
+        final Button rowsEditButton = new Button("Edit");
+        rowsEditButton.addClickListener(new Button.ClickListener() {
+            @Override
+            public void buttonClick(Button.ClickEvent clickEvent) {
+                getUI().addWindow(new SurveillanceViewConfigurationCategoryWindow(surveillanceViewService, (RowDef) rowsTable.getValue(), new SurveillanceViewConfigurationCategoryWindow.SaveActionListener() {
+                    @Override
+                    public void save(Def def) {
+                        RowDef rowToBeReplaced = (RowDef) rowsTable.getValue();
+                        int index = rowOrder.get(rowToBeReplaced);
+
+                        rows.removeItem(rowToBeReplaced);
+                        rowOrder.remove(rowToBeReplaced);
+
+                        rows.addItem((RowDef) def);
+                        rowOrder.put((RowDef) def, index);
+
+                        rows.sort(new Object[]{"label"}, new boolean[]{true});
+                        rowsTable.refreshRowCache();
+                    }
+                }));
+            }
+        });
+
+        rowsEditButton.setEnabled(true);
+        rowsEditButton.setStyleName("small");
+        rowsEditButton.setDescription("Edit row");
+        rowsEditButton.setEnabled(false);
+
+        final Button rowsRemoveButton = new Button("Remove");
         rowsRemoveButton.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent clickEvent) {
+                RowDef rowDef = (RowDef) rowsTable.getValue();
+                if (rowDef != null) {
+                    rowsTable.unselect(rowDef);
+                    rows.removeItem(rowDef);
+                }
+
+                rowsTable.refreshRowCache();
+            }
+        });
+
+        final Button rowUpButton = new Button();
+        rowUpButton.setStyleName("small");
+        rowUpButton.setIcon(new ThemeResource("../runo/icons/16/arrow-up.png"));
+        rowUpButton.setDescription("Move this a row entry one position up");
+        rowUpButton.setEnabled(false);
+        rowUpButton.addClickListener(new Button.ClickListener() {
+            @Override
+            public void buttonClick(Button.ClickEvent clickEvent) {
+                RowDef rowDef = (RowDef) rowsTable.getValue();
+                if (rowDef != null) {
+                    int rowDefIndex = rowOrder.get(rowDef);
+
+                    RowDef rowDefToSwap = null;
+
+                    for (Map.Entry<RowDef, Integer> entry : rowOrder.entrySet()) {
+                        if (entry.getValue().intValue() == rowDefIndex - 1) {
+                            rowDefToSwap = entry.getKey();
+                            break;
+                        }
+                    }
+
+                    if (rowDefToSwap != null) {
+                        rowsTable.unselect(rowDef);
+                        rowOrder.remove(rowDef);
+                        rowOrder.remove(rowDefToSwap);
+                        rowOrder.put(rowDef, rowDefIndex - 1);
+                        rowOrder.put(rowDefToSwap, rowDefIndex);
+
+                        rows.sort(new Object[]{"label"}, new boolean[]{true});
+                        rowsTable.refreshRowCache();
+                        rowsTable.select(rowDef);
+                    }
+                }
+            }
+        });
+
+        final Button rowDownButton = new Button();
+        rowDownButton.setStyleName("small");
+        rowDownButton.setIcon(new ThemeResource("../runo/icons/16/arrow-down.png"));
+        rowDownButton.setDescription("Move this a row entry one position down");
+        rowDownButton.setEnabled(false);
+        rowDownButton.addClickListener(new Button.ClickListener() {
+            @Override
+            public void buttonClick(Button.ClickEvent clickEvent) {
+                RowDef rowDef = (RowDef) rowsTable.getValue();
+                if (rowDef != null) {
+                    int rowDefIndex = rowOrder.get(rowDef);
+
+                    RowDef rowDefToSwap = null;
+
+                    for (Map.Entry<RowDef, Integer> entry : rowOrder.entrySet()) {
+                        if (entry.getValue().intValue() == rowDefIndex + 1) {
+                            rowDefToSwap = entry.getKey();
+                            break;
+                        }
+                    }
+
+                    if (rowDefToSwap != null) {
+                        rowsTable.unselect(rowDef);
+                        rowOrder.remove(rowDef);
+                        rowOrder.remove(rowDefToSwap);
+                        rowOrder.put(rowDef, rowDefIndex + 1);
+                        rowOrder.put(rowDefToSwap, rowDefIndex);
+
+                        rows.sort(new Object[]{"label"}, new boolean[]{true});
+                        rowsTable.refreshRowCache();
+                        rowsTable.select(rowDef);
+                    }
+                }
             }
         });
 
@@ -153,7 +493,27 @@ public class SurveillanceViewConfigurationWindow extends Window {
 
         rowsRemoveButton.setEnabled(true);
         rowsRemoveButton.setStyleName("small");
-        rowsRemoveButton.setDescription("Remove row category");
+        rowsRemoveButton.setDescription("Remove row");
+        rowsRemoveButton.setEnabled(false);
+
+        rowUpButton.setSizeFull();
+        rowDownButton.setSizeFull();
+        rowsAddButton.setSizeFull();
+        rowsEditButton.setSizeFull();
+        rowsRemoveButton.setSizeFull();
+
+        rowsTable.setImmediate(true);
+        rowsTable.addValueChangeListener(new Property.ValueChangeListener() {
+            @Override
+            public void valueChange(Property.ValueChangeEvent valueChangeEvent) {
+                boolean somethingSelected = (rowsTable.getValue() != null);
+                rowsRemoveButton.setEnabled(somethingSelected);
+                rowsEditButton.setEnabled(somethingSelected);
+                rowsAddButton.setEnabled(true);
+                rowUpButton.setEnabled(somethingSelected && rowOrder.get(rowsTable.getValue()).intValue() > 0);
+                rowDownButton.setEnabled(somethingSelected && rowOrder.get(rowsTable.getValue()).intValue() < rowOrder.size() - 1);
+            }
+        });
 
         /**
          * Create form layouts...
@@ -164,11 +524,17 @@ public class SurveillanceViewConfigurationWindow extends Window {
 
         FormLayout columnTableFormLayout = new FormLayout();
         columnTableFormLayout.addComponent(columnsAddButton);
+        columnTableFormLayout.addComponent(columnsEditButton);
         columnTableFormLayout.addComponent(columnsRemoveButton);
+        columnTableFormLayout.addComponent(columnUpButton);
+        columnTableFormLayout.addComponent(columnDownButton);
 
         FormLayout rowTableFormLayout = new FormLayout();
         rowTableFormLayout.addComponent(rowsAddButton);
+        rowTableFormLayout.addComponent(rowsEditButton);
         rowTableFormLayout.addComponent(rowsRemoveButton);
+        rowTableFormLayout.addComponent(rowUpButton);
+        rowTableFormLayout.addComponent(rowDownButton);
 
         /**
          * Adding the different {@link com.vaadin.ui.FormLayout} instances to a {@link com.vaadin.ui.GridLayout}
@@ -183,14 +549,14 @@ public class SurveillanceViewConfigurationWindow extends Window {
         gridLayout.setRows(1);
         gridLayout.setMargin(true);
 
-        gridLayout.addComponent(columnsTable);
-        gridLayout.addComponent(columnTableFormLayout);
         gridLayout.addComponent(rowsTable);
         gridLayout.addComponent(rowTableFormLayout);
+        gridLayout.addComponent(columnsTable);
+        gridLayout.addComponent(columnTableFormLayout);
 
-        gridLayout.setColumnExpandRatio(1, 0.5f);
+        gridLayout.setColumnExpandRatio(1, 0.3f);
         gridLayout.setColumnExpandRatio(2, 1.0f);
-        gridLayout.setColumnExpandRatio(3, 0.5f);
+        gridLayout.setColumnExpandRatio(3, 0.3f);
         gridLayout.setColumnExpandRatio(4, 1.0f);
 
         /**
@@ -237,17 +603,21 @@ public class SurveillanceViewConfigurationWindow extends Window {
             @Override
             public void buttonClick(Button.ClickEvent event) {
                 if (titleField.isValid() && refreshSecondsField.isValid()) {
+                    View finalView = new View();
 
-                }
-                /*
-                for (Map.Entry<String, String> entry : requiredParameters.entrySet()) {
-                    String newValue = table.getItem(entry.getKey()).getItemProperty("Value").getValue().toString();
-                    dashletSpec.getParameters().put(entry.getKey(), newValue);
+                    for (ColumnDef columnDef : columns.getItemIds()) {
+                        finalView.getColumns().add(columnDef);
+                    }
+
+                    for (RowDef rowDef : rows.getItemIds()) {
+                        finalView.getRows().add(rowDef);
+                    }
+                    finalView.setName(titleField.getValue());
+                    finalView.setRefreshSeconds(Integer.parseInt(refreshSecondsField.getValue()));
+
+                    saveActionListener.save(finalView);
                 }
 
-                WallboardProvider.getInstance().save();
-                ((WallboardConfigUI) getUI()).notifyMessage("Data saved", "Properties");
-                */
                 close();
             }
         });
@@ -258,5 +628,9 @@ public class SurveillanceViewConfigurationWindow extends Window {
         verticalLayout.addComponent(horizontalLayout);
 
         setContent(verticalLayout);
+    }
+
+    public static interface SaveActionListener {
+        void save(View view);
     }
 }

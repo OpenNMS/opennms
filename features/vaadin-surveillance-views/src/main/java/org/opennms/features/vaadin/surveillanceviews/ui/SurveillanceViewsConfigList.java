@@ -97,8 +97,7 @@ public class SurveillanceViewsConfigList extends VerticalLayout {
                 do {
                     i++;
                     newName = "Untitled #" + i;
-                }
-                while (SurveillanceViewProvider.getInstance().containsView(newName));
+                } while (SurveillanceViewProvider.getInstance().containsView(newName));
 
                 View view = new View();
                 view.setName(newName);
@@ -106,17 +105,19 @@ public class SurveillanceViewsConfigList extends VerticalLayout {
                 view.getColumns().add(new ColumnDef());
                 view.getRows().add(new RowDef());
 
-                m_surveillanceViewConfiguration.getViews().add(view);
+                getUI().addWindow(new SurveillanceViewConfigurationWindow(m_surveillanceViewService, view, new SurveillanceViewConfigurationWindow.SaveActionListener() {
+                    @Override
+                    public void save(View view) {
+                        m_beanItemContainer.addItem(view);
+                        m_surveillanceViewConfiguration.getViews().add(view);
 
-                SurveillanceViewProvider.getInstance().save();
+                        SurveillanceViewProvider.getInstance().save();
+                        ((SurveillanceViewsConfigUI) getUI()).notifyMessage("Data saved", "Surveillance View");
 
-                m_beanItemContainer.addItem(view);
-
-                //m_beanItemContainer = SurveillanceViewProvider.getInstance().getBeanContainer();
-
-                getUI().addWindow(new SurveillanceViewConfigurationWindow(m_surveillanceViewService, view));
-
-                m_table.refreshRowCache();
+                        m_table.refreshRowCache();
+                        m_table.sort(new Object[]{"name"}, new boolean[]{true});
+                    }
+                }));
             }
         });
 
@@ -129,82 +130,115 @@ public class SurveillanceViewsConfigList extends VerticalLayout {
         horizontalLayout.setComponentAlignment(button, Alignment.MIDDLE_RIGHT);
 
         addComponent(horizontalLayout);
+
         addComponent(addButton);
 
         /**
          * Adding the table with the required {@link com.vaadin.ui.Table.ColumnGenerator} objects
          */
         m_table = new Table();
+
         m_table.setContainerDataSource(m_beanItemContainer);
         m_table.setSizeFull();
+        m_table.sort(new Object[]{"name"}, new boolean[]{true});
 
-        m_table.addGeneratedColumn("Edit", new Table.ColumnGenerator() {
-            public Object generateCell(Table source, final Object itemId, Object columnId) {
-                Button button = new Button("Edit");
-                button.setDescription("Edit this Ops Board configuration");
-                button.setStyleName("small");
-                button.addClickListener(new Button.ClickListener() {
-                    public void buttonClick(Button.ClickEvent clickEvent) {
-                        getUI().addWindow(new SurveillanceViewConfigurationWindow(m_surveillanceViewService, m_beanItemContainer.getItem(itemId).getBean()));
+        m_table.addGeneratedColumn("Edit", new Table.ColumnGenerator()
+
+                {
+                    public Object generateCell(Table source, final Object itemId, Object columnId) {
+                        Button button = new Button("Edit");
+                        button.setDescription("Edit this Ops Board configuration");
+                        button.setStyleName("small");
+                        button.addClickListener(new Button.ClickListener() {
+                            public void buttonClick(Button.ClickEvent clickEvent) {
+                                getUI().addWindow(new SurveillanceViewConfigurationWindow(m_surveillanceViewService, m_beanItemContainer.getItem(itemId).getBean(), new SurveillanceViewConfigurationWindow.SaveActionListener() {
+                                    @Override
+                                    public void save(View view) {
+                                        m_beanItemContainer.removeItem(itemId);
+                                        m_beanItemContainer.addItem(view);
+                                        m_surveillanceViewConfiguration.getViews().set(m_surveillanceViewConfiguration.getViews().indexOf(itemId), view);
+
+                                        SurveillanceViewProvider.getInstance().save();
+                                        ((SurveillanceViewsConfigUI) getUI()).notifyMessage("Data saved", "Surveillance view");
+
+                                        m_table.refreshRowCache();
+                                        m_table.sort(new Object[]{"name"}, new boolean[]{true});
+                                    }
+                                }));
+                            }
+                        });
+                        return button;
                     }
-                });
-                return button;
-            }
-        });
+                }
 
-        m_table.addGeneratedColumn("Remove", new Table.ColumnGenerator() {
-            public Object generateCell(Table source, final Object itemId, Object columnId) {
-                Button button = new Button("Remove");
-                button.setDescription("Delete this Ops Board configuration");
-                button.setStyleName("small");
-                button.addClickListener(new Button.ClickListener() {
-                    public void buttonClick(Button.ClickEvent clickEvent) {
-                        SurveillanceViewProvider.getInstance().removeView((View) itemId);
-                        m_beanItemContainer.removeItem(itemId);
+        );
+
+        m_table.addGeneratedColumn("Remove", new Table.ColumnGenerator()
+
+                {
+                    public Object generateCell(Table source, final Object itemId, Object columnId) {
+                        Button button = new Button("Remove");
+                        button.setDescription("Delete this Ops Board configuration");
+                        button.setStyleName("small");
+                        button.addClickListener(new Button.ClickListener() {
+                            public void buttonClick(Button.ClickEvent clickEvent) {
+                                SurveillanceViewProvider.getInstance().removeView((View) itemId);
+                                m_beanItemContainer.removeItem(itemId);
+                            }
+                        });
+                        return button;
                     }
-                });
-                return button;
-            }
-        });
+                }
 
-        m_table.addGeneratedColumn("Preview", new Table.ColumnGenerator() {
-            public Object generateCell(Table source, final Object itemId, Object columnId) {
-                Button button = new Button("Preview");
-                button.setDescription("Preview this Ops Board configuration");
-                button.setStyleName("small");
-                //button.addClickListener(new PreviewClickListener(WallboardOverview.this, (Wallboard) itemId));
-                return button;
-            }
-        });
+        );
 
-        m_table.addGeneratedColumn("Default", new Table.ColumnGenerator() {
-            public Object generateCell(Table source, final Object itemId, Object columnId) {
-                CheckBox checkBox = new CheckBox();
-                checkBox.setImmediate(true);
-                checkBox.setDescription("Make this Ops Board configuration the default");
+        m_table.addGeneratedColumn("Preview", new Table.ColumnGenerator()
 
-                final View view = m_beanItemContainer.getItem(itemId).getBean();
-
-                checkBox.setValue(m_surveillanceViewConfiguration.getDefaultView().equals(view.getName()));
-
-                checkBox.addValueChangeListener(new Property.ValueChangeListener() {
-                    @Override
-                    public void valueChange(Property.ValueChangeEvent valueChangeEvent) {
-                        boolean newValue = ((Boolean) valueChangeEvent.getProperty().getValue());
-
-
-                        if (newValue) {
-                            m_surveillanceViewConfiguration.setDefaultView(view.getName());
-                        }
-
-                        m_table.refreshRowCache();
-
-                        SurveillanceViewProvider.getInstance().save();
+                {
+                    public Object generateCell(Table source, final Object itemId, Object columnId) {
+                        Button button = new Button("Preview");
+                        button.setDescription("Preview this Ops Board configuration");
+                        button.setStyleName("small");
+                        //button.addClickListener(new PreviewClickListener(WallboardOverview.this, (Wallboard) itemId));
+                        return button;
                     }
-                });
-                return checkBox;
-            }
-        });
+                }
+
+        );
+
+        m_table.addGeneratedColumn("Default", new Table.ColumnGenerator()
+
+                {
+                    public Object generateCell(Table source, final Object itemId, Object columnId) {
+                        CheckBox checkBox = new CheckBox();
+                        checkBox.setImmediate(true);
+                        checkBox.setDescription("Make this Ops Board configuration the default");
+
+                        final View view = m_beanItemContainer.getItem(itemId).getBean();
+
+                        checkBox.setValue(m_surveillanceViewConfiguration.getDefaultView().equals(view.getName()));
+
+                        checkBox.addValueChangeListener(new Property.ValueChangeListener() {
+                            @Override
+                            public void valueChange(Property.ValueChangeEvent valueChangeEvent) {
+                                boolean newValue = ((Boolean) valueChangeEvent.getProperty().getValue());
+
+
+                                if (newValue) {
+                                    m_surveillanceViewConfiguration.setDefaultView(view.getName());
+                                }
+
+                                m_table.refreshRowCache();
+
+                                SurveillanceViewProvider.getInstance().save();
+                                ((SurveillanceViewsConfigUI) getUI()).notifyMessage("Data saved", "Default surveillance view");
+                            }
+                        });
+                        return checkBox;
+                    }
+                }
+
+        );
 
         m_table.setVisibleColumns(new Object[]{"name", "Edit", "Remove", "Preview", "Default"});
         m_table.setColumnHeader("name", "Name");

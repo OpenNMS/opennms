@@ -33,10 +33,14 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
 public class Category {
-    @XmlAttribute(name = "name", required = true)
     private java.lang.String m_name;
 
+    @XmlAttribute(name = "name", required = true)
     public String getName() {
         return m_name;
+    }
+
+    public void setName(String name) {
+        this.m_name = name;
     }
 }

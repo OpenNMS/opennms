@@ -6,5 +6,7 @@ import java.util.List;
 
 public interface SurveillanceViewService {
 
-    public List<OnmsCategory> getOnmsCategories();
+    List<OnmsCategory> getOnmsCategories();
+
+    List<String> getRtcCategories();
 }
