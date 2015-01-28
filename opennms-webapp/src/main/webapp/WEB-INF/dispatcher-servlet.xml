@@ -878,6 +878,22 @@
         <property name="inventoryService" ref="inventoryService"/>
     </bean>
 
+    <bean id="notificationFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+        <property name="staticMethod"><value>org.opennms.netmgt.config.NotificationFactory.init</value></property>
+    </bean>
+
+    <bean id="notificationFactory" class="org.opennms.netmgt.config.NotificationFactory" depends-on="notificationFactory-init" factory-method="getInstance"/>
+
+    <bean name="/admin/notification/noticeWizard/eventNotices.htm"
+          class="org.opennms.web.controller.admin.notifications.EventNoticesController">
+        <property name="eventConfDao" ref="eventConfDao"/>
+        <property name="notificationFactory" ref="notificationFactory"/>
+    </bean>
+
+    <bean name="/admin/notification/noticeWizard/chooseUeis.htm"
+          class="org.opennms.web.controller.admin.notifications.ChooseUeisController">
+        <property name="eventConfDao" ref="eventConfDao"/>
+    </bean>
 
     <!-- Examples
          <bean name="/nodes.htm" class="org.opennms.controller.NodeController">
