@@ -32,6 +32,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
+import java.net.URLDecoder;
 import java.nio.charset.Charset;
 import java.security.GeneralSecurityException;
 import java.util.List;
@@ -127,7 +128,10 @@ public class HttpUrlConnection extends URLConnection {
         // Add User Authentication
         String[] userInfo = m_url.getUserInfo() == null ? null :  m_url.getUserInfo().split(":");
         if (userInfo != null && userInfo.length == 2) {
-            m_clientWrapper.addBasicCredentials(userInfo[0], userInfo[1]);
+            // If the URL contains a username/password, it might need to be decoded
+            String uname = URLDecoder.decode(userInfo[0], "UTF-8");
+            String pwd = URLDecoder.decode(userInfo[1], "UTF-8");
+            m_clientWrapper.addBasicCredentials(uname, pwd);
         }
 
     }

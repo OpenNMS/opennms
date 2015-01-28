@@ -69,7 +69,7 @@
 			</tr>
 		</thead>
 		<% for (String[] pth : testPaths) {
-			pthData = PathOutageManagerDaoImpl.getInstance().getCriticalPathData(pth[0], pth[1]); %>
+			pthData = PathOutageManagerDaoImpl.getInstance().getCriticalPathData(pth[1], pth[2]); %>
 		<tr>
 			<% if((pthData[0] == null) || (pthData[0].equals(""))) { %>
 			<td>(Interface not in database)</td>

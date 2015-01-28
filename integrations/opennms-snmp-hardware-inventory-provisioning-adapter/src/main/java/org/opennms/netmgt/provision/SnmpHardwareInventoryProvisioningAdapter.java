@@ -243,6 +243,7 @@ public class SnmpHardwareInventoryProvisioningAdapter extends SimplerQueuedProvi
             if (walker.timedOut()) {
                 throw new SnmpHardwareInventoryException("Aborting entities scan: Agent timed out while scanning the " + trackerName + " table");
             }  else if (walker.failed()) {
+                LOG.error("Aborting agent scan for {} : {}", agentConfig, walker.getErrorThrowable());
                 throw new SnmpHardwareInventoryException("Aborting entities scan: Agent failed while scanning the " + trackerName + " table: " + walker.getErrorMessage());
             }
         } catch (final InterruptedException e) {
@@ -251,7 +252,7 @@ public class SnmpHardwareInventoryProvisioningAdapter extends SimplerQueuedProvi
 
         OnmsHwEntity root = tracker.getRootEntity();
         if (root == null) {
-            throw new SnmpHardwareInventoryException("Cannot get root entity for node " + node.getLabel() + ", it seems like the node does not have an implementation for the entPhysicalTable of the ENTITY-MIB.");
+            throw new SnmpHardwareInventoryException("Cannot get root entity for node " + node.getLabel() + ", it seems like the node does not have an implementation for the entPhysicalTable of the ENTITY-MIB, or is has an incorrect implementation.");
         }
 
         return root;

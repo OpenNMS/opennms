@@ -32,37 +32,10 @@
 <%@page language="java"
 	contentType="text/html"
 	session="true"
-	import="java.util.*,
-		org.opennms.web.admin.notification.noticeWizard.*,
-		org.opennms.netmgt.config.*,
-		org.opennms.netmgt.config.notifications.*,
-		org.opennms.core.utils.ConfigFileConstants,
-		org.springframework.core.io.FileSystemResource
-	"
+	import="org.opennms.web.admin.notification.noticeWizard.*"
 %>
-
-<%!
-	private DefaultEventConfDao m_eventconfFactory;
-	private NotificationFactory m_notificationFactory;
-
-	public void init() throws ServletException {
-		try {
-			NotificationFactory.init();
-		} catch (Throwable t) {
-			throw new ServletException("Could not initialize NotificationFactory: " + t.getMessage(), t);
-		}
-
-		try {
-			m_eventconfFactory = new DefaultEventConfDao();
-			m_eventconfFactory.setConfigResource(new FileSystemResource(ConfigFileConstants.getFile(ConfigFileConstants.EVENT_CONF_FILE_NAME)));
-			m_eventconfFactory.afterPropertiesSet();
-		} catch (Throwable e) {
-			throw new ServletException("Cannot load configuration file", e);
-		}
-
-		m_notificationFactory = NotificationFactory.getInstance();
-	}
-%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 
 <jsp:include page="/includes/bootstrap.jsp" flush="false" >
   <jsp:param name="title" value="Event Notifications" />
@@ -140,38 +113,37 @@
               UEI
             </th>
           </tr>
-          <% Map<String, Notification> noticeMap = new TreeMap<String, Notification>(m_notificationFactory.getNotifications());
-             for(String key : noticeMap.keySet()) {
-               Notification curNotif = (Notification)noticeMap.get(key);
-               String ekey = org.apache.commons.lang.StringEscapeUtils.escapeJavaScript(key);
-          %>
+          <c:forEach items="${notifications}" var="notification">
           <tr>
             <td>
-              <input type="button" class="btn btn-default" value="Edit" onclick="javascript:editNotice('<%=ekey%>')"/>
+              <input type="button" class="btn btn-default" value="Edit" onclick="javascript:editNotice('${notification.escapedName}')"/>
             </td>
             <td>
-              <input type="button" class="btn btn-default" value="Delete"  onclick="javascript:deleteNotice('<%=ekey%>')"/>
+              <input type="button" class="btn btn-default" value="Delete"  onclick="javascript:deleteNotice('${notification.escapedName}')"/>
             </td>
             <td>
-              <%if (curNotif.getStatus().equals("on")) { %>
-                <input type="radio" value="Off" onclick="javascript:setStatus('<%=ekey%>','off')"/>Off
-                <input type="radio" value="On" CHECKED onclick="javascript:setStatus('<%=ekey%>','on')"/>On
-              <% } else { %>
-                <input type="radio" value="Off" CHECKED onclick="javascript:setStatus('<%=ekey%>','off')"/>Off
-                <input type="radio" value="On" onclick="javascript:setStatus('<%=ekey%>','on')"/>On
-              <% } %>
+            <c:choose>
+              <c:when test="${notification.isOn}">
+                <input type="radio" value="Off" onclick="javascript:setStatus('${notification.escapedName}','off')"/>Off
+                <input type="radio" value="On" CHECKED onclick="javascript:setStatus('${notification.escapedName}','on')"/>On
+              </c:when>
+              <c:otherwise>
+                <input type="radio" value="Off" CHECKED onclick="javascript:setStatus('${notification.escapedName}','off')"/>Off
+                <input type="radio" value="On" onclick="javascript:setStatus('${notification.escapedName}','on')"/>On
+              </c:otherwise>
+            </c:choose>
             </td>
             <td>
-              <%=key%>
+              ${notification.name}
             </td>
             <td>
-              <%=m_eventconfFactory.getEventLabel(curNotif.getUei())%>
+              ${notification.eventLabel}
             </td>
             <td>
-              <% if (curNotif.getUei() != null && curNotif.getUei().startsWith("~")) { %>REGEX: <%=curNotif.getUei().substring(1)%><% } else { %><%=curNotif.getUei()%><% } %>
+              ${notification.displayUei}
             </td>
           </tr>
-          <% } %>
+          </c:forEach>
         </table>
       </td>
     </tr>
@@ -181,17 +153,3 @@
 </form>
 
 <jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />
-
-<%!
-  public String stripUei(String uei)
-    {
-        String leftover = uei;
-        
-        for (int i = 0; i < 3; i++)
-        {
-            leftover = leftover.substring(leftover.indexOf('/')+1);
-        }
-        
-        return leftover;
-     }
-%>
