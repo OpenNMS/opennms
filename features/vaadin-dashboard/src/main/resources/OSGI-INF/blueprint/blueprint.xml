@@ -30,7 +30,7 @@
 
     <bean id="wallboardConfigUILink" class="org.opennms.features.vaadin.dashboard.config.ui.AdminPageNavEntry">
         <property name="url" value="admin/wallboardConfig.jsp"/>
-        <property name="name" value="Ops Board Config Web UI"/>
+        <property name="name" value="Ops Board Configuration"/>
     </bean>
 
     <bean id="wallboardConfigUIFactory" class="org.opennms.features.vaadin.dashboard.config.ui.WallboardConfigUIFactory">
