@@ -248,14 +248,7 @@ public class IpInterfaceScan implements RunInBatch {
 
     protected boolean shouldDetect(ServiceDetector detector) {
         String ipMatch = detector.getIpMatch();
-<<<<<<< HEAD
-	// Execute the detector if the ipMatch is not provided.
-        if (ipMatch  == null) return true; 
-	if (ipMatch.isEmpty() == true) return true;
-	    
-=======
         if (ipMatch  == null || ipMatch.trim().isEmpty()) return true; // Execute the detector if the ipMatch is not provided.
->>>>>>> upstream/develop
         // Regular Expression Matching
         if (ipMatch.startsWith("~")) {
             return getAddress().getHostAddress().matches(ipMatch.substring(1));
