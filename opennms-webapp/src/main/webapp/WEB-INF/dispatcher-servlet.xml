@@ -82,6 +82,10 @@
         <property name="deployedForeignSourceRepository" ref="selectedDeployedForeignSourceRepository"/>
     </bean>
 
+    <bean name="/admin/sendevent.htm" class="org.opennms.web.controller.SendEventController">
+          <property name="eventConfDao" ref="eventConfDao"/>
+    </bean>
+
     <bean name="/admin/editForeignSource.htm" class="org.opennms.web.controller.EditForeignSourceController">
         <property name="bindOnNewForm" value="true"/>
         <property name="foreignSourceService" ref="defaultForeignSourceService"/>
