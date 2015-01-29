@@ -12,14 +12,10 @@
   <changeSet author="jwhite" id="1.16.0-removeDuplicateOutages">
     <sql>
 DELETE FROM outages WHERE ifregainedservice is null AND outageid NOT IN (
-  SELECT
-    MIN(outageid)
-  FROM
-    outages
-  WHERE
-   ifregainedservice IS NULL
-  GROUP BY
-   nodeid, ipaddr, serviceid, ifserviceid
+  SELECT MIN(o.outageid)
+  FROM outages o
+  WHERE ifregainedservice IS NULL
+  GROUP BY o.ifserviceid
 );
     </sql>
   </changeSet>
