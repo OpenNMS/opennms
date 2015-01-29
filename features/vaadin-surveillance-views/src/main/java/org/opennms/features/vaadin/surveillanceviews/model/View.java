@@ -35,10 +35,16 @@ import javax.xml.bind.annotation.XmlRootElement;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * This class represents the view element of the surveillance view configuration xml
+ */
 @XmlRootElement
 public class View {
 
     private List<RowDef> m_rows = new LinkedList<RowDef>();
+    private List<ColumnDef> m_columns = new LinkedList<ColumnDef>();
+    private java.lang.String m_name = "untitled";
+    private java.lang.Integer m_refreshSeconds = 300;
 
     @XmlElement(name = "row-def")
     @XmlElementWrapper(name = "rows")
@@ -46,15 +52,11 @@ public class View {
         return m_rows;
     }
 
-    private List<ColumnDef> m_columns = new LinkedList<ColumnDef>();
-
     @XmlElement(name = "column-def")
     @XmlElementWrapper(name = "columns")
     public List<ColumnDef> getColumns() {
         return m_columns;
     }
-
-    private java.lang.String m_name = "untitled";
 
     @XmlAttribute(name = "name", required = true)
     public String getName() {
@@ -64,8 +66,6 @@ public class View {
     public void setName(String name) {
         this.m_name = name;
     }
-
-    private java.lang.Integer m_refreshSeconds = 300;
 
     @XmlAttribute(name = "refresh-seconds", required = false)
     public int getRefreshSeconds() {

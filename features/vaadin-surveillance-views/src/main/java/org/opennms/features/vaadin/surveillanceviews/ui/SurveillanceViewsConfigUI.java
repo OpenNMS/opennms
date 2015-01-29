@@ -36,6 +36,11 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import org.opennms.features.vaadin.surveillanceviews.service.SurveillanceViewService;
 
+/**
+ * The surveillance view config application's "main" class
+ *
+ * @author Christian Pape
+ */
 @SuppressWarnings("serial")
 @Theme("dashboard")
 @Title("OpenNMS Surveillance Views")
@@ -73,6 +78,11 @@ public class SurveillanceViewsConfigUI extends UI {
         }
     }
 
+    /**
+     * Method for setting the {@link org.opennms.features.vaadin.surveillanceviews.service.SurveillanceViewService} instance to be used
+     *
+     * @param surveillanceViewService the instance to be used
+     */
     public void setSurveillanceViewService(SurveillanceViewService surveillanceViewService) {
         this.m_surveillanceViewService = surveillanceViewService;
     }

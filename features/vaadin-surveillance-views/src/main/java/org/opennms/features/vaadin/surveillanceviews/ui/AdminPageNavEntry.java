@@ -31,7 +31,7 @@ package org.opennms.features.vaadin.surveillanceviews.ui;
 import org.opennms.web.navigate.PageNavEntry;
 
 /**
- * Navigation entry for displaying a link to the wallboard configuration page.
+ * Navigation entry for displaying a link to the surveillance view configuration page.
  *
  * @author Christian Pape
  */

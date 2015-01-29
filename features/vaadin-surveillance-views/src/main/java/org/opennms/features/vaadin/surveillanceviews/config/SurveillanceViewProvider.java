@@ -28,7 +28,6 @@ package org.opennms.features.vaadin.surveillanceviews.config;
  *     http://www.opennms.com/
  *******************************************************************************/
 
-import com.vaadin.data.util.BeanItemContainer;
 import org.opennms.features.vaadin.surveillanceviews.model.SurveillanceViewConfiguration;
 import org.opennms.features.vaadin.surveillanceviews.model.View;
 
@@ -57,15 +56,6 @@ public class SurveillanceViewProvider {
      */
     private SurveillanceViewProvider() {
         load();
-    }
-
-    /**
-     * Method to return the {@link com.vaadin.data.util.BeanItemContainer} associated with this object.
-     *
-     * @return the {@link com.vaadin.data.util.BeanItemContainer}
-     */
-    public BeanItemContainer<View> getBeanContainer() {
-        return new BeanItemContainer<View>(View.class, m_surveillanceViewConfiguration.getViews());
     }
 
     /**
@@ -131,6 +121,11 @@ public class SurveillanceViewProvider {
         return null;
     }
 
+    /**
+     * Returns the loaded {@link org.opennms.features.vaadin.surveillanceviews.model.SurveillanceViewConfiguration} instance
+     *
+     * @return the loaded config instance
+     */
     public SurveillanceViewConfiguration getSurveillanceViewConfiguration() {
         return m_surveillanceViewConfiguration;
     }

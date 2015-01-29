@@ -31,6 +31,9 @@ package org.opennms.features.vaadin.surveillanceviews.model;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
+/**
+ * This class represents the category element of the surveillance view configuration xml
+ */
 @XmlRootElement
 public class Category {
     private java.lang.String m_name;

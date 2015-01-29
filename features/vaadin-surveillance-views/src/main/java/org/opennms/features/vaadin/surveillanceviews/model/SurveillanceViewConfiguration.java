@@ -37,6 +37,9 @@ import javax.xml.bind.annotation.XmlRootElement;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * This class represents the root element of the surveillance view configuration xml
+ */
 @XmlRootElement(name = "surveillance-view-configuration")
 @XmlAccessorType(XmlAccessType.FIELD)
 @SuppressWarnings("all")
@@ -45,6 +48,10 @@ public class SurveillanceViewConfiguration implements java.io.Serializable {
     @XmlAttribute(name = "default-view", required = false)
     private java.lang.String m_defaultView = "default";
 
+    @XmlElement(name = "view")
+    @XmlElementWrapper(name = "views")
+    private List<View> m_views = new LinkedList<View>();
+
     public String getDefaultView() {
         return m_defaultView;
     }
@@ -52,10 +59,6 @@ public class SurveillanceViewConfiguration implements java.io.Serializable {
     public void setDefaultView(String defaultView) {
         this.m_defaultView = defaultView;
     }
-
-    @XmlElement(name = "view")
-    @XmlElementWrapper(name = "views")
-    private List<View> m_views = new LinkedList<View>();
 
     public List<View> getViews() {
         return m_views;

@@ -33,30 +33,19 @@ import javax.xml.bind.annotation.XmlElement;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * This class represents the column-def element of the surveillance view configuration xml
+ */
 public class ColumnDef implements Def {
 
     private java.lang.String m_label = "default";
+    private java.lang.String m_reportCategory;
+    private List<Category> m_categories = new LinkedList<Category>();
 
     @Override
     @XmlAttribute(name = "label", required = true)
     public String getLabel() {
         return m_label;
-    }
-
-    private java.lang.String m_reportCategory;
-
-    @Override
-    @XmlAttribute(name = "report-category", required = false)
-    public String getReportCategory() {
-        return m_reportCategory;
-    }
-
-    private List<Category> m_categories = new LinkedList<Category>();
-
-    @Override
-    @XmlElement(name = "category")
-    public List<Category> getCategories() {
-        return m_categories;
     }
 
     @Override
@@ -65,10 +54,23 @@ public class ColumnDef implements Def {
     }
 
     @Override
+    @XmlAttribute(name = "report-category", required = false)
+    public String getReportCategory() {
+        return m_reportCategory;
+    }
+
+    @Override
     public void setReportCategory(String reportCategory) {
         this.m_reportCategory = reportCategory;
     }
 
+    @Override
+    @XmlElement(name = "category")
+    public List<Category> getCategories() {
+        return m_categories;
+    }
+
+    @Override
     public boolean containsCategory(String name) {
         for (Category category : getCategories()) {
             if (name.equals(category.getName())) {

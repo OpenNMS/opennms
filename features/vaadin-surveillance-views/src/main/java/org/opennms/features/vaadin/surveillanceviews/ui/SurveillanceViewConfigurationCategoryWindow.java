@@ -31,6 +31,10 @@ public class SurveillanceViewConfigurationCategoryWindow extends Window {
          * Setting the title
          */
         super("Window title");
+
+        /**
+         * Check whether this dialog is for a column or row and alter the window title
+         */
         if (def instanceof RowDef) {
             super.setCaption("Row definition");
         } else {
@@ -56,6 +60,9 @@ public class SurveillanceViewConfigurationCategoryWindow extends Window {
         labelField.setDescription("Label of this surveillance view");
         labelField.setWidth(100, Unit.PERCENTAGE);
 
+        /**
+         * Creating a simple validator for the title field
+         */
         labelField.addValidator(new AbstractStringValidator("Please use an unique name for the surveillance view") {
             @Override
             protected boolean isValidValue(String s) {
@@ -63,20 +70,29 @@ public class SurveillanceViewConfigurationCategoryWindow extends Window {
             }
         });
 
-        final NativeSelect nativeSelect = new NativeSelect();
-        nativeSelect.setImmediate(true);
-        nativeSelect.setCaption("Report category");
-        nativeSelect.setDescription("Report category for this entry");
-        nativeSelect.setWidth(100, Unit.PERCENTAGE);
-
-        for (String category : surveillanceViewService.getRtcCategories()) {
-            nativeSelect.addItem(category);
-        }
-
-        nativeSelect.select(def.getReportCategory());
+        /**
+         * Create selection box for the report category
+         */
+        final NativeSelect reportCategorySelect = new NativeSelect();
+        reportCategorySelect.setImmediate(true);
+        reportCategorySelect.setCaption("Report category");
+        reportCategorySelect.setDescription("Report category for this entry");
+        reportCategorySelect.setWidth(100, Unit.PERCENTAGE);
 
         /**
-         * Columns table
+         * Add data to the selection box
+         */
+        for (String category : surveillanceViewService.getRtcCategories()) {
+            reportCategorySelect.addItem(category);
+        }
+
+        /**
+         * Preselect the right value
+         */
+        reportCategorySelect.select(def.getReportCategory());
+
+        /**
+         * Categories table
          */
         final Table categoriesTable = new Table();
         categoriesTable.setCaption("Categories");
@@ -104,15 +120,10 @@ public class SurveillanceViewConfigurationCategoryWindow extends Window {
          */
         FormLayout baseFormLayout = new FormLayout();
         baseFormLayout.setSizeFull();
-        baseFormLayout.addComponent(labelField);
-        baseFormLayout.addComponent(nativeSelect);
-        baseFormLayout.addComponent(categoriesTable);
-
-        /**
-         * Adding the different {@link com.vaadin.ui.FormLayout} instances to a {@link com.vaadin.ui.GridLayout}
-         */
         baseFormLayout.setMargin(true);
-        baseFormLayout.setSizeFull();
+        baseFormLayout.addComponent(labelField);
+        baseFormLayout.addComponent(reportCategorySelect);
+        baseFormLayout.addComponent(categoriesTable);
 
         /**
          * Creating the vertical layout...
@@ -176,7 +187,7 @@ public class SurveillanceViewConfigurationCategoryWindow extends Window {
                 }
 
                 finalDef.setLabel(labelField.getValue());
-                finalDef.setReportCategory((String) nativeSelect.getValue());
+                finalDef.setReportCategory((String) reportCategorySelect.getValue());
 
                 saveActionListener.save(finalDef);
 
@@ -192,6 +203,9 @@ public class SurveillanceViewConfigurationCategoryWindow extends Window {
         setContent(verticalLayout);
     }
 
+    /**
+     * Interface for a listner that will be invoked when OK is clicked
+     */
     public static interface SaveActionListener {
         void save(Def def);
     }

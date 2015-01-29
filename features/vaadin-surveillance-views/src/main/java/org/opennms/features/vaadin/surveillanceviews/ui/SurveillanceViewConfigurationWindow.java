@@ -44,7 +44,7 @@ public class SurveillanceViewConfigurationWindow extends Window {
         setHeight(66, Sizeable.Unit.PERCENTAGE);
 
         /**
-         * Title and refresh seconds
+         * Title field
          */
         final TextField titleField = new TextField();
         titleField.setValue(view.getName());
@@ -53,6 +53,9 @@ public class SurveillanceViewConfigurationWindow extends Window {
         titleField.setDescription("Title of this surveillance view");
         titleField.setWidth(25, Unit.PERCENTAGE);
 
+        /**
+         * Adding simple validator
+         */
         titleField.addValidator(new AbstractStringValidator("Please use an unique name for the surveillance view") {
             @Override
             protected boolean isValidValue(String s) {
@@ -61,7 +64,7 @@ public class SurveillanceViewConfigurationWindow extends Window {
         });
 
         /**
-         * Duration field setup, layout and adding listener and validator
+         * Refresh seconds field setup and validator
          */
         final TextField refreshSecondsField = new TextField();
         refreshSecondsField.setValue(String.valueOf(view.getRefreshSeconds()));
@@ -106,6 +109,9 @@ public class SurveillanceViewConfigurationWindow extends Window {
         columnsTable.setSelectable(true);
         columnsTable.setMultiSelect(false);
 
+        /**
+         * Create custom sorter
+         */
         columns.setItemSorter(new DefaultItemSorter() {
             @Override
             public int compare(Object o1, Object o2) {
@@ -158,6 +164,11 @@ public class SurveillanceViewConfigurationWindow extends Window {
         columnsAddButton.setEnabled(true);
 
         final Button columnsEditButton = new Button("Edit");
+        columnsEditButton.setEnabled(true);
+        columnsEditButton.setStyleName("small");
+        columnsEditButton.setDescription("Edit column");
+        columnsEditButton.setEnabled(false);
+
         columnsEditButton.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent clickEvent) {
@@ -180,12 +191,13 @@ public class SurveillanceViewConfigurationWindow extends Window {
             }
         });
 
-        columnsEditButton.setEnabled(true);
-        columnsEditButton.setStyleName("small");
-        columnsEditButton.setDescription("Edit column");
-        columnsEditButton.setEnabled(false);
 
         final Button columnsRemoveButton = new Button("Remove");
+        columnsRemoveButton.setEnabled(true);
+        columnsRemoveButton.setStyleName("small");
+        columnsRemoveButton.setDescription("Remove column");
+        columnsRemoveButton.setEnabled(false);
+
         columnsRemoveButton.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent clickEvent) {
@@ -199,16 +211,13 @@ public class SurveillanceViewConfigurationWindow extends Window {
             }
         });
 
-        columnsRemoveButton.setEnabled(true);
-        columnsRemoveButton.setStyleName("small");
-        columnsRemoveButton.setDescription("Remove column");
-        columnsRemoveButton.setEnabled(false);
 
         final Button columnUpButton = new Button();
         columnUpButton.setStyleName("small");
         columnUpButton.setIcon(new ThemeResource("../runo/icons/16/arrow-up.png"));
         columnUpButton.setDescription("Move this a column entry one position up");
         columnUpButton.setEnabled(false);
+
         columnUpButton.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent clickEvent) {
@@ -246,6 +255,7 @@ public class SurveillanceViewConfigurationWindow extends Window {
         columnDownButton.setIcon(new ThemeResource("../runo/icons/16/arrow-down.png"));
         columnDownButton.setDescription("Move this a column entry one position down");
         columnDownButton.setEnabled(false);
+
         columnDownButton.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent clickEvent) {
@@ -277,6 +287,8 @@ public class SurveillanceViewConfigurationWindow extends Window {
             }
         });
 
+        columnsTable.setSizeFull();
+
         columnUpButton.setSizeFull();
         columnDownButton.setSizeFull();
         columnsAddButton.setSizeFull();
@@ -284,6 +296,10 @@ public class SurveillanceViewConfigurationWindow extends Window {
         columnsRemoveButton.setSizeFull();
 
         columnsTable.setImmediate(true);
+
+        /**
+         * ...and a listener
+         */
         columnsTable.addValueChangeListener(new Property.ValueChangeListener() {
             @Override
             public void valueChange(Property.ValueChangeEvent valueChangeEvent) {
@@ -299,7 +315,6 @@ public class SurveillanceViewConfigurationWindow extends Window {
         /**
          * Rows table
          */
-
         final Table rowsTable = new Table();
 
         rowsTable.setSortEnabled(false);
@@ -322,6 +337,9 @@ public class SurveillanceViewConfigurationWindow extends Window {
         rowsTable.setSelectable(true);
         rowsTable.setMultiSelect(false);
 
+        /**
+         * Create custom sorter
+         */
         rows.setItemSorter(new DefaultItemSorter() {
             @Override
             public int compare(Object o1, Object o2) {
@@ -351,8 +369,12 @@ public class SurveillanceViewConfigurationWindow extends Window {
         /**
          * Adding the buttons...
          */
-
         final Button rowsAddButton = new Button("Add");
+        rowsAddButton.setEnabled(true);
+        rowsAddButton.setStyleName("small");
+        rowsAddButton.setDescription("Add row");
+        rowsAddButton.setEnabled(true);
+
         rowsAddButton.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent clickEvent) {
@@ -369,12 +391,12 @@ public class SurveillanceViewConfigurationWindow extends Window {
             }
         });
 
-        rowsAddButton.setEnabled(true);
-        rowsAddButton.setStyleName("small");
-        rowsAddButton.setDescription("Add row");
-        rowsAddButton.setEnabled(true);
-
         final Button rowsEditButton = new Button("Edit");
+        rowsEditButton.setEnabled(true);
+        rowsEditButton.setStyleName("small");
+        rowsEditButton.setDescription("Edit row");
+        rowsEditButton.setEnabled(false);
+
         rowsEditButton.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent clickEvent) {
@@ -397,12 +419,13 @@ public class SurveillanceViewConfigurationWindow extends Window {
             }
         });
 
-        rowsEditButton.setEnabled(true);
-        rowsEditButton.setStyleName("small");
-        rowsEditButton.setDescription("Edit row");
-        rowsEditButton.setEnabled(false);
 
         final Button rowsRemoveButton = new Button("Remove");
+        rowsRemoveButton.setEnabled(true);
+        rowsRemoveButton.setStyleName("small");
+        rowsRemoveButton.setDescription("Remove row");
+        rowsRemoveButton.setEnabled(false);
+
         rowsRemoveButton.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent clickEvent) {
@@ -421,6 +444,7 @@ public class SurveillanceViewConfigurationWindow extends Window {
         rowUpButton.setIcon(new ThemeResource("../runo/icons/16/arrow-up.png"));
         rowUpButton.setDescription("Move this a row entry one position up");
         rowUpButton.setEnabled(false);
+
         rowUpButton.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent clickEvent) {
@@ -457,6 +481,7 @@ public class SurveillanceViewConfigurationWindow extends Window {
         rowDownButton.setIcon(new ThemeResource("../runo/icons/16/arrow-down.png"));
         rowDownButton.setDescription("Move this a row entry one position down");
         rowDownButton.setEnabled(false);
+
         rowDownButton.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent clickEvent) {
@@ -489,12 +514,6 @@ public class SurveillanceViewConfigurationWindow extends Window {
         });
 
         rowsTable.setSizeFull();
-        columnsTable.setSizeFull();
-
-        rowsRemoveButton.setEnabled(true);
-        rowsRemoveButton.setStyleName("small");
-        rowsRemoveButton.setDescription("Remove row");
-        rowsRemoveButton.setEnabled(false);
 
         rowUpButton.setSizeFull();
         rowDownButton.setSizeFull();
@@ -503,6 +522,10 @@ public class SurveillanceViewConfigurationWindow extends Window {
         rowsRemoveButton.setSizeFull();
 
         rowsTable.setImmediate(true);
+
+        /**
+         * ...and a listener
+         */
         rowsTable.addValueChangeListener(new Property.ValueChangeListener() {
             @Override
             public void valueChange(Property.ValueChangeEvent valueChangeEvent) {
@@ -630,6 +653,9 @@ public class SurveillanceViewConfigurationWindow extends Window {
         setContent(verticalLayout);
     }
 
+    /**
+     * Interface for a listner that will be invoked when OK is clicked
+     */
     public static interface SaveActionListener {
         void save(View view);
     }

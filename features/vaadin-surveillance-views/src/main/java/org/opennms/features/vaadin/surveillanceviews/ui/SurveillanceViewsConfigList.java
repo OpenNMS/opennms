@@ -40,7 +40,6 @@ import com.vaadin.ui.VerticalLayout;
 import org.opennms.features.vaadin.surveillanceviews.config.SurveillanceViewProvider;
 import org.opennms.features.vaadin.surveillanceviews.model.ColumnDef;
 import org.opennms.features.vaadin.surveillanceviews.model.RowDef;
-import org.opennms.features.vaadin.surveillanceviews.model.SurveillanceViewConfiguration;
 import org.opennms.features.vaadin.surveillanceviews.model.View;
 import org.opennms.features.vaadin.surveillanceviews.service.SurveillanceViewService;
 
@@ -54,19 +53,18 @@ public class SurveillanceViewsConfigList extends VerticalLayout {
     /**
      * The {@link com.vaadin.data.util.BeanItemContainer} this component uses for {@link View} configurations
      */
-    BeanItemContainer<View> m_beanItemContainer;
+    BeanItemContainer<View> m_beanItemContainer = new BeanItemContainer<View>(View.class);
 
     private SurveillanceViewService m_surveillanceViewService;
-
-    private SurveillanceViewConfiguration m_surveillanceViewConfiguration = SurveillanceViewProvider.getInstance().getSurveillanceViewConfiguration();
 
     public SurveillanceViewsConfigList(SurveillanceViewService surveillanceViewService) {
         this.m_surveillanceViewService = surveillanceViewService;
 
         /**
-         * Setting the member fields
+         * Loading the config
          */
-        m_beanItemContainer = SurveillanceViewProvider.getInstance().getBeanContainer();
+
+        reloadSurveillanceViews();
 
         /**
          * Setting up the layout component
@@ -82,7 +80,9 @@ public class SurveillanceViewsConfigList extends VerticalLayout {
         button.setStyleName("small");
         button.setDescription("Display help and usage");
 
-        //button.addClickListener(new HelpClickListener(this, m_wallboardConfigView.getDashletSelector()));
+        /**
+         * button.addClickListener(new HelpClickListener(this, m_wallboardConfigView.getDashletSelector()));
+         */
 
         Button addButton = new Button("Add");
         addButton.setStyleName("small");
@@ -109,9 +109,10 @@ public class SurveillanceViewsConfigList extends VerticalLayout {
                     @Override
                     public void save(View view) {
                         m_beanItemContainer.addItem(view);
-                        m_surveillanceViewConfiguration.getViews().add(view);
 
+                        SurveillanceViewProvider.getInstance().getSurveillanceViewConfiguration().getViews().add(view);
                         SurveillanceViewProvider.getInstance().save();
+
                         ((SurveillanceViewsConfigUI) getUI()).notifyMessage("Data saved", "Surveillance View");
 
                         m_table.refreshRowCache();
@@ -147,7 +148,7 @@ public class SurveillanceViewsConfigList extends VerticalLayout {
                 {
                     public Object generateCell(Table source, final Object itemId, Object columnId) {
                         Button button = new Button("Edit");
-                        button.setDescription("Edit this Ops Board configuration");
+                        button.setDescription("Edit this Surveillance View configuration");
                         button.setStyleName("small");
                         button.addClickListener(new Button.ClickListener() {
                             public void buttonClick(Button.ClickEvent clickEvent) {
@@ -156,7 +157,7 @@ public class SurveillanceViewsConfigList extends VerticalLayout {
                                     public void save(View view) {
                                         m_beanItemContainer.removeItem(itemId);
                                         m_beanItemContainer.addItem(view);
-                                        m_surveillanceViewConfiguration.getViews().set(m_surveillanceViewConfiguration.getViews().indexOf(itemId), view);
+                                        SurveillanceViewProvider.getInstance().getSurveillanceViewConfiguration().getViews().set(SurveillanceViewProvider.getInstance().getSurveillanceViewConfiguration().getViews().indexOf(itemId), view);
 
                                         SurveillanceViewProvider.getInstance().save();
                                         ((SurveillanceViewsConfigUI) getUI()).notifyMessage("Data saved", "Surveillance view");
@@ -178,7 +179,7 @@ public class SurveillanceViewsConfigList extends VerticalLayout {
                 {
                     public Object generateCell(Table source, final Object itemId, Object columnId) {
                         Button button = new Button("Remove");
-                        button.setDescription("Delete this Ops Board configuration");
+                        button.setDescription("Delete this Surveillance View configuration");
                         button.setStyleName("small");
                         button.addClickListener(new Button.ClickListener() {
                             public void buttonClick(Button.ClickEvent clickEvent) {
@@ -197,9 +198,11 @@ public class SurveillanceViewsConfigList extends VerticalLayout {
                 {
                     public Object generateCell(Table source, final Object itemId, Object columnId) {
                         Button button = new Button("Preview");
-                        button.setDescription("Preview this Ops Board configuration");
+                        button.setDescription("Preview this Surveillance View configuration");
                         button.setStyleName("small");
-                        //button.addClickListener(new PreviewClickListener(WallboardOverview.this, (Wallboard) itemId));
+                        /**
+                         * button.addClickListener(new PreviewClickListener(WallboardOverview.this, (Wallboard) itemId));
+                         */
                         return button;
                     }
                 }
@@ -212,25 +215,25 @@ public class SurveillanceViewsConfigList extends VerticalLayout {
                     public Object generateCell(Table source, final Object itemId, Object columnId) {
                         CheckBox checkBox = new CheckBox();
                         checkBox.setImmediate(true);
-                        checkBox.setDescription("Make this Ops Board configuration the default");
+                        checkBox.setDescription("Make this Surveillance View configuration the default");
 
                         final View view = m_beanItemContainer.getItem(itemId).getBean();
 
-                        checkBox.setValue(m_surveillanceViewConfiguration.getDefaultView().equals(view.getName()));
+                        checkBox.setValue(SurveillanceViewProvider.getInstance().getSurveillanceViewConfiguration().getDefaultView().equals(view.getName()));
 
                         checkBox.addValueChangeListener(new Property.ValueChangeListener() {
                             @Override
                             public void valueChange(Property.ValueChangeEvent valueChangeEvent) {
                                 boolean newValue = ((Boolean) valueChangeEvent.getProperty().getValue());
 
-
                                 if (newValue) {
-                                    m_surveillanceViewConfiguration.setDefaultView(view.getName());
+                                    SurveillanceViewProvider.getInstance().getSurveillanceViewConfiguration().setDefaultView(view.getName());
                                 }
 
                                 m_table.refreshRowCache();
 
                                 SurveillanceViewProvider.getInstance().save();
+
                                 ((SurveillanceViewsConfigUI) getUI()).notifyMessage("Data saved", "Default surveillance view");
                             }
                         });
@@ -249,5 +252,13 @@ public class SurveillanceViewsConfigList extends VerticalLayout {
         addComponent(m_table);
 
         setExpandRatio(m_table, 1.0f);
+    }
+
+    /**
+     * Reloads the configuration.
+     */
+    public void reloadSurveillanceViews() {
+        m_beanItemContainer.removeAllItems();
+        m_beanItemContainer.addAll(SurveillanceViewProvider.getInstance().getSurveillanceViewConfiguration().getViews());
     }
 }
