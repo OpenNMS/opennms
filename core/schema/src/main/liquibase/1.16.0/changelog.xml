@@ -40,7 +40,7 @@ DELETE FROM outages WHERE ifregainedservice is null AND outageid NOT IN (
 CREATE UNIQUE INDEX
   one_outstanding_outage_per_service_idx
 ON
-  outages (nodeid, ipaddr, serviceid, ifserviceid)
+  outages (ifserviceid)
 WHERE
   ifregainedservice IS NULL;
     </sql>
