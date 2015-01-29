@@ -38,6 +38,8 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
+import com.github.wolfie.refresher.Refresher;
+import java.util.concurrent.ConcurrentHashMap;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.features.geocoder.Coordinates;
 import org.opennms.features.geocoder.GeocoderException;
@@ -64,6 +66,15 @@ import org.springframework.transaction.support.TransactionOperations;
  * @author Marcus Hellberg (marcus@vaadin.com)
  */
 public class MapWidgetComponent extends NodeMapComponent implements GeoAssetProvider {
+
+    private class DynamicUpdateRefresher implements Refresher.RefreshListener{
+
+        @Override
+        public void refresh(Refresher refresher) {
+            refreshView();
+        }
+    }
+
     private static final long serialVersionUID = -6364929103619363239L;
     private static final Logger LOG = LoggerFactory.getLogger(MapWidgetComponent.class);
 
@@ -78,6 +89,7 @@ public class MapWidgetComponent extends NodeMapComponent implements GeoAssetProv
     private AlarmDao m_alarmDao;
     private GeocoderService m_geocoderService;
     private TransactionOperations m_transaction;
+    private Boolean m_aclsEnabled = false;
 
     private Map<Integer,NodeEntry> m_activeNodes = new HashMap<Integer,NodeEntry>();
 
@@ -123,14 +135,24 @@ public class MapWidgetComponent extends NodeMapComponent implements GeoAssetProv
                 refreshNodeData();
             }
         }, 0, 5, TimeUnit.MINUTES);
+        checkAclsEnabled();
+        setupAutoRefresher();
+    }
+
+    private void checkAclsEnabled() {
+        String aclsPropValue = System.getProperty("org.opennms.web.aclsEnabled");
+        m_aclsEnabled = aclsPropValue != null && aclsPropValue.equals("true");
+    }
+
+    public void setupAutoRefresher(){
+        Refresher refresher = new Refresher();
+        refresher.setRefreshInterval(5000); //Pull every two seconds for view updates
+        refresher.addListener(new DynamicUpdateRefresher());
+        addExtension(refresher);
     }
 
     public void refresh() {
-        m_executor.schedule(new Runnable() {
-            @Override public void run() {
-                refreshNodeData();
-            }
-        }, 0, TimeUnit.MINUTES);
+        refreshView();
     }
 
     @Override
@@ -140,6 +162,20 @@ public class MapWidgetComponent extends NodeMapComponent implements GeoAssetProv
             nodes.add(new AbstractVertex("nodes", entry.getKey().toString(), entry.getValue().getNodeLabel()));
         }
         return nodes;
+    }
+
+    private void refreshView() {
+        if(m_aclsEnabled) {
+            Map<Integer, String> nodes = getNodeDao().getAllLabelsById();
+
+            Map<Integer, NodeEntry> aclOnlyNodes = new HashMap<Integer, NodeEntry>();
+            for (Integer nodeId : nodes.keySet()) {
+                if (m_activeNodes.containsKey(nodeId)) aclOnlyNodes.put(nodeId, m_activeNodes.get(nodeId));
+            }
+            showNodes(aclOnlyNodes);
+        } else {
+            showNodes(m_activeNodes);
+        }
     }
 
     private void refreshNodeData() {
@@ -258,7 +294,6 @@ public class MapWidgetComponent extends NodeMapComponent implements GeoAssetProv
 
 
         m_activeNodes = nodes;
-        showNodes(nodes);
     }
 
     /**
