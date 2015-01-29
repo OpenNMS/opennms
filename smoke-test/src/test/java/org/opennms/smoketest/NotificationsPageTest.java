@@ -72,17 +72,17 @@ public class NotificationsPageTest extends OpenNMSSeleniumTestCase {
         waitForElement("link=[Remove all]");
         waitForElement("link=Sent Time");
         waitForElement("//input[@value='Acknowledge Notices']");
-        clickAndWait("link=Notices");
+        clickAndWait("link=Notice List");
         clickAndWait("link=All outstanding notices");
         waitForText("only outstanding notices");
         waitForElement("link=Respond Time");
         waitForElement("css=input[type=button]");
-        clickAndWait("link=Notices");
+        clickAndWait("link=Notice List");
         clickAndWait("link=All acknowledged notices");
         waitForText("only acknowledged notices");
         waitForElement("link=Node");
         waitForElement("css=input[type=submit]");
-        clickAndWait("link=Notices");
+        clickAndWait("link=Notice List");
     }
 
 }
