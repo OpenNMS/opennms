@@ -53,6 +53,7 @@ import org.opennms.netmgt.poller.pollables.PollableService;
 import org.opennms.netmgt.xml.event.Event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.dao.DataRetrievalFailureException;
 
 /**
  * Represents a DefaultPollContext
@@ -390,15 +391,20 @@ public class DefaultPollContext implements PollContext, EventListener {
                     pollEvent.complete(e);
                 }
             }
-            
+
             for (Iterator<PendingPollEvent> it = m_pendingPollEvents.iterator(); it.hasNext(); ) {
                 PendingPollEvent pollEvent = it.next();
                 LOG.trace("onEvent: determining if pollEvent is pending: {}", pollEvent);
                 if (pollEvent.isPending()) continue;
-                
+
                 LOG.trace("onEvent: processing pending pollEvent...: {}", pollEvent);
-                pollEvent.processPending();
-                it.remove();
+                try {
+                    pollEvent.processPending();
+                } catch (DataRetrievalFailureException ex) {
+                    LOG.error("onEvent: process pending failed on: {}", pollEvent, ex);
+                    // Don't remove the pending poll event if processPending() failed
+                    continue;
+                }
                 LOG.trace("onEvent: processing of pollEvent completed.: {}", pollEvent);
             }
         }
