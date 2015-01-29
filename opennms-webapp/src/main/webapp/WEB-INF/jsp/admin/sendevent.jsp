@@ -33,28 +33,8 @@
 	contentType="text/html"
 	session="true"
 	import="
-		java.io.*,
-		java.util.*,
-		org.opennms.netmgt.config.*,
-		org.opennms.core.utils.BundleLists,
-		org.opennms.core.utils.ConfigFileConstants,
-		org.opennms.core.utils.InetAddressUtils,
-		org.opennms.netmgt.xml.eventconf.Event,
-		org.springframework.core.io.FileSystemResource
+		org.opennms.core.utils.InetAddressUtils
 	"
-%>
-<%!
-	private DefaultEventConfDao m_eventConfDao;
-
-	public void init() throws ServletException {
-		try {
-			m_eventConfDao = new DefaultEventConfDao();
-			m_eventConfDao.setConfigResource(new FileSystemResource(ConfigFileConstants.getFile(ConfigFileConstants.EVENT_CONF_FILE_NAME)));
-			m_eventConfDao.afterPropertiesSet();
-		} catch (Throwable e) {
-			throw new ServletException("Cannot load configuration file", e);
-		}
-	}
 %>
 <%
     String hostName = InetAddressUtils.getLocalHostName();
@@ -199,7 +179,7 @@
           <div class="col-sm-10">
             <select name="uei" class="form-control" id="input.uei" >
               <option value="">--Select One--</option>
-              <%=buildEventSelect()%>
+              ${model.eventSelect}
             </select>
           </div>
         </div>
@@ -284,66 +264,3 @@
 </form>
 
 <jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />
-
-<%!
-    public String buildEventSelect()
-      throws IOException, FileNotFoundException
-    {
-        List<Event> events = m_eventConfDao.getEventsByLabel();
-        StringBuffer buffer = new StringBuffer();
-
-        List<String> excludeList = getExcludeList();
-	TreeMap<String, String> sortedMap = new TreeMap<String, String>();
-
-        for (Event e : events) {
-
-            String uei = e.getUei();
-            //System.out.println(uei);
-
-            String label = e.getEventLabel();
-            //System.out.println(label);
-
-            String trimmedUei = stripUei(uei);
-            //System.out.println(trimmedUei);
-
-            if (!excludeList.contains(trimmedUei)) {
-		sortedMap.put(label,uei);
-                //System.out.println("sortedMap.put('"+label+"', '"+uei+"')");
-            }
-	}
-        for(Map.Entry<String, String> me : sortedMap.entrySet()) {
-            buffer.append("<option value=" + me.getValue() + ">" + me.getKey() + "</option>");
-        }
-
-        return buffer.toString();
-    }
-
-    public String stripUei(String uei)
-    {
-        String leftover = uei;
-
-        for (int i = 0; i < 3; i++)
-        {
-            leftover = leftover.substring(leftover.indexOf('/')+1);
-        }
-
-        return leftover;
-     }
-
-     public List<String> getExcludeList()
-      throws IOException, FileNotFoundException
-     {
-        List<String> excludes = new ArrayList<String>();
-
-        Properties excludeProperties = new Properties();
-	excludeProperties.load( new FileInputStream( ConfigFileConstants.getFile(ConfigFileConstants.EXCLUDE_UEI_FILE_NAME )));
-        String[] ueis = BundleLists.parseBundleList( excludeProperties.getProperty( "excludes" ));
-
-        for (int i = 0; i < ueis.length; i++)
-        {
-            excludes.add(ueis[i]);
-        }
-
-        return excludes;
-     }
-%>

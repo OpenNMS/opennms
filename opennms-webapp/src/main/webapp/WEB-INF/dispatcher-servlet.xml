@@ -82,6 +82,10 @@
         <property name="deployedForeignSourceRepository" ref="selectedDeployedForeignSourceRepository"/>
     </bean>
 
+    <bean name="/admin/sendevent.htm" class="org.opennms.web.controller.SendEventController">
+          <property name="eventConfDao" ref="eventConfDao"/>
+    </bean>
+
     <bean name="/admin/editForeignSource.htm" class="org.opennms.web.controller.EditForeignSourceController">
         <property name="bindOnNewForm" value="true"/>
         <property name="foreignSourceService" ref="defaultForeignSourceService"/>
@@ -500,6 +504,30 @@
                     <property name="entries">
                         <list>
                             <bean class="org.opennms.web.navigate.LocationBasedNavBarEntry">
+                                <property name="name" value="Nodes"/>
+                                <property name="url" value="element/nodeList.htm"/>
+                                <property name="locationMatch" value="nodelist"/>
+                            </bean>
+                            <bean class="org.opennms.web.navigate.LocationBasedNavBarEntry">
+                                <property name="name" value="Assets"/>
+                                <property name="url" value="asset/index.jsp"/>
+                                <property name="locationMatch" value="asset"/>
+                            </bean>
+                            <bean class="org.opennms.web.navigate.LocationBasedNavBarEntry">
+                                <property name="name" value="Path Outages"/>
+                                <property name="url" value="pathOutage/index.jsp"/>
+                                <property name="locationMatch" value="pathOutage"/>
+                            </bean>
+                        </list>
+                    </property>
+                </bean>
+
+                <bean class="org.opennms.web.navigate.MenuDropdownNavBarEntry">
+                    <property name="name" value="Status" />
+                    <property name="url" value="#" />
+                    <property name="entries">
+                        <list>
+                            <bean class="org.opennms.web.navigate.LocationBasedNavBarEntry">
                                 <property name="name" value="Events"/>
                                 <property name="url" value="event/index"/>
                                 <property name="locationMatch" value="event"/>
@@ -515,45 +543,21 @@
                                 <property name="locationMatch" value="notification"/>
                             </bean>
                             <bean class="org.opennms.web.navigate.LocationBasedNavBarEntry">
-                                <property name="name" value="Assets"/>
-                                <property name="url" value="asset/index.jsp"/>
-                                <property name="locationMatch" value="asset"/>
-                            </bean>
-                            <bean class="org.opennms.web.navigate.LocationBasedNavBarEntry">
-                                <property name="name" value="Nodes"/>
-                                <property name="url" value="element/nodeList.htm"/>
-                                <property name="locationMatch" value="nodelist"/>
-                            </bean>
-                        </list>
-                    </property>
-                </bean>
-
-                <bean class="org.opennms.web.navigate.MenuDropdownNavBarEntry">
-                    <property name="name" value="Status" />
-                    <property name="url" value="#" />
-                    <property name="entries">
-                        <list>
-                            <bean class="org.opennms.web.navigate.LocationBasedNavBarEntry">
                                 <property name="name" value="Outages"/>
                                 <property name="url" value="outage/index.jsp"/>
                                 <property name="locationMatch" value="outage"/>
-                            </bean>
-                            <bean class="org.opennms.web.navigate.LocationBasedNavBarEntry">
-                                <property name="name" value="Path Outages"/>
-                                <property name="url" value="pathOutage/index.jsp"/>
-                                <property name="locationMatch" value="pathOutage"/>
-                            </bean>
-                            <bean class="org.opennms.web.navigate.DistributedStatusNavBarEntry">
-                                <property name="name" value="Distributed Status"/>
-                                <property name="url" value="distributedStatusSummary.htm"/>
-                                <property name="locationMatch" value="distributedstatus"/>
-                                <property name="locationMonitorDao" ref="locationMonitorDao"/>
                             </bean>
                             <bean class="org.opennms.web.navigate.SurveillanceViewNavBarEntry">
                                 <property name="name" value="Surveillance"/>
                                 <property name="url" value=""/>
                                 <property name="locationMatch" value="surveillance"/>
                                 <property name="surveillanceViewConfigDao" ref="surveillanceViewConfigDao"/>
+                            </bean>
+                            <bean class="org.opennms.web.navigate.DistributedStatusNavBarEntry">
+                                <property name="name" value="Distributed Status"/>
+                                <property name="url" value="distributedStatusSummary.htm"/>
+                                <property name="locationMatch" value="distributedstatus"/>
+                                <property name="locationMonitorDao" ref="locationMonitorDao"/>
                             </bean>
                         </list>
                     </property>
@@ -879,6 +883,22 @@
         <property name="inventoryService" ref="inventoryService"/>
     </bean>
 
+    <bean id="notificationFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+        <property name="staticMethod"><value>org.opennms.netmgt.config.NotificationFactory.init</value></property>
+    </bean>
+
+    <bean id="notificationFactory" class="org.opennms.netmgt.config.NotificationFactory" depends-on="notificationFactory-init" factory-method="getInstance"/>
+
+    <bean name="/admin/notification/noticeWizard/eventNotices.htm"
+          class="org.opennms.web.controller.admin.notifications.EventNoticesController">
+        <property name="eventConfDao" ref="eventConfDao"/>
+        <property name="notificationFactory" ref="notificationFactory"/>
+    </bean>
+
+    <bean name="/admin/notification/noticeWizard/chooseUeis.htm"
+          class="org.opennms.web.controller.admin.notifications.ChooseUeisController">
+        <property name="eventConfDao" ref="eventConfDao"/>
+    </bean>
 
     <!-- Examples
          <bean name="/nodes.htm" class="org.opennms.controller.NodeController">

@@ -305,7 +305,7 @@ public class JniRrdStrategy implements RrdStrategy<JniRrdStrategy.CreateCommand 
         //
         String[] dsValues = fetchStrings[2].split("\\s");
         Double dsValue = null;
-        if (dsValues[dsIndex].trim().equalsIgnoreCase("nan")) {
+        if (dsValues[dsIndex].trim().toLowerCase().endsWith("nan")) {
             dsValue = new Double(Double.NaN);
         } else {
             try {
@@ -396,7 +396,7 @@ public class JniRrdStrategy implements RrdStrategy<JniRrdStrategy.CreateCommand 
         
         for(int i = fetchStrings.length - 2; i > 1; i--) {
             String[] dsValues = fetchStrings[i].split("\\s");
-        	if ( dsValues[dsIndex].trim().equalsIgnoreCase("nan") ) {
+            if (dsValues[dsIndex].trim().toLowerCase().endsWith("nan")) {
         	    LOG.debug("fetchInRange: Got a NaN value - continuing back in time");
         	} else {
         		try {

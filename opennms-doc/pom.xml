@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>opennms</artifactId>
-    <version>15.0.0-SNAPSHOT</version>
+    <version>16.0.0-SNAPSHOT</version>
   </parent>
   <groupId>org.opennms.doc</groupId>
   <artifactId>parent</artifactId>
@@ -67,6 +67,9 @@
               <sourceHighlighter>prettify</sourceHighlighter>
               <backend>html5</backend>
               <doctype>book</doctype>
+              <attributes>
+                <stylesheet>../../../asciidoctor-default.css</stylesheet>
+              </attributes>
             </configuration>
           </execution>
         </executions>

@@ -89,7 +89,8 @@ public class EntityPhysicalTableTracker extends TableTracker {
      */
     @Override
     public SnmpRowResult createRowResult(int columnCount, SnmpInstId instance) {
-        return new EntityPhysicalTableRow(vendorAttributes, replacementMap, columnCount, instance);
+        LOG.debug("createRowResult: processing instance {}", instance);
+        return new EntityPhysicalTableRow(columnCount, instance);
     }
 
     /* (non-Javadoc)
@@ -97,11 +98,12 @@ public class EntityPhysicalTableTracker extends TableTracker {
      */
     @Override
     public void rowCompleted(SnmpRowResult row) {
-        OnmsHwEntity entity = ((EntityPhysicalTableRow) row).getOnmsHwEntity();
+        OnmsHwEntity entity = ((EntityPhysicalTableRow) row).getOnmsHwEntity(vendorAttributes, replacementMap);
         LOG.debug("rowCompleted: found entity {}, index: {}, parent: {}", entity.getEntPhysicalName(), entity.getEntPhysicalIndex(), entity.getEntPhysicalContainedIn());
         if (entity.getEntPhysicalContainedIn() != null && entity.getEntPhysicalContainedIn() > 0) {
             for (OnmsHwEntity e : entities) {
                 if (e.getEntPhysicalIndex() == entity.getEntPhysicalContainedIn()) {
+                    LOG.debug("rowCompleted: adding child index {} to parent index {}", entity.getEntPhysicalIndex(), e.getEntPhysicalIndex());
                     e.addChildEntity(entity);
                     break;
                 }
@@ -123,5 +125,4 @@ public class EntityPhysicalTableTracker extends TableTracker {
         }
         return null;
     }
-
 }
