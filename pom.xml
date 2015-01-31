@@ -3335,7 +3335,7 @@
       <dependency>
         <groupId>org.krupczak</groupId>
         <artifactId>xmp</artifactId>
-        <version>1.30r1</version>
+        <version>1.31</version>
       </dependency>
       <dependency>
         <groupId>xmlunit</groupId>
