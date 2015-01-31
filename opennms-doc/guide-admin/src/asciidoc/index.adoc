@@ -58,6 +58,7 @@ include::text/poller/SSLCertMonitor.adoc[]
 include::text/poller/StrafePingMonitor.adoc[]
 include::text/poller/SystemExecuteMonitor.adoc[]
 include::text/poller/Win32ServiceMonitor.adoc[]
+include::text/poller/XmpMonitor.adoc[]
 
 // Event description
 include::text/events.adoc[]
