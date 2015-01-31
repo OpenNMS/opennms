@@ -343,12 +343,52 @@ public class TimelineRestService extends OnmsRestService {
     @Context
     ServletContext m_servletContext;
 
+    private OnmsOutageCollection queryOutages(final int nodeId,
+                                              final String ipAddress,
+                                              final String serviceName,
+                                              final int start,
+                                              final int end) {
+        OnmsOutageCollection onmsOutageCollection;
+
+        readLock();
+        try {
+            final CriteriaBuilder builder = new CriteriaBuilder(OnmsOutage.class);
+            builder.eq("node.id", nodeId);
+
+            final Date startDate = new Date();
+            startDate.setTime(start);
+            builder.or(Restrictions.isNull("ifRegainedService"), Restrictions.gt("ifRegainedService", startDate));
+
+            final Date endDate = new Date();
+            endDate.setTime(end);
+            builder.or(Restrictions.isNull("ifLostService"), Restrictions.gt("ifLostService", endDate));
+
+            builder.eq("serviceType.name", serviceName);
+            builder.eq("ipInterface.ipAddress", InetAddressUtils.addr(ipAddress));
+
+            builder.alias("monitoredService", "monitoredService");
+            builder.alias("monitoredService.ipInterface", "ipInterface");
+            builder.alias("monitoredService.ipInterface.node", "node");
+            builder.alias("monitoredService.serviceType", "serviceType");
+
+            applyQueryFilters(m_uriInfo.getQueryParameters(), builder, null);
+
+            builder.orderBy("id").desc();
+
+            onmsOutageCollection = new OnmsOutageCollection(m_outageDao.findMatching(builder.toCriteria()));
+        } finally {
+            readUnlock();
+        }
+
+        return onmsOutageCollection;
+    }
+
     @GET
     @Produces("image/png")
     @Transactional
     @Path("header/{start}/{end}/{width}")
-    public Response header(@PathParam("start") final long start, @PathParam("end") final long end, @PathParam("width") final int width) throws IOException {
-        int delta = (int) end - (int) start;
+    public Response header(@PathParam("start") final int start, @PathParam("end") final int end, @PathParam("width") final int width) throws IOException {
+        int delta = end - start;
 
         BufferedImage bufferedImage = new BufferedImage(width, 20, BufferedImage.TYPE_INT_ARGB);
 
@@ -377,35 +417,10 @@ public class TimelineRestService extends OnmsRestService {
     @Produces("text/javascript")
     @Transactional
     @Path("html/{nodeId}/{ipAddress}/{serviceName}/{start}/{end}/{width}")
-    public Response html(@PathParam("nodeId") final int nodeId, @PathParam("ipAddress") final String ipAddress, @PathParam("serviceName") final String serviceName, @PathParam("start") final long start, @PathParam("end") final long end, @PathParam("width") final int width) throws IOException {
-        int delta = (int) end - (int) start;
+    public Response html(@PathParam("nodeId") final int nodeId, @PathParam("ipAddress") final String ipAddress, @PathParam("serviceName") final String serviceName, @PathParam("start") final int start, @PathParam("end") final int end, @PathParam("width") final int width) throws IOException {
+        int delta = end - start;
 
-        OnmsOutageCollection onmsOutageCollection;
-
-        readLock();
-        try {
-            final CriteriaBuilder builder = new CriteriaBuilder(OnmsOutage.class);
-            builder.eq("node.id", nodeId);
-            final Date d = new Date();
-            d.setTime(start);
-
-            builder.or(Restrictions.isNull("ifRegainedService"), Restrictions.gt("ifRegainedService", d));
-            builder.eq("serviceType.name", serviceName);
-            builder.eq("ipInterface.ipAddress", InetAddressUtils.addr(ipAddress));
-
-            builder.alias("monitoredService", "monitoredService");
-            builder.alias("monitoredService.ipInterface", "ipInterface");
-            builder.alias("monitoredService.ipInterface.node", "node");
-            builder.alias("monitoredService.serviceType", "serviceType");
-
-            applyQueryFilters(m_uriInfo.getQueryParameters(), builder);
-
-            builder.orderBy("id").desc();
-
-            onmsOutageCollection = new OnmsOutageCollection(m_outageDao.findMatching(builder.toCriteria()));
-        } finally {
-            readUnlock();
-        }
+        OnmsOutageCollection onmsOutageCollection = queryOutages(nodeId, ipAddress, serviceName, start, end);
 
         BufferedImage bufferedImage = new BufferedImage(width, 20, BufferedImage.TYPE_INT_ARGB);
 
@@ -462,35 +477,10 @@ public class TimelineRestService extends OnmsRestService {
     @Produces("image/png")
     @Transactional
     @Path("image/{nodeId}/{ipAddress}/{serviceName}/{start}/{end}/{width}")
-    public Response image(@PathParam("nodeId") final int nodeId, @PathParam("ipAddress") final String ipAddress, @PathParam("serviceName") final String serviceName, @PathParam("start") final long start, @PathParam("end") final long end, @PathParam("width") final int width) throws IOException {
-        int delta = (int) end - (int) start;
+    public Response image(@PathParam("nodeId") final int nodeId, @PathParam("ipAddress") final String ipAddress, @PathParam("serviceName") final String serviceName, @PathParam("start") final int start, @PathParam("end") final int end, @PathParam("width") final int width) throws IOException {
+        int delta = end - start;
 
-        OnmsOutageCollection onmsOutageCollection;
-
-        readLock();
-        try {
-            final CriteriaBuilder builder = new CriteriaBuilder(OnmsOutage.class);
-            builder.eq("node.id", nodeId);
-            final Date d = new Date();
-            d.setTime(start);
-
-            builder.or(Restrictions.isNull("ifRegainedService"), Restrictions.gt("ifRegainedService", d));
-            builder.eq("serviceType.name", serviceName);
-            builder.eq("ipInterface.ipAddress", InetAddressUtils.addr(ipAddress));
-
-            builder.alias("monitoredService", "monitoredService");
-            builder.alias("monitoredService.ipInterface", "ipInterface");
-            builder.alias("monitoredService.ipInterface.node", "node");
-            builder.alias("monitoredService.serviceType", "serviceType");
-
-            applyQueryFilters(m_uriInfo.getQueryParameters(), builder);
-
-            builder.orderBy("id").desc();
-
-            onmsOutageCollection = new OnmsOutageCollection(m_outageDao.findMatching(builder.toCriteria()));
-        } finally {
-            readUnlock();
-        }
+        OnmsOutageCollection onmsOutageCollection = queryOutages(nodeId, ipAddress, serviceName, start, end);
 
         BufferedImage bufferedImage = new BufferedImage(width, 20, BufferedImage.TYPE_INT_ARGB);
 

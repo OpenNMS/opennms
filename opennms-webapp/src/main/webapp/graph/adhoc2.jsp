@@ -174,7 +174,7 @@
               
               <br/>
 
-              <select name="ds" size="6">
+              <select class="multi-select" name="ds" size="6">
                 <c:forEach var="attribute" items="${resource.attributes}">
                   <c:choose>
                     <c:when test="${! anythingSelected}">
