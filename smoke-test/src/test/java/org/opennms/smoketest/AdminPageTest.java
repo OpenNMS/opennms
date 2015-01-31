@@ -69,8 +69,8 @@ public class AdminPageTest extends OpenNMSSeleniumTestCase {
                 new String[] { "Manage Events Configuration", "//div[@id='content']//iframe" },
                 new String[] { "Manage SNMP Collections and Data Collection Groups", "//div[@id='content']//iframe" },
                 new String[] { "SNMP MIB Compiler", "//div[@id='content']//iframe" },
-                new String[] { "Ops Board Config Web UI", "//div[@id='content']//iframe" },
-                new String[] { "JMX Config Generator Web UI ALPHA", "//div[@id='content']//iframe" },
+                new String[] { "Ops Board Configuration", "//div[@id='content']//iframe" },
+                new String[] { "JMX Configuration Generator", "//div[@id='content']//iframe" },
 
                 // Node Provisioning
                 new String[] { "Add Interface for Scanning", "//h3[text()='Enter IP Address']" },

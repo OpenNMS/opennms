@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,43 +26,27 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.sms.reflector.smsservice;
+package org.opennms.features.gwt.graph.resource.list.client.view;
 
-import org.smslib.InboundMessage;
+import java.util.List;
 
-/**
- * @author brozow
- *
- */
-public class SmsResponse extends MobileMsgResponse {
+import com.google.gwt.user.client.ui.Widget;
+
+public interface CustomReportSelectListView<T> {
     
-    private InboundMessage m_msg;
+    public interface Presenter<T>{
+        void onSubmitButtonClick();
+        void onClearSelectionButtonClick();
+        void onSearchButtonClick();
+    }
     
-    public SmsResponse(InboundMessage msg) {
-        m_msg = msg;
-    }
-
-    /**
-     * @return the originator
-     */
-    public String getOriginator() {
-        return m_msg.getOriginator();
-    }
-
-    /**
-     * @return the text
-     */
-    public String getText() {
-        return m_msg.getText();
-    }
-
-    /**
-     * @return
-     */
-    public InboundMessage getMessage() {
-        return m_msg;
-        
-    }
-
-
+    ResourceListItem getSelectedReport();
+    void setDataList(List<ResourceListItem> dataList);
+    void setPresenter(Presenter<T> presenter);
+    Widget asWidget();
+    void clearAllSelections();
+    void showWarning();
+    List<ResourceListItem> getDataList();
+    Widget searchPopupTarget();
+    List<ResourceListItem> getAllReports();
 }
