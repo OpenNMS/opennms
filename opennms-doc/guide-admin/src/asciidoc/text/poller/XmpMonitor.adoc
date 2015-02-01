@@ -30,7 +30,7 @@ Also, don't forget to add an entry in _response-graph.properties_ so that respon
 
 ===== Examples
 
-. Adding entry in collectd-configuration.xml
+.Adding entry in collectd-configuration.xml
 [source, xml]
 ----
 <service name="XMP" interval="300000" user-defined="false" status="on">
@@ -43,7 +43,7 @@ Also, don't forget to add an entry in _response-graph.properties_ so that respon
 ----
 
 .Add entry in response-graph.properties
-[source, xml]
+[source, bash]
 ----
 reports=icmp, \
 xmp, \ . . . .
