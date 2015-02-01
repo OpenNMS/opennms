@@ -432,8 +432,8 @@ a.list-group-item.active:focus {
 $header-background-image: url("../images/headerbg.png") !default;
 
 .navbar-inverse, .navbar-collapse {
-    background-color: #ddd;
-    border-color: #ddd;
+    background-color: $color_alto_approx;
+    border-color: $color_alto_approx;
 }
 
 .navbar-inverse .navbar-nav > li {
@@ -449,11 +449,11 @@ $header-background-image: url("../images/headerbg.png") !default;
 	}
 
     a:focus {
-      color: #4c9d29;
+      color: $color_lima_approx;
     }
 
     a:hover {
-      color: #4c9d29;
+      color: $color_lima_approx;
     }
 
 	&.dropdown.open {
