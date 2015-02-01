@@ -50,7 +50,7 @@ xmp, \ . . . .
 
 report.xmp.name=XMP
 report.xmp.columns=xmp
-report.xmp.type=responseTime, distributedStatus
+report.xmp.type=responseTime
 report.xmp.command=--title="XMP Response Time" \
  --vertical-label="Seconds" \
  DEF:rtMills={rrd1}:xmp:AVERAGE \
