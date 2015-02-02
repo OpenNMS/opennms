@@ -67,7 +67,9 @@
     <!-- OpenNMS Vaadin Themes -->
     <module>themes</module>
 
-      <module>vaadin-dashboard</module>
-      <module>vaadin-dashlets</module>
+    <module>vaadin-dashboard</module>
+    <module>vaadin-dashlets</module>
+
+    <module>correlator</module>	
   </modules>
 </project>
