@@ -333,15 +333,20 @@ public class DefaultPollContext implements PollContext, EventListener {
     /** {@inheritDoc} */
     @Override
     public void resolveOutage(final PollableService svc, final PollEvent svcRegainEvent) {
-        final int nodeId = svc.getNodeId();
-        final String ipAddr = svc.getIpAddr();
-        final String svcName = svc.getSvcName();
+        final Integer outageId = getQueryManager().resolveOutagePendingRegainEventId(svc.getNodeId(),
+                svc.getIpAddr(), svc.getSvcName(), svcRegainEvent.getDate());
+        // This can happen when interfaces are reparented
+        if (outageId == null) {
+            LOG.info("resolveOutage: no outstanding outage for {} on {} with node id {}", svc.getSvcName(), svc.getIpAddr(), svc.getNodeId());
+            return;
+        }
+
         final Runnable r = new Runnable() {
             @Override
             public void run() {
                 final int eventId = svcRegainEvent.getEventId();
                 if (eventId > 0) {
-                    getQueryManager().resolveOutage(nodeId, ipAddr, svcName, eventId, svcRegainEvent.getDate());
+                    getQueryManager().updateResolvedOutageWithEventId(outageId, eventId);
                 } else {
                     LOG.warn("run: Failed to determine an eventId for service regained for: {} with event: {}", svc, svcRegainEvent);
                 }
