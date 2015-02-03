@@ -40,7 +40,6 @@ public class Correlator {
 
     public Correlator() {
         logger.debug("Correlator constructor!!!");
-        logger.debug("Correlator got this nodeDao: '{}'", m_nodeDao.toString());
     }
 
     public void setNodeDao(NodeDao nodeDao) {
