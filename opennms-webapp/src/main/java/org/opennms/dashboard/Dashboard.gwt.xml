@@ -4,7 +4,7 @@
   <inherits name='com.google.gwt.user.User'/>
   <inherits name='com.google.gwt.http.HTTP'/>
     <!-- Bootstrap 3 bindings -->
-    <inherits name="org.gwtbootstrap3.GwtBootstrap3NoTheme"/>
+    <inherits name="org.gwtbootstrap3.GwtBootstrap3NoThemeNoJs"/>
     <entry-point class='org.opennms.dashboard.client.Dashboard' />
 
   <collapse-all-properties/>
