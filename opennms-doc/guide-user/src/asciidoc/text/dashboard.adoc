@@ -1,0 +1,124 @@
+
+:imagesdir: ../images
+
+[[user-guide-dashboard]]
+== OpenNMS Dashboard
+
+In Network Operation Centers _NOC_ an overview about issues in the network is important and often described as _Dashboards_.
+Large networks have people (Operator) with different responsibilities and the _Dashboard_ should show only information for a given _monitoring context_.
+Network or Server operator have a need to customize or filter information on the _Dashboard_.
+A _Dashboard_ as an At-a-glance overview is also often used to give an entry point for more detailed diagnosis through the information provided by the monitoring system.
+The _Surveillance View_ allows to reduce the visible information by selecting rows, columns and cells to quickly limit the amount of information to navigate through.
+
+[[user-guide-dashboard-components]]
+=== Dashboard Components
+
+The _Dashboard_ is built with five components:
+
+* _Surveillance View_: Allows to model a _monitoring context_ for the _Dashboard_.
+* _Alarms_: Shows unacknowledged _Alarms_ which should be escalated by an _Operator_.
+* _Notifications_: Shows outstanding and unacknowledged notifications sent to _Engineers_.
+* _Node Status_: Shows all ongoing network _Outages_.
+* _Resource Graph Viewer_: Shows performance time series reports for performance diagnosis.
+
+The following screenshot shows a configured _Dashboard_ and which information are displayed in the components.
+
+.Dashboard with configured surveillance view and current outage
+image::dashboard/01_dashboard-overall.png[]
+
+The following section describe the information shown in each component.
+All other components display information based on the _Surveillance View_.
+
+[[user-guide-dashboard-surveillance-view]]
+==== Surveillance View
+
+The _Surveillance View_ has multiple functions.
+
+* Allows to model the _monitoring context_ and shows service and node _Outages_ in compact matrix view.
+* Allows to limit the number of information in the _Dashboard_ by selecting rows, columns and cells.
+
+The following screenshots show all possible selections in the _Surveillance View_.
+
+.Information displayed from all nodes matching the surveillance view
+image::dashboard/02_unselected.png[]
+
+.Information displayed from nodes in the selected row
+image::dashboard/03_row-select.png[]
+
+.Information displayed from nodes in the selected column
+image::dashboard/04_column-select.png[]
+
+.Information displayed from nodes in the selected cell
+image::dashboard/05_cell-select.png[]
+
+[[user-guide-dashboard-alarms]]
+==== Alarms
+
+The _Alarms_ component gives an overview about all unacknowledged _Alarms_ with a severity higher than _Normal(1)_.
+Acknowledged _Alarms_ will be removed from the responsibility of the _Operator_.
+The following information are shown in:
+
+.Information displayed in the _Alarms_ component
+image::dashboard/06_alarms-component.png[]
+
+1. _Node_: Node label of the node the _Alarm_ is associated.
+2. _Log Msg_: The log message from the _Event_ which is the source for this _Alarm_. It is specified in the event configuration file in `<logmsg />`
+3. _Count_: Number of _Alarms_ deduplicated by the reduction key of the _Alarm_.
+4. _First Time_: Time for the first occurrence of the _Alarm_.
+5. _Last Time_: Time for the last occurrence of the _Alarm_.
+
+The _Alarms_ component shows the 5 latest _Alarms_ and allows with pagination to navigate to older _Alarms_.
+
+[[user-guide-dashboard-notifications]]
+==== Notifications
+
+To inform people on a duty schedule notifications are used and force action to fix or reconfigure systems immediately.
+In _OpenNMS_ it is possible to acknowledge notifications to see who is working on a specific issue.
+The _Dashboard_ should show outstanding notifications in the _NOC_ to provide an overview and give the possibility for intervention.
+
+.Information displayed in the _Notifications_ component
+image::dashboard/07_notifications-component.png[]
+
+1. _Node_: Label of the monitored node the notification is associated with.
+2. _Service_: Name of the service the notification is associated with.
+3. _Message_: Message of the notification.
+4. _Responder_: User name who acknowledged the notification
+5. _Response Time_: Time when the user acknowledged the notification
+
+The _Notifications_ component shows the last 8 unacknowledged notifications and allows with pagination to navigate to older unacknowledged notifications.
+
+[[user-guide-dashboard-node-status]]
+==== Node Status
+
+An acknowledged _Alarm_ doesn't mean necessarily the outage is solved.
+To give an overview information about ongoing _Outages_ in the network, the _Dashboard_ shows an outage list in the _Node Status_ component.
+
+.Information displayed in the _Node Status_ component
+image::dashboard/08_node-status-component.png[]
+
+1. _Node_: Label of the monitored node with ongoing outages.
+2. _Current Outages_: Number of services on the node with outages and total number of monitored services, e.g. with the natural meaning of _"3 of 3 services are affected"_.
+3. _24 Hour Availability_: Availability of all services provided by the node calculated by the last 24 hours.
+
+The _Node Status_ component shows the last 5 ongoing _Outages_ and allows with pagination to navigate to older _Outages_.
+
+[[user-guide-dashboard-resource-graph-viewer]]
+==== Resource Graph Viewer
+
+To give a quick entry point diagnose performance issues a _Resource Graph Viewer_ allows to navigate to time series data reports which are filtered in the context of the _Surveillance View_.
+
+.Show time series based performance with the _Resource Graph Viewer_
+image::dashboard/09_resource-graph-viewer.png[]
+
+It allows to navigate sequentially through resource graphs provided by nodes filtered by the _Surveillance View_ context and selection and shows one graph report at a time.
+
+[[user-guide-dashboard-advanced-configuration]]
+=== Advanced configuration
+
+The _Surveillance View_ component allows to model multiple views for different monitoring contexts.
+It gives the possibility to create special view as example for network operators or server operators.
+The _Dashboard_ shows only *_one_* link:http://www.opennms.org/wiki/Dashboard[configured _Surveillance View_].
+To give different users the possibility using their _Surveillance View_ fitting there requirements it is possible to map a logged in user to a given _Surveillance View_ used in the _Dashboard_.
+
+The selected nodes from the _Surveillance View_ are also aware of link:http://www.opennms.org/wiki/User_Restriction_Filters[User Restriction Filter].
+If you have a group of users, which should see just a subset of nodes the _Surveillance View_ will filter nodes which are not related to the assigned user group.

@@ -123,7 +123,7 @@ public class DefaultNodeService implements NodeService {
     
     @Override
     public void getAllSnmpInterfacesForNode(int nodeId, RequestCallback callback) {
-        String url = BASE_URL + nodeId + "/snmpinterfaces?limit=0";
+        String url = BASE_URL + nodeId + "/snmpinterfaces?limit=0&orderBy=ifIndex";
         sendRequest(callback, url);
     }
 
