@@ -1,0 +1,86 @@
+<?xml version="1.0"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.opennms.features</groupId>
+        <artifactId>correlator</artifactId>
+        <version>16.0.0-SNAPSHOT</version>
+    </parent>
+    <groupId>org.opennms.features.correlator</groupId>
+    <artifactId>core</artifactId>
+    <packaging>bundle</packaging>
+    <properties>
+        <bundle.symbolicName>org.opennms.features.correlator.core</bundle.symbolicName>
+        <bundle.namespace>org.opennms.featuers.correlator</bundle.namespace>
+    </properties>
+    <name>OpenNMS :: Features :: Correlator :: Core</name>
+    
+    <build>
+        <plugins>
+            
+            <plugin>
+                <!--
+                 | the following instructions build a simple set of public/private classes into an OSGi bundle
+                -->
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <configuration>
+                    <instructions>
+                        <Bundle-SymbolicName>${bundle.symbolicName}</Bundle-SymbolicName>
+                        <Bundle-Version>${project.version}</Bundle-Version>
+                        <Export-Package>${bundle.namespace}.*;version="${project.version}"</Export-Package>
+                    </instructions>
+                </configuration>
+            </plugin>
+        </plugins>
+        
+    </build>
+    
+    <dependencies>
+        <!-- OpenNMS dependencies -->
+        <dependency>
+            <groupId>org.opennms</groupId>
+            <artifactId>opennms-dao</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms</groupId>
+            <artifactId>opennms-model</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        
+        <!-- Logging -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>1.0.4</version>
+            <scope>test</scope>
+        </dependency>
+        
+        <!-- Spring -->
+        <!-- not sure what that brings in -->
+        <dependency>
+            <groupId>org.opennms.dependencies</groupId>
+            <artifactId>spring-dependencies</artifactId>
+            <type>pom</type>
+            <scope>provided</scope>
+        </dependency>
+        
+        <!-- Testing -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.easymock</groupId>
+            <artifactId>easymock</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+</project>
