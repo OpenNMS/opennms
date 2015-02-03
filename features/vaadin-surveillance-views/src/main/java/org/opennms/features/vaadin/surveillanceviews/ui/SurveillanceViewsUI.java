@@ -34,6 +34,8 @@ import com.vaadin.server.VaadinRequest;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
+import org.opennms.features.vaadin.surveillanceviews.config.SurveillanceViewProvider;
+import org.opennms.features.vaadin.surveillanceviews.model.View;
 
 /**
  * The surveillance view application's "main" class
@@ -51,6 +53,9 @@ public class SurveillanceViewsUI extends UI {
         rootLayout.setSizeFull();
         rootLayout.setSpacing(true);
         rootLayout.addComponent(new Label("Hello SurveillanceViewsUI"));
+
+        View view = SurveillanceViewProvider.getInstance().getView("default");
+        rootLayout.addComponent(new SurveillanceViewTable(view));
         setContent(rootLayout);
     }
 }

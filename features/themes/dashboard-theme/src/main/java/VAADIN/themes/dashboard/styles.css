@@ -338,3 +338,78 @@ td.onms {
     background-color: #FFF;
     font-size: 100%;
 }
+
+/*
+.v-table-cell-content-marked {
+    background: #57a7ed;
+    color: #fff;
+}
+*/
+
+.v-table-cell-content-marked {
+    border: 1px solid #999999;
+}
+
+.v-table-cell-wrapper { line-height: normal; padding: 3px 0px 3px 0px; }
+
+.v-table-cell-content-critical {
+    color: black;
+    background-color: #f5cdcd;
+    border: 1px 0 solid #999999;
+    background-image: url(../../../../images/bgCritical.png);
+    background-repeat: repeat-y;
+    background-position: left top;
+}
+.v-table-cell-content-major {
+    color: black;
+    background-color: #ffd7cd;
+    border: 1px 0 solid #999999;
+    background-image: url(../../../../images/bgMajor.png);
+    background-repeat: repeat-y;
+    background-position: left top;
+}
+
+.v-table-cell-content-minor {
+    color: black;
+    background-color: blanchedalmond;
+    border: 1px 0 solid #999999;
+    background-image: url(../../../../images/bgMinor.png);
+    background-repeat: repeat-y;
+    background-position: left top;
+}
+
+.v-table-cell-content-warning {
+    color: black;
+    background-color: #fff5cd;
+    border: 1px 0 solid #999999;
+    background-image: url(../../../../images/bgWarning.png);
+    background-repeat: repeat-y;
+    background-position: left top;
+}
+
+.v-table-cell-content-indeterminate {
+    color: black;
+    background-color: #ebebcd;
+    border: 1px 0 solid #999999;
+    background-image: url(../../../../images/bgIndeterminate.png);
+    background-repeat: repeat-y;
+    background-position: left top;
+}
+
+.v-table-cell-content-normal {
+    color: black;
+    background-color: #d7e1cd;
+    border: 1px 0 solid #999999;
+    background-image: url(../../../../images/bgNormal.png);
+    background-repeat: repeat-y;
+    background-position: left top;
+}
+
+.v-table-cell-content-cleared {
+    color: black;
+    background-color: #eeeeee;
+    border: 1px 0 solid #999999;
+    background-image: url(../../../../images/bgCleared.png);
+    background-repeat: repeat-y;
+    background-position: left top;
+}
