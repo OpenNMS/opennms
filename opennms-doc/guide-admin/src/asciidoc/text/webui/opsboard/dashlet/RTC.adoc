@@ -1,0 +1,12 @@
+
+==== RTC
+
+This _Dashlet_ shows the configured SLA categories from the OpenNMS start page.
+
+[options="autowidth"]
+|===
+| Boost support     | false
+| `-`               | -
+|===
+
+
