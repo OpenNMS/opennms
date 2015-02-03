@@ -1,11 +1,13 @@
+// Allow GitHub image rendering
+:imagesdir: ../../../images
 
 === Introduction
 
 In a network operation center _(NOC)_ the _Ops Board_ can be used to visualize monitoring information.
-The information can be arranged with configurable _Dashlets_.
+The monitoring information for various use-cases are arranged in configurable _Dashlets_.
 To address different user groups it is possible to create multiple _Ops Boards_.
 
-There are two visualisation components display _Dashlets_:
+There are two visualisation components to display _Dashlets_:
 
  * _Ops Panel_: Shows multiple _Dashlets_ on one screen, e.g. on a NOC operators workstation
  * _Ops Board_: Shows one _Dashlet_ at a time in rotation, e.g. for a screen wall in a NOC
