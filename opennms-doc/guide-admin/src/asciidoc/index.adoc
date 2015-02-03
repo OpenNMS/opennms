@@ -16,6 +16,10 @@
 // Include your documentation sections here
 // include::text/myFile.adoc[]
 
+= Configuration files
+// Include configuration file documenration here
+include::text/configuration-files/c3p0.properties.adoc[]
+
 // Include monitor documentation here
 == Service Assurance
 
