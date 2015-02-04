@@ -28,6 +28,8 @@
 
 package org.opennms.web.element;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -611,25 +613,12 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
 	 */
     @Override
     public Service getService(int nodeId, String ipAddress, int serviceId) {
-        if (ipAddress == null) {
-            throw new IllegalArgumentException("Cannot take null parameters.");
+        try {
+            OnmsMonitoredService monSvc = m_monSvcDao.get(nodeId, InetAddress.getByName(ipAddress), serviceId);
+            return monSvc == null ? null : new Service(monSvc);
+        } catch (UnknownHostException e) {
+            throw new IllegalArgumentException("Invalid ip address '" + ipAddress + "'", e);
         }
-        OnmsCriteria criteria = new OnmsCriteria(OnmsMonitoredService.class);
-        criteria.createAlias("ipInterface", "ipInterface", OnmsCriteria.LEFT_JOIN);
-        criteria.createAlias("ipInterface.node", "node", OnmsCriteria.LEFT_JOIN);
-        criteria.createAlias("serviceType", "serviceType", OnmsCriteria.LEFT_JOIN);
-        criteria.createAlias("ipInterface.snmpInterface", "snmpIface", OnmsCriteria.LEFT_JOIN);
-        criteria.add(Restrictions.eq("node.id", nodeId));
-        criteria.add(Restrictions.eq("ipInterface.ipAddress", InetAddressUtils.addr(ipAddress)));
-        criteria.add(Restrictions.eq("serviceType.id", serviceId));
-        
-        List<OnmsMonitoredService> monSvcs = m_monSvcDao.findMatching(criteria);
-        if(monSvcs.size() > 0) {
-            return new Service(monSvcs.get(0));
-        }else {
-            return null;
-        }
-        
     }
     
     /* (non-Javadoc)
@@ -637,22 +626,8 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
 	 */
     @Override
     public Service getService(int ifServiceId) {
-        OnmsCriteria criteria = new OnmsCriteria(OnmsMonitoredService.class);
-        criteria.createAlias("ipInterface", "ipInterface", OnmsCriteria.LEFT_JOIN);
-        criteria.createAlias("ipInterface.node", "node", OnmsCriteria.LEFT_JOIN);
-        criteria.createAlias("ipInterface.snmpInterface", "snmpIface",  OnmsCriteria.LEFT_JOIN);
-        criteria.add(Restrictions.eq("id", ifServiceId));
-        criteria.addOrder(Order.asc("status"));
-        
-        List<OnmsMonitoredService> monSvcs = m_monSvcDao.findMatching(criteria);
-        
-        if(monSvcs.size() > 0) {
-            return new Service(monSvcs.get(0));
-        }else {
-            return null;
-        }
-        
-        
+        OnmsMonitoredService monSvc = m_monSvcDao.get(ifServiceId);
+        return monSvc == null ? null : new Service(monSvc);
     }
     
 

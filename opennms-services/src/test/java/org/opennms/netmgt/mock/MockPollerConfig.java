@@ -32,12 +32,14 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.Vector;
 
@@ -446,10 +448,14 @@ public class MockPollerConfig extends PollOutagesConfigManager implements Poller
         m_defaultPollInterval = defaultPollInterval;
     }
 
-    public void populatePackage(final MockNetwork network) {
+    public void populatePackage(final MockNetwork network, MockService... exclude) {
+        final List<MockService> servicesToExclude = Arrays.asList(exclude);
         final MockVisitor populator = new MockVisitorAdapter() {
             @Override
             public void visitService(final MockService svc) {
+                if (servicesToExclude.contains(svc)) {
+                    return;
+                }
                 addService(svc);
             }
         };

@@ -195,6 +195,11 @@ public class PollerTest implements TemporaryDatabaseAware<MockDatabase> {
         m_network.addNode(4, "DownNode");
         m_network.addInterface("192.168.1.6");
         m_network.addService("SNMP");
+        m_network.addNode(5, "Loner");
+        m_network.addInterface("192.168.1.7");
+        m_network.addService("ICMP");
+        m_network.addService("SNMP");
+        MockService unmonitoredService = m_network.addService("NotMonitored");
 
         m_db.populate(m_network);
         DataSourceFactory.setInstance(m_db);
@@ -206,7 +211,7 @@ public class PollerTest implements TemporaryDatabaseAware<MockDatabase> {
         m_pollerConfig.addPackage("TestPackage");
         m_pollerConfig.addDowntime(1000L, 0L, -1L, false);
         m_pollerConfig.setDefaultPollInterval(1000L);
-        m_pollerConfig.populatePackage(m_network);
+        m_pollerConfig.populatePackage(m_network, unmonitoredService);
         m_pollerConfig.addPackage("TestPkg2");
         m_pollerConfig.addDowntime(1000L, 0L, -1L, false);
         m_pollerConfig.setDefaultPollInterval(2000L);
@@ -1306,6 +1311,40 @@ public class PollerTest implements TemporaryDatabaseAware<MockDatabase> {
                 m_latch.countDown();
             }
         }
+    }
+
+    /**
+     * Test for NMS-7426.
+     */
+    @Test
+    public void testServicesWithoutPackagesAreMarkedAsNotPolled() {
+        MockService monitoredSvc = m_network.getService(5, "192.168.1.7", "SNMP");
+        MockService notMonitoredSvc = m_network.getService(5, "192.168.1.7", "NotMonitored");
+        OnmsMonitoredService notMonitored = m_monitoredServiceDao.get(
+                notMonitoredSvc.getNodeId(),
+                notMonitoredSvc.getAddress(),
+                notMonitoredSvc.getSvcName());
+
+        // The status should be set initially set to active
+        assertEquals("A", notMonitored.getStatus());
+
+        // Start the poller
+        startDaemons();
+
+        // Take a service down, and wait for the event
+        // We do this to make ensure the nodes services we're in fact scheduled
+        anticipateDown(monitoredSvc);
+
+        monitoredSvc.bringDown();
+
+        verifyAnticipated(10000);
+
+        // The status should now be set to not monitored
+        notMonitored = m_monitoredServiceDao.get(
+                notMonitoredSvc.getNodeId(),
+                notMonitoredSvc.getAddress(),
+                notMonitoredSvc.getSvcName());
+        assertEquals("N", notMonitored.getStatus());
     }
 
     //
