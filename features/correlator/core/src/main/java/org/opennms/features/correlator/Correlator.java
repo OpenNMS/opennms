@@ -24,7 +24,7 @@
  * http://www.opennms.org/ http://www.opennms.com/
  * *****************************************************************************
  */
-package org.opennms.correlator;
+package org.opennms.features.correlator;
 
 import org.opennms.netmgt.events.api.EventProxy;
 import org.opennms.netmgt.events.api.annotations.EventHandler;

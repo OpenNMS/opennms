@@ -11,13 +11,12 @@
     <packaging>bundle</packaging>
     <properties>
         <bundle.symbolicName>org.opennms.features.correlator.core</bundle.symbolicName>
-        <bundle.namespace>org.opennms.featuers.correlator</bundle.namespace>
+        <bundle.namespace>org.opennms.features.correlator</bundle.namespace>
     </properties>
     <name>OpenNMS :: Features :: Correlator :: Core</name>
     
     <build>
         <plugins>
-            
             <plugin>
                 <!-- build a simple set of public/private classes into an OSGi bundle -->
                 <groupId>org.apache.felix</groupId>
@@ -31,7 +30,6 @@
                 </configuration>
             </plugin>
         </plugins>
-        
     </build>
     
     <dependencies>

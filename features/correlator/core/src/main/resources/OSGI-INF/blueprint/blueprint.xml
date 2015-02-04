@@ -3,7 +3,7 @@
  
     <reference id="eventProxy" interface="org.opennms.netmgt.events.api.EventProxy" availability="mandatory" />
     
-    <bean id="correlator" class="org.opennms.correlator.Correlator">
+    <bean id="correlator" class="org.opennms.features.correlator.Correlator">
         <argument ref="eventProxy" />
     </bean>
 
