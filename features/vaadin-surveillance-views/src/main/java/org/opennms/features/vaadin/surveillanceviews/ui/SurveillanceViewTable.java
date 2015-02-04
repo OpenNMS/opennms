@@ -1,7 +1,6 @@
 package org.opennms.features.vaadin.surveillanceviews.ui;
 
 import com.vaadin.event.ItemClickEvent;
-import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Table;
@@ -22,25 +21,33 @@ public class SurveillanceViewTable extends Table {
     private Object selectedItemId, selectedPropertyId;
 
     public SurveillanceViewTable(View view) {
-        setSizeFull();
+
+        setSizeUndefined();
+        setWidth(100, Unit.PERCENTAGE);
 
         setSelectable(true);
         setMultiSelect(true);
         setImmediate(true);
         setSelectable(false);
 
+        addStyleName("surveillance-view");
+
         addGeneratedColumn("", new ColumnGenerator() {
             @Override
             public Object generateCell(Table table, final Object itemId, Object columnId) {
-                return itemId;
+                Label label = new Label((String) itemId);
+                label.setSizeFull();
+                label.addStyleName("clear");
+                return label;
             }
         });
 
         for (ColumnDef columnDef : view.getColumns()) {
             addGeneratedColumn(columnDef.getLabel(), new Table.ColumnGenerator() {
                 public Object generateCell(Table source, final Object itemId, Object columnId) {
-                    Label label = new Label("&nbsp;&nbsp;&nbsp;bla");
-                    label.setContentMode(ContentMode.HTML);
+                    Label label = new Label("Bla");
+                    label.setSizeFull();
+                    label.addStyleName("normal");
                     return label;
                 }
             });

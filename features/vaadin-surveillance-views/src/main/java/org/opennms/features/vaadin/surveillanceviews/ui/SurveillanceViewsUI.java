@@ -52,10 +52,17 @@ public class SurveillanceViewsUI extends UI {
         VerticalLayout rootLayout = new VerticalLayout();
         rootLayout.setSizeFull();
         rootLayout.setSpacing(true);
-        rootLayout.addComponent(new Label("Hello SurveillanceViewsUI"));
+
+        rootLayout.addComponent(new Label("Header"));
 
         View view = SurveillanceViewProvider.getInstance().getView("default");
-        rootLayout.addComponent(new SurveillanceViewTable(view));
+
+        SurveillanceViewTable surveillanceViewTable = new SurveillanceViewTable(view);
+
+        rootLayout.addComponent(surveillanceViewTable);
+
+        rootLayout.addComponent(new Label("Footer"));
+        
         setContent(rootLayout);
     }
 }

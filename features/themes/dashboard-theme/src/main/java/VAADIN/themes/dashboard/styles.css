@@ -1,43 +1,8 @@
 @import "../runo/legacy-styles.css";
 
-.dashboard .v-portlet-slot {
-    background: #fff !important;
-    -webkit-border-radius: 4px !important;
-    -moz-border-radius: 4px !important;
-    border-radius: 4px !important;
-    -webkit-box-shadow: 0 2px 3px rgba(0, 0, 0, 0.14), 0 0 0 1px rgba(0, 0, 0, 0.07) !important;
-    -moz-box-shadow: 0 2px 3px rgba(0, 0, 0, 0.14), 0 0 0 1px rgba(0, 0, 0, 0.07) !important;
-    box-shadow: 0 2px 3px rgba(0, 0, 0, 0.14), 0 0 0 1px rgba(0, 0, 0, 0.07) !important;
-}
-
-.dashboard .v-portlet-header {
-    color: #fff !important;
-    text-shadow: 0 1px 1px #000 !important;
-    background: #5d6167 !important;
-    background: -moz-linear-gradient(top, #5d6167 0%, #393939 100%) !important;
-    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #5d6167), color-stop(100%, #393939)) !important;
-    background: -webkit-linear-gradient(top, #5d6167 0%, #393939 100%) !important;
-    background: -o-linear-gradient(top, #5d6167 0%, #393939 100%) !important;
-    background: -ms-linear-gradient(top, #5d6167 0%, #393939 100%) !important;
-}
-
-.dashboard .v-portlet-content-wrapper {
-    border: none !important;
-}
-
-.dashboard .v-portlet .v-portlet-header-button {
-    margin-right: 3px;
-    border-radius: 3px;
-}
-
-.dashboard.v-app {
-    background: #dfe0e1;
-    background: -moz-linear-gradient(top, #d8d9da 0%, #e6e7e8 10%, #e0e1e2 100%);
-    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #d8d9da), color-stop(10%, #e6e7e8), color-stop(100%, #e0e1e2));
-    background: -webkit-linear-gradient(top, #d8d9da 0%, #e6e7e8 10%, #e0e1e2 100%);
-    background: -o-linear-gradient(top, #d8d9da 0%, #e6e7e8 10%, #e0e1e2 100%);
-    background: -ms-linear-gradient(top, #d8d9da 0%, #e6e7e8 10%, #e0e1e2 100%);
-}
+/*  --------------------------------------------------
+    :: Ops Board styles
+    -------------------------------------------------- */
 
 .debug {
     border: 1px dashed red;
@@ -101,39 +66,36 @@
     vertical-align: top;
 }
 
-.v-table-cell-wrapper { line-height: normal; padding: 3px; }
-
 /*  --------------------------------------------------
     :: Alarm/Node Table Rows (Vaadin Widgets)
     -------------------------------------------------- */
 
-/**
- * Table row CSS. Coordinate these class names with the values inside:
- *
- * org.opennms.features.topology.app.internal.support.AlarmTableCellStyleGenerator
- */
-
-/* The padding: 20px is handled by adding &nbsp;s with a ColumnGenerator */
-.v-table-cell-content-bright { /* padding-left: 20px; */ background-position: top left; background-repeat: repeat-y; }
+.v-table-cell-content-bright {
+    background-position: top left;
+    background-repeat: repeat-y;
+}
 
 .v-table-row-alarm-minor,
 .v-table-row-alarm-minor-noack {
     border-top: 2px solid #FF9900 !important;
 }
+
 .v-table-row-alarm-minor-noack {
     font-weight: bold;
 }
+
 .v-table-row-alarm-minor.v-table-row,
 .v-table-row-alarm-minor-noack.v-table-row {
     background-color: #FFEBCD;
 }
+
 .v-table-row-alarm-minor.v-table-row-odd,
 .v-table-row-alarm-minor-noack.v-table-row-odd {
     background-color: #F8E4C6;
 }
+
 .v-table-row-alarm-minor .v-table-cell-content-bright,
-.v-table-row-alarm-minor-noack .v-table-cell-content-bright
-{
+.v-table-row-alarm-minor-noack .v-table-cell-content-bright {
     background-image: url(../../../images/bgMinor.png);
 }
 
@@ -141,20 +103,23 @@
 .v-table-row-alarm-critical-noack {
     border-top: 2px solid #CC0000 !important;
 }
+
 .v-table-row-alarm-critical-noack {
     font-weight: bold;
 }
+
 .v-table-row-alarm-critical.v-table-row,
 .v-table-row-alarm-critical-noack.v-table-row {
     background-color: #F5CDCD;
 }
+
 .v-table-row-alarm-critical.v-table-row-odd,
 .v-table-row-alarm-critical-noack.v-table-row-odd {
     background-color: #EEC6C6;
 }
+
 .v-table-row-alarm-critical .v-table-cell-content-bright,
-.v-table-row-alarm-critical-noack .v-table-cell-content-bright
-{
+.v-table-row-alarm-critical-noack .v-table-cell-content-bright {
     background-image: url(../../../images/bgCritical.png);
 }
 
@@ -162,20 +127,23 @@
 .v-table-row-alarm-major-noack {
     border-top: 2px solid #FF3300 !important;
 }
+
 .v-table-row-alarm-major-noack {
     font-weight: bold;
 }
+
 .v-table-row-alarm-major.v-table-row,
 .v-table-row-alarm-major-noack.v-table-row {
     background-color: #FFD7CD;
 }
+
 .v-table-row-alarm-major.v-table-row-odd,
 .v-table-row-alarm-major-noack.v-table-row-odd {
     background-color: #F8D0C6;
 }
+
 .v-table-row-alarm-major .v-table-cell-content-bright,
-.v-table-row-alarm-major-noack .v-table-cell-content-bright
-{
+.v-table-row-alarm-major-noack .v-table-cell-content-bright {
     background-image: url(../../../images/bgMajor.png);
 }
 
@@ -183,20 +151,23 @@
 .v-table-row-alarm-warning-noack {
     border-top: 2px solid #FFCC00 !important;
 }
+
 .v-table-row-alarm-warning-noack {
     font-weight: bold;
 }
+
 .v-table-row-alarm-warning.v-table-row,
 .v-table-row-alarm-warning-noack.v-table-row {
     background-color: #FFF5CD;
 }
+
 .v-table-row-alarm-warning.v-table-row-odd,
 .v-table-row-alarm-warning-noack.v-table-row-odd {
     background-color: #F8EEC6;
 }
+
 .v-table-row-alarm-warning .v-table-cell-content-bright,
-.v-table-row-alarm-warning-noack .v-table-cell-content-bright
-{
+.v-table-row-alarm-warning-noack .v-table-cell-content-bright {
     background-image: url(../../../images/bgWarning.png);
 }
 
@@ -204,20 +175,23 @@
 .v-table-row-alarm-indeterminate-noack {
     border-top: 2px solid #999000 !important;
 }
+
 .v-table-row-alarm-indeterminate-noack {
     font-weight: bold;
 }
+
 .v-table-row-alarm-indeterminate.v-table-row,
 .v-table-row-alarm-indeterminate-noack.v-table-row {
     background-color: #EBEBCD;
 }
+
 .v-table-row-alarm-indeterminate.v-table-row-odd,
 .v-table-row-alarm-indeterminate-noack.v-table-row-odd {
     background-color: #E4E4C6;
 }
+
 .v-table-row-alarm-indeterminate .v-table-cell-content-bright,
-.v-table-row-alarm-indeterminate-noack .v-table-cell-content-bright
-{
+.v-table-row-alarm-indeterminate-noack .v-table-cell-content-bright {
     background-image: url(../../../images/bgIndeterminate.png);
 }
 
@@ -225,20 +199,23 @@
 .v-table-row-alarm-normal-noack {
     border-top: 2px solid #336600 !important;
 }
+
 .v-table-row-alarm-normal-noack {
     font-weight: bold;
 }
+
 .v-table-row-alarm-normal.v-table-row,
 .v-table-row-alarm-normal-noack.v-table-row {
     background-color: #D7E1CD;
 }
+
 .v-table-row-alarm-normal.v-table-row-odd,
 .v-table-row-alarm-normal-noack.v-table-row-odd {
     background-color: #D0DAC6;
 }
+
 .v-table-row-alarm-normal .v-table-cell-content-bright,
-.v-table-row-alarm-normal-noack .v-table-cell-content-bright
-{
+.v-table-row-alarm-normal-noack .v-table-cell-content-bright {
     background-image: url(../../../images/bgNormal.png);
 }
 
@@ -246,78 +223,190 @@
 .v-table-row-alarm-cleared-noack {
     border-top: 2px solid #999 !important;
 }
+
 .v-table-row-alarm-cleared-noack {
     font-weight: bold;
 }
+
 .v-table-row-alarm-cleared.v-table-row,
 .v-table-row-alarm-cleared-noack.v-table-row {
     background-color: #EEEEEE;
 }
+
 .v-table-row-alarm-cleared.v-table-row-odd,
 .v-table-row-alarm-cleared-noack.v-table-row-odd {
     background-color: #E7E7E7;
 }
+
 .v-table-row-alarm-cleared .v-table-cell-content-bright,
-.v-table-row-alarm-cleared-noack .v-table-cell-content-bright
-{
+.v-table-row-alarm-cleared-noack .v-table-cell-content-bright {
     background-image: url(../../../images/bgCleared.png);
 }
 
+/*  --------------------------------------------------
+    :: Alarm dashlet styles
+    -------------------------------------------------- */
 
 table.onms {
     border-collapse: collapse;
     width: 100%;
     margin-top: 0;
     margin-bottom: 10px;
-    color:#000000;
+    color: #000000;
 }
 
-table.o-box{ margin-bottom:0px; }
+table.o-box {
+    margin-bottom: 0px;
+}
 
-td.bright { padding-left: 20px; background-position: top left; background-repeat: repeat-y; }
+td.bright {
+    padding-left: 20px;
+    background-position: top left;
+    background-repeat: repeat-y;
+}
 
-tr.CellStatus td.onms { padding-left: 20px; background-position: top left; background-repeat: repeat-y; }
-tr.CellStatus td.Critical{ background-color: #F5CDCD; border-top: 2px solid #CC0000 !important; background-image: url(../../../images/bgCritical.png); }
-tr.CellStatus td.Major{ background-color: #FFD7CD; border-top: 2px solid #FF3300 !important; background-image: url(../../../images/bgMajor.png); }
-tr.CellStatus td.Minor{ background-color: #FFEBCD; border-top: 2px solid #FF9900 !important; background-image: url(../../../images/bgMinor.png); }
-tr.CellStatus td.Warning{ background-color: #FFF5CD; border-top: 2px solid #FFCC00 !important; background-image: url(../../../images/bgWarning.png); }
-tr.CellStatus td.Indeterminate{ background-color: #EBEBCD; border-top: 2px solid #999000 !important; background-image: url(../../../images/bgIndeterminate.png); }
-tr.CellStatus td.Normal{ background-color: #D7E1CD; border-top: 2px solid #336600 !important; background-image: url(../../../images/bgNormal.png); }
-tr.CellStatus td.Cleared { background-color: #EEE; border-top: 2px solid #999 !important; background-image: url(../../../images/bgCleared.png); }
-tr.CellStatus td.nobright { background-image: none;}
+tr.CellStatus td.onms {
+    padding-left: 20px;
+    background-position: top left;
+    background-repeat: repeat-y;
+}
 
-tr.Critical td.onms { background-color: #F5CDCD; }
-tr.Critical td.divider { border-top: 2px solid #CC0000 !important; }
-tr.Critical td.bright { background-image: url(../../../images/bgCritical.png); }
+tr.CellStatus td.Critical {
+    background-color: #F5CDCD;
+    border-top: 2px solid #CC0000 !important;
+    background-image: url(../../../images/bgCritical.png);
+}
 
-tr.Major td.onms { background-color: #FFD7CD; }
-tr.Major td.divider { border-top: 2px solid #FF3300 !important; }
-tr.Major td.bright { background-image: url(../../../images/bgMajor.png); }
+tr.CellStatus td.Major {
+    background-color: #FFD7CD;
+    border-top: 2px solid #FF3300 !important;
+    background-image: url(../../../images/bgMajor.png);
+}
 
-tr.Minor td.onms { background-color: #FFEBCD; }
-tr.Minor td.divider { border-top: 2px solid #FF9900 !important; }
-tr.Minor td.bright { background-image: url(../../../images/bgMinor.png); }
+tr.CellStatus td.Minor {
+    background-color: #FFEBCD;
+    border-top: 2px solid #FF9900 !important;
+    background-image: url(../../../images/bgMinor.png);
+}
 
-tr.Warning td.onms { background-color: #FFF5CD; }
-tr.Warning td.divider { border-top: 2px solid #FFCC00 !important; }
-tr.Warning td.bright { background-image: url(../../../images/bgWarning.png); }
+tr.CellStatus td.Warning {
+    background-color: #FFF5CD;
+    border-top: 2px solid #FFCC00 !important;
+    background-image: url(../../../images/bgWarning.png);
+}
 
-tr.Indeterminate td.onms { background-color: #EBEBCD; }
-tr.Indeterminate td.divider { border-top: 2px solid #999900 !important; }
-tr.Indeterminate td.bright { background-image: url(../../../images/bgIndeterminate.png); }
+tr.CellStatus td.Indeterminate {
+    background-color: #EBEBCD;
+    border-top: 2px solid #999000 !important;
+    background-image: url(../../../images/bgIndeterminate.png);
+}
 
-tr.Normal td.onms { background-color: #D7E1CD; }
-tr.Normal td.divider { border-top: 2px solid #336600 !important; }
-tr.Normal td.bright { background-image: url(../../../images/bgNormal.png); }
+tr.CellStatus td.Normal {
+    background-color: #D7E1CD;
+    border-top: 2px solid #336600 !important;
+    background-image: url(../../../images/bgNormal.png);
+}
 
-tr.Cleared td.onms { background-color: #EEE; }
-tr.Cleared td.divider { border-top: 2px solid #999 !important; }
-tr.Cleared td.bright { background-image: url(../../../images/bgCleared.png); }
+tr.CellStatus td.Cleared {
+    background-color: #EEE;
+    border-top: 2px solid #999 !important;
+    background-image: url(../../../images/bgCleared.png);
+}
 
-td.onms { font-size: 100%; }
+tr.CellStatus td.nobright {
+    background-image: none;
+}
+
+tr.Critical td.onms {
+    background-color: #F5CDCD;
+}
+
+tr.Critical td.divider {
+    border-top: 2px solid #CC0000 !important;
+}
+
+tr.Critical td.bright {
+    background-image: url(../../../images/bgCritical.png);
+}
+
+tr.Major td.onms {
+    background-color: #FFD7CD;
+}
+
+tr.Major td.divider {
+    border-top: 2px solid #FF3300 !important;
+}
+
+tr.Major td.bright {
+    background-image: url(../../../images/bgMajor.png);
+}
+
+tr.Minor td.onms {
+    background-color: #FFEBCD;
+}
+
+tr.Minor td.divider {
+    border-top: 2px solid #FF9900 !important;
+}
+
+tr.Minor td.bright {
+    background-image: url(../../../images/bgMinor.png);
+}
+
+tr.Warning td.onms {
+    background-color: #FFF5CD;
+}
+
+tr.Warning td.divider {
+    border-top: 2px solid #FFCC00 !important;
+}
+
+tr.Warning td.bright {
+    background-image: url(../../../images/bgWarning.png);
+}
+
+tr.Indeterminate td.onms {
+    background-color: #EBEBCD;
+}
+
+tr.Indeterminate td.divider {
+    border-top: 2px solid #999900 !important;
+}
+
+tr.Indeterminate td.bright {
+    background-image: url(../../../images/bgIndeterminate.png);
+}
+
+tr.Normal td.onms {
+    background-color: #D7E1CD;
+}
+
+tr.Normal td.divider {
+    border-top: 2px solid #336600 !important;
+}
+
+tr.Normal td.bright {
+    background-image: url(../../../images/bgNormal.png);
+}
+
+tr.Cleared td.onms {
+    background-color: #EEE;
+}
+
+tr.Cleared td.divider {
+    border-top: 2px solid #999 !important;
+}
+
+tr.Cleared td.bright {
+    background-image: url(../../../images/bgCleared.png);
+}
+
+td.onms {
+    font-size: 100%;
+}
 
 th.onms {
-    border:1px solid #999;
+    border: 1px solid #999;
     padding: 4px 5px;
     background-color: #444;
     font-weight: bold;
@@ -326,10 +415,10 @@ th.onms {
 }
 
 td.onms div.clip {
-    margin:0;
-    padding:0;
-    height:1.5em;
-    overflow:hidden;
+    margin: 0;
+    padding: 0;
+    height: 1.5em;
+    overflow: hidden;
 }
 
 td.onms {
@@ -339,77 +428,111 @@ td.onms {
     font-size: 100%;
 }
 
-/*
+/*  --------------------------------------------------
+    :: Surveillance View styles
+    -------------------------------------------------- */
+
+.surveillance-view .v-table-cell-content {
+    padding: 0px 0px 0px 0px;
+}
+
 .v-table-cell-content-marked {
     background: #57a7ed;
     color: #fff;
-}
-*/
-
-.v-table-cell-content-marked {
-    border: 1px solid #999999;
+    padding: 0px 0px 0px 0px;
 }
 
-.v-table-cell-wrapper { line-height: normal; padding: 3px 0px 3px 0px; }
+.surveillance-view .v-table-caption-container {
+    overflow: visible;
+    color: #393a3c;
+    font-size: 15px;
+    padding: 9px 0px 9px 0px;
+    text-shadow: #ffffff 0 1px 0;
+    margin-left: 4px;
+}
 
-.v-table-cell-content-critical {
+.surveillance-view .v-table-cell-wrapper {
+    line-height: normal;
+    padding: 0px 0px 0px 0px;
+}
+
+.surveillance-view .clear {
+    color: black;
+    background-color: #ffffff;
+    border: 1px 0 solid #999999;
+    line-height: 30px;
+    padding-left: 4px;
+    td-padding-left: 4px;
+}
+
+.surveillance-view .critical {
     color: black;
     background-color: #f5cdcd;
     border: 1px 0 solid #999999;
     background-image: url(../../../../images/bgCritical.png);
     background-repeat: repeat-y;
     background-position: left top;
+    line-height: 30px;
 }
-.v-table-cell-content-major {
+
+.surveillance-view .major {
     color: black;
     background-color: #ffd7cd;
     border: 1px 0 solid #999999;
     background-image: url(../../../../images/bgMajor.png);
     background-repeat: repeat-y;
     background-position: left top;
+    line-height: 30px;
 }
 
-.v-table-cell-content-minor {
+.surveillance-view .minor {
     color: black;
     background-color: blanchedalmond;
     border: 1px 0 solid #999999;
     background-image: url(../../../../images/bgMinor.png);
     background-repeat: repeat-y;
     background-position: left top;
+    line-height: 30px;
 }
 
-.v-table-cell-content-warning {
+.surveillance-view .warning {
     color: black;
     background-color: #fff5cd;
     border: 1px 0 solid #999999;
     background-image: url(../../../../images/bgWarning.png);
     background-repeat: repeat-y;
     background-position: left top;
+    line-height: 30px;
 }
 
-.v-table-cell-content-indeterminate {
+.surveillance-view .indeterminate {
     color: black;
     background-color: #ebebcd;
     border: 1px 0 solid #999999;
     background-image: url(../../../../images/bgIndeterminate.png);
     background-repeat: repeat-y;
     background-position: left top;
+    line-height: 30px;
 }
 
-.v-table-cell-content-normal {
+.surveillance-view .normal {
     color: black;
     background-color: #d7e1cd;
     border: 1px 0 solid #999999;
     background-image: url(../../../../images/bgNormal.png);
     background-repeat: repeat-y;
     background-position: left top;
+    line-height: 30px;
+    padding-left: 18px;
+    td-padding-left: 18px;
 }
 
-.v-table-cell-content-cleared {
+.surveillance-view .cleared {
     color: black;
     background-color: #eeeeee;
     border: 1px 0 solid #999999;
     background-image: url(../../../../images/bgCleared.png);
     background-repeat: repeat-y;
     background-position: left top;
+    line-height: 30px;
 }
