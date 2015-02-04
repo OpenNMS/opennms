@@ -405,9 +405,9 @@ public class DefaultPollContext implements PollContext, EventListener {
                 LOG.trace("onEvent: processing pending pollEvent...: {}", pollEvent);
                 try {
                     pollEvent.processPending();
+                    it.remove();
                 } catch (DataRetrievalFailureException ex) {
                     LOG.error("onEvent: process pending failed on: {}", pollEvent, ex);
-                    // Don't remove the pending poll event if processPending() failed
                     continue;
                 }
                 LOG.trace("onEvent: processing of pollEvent completed.: {}", pollEvent);
