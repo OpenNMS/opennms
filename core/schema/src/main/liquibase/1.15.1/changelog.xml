@@ -9,7 +9,7 @@
       Partial fix for issue NMS-7394:
         Remove any duplicate outages.
   -->
-  <changeSet author="jwhite" id="1.16.0-removeDuplicateOutages">
+  <changeSet author="jwhite" id="1.15.1-removeDuplicateOutages">
     <sql>
 DELETE FROM outages WHERE ifregainedservice is null AND outageid NOT IN (
   SELECT MIN(o.outageid)
@@ -31,7 +31,7 @@ DELETE FROM outages WHERE ifregainedservice is null AND outageid NOT IN (
       does not currently support partial indexes.
       See https://liquibase.jira.com/browse/CORE-47.
   -->
-  <changeSet author="jwhite" id="1.16.0-enforceUniqueOutages">
+  <changeSet author="jwhite" id="1.15.1-enforceUniqueOutages">
     <sql>
 CREATE UNIQUE INDEX
   one_outstanding_outage_per_service_idx
