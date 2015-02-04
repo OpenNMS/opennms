@@ -119,22 +119,33 @@ public class QueryManagerDaoImpl implements QueryManager {
 
     /** {@inheritDoc} */
     @Override
-    public void resolveOutage(int nodeId, String ipAddr, String svcName, int regainedEventId, Date time) {
-        LOG.info("resolving outage for {}:{}:{} with resolution {}:{}", nodeId, ipAddr, svcName, regainedEventId, time);
+    public Integer resolveOutagePendingRegainEventId(int nodeId, String ipAddr, String svcName, Date regainedTime) {
+        LOG.info("resolving outage for {}:{}:{} @ {}", nodeId, ipAddr, svcName, regainedTime);
         int serviceId = m_serviceTypeDao.findByName(svcName).getId();
-        
-        OnmsEvent event = m_eventDao.get(regainedEventId);
-        OnmsMonitoredService service = m_monitoredServiceDao.get(nodeId, InetAddressUtils.addr(ipAddr), serviceId);
 
-        // Update the outage
+        OnmsMonitoredService service = m_monitoredServiceDao.get(nodeId, InetAddressUtils.addr(ipAddr), serviceId);
         OnmsOutage outage = m_outageDao.currentOutageForService(service);
         if (outage == null) {
-            LOG.warn("Cannot find outage for service: {}", service);
-        } else {
-            outage.setServiceRegainedEvent(event);
-            outage.setIfRegainedService(new Timestamp(time.getTime()));
-            m_outageDao.saveOrUpdate(outage);
+            return null;
         }
+
+        // Update the outage
+        outage.setIfRegainedService(new Timestamp(regainedTime.getTime()));
+        m_outageDao.saveOrUpdate(outage);
+        return outage.getId();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void updateResolvedOutageWithEventId(int outageId, int regainedEventId) {
+        LOG.info("updating resolved outage {} with event id {}", outageId, regainedEventId);
+
+        OnmsEvent event = m_eventDao.get(regainedEventId);
+        OnmsOutage outage = m_outageDao.get(outageId);
+
+        // Update the outage
+        outage.setServiceRegainedEvent(event);
+        m_outageDao.saveOrUpdate(outage);
     }
 
     /** {@inheritDoc} */
@@ -330,5 +341,4 @@ public class QueryManagerDaoImpl implements QueryManager {
             m_monitoredServiceDao.save(service);
         }
     }
-
 }
