@@ -69,8 +69,8 @@
             <repository>mvn:org.opennms.features/vaadin-dashboard/${project.version}/xml/features</repository>
             <repository>mvn:org.opennms.features.vaadin-dashlets/dashlet-features/${project.version}/xml</repository>
             
-            
-            <repository>mvn:org.opennms.features.correlator/correlator-feature/${project.version}/xml/features</repository>
+            <!-- correlator -->
+            <!-- repository>mvn:org.opennms.features.correlator/correlator-feature/${project.version}/xml/features</repository -->
           
           </repositories>
 
@@ -107,7 +107,7 @@
             <feature>vaadin-dashboard</feature>
             <feature>vaadin-node-maps</feature>
             <feature>vaadin-snmp-events-and-metrics</feature>
-            <feature>correlator-feature</feature>
+            <!-- feature>correlator-feature</feature -->
           </features>
         </configuration>
       </plugin>

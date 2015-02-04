@@ -22,27 +22,59 @@
  *
  * For more information contact: OpenNMS(R) Licensing <license@opennms.org>
  * http://www.opennms.org/ http://www.opennms.com/
- ******************************************************************************
+ * *****************************************************************************
  */
 package org.opennms.correlator;
 
-import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.events.api.EventProxy;
+import org.opennms.netmgt.events.api.annotations.EventHandler;
+import org.opennms.netmgt.events.api.annotations.EventListener;
+
+import org.opennms.netmgt.xml.event.Event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * @author Markus Neumann
  */
+@EventListener(name = "Correlator", logPrefix = "Correlator-LogPrefix")
 public class Correlator {
 
-    private static Logger logger = LoggerFactory.getLogger(Correlator.class);
-    private NodeDao m_nodeDao;
+    private static final Logger LOGGER = LoggerFactory.getLogger(Correlator.class);
+    private EventProxy eventProxy;
 
-    public Correlator() {
-        logger.debug("Correlator constructor!!!");
+    public Correlator(EventProxy eventProxy) {
+
+        //TODO DEBUG REMOVE  SystemOut
+        System.out.println("DEBUG testing correlator");
+        LOGGER.debug("DEBUG testing correlator");
+
+        if (eventProxy == null) {
+            throw new RuntimeException("eventProxy cannot be null.");
+        }
+        this.eventProxy = eventProxy;
     }
 
-    public void setNodeDao(NodeDao nodeDao) {
-        m_nodeDao = nodeDao;
+    @EventHandler(uei = "uei.opennms.org/nodes/nodeDown")
+    public void handleEventNodeDown(Event e) {
+        //TODO DEBUG
+        LOGGER.debug("Received nodeDown configuration event: {}", e);
+        System.out.println("DEBUG event nodeDown Received: {}" + e);
+    }
+    
+    @EventHandler(uei = "*")
+    public void handleAllEvent(Event e) {
+        //TODO DEBUG
+        LOGGER.info("Received reload configuration event: {}", e);
+        System.out.println("DEBUG event gateway Received reload configuration event: {}" + e);
+        LOGGER.debug("DEBUG event gateway Received reload configuration event: {}" + e);
+    }
+
+    public EventProxy getEventProxy() {
+        return eventProxy;
+    }
+
+    public void setEventProxy(EventProxy eventProxy) {
+        this.eventProxy = eventProxy;
     }
 }

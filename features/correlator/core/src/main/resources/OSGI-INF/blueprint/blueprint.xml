@@ -1,10 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0" xsi:schemaLocation=" http://www.osgi.org/xmlns/blueprint/v1.0.0 http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/aries/tags/blueprint-0.3.1/blueprint-core/src/main/resources/org/apache/aries/blueprint/ext/blueprint-ext.xsd">
  
-    <reference id="nodeDao" interface="org.opennms.netmgt.dao.api.NodeDao" />
+    <reference id="eventProxy" interface="org.opennms.netmgt.model.events.EventProxy" availability="mandatory" />
     
-    <bean id="controller" class="org.opennms.correlator.Correlator">
-        <property name="nodeDao" ref="nodeDao" />
+    <bean id="correlator" class="org.opennms.correlator.Correlator">
+        <argument ref="eventProxy" />
     </bean>
-    
+
+    <!-- there might be an additional bean required -->
+    <!-- receives events from OpenNMS -->
+    <reference id="eventSubscriptionService" interface="org.opennms.netmgt.model.events.EventSubscriptionService" availability="mandatory" />
+
+    <!-- note init and destroy methods specified because OSGi and not a Spring environment -->
+    <bean id="eventGatewayEventListenerAdapter" class="org.opennms.netmgt.model.events.AnnotationBasedEventListenerAdapter" init-method="afterPropertiesSet"
+        destroy-method="destroy">
+        <property name="annotatedListener" ref="correlator" />
+        <property name="eventSubscriptionService" ref="eventSubscriptionService" />
+    </bean>                
 </blueprint>
