@@ -164,8 +164,8 @@ $(document).ready(function() {
 <div class="row">
 
 	<div class="col-md-10">
-	<c:forEach var="resultSet" items="${results.graphResultSets}" varStatus="loop">
-    <div class="panel panel-default text-center" id="panel-resource${loop.index}">
+	<c:forEach var="resultSet" items="${results.graphResultSets}">
+    <div class="panel panel-default text-center" id="panel-resource${resultSet.index}">
       <div class="panel-heading">
         <h3 class="panel-title">
             ${resultSet.resource.parent.resourceType.label}:
@@ -291,11 +291,18 @@ $(document).ready(function() {
 
 	<div class="col-md-2">
 	<div id="results-sidebar" class="resource-graphs-sidebar hidden-print hidden-xs hidden-sm sidebar-fixed">
-		<ul class="nav nav-stacked">
-		<c:forEach var="resultSet" items="${results.graphResultSets}" varStatus="loop">
-		<li><a href="${requestScope['javax.servlet.forward.request_uri']}?${pageContext.request.queryString}#panel-resource${loop.index}" data-target="#panel-resource${loop.index}">${resultSet.resource.label}</a></li> 
-		</c:forEach>
-		</ul>
+        <ul class="nav nav-stacked">
+            <c:forEach var="resourceType" items="${results.resourceTypes}">
+            <li>
+                <a href="${requestScope['javax.servlet.forward.request_uri']}?${pageContext.request.queryString}#panel-resource${results.graphResultMap[resourceType][0].index}" data-target="#panel-resource${results.graphResultMap[resourceType][0].index}">${resourceType}</a>
+                <ul class="nav">
+                    <c:forEach var="resultSet" items="${results.graphResultMap[resourceType]}">
+                    <li><a href="${requestScope['javax.servlet.forward.request_uri']}?${pageContext.request.queryString}#panel-resource${resultSet.index}" data-target="#panel-resource${resultSet.index}">${resultSet.resource.label}</a></li> 
+                    </c:forEach>
+                </ul>
+            </li>
+            </c:forEach>
+        </ul>
 	</div>
 
 </div> <!-- row -->
