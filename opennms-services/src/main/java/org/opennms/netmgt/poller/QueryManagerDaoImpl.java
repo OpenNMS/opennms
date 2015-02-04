@@ -30,6 +30,8 @@ package org.opennms.netmgt.poller;
 
 import static org.opennms.core.utils.InetAddressUtils.addr;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.util.Arrays;
@@ -317,28 +319,17 @@ public class QueryManagerDaoImpl implements QueryManager {
             LOG.info("Calling closeOutagesForService: {}",outage);
             
         }
-        
-        
-        
     }
 
     @Override
     public void updateServiceStatus(int nodeId, String ipAddr, String serviceName, String status) {
-        Criteria criteria = new Criteria(OnmsMonitoredService.class);
-        criteria.setAliases(Arrays.asList(new Alias[] {
-            new Alias("monitoredService.ipInterface", "ipInterface", JoinType.LEFT_JOIN),
-            new Alias("monitoredService.serviceType", "serviceType", JoinType.LEFT_JOIN),
-            new Alias("ipInterface.node", "node", JoinType.LEFT_JOIN)
-        }));
-        criteria.addRestriction(new EqRestriction("node.id", nodeId));
-        criteria.addRestriction(new EqRestriction("ipInterface.ipAddress", addr(ipAddr)));
-        criteria.addRestriction(new EqRestriction("serviceType.name", serviceName));
-        criteria.addRestriction(new NullRestriction("ifRegainedService"));
-        List<OnmsMonitoredService> services = m_monitoredServiceDao.findMatching(criteria);
-        
-        for (OnmsMonitoredService service : services) {
+        try {
+            OnmsMonitoredService service = m_monitoredServiceDao.get(nodeId, InetAddress.getByName(ipAddr), serviceName);
             service.setStatus(status);
-            m_monitoredServiceDao.save(service);
+            m_monitoredServiceDao.saveOrUpdate(service);
+        } catch (UnknownHostException e) {
+            LOG.error("Failed to set the status for service named {} on node id {} and interface {} to {}.",
+                    serviceName, nodeId,  ipAddr, status, e);
         }
     }
 }
