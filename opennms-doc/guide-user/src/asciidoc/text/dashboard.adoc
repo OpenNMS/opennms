@@ -34,7 +34,7 @@ All other components display information based on the _Surveillance View_.
 
 The _Surveillance View_ has multiple functions.
 
-* Allows to model model the _monitoring context_ and shows service and node _Outages_ in compact matrix view.
+* Allows to model the _monitoring context_ and shows service and node _Outages_ in compact matrix view.
 * Allows to limit the number of information in the _Dashboard_ by selecting rows, columns and cells.
 
 The following screenshots show all possible selections in the _Surveillance View_.
