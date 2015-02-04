@@ -781,6 +781,10 @@ Do not confuse it with the Bootstrap .pagination class.
   margin-top: 5px;
 }
 
+/* Add a margin to the left of the elements equilavent to one &nbsp */
+.space-on-the-left {
+  margin-left: 3px;
+}
 
 /* --------------------------------------------------
     :: Styles for DBIDs, foreign-source, and foreign-ID
