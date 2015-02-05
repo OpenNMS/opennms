@@ -28,7 +28,7 @@ Bootstrap Theme Specific Stylesheet
 body {
 	//background:url(../images/textures/debut_dark.png);
 	background-color: white;
-	font: $font-size-small 'Open Sans', Arial, sans-serif;
+	font: 'Open Sans', Arial, sans-serif;
 }
 body.fixed-nav {
 	padding-top: $navbar-height !important;
@@ -364,7 +364,6 @@ a.list-group-item.active:focus {
 .dropdown-menu>.active>a:focus {
 	color: white;
 	background-color: $color_tundora_approx;
-	border-color: $color_suva_gray_approx;
 	padding: 5px;
 	min-width: 50px;
 }
@@ -400,7 +399,7 @@ a.list-group-item.active:focus {
 .navbar-brand {
 	line-height: $navbar-logo-height; /* same as the logo image */
 	height: $navbar-logo-height;
-	padding: 2px !important;
+	padding: 10px !important;
 	/*
 	padding-left: 0;
 	padding-right: 0;
@@ -428,27 +427,34 @@ a.list-group-item.active:focus {
 
 @mixin navbar-inverse-color($text-color) {
 	color: $text-color;
-	text-shadow: rgba(0,0,0,0.5) 1px 1px 1px;
 }
 
 $header-background-image: url("../images/headerbg.png") !default;
 
 .navbar-inverse, .navbar-collapse {
-	background-image: $header-background-image;
-	background-repeat: repeat-x;
+    background-color: $color_alto_approx;
+    border-color: $color_alto_approx;
 }
 
 .navbar-inverse .navbar-nav > li {
 	padding: 5px 10px;
 	bottom: 0;
-	@include navbar-inverse-color(white);
+	@include navbar-inverse-color(black);
 	border: 1px solid transparent;
 	a {
 		line-height: $line-height-computed;
 		padding: 0;
-		@include navbar-inverse-color(white);
+		@include navbar-inverse-color(black);
 		background-color: transparent;
 	}
+
+    a:focus {
+      color: $color_lima_approx;
+    }
+
+    a:hover {
+      color: $color_lima_approx;
+    }
 
 	&.dropdown.open {
 		background-color: transparent;
@@ -462,10 +468,6 @@ $header-background-image: url("../images/headerbg.png") !default;
 	display: block !important;
 	margin-right: 0;
 	padding: 5px;
-	@include navbar-inverse-color(white);
-	a {
-		@include navbar-inverse-color(white);
-	}
 	h3 {
 		margin: 0;
 		font-size: $font-size-large !important;
@@ -538,8 +540,8 @@ $header-background-image: url("../images/headerbg.png") !default;
 .panel-heading {
 	border-top-left-radius: 0;
 	border-top-right-radius: 0;
-	background-image: url(../images/headingbg.png);
-	background-repeat: repeat-x;
+    background-color: $color_lima_approx !important;
+    border-color: $color_lima_approx !important;
 	background-position: center center;
 	padding: $panel-heading-padding;
 }
@@ -548,6 +550,11 @@ $header-background-image: url("../images/headerbg.png") !default;
 	color: white !important;
 	font-size: $font-size-base !important;
 	font-weight: bold;
+}
+
+.panel-title > a:hover {
+  color: $color_alto_approx;
+  text-decoration: none;
 }
 
 .panel-body {
@@ -650,13 +657,8 @@ $header-background-image: url("../images/headerbg.png") !default;
 .table > tr > th,
 .table > tbody > tr > th,
 .table > thead > tr > th {
-	color: white;
-	background-color: $color_tundora_approx;
+	background-color: $color_celeste_approx;
 	border-bottom: 0;
-	a {
-		color: white;
-		text-decoration: underline;
-	}
 }
 
 /* tables without borders */
@@ -674,16 +676,12 @@ $header-background-image: url("../images/headerbg.png") !default;
 	padding: 30px 2px 2px 2px;
 	margin-left: -15px;
 	margin-right: -15px;
-	background-color: white;
-	background-image: url(../images/footerbg.png);
-	background-repeat: repeat-x;
+	background-color: $color_alto_approx;
 }
 
 .container, .container-fluid {
-	padding-top: 15px;
+	padding-top: 20px;
 	background-color: $color_gallery_approx;
-	background-image: url(../images/mainbg.png);
-	background-repeat: repeat-x;
 	.login {
 		padding-top: 30px;
 	}
