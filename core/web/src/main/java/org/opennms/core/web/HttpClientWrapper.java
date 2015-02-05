@@ -304,7 +304,7 @@ public class HttpClientWrapper implements Closeable {
      * Note that when you are done with the response, you must call {@link #closeResponse()} so that it gets cleaned up properly.
      */
     public CloseableHttpResponse execute(final HttpUriRequest method) throws ClientProtocolException, IOException {
-        LOG.debug("execute: " + this.toString());
+        LOG.debug("execute: " + this.toString() + "; method: " + method.toString());
         // override some headers with our versions
         final HttpRequestWrapper requestWrapper = HttpRequestWrapper.wrap(method);
         if (m_userAgent != null && !m_userAgent.trim().isEmpty()) {
