@@ -49,7 +49,10 @@ import java.util.regex.Pattern;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.http.Header;
+import org.apache.http.HttpException;
 import org.apache.http.HttpHost;
+import org.apache.http.HttpRequest;
+import org.apache.http.HttpRequestInterceptor;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -59,6 +62,8 @@ import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.protocol.HTTP;
+import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
 import org.opennms.core.utils.EmptyKeyRelaxedTrustProvider;
 import org.opennms.core.utils.HttpResponseRange;
@@ -306,16 +311,20 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
                 URI uri = getURI(svc);
                 PageSequenceHttpUriRequest method = getMethod(uri);
 
-                if (getVirtualHost(svc) != null) {
-                    // According to the standard, adding the default ports to the host header is optional, and this makes IIS 7.5 happy.
-                    HttpHost host = null;
-                    if ("https".equals(uri.getScheme()) && uri.getPort() == 443) { // Suppress the addition of default port for HTTPS
-                        host = new HttpHost(getVirtualHost(svc));
-                    } else if ("http".equals(uri.getScheme()) && uri.getPort() == 80) { //  Suppress the addition of default port for HTTP
-                        host = new HttpHost(getVirtualHost(svc));
-                    } else {  // Add the port if it is non-standard
-                        host = new HttpHost(getVirtualHost(svc), uri.getPort());
-                    }
+                if (getVirtualHost(svc) == null) {
+                    LOG.debug("Adding request interceptor to remove the host header");
+                    clientWrapper.addRequestInterceptor(new HttpRequestInterceptor() {
+                        @Override
+                        public void process(HttpRequest request, HttpContext ctx) throws HttpException, IOException {
+                            Header host = request.getFirstHeader(HTTP.TARGET_HOST);
+                            if (host != null) {
+                                request.removeHeader(host);
+                                LOG.debug("httpRequestInterceptor: virtual-host is not set, removing host header");
+                            }
+                        }
+                    });
+                } else {
+                    HttpHost host = new HttpHost(getVirtualHost(svc), uri.getPort());
                     clientWrapper.setVirtualHost(host.toHostString());
                 }
 
