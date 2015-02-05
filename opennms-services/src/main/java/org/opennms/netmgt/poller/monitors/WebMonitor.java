@@ -88,7 +88,9 @@ public class WebMonitor extends AbstractServiceMonitor {
             String queryString = ParameterMap.getKeyedString(map,"queryString",null);
             if (queryString != null && !queryString.trim().isEmpty()) {
                 final List<NameValuePair> params = URLEncodedUtils.parse(queryString, Charset.forName("UTF-8"));
-                ub.setParameters(params);
+                if (!params.isEmpty()) {
+                    ub.setParameters(params);
+                }
             }
 
             final HttpGet getMethod = new HttpGet(ub.build());
