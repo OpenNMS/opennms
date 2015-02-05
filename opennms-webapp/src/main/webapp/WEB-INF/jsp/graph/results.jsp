@@ -224,14 +224,14 @@
 
                 <div align="center">
                     <div>
-                    <div style="text-align: right;" id="auxControls">
+                    <div id="auxControls" class="graph-aux-controls" data-resource-id="${resultSet.resource.id}" data-graph-name="${resultSet.graphs[0].name}">
                     <opennms-addKscReport id="${resultSet.resource.id}.${resultSet.graphs[0].name}" reportName="${resultSet.graphs[0].name}" resourceId="${resultSet.resource.id}" graphTitle="${resultSet.graphs[0].title}" timespan="${results.relativeTime}" onclick="document.getElementById('auxControls').style.height = '120px';"></opennms-addKscReport>
                     <c:if test="${fn:contains(resultSet.resource.resourceType.label, 'SNMP') || fn:contains(resultSet.resource.resourceType.label, 'TCA') }">
                         <c:if test="${fn:contains(resultSet.resource.label,'(*)') != true}">
                             <a href="javascript:nrtgPopUp('${resultSet.resource.id}','${resultSet.graphs[0].name}')" title="Start NRT-Graphing for ${graph.title}"><button type="button" class="btn btn-default btn-xs" aria-label="Start NRT-Graphing for ${graph.title}"><span class="glyphicon glyphicon-flash" aria-hidden="true"></span></button></a><br/>
                         </c:if>
                     </c:if>
-                    </div>
+                    </div> <!-- graph-aux-controls -->
                     <img id="zoomImage" class="graphImg" data-imgsrc="${graphUrl}" src="#" alt="Resource graph: ${resultSet.graphs[0].title} (drag to zoom)" />
                     </div>
                 </div>
@@ -256,14 +256,15 @@
                     </c:url>
 
                     <div>
-                    <div style="text-align: right;">
+
+                    <div class="graph-aux-controls" data-resource-id="${resultSet.resource.id}" data-graph-name="${graph.name}">
                     <opennms-addKscReport id="${resultSet.resource.id}.${graph.name}" reportName="${graph.name}" resourceId="${resultSet.resource.id}" graphTitle="${graph.title}" timespan="${results.relativeTime}"></opennms-addKscReport>
                     <c:if test="${fn:contains(resultSet.resource.resourceType.label, 'SNMP') || fn:contains(resultSet.resource.resourceType.label, 'TCA') }">
                         <c:if test="${fn:contains(resultSet.resource.label,'(*)') != true}">
                             <a href="javascript:nrtgPopUp('${resultSet.resource.id}','${graph.name}')" title="Start NRT-Graphing for ${graph.title}"><button type="button" class="btn btn-default btn-xs" aria-label="Start NRT-Graphing for ${graph.title}"><span class="glyphicon glyphicon-flash" aria-hidden="true"></span></button></a><br/>
                         </c:if>
                     </c:if>
-                    </div>
+                    </div> <!-- graph-aux-controls -->
                     <a href="${zoomUrl}"><img class="graphImg" data-imgsrc="${graphUrl}" src="#" alt="Resource graph: ${graph.title} (click to zoom)" /></a>
                     </div>
                     <br/><br/>
