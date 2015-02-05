@@ -7,18 +7,20 @@ import com.vaadin.ui.Table;
 import org.opennms.features.vaadin.surveillanceviews.model.ColumnDef;
 import org.opennms.features.vaadin.surveillanceviews.model.RowDef;
 import org.opennms.features.vaadin.surveillanceviews.model.View;
+import org.opennms.features.vaadin.surveillanceviews.ui.dashboard.SurveillanceViewDetailTable;
 
-/**
- * Created by chris on 02.02.15.
- */
+import java.util.ArrayList;
+import java.util.List;
+
 public class SurveillanceViewTable extends Table {
 
     enum TableSelectionMode {
         ALL_SELECTED, ROW_SELECTED, COLUMN_SELECTED, ITEM_SELECTED
     }
 
-    private TableSelectionMode selectionType = TableSelectionMode.ALL_SELECTED;
-    private Object selectedItemId, selectedPropertyId;
+    private TableSelectionMode m_selectionType = TableSelectionMode.ALL_SELECTED;
+    private Object m_selectedItemId, m_selectedPropertyId;
+    private List<SurveillanceViewDetailTable> m_detailTables = new ArrayList<SurveillanceViewDetailTable>();
 
     public SurveillanceViewTable(View view) {
 
@@ -45,7 +47,7 @@ public class SurveillanceViewTable extends Table {
         for (ColumnDef columnDef : view.getColumns()) {
             addGeneratedColumn(columnDef.getLabel(), new Table.ColumnGenerator() {
                 public Object generateCell(Table source, final Object itemId, Object columnId) {
-                    Label label = new Label("Bla");
+                    Label label = new Label("0/5");
                     label.setSizeFull();
                     label.addStyleName("normal");
                     return label;
@@ -58,19 +60,21 @@ public class SurveillanceViewTable extends Table {
             setItemCaption(rowDef.getLabel(), rowDef.getLabel());
         }
 
+        this.setPageLength(this.getItemIds().size());
+
         addItemClickListener(new ItemClickEvent.ItemClickListener() {
             @Override
             public void itemClick(ItemClickEvent itemClickEvent) {
                 String selectedColumn = (String) itemClickEvent.getPropertyId();
                 if (!"".equals(selectedColumn)) {
                     Notification.show("Item clicked");
-                    selectionType = TableSelectionMode.ITEM_SELECTED;
-                    selectedItemId = itemClickEvent.getItemId();
-                    selectedPropertyId = itemClickEvent.getPropertyId();
+                    m_selectionType = TableSelectionMode.ITEM_SELECTED;
+                    m_selectedItemId = itemClickEvent.getItemId();
+                    m_selectedPropertyId = itemClickEvent.getPropertyId();
                 } else {
                     Notification.show("Row clicked");
-                    selectionType = TableSelectionMode.ROW_SELECTED;
-                    selectedItemId = itemClickEvent.getItemId();
+                    m_selectionType = TableSelectionMode.ROW_SELECTED;
+                    m_selectedItemId = itemClickEvent.getItemId();
                 }
 
                 markAsDirtyRecursive();
@@ -81,11 +85,11 @@ public class SurveillanceViewTable extends Table {
             @Override
             public void headerClick(HeaderClickEvent headerClickEvent) {
                 if ("".equals(headerClickEvent.getPropertyId())) {
-                    selectionType = TableSelectionMode.ALL_SELECTED;
+                    m_selectionType = TableSelectionMode.ALL_SELECTED;
                     Notification.show("All clicked");
                 } else {
-                    selectionType = TableSelectionMode.COLUMN_SELECTED;
-                    selectedPropertyId = headerClickEvent.getPropertyId();
+                    m_selectionType = TableSelectionMode.COLUMN_SELECTED;
+                    m_selectedPropertyId = headerClickEvent.getPropertyId();
                     Notification.show("Header clicked");
                 }
                 markAsDirtyRecursive();
@@ -97,26 +101,26 @@ public class SurveillanceViewTable extends Table {
             public String getStyle(final Table source, final Object itemId, final Object propertyId) {
                 String style = null;
 
-                if (selectionType == TableSelectionMode.ALL_SELECTED) {
+                if (m_selectionType == TableSelectionMode.ALL_SELECTED) {
                     return style;
                 }
 
-                if (selectionType == TableSelectionMode.COLUMN_SELECTED) {
-                    if (selectedPropertyId.equals(propertyId)) {
+                if (m_selectionType == TableSelectionMode.COLUMN_SELECTED) {
+                    if (m_selectedPropertyId.equals(propertyId)) {
                         style = "marked";
                         System.out.println("return getStyle()");
                     }
                 }
 
-                if (selectionType == TableSelectionMode.ROW_SELECTED) {
-                    if (selectedItemId.equals(itemId) && !"".equals(propertyId)) {
+                if (m_selectionType == TableSelectionMode.ROW_SELECTED) {
+                    if (m_selectedItemId.equals(itemId) && !"".equals(propertyId)) {
                         style = "marked";
                         System.out.println("return getStyle()");
                     }
                 }
 
-                if (selectionType == TableSelectionMode.ITEM_SELECTED) {
-                    if (selectedItemId.equals(itemId) && selectedPropertyId.equals(propertyId)) {
+                if (m_selectionType == TableSelectionMode.ITEM_SELECTED) {
+                    if (m_selectedItemId.equals(itemId) && m_selectedPropertyId.equals(propertyId)) {
                         style = "marked";
                         System.out.println("return getStyle()");
                     }
@@ -125,6 +129,12 @@ public class SurveillanceViewTable extends Table {
                 return style;
             }
         });
+    }
+
+    public void addDetailsTable(SurveillanceViewDetailTable surveillanceViewDetailTable) {
+        m_detailTables.add(surveillanceViewDetailTable);
+
+        surveillanceViewDetailTable.refreshDetails(null, null);
     }
 }
 

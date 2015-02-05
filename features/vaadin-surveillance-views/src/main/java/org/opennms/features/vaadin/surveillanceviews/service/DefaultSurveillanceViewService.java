@@ -7,6 +7,7 @@ import org.opennms.netmgt.config.GroupDao;
 import org.opennms.netmgt.config.categories.CatFactory;
 import org.opennms.netmgt.config.categories.Categorygroup;
 import org.opennms.netmgt.dao.api.AlarmDao;
+import org.opennms.netmgt.dao.api.AlarmRepository;
 import org.opennms.netmgt.dao.api.CategoryDao;
 import org.opennms.netmgt.dao.api.GraphDao;
 import org.opennms.netmgt.dao.api.NodeDao;
@@ -45,6 +46,16 @@ public class DefaultSurveillanceViewService implements SurveillanceViewService {
     private AlarmDao m_alarmDao;
     private GroupDao m_groupDao;
     private OutageDao m_outageDao;
+    private AlarmRepository m_alarmRepository;
+
+    /**
+     * Method to set the alarm repository instance.
+     *
+     * @param alarmRepository the repository to be used
+     */
+    public void setAlarmRepository(AlarmRepository alarmRepository) {
+        this.m_alarmRepository = alarmRepository;
+    }
 
     /**
      * Method to set the node dao.
@@ -177,5 +188,14 @@ public class DefaultSurveillanceViewService implements SurveillanceViewService {
 
         return categories;
     }
+
+    public AlarmDao getAlarmDao() {
+        return m_alarmDao;
+    }
+
+    public AlarmRepository getAlarmRepository() {
+        return m_alarmRepository;
+    }
+
 }
 

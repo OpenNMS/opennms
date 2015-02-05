@@ -31,11 +31,14 @@ package org.opennms.features.vaadin.surveillanceviews.ui;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.Title;
 import com.vaadin.server.VaadinRequest;
-import com.vaadin.ui.Label;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import org.opennms.features.vaadin.surveillanceviews.config.SurveillanceViewProvider;
 import org.opennms.features.vaadin.surveillanceviews.model.View;
+import org.opennms.features.vaadin.surveillanceviews.service.SurveillanceViewService;
+import org.opennms.features.vaadin.surveillanceviews.ui.dashboard.SurveillanceViewAlarmTable;
+import org.opennms.features.vaadin.surveillanceviews.ui.dashboard.SurveillanceViewNotificationTable;
+import org.opennms.features.vaadin.surveillanceviews.ui.dashboard.SurveillanceViewOutageTable;
 
 /**
  * The surveillance view application's "main" class
@@ -43,17 +46,16 @@ import org.opennms.features.vaadin.surveillanceviews.model.View;
  * @author Christian Pape
  */
 @SuppressWarnings("serial")
-@Theme("dashboard")
+@Theme("opennms")
 @Title("OpenNMS Surveillance Views")
 public class SurveillanceViewsUI extends UI {
+    private SurveillanceViewService m_surveillanceViewService;
 
     @Override
     protected void init(VaadinRequest request) {
         VerticalLayout rootLayout = new VerticalLayout();
         rootLayout.setSizeFull();
-        rootLayout.setSpacing(true);
-
-        rootLayout.addComponent(new Label("Header"));
+        rootLayout.setSpacing(false);
 
         View view = SurveillanceViewProvider.getInstance().getView("default");
 
@@ -61,8 +63,23 @@ public class SurveillanceViewsUI extends UI {
 
         rootLayout.addComponent(surveillanceViewTable);
 
-        rootLayout.addComponent(new Label("Footer"));
-        
+        VerticalLayout secondLayout = new VerticalLayout();
+
+        secondLayout.addComponent(new SurveillanceViewAlarmTable(m_surveillanceViewService));
+        secondLayout.addComponent(new SurveillanceViewNotificationTable(m_surveillanceViewService));
+        secondLayout.addComponent(new SurveillanceViewOutageTable(m_surveillanceViewService));
+
+        rootLayout.addComponent(secondLayout);
+        rootLayout.setExpandRatio(secondLayout,1.0f);
         setContent(rootLayout);
+    }
+
+    /**
+     * Method for setting the {@link org.opennms.features.vaadin.surveillanceviews.service.SurveillanceViewService} instance to be used
+     *
+     * @param surveillanceViewService the instance to be used
+     */
+    public void setSurveillanceViewService(SurveillanceViewService surveillanceViewService) {
+        this.m_surveillanceViewService = surveillanceViewService;
     }
 }

@@ -42,7 +42,7 @@ import org.opennms.features.vaadin.surveillanceviews.service.SurveillanceViewSer
  * @author Christian Pape
  */
 @SuppressWarnings("serial")
-@Theme("dashboard")
+@Theme("opennms")
 @Title("OpenNMS Surveillance Views")
 public class SurveillanceViewsConfigUI extends UI {
 

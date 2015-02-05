@@ -199,7 +199,7 @@
 
         <dependency>
             <groupId>org.opennms.features.themes</groupId>
-            <artifactId>dashboard-theme</artifactId>
+            <artifactId>onms-default-theme</artifactId>
             <version>${project.version}</version>
         </dependency>
 
@@ -224,6 +224,13 @@
         <dependency>
             <groupId>org.opennms</groupId>
             <artifactId>opennms-config</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.opennms.features.topology.plugins</groupId>
+            <artifactId>browsers</artifactId>
+            <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
 <!--
