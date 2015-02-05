@@ -293,9 +293,9 @@ public class AlarmDetailsDashlet extends AbstractDashlet {
         } else {
             StringBuilder sb = new StringBuilder();
 
-            sb.append("<table class='onms'>");
+            sb.append("<table class='alert-details-dashlet onms-table'>");
             sb.append("<thead>");
-            sb.append("<th class='onms'>ID</th><th class='onms'>Severity</th><th class='onms'>Node</th><th class='onms'>Count</th><th class='onms'>Last Event Time</th><th class='onms'>Log Msg</th>");
+            sb.append("<th class='alert-details-dashlet onms-header-cell'>ID</th><th class='alert-details-dashlet onms-header-cell'>Severity</th><th class='alert-details-dashlet onms-header-cell'>Node</th><th class='alert-details-dashlet onms-header-cell'>Count</th><th class='alert-details-dashlet onms-header-cell'>Last Event Time</th><th class='alert-details-dashlet onms-header-cell'>Log Msg</th>");
             sb.append("</thead>");
 
             for (OnmsAlarm onmsAlarm : alarms) {
@@ -312,13 +312,13 @@ public class AlarmDetailsDashlet extends AbstractDashlet {
                     }
                 }
 
-                sb.append("<tr class='" + onmsAlarm.getSeverity().getLabel() + " onms'>");
-                sb.append("<td class='divider bright onms' valign='middle' rowspan='1'><nobr>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + onmsAlarm.getId() + "</nobr></td>");
-                sb.append("<td class='divider onms' valign='middle' rowspan='1'><nobr>" + onmsAlarm.getSeverity().getLabel() + "</nobr></td>");
-                sb.append("<td class='divider onms' valign='middle' rowspan='1'><nobr>" + (onmsNode != null ? onmsNode.getLabel() : "-") + "</nobr></td>");
-                sb.append("<td class='divider onms' valign='middle' rowspan='1'><nobr>" + onmsAlarm.getCounter() + "</nobr></td>");
-                sb.append("<td class='divider onms' valign='middle' rowspan='1'><nobr>" + onmsAlarm.getLastEventTime().toString() + "</nobr></td>");
-                sb.append("<td class='divider onms' valign='middle' rowspan='1'>" + onmsAlarm.getLogMsg().replaceAll("\\<.*?>", "") + "</td>");
+                sb.append("<tr class='alert-details-dashlet " + onmsAlarm.getSeverity().getLabel() + "'>");
+                sb.append("<td class='alert-details-dashlet onms-cell divider bright onms' valign='middle' rowspan='1'><nobr>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + onmsAlarm.getId() + "</nobr></td>");
+                sb.append("<td class='alert-details-dashlet onms-cell divider onms' valign='middle' rowspan='1'><nobr>" + onmsAlarm.getSeverity().getLabel() + "</nobr></td>");
+                sb.append("<td class='alert-details-dashlet onms-cell divider onms' valign='middle' rowspan='1'><nobr>" + (onmsNode != null ? onmsNode.getLabel() : "-") + "</nobr></td>");
+                sb.append("<td class='alert-details-dashlet onms-cell divider onms' valign='middle' rowspan='1'><nobr>" + onmsAlarm.getCounter() + "</nobr></td>");
+                sb.append("<td class='alert-details-dashlet onms-cell divider onms' valign='middle' rowspan='1'><nobr>" + onmsAlarm.getLastEventTime().toString() + "</nobr></td>");
+                sb.append("<td class='alert-details-dashlet onms-cell divider onms' valign='middle' rowspan='1'>" + onmsAlarm.getLogMsg().replaceAll("\\<.*?>", "") + "</td>");
                 sb.append("</td></tr>");
             }
             sb.append("</table>");
