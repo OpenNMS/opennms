@@ -45,16 +45,9 @@
     <c:param name="breadcrumb" value="<a href='report/index.jsp'>Reports</a>" />
     <c:param name="breadcrumb" value="<a href='graph/index.jsp'>Resource Graphs</a>"/>
     <c:param name="breadcrumb" value="Results" />
+    <c:param name="scrollSpy" value="#results-sidebar" />
     <c:param name="meta"       value="<meta http-equiv='X-UA-Compatible' content='IE=Edge' />"/>
 </c:import>
-
-<!-- The following script section is required for the sidebar -->
-<script>
-$(document).ready(function() {
-    var b = $('body');
-    if (b) b.scrollspy({ target: '.resource-graphs-sidebar' });
-});
-</script>
 
 <div id="graph-results">
 
@@ -304,6 +297,7 @@ $(document).ready(function() {
             </c:forEach>
         </ul>
 	</div>
+    </div>
 
 </div> <!-- row -->
 
