@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
+
+  <!--
+      Partial fix for issue NMS-7394:
+        Remove any duplicate outages.
+  -->
+  <changeSet author="jwhite" id="1.15.1-removeDuplicateOutages">
+    <sql>
+DELETE FROM outages WHERE ifregainedservice is null AND outageid NOT IN (
+  SELECT MIN(o.outageid)
+  FROM outages o
+  WHERE ifregainedservice IS NULL
+  GROUP BY o.ifserviceid
+);
+    </sql>
+  </changeSet>
+
+  <!--
+      Partial fix for issue NMS-7394:
+        Only allow a single outstanding outage per service.
+      
+      We use partial index as opposed to constraints since the ifregainedservice
+      field is NULL and part of the constraint.
+
+      We use an SQL clause instead of an index definition since Liquibase
+      does not currently support partial indexes.
+      See https://liquibase.jira.com/browse/CORE-47.
+  -->
+  <changeSet author="jwhite" id="1.15.1-enforceUniqueOutages">
+    <sql>
+CREATE UNIQUE INDEX
+  one_outstanding_outage_per_service_idx
+ON
+  outages (ifserviceid)
+WHERE
+  ifregainedservice IS NULL;
+    </sql>
+    <rollback>
+      <dropIndex tableName="outages" indexName="one_outstanding_outage_per_service_idx" />
+    </rollback>
+  </changeSet>
+</databaseChangeLog>

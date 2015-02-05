@@ -30,6 +30,8 @@ package org.opennms.netmgt.poller;
 
 import static org.opennms.core.utils.InetAddressUtils.addr;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.util.Arrays;
@@ -119,22 +121,33 @@ public class QueryManagerDaoImpl implements QueryManager {
 
     /** {@inheritDoc} */
     @Override
-    public void resolveOutage(int nodeId, String ipAddr, String svcName, int regainedEventId, Date time) {
-        LOG.info("resolving outage for {}:{}:{} with resolution {}:{}", nodeId, ipAddr, svcName, regainedEventId, time);
+    public Integer resolveOutagePendingRegainEventId(int nodeId, String ipAddr, String svcName, Date regainedTime) {
+        LOG.info("resolving outage for {}:{}:{} @ {}", nodeId, ipAddr, svcName, regainedTime);
         int serviceId = m_serviceTypeDao.findByName(svcName).getId();
-        
-        OnmsEvent event = m_eventDao.get(regainedEventId);
-        OnmsMonitoredService service = m_monitoredServiceDao.get(nodeId, InetAddressUtils.addr(ipAddr), serviceId);
 
-        // Update the outage
+        OnmsMonitoredService service = m_monitoredServiceDao.get(nodeId, InetAddressUtils.addr(ipAddr), serviceId);
         OnmsOutage outage = m_outageDao.currentOutageForService(service);
         if (outage == null) {
-            LOG.warn("Cannot find outage for service: {}", service);
-        } else {
-            outage.setServiceRegainedEvent(event);
-            outage.setIfRegainedService(new Timestamp(time.getTime()));
-            m_outageDao.saveOrUpdate(outage);
+            return null;
         }
+
+        // Update the outage
+        outage.setIfRegainedService(new Timestamp(regainedTime.getTime()));
+        m_outageDao.saveOrUpdate(outage);
+        return outage.getId();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void updateResolvedOutageWithEventId(int outageId, int regainedEventId) {
+        LOG.info("updating resolved outage {} with event id {}", outageId, regainedEventId);
+
+        OnmsEvent event = m_eventDao.get(regainedEventId);
+        OnmsOutage outage = m_outageDao.get(outageId);
+
+        // Update the outage
+        outage.setServiceRegainedEvent(event);
+        m_outageDao.saveOrUpdate(outage);
     }
 
     /** {@inheritDoc} */
@@ -306,29 +319,17 @@ public class QueryManagerDaoImpl implements QueryManager {
             LOG.info("Calling closeOutagesForService: {}",outage);
             
         }
-        
-        
-        
     }
 
     @Override
     public void updateServiceStatus(int nodeId, String ipAddr, String serviceName, String status) {
-        Criteria criteria = new Criteria(OnmsMonitoredService.class);
-        criteria.setAliases(Arrays.asList(new Alias[] {
-            new Alias("monitoredService.ipInterface", "ipInterface", JoinType.LEFT_JOIN),
-            new Alias("monitoredService.serviceType", "serviceType", JoinType.LEFT_JOIN),
-            new Alias("ipInterface.node", "node", JoinType.LEFT_JOIN)
-        }));
-        criteria.addRestriction(new EqRestriction("node.id", nodeId));
-        criteria.addRestriction(new EqRestriction("ipInterface.ipAddress", addr(ipAddr)));
-        criteria.addRestriction(new EqRestriction("serviceType.name", serviceName));
-        criteria.addRestriction(new NullRestriction("ifRegainedService"));
-        List<OnmsMonitoredService> services = m_monitoredServiceDao.findMatching(criteria);
-        
-        for (OnmsMonitoredService service : services) {
+        try {
+            OnmsMonitoredService service = m_monitoredServiceDao.get(nodeId, InetAddress.getByName(ipAddr), serviceName);
             service.setStatus(status);
-            m_monitoredServiceDao.save(service);
+            m_monitoredServiceDao.saveOrUpdate(service);
+        } catch (UnknownHostException e) {
+            LOG.error("Failed to set the status for service named {} on node id {} and interface {} to {}.",
+                    serviceName, nodeId,  ipAddr, status, e);
         }
     }
-
 }
