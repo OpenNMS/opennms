@@ -253,7 +253,9 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
                 String query = URLEncodedUtils.format(parms, "UTF-8");
                 URIBuilder ub = new URIBuilder(uri);
                 final List<NameValuePair> params = URLEncodedUtils.parse(query, Charset.forName("UTF-8"));
-                ub.setParameters(params);
+                if (!params.isEmpty()) {
+                    ub.setParameters(params);
+                }
                 uriWithQueryString = ub.build();
                 this.setURI(uriWithQueryString);
             } catch (URISyntaxException e) {
@@ -480,7 +482,9 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
             ub.setPort(getPort());
             ub.setPath(getPath(seqProps, svcProps));
             final List<NameValuePair> params = URLEncodedUtils.parse(getQuery(seqProps, svcProps), Charset.forName("UTF-8"));
-            ub.setParameters(params);
+            if (!params.isEmpty()) {
+                ub.setParameters(params);
+            }
             ub.setFragment(getFragment(seqProps, svcProps));
             return ub.build();
         }
