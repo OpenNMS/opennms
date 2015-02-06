@@ -19,7 +19,7 @@ public class SurveillanceViewNotificationTable extends SurveillanceViewDetailTab
     }
 
     @Override
-    public void refreshDetails(Set<OnmsCategory> rowCategories, Set<OnmsCategory> columnCategories) {
+    public void refreshDetails(Set<String> rowCategories, Set<String> columnCategories) {
 
     }
 }

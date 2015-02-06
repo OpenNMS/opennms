@@ -2,6 +2,8 @@ package org.opennms.features.vaadin.surveillanceviews.service;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
+import org.opennms.features.vaadin.surveillanceviews.model.Category;
+import org.opennms.features.vaadin.surveillanceviews.model.View;
 import org.opennms.netmgt.config.CategoryFactory;
 import org.opennms.netmgt.config.GroupDao;
 import org.opennms.netmgt.config.categories.CatFactory;
@@ -16,13 +18,18 @@ import org.opennms.netmgt.dao.api.OutageDao;
 import org.opennms.netmgt.dao.api.ResourceDao;
 import org.opennms.netmgt.dao.api.SurveillanceViewConfigDao;
 import org.opennms.netmgt.model.OnmsCategory;
+import org.opennms.netmgt.model.SurveillanceStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.orm.ObjectRetrievalFailureException;
 
 import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Service class that encapsulate helper methods for surveillance views.
@@ -197,5 +204,37 @@ public class DefaultSurveillanceViewService implements SurveillanceViewService {
         return m_alarmRepository;
     }
 
+    public NodeDao getNodeDao() {
+        return m_nodeDao;
+    }
+
+    public Set<OnmsCategory> getOnmsCategoriesFromViewCategories(final Collection<Category> viewCats) {
+        final Set<OnmsCategory> categories = new HashSet<OnmsCategory>();
+
+        for (final Category viewCat : viewCats) {
+            final OnmsCategory category = m_categoryDao.findByName(viewCat.getName());
+
+            if (category == null) {
+                throw new ObjectRetrievalFailureException(OnmsCategory.class, viewCat.getName(), "Unable to locate OnmsCategory named: " + viewCat.getName() + " as specified in the surveillance view configuration file", null);
+            }
+            categories.add(category);
+        }
+        return categories;
+    }
+
+
+    public SurveillanceStatus[][] calculateCellStatus(final View view) {
+        final SurveillanceStatus[][] cellStatus = new SurveillanceStatus[view.getRows().size()][view.getColumns().size()];
+        for (int rowIndex = 0; rowIndex < view.getRows().size(); rowIndex++) {
+            for (int colIndex = 0; colIndex < view.getColumns().size(); colIndex++) {
+                final Collection<OnmsCategory> rowCategories = getOnmsCategoriesFromViewCategories(view.getRows().get(rowIndex).getCategories());
+                final Collection<OnmsCategory> columnCategories = getOnmsCategoriesFromViewCategories(view.getColumns().get(colIndex).getCategories());
+                final SurveillanceStatus status = m_nodeDao.findSurveillanceStatusByCategoryLists(rowCategories, columnCategories);
+                cellStatus[rowIndex][colIndex] = status;
+            }
+
+        }
+        return cellStatus;
+    }
 }
 

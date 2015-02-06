@@ -59,18 +59,25 @@ public class SurveillanceViewsUI extends UI {
 
         View view = SurveillanceViewProvider.getInstance().getView("default");
 
-        SurveillanceViewTable surveillanceViewTable = new SurveillanceViewTable(view);
+        SurveillanceViewTable surveillanceViewTable = new SurveillanceViewTable(view, m_surveillanceViewService);
 
         rootLayout.addComponent(surveillanceViewTable);
 
         VerticalLayout secondLayout = new VerticalLayout();
+        SurveillanceViewAlarmTable surveillanceViewAlarmTable = new SurveillanceViewAlarmTable(m_surveillanceViewService);
+        SurveillanceViewNotificationTable surveillanceViewNotificationTable = new SurveillanceViewNotificationTable(m_surveillanceViewService);
+        SurveillanceViewOutageTable surveillanceViewOutageTable = new SurveillanceViewOutageTable(m_surveillanceViewService);
 
-        secondLayout.addComponent(new SurveillanceViewAlarmTable(m_surveillanceViewService));
-        secondLayout.addComponent(new SurveillanceViewNotificationTable(m_surveillanceViewService));
-        secondLayout.addComponent(new SurveillanceViewOutageTable(m_surveillanceViewService));
+        secondLayout.addComponent(surveillanceViewAlarmTable);
+        secondLayout.addComponent(surveillanceViewNotificationTable);
+        secondLayout.addComponent(surveillanceViewOutageTable);
+
+        surveillanceViewTable.addDetailsTable(surveillanceViewAlarmTable);
+        surveillanceViewTable.addDetailsTable(surveillanceViewNotificationTable);
+        surveillanceViewTable.addDetailsTable(surveillanceViewOutageTable);
 
         rootLayout.addComponent(secondLayout);
-        rootLayout.setExpandRatio(secondLayout,1.0f);
+        rootLayout.setExpandRatio(secondLayout, 1.0f);
         setContent(rootLayout);
     }
 

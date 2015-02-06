@@ -3,10 +3,8 @@ package org.opennms.features.vaadin.surveillanceviews.ui.dashboard;
 import com.vaadin.data.util.BeanItemContainer;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.criteria.Fetch;
-import org.opennms.core.criteria.restrictions.Restrictions;
 import org.opennms.features.vaadin.surveillanceviews.service.SurveillanceViewService;
 import org.opennms.netmgt.model.OnmsAlarm;
-import org.opennms.netmgt.model.OnmsCategory;
 
 import java.util.List;
 import java.util.Set;
@@ -30,17 +28,24 @@ public class SurveillanceViewAlarmTable extends SurveillanceViewDetailTable {
     }
 
     @Override
-    public void refreshDetails(Set<OnmsCategory> rowCategories, Set<OnmsCategory> columnCategories) {
+    public void refreshDetails(Set<String> rowCategories, Set<String> columnCategories) {
 
         final CriteriaBuilder alarmCb = new CriteriaBuilder(OnmsAlarm.class);
 
         alarmCb.alias("node", "node");
-        alarmCb.alias("node.categories", "category");
         alarmCb.alias("lastEvent", "event");
-
         alarmCb.ne("node.type", "D");
-        alarmCb.and(Restrictions.in("category", rowCategories), Restrictions.in("category", columnCategories));
 
+        if (rowCategories != null || columnCategories != null) {
+            alarmCb.alias("node.categories", "category");
+
+            if (rowCategories != null && rowCategories.size() > 0) {
+                alarmCb.in("category.name", rowCategories);
+            }
+            if (columnCategories != null && columnCategories.size() > 0) {
+                alarmCb.in("category.name", columnCategories);
+            }
+        }
         alarmCb.fetch("firstEvent", Fetch.FetchType.EAGER);
         alarmCb.fetch("lastEvent", Fetch.FetchType.EAGER);
 

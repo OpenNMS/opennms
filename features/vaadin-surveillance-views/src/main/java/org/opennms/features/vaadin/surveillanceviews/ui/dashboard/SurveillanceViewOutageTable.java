@@ -17,7 +17,7 @@ public class SurveillanceViewOutageTable extends SurveillanceViewDetailTable {
     }
 
     @Override
-    public void refreshDetails(Set<OnmsCategory> rowCategories, Set<OnmsCategory> columnCategories) {
+    public void refreshDetails(Set<String> rowCategories, Set<String> columnCategories) {
 
     }
 }

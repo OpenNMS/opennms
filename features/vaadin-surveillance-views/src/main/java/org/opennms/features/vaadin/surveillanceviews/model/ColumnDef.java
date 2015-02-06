@@ -30,8 +30,11 @@ package org.opennms.features.vaadin.surveillanceviews.model;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * This class represents the column-def element of the surveillance view configuration xml
@@ -68,6 +71,15 @@ public class ColumnDef implements Def {
     @XmlElement(name = "category")
     public List<Category> getCategories() {
         return m_categories;
+    }
+
+    @Override
+    public Set<String> getCategoryNames() {
+        Set<String> listOfNames = new HashSet<>();
+        for(Category category:getCategories()) {
+            listOfNames.add(category.getName());
+        }
+        return listOfNames;
     }
 
     @Override

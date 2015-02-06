@@ -19,5 +19,5 @@ public abstract class SurveillanceViewDetailTable extends Table {
         return m_surveillanceViewService;
     }
 
-    public abstract void refreshDetails(Set<OnmsCategory> rowCategories, Set<OnmsCategory> columnCategories);
+    public abstract void refreshDetails(Set<String> rowCategories, Set<String> columnCategories);
 }

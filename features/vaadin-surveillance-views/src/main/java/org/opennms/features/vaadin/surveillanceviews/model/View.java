@@ -75,4 +75,22 @@ public class View {
     public void setRefreshSeconds(int refreshSeconds) {
         this.m_refreshSeconds = refreshSeconds;
     }
+
+    public RowDef getRowDef(String label) {
+        for (RowDef rowDef : getRows()) {
+            if (label.equals(rowDef.getLabel())) {
+                return rowDef;
+            }
+        }
+        return null;
+    }
+
+    public ColumnDef getColumnDef(String label) {
+        for (ColumnDef columnDef : getColumns()) {
+            if (label.equals(columnDef.getLabel())) {
+                return columnDef;
+            }
+        }
+        return null;
+    }
 }
