@@ -878,7 +878,11 @@
         <property name="inventoryService" ref="inventoryService"/>
     </bean>
 
-    <bean id="notificationFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+    <bean id="notifdConfigFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+        <property name="staticMethod"><value>org.opennms.netmgt.config.NotifdConfigFactory.init</value></property>
+    </bean>
+
+    <bean id="notificationFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" depends-on="notifdConfigFactory-init">
         <property name="staticMethod"><value>org.opennms.netmgt.config.NotificationFactory.init</value></property>
     </bean>
 
