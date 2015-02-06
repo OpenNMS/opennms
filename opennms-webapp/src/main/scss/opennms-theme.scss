@@ -674,6 +674,10 @@ $header-background-image: url("../images/headerbg.png") !default;
 /* =15.0 Miscellaneous and Workarounds
 ----------------------------------------------- */
 
+.graph-aux-controls {
+	text-align: right;
+}
+
 #footer {
 	clear: both;
 	text-align: center;
@@ -787,6 +791,10 @@ Do not confuse it with the Bootstrap .pagination class.
   margin-top: 5px;
 }
 
+/* Add a margin to the left of the elements equilavent to one &nbsp */
+.space-on-the-left {
+  margin-left: 3px;
+}
 
 /* --------------------------------------------------
     :: Styles for DBIDs, foreign-source, and foreign-ID

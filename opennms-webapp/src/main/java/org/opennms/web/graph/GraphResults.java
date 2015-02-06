@@ -31,6 +31,7 @@ package org.opennms.web.graph;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -75,10 +76,17 @@ public class GraphResults {
     
     private List<GraphResultSet> m_graphResultSets =
         new LinkedList<GraphResultSet>();
-    
+
+    private List<String> m_resourceTypes =
+            new LinkedList<String>();
+
+    private Map<String,List<GraphResultSet>> m_graphResultMap =
+            new HashMap<String,List<GraphResultSet>>();
+
     private int m_graphTopOffsetWithText;
     private int m_graphLeftOffset;
     private int m_graphRightOffset;
+    private int m_resourceIndex = 0;
     
     // FIXME: this is very US-centric; can we have it use the system locale?
     static {
@@ -236,9 +244,27 @@ public class GraphResults {
      * @param resultSet a {@link org.opennms.web.graph.GraphResults.GraphResultSet} object.
      */
     public void addGraphResultSet(GraphResultSet resultSet) {
+        resultSet.setIndex(m_resourceIndex++);
         m_graphResultSets.add(resultSet);
+        String resourceType = resultSet.getResource().getResourceType().getLabel();
+        if (!m_resourceTypes.contains(resourceType)) {
+            m_resourceTypes.add(resourceType);
+        }
+        if (!m_graphResultMap.containsKey(resourceType)) {
+            m_graphResultMap.put(resourceType, new LinkedList<GraphResultSet>());
+        }
+        m_graphResultMap.get(resourceType).add(resultSet);
     }
-    
+
+    /**
+     * <p>getGraphResultSets</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
+    public List<String> getResourceTypes() {
+        return m_resourceTypes;
+    }
+
     /**
      * <p>getGraphResultSets</p>
      *
@@ -246,6 +272,15 @@ public class GraphResults {
      */
     public List<GraphResultSet> getGraphResultSets() {
         return m_graphResultSets;
+    }
+    
+    /**
+     * <p>getGraphResultMap</p>
+     *
+     * @return a {@link java.util.Map} object.
+     */
+    public Map<String,List<GraphResultSet>> getGraphResultMap() {
+        return m_graphResultMap;
     }
     
     /**
@@ -271,6 +306,8 @@ public class GraphResults {
         
         private OnmsResource m_resource;
         
+        private int m_index;
+        
         public GraphResultSet() {
         }
         
@@ -288,6 +325,14 @@ public class GraphResults {
 
         public void setGraphs(List<Graph> graphs) {
             m_graphs = graphs;
+        }
+
+        public int getIndex() {
+            return m_index;
+        }
+
+        public void setIndex(int index) {
+            m_index = index;
         }
     }
 

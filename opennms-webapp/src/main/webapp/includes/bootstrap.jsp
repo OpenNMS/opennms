@@ -96,6 +96,10 @@
     <c:out value="${link}" escapeXml="false" />
   </c:forEach>
   <script type="text/javascript" src="<%= baseHref %>js/global.js"></script>
+
+    <script type="text/javascript" src="lib/jquery/dist/jquery.js"></script>
+    <script type="text/javascript" src="lib/bootstrap/dist/js/bootstrap.js"></script>
+
     <c:if test="${!empty pageContext.request.remoteUser && !param.disableCoreWeb}">
         <script type="text/javascript" src="<%= baseHref %>coreweb/coreweb.nocache.js"></script>
     </c:if>
@@ -108,8 +112,6 @@
       <script type="text/javascript" src='<%= baseHref %>resources/spring/Spring.js'></script>
       <script type="text/javascript" src='<%= baseHref %>resources/spring/Spring-Dojo.js'></script>
     </c:if>
-    <script type="text/javascript" src="lib/jquery/dist/jquery.js"></script>
-    <script type="text/javascript" src="lib/bootstrap/dist/js/bootstrap.js"></script>
 
 <c:forEach var="script" items="${paramValues.script}">
     <c:out value="${script}" escapeXml="false" />
@@ -132,7 +134,11 @@
 <%-- The <body> tag is unmatched in this file (its matching tag is in the
      footer), so we hide it in a JSP code fragment so the Eclipse HTML
      validator doesn't complain. --%>
-<%= "<body role=\"document\"" %>
+<%= "<body role=\"document\" " %>
+<c:if test="${param.scrollSpy != null}">
+  data-spy="scroll" data-target="${param.scrollSpy}"
+</c:if>
+
 <%-- Don't add any padding when the visual heading is not being displayed --%>
 <c:if test="${param.quiet != 'true'}">
   class="fixed-nav"
