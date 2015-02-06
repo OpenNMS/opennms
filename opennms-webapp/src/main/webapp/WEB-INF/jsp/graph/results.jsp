@@ -351,6 +351,7 @@ for (var i=0; i < imgs.length; i++) {
     }
 </script>
 
+<jsp:include page="forecast.jsp" flush="false" />
 
 <c:if test="${param.zoom == 'true'}">
     <c:url var="zoomReloadUrl" value="${requestScope.relativeRequestPath}">
