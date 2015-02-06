@@ -1,0 +1,378 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 5.6.1.final using JasperReports Library version 5.6.1  -->
+<!-- 2015-02-06T13:58:53 -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Forecast" pageWidth="842" pageHeight="595" orientation="Landscape" whenNoDataType="NoDataSection" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="8a465670-cc4a-4270-965f-8efb86e33b71">
+	<property name="template.engine" value="tabular_template"/>
+	<property name="net.sf.jasperreports.export.csv.exclude.origin.report.header" value="pageHeader"/>
+	<property name="net.sf.jasperreports.chart.domain.axis.tick.interval" value="1000"/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="OpenNMS PostreSQL"/>
+	<style name="Table">
+		<box>
+			<pen lineWidth="1.0" lineColor="#000000"/>
+			<topPen lineWidth="1.0" lineColor="#000000"/>
+			<leftPen lineWidth="1.0" lineColor="#000000"/>
+			<bottomPen lineWidth="1.0" lineColor="#000000"/>
+			<rightPen lineWidth="1.0" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="Table_TH" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+			<topPen lineWidth="0.5" lineColor="#000000"/>
+			<leftPen lineWidth="0.5" lineColor="#000000"/>
+			<bottomPen lineWidth="0.5" lineColor="#000000"/>
+			<rightPen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="Table_CH" mode="Opaque" backcolor="#EFEFEF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+			<topPen lineWidth="0.5" lineColor="#000000"/>
+			<leftPen lineWidth="0.5" lineColor="#000000"/>
+			<bottomPen lineWidth="0.5" lineColor="#000000"/>
+			<rightPen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="Table_TD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+			<topPen lineWidth="0.5" lineColor="#000000"/>
+			<leftPen lineWidth="0.5" lineColor="#000000"/>
+			<bottomPen lineWidth="0.5" lineColor="#000000"/>
+			<rightPen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="Table 1_TH" mode="Opaque" backcolor="#F0F8FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+			<topPen lineWidth="0.5" lineColor="#000000"/>
+			<leftPen lineWidth="0.5" lineColor="#000000"/>
+			<bottomPen lineWidth="0.5" lineColor="#000000"/>
+			<rightPen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="Table 1_CH" mode="Opaque" backcolor="#BFE1FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+			<topPen lineWidth="0.5" lineColor="#000000"/>
+			<leftPen lineWidth="0.5" lineColor="#000000"/>
+			<bottomPen lineWidth="0.5" lineColor="#000000"/>
+			<rightPen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="Table 1_TD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+			<topPen lineWidth="0.5" lineColor="#000000"/>
+			<leftPen lineWidth="0.5" lineColor="#000000"/>
+			<bottomPen lineWidth="0.5" lineColor="#000000"/>
+			<rightPen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="Table 2_TH" mode="Opaque" backcolor="#F0F8FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+			<topPen lineWidth="0.5" lineColor="#000000"/>
+			<leftPen lineWidth="0.5" lineColor="#000000"/>
+			<bottomPen lineWidth="0.5" lineColor="#000000"/>
+			<rightPen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="Table 2_CH" mode="Opaque" backcolor="#BFE1FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+			<topPen lineWidth="0.5" lineColor="#000000"/>
+			<leftPen lineWidth="0.5" lineColor="#000000"/>
+			<bottomPen lineWidth="0.5" lineColor="#000000"/>
+			<rightPen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="Table 2_TD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+			<topPen lineWidth="0.5" lineColor="#000000"/>
+			<leftPen lineWidth="0.5" lineColor="#000000"/>
+			<bottomPen lineWidth="0.5" lineColor="#000000"/>
+			<rightPen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="Table 3_TH" mode="Opaque" backcolor="#F0F8FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+			<topPen lineWidth="0.5" lineColor="#000000"/>
+			<leftPen lineWidth="0.5" lineColor="#000000"/>
+			<bottomPen lineWidth="0.5" lineColor="#000000"/>
+			<rightPen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="Table 3_CH" mode="Opaque" backcolor="#BFE1FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+			<topPen lineWidth="0.5" lineColor="#000000"/>
+			<leftPen lineWidth="0.5" lineColor="#000000"/>
+			<bottomPen lineWidth="0.5" lineColor="#000000"/>
+			<rightPen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="Table 3_TD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+			<topPen lineWidth="0.5" lineColor="#000000"/>
+			<leftPen lineWidth="0.5" lineColor="#000000"/>
+			<bottomPen lineWidth="0.5" lineColor="#000000"/>
+			<rightPen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<subDataset name="rrdDataset" whenResourceMissingType="Error" uuid="23af2521-c8a1-49c8-bd08-8345a068e24b">
+		<property name="com.jaspersoft.studio.data.defaultdataadapter" value="OpenNMS PostreSQL"/>
+		<parameter name="ds_trainingStartDate" class="java.util.Date"/>
+		<parameter name="ds_graphStartDate" class="java.util.Date"/>
+		<parameter name="ds_endDate" class="java.util.Date"/>
+		<parameter name="ds_rrdFile" class="java.lang.String"/>
+		<parameter name="ds_dsName" class="java.lang.String"/>
+		<parameter name="ifSpeedBits" class="java.lang.Long"/>
+		<parameter name="confidenceLevel" class="java.lang.Double">
+			<defaultValueExpression><![CDATA["0.95"]]></defaultValueExpression>
+		</parameter>
+		<queryString language="jrobin">
+			<![CDATA[--start $P{ds_trainingStartDate} --end $P{ds_endDate}
+        DEF:octets=$P{ds_rrdFile}:$P{ds_dsName}:AVERAGE
+        CDEF:percentIo=octets,8,*,$P{ifSpeedBits},/,100,*
+        XPORT:percentIo:percentIo
+        ANALYTICS:OutlierFilter=percentIo:0.975
+        ANALYTICS:TrendLine=Trend:percentIo:604800:3
+        ANALYTICS:HoltWinters=HW:percentIo:1:604800:$P{confidenceLevel}
+        ANALYTICS:Chomp=$P{ds_graphStartDate}:true]]>
+		</queryString>
+		<field name="Timestamp" class="java.util.Date">
+			<fieldDescription><![CDATA[Timestamp]]></fieldDescription>
+		</field>
+		<field name="percentIo" class="java.lang.Double">
+			<fieldDescription><![CDATA[percentIo]]></fieldDescription>
+		</field>
+		<field name="HWFit" class="java.lang.Double">
+			<fieldDescription><![CDATA[HWFit]]></fieldDescription>
+		</field>
+		<field name="HWUpr" class="java.lang.Double">
+			<fieldDescription><![CDATA[HWUpr]]></fieldDescription>
+		</field>
+		<field name="HWLwr" class="java.lang.Double">
+			<fieldDescription><![CDATA[HWLwr]]></fieldDescription>
+		</field>
+		<field name="Trend" class="java.lang.Double">
+			<fieldDescription><![CDATA[Trend]]></fieldDescription>
+		</field>
+	</subDataset>
+	<parameter name="trainingStartDate" class="java.util.Date" isForPrompting="false">
+		<parameterDescription><![CDATA[Report Start Date]]></parameterDescription>
+		<defaultValueExpression><![CDATA[new java.util.Date(
+    new GregorianCalendar(new GregorianCalendar().get(Calendar.YEAR), new GregorianCalendar().get(Calendar.MONTH), new GregorianCalendar().get(Calendar.DATE) - 7*4).getTimeInMillis()
+)]]></defaultValueExpression>
+	</parameter>
+	<parameter name="graphStartDate" class="java.util.Date" isForPrompting="false">
+		<parameterDescription><![CDATA[Report Start Date]]></parameterDescription>
+		<defaultValueExpression><![CDATA[new java.util.Date(
+    new GregorianCalendar(new GregorianCalendar().get(Calendar.YEAR), new GregorianCalendar().get(Calendar.MONTH), new GregorianCalendar().get(Calendar.DATE) - 7*1).getTimeInMillis()
+)]]></defaultValueExpression>
+	</parameter>
+	<parameter name="endDate" class="java.util.Date" isForPrompting="false">
+		<parameterDescription><![CDATA[Report Start Date]]></parameterDescription>
+		<defaultValueExpression><![CDATA[new java.util.Date()]]></defaultValueExpression>
+	</parameter>
+	<parameter name="confidenceLevel" class="java.lang.Double" isForPrompting="false">
+		<parameterDescription><![CDATA[Confidence Level]]></parameterDescription>
+		<defaultValueExpression><![CDATA[0.95]]></defaultValueExpression>
+	</parameter>
+        <parameter name="rrdDir" class="java.lang.String" isForPrompting="false">
+                <defaultValueExpression><![CDATA["${install.dir}/share/rrd"]]></defaultValueExpression>
+        </parameter>
+	<parameter name="nodeId" class="java.lang.Integer" isForPrompting="false">
+		<parameterDescription><![CDATA[Node ID]]></parameterDescription>
+		<defaultValueExpression><![CDATA["255"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="ifResourceId" class="java.lang.String" isForPrompting="false">
+		<parameterDescription><![CDATA[Resource ID for the interface]]></parameterDescription>
+		<defaultValueExpression><![CDATA["ge_0_0_0-a8d0e5a0a480"]]></defaultValueExpression>
+	</parameter>
+	<queryString language="resourceQuery">
+		<![CDATA[--rrddir $P{rrdDir} --nodeid $P{nodeId} --resourcetype $P{ifResourceId} --dsname ifInOctets,ifOutOctets --string ifSpeed]]>
+	</queryString>
+	<field name="ifSpeed" class="java.lang.String"/>
+	<field name="ifInOctets" class="java.lang.String"/>
+	<field name="ifOutOctets" class="java.lang.String"/>
+	<detail>
+		<band height="554" splitType="Stretch">
+			<timeSeriesChart>
+				<chart isShowLegend="true">
+					<reportElement positionType="FixRelativeToBottom" x="-1" y="30" width="800" height="250" uuid="09b3b246-6e1c-4dd7-b670-d44155ef68ae"/>
+					<chartTitle/>
+					<chartSubtitle/>
+					<chartLegend position="Top"/>
+				</chart>
+				<timeSeriesDataset timePeriod="Second">
+					<dataset>
+						<datasetRun subDataset="rrdDataset" uuid="7d875d66-a532-4add-9065-c3ac5e1aa401">
+							<datasetParameter name="ds_trainingStartDate">
+								<datasetParameterExpression><![CDATA[$P{trainingStartDate}]]></datasetParameterExpression>
+							</datasetParameter>
+							<datasetParameter name="ds_graphStartDate">
+								<datasetParameterExpression><![CDATA[$P{graphStartDate}]]></datasetParameterExpression>
+							</datasetParameter>
+							<datasetParameter name="ds_endDate">
+								<datasetParameterExpression><![CDATA[$P{endDate}]]></datasetParameterExpression>
+							</datasetParameter>
+							<datasetParameter name="ds_rrdFile">
+								<datasetParameterExpression><![CDATA[$F{ifInOctets}]]></datasetParameterExpression>
+							</datasetParameter>
+							<datasetParameter name="ds_dsName">
+								<datasetParameterExpression><![CDATA["ifInOctets"]]></datasetParameterExpression>
+							</datasetParameter>
+							<datasetParameter name="ifSpeedBits">
+								<datasetParameterExpression><![CDATA[Long.parseLong($F{ifSpeed})]]></datasetParameterExpression>
+							</datasetParameter>
+							<datasetParameter name="confidenceLevel">
+								<datasetParameterExpression><![CDATA[$P{confidenceLevel}]]></datasetParameterExpression>
+							</datasetParameter>
+						</datasetRun>
+					</dataset>
+					<timeSeries>
+						<seriesExpression><![CDATA["Input Utilization"]]></seriesExpression>
+						<timePeriodExpression><![CDATA[$F{Timestamp}]]></timePeriodExpression>
+						<valueExpression><![CDATA[$F{percentIo}]]></valueExpression>
+					</timeSeries>
+					<timeSeries>
+						<seriesExpression><![CDATA["Forecast"]]></seriesExpression>
+						<timePeriodExpression><![CDATA[$F{Timestamp}]]></timePeriodExpression>
+						<valueExpression><![CDATA[$F{HWFit}]]></valueExpression>
+					</timeSeries>
+					<timeSeries>
+						<seriesExpression><![CDATA["Forecast (Upper Bound)"]]></seriesExpression>
+						<timePeriodExpression><![CDATA[$F{Timestamp}]]></timePeriodExpression>
+						<valueExpression><![CDATA[$F{HWUpr}]]></valueExpression>
+					</timeSeries>
+					<timeSeries>
+						<seriesExpression><![CDATA["Forecast (Lower Bound)"]]></seriesExpression>
+						<timePeriodExpression><![CDATA[$F{Timestamp}]]></timePeriodExpression>
+						<valueExpression><![CDATA[$F{HWLwr}]]></valueExpression>
+					</timeSeries>
+					<timeSeries>
+						<seriesExpression><![CDATA["Trend"]]></seriesExpression>
+						<timePeriodExpression><![CDATA[$F{Timestamp}]]></timePeriodExpression>
+						<valueExpression><![CDATA[$F{Trend}]]></valueExpression>
+					</timeSeries>
+				</timeSeriesDataset>
+				<timeSeriesPlot isShowShapes="false">
+					<plot>
+						<seriesColor seriesOrder="0" color="#000000"/>
+						<seriesColor seriesOrder="1" color="#2F8931"/>
+						<seriesColor seriesOrder="2" color="#EBDBA2"/>
+						<seriesColor seriesOrder="3" color="#EBDBA2"/>
+						<seriesColor seriesOrder="4" color="#FF00FF"/>
+					</plot>
+					<timeAxisFormat>
+						<axisFormat/>
+					</timeAxisFormat>
+					<valueAxisFormat>
+						<axisFormat/>
+					</valueAxisFormat>
+				</timeSeriesPlot>
+			</timeSeriesChart>
+			<timeSeriesChart>
+				<chart isShowLegend="true">
+					<reportElement positionType="FixRelativeToBottom" x="1" y="300" width="800" height="250" uuid="66ff0758-fbfd-40c0-acdd-4cbaacea3133"/>
+					<chartTitle/>
+					<chartSubtitle/>
+					<chartLegend position="Top"/>
+				</chart>
+				<timeSeriesDataset timePeriod="Second">
+					<dataset>
+						<datasetRun subDataset="rrdDataset" uuid="e608d9e5-a2fa-43dc-b634-ef90f3aaa614">
+							<datasetParameter name="ds_trainingStartDate">
+								<datasetParameterExpression><![CDATA[$P{trainingStartDate}]]></datasetParameterExpression>
+							</datasetParameter>
+							<datasetParameter name="ds_graphStartDate">
+								<datasetParameterExpression><![CDATA[$P{graphStartDate}]]></datasetParameterExpression>
+							</datasetParameter>
+							<datasetParameter name="ds_endDate">
+								<datasetParameterExpression><![CDATA[$P{endDate}]]></datasetParameterExpression>
+							</datasetParameter>
+							<datasetParameter name="ds_rrdFile">
+								<datasetParameterExpression><![CDATA[$F{ifOutOctets}]]></datasetParameterExpression>
+							</datasetParameter>
+							<datasetParameter name="ds_dsName">
+								<datasetParameterExpression><![CDATA["ifOutOctets"]]></datasetParameterExpression>
+							</datasetParameter>
+							<datasetParameter name="ifSpeedBits">
+								<datasetParameterExpression><![CDATA[Long.parseLong($F{ifSpeed})]]></datasetParameterExpression>
+							</datasetParameter>
+							<datasetParameter name="confidenceLevel">
+								<datasetParameterExpression><![CDATA[$P{confidenceLevel}]]></datasetParameterExpression>
+							</datasetParameter>
+						</datasetRun>
+					</dataset>
+					<timeSeries>
+						<seriesExpression><![CDATA["Output Utilization"]]></seriesExpression>
+						<timePeriodExpression><![CDATA[$F{Timestamp}]]></timePeriodExpression>
+						<valueExpression><![CDATA[$F{percentIo}]]></valueExpression>
+					</timeSeries>
+					<timeSeries>
+						<seriesExpression><![CDATA["Forecast"]]></seriesExpression>
+						<timePeriodExpression><![CDATA[$F{Timestamp}]]></timePeriodExpression>
+						<valueExpression><![CDATA[$F{HWFit}]]></valueExpression>
+					</timeSeries>
+					<timeSeries>
+						<seriesExpression><![CDATA["Forecast (Upper Bound)"]]></seriesExpression>
+						<timePeriodExpression><![CDATA[$F{Timestamp}]]></timePeriodExpression>
+						<valueExpression><![CDATA[$F{HWUpr}]]></valueExpression>
+					</timeSeries>
+					<timeSeries>
+						<seriesExpression><![CDATA["Forecast (Lower Bound)"]]></seriesExpression>
+						<timePeriodExpression><![CDATA[$F{Timestamp}]]></timePeriodExpression>
+						<valueExpression><![CDATA[$F{HWLwr}]]></valueExpression>
+					</timeSeries>
+					<timeSeries>
+						<seriesExpression><![CDATA["Trend"]]></seriesExpression>
+						<timePeriodExpression><![CDATA[$F{Timestamp}]]></timePeriodExpression>
+						<valueExpression><![CDATA[$F{Trend}]]></valueExpression>
+					</timeSeries>
+				</timeSeriesDataset>
+				<timeSeriesPlot isShowShapes="false">
+					<plot>
+						<seriesColor seriesOrder="0" color="#000000"/>
+						<seriesColor seriesOrder="1" color="#2F8931"/>
+						<seriesColor seriesOrder="2" color="#EBDBA2"/>
+						<seriesColor seriesOrder="3" color="#EBDBA2"/>
+						<seriesColor seriesOrder="4" color="#FF00FF"/>
+					</plot>
+					<timeAxisFormat>
+						<axisFormat/>
+					</timeAxisFormat>
+					<valueAxisFormat>
+						<axisFormat/>
+					</valueAxisFormat>
+				</timeSeriesPlot>
+			</timeSeriesChart>
+			<staticText>
+				<reportElement x="2" y="0" width="799" height="30" uuid="766b3f62-9737-4457-b6de-5d46efb9422a"/>
+				<textElement>
+					<font size="19" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Interface Utilization Forecasts]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="29" width="90" height="30" uuid="66fdb154-39f8-48e3-b357-ef43194a853a"/>
+				<textElement>
+					<font size="13" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Input:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="2" y="293" width="90" height="30" uuid="689db7b2-ef86-4885-8035-b12daf8806ef"/>
+				<textElement>
+					<font size="13" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Output:]]></text>
+			</staticText>
+		</band>
+	</detail>
+</jasperReport>
