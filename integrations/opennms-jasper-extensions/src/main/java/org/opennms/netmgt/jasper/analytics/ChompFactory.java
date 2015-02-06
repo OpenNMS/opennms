@@ -29,17 +29,17 @@
 package org.opennms.netmgt.jasper.analytics;
 
 /**
- * Instantiate a filter used to strip leading
- * and trailing NaNs from the data source.
+ * Instantiate a filter used to remove leading
+ * or trailing rows from the data source.
  *
  * @author jwhite
  */
-public class StripNaNsFactory implements FilterFactory {
+public class ChompFactory implements FilterFactory {
     @Override
     public Filter getFilter(AnalyticsCommand cmd)  {
-        if (!"StripNaNs".equalsIgnoreCase(cmd.getModule())) {
+        if (!"Chomp".equalsIgnoreCase(cmd.getModule())) {
             return null;
         }
-        return new StripNaNs();
+        return new Chomp(ChompConfig.parse(cmd));
     }
 }

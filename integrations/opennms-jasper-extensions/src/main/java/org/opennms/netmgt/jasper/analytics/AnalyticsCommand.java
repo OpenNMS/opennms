@@ -72,6 +72,13 @@ public class AnalyticsCommand {
         }
     }
 
+    public boolean getBooleanArgument(int index, boolean defaultValue, String label) {
+        if (m_arguments.length >= index+1) {
+            return Boolean.parseBoolean(m_arguments[index]);
+        }
+        return defaultValue;
+    }
+
     public int getIntArgument(int index, int defaultValue, String label) {
         if (m_arguments.length >= index+1) {
             try {

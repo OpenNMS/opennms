@@ -29,21 +29,53 @@
 package org.opennms.netmgt.jasper.analytics;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
 import com.google.common.collect.RowSortedTable;
 import com.google.common.collect.TreeBasedTable;
 
-public class StripNaNsTest {
+public class ChompTest {
     @Test
-    public void canStripNaNs() throws Exception {
-        final String qs = "ANALYTICS:StripNaNs=1";
+    public void canCutoffRows() throws Exception {
+        final String qs = "ANALYTICS:Chomp=5";
         RrdDataSourceFilter dse = new RrdDataSourceFilter(qs);
 
         RowSortedTable<Integer, String, Double> table = TreeBasedTable.create();
         int k = 0;
-        
+
+        // Add some NaNs to the table
+        for (; k < 10; k++) {
+            table.put(k, "Timestamp", (double)k*1000);
+            table.put(k, "X", Double.NaN);
+        }
+
+        // Add some values to the table
+        for (; k < 90; k++) {
+            table.put(k, "Timestamp", (double)k*1000);
+            table.put(k, "X", (double)k);
+        }
+
+        // Apply the filter
+        dse.filter(table);
+
+        // Verify
+        assertEquals(85, table.rowKeySet().size());
+        for (int i = 0; i < 5; i++) {
+            assertEquals((double)(i+5)*1000, table.get(i, "Timestamp"), 0.0001);
+            assertTrue(Double.isNaN(table.get(i, "X")));
+        };
+    }
+
+    @Test
+    public void canStripNaNs() throws Exception {
+        final String qs = "ANALYTICS:Chomp=0:true";
+        RrdDataSourceFilter dse = new RrdDataSourceFilter(qs);
+
+        RowSortedTable<Integer, String, Double> table = TreeBasedTable.create();
+        int k = 0;
+
         // Add some NaNs to the table
         for (; k < 10; k++) {
             table.put(k, "Timestamp", (double)k);
@@ -71,5 +103,13 @@ public class StripNaNsTest {
             assertEquals((double)(i+10), table.get(i, "Timestamp"), 0.0001);
             assertEquals((double)(i+10), table.get(i, "X"), 0.0001);
         };
+    }
+
+    @Test
+    public void doesntFailOnEmtpyDs() throws Exception {
+        final String qs = "ANALYTICS:Chomp=0:true";
+        RrdDataSourceFilter dse = new RrdDataSourceFilter(qs);
+        RowSortedTable<Integer, String, Double> table = TreeBasedTable.create();
+        dse.filter(table);
     }
 }
