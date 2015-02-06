@@ -426,6 +426,12 @@
     </dependency>
     <dependency>
       <groupId>org.opennms.features</groupId>
+      <artifactId>org.opennms.features.gwt-bootstrap</artifactId>
+      <version>${project.version}</version>
+      <scope>${onmsLibScope}</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features</groupId>
       <artifactId>org.opennms.features.gwt-ksc-add</artifactId>
       <version>${project.version}</version>
       <scope>${onmsLibScope}</scope>

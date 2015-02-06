@@ -45,16 +45,9 @@
     <c:param name="breadcrumb" value="<a href='report/index.jsp'>Reports</a>" />
     <c:param name="breadcrumb" value="<a href='graph/index.jsp'>Resource Graphs</a>"/>
     <c:param name="breadcrumb" value="Results" />
+    <c:param name="scrollSpy" value="#results-sidebar" />
     <c:param name="meta"       value="<meta http-equiv='X-UA-Compatible' content='IE=Edge' />"/>
 </c:import>
-
-<!-- The following script section is required for the sidebar -->
-<script>
-$(document).ready(function() {
-    var b = $('body');
-    if (b) b.scrollspy({ target: '.resource-graphs-sidebar' });
-});
-</script>
 
 <div id="graph-results">
 
@@ -164,8 +157,8 @@ $(document).ready(function() {
 <div class="row">
 
 	<div class="col-md-10">
-	<c:forEach var="resultSet" items="${results.graphResultSets}" varStatus="loop">
-    <div class="panel panel-default text-center" id="panel-resource${loop.index}">
+	<c:forEach var="resultSet" items="${results.graphResultSets}">
+    <div class="panel panel-default text-center" id="panel-resource${resultSet.index}">
       <div class="panel-heading">
         <h3 class="panel-title">
             ${resultSet.resource.parent.resourceType.label}:
@@ -231,14 +224,14 @@ $(document).ready(function() {
 
                 <div align="center">
                     <div>
-                    <div style="text-align: right;" id="auxControls">
+                    <div id="auxControls" class="graph-aux-controls" data-resource-id="${resultSet.resource.id}" data-graph-name="${resultSet.graphs[0].name}">
                     <opennms-addKscReport id="${resultSet.resource.id}.${resultSet.graphs[0].name}" reportName="${resultSet.graphs[0].name}" resourceId="${resultSet.resource.id}" graphTitle="${resultSet.graphs[0].title}" timespan="${results.relativeTime}" onclick="document.getElementById('auxControls').style.height = '120px';"></opennms-addKscReport>
                     <c:if test="${fn:contains(resultSet.resource.resourceType.label, 'SNMP') || fn:contains(resultSet.resource.resourceType.label, 'TCA') }">
                         <c:if test="${fn:contains(resultSet.resource.label,'(*)') != true}">
                             <a href="javascript:nrtgPopUp('${resultSet.resource.id}','${resultSet.graphs[0].name}')" title="Start NRT-Graphing for ${graph.title}"><button type="button" class="btn btn-default btn-xs" aria-label="Start NRT-Graphing for ${graph.title}"><span class="glyphicon glyphicon-flash" aria-hidden="true"></span></button></a><br/>
                         </c:if>
                     </c:if>
-                    </div>
+                    </div> <!-- graph-aux-controls -->
                     <img id="zoomImage" class="graphImg" data-imgsrc="${graphUrl}" src="#" alt="Resource graph: ${resultSet.graphs[0].title} (drag to zoom)" />
                     </div>
                 </div>
@@ -263,14 +256,15 @@ $(document).ready(function() {
                     </c:url>
 
                     <div>
-                    <div style="text-align: right;">
+
+                    <div class="graph-aux-controls" data-resource-id="${resultSet.resource.id}" data-graph-name="${graph.name}">
                     <opennms-addKscReport id="${resultSet.resource.id}.${graph.name}" reportName="${graph.name}" resourceId="${resultSet.resource.id}" graphTitle="${graph.title}" timespan="${results.relativeTime}"></opennms-addKscReport>
                     <c:if test="${fn:contains(resultSet.resource.resourceType.label, 'SNMP') || fn:contains(resultSet.resource.resourceType.label, 'TCA') }">
                         <c:if test="${fn:contains(resultSet.resource.label,'(*)') != true}">
                             <a href="javascript:nrtgPopUp('${resultSet.resource.id}','${graph.name}')" title="Start NRT-Graphing for ${graph.title}"><button type="button" class="btn btn-default btn-xs" aria-label="Start NRT-Graphing for ${graph.title}"><span class="glyphicon glyphicon-flash" aria-hidden="true"></span></button></a><br/>
                         </c:if>
                     </c:if>
-                    </div>
+                    </div> <!-- graph-aux-controls -->
                     <a href="${zoomUrl}"><img class="graphImg" data-imgsrc="${graphUrl}" src="#" alt="Resource graph: ${graph.title} (click to zoom)" /></a>
                     </div>
                     <br/><br/>
@@ -291,12 +285,20 @@ $(document).ready(function() {
 
 	<div class="col-md-2">
 	<div id="results-sidebar" class="resource-graphs-sidebar hidden-print hidden-xs hidden-sm sidebar-fixed">
-		<ul class="nav nav-stacked">
-		<c:forEach var="resultSet" items="${results.graphResultSets}" varStatus="loop">
-		<li><a href="${requestScope['javax.servlet.forward.request_uri']}?${pageContext.request.queryString}#panel-resource${loop.index}" data-target="#panel-resource${loop.index}">${resultSet.resource.label}</a></li> 
-		</c:forEach>
-		</ul>
+        <ul class="nav nav-stacked">
+            <c:forEach var="resourceType" items="${results.resourceTypes}">
+            <li>
+                <a href="${requestScope['javax.servlet.forward.request_uri']}?${pageContext.request.queryString}#panel-resource${results.graphResultMap[resourceType][0].index}" data-target="#panel-resource${results.graphResultMap[resourceType][0].index}">${resourceType}</a>
+                <ul class="nav">
+                    <c:forEach var="resultSet" items="${results.graphResultMap[resourceType]}">
+                    <li><a href="${requestScope['javax.servlet.forward.request_uri']}?${pageContext.request.queryString}#panel-resource${resultSet.index}" data-target="#panel-resource${resultSet.index}">${resultSet.resource.label}</a></li> 
+                    </c:forEach>
+                </ul>
+            </li>
+            </c:forEach>
+        </ul>
 	</div>
+    </div>
 
 </div> <!-- row -->
 

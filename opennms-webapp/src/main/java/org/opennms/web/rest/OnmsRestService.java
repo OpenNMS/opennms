@@ -105,12 +105,18 @@ public class OnmsRestService {
 	    m_writeLock.unlock();
 	}
 
+
 	protected void applyQueryFilters(final MultivaluedMap<String,String> p, final CriteriaBuilder builder) {
+		this.applyQueryFilters(p, builder, DEFAULT_LIMIT);
+	}
+
+	protected void applyQueryFilters(final MultivaluedMap<String,String> p, final CriteriaBuilder builder, final Integer defaultLimit) {
+
 		final MultivaluedMap<String, String> params = new MultivaluedMapImpl();
 	    params.putAll(p);
 
 	    builder.distinct();
-	    builder.limit(DEFAULT_LIMIT);
+	    builder.limit(defaultLimit);
 
 	    // not sure why we remove this, but that's what the old query filter code did, I presume there's a reason  :)
 	    params.remove("_dc");

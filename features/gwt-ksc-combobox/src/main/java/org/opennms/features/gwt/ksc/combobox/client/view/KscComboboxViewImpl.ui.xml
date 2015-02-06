@@ -8,11 +8,11 @@
                 <b:FieldSet>
                     <b:FormGroup>
                         <b:TextBox ui:field="m_textBox" />
-                        <b:Button ui:field="m_searchButton">Search</b:Button>
+                        <b:Button ui:field="m_searchButton" addStyleNames="space-on-the-left">Search</b:Button>
                     </b:FormGroup>
                 </b:FieldSet>
             </b:Form>
         </b:Column>
     </b:Row>
 
-</ui:UiBinder> 
+</ui:UiBinder>

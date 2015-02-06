@@ -6,7 +6,7 @@
 	<inherits name="com.google.gwt.json.JSON" />
 
 	<!-- Bootstrap 3 bindings -->
-	<inherits name="org.gwtbootstrap3.GwtBootstrap3NoTheme"/>
+	<inherits name="org.gwtbootstrap3.GwtBootstrap3NoThemeNoJs"/>
 
 	<inherits name='org.opennms.features.gwt.theme.OpennmsTheme' />
 	<inherits name="org.opennms.features.gwt.tableresources.OnmsTableResources"/>
