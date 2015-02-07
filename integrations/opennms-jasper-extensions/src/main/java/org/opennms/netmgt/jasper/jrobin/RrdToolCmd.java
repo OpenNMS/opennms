@@ -30,9 +30,9 @@ package org.opennms.netmgt.jasper.jrobin;
 
 import java.io.IOException;
 
-import net.sf.jasperreports.engine.JRDataSource;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRField;
+import net.sf.jasperreports.engine.JRRewindableDataSource;
 
 import org.jrobin.core.RrdDb;
 import org.jrobin.core.RrdDbPool;
@@ -44,35 +44,37 @@ import org.slf4j.LoggerFactory;
 abstract class RrdToolCmd {
     private static final Logger LOG = LoggerFactory.getLogger(RrdToolCmd.class);
 
-    public static class EmptyJRDataSource implements JRDataSource {
-
-                @Override
-		public Object getFieldValue(JRField arg0) throws JRException {
-			return null;
-		}
-
-                @Override
-		public boolean next() throws JRException {
-			return false;
-		}
-
-	}
-
 	private RrdCmdScanner cmdScanner;
 
     abstract String getCmdType();
 
-    abstract JRDataSource execute() throws RrdException, IOException;
+    abstract JRRewindableDataSource execute() throws RrdException, IOException;
 
-    JRDataSource executeCommand(String command) throws RrdException {
+    public static class EmptyJRDataSource implements JRRewindableDataSource {
+        @Override
+        public Object getFieldValue(JRField jrField) throws JRException {
+            return null;
+        }
+
+        @Override
+        public boolean next() throws JRException {
+            return false;
+        }
+
+        @Override
+        public void moveFirst() throws JRException {
+            // pass
+        }
+    }
+
+    JRRewindableDataSource executeCommand(String command) throws RrdException {
         cmdScanner = new RrdCmdScanner(command);
         try {
         	return execute();
         }catch(IOException e) {
         	LOG.debug("Error creating JRobinDatasource: The Following Exception Occured: {}", e.getMessage());
-        	return new EmptyJRDataSource();
+            return new EmptyJRDataSource();
         }
-        
     }
 
     String getOptionValue(String shortForm, String longForm) throws RrdException {

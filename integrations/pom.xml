@@ -15,6 +15,7 @@
     <module>opennms-link-provisioning-adapter</module>
     <module>opennms-map-provisioning-adapter</module>
     <module>opennms-puppet-provisioning-adapter</module>
+    <module>opennms-R</module>
     <module>opennms-rancid-provisioning-adapter</module>
     <module>opennms-rws</module>
     <module>opennms-snmp-asset-provisioning-adapter</module>
