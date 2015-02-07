@@ -1,11 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Created with Jaspersoft Studio version 5.6.1.final using JasperReports Library version 5.6.1  -->
-<!-- 2015-02-06T13:58:53 -->
+<!-- 2015-02-07T09:25:13 -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Forecast" pageWidth="842" pageHeight="595" orientation="Landscape" whenNoDataType="NoDataSection" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="8a465670-cc4a-4270-965f-8efb86e33b71">
 	<property name="template.engine" value="tabular_template"/>
-	<property name="net.sf.jasperreports.export.csv.exclude.origin.report.header" value="pageHeader"/>
-	<property name="net.sf.jasperreports.chart.domain.axis.tick.interval" value="1000"/>
-	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="OpenNMS PostreSQL"/>
 	<style name="Table">
 		<box>
 			<pen lineWidth="1.0" lineColor="#000000"/>
@@ -130,18 +127,21 @@
 		<parameter name="ds_endDate" class="java.util.Date"/>
 		<parameter name="ds_rrdFile" class="java.lang.String"/>
 		<parameter name="ds_dsName" class="java.lang.String"/>
-		<parameter name="ifSpeedBits" class="java.lang.Long"/>
-		<parameter name="confidenceLevel" class="java.lang.Double">
-			<defaultValueExpression><![CDATA["0.95"]]></defaultValueExpression>
-		</parameter>
+		<parameter name="ifSpeedBits" class="java.lang.Double"/>
+		<parameter name="confidenceLevel" class="java.lang.Double"/>
+		<parameter name="outlierThreshold" class="java.lang.Double"/>
+		<parameter name="seasonInSeconds" class="java.lang.Integer"/>
+		<parameter name="numSeasonsToForecast" class="java.lang.Integer"/>
+		<parameter name="trendOrder" class="java.lang.Integer"/>
+		<parameter name="trendLengthInSeconds" class="java.lang.Integer"/>
 		<queryString language="jrobin">
 			<![CDATA[--start $P{ds_trainingStartDate} --end $P{ds_endDate}
         DEF:octets=$P{ds_rrdFile}:$P{ds_dsName}:AVERAGE
         CDEF:percentIo=octets,8,*,$P{ifSpeedBits},/,100,*
         XPORT:percentIo:percentIo
-        ANALYTICS:OutlierFilter=percentIo:0.975
-        ANALYTICS:TrendLine=Trend:percentIo:604800:3
-        ANALYTICS:HoltWinters=HW:percentIo:1:604800:$P{confidenceLevel}
+        ANALYTICS:OutlierFilter=percentIo:$P{outlierThreshold}
+        ANALYTICS:TrendLine=Trend:percentIo:$P{trendLengthInSeconds}:$P{trendOrder}
+        ANALYTICS:HoltWinters=HW:percentIo:$P{numSeasonsToForecast}:$P{seasonInSeconds}:$P{confidenceLevel}
         ANALYTICS:Chomp=$P{ds_graphStartDate}:true]]>
 		</queryString>
 		<field name="Timestamp" class="java.util.Date">
@@ -163,14 +163,14 @@
 			<fieldDescription><![CDATA[Trend]]></fieldDescription>
 		</field>
 	</subDataset>
-	<parameter name="trainingStartDate" class="java.util.Date" isForPrompting="false">
-		<parameterDescription><![CDATA[Report Start Date]]></parameterDescription>
+	<parameter name="trainingStartDate" class="java.util.Date">
+		<parameterDescription><![CDATA[Training Start Date]]></parameterDescription>
 		<defaultValueExpression><![CDATA[new java.util.Date(
     new GregorianCalendar(new GregorianCalendar().get(Calendar.YEAR), new GregorianCalendar().get(Calendar.MONTH), new GregorianCalendar().get(Calendar.DATE) - 7*4).getTimeInMillis()
 )]]></defaultValueExpression>
 	</parameter>
-	<parameter name="graphStartDate" class="java.util.Date" isForPrompting="false">
-		<parameterDescription><![CDATA[Report Start Date]]></parameterDescription>
+	<parameter name="graphStartDate" class="java.util.Date">
+		<parameterDescription><![CDATA[Graph Start Date]]></parameterDescription>
 		<defaultValueExpression><![CDATA[new java.util.Date(
     new GregorianCalendar(new GregorianCalendar().get(Calendar.YEAR), new GregorianCalendar().get(Calendar.MONTH), new GregorianCalendar().get(Calendar.DATE) - 7*1).getTimeInMillis()
 )]]></defaultValueExpression>
@@ -179,23 +179,49 @@
 		<parameterDescription><![CDATA[Report Start Date]]></parameterDescription>
 		<defaultValueExpression><![CDATA[new java.util.Date()]]></defaultValueExpression>
 	</parameter>
-	<parameter name="confidenceLevel" class="java.lang.Double" isForPrompting="false">
+	<parameter name="confidenceLevel" class="java.lang.Double">
 		<parameterDescription><![CDATA[Confidence Level]]></parameterDescription>
 		<defaultValueExpression><![CDATA[0.95]]></defaultValueExpression>
 	</parameter>
-        <parameter name="rrdDir" class="java.lang.String" isForPrompting="false">
-                <defaultValueExpression><![CDATA["${install.dir}/share/rrd"]]></defaultValueExpression>
-        </parameter>
-	<parameter name="nodeId" class="java.lang.Integer" isForPrompting="false">
-		<parameterDescription><![CDATA[Node ID]]></parameterDescription>
-		<defaultValueExpression><![CDATA["255"]]></defaultValueExpression>
+	<parameter name="outlierThreshold" class="java.lang.Double">
+		<parameterDescription><![CDATA[Outlier Threshold]]></parameterDescription>
+		<defaultValueExpression><![CDATA[0.975]]></defaultValueExpression>
 	</parameter>
-	<parameter name="ifResourceId" class="java.lang.String" isForPrompting="false">
+	<parameter name="ifInSpeedBits" class="java.lang.Double">
+		<parameterDescription><![CDATA[Downstream Bandwidth]]></parameterDescription>
+		<defaultValueExpression><![CDATA[0.0d]]></defaultValueExpression>
+	</parameter>
+	<parameter name="ifOutSpeedBits" class="java.lang.Double">
+		<parameterDescription><![CDATA[Upstream Bandwidth]]></parameterDescription>
+		<defaultValueExpression><![CDATA[0.0d]]></defaultValueExpression>
+	</parameter>
+	<parameter name="seasonInSeconds" class="java.lang.Integer">
+		<parameterDescription><![CDATA[Seasonality (Seconds)]]></parameterDescription>
+		<defaultValueExpression><![CDATA[604800]]></defaultValueExpression>
+	</parameter>
+	<parameter name="numSeasonsToForecast" class="java.lang.Integer">
+		<parameterDescription><![CDATA[Number of seasons to forecast]]></parameterDescription>
+		<defaultValueExpression><![CDATA[1]]></defaultValueExpression>
+	</parameter>
+	<parameter name="trendOrder" class="java.lang.Integer">
+		<parameterDescription><![CDATA[Trend Order]]></parameterDescription>
+		<defaultValueExpression><![CDATA[1]]></defaultValueExpression>
+	</parameter>
+	<parameter name="trendLengthInSeconds" class="java.lang.Integer">
+		<parameterDescription><![CDATA[Trend Length (Seconds)]]></parameterDescription>
+		<defaultValueExpression><![CDATA[604800]]></defaultValueExpression>
+	</parameter>
+	<parameter name="rrdDir" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["${install.dir}/share/rrd"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="nodeId" class="java.lang.Integer">
+		<parameterDescription><![CDATA[Node ID]]></parameterDescription>
+	</parameter>
+	<parameter name="ifResourceId" class="java.lang.String">
 		<parameterDescription><![CDATA[Resource ID for the interface]]></parameterDescription>
-		<defaultValueExpression><![CDATA["ge_0_0_0-a8d0e5a0a480"]]></defaultValueExpression>
 	</parameter>
 	<queryString language="resourceQuery">
-		<![CDATA[--rrddir $P{rrdDir} --nodeid $P{nodeId} --resourcetype $P{ifResourceId} --dsname ifInOctets,ifOutOctets --string ifSpeed]]>
+		<![CDATA[--rrddir $P{rrdDir}/snmp --nodeid $P{nodeId} --resourcetype $P{ifResourceId} --dsname ifInOctets,ifOutOctets --string ifSpeed]]>
 	</queryString>
 	<field name="ifSpeed" class="java.lang.String"/>
 	<field name="ifInOctets" class="java.lang.String"/>
@@ -228,10 +254,25 @@
 								<datasetParameterExpression><![CDATA["ifInOctets"]]></datasetParameterExpression>
 							</datasetParameter>
 							<datasetParameter name="ifSpeedBits">
-								<datasetParameterExpression><![CDATA[Long.parseLong($F{ifSpeed})]]></datasetParameterExpression>
+								<datasetParameterExpression><![CDATA[$P{ifInSpeedBits} > 0 ? $P{ifInSpeedBits} : Double.parseDouble($F{ifSpeed})]]></datasetParameterExpression>
 							</datasetParameter>
 							<datasetParameter name="confidenceLevel">
 								<datasetParameterExpression><![CDATA[$P{confidenceLevel}]]></datasetParameterExpression>
+							</datasetParameter>
+							<datasetParameter name="outlierThreshold">
+								<datasetParameterExpression><![CDATA[$P{outlierThreshold}]]></datasetParameterExpression>
+							</datasetParameter>
+							<datasetParameter name="seasonInSeconds">
+								<datasetParameterExpression><![CDATA[$P{seasonInSeconds}]]></datasetParameterExpression>
+							</datasetParameter>
+							<datasetParameter name="numSeasonsToForecast">
+								<datasetParameterExpression><![CDATA[$P{numSeasonsToForecast}]]></datasetParameterExpression>
+							</datasetParameter>
+							<datasetParameter name="trendOrder">
+								<datasetParameterExpression><![CDATA[$P{trendOrder}]]></datasetParameterExpression>
+							</datasetParameter>
+							<datasetParameter name="trendLengthInSeconds">
+								<datasetParameterExpression><![CDATA[$P{trendLengthInSeconds}]]></datasetParameterExpression>
 							</datasetParameter>
 						</datasetRun>
 					</dataset>
@@ -303,10 +344,25 @@
 								<datasetParameterExpression><![CDATA["ifOutOctets"]]></datasetParameterExpression>
 							</datasetParameter>
 							<datasetParameter name="ifSpeedBits">
-								<datasetParameterExpression><![CDATA[Long.parseLong($F{ifSpeed})]]></datasetParameterExpression>
+								<datasetParameterExpression><![CDATA[$P{ifOutSpeedBits} > 0 ? $P{ifOutSpeedBits} : Double.parseDouble($F{ifSpeed})]]></datasetParameterExpression>
 							</datasetParameter>
 							<datasetParameter name="confidenceLevel">
 								<datasetParameterExpression><![CDATA[$P{confidenceLevel}]]></datasetParameterExpression>
+							</datasetParameter>
+							<datasetParameter name="outlierThreshold">
+								<datasetParameterExpression><![CDATA[$P{outlierThreshold}]]></datasetParameterExpression>
+							</datasetParameter>
+							<datasetParameter name="seasonInSeconds">
+								<datasetParameterExpression><![CDATA[$P{seasonInSeconds}]]></datasetParameterExpression>
+							</datasetParameter>
+							<datasetParameter name="numSeasonsToForecast">
+								<datasetParameterExpression><![CDATA[$P{numSeasonsToForecast}]]></datasetParameterExpression>
+							</datasetParameter>
+							<datasetParameter name="trendOrder">
+								<datasetParameterExpression><![CDATA[$P{trendOrder}]]></datasetParameterExpression>
+							</datasetParameter>
+							<datasetParameter name="trendLengthInSeconds">
+								<datasetParameterExpression><![CDATA[$P{trendLengthInSeconds}]]></datasetParameterExpression>
 							</datasetParameter>
 						</datasetRun>
 					</dataset>
