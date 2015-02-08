@@ -668,6 +668,10 @@ $header-background-image: url("../images/headerbg.png") !default;
 /* =15.0 Miscellaneous and Workarounds
 ----------------------------------------------- */
 
+.graph-aux-controls {
+	text-align: right;
+}
+
 #footer {
 	clear: both;
 	text-align: center;
