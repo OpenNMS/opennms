@@ -17,5 +17,6 @@
         <report id="AssetMangementMaintStrategy" template="AssetManagementMaintStrategy.jrxml" engine="jdbc" />
         <report id="Event-Analysis" template="EventAnalysis.jrxml" engine="jdbc" />
         <report id="InterfaceUtilizationForecast" template="InterfaceUtilizationForecast.jrxml" engine="jdbc" />
+        <report id="NetSnmpDiskUtilizationForecast" template="NetSnmpDiskUtilizationForecast.jrxml" engine="jdbc" />
         <report id="DiskUsageForCTX" template="DiskUsageForCTX.jrxml" engine="jdbc" /> 
 </jasper-reports>
