@@ -154,7 +154,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                <button type="button" id="${param.prefix}-advanced" class="btn btn-primary ${param.prefix}-deps-ok">Advanced</button>
+                <%-- <button type="button" id="${param.prefix}-advanced" class="btn btn-primary ${param.prefix}-deps-ok">Advanced</button> --%>
                 <button type="button" id="${param.prefix}-render" class="btn btn-success ${param.prefix}-deps-ok">Render</button>
             </div>
         </div>
