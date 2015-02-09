@@ -51,11 +51,11 @@
 </c:if>
 
 <div class="row row-centered login">
-  <div class="col-md-4 col-centered">
+  <div class="col-md-6 col-centered">
     <form class="form-horizontal" role="form" action="<c:url value='j_spring_security_check'/>" method="post">
       <div class="form-group">
-        <label for="input_j_username" class="col-sm-2 control-label">Username</label>
-        <div class="col-sm-10">
+        <label for="input_j_username" class="col-sm-4 control-label">Username</label>
+        <div class="col-sm-8">
           <input type="text" class="form-control" id="input_j_username" name="j_username"
             <%-- This is deprecated and requires a custom AuthenticationFailureHandler to function properly --%>
             <c:if test="${not empty param.login_error}">value='<c:out value="${SPRING_SECURITY_LAST_USERNAME}"/>'</c:if>
@@ -64,14 +64,14 @@
       </div>
 
       <div class="form-group">
-        <label for="j_password" class="col-sm-2 control-label">Password</label>
-        <div class="col-sm-10">
+        <label for="j_password" class="col-sm-4 control-label">Password</label>
+        <div class="col-sm-8">
           <input type="password" class="form-control" id="input_j_password" name="j_password" placeholder="Password">
         </div>
       </div>
 
       <div class="form-group">
-        <div class="col-sm-offset-2 col-sm-10">
+        <div class="col-sm-offset-4 col-sm-8">
           <button type="submit" name="Login" class="btn btn-default">Login</button>
         </div>
       </div>
