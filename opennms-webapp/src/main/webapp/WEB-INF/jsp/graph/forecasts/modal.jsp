@@ -59,16 +59,16 @@
                     <div role="tabpanel" id="${param.prefix}-options">
                         <!-- Nav tabs -->
                         <ul class="nav nav-tabs" role="tablist">
-                            <li role="presentation" class="active"><a href="#time" role="tab" data-toggle="tab">Time Span</a></li>
-                            <li role="presentation"><a href="#stat" role="tab" data-toggle="tab">Trend and Forecast</a></li>
-                            <c:if test="${param.showNetworkTab != null }"><li role="presentation"><a href="#network" role="tab" data-toggle="tab">Network Interface</a></li></c:if>
+                            <li role="presentation" class="active"><a href="#${param.prefix}-time" role="tab" data-toggle="tab">Time Span</a></li>
+                            <li role="presentation"><a href="#${param.prefix}-stat" role="tab" data-toggle="tab">Trend and Forecast</a></li>
+                            <c:if test="${param.showNetworkTab != null }"><li role="presentation"><a href="#${param.prefix}-network" role="tab" data-toggle="tab">Network Interface</a></li></c:if>
                         </ul>
 
                         <p> </p>
 
                         <!-- Tab panes -->
                         <div class="tab-content">
-                            <div role="tabpanel" class="tab-pane active" id="time">
+                            <div role="tabpanel" class="tab-pane active" id="${param.prefix}-time">
                                 <div class="form-group">
                                     <label class="col-sm-3 control-label">Training Start</label>
                                     <div class="col-sm-9">
@@ -93,7 +93,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div role="tabpanel" class="tab-pane" id="stat">
+                            <div role="tabpanel" class="tab-pane" id="${param.prefix}-stat">
                                 <div class="form-group">
                                     <label class="col-sm-3 control-label">Season</label>
                                     <div class="col-sm-9">
@@ -127,7 +127,7 @@
                                 </div>
                             </div>
                             <c:if test="${param.showNetworkTab != null }">
-                            <div role="tabpanel" class="tab-pane" id="network">
+                            <div role="tabpanel" class="tab-pane" id="${param.prefix}-network">
                                 <div class="form-group">
                                     <label class="col-sm-3 control-label">Downstream Bandwidth</label>
                                     <div class="col-sm-9">
