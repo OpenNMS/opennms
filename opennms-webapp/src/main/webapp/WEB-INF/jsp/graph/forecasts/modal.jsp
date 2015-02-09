@@ -243,6 +243,7 @@
         modal.find('#${param.prefix}-node-id').val(parsedResourceId.nodeId);
         modal.find('#${param.prefix}-resource-id').val(parsedResourceId.resourceId);
 
+        $('#${param.prefix}-template').val('1day');
         resetValues();
         hideOrShowOptions();
         checkDependencies();
