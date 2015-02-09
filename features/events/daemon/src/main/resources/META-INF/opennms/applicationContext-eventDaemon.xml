@@ -18,6 +18,7 @@
 
   <context:annotation-config />
   <tx:annotation-driven/>
+  <aop:aspectj-autoproxy proxy-target-class="true" />
 
   <bean id="daemon" class="org.opennms.netmgt.eventd.Eventd">
     <property name="eventdServiceManager"><ref local="eventdServiceManager"/></property>
