@@ -166,7 +166,7 @@
     <c:import url="${param.jsimpl}" />
 
     function checkDependencies() {
-        var depsSatisfied = true;
+        var depsSatisfied = ${param.depsSatisfied};
         $('.${param.prefix}-deps-ok').toggleClass('hide', !depsSatisfied);
         $('.${param.prefix}-deps-failed').toggleClass('hide', depsSatisfied);
     }

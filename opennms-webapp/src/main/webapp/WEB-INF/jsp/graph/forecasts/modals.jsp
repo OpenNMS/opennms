@@ -37,6 +37,20 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
 <%--
+    Verify the forecasting dependencies.
+--%>
+<%
+boolean canForecast = true;
+try {
+    org.opennms.netmgt.jasper.analytics.HWForecast.checkForecastSupport();
+} catch (Throwable t) {
+    canForecast = false;
+}
+%>
+
+<c:set var="canForecast" value="<%= canForecast %>"/>
+
+<%--
     Interface Utilization Forecast
 --%>
 <c:import url="forecasts/modal.jsp">
@@ -46,6 +60,7 @@
     <c:param name="graphNames" value="mib2.traffic-inout,mib2.HCtraffic-inout" />
     <c:param name="jsimpl" value="forecasts/interfaceUtilizationForecast.jsp" />
     <c:param name="showNetworkTab" value="true" />
+    <c:param name="depsSatisfied" value="${canForecast}" />
 </c:import>
 
 
@@ -58,4 +73,5 @@
     <c:param name="reportId" value="NetSnmpDiskUtilizationForecast" />
     <c:param name="graphNames" value="netsnmp.diskpercent" />
     <c:param name="jsimpl" value="forecasts/diskUtilizationForecast.jsp" />
+    <c:param name="depsSatisfied" value="${canForecast}" />
 </c:import>
