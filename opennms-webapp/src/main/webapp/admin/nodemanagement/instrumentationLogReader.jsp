@@ -43,8 +43,10 @@
 
 <jsp:include page="/includes/bootstrap.jsp" flush="false" >
   <jsp:param name="title" value="Instrumentation Log Reader" />
+  <jsp:param name="headTitle" value="Admin" />
   <jsp:param name="headTitle" value="Instrumentation Log Reader" />
   <jsp:param name="location" value="Instrumentation Log Reader" />  
+  <jsp:param name="breadcrumb" value="<a href='admin/index.jsp'>Admin</a>" />
   <jsp:param name="breadcrumb" value="Instrumentation Log Reader" />
 </jsp:include>
 
