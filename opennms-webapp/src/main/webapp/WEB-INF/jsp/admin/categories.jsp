@@ -41,6 +41,8 @@
 	<jsp:param name="breadcrumb" value="Categories" />
 </jsp:include>
 
+<link rel="stylesheet" href="css/font-awesome-4.0.3/css/font-awesome.min.css">
+
 <script type="text/javascript">
 
    var surveillanceCategories = {
@@ -81,8 +83,8 @@
     </tr>
     <c:forEach items="${categories}" var="category">
       <tr>
-        <td><a onclick="deleteCategory('${fn:escapeXml(category.name)}', ${category.id})" ><img src="images/trash.gif" alt="Delete Category"/></a></td>
-        <td><a href="admin/categories.htm?categoryid=${category.id}&edit"><img src="images/modify.gif" alt="Edit Category"/></a></td>
+        <td><a onclick="deleteCategory('${fn:escapeXml(category.name)}', ${category.id})" ><i class="fa fa-trash-o fa-2x"></li></a></td>
+        <td><a href="admin/categories.htm?categoryid=${category.id}&edit"><i class="fa fa-edit fa-2x"></li></a></td>
         <td><a href="admin/categories.htm?categoryid=${category.id}">${fn:escapeXml(category.name)}</a></td>
       </tr>
     </c:forEach>
