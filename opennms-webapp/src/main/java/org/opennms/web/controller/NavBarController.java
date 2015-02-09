@@ -107,6 +107,7 @@ public class NavBarController extends AbstractController implements Initializing
         model.put("request", request);
         model.put("baseHref",
                 org.opennms.web.api.Util.calculateUrlBase(request));
+        model.put("isProvision", request.isUserInRole(Authentication.ROLE_PROVISION));
         model.put("isAdmin", request.isUserInRole(Authentication.ROLE_ADMIN));
 
         String noticeStatus = "Unknown";
