@@ -152,7 +152,7 @@
                     <input type="hidden" id="${prefix}-node-id">
                     <input type="hidden" id="${prefix}-resource-id">
                 </form>
-                <form id="db-report-parameters" class="hide" action="/opennms/report/database/onlineReport.htm?reportId=local_${reportId}" target="_blank" method="post"></form>
+                <form id="${prefix}-db-report-parameters" class="hide" action="/opennms/report/database/onlineReport.htm?reportId=local_${reportId}" target="_blank" method="post"></form>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -258,7 +258,7 @@
             'dateParms[1].minutes' : 0
         };
 
-        var form = $('#db-report-parameters');
+        var form = $('#${prefix}-db-report-parameters');
         form.empty();
         for (var id in dbReportParms) {
             if (dbReportParms.hasOwnProperty(id)) {
@@ -311,7 +311,7 @@
 
     $('#${prefix}-render').click(function() {
         if(generateReportParametersForm()) {
-            $('#db-report-parameters').submit();
+            $('#${prefix}-db-report-parameters').submit();
         }
     });
 
