@@ -161,10 +161,6 @@ groovy.compiler.output.path=target/classes
       <exclusions>
         <exclusion>
           <groupId>org.springframework</groupId>
-          <artifactId>spring-struts</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.springframework</groupId>
           <artifactId>spring-webmvc</artifactId>
         </exclusion>
         <exclusion>
