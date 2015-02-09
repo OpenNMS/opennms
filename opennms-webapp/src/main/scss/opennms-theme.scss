@@ -791,26 +791,8 @@ Do not confuse it with the Bootstrap .pagination class.
     :: spans in the node list and node details pages
     -------------------------------------------------- */
 
-span.NLdbid, span.NLfs, span.NLfid, span.NPdbid, span.NPfs, span.NPfid {
-	background-repeat: no-repeat;
-	padding-left: 17px;
-	padding-right: 4px;
-}
-
 span.NLdbid, span.NLfs, span.NLfid {
 	display: none;
-}
-
-span.NLdbid, span.NPdbid {
-	background-image: url(../images/nodelist/dbid-16.png);
-}
-
-span.NLfs, span.NPfs {
-	background-image: url(../images/nodelist/foreignsource-16.png);
-}
-
-span.NLfid, span.NPfid {
-	background-image: url(../images/nodelist/foreignid-16.png);
 }
 
 div.NLnode:hover span.NLdbid, div.NLnode:hover span.NLfs, div.NLnode:hover span.NLfid {

@@ -2,8 +2,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2015 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -69,7 +69,7 @@
   </c:when>
   
   <c:otherwise>
-    <h3 class="panel-title"><span>Nodes</span><span style="padding-left: 32px;"><a href="javascript:toggleClassDisplay('NLdbid', '', 'inline');"><img src="images/nodelist/dbid-16.png" title="Toggle database IDs" width="16" height="16"/></a>&nbsp;<a href="javascript:toggleClassDisplay('NLfs', '', 'inline');"><img src="images/nodelist/foreignsource-16.png" title="Toggle requisition names" width="16" height="16"/></a>&nbsp;<a href="javascript:toggleClassDisplay('NLfid', '', 'inline');"><img src="images/nodelist/foreignid-16.png" title="Toggle foreign-IDs" width="16" height="16"/></a></span></h3>
+    <h3 class="panel-title"><span>Nodes</span><span style="padding-left: 32px;"><a href="javascript:toggleClassDisplay('NLdbid', '', 'inline');"><span class="glyphicon glyphicon-hdd" style="color: #000000;" title="Toggle database IDs"/></a>&nbsp;&nbsp;<a href="javascript:toggleClassDisplay('NLfs', '', 'inline');"><span class="glyphicon glyphicon-list-alt" style="color: #000000;" title="Toggle requisition names"/></a>&nbsp;&nbsp;<a href="javascript:toggleClassDisplay('NLfid', '', 'inline');"><span class="glyphicon glyphicon-qrcode" style="color: #000000;" title="Toggle foreign IDs"/></a></span></h3>
   </c:otherwise>
 </c:choose>
   </div> <!-- panel-heading -->

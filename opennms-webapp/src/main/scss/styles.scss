@@ -84,9 +84,6 @@ $font_2: sans-serif;
 //original selectors
 //span.NLdbid, span.NLfs, span.NLfid, span.NPdbid, span.NPfs, span.NPfid
 %extend_5 {
-	background-repeat: no-repeat;
-	padding-left: 17px;
-	padding-right: 4px;
 }
 
 
@@ -223,29 +220,23 @@ span {
 	&.NLdbid {
 		@extend %extend_5;
 		display: none;
-		background-image: url(../images/nodelist/dbid-16.png);
 	}
 	&.NLfs {
 		@extend %extend_5;
 		display: none;
-		background-image: url(../images/nodelist/foreignsource-16.png);
 	}
 	&.NLfid {
 		@extend %extend_5;
 		display: none;
-		background-image: url(../images/nodelist/foreignid-16.png);
 	}
 	&.NPdbid {
 		@extend %extend_5;
-		background-image: url(../images/nodelist/dbid-16.png);
 	}
 	&.NPfs {
 		@extend %extend_5;
-		background-image: url(../images/nodelist/foreignsource-16.png);
 	}
 	&.NPfid {
 		@extend %extend_5;
-		background-image: url(../images/nodelist/foreignid-16.png);
 	}
 }
 applet {
