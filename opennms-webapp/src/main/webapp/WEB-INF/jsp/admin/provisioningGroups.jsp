@@ -152,7 +152,7 @@
   	  <td>
   	    <c:choose>
   	  	<c:when test="${!empty foreignSources[foreignSourceName]}">
-        <button id="edit_fs_anchor_${foreignSourceName}" onclick="editForeignSource(<js:quote value="${foreignSourceName}"/>)">Edit</button> | <button onclick="cloneForeignSource(<js:quote value="${foreignSourceName}"/>)">Clone</button>
+        <div class="btn-group" role="group"><button class="btn btn-default" id="edit_fs_anchor_${foreignSourceName}" onclick="editForeignSource(<js:quote value="${foreignSourceName}"/>)">Edit</button><button class="btn btn-default" onclick="cloneForeignSource(<js:quote value="${foreignSourceName}"/>)">Clone</button></div>
   	  	<br />
           <h5>
             Last Modified:

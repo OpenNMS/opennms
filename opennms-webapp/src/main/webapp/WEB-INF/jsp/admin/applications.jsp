@@ -41,6 +41,8 @@
 	<jsp:param name="breadcrumb" value="Applications" />
 </jsp:include>
 
+<link rel="stylesheet" href="css/font-awesome-4.0.3/css/font-awesome.min.css">
+
 <div class="row">
   <div class="col-md-8">
     <div class="panel panel-default">
@@ -55,8 +57,8 @@
         </tr>
         <c:forEach items="${applications}" var="app">
         <tr>
-          <td><a href="admin/applications.htm?removeApplicationId=${app.id}"><img src="images/trash.gif" alt="Delete Application"/></a></td>
-          <td><a href="admin/applications.htm?applicationid=${app.id}&edit=edit"><img src="images/modify.gif" alt="Edit Application"/></a></td>
+          <td><a href="admin/applications.htm?removeApplicationId=${app.id}"><i class="fa fa-trash-o fa-2x"></li></a></td>
+          <td><a href="admin/applications.htm?applicationid=${app.id}&edit=edit"><i class="fa fa-edit fa-2x"></li></a></td>
           <td><a href="admin/applications.htm?applicationid=${app.id}">${fn:escapeXml(app.name)}</a></td>
         </tr>
         </c:forEach>
@@ -64,9 +66,11 @@
           <td></td>
           <td></td>
           <td>
-            <form action="admin/applications.htm">
-              <input type="textfield" name="newApplicationName" size="40"/>
-              <input type="submit" value="Add New Application"/>
+            <form class="form-inline" action="admin/applications.htm">
+              <div class="form-group">
+                <input type="textfield" class="form-control" name="newApplicationName" size="40"/>
+              </div>
+              <button type="submit" class="btn btn-default">Add New Application</button>
             </form>
         </tr>
       </table>
