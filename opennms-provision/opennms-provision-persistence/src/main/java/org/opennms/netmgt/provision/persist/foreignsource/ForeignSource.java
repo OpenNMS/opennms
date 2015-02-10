@@ -150,7 +150,7 @@ public class ForeignSource implements Serializable, Comparable<ForeignSource> {
      */
     @XmlTransient
     public Date getDateStampAsDate() {
-        return m_dateStamp.toGregorianCalendar().getTime();
+        return m_dateStamp == null ? null : m_dateStamp.toGregorianCalendar().getTime();
     }
     /**
      * <p>setDateStamp</p>
