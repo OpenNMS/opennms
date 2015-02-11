@@ -52,6 +52,11 @@ public class SelectionAwareTable extends Table implements VerticesUpdateManager.
 	private List<String> nonCollapsibleColumns = new ArrayList<String>();
 	private EventProxy eventProxy;
 
+    /**
+     * Used to temporary disable the refreshing of the row cache.
+     */
+    private boolean m_disableRowCacheRefresh = false;
+
 	/**
 	 *  Leave OnmsDaoContainer without generics; the Aries blueprint code cannot match up
 	 *  the arguments if you put the generic types in.
@@ -96,24 +101,43 @@ public class SelectionAwareTable extends Table implements VerticesUpdateManager.
 			return value.toString();
 		}
 	}
-	
+
 	/**
-	 * Sets the non collapsbile columns.
+	 * Sets the non collapsible columns.
+	 *
+	 * Temporarily disables row cache refreshing since every call to
+	 * setColumnCollapsible() triggers one. The refresh is deferred
+	 * until all columns have been processed.
+	 *
 	 * @param nonCollapsibleColumns
 	 */
-	public void setNonCollapsibleColumns(List<String> nonCollapsibleColumns) {
-	    // set all elements to collapsible
-	    for (Object eachPropertyId : m_container.getContainerPropertyIds()) {
-	        setColumnCollapsible(eachPropertyId,  true);
+	public synchronized void setNonCollapsibleColumns(List<String> nonCollapsibleColumns) {
+	    m_disableRowCacheRefresh = true;
+	    try {
+	        // set all elements to collapsible
+	        for (Object eachPropertyId : m_container.getContainerPropertyIds()) {
+	            setColumnCollapsible(eachPropertyId,  true);
+	        }
+
+	        // set new value
+	        if (nonCollapsibleColumns == null) nonCollapsibleColumns = new ArrayList<String>();
+
+	        // set non collapsible
+	        for (Object eachPropertyId : nonCollapsibleColumns) {
+	            setColumnCollapsible(eachPropertyId,  false);
+	        }
+	    } finally {
+	        m_disableRowCacheRefresh = false;
 	    }
-	    
-	    // set new value
-	    if (nonCollapsibleColumns == null) nonCollapsibleColumns = new ArrayList<String>();
-        
-        // set non collapsible
-        for (Object eachPropertyId : nonCollapsibleColumns) {
-            setColumnCollapsible(eachPropertyId,  false);
+	    refreshRowCache();
+    }
+
+    @Override
+    public void refreshRowCache() {
+        if (m_disableRowCacheRefresh) {
+            return;
         }
+        super.refreshRowCache();
     }
 
     @Override

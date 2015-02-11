@@ -122,10 +122,10 @@ function toggleReqNodes() {
         </div> <!-- column -->
 
         <div class="col-md-2 text-center">
-          <input type="submit" class="btn btn-default" name="action" value="Add &#155;&#155;"/>
-          <br/>
-          <br/>
-          <input type="submit" class="btn btn-default" name="action" value="&#139;&#139; Remove"/>
+          <div class="btn-group-vertical" role="group">
+            <button type="submit" class="btn btn-default" name="action" value="Add &#155;&#155;">Add &#155;&#155;</button>
+            <button type="submit" class="btn btn-default" name="action" value="&#139;&#139; Remove">&#139;&#139; Remove</button>
+          </div>
         </div>
 
         <div class="col-md-5">
