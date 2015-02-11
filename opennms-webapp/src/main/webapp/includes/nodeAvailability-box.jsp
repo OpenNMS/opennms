@@ -88,8 +88,9 @@
 
     long timelineEnd = new Date().getTime() / 1000;
     long timelineStart = timelineEnd - 3600 * 24;
-    int timelineWidth = 250;
-    String emptyUrl = "/opennms/rest/timeline/empty/" + timelineStart + "/" + timelineEnd + "/" + timelineWidth;
+
+    String timelineHeaderUrl = "/opennms/rest/timeline/header/" + timelineStart + "/" + timelineEnd + "/";
+    String timelineEmptyUrl = "/opennms/rest/timeline/empty/" + timelineStart + "/" + timelineEnd + "/" ;
 
     Outage[] outages = new OutageModel().getCurrentOutagesForNode(nodeId);
 %>
@@ -147,11 +148,11 @@
               <%
                   if ("Not Monitored".equals(availValue)) {
               %>
-                <td class="severity-Cleared nobright"><img src="<%=emptyUrl%>"></td>
+                <td class="severity-Cleared nobright"><img src="#" data-imgsrc="<%=timelineEmptyUrl%>"></td>
               <%
                   } else {
               %>
-                <td class="severity-Cleared nobright"><img src="/opennms/rest/timeline/header/<%=timelineStart%>/<%=timelineEnd%>/<%=timelineWidth%>"></td>
+                <td class="severity-Cleared nobright"><img src="#" data-imgsrc="<%=timelineHeaderUrl%>"></td>
               <%
                   }
               %>
@@ -183,8 +184,8 @@
                   availValue = ElementUtil.getServiceStatusString(service);
                 }
 
-                String timelineUrl = "/opennms/rest/timeline/html/" + String.valueOf(nodeId) + "/" + ipAddr + "/" + service.getServiceName() + "/" + timelineStart + "/" + timelineEnd + "/" + timelineWidth;
-
+                String timelineUrl = "/opennms/rest/timeline/image/" + String.valueOf(nodeId) + "/" + ipAddr + "/" + service.getServiceName() + "/" + timelineStart + "/" + timelineEnd + "/";
+                String timelineId  = String.valueOf(nodeId) + "-" + ipAddr + "-" + service.getServiceName();
               %>
                        
                 <c:url var="serviceLink" value="element/service.jsp">
@@ -205,11 +206,11 @@
                     <%
                          if (service.isManaged()) {
                     %>
-                    <script src="<%=timelineUrl%>"></script>
+                    <img src="#" data-imgsrc="<%=timelineUrl%>" usemap="#<%=timelineId%>"><map name="<%=timelineId%>"></map>
                     <%
                         } else {
                     %>
-                    <img src="<%=emptyUrl%>">
+                    <img src="#" data-imgsrc="<%=timelineEmptyUrl%>">
                     <%
                         }
                     %>
@@ -236,3 +237,4 @@
 
 </div>
 
+<script type="text/javascript" src="js/timeline-resize.js"></script>
