@@ -172,7 +172,7 @@ public class QueryManagerDaoImpl implements QueryManager {
 
         Criteria criteria = new Criteria(OnmsMonitoredService.class);
         criteria.setAliases(Arrays.asList(new Alias[] {
-            new Alias("monitoredService.ipInterface", "ipInterface", JoinType.LEFT_JOIN),
+            new Alias("ipInterface", "ipInterface", JoinType.LEFT_JOIN),
             new Alias("ipInterface.node", "node", JoinType.LEFT_JOIN)
         }));
         criteria.addRestriction(new EqRestriction("node.id", nodeId));
