@@ -136,6 +136,11 @@ public class SnmpAgentConfig extends SnmpConfiguration implements Serializable {
                                                              .toString();
     }
 
+    /**
+     * Don't expose credentials here in plaintext in case this object is used in a log message.
+     * 
+     * @see http://issues.opennms.org/browse/NMS-1504
+     */
     @Override
     public String toString() {
         StringBuffer buff = new StringBuffer("SnmpAgentConfig[");
@@ -151,17 +156,17 @@ public class SnmpAgentConfig extends SnmpConfiguration implements Serializable {
         if (isVersion3()) {
             buff.append(", SecurityLevel: " + getSecurityLevel());
             buff.append(", SecurityName: " + getSecurityName());
-            buff.append(", AuthPassPhrase: " + getAuthPassPhrase());
+            buff.append(", AuthPassPhrase: XXXXXXXX"); //getAuthPassPhrase()
             buff.append(", AuthProtocol: " + getAuthProtocol());
-            buff.append(", PrivPassphrase: " + getPrivPassPhrase());
+            buff.append(", PrivPassphrase: XXXXXXXX"); //getPrivPassPhrase()
             buff.append(", PrivProtocol: " + getPrivProtocol());
             buff.append(", ContextName: " + getContextName());
             buff.append(", EngineId: " + getEngineId());
             buff.append(", ContextEngineId: " + getContextEngineId());
             buff.append(", EnterpriseId:" + getEnterpriseId());
         } else {
-            buff.append(", ReadCommunity: " + getReadCommunity());
-            buff.append(", WriteCommunity: " + getWriteCommunity());
+            buff.append(", ReadCommunity: XXXXXXXX"); //getReadCommunity()
+            buff.append(", WriteCommunity: XXXXXXXX"); //getWriteCommunity()
         }
         buff.append("]");
         return buff.toString();
