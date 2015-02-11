@@ -81,16 +81,26 @@
   </filter>
 
   <filter>
+    <description>Allows "cross-site scripting" for the REST services.</description>
     <filter-name>CORS Filter</filter-name>
     <filter-class>org.ebaysf.web.cors.CORSFilter</filter-class>
     <!-- See https://github.com/eBay/cors-filter for a full list of parameters -->
-    <!--
     <init-param>
-      <description>A comma separated list of allowed origins. Note: An '*' cannot be used for an allowed origin when using credentials.</description>
       <param-name>cors.allowed.origins</param-name>
-      <param-value>http://localhost:8080</param-value>
+      <param-value>*</param-value>
     </init-param>
-    -->
+    <init-param>
+      <param-name>cors.allowed.methods</param-name>
+      <param-value>GET,PUT,POST,HEAD,OPTIONS,DELETE</param-value>
+    </init-param>
+    <init-param>
+      <param-name>cors.allowed.headers</param-name>
+      <param-value>Accept,Access-Control-Request-Headers,Access-Control-Request-Method,Authorization,Content-Type,Origin,X-Requested-With</param-value>
+    </init-param>
+    <init-param>
+      <param-name>cors.support.credentials</param-name>
+      <param-value>true</param-value>
+    </init-param>
   </filter>
 
   <filter>
@@ -168,8 +178,7 @@
     <filter-name>openSessionInViewFilter</filter-name>
     <url-pattern>/*</url-pattern>
   </filter-mapping>
-  
-  <!-- Uncomment this to enable CORS support -->
+
   <filter-mapping>
     <filter-name>CORS Filter</filter-name>
     <url-pattern>/rest/*</url-pattern>
