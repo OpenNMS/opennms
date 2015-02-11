@@ -44,6 +44,7 @@
     <module>rancid</module>
     <module>rxtx</module>
     <module>servlet</module>
+    <module>smack</module>
     <module>smslib</module>
     <module>snmp4j</module>
     <module>snmp4j-agent</module>
