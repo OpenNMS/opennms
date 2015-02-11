@@ -62,7 +62,7 @@ import org.opennms.netmgt.config.notificationCommands.Command;
 import org.opennms.netmgt.config.notifications.Notification;
 import org.opennms.netmgt.config.users.Contact;
 import org.opennms.netmgt.config.users.User;
-import org.opennms.netmgt.eventd.AbstractEventUtil;
+import org.opennms.netmgt.eventd.EventUtil;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventIpcManager;
 import org.opennms.netmgt.events.api.EventIpcManagerFactory;
@@ -73,6 +73,7 @@ import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * <p>BroadcastEventProcessor class.</p>
@@ -84,11 +85,8 @@ import org.slf4j.LoggerFactory;
 public final class BroadcastEventProcessor implements EventListener {
     
     private static final Logger LOG = LoggerFactory.getLogger(BroadcastEventProcessor.class);
-    
-    /**
-     */
+
     private volatile Map<String, NoticeQueue> m_noticeQueues;
-    private volatile EventIpcManager m_eventManager;
     private volatile PollOutagesConfigManager m_pollOutagesConfigManager;
     private volatile NotificationManager m_notificationManager;
     private volatile NotifdConfigManager m_notifdConfigManager;
@@ -96,6 +94,12 @@ public final class BroadcastEventProcessor implements EventListener {
     private volatile UserManager m_userManager;
     private volatile GroupManager m_groupManager;
     private volatile NotificationCommandManager m_notificationCommandManager;
+
+    @Autowired
+    private volatile EventIpcManager m_eventManager;
+
+    @Autowired
+    private volatile EventUtil m_eventUtil;
 
     /**
      * <p>Constructor for BroadcastEventProcessor.</p>
@@ -143,7 +147,9 @@ public final class BroadcastEventProcessor implements EventListener {
         if (m_notificationCommandManager == null) {
             throw new IllegalStateException("property notificationCommandManager not set");
         }
-
+        if (m_eventUtil == null) {
+            throw new IllegalStateException("property eventUtil not set");
+        }
     }
 
     /**
@@ -349,7 +355,7 @@ public final class BroadcastEventProcessor implements EventListener {
             final boolean wasAcked = wa;
             final Map<String, String> parmMap = rebuildParameterMap(notifId, resolutionPrefix, skipNumericPrefix);
             
-            AbstractEventUtil.getInstance().expandMapValues(parmMap, 
+            m_eventUtil.expandMapValues(parmMap,
                     getNotificationManager().getEvent(Integer.parseInt(parmMap.get("eventID"))));
             
             String queueID = getNotificationManager().getQueueForNotification(notifId);
@@ -698,7 +704,7 @@ public final class BroadcastEventProcessor implements EventListener {
     /**
      * 
      */
-    static Map<String, String> buildParameterMap(Notification notification, Event event, int noticeId) {
+    protected Map<String, String> buildParameterMap(Notification notification, Event event, int noticeId) {
         Map<String, String> paramMap = new HashMap<String, String>();
         
         NotificationManager.addNotificationParams(paramMap, notification);
@@ -723,14 +729,13 @@ public final class BroadcastEventProcessor implements EventListener {
         paramMap.put("eventID", String.valueOf(event.getDbid()));
         paramMap.put("eventUEI", event.getUei());
 
-        AbstractEventUtil.getInstance().expandMapValues(paramMap, event);
+        m_eventUtil.expandMapValues(paramMap, event);
 
         return Collections.unmodifiableMap(paramMap);
-        
     }
 
-    private static void nullSafeExpandedPut(final String key, final String value, final Event event, Map<String, String> paramMap) {
-        String result = AbstractEventUtil.getInstance().expandParms(value, event);
+    private void nullSafeExpandedPut(final String key, final String value, final Event event, Map<String, String> paramMap) {
+        String result = m_eventUtil.expandParms(value, event);
         paramMap.put(key, (result == null ? value : result));
     }
 
@@ -1208,4 +1213,11 @@ public final class BroadcastEventProcessor implements EventListener {
         m_noticeQueues = noticeQueues;
     }
 
+    public void setEventUtil(EventUtil eventUtil) {
+        m_eventUtil = eventUtil;
+    }
+
+    public EventUtil getEventUtil() {
+        return m_eventUtil;
+    }
 } // end class

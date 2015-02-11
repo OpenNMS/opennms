@@ -134,7 +134,11 @@
 <%-- The <body> tag is unmatched in this file (its matching tag is in the
      footer), so we hide it in a JSP code fragment so the Eclipse HTML
      validator doesn't complain. --%>
-<%= "<body role=\"document\"" %>
+<%= "<body role=\"document\" " %>
+<c:if test="${param.scrollSpy != null}">
+  data-spy="scroll" data-target="${param.scrollSpy}"
+</c:if>
+
 <%-- Don't add any padding when the visual heading is not being displayed --%>
 <c:if test="${param.quiet != 'true'}">
   class="fixed-nav"

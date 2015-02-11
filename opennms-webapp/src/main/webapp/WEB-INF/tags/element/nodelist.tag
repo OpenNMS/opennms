@@ -12,10 +12,10 @@
     <li>
       <c:choose>
         <c:when test="${!empty nodeModel.node.foreignSource}">
-          <div class="NLnode"><a href="${nodeLink}">${nodeModel.node.label}</a>&nbsp;<span class="NLdbid">${nodeModel.node.id}</span>&nbsp;<span class="NLfs">${nodeModel.node.foreignSource}</span>&nbsp;<span class="NLfid">${nodeModel.node.foreignId}</span></div>
+          <div class="NLnode"><a href="${nodeLink}">${nodeModel.node.label}</a>&nbsp;&nbsp;<span class="NLdbid label label-default" title="Database ID: ${nodeModel.node.id}"><span class="glyphicon glyphicon-hdd"></span>&nbsp;${nodeModel.node.id}</span>&nbsp;<span class="NLfs label label-default" title="Requisition: ${nodeModel.node.foreignSource}"><span class="glyphicon glyphicon-list-alt"></span>&nbsp;${nodeModel.node.foreignSource}</span>&nbsp;<span class="NLfid label label-default" title="Foreign ID: ${nodeModel.node.foreignId}"><span class="glyphicon glyphicon-qrcode"></span>&nbsp;${nodeModel.node.foreignId}</span></div>
         </c:when>
         <c:otherwise>
-          <div class="NLnode"><a href="${nodeLink}">${nodeModel.node.label}</a>&nbsp;<span class="NLdbid">${nodeModel.node.id}</span></div>
+          <div class="NLnode"><a href="${nodeLink}">${nodeModel.node.label}</a>&nbsp;&nbsp;<span class="NLdbid label label-default" title="Database ID: ${nodeModel.node.id}"><span class="glyphicon glyphicon-hdd"></span>&nbsp;${nodeModel.node.id}</span></div>
         </c:otherwise>
       </c:choose>
       <ul>

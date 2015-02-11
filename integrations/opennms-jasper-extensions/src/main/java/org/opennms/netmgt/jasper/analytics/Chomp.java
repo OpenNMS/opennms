@@ -44,40 +44,61 @@ import com.google.common.collect.Sets;
  *
  * @author jwhite
  */
-public class StripNaNs implements Filter {
+public class Chomp implements Filter {
+    private final ChompConfig m_config;
+
+    public Chomp(ChompConfig config) {
+        m_config = config;
+    }
+
     @Override
     public void filter(RowSortedTable<Integer, String, Double> dsAsTable)
             throws Exception {
-        // Excluding the Timestamp column, determine the
-        // index of the first and last rows which don't contain
-        // completely NaN values
-        Set<String> columnNames = Sets.newHashSet(dsAsTable.columnKeySet());
-        columnNames.remove("Timestamp");
-        Point rowsWithValues = DataSourceUtils.getRowsWithValues(dsAsTable, columnNames.toArray(new String[0]));
-        int firstRowWithValues = rowsWithValues.x;
-        int lastRowWithValues = rowsWithValues.y;
 
         int numRowsInTable = dsAsTable.rowKeySet().size();
-        columnNames = Sets.newHashSet(dsAsTable.columnKeySet());
+        int lastRowToKeep = numRowsInTable;
+        int firstRowToKeep = lastRowToKeep;
 
-        // Remove all of the trailing NaN rows
-        for (int i = lastRowWithValues+1; i < numRowsInTable; i++) {
+        // Determine the index of the first row with a timestamp
+        // on/after the cutoff date
+        for (int k : dsAsTable.rowKeySet()) {
+            if(dsAsTable.get(k, "Timestamp") >= m_config.getCutoffDate()) {
+                firstRowToKeep = k;
+                break;
+            }
+        }
+
+        if (m_config.getStripNaNs()) {
+            // Excluding the Timestamp column, determine the
+            // index of the first and last rows which don't contain
+            // completely NaN values
+            Set<String> columnNamesNoTs = Sets.newHashSet(dsAsTable.columnKeySet());
+            columnNamesNoTs.remove("Timestamp");
+            Point rowsWithValues = DataSourceUtils.getRowsWithValues(dsAsTable, columnNamesNoTs.toArray(new String[0]));
+            firstRowToKeep = Math.max(firstRowToKeep, rowsWithValues.x);
+            lastRowToKeep = Math.min(lastRowToKeep, rowsWithValues.y);
+        }
+
+        Set<String> columnNames = Sets.newHashSet(dsAsTable.columnKeySet());
+
+        // Remove all of the trailing rows
+        for (int i = lastRowToKeep+1; i < numRowsInTable; i++) {
             for (String columnName : columnNames) {
                 dsAsTable.remove(i, columnName);
             }
         }
 
-        // Remove all of the leading NaN rows
-        for (int i = 0; i < firstRowWithValues; i++) {
+        // Remove all of the leading rows
+        for (int i = 0; i < firstRowToKeep; i++) {
             for (String columnName : columnNames) {
                 dsAsTable.remove(i, columnName);
             }
         }
 
         // Bump up the indices on the remaining rows
-        if (firstRowWithValues > 0) {
+        if (firstRowToKeep > 0) {
             int j = 0;
-            for (int i = firstRowWithValues; i <= lastRowWithValues; i++) {
+            for (int i = firstRowToKeep; i <= lastRowToKeep; i++) {
                 for (String columnName : columnNames) {
                     Double value = dsAsTable.get(i, columnName);
                     if (value != null) {

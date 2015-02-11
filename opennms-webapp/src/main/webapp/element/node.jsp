@@ -2,8 +2,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2015 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -313,12 +313,11 @@ function confirmAssetEdit() {
 </script>
 
 <h4>
-  Node: <strong>${model.label}</strong> (ID: <strong>${model.id}</strong>)<br>
   <c:if test="${model.foreignSource != null}">
-    <em>Created via provisioning requisition <strong>${model.foreignSource}</strong> (foreignId: <strong>${model.foreignId}</strong>)</em><br>
+    <div class="NPnode">Node: <strong>${model.label}</strong>&nbsp;&nbsp;&nbsp;<span class="NPdbid label label-default" title="Database ID: ${model.id}"><span class="glyphicon glyphicon-hdd"></span>&nbsp;${model.id}</span>&nbsp;<span class="NPfs label label-default" title="Requisition: ${model.foreignSource}"><span class="glyphicon glyphicon-list-alt"></span>&nbsp;${model.foreignSource}</span>&nbsp;<span class="NPfid label label-default" title="Foreign ID: ${model.foreignId}"><span class="glyphicon glyphicon-qrcode"></span>&nbsp;${model.foreignId}</span></div>
   </c:if>
   <c:if test="${model.foreignSource == null}">
-    <em>Not a member of any provisioning requisition</em>
+    <div class="NPnode">Node: <strong>${model.label}</strong>&nbsp;&nbsp;&nbsp;<span class="NPdbid label label-default" title="Database ID: ${model.id}"><span class="glyphicon glyphicon-hdd"></span>&nbsp;${model.id}</span></div>
   </c:if>
 </h4>
 

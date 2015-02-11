@@ -48,7 +48,6 @@ import org.opennms.netmgt.xml.event.Event;
 public class TaskCreationTest extends NotificationsTestCase {
     
     private static final int INTERVAL = 1000;
-    private BroadcastEventProcessor m_eventProcessor;
     private Notification m_notif;
     private Map<String, String> m_params;
     private String[] m_commands;
@@ -57,13 +56,12 @@ public class TaskCreationTest extends NotificationsTestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        m_eventProcessor = m_notifd.getBroadcastEventProcessor();
-        
+
         m_notif = m_notificationManager.getNotification("nodeDown");
         MockNode node = m_network.getNode(1);
         Event nodeDownEvent = node.createDownEvent();
-        
-        m_params = BroadcastEventProcessor.buildParameterMap(m_notif, nodeDownEvent, 1);
+
+        m_params = m_eventProcessor.buildParameterMap(m_notif, nodeDownEvent, 1);
         m_commands = new String[]{ "email" };
     }
 
