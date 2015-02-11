@@ -5,6 +5,7 @@ import org.opennms.features.vaadin.surveillanceviews.service.SurveillanceViewSer
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsNotification;
 
+import java.util.List;
 import java.util.Set;
 
 public class SurveillanceViewNotificationTable extends SurveillanceViewDetailTable {

@@ -22,6 +22,7 @@ import org.opennms.netmgt.model.SurveillanceStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.orm.ObjectRetrievalFailureException;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;

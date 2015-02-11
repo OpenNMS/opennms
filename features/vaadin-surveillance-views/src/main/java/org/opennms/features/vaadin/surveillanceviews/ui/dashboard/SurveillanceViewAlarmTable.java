@@ -2,10 +2,12 @@ package org.opennms.features.vaadin.surveillanceviews.ui.dashboard;
 
 import com.vaadin.data.util.BeanItemContainer;
 import org.opennms.core.criteria.CriteriaBuilder;
-import org.opennms.core.criteria.Fetch;
 import org.opennms.features.vaadin.surveillanceviews.service.SurveillanceViewService;
 import org.opennms.netmgt.model.OnmsAlarm;
+import org.opennms.netmgt.model.OnmsCategory;
+import org.opennms.netmgt.model.OnmsNode;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -28,7 +30,38 @@ public class SurveillanceViewAlarmTable extends SurveillanceViewDetailTable {
     }
 
     @Override
-    public void refreshDetails(Set<String> rowCategories, Set<String> columnCategories) {
+    public void refreshDetails(Set<String> rowCategories, Set<String> colCategories) {
+        if (rowCategories == null || colCategories == null) {
+            return;
+        }
+
+        List<OnmsCategory> onmsCategories = getSurveillanceViewService().getOnmsCategories();
+
+        Set<OnmsCategory> rows = new HashSet<>();
+        Set<OnmsCategory> cols = new HashSet<>();
+
+        for (OnmsCategory onmsCategory : onmsCategories) {
+            if (rowCategories.contains(onmsCategory.getName())) {
+                rows.add(onmsCategory);
+            }
+            if (colCategories.contains(onmsCategory.getName())) {
+                cols.add(onmsCategory);
+            }
+        }
+
+        List<OnmsNode> nodes = null;
+
+        if (rows.size() == 0 || cols.size() == 0) {
+            if (rows.size() == 0 && cols.size() > 0) {
+                nodes = getSurveillanceViewService().getNodeDao().findAllByCategoryList(cols);
+            }
+
+            if (rows.size() > 0 && cols.size() == 0) {
+                nodes = getSurveillanceViewService().getNodeDao().findAllByCategoryList(rows);
+            }
+        } else {
+            nodes = getSurveillanceViewService().getNodeDao().findAllByCategoryLists(rows, cols);
+        }
 
         final CriteriaBuilder alarmCb = new CriteriaBuilder(OnmsAlarm.class);
 
@@ -36,27 +69,21 @@ public class SurveillanceViewAlarmTable extends SurveillanceViewDetailTable {
         alarmCb.alias("lastEvent", "event");
         alarmCb.ne("node.type", "D");
 
-        if (rowCategories != null || columnCategories != null) {
-            alarmCb.alias("node.categories", "category");
-
-            if (rowCategories != null && rowCategories.size() > 0) {
-                alarmCb.in("category.name", rowCategories);
-            }
-            if (columnCategories != null && columnCategories.size() > 0) {
-                alarmCb.in("category.name", columnCategories);
-            }
-        }
-        alarmCb.fetch("firstEvent", Fetch.FetchType.EAGER);
-        alarmCb.fetch("lastEvent", Fetch.FetchType.EAGER);
+        //alarmCb.fetch("firstEvent", Fetch.FetchType.EAGER);
+        //alarmCb.fetch("lastEvent", Fetch.FetchType.EAGER);
 
         alarmCb.distinct();
 
-        List<OnmsAlarm> alarms = getSurveillanceViewService().getAlarmDao().findMatching(alarmCb.toCriteria());
-
         m_beanItemContainer.removeAllItems();
 
-        for (OnmsAlarm alarm : alarms) {
-            m_beanItemContainer.addItem(alarm);
+        if (nodes != null && nodes.size() > 0) {
+            alarmCb.in("node", nodes);
+
+            List<OnmsAlarm> alarms = getSurveillanceViewService().getAlarmDao().findMatching(alarmCb.toCriteria());
+
+            for (OnmsAlarm alarm : alarms) {
+                m_beanItemContainer.addItem(alarm);
+            }
         }
 
         refreshRowCache();

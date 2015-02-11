@@ -9,7 +9,6 @@ import org.opennms.features.vaadin.surveillanceviews.model.RowDef;
 import org.opennms.features.vaadin.surveillanceviews.model.View;
 import org.opennms.features.vaadin.surveillanceviews.service.SurveillanceViewService;
 import org.opennms.features.vaadin.surveillanceviews.ui.dashboard.SurveillanceViewDetailTable;
-import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.SurveillanceStatus;
 
 import java.util.ArrayList;
@@ -31,6 +30,9 @@ public class SurveillanceViewTable extends Table {
 
     private Set<String> m_selectedRowCategories = null;
     private Set<String> m_selectedColumnCategories = null;
+
+    private Set<String> m_allRowCategories = new HashSet<>();
+    private Set<String> m_allColumnCategories = new HashSet<>();
 
     SurveillanceStatus[][] cells;
 
@@ -62,6 +64,8 @@ public class SurveillanceViewTable extends Table {
 
 
         for (ColumnDef columnDef : view.getColumns()) {
+            m_allColumnCategories.addAll(columnDef.getCategoryNames());
+
             addGeneratedColumn(columnDef.getLabel(), new Table.ColumnGenerator() {
                 public Object generateCell(Table source, final Object itemId, Object columnId) {
 
@@ -79,9 +83,14 @@ public class SurveillanceViewTable extends Table {
         }
 
         for (RowDef rowDef : view.getRows()) {
+            m_allRowCategories.addAll(rowDef.getCategoryNames());
+
             addItem(rowDef.getLabel());
             setItemCaption(rowDef.getLabel(), rowDef.getLabel());
         }
+
+        m_selectedRowCategories = m_allRowCategories;
+        m_selectedColumnCategories = m_allColumnCategories;
 
         this.setPageLength(this.getItemIds().size());
 
@@ -98,13 +107,16 @@ public class SurveillanceViewTable extends Table {
                     m_selectedRowCategories = view.getRowDef((String) itemClickEvent.getItemId()).getCategoryNames();
                     m_selectedColumnCategories = view.getColumnDef((String) itemClickEvent.getPropertyId()).getCategoryNames();
 
+                    System.out.println("Row: " + itemClickEvent.getItemId() + " / " + m_selectedRowCategories.size());
+                    System.out.println("Col: " + itemClickEvent.getPropertyId() + " / " + m_selectedColumnCategories.size());
+
                 } else {
                     Notification.show("Row clicked");
                     m_selectionType = TableSelectionMode.ROW_SELECTED;
                     m_selectedItemId = itemClickEvent.getItemId();
 
                     m_selectedRowCategories = view.getRowDef((String) itemClickEvent.getItemId()).getCategoryNames();
-                    m_selectedColumnCategories = null;
+                    m_selectedColumnCategories = m_allColumnCategories;
                 }
 
                 updateDetailsTable();
@@ -119,15 +131,15 @@ public class SurveillanceViewTable extends Table {
                 if ("".equals(headerClickEvent.getPropertyId())) {
                     m_selectionType = TableSelectionMode.ALL_SELECTED;
 
-                    m_selectedRowCategories = null;
-                    m_selectedColumnCategories = null;
+                    m_selectedRowCategories = m_allRowCategories;
+                    m_selectedColumnCategories = m_allColumnCategories;
 
                     Notification.show("All clicked");
                 } else {
                     m_selectionType = TableSelectionMode.COLUMN_SELECTED;
                     m_selectedPropertyId = headerClickEvent.getPropertyId();
 
-                    m_selectedRowCategories = null;
+                    m_selectedRowCategories = m_allRowCategories;
                     m_selectedColumnCategories = view.getColumnDef((String) headerClickEvent.getPropertyId()).getCategoryNames();
 
                     Notification.show("Header clicked");
@@ -151,21 +163,18 @@ public class SurveillanceViewTable extends Table {
                 if (m_selectionType == TableSelectionMode.COLUMN_SELECTED) {
                     if (m_selectedPropertyId.equals(propertyId)) {
                         style = "marked";
-                        System.out.println("return getStyle()");
                     }
                 }
 
                 if (m_selectionType == TableSelectionMode.ROW_SELECTED) {
                     if (m_selectedItemId.equals(itemId) && !"".equals(propertyId)) {
                         style = "marked";
-                        System.out.println("return getStyle()");
                     }
                 }
 
                 if (m_selectionType == TableSelectionMode.ITEM_SELECTED) {
                     if (m_selectedItemId.equals(itemId) && m_selectedPropertyId.equals(propertyId)) {
                         style = "marked";
-                        System.out.println("return getStyle()");
                     }
                 }
 
