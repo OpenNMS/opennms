@@ -40,6 +40,7 @@ import java.util.concurrent.TimeUnit;
 
 import com.github.wolfie.refresher.Refresher;
 import org.opennms.core.criteria.CriteriaBuilder;
+import org.opennms.core.criteria.restrictions.Restrictions;
 import org.opennms.features.geocoder.Coordinates;
 import org.opennms.features.geocoder.GeocoderException;
 import org.opennms.features.geocoder.GeocoderService;
@@ -186,9 +187,24 @@ public class MapWidgetComponent extends NodeMapComponent implements GeoAssetProv
 
         LOG.debug("Refreshing node data.");
 
-        final CriteriaBuilder cb = new CriteriaBuilder(OnmsNode.class);
-        cb.alias("assetRecord", "asset");
-        cb.orderBy("id").asc();
+        // Retrieves nodes with addresses or lat/lon fields
+        final CriteriaBuilder cb = new CriteriaBuilder(OnmsNode.class)
+            .alias("assetRecord", "asset")
+            .or(
+                   Restrictions.any(
+                           Restrictions.isNotNull("asset.geolocation.address1"),
+                           Restrictions.isNotNull("asset.geolocation.address2"),
+                           Restrictions.isNotNull("asset.geolocation.city"),
+                           Restrictions.isNotNull("asset.geolocation.state"),
+                           Restrictions.isNotNull("asset.geolocation.zip"),
+                           Restrictions.isNotNull("asset.geolocation.country")
+                   ),
+                   Restrictions.and(
+                           Restrictions.isNotNull("asset.geolocation.latitude"),
+                           Restrictions.isNotNull("asset.geolocation.longitude")
+                  )
+             )
+            .orderBy("id").asc();
 
         final List<OnmsAssetRecord> updatedAssets = new ArrayList<OnmsAssetRecord>();
         final Map<Integer, NodeEntry> nodes = new HashMap<Integer, NodeEntry>();
@@ -217,10 +233,7 @@ public class MapWidgetComponent extends NodeMapComponent implements GeoAssetProv
                                 nodes.put(node.getId(), new NodeEntry(node));
                                 continue;
                             }
-                        } else if (addressString == null || "".equals(addressString)) {
-                            // no real address info, skip it
-                            continue;
-                        } else {
+                        } else if (addressString != null && ! "".equals(addressString)) {
                             LOG.debug("Node {} has an asset record with address \"{}\", but no coordinates.", node.getId(), addressString);
                             final Coordinates coordinates = getCoordinates(addressString);
 
@@ -241,9 +254,13 @@ public class MapWidgetComponent extends NodeMapComponent implements GeoAssetProv
                                 // valid coordinates, add to the list
                                 nodes.put(node.getId(), new NodeEntry(node));
                             }
+                        } else {
+                            // We shouldn't hit this block with our criteria, so we warn
+                            LOG.warn("Node {} has no address or latitude/longitude information.", node.getId());
                         }
                     } else {
-                        // no asset information
+                        // We shouldn't hit this block with our criteria, so we warn
+                        LOG.warn("Node {} has no asset information.", node.getId());
                     }
                 }
 
