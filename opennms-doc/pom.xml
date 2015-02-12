@@ -61,12 +61,12 @@
                     <dependency>
                         <groupId>org.asciidoctor</groupId>
                         <artifactId>asciidoctorj-pdf</artifactId>
-                        <version>1.5.0-alpha.6</version>
+                        <version>${asciidoctorjPdfVersion}</version>
                     </dependency>
                     <dependency>
                         <groupId>org.asciidoctor</groupId>
                         <artifactId>asciidoctorj</artifactId>
-                        <version>1.5.2</version>
+                        <version>${asciidoctorjVersion}</version>
                     </dependency>
                 </dependencies>
 
@@ -94,6 +94,7 @@
                         </goals>
                         <configuration>
                             <backend>pdf</backend>
+                            <doctype>book</doctype>
                             <!-- WARNING callout bullets don't yet work with CodeRay -->
                             <sourceHighlighter>coderay</sourceHighlighter>
                             <attributes>
