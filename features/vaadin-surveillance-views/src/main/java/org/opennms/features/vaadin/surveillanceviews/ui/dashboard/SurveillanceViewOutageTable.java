@@ -1,24 +1,107 @@
 package org.opennms.features.vaadin.surveillanceviews.ui.dashboard;
 
 import com.vaadin.data.util.BeanItemContainer;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.Table;
+import org.opennms.features.vaadin.surveillanceviews.service.NodeRtc;
 import org.opennms.features.vaadin.surveillanceviews.service.SurveillanceViewService;
 import org.opennms.netmgt.model.OnmsCategory;
-import org.opennms.netmgt.model.OnmsOutage;
+import org.opennms.netmgt.model.OnmsNode;
 
 import java.util.List;
 import java.util.Set;
 
 public class SurveillanceViewOutageTable extends SurveillanceViewDetailTable {
-    private BeanItemContainer<OnmsOutage> m_beanItemContainer = new BeanItemContainer<OnmsOutage>(OnmsOutage.class);
+    private BeanItemContainer<NodeRtc> m_beanItemContainer = new BeanItemContainer<NodeRtc>(NodeRtc.class);
 
     public SurveillanceViewOutageTable(SurveillanceViewService surveillanceViewService) {
         super("Outages", surveillanceViewService);
 
         setContainerDataSource(m_beanItemContainer);
+
+        addStyleName("surveillance-view");
+
+
+        addGeneratedColumn("node", new ColumnGenerator() {
+            @Override
+            public Object generateCell(Table table, final Object itemId, Object columnId) {
+                Label label = new Label(((NodeRtc) itemId).getNode().getLabel());
+                label.setSizeFull();
+                label.setPrimaryStyleName("white");
+                return label;
+            }
+        });
+
+        addGeneratedColumn("currentOutages", new ColumnGenerator() {
+            @Override
+            public Object generateCell(Table table, final Object itemId, Object columnId) {
+                NodeRtc nodeRtc = (NodeRtc) itemId;
+                return nodeRtc.getDownServiceCount() + " of " + nodeRtc.getDownServiceCount();
+            }
+        });
+
+        addGeneratedColumn("availability", new ColumnGenerator() {
+            @Override
+            public Object generateCell(Table table, final Object itemId, Object columnId) {
+                return ((NodeRtc) itemId).getAvailabilityAsString();
+            }
+        });
+
+        setVisibleColumns(new Object[]{"node", "currentOutages", "availability"});
+
+        setColumnHeader("node", "Node");
+        setColumnHeader("currentOutages", "Current Outages");
+        setColumnHeader("availability", "24 Hour Availability");
+
+        setCellStyleGenerator(new CellStyleGenerator() {
+            @Override
+            public String getStyle(Table table, Object itemId, Object propertyId) {
+                String style = null;
+                NodeRtc nodeRtc = (NodeRtc) itemId;
+                if (!"node".equals(propertyId)) {
+                    if (nodeRtc.getAvailability() == 1.0) {
+                        style = "normal-image";
+                    } else {
+                        style = "critical-image";
+                    }
+                } else {
+                    //style = "white";
+                }
+                return style;
+            }
+        });
+
     }
 
     @Override
-    public void refreshDetails(Set<String> rowCategories, Set<String> columnCategories) {
+    public void refreshDetails(Set<OnmsCategory> rowCategories, Set<OnmsCategory> colCategories) {
+        if (rowCategories == null || colCategories == null) {
+            return;
+        }
 
+        List<OnmsNode> nodes = null;
+
+        if (rowCategories.size() == 0 || colCategories.size() == 0) {
+            if (rowCategories.size() == 0 && colCategories.size() > 0) {
+                nodes = getSurveillanceViewService().getNodeDao().findAllByCategoryList(colCategories);
+            }
+
+            if (rowCategories.size() > 0 && colCategories.size() == 0) {
+                nodes = getSurveillanceViewService().getNodeDao().findAllByCategoryList(rowCategories);
+            }
+        } else {
+            nodes = getSurveillanceViewService().getNodeDao().findAllByCategoryLists(rowCategories, colCategories);
+        }
+
+        m_beanItemContainer.removeAllItems();
+
+        if (nodes != null && nodes.size() > 0) {
+            List<NodeRtc> nodeRtcList = getSurveillanceViewService().getRtcList(nodes);
+            for (NodeRtc nodeRtc : nodeRtcList) {
+                m_beanItemContainer.addItem(nodeRtc);
+            }
+        }
+
+        sort(new Object[]{"node"}, new boolean[]{true});
     }
 }

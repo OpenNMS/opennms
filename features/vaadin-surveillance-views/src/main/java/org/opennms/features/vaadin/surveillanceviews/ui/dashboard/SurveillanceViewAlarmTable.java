@@ -1,13 +1,13 @@
 package org.opennms.features.vaadin.surveillanceviews.ui.dashboard;
 
 import com.vaadin.data.util.BeanItemContainer;
+import com.vaadin.ui.Table;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.features.vaadin.surveillanceviews.service.SurveillanceViewService;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsNode;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -27,40 +27,44 @@ public class SurveillanceViewAlarmTable extends SurveillanceViewDetailTable {
         setColumnHeader("counter", "Count");
         setColumnHeader("firstEventTime", "First Time");
         setColumnHeader("lastEventTime", "Last Time");
+
+        addStyleName("surveillance-view");
+
+        setCellStyleGenerator(new CellStyleGenerator() {
+            @Override
+            public String getStyle(final Table source, final Object itemId, final Object propertyId) {
+                String style = null;
+
+                OnmsAlarm onmsAlarm = ((OnmsAlarm) itemId);
+                style = onmsAlarm.getSeverity().getLabel().toLowerCase();
+
+                if ("logMsg".equals(propertyId)) {
+                    style += "-image";
+                }
+
+                return style;
+            }
+        });
     }
 
     @Override
-    public void refreshDetails(Set<String> rowCategories, Set<String> colCategories) {
+    public void refreshDetails(Set<OnmsCategory> rowCategories, Set<OnmsCategory> colCategories) {
         if (rowCategories == null || colCategories == null) {
             return;
         }
 
-        List<OnmsCategory> onmsCategories = getSurveillanceViewService().getOnmsCategories();
-
-        Set<OnmsCategory> rows = new HashSet<>();
-        Set<OnmsCategory> cols = new HashSet<>();
-
-        for (OnmsCategory onmsCategory : onmsCategories) {
-            if (rowCategories.contains(onmsCategory.getName())) {
-                rows.add(onmsCategory);
-            }
-            if (colCategories.contains(onmsCategory.getName())) {
-                cols.add(onmsCategory);
-            }
-        }
-
         List<OnmsNode> nodes = null;
 
-        if (rows.size() == 0 || cols.size() == 0) {
-            if (rows.size() == 0 && cols.size() > 0) {
-                nodes = getSurveillanceViewService().getNodeDao().findAllByCategoryList(cols);
+        if (rowCategories.size() == 0 || colCategories.size() == 0) {
+            if (rowCategories.size() == 0 && colCategories.size() > 0) {
+                nodes = getSurveillanceViewService().getNodeDao().findAllByCategoryList(colCategories);
             }
 
-            if (rows.size() > 0 && cols.size() == 0) {
-                nodes = getSurveillanceViewService().getNodeDao().findAllByCategoryList(rows);
+            if (rowCategories.size() > 0 && colCategories.size() == 0) {
+                nodes = getSurveillanceViewService().getNodeDao().findAllByCategoryList(rowCategories);
             }
         } else {
-            nodes = getSurveillanceViewService().getNodeDao().findAllByCategoryLists(rows, cols);
+            nodes = getSurveillanceViewService().getNodeDao().findAllByCategoryLists(rowCategories, colCategories);
         }
 
         final CriteriaBuilder alarmCb = new CriteriaBuilder(OnmsAlarm.class);
@@ -68,9 +72,7 @@ public class SurveillanceViewAlarmTable extends SurveillanceViewDetailTable {
         alarmCb.alias("node", "node");
         alarmCb.alias("lastEvent", "event");
         alarmCb.ne("node.type", "D");
-
-        //alarmCb.fetch("firstEvent", Fetch.FetchType.EAGER);
-        //alarmCb.fetch("lastEvent", Fetch.FetchType.EAGER);
+        alarmCb.limit(100);
 
         alarmCb.distinct();
 
@@ -85,6 +87,8 @@ public class SurveillanceViewAlarmTable extends SurveillanceViewDetailTable {
                 m_beanItemContainer.addItem(alarm);
             }
         }
+
+        sort(new Object[]{"firstEventTime"}, new boolean[]{true});
 
         refreshRowCache();
     }

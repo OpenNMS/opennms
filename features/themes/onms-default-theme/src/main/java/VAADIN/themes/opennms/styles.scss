@@ -207,6 +207,7 @@ $header-background-image: url("images/headerbg.png") !default;
 
 .surveillance-view .v-table-cell-content {
   padding: 0px 0px 0px 0px;
+  background-color: #ffffff;
 }
 /*
 .v-table-cell-content-marked {
@@ -215,12 +216,24 @@ $header-background-image: url("images/headerbg.png") !default;
   padding: 0px 0px 0px 0px;
 }
 */
+
+.v-caption-surveillance-view {
+  background-color: #4d9c29;
+  border-color: #4d9c29 !important;
+  border-bottom: 1px solid transparent;
+  padding: 6px;
+  color: white !important;
+  font-size: 12px !important;
+  font-weight: bold;
+}
+
 .surveillance-view .v-table-caption-container {
   overflow: hidden;
   white-space: nowrap;
   margin-left: 6px;
   padding-right: 0px;
   margin-left: 4px;
+  text-transform: none;
   /*
     For Vaadin Theme Runo:
 
@@ -236,9 +249,11 @@ $header-background-image: url("images/headerbg.png") !default;
 .surveillance-view .v-table-cell-wrapper {
   line-height: normal;
   padding: 0px 0px 0px 0px;
+  word-break: break-word;
+  white-space: normal;
 }
 
-.surveillance-view .clear {
+.surveillance-view .white {
   color: black;
   background-color: #ffffff;
   border-top: 1px solid #999999;
@@ -331,3 +346,185 @@ $header-background-image: url("images/headerbg.png") !default;
   td-padding-left: 18px;
 }
 
+.surveillance-view .v-table-cell-content-white {
+  color: black;
+  background-color: #ffffff;
+  border-top: 1px solid #999999;
+  padding-left: 4px;
+  td-padding-left: 4px;
+}
+
+.surveillance-view .v-table-cell-content-critical {
+  color: black;
+  background-color: #f5cdcd;
+  border-top: 1px solid #999999;
+  line-height: 30px;
+  padding-left: 4px;
+  td-padding-left: 4px;
+  height:30px;
+  padding-top: 6px;
+}
+
+.surveillance-view .v-table-cell-content-major {
+  color: black;
+  background-color: #ffd7cd;
+  border-top: 1px solid #999999;
+  line-height: 30px;
+  padding-left: 4px;
+  td-padding-left: 4px;
+  height:30px;
+  padding-top: 6px;
+}
+
+.surveillance-view .v-table-cell-content-minor {
+  color: black;
+  background-color: blanchedalmond;
+  border-top: 1px solid #999999;
+  line-height: 30px;
+  padding-left: 4px;
+  td-padding-left: 4px;
+  height:30px;
+  padding-top: 6px;
+}
+
+.surveillance-view .v-table-cell-content-warning {
+  color: black;
+  background-color: #fff5cd;
+  border-top: 1px solid #999999;
+  line-height: 30px;
+  padding-left: 4px;
+  td-padding-left: 4px;
+  height:30px;
+  padding-top: 6px;
+}
+
+.surveillance-view .v-table-cell-content-indeterminate {
+  color: black;
+  background-color: #ebebcd;
+  border-top: 1px solid #999999;
+  line-height: 30px;
+  padding-left: 4px;
+  td-padding-left: 4px;
+  height:30px;
+  padding-top: 6px;
+}
+
+.surveillance-view .v-table-cell-content-normal {
+  color: black;
+  background-color: #d7e1cd;
+  border-top: 1px solid #999999;
+  line-height: 30px;
+  padding-left: 4px;
+  td-padding-left: 4px;
+  height:30px;
+  padding-top: 6px;
+}
+
+.surveillance-view .v-table-cell-content-cleared {
+  color: black;
+  background-color: #eeeeee;
+  border-top: 1px solid #999999;
+  line-height: 30px;
+  padding-left: 4px;
+  td-padding-left: 4px;
+  height:30px;
+  padding-top: 6px;
+}
+
+.surveillance-view .v-table-cell-content-critical-image {
+  color: black;
+  background-color: #f5cdcd;
+  border-top: 1px solid #999999;
+  background-image: url(../../../../images/bgCritical.png);
+  background-repeat: repeat-y;
+  background-position: left top;
+  line-height: 30px;
+  padding-left: 18px;
+  td-padding-left: 18px;
+  height:30px;
+  padding-top: 6px;
+}
+
+.surveillance-view .v-table-cell-content-major-image {
+  color: black;
+  background-color: #ffd7cd;
+  border-top: 1px solid #999999;
+  background-image: url(../../../../images/bgMajor.png);
+  background-repeat: repeat-y;
+  background-position: left top;
+  line-height: 30px;
+  padding-left: 18px;
+  td-padding-left: 18px;
+  height:30px;
+  padding-top: 6px;
+}
+
+.surveillance-view .v-table-cell-content-minor-image {
+  color: black;
+  background-color: blanchedalmond;
+  border-top: 1px solid #999999;
+  background-image: url(../../../../images/bgMinor.png);
+  background-repeat: repeat-y;
+  background-position: left top;
+  line-height: 30px;
+  padding-left: 18px;
+  td-padding-left: 18px;
+  height:30px;
+  padding-top: 6px;
+}
+
+.surveillance-view .v-table-cell-content-warning-image {
+  color: black;
+  background-color: #fff5cd;
+  border-top: 1px solid #999999;
+  background-image: url(../../../../images/bgWarning.png);
+  background-repeat: repeat-y;
+  background-position: left top;
+  line-height: 30px;
+  padding-left: 18px;
+  td-padding-left: 18px;
+  height:30px;
+  padding-top: 6px;
+}
+
+.surveillance-view .v-table-cell-content-indeterminate-image {
+  color: black;
+  background-color: #ebebcd;
+  border-top: 1px solid #999999;
+  background-image: url(../../../../images/bgIndeterminate.png);
+  background-repeat: repeat-y;
+  background-position: left top;
+  line-height: 30px;
+  padding-left: 18px;
+  td-padding-left: 18px;
+  height:30px;
+  padding-top: 6px;
+}
+
+.surveillance-view .v-table-cell-content-normal-image {
+  color: black;
+  background-color: #d7e1cd;
+  border-top: 1px solid #999999;
+  background-image: url(../../../../images/bgNormal.png);
+  background-repeat: repeat-y;
+  background-position: left top;
+  line-height: 30px;
+  padding-left: 18px;
+  td-padding-left: 18px;
+  height:30px;
+  padding-top: 6px;
+}
+
+.surveillance-view .v-table-cell-content-cleared-image {
+  color: black;
+  background-color: #eeeeee;
+  border-top: 1px solid #999999;
+  background-image: url(../../../../images/bgCleared.png);
+  background-repeat: repeat-y;
+  background-position: left top;
+  line-height: 30px;
+  padding-left: 18px;
+  td-padding-left: 18px;
+  height:30px;
+  padding-top: 6px;
+}

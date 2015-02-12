@@ -54,8 +54,8 @@ public class SurveillanceViewsUI extends UI {
     @Override
     protected void init(VaadinRequest request) {
         VerticalLayout rootLayout = new VerticalLayout();
+        rootLayout.setSpacing(true);
         rootLayout.setSizeFull();
-        rootLayout.setSpacing(false);
 
         View view = SurveillanceViewProvider.getInstance().getView("default");
 
@@ -64,6 +64,8 @@ public class SurveillanceViewsUI extends UI {
         rootLayout.addComponent(surveillanceViewTable);
 
         VerticalLayout secondLayout = new VerticalLayout();
+        secondLayout.setSpacing(true);
+
         SurveillanceViewAlarmTable surveillanceViewAlarmTable = new SurveillanceViewAlarmTable(m_surveillanceViewService);
         SurveillanceViewNotificationTable surveillanceViewNotificationTable = new SurveillanceViewNotificationTable(m_surveillanceViewService);
         SurveillanceViewOutageTable surveillanceViewOutageTable = new SurveillanceViewOutageTable(m_surveillanceViewService);

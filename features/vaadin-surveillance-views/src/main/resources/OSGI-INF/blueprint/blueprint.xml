@@ -7,6 +7,8 @@
     <reference id="categoryDao" interface="org.opennms.netmgt.dao.api.CategoryDao" availability="mandatory"/>
     <reference id="alarmDao" interface="org.opennms.netmgt.dao.api.AlarmDao" availability="mandatory"/>
     <reference id="outageDao" interface="org.opennms.netmgt.dao.api.OutageDao" availability="mandatory"/>
+    <reference id="monitoredServiceDao" interface="org.opennms.netmgt.dao.api.MonitoredServiceDao" availability="mandatory"/>
+    <reference id="transactionOperations" interface="org.springframework.transaction.support.TransactionOperations" availability="mandatory"/>
 
     <reference id="alarmRepository" interface="org.opennms.netmgt.dao.api.AlarmRepository" availability="mandatory" />
 
@@ -29,6 +31,8 @@
         <property name="alarmDao" ref="alarmDao"/>
         <property name="groupDao" ref="groupDao"/>
         <property name="outageDao" ref="outageDao"/>
+        <property name="monitoredServiceDao" ref="monitoredServiceDao"/>
+        <property name="transactionOperations" ref="transactionOperations"/>
         <property name="alarmRepository" ref="alarmRepository"/>
     </bean>
 

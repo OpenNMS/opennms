@@ -4,7 +4,6 @@ import com.vaadin.ui.Table;
 import org.opennms.features.vaadin.surveillanceviews.service.SurveillanceViewService;
 import org.opennms.netmgt.model.OnmsCategory;
 
-import java.util.List;
 import java.util.Set;
 
 public abstract class SurveillanceViewDetailTable extends Table {
@@ -14,11 +13,12 @@ public abstract class SurveillanceViewDetailTable extends Table {
         super(title);
         m_surveillanceViewService = surveillanceViewService;
         setSizeFull();
+        setPageLength(5);
     }
 
     protected SurveillanceViewService getSurveillanceViewService() {
         return m_surveillanceViewService;
     }
 
-    public abstract void refreshDetails(Set<String> rowCategories, Set<String> columnCategories);
+    public abstract void refreshDetails(Set<OnmsCategory> rowCategories, Set<OnmsCategory> colCategories);
 }

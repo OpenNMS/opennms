@@ -5,8 +5,11 @@ import org.opennms.features.vaadin.surveillanceviews.model.View;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.AlarmRepository;
 import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.api.NotificationDao;
 import org.opennms.netmgt.model.OnmsCategory;
+import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.SurveillanceStatus;
+import org.springframework.transaction.support.TransactionOperations;
 
 import java.util.Collection;
 import java.util.List;
@@ -29,4 +32,10 @@ public interface SurveillanceViewService {
     SurveillanceStatus[][] calculateCellStatus(final View view);
 
     Set<OnmsCategory> getOnmsCategoriesFromViewCategories(final Collection<Category> viewCats);
+
+    List<NodeRtc> getRtcList(List<OnmsNode> nodes);
+
+    TransactionOperations getTransactionOperations();
+
+    NotificationDao getNotificationDao();
 }

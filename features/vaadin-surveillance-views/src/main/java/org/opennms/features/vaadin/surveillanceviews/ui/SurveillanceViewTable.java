@@ -9,11 +9,15 @@ import org.opennms.features.vaadin.surveillanceviews.model.RowDef;
 import org.opennms.features.vaadin.surveillanceviews.model.View;
 import org.opennms.features.vaadin.surveillanceviews.service.SurveillanceViewService;
 import org.opennms.features.vaadin.surveillanceviews.ui.dashboard.SurveillanceViewDetailTable;
+import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.SurveillanceStatus;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public class SurveillanceViewTable extends Table {
@@ -28,20 +32,28 @@ public class SurveillanceViewTable extends Table {
     private Object m_selectedItemId, m_selectedPropertyId;
     private List<SurveillanceViewDetailTable> m_detailTables = new ArrayList<SurveillanceViewDetailTable>();
 
-    private Set<String> m_selectedRowCategories = null;
-    private Set<String> m_selectedColumnCategories = null;
+    private Set<OnmsCategory> m_selectedRowCategories = null;
+    private Set<OnmsCategory> m_selectedColumnCategories = null;
 
-    private Set<String> m_allRowCategories = new HashSet<>();
-    private Set<String> m_allColumnCategories = new HashSet<>();
+    private Set<OnmsCategory> m_allRowCategories = new HashSet<>();
+    private Set<OnmsCategory> m_allColumnCategories = new HashSet<>();
 
     SurveillanceStatus[][] cells;
 
+    Map<String, OnmsCategory> m_onmsCategoryMap = new HashMap<>();
+
     public SurveillanceViewTable(final View view, SurveillanceViewService surveillanceViewService) {
+        super("Surveillance view: " + view.getName());
 
         this.m_surveillanceViewService = surveillanceViewService;
 
         cells = m_surveillanceViewService.calculateCellStatus(view);
 
+        List<OnmsCategory> onmsCategories = m_surveillanceViewService.getOnmsCategories();
+
+        for (OnmsCategory onmsCategory : onmsCategories) {
+            m_onmsCategoryMap.put(onmsCategory.getName(), onmsCategory);
+        }
         setSizeUndefined();
         setWidth(100, Unit.PERCENTAGE);
 
@@ -57,14 +69,15 @@ public class SurveillanceViewTable extends Table {
             public Object generateCell(Table table, final Object itemId, Object columnId) {
                 Label label = new Label((String) itemId);
                 label.setSizeFull();
-                label.addStyleName("clear");
+                label.addStyleName("white");
                 return label;
             }
         });
 
+        setColumnHeader("", view.getName());
 
         for (ColumnDef columnDef : view.getColumns()) {
-            m_allColumnCategories.addAll(columnDef.getCategoryNames());
+            m_allColumnCategories.addAll(getOnmsCategoriesForNames(columnDef.getCategoryNames()));
 
             addGeneratedColumn(columnDef.getLabel(), new Table.ColumnGenerator() {
                 public Object generateCell(Table source, final Object itemId, Object columnId) {
@@ -83,7 +96,7 @@ public class SurveillanceViewTable extends Table {
         }
 
         for (RowDef rowDef : view.getRows()) {
-            m_allRowCategories.addAll(rowDef.getCategoryNames());
+            m_allRowCategories.addAll(getOnmsCategoriesForNames(rowDef.getCategoryNames()));
 
             addItem(rowDef.getLabel());
             setItemCaption(rowDef.getLabel(), rowDef.getLabel());
@@ -99,28 +112,25 @@ public class SurveillanceViewTable extends Table {
             public void itemClick(ItemClickEvent itemClickEvent) {
                 String selectedColumn = (String) itemClickEvent.getPropertyId();
                 if (!"".equals(selectedColumn)) {
-                    Notification.show("Item clicked");
                     m_selectionType = TableSelectionMode.ITEM_SELECTED;
                     m_selectedItemId = itemClickEvent.getItemId();
                     m_selectedPropertyId = itemClickEvent.getPropertyId();
 
-                    m_selectedRowCategories = view.getRowDef((String) itemClickEvent.getItemId()).getCategoryNames();
-                    m_selectedColumnCategories = view.getColumnDef((String) itemClickEvent.getPropertyId()).getCategoryNames();
+                    Notification.show(m_selectedItemId + "/" + m_selectedPropertyId + " selected");
 
-                    System.out.println("Row: " + itemClickEvent.getItemId() + " / " + m_selectedRowCategories.size());
-                    System.out.println("Col: " + itemClickEvent.getPropertyId() + " / " + m_selectedColumnCategories.size());
-
+                    m_selectedRowCategories = getOnmsCategoriesForNames(view.getRowDef((String) itemClickEvent.getItemId()).getCategoryNames());
+                    m_selectedColumnCategories = getOnmsCategoriesForNames(view.getColumnDef((String) itemClickEvent.getPropertyId()).getCategoryNames());
                 } else {
-                    Notification.show("Row clicked");
                     m_selectionType = TableSelectionMode.ROW_SELECTED;
                     m_selectedItemId = itemClickEvent.getItemId();
 
-                    m_selectedRowCategories = view.getRowDef((String) itemClickEvent.getItemId()).getCategoryNames();
+                    Notification.show(m_selectedItemId + " selected");
+
+                    m_selectedRowCategories = getOnmsCategoriesForNames(view.getRowDef((String) itemClickEvent.getItemId()).getCategoryNames());
                     m_selectedColumnCategories = m_allColumnCategories;
                 }
 
                 updateDetailsTable();
-
                 markAsDirtyRecursive();
             }
         });
@@ -134,19 +144,18 @@ public class SurveillanceViewTable extends Table {
                     m_selectedRowCategories = m_allRowCategories;
                     m_selectedColumnCategories = m_allColumnCategories;
 
-                    Notification.show("All clicked");
+                    Notification.show("All entries selected");
                 } else {
                     m_selectionType = TableSelectionMode.COLUMN_SELECTED;
                     m_selectedPropertyId = headerClickEvent.getPropertyId();
 
                     m_selectedRowCategories = m_allRowCategories;
-                    m_selectedColumnCategories = view.getColumnDef((String) headerClickEvent.getPropertyId()).getCategoryNames();
+                    m_selectedColumnCategories = getOnmsCategoriesForNames(view.getColumnDef((String) headerClickEvent.getPropertyId()).getCategoryNames());
 
-                    Notification.show("Header clicked");
+                    Notification.show(m_selectedPropertyId + " selected");
                 }
 
                 updateDetailsTable();
-
                 markAsDirtyRecursive();
             }
         });
@@ -181,6 +190,14 @@ public class SurveillanceViewTable extends Table {
                 return style;
             }
         });
+    }
+
+    private Set<OnmsCategory> getOnmsCategoriesForNames(Collection<String> collection) {
+        Set<OnmsCategory> onmsCategories = new HashSet<>();
+        for (String name : collection) {
+            onmsCategories.add(m_onmsCategoryMap.get(name));
+        }
+        return onmsCategories;
     }
 
     private void updateDetailsTable() {
