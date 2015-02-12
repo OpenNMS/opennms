@@ -39,7 +39,6 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
 import com.github.wolfie.refresher.Refresher;
-import java.util.concurrent.ConcurrentHashMap;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.features.geocoder.Coordinates;
 import org.opennms.features.geocoder.GeocoderException;
@@ -68,6 +67,7 @@ import org.springframework.transaction.support.TransactionOperations;
 public class MapWidgetComponent extends NodeMapComponent implements GeoAssetProvider {
 
     private class DynamicUpdateRefresher implements Refresher.RefreshListener{
+        private static final long serialVersionUID = 801233170298353060L;
 
         @Override
         public void refresh(Refresher refresher) {
@@ -221,7 +221,7 @@ public class MapWidgetComponent extends NodeMapComponent implements GeoAssetProv
                             // no real address info, skip it
                             continue;
                         } else {
-                            LOG.debug("Node {} has an asset record with address \"{}\", but no coordinates.", new Object[]{node.getId(), addressString});
+                            LOG.debug("Node {} has an asset record with address \"{}\", but no coordinates.", node.getId(), addressString);
                             final Coordinates coordinates = getCoordinates(addressString);
 
                             if (coordinates == null) {

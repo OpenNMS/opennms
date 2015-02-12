@@ -28,10 +28,12 @@
 
 package org.opennms.features.geocoder.google;
 
+import java.io.IOException;
 import java.security.InvalidKeyException;
 
 import org.apache.commons.httpclient.DefaultHttpMethodRetryHandler;
 import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
 import org.apache.commons.httpclient.params.HttpMethodParams;
 import org.opennms.features.geocoder.Coordinates;
 import org.opennms.features.geocoder.GeocoderException;
@@ -65,10 +67,12 @@ public class GoogleGeocoderService implements GeocoderService {
 
     public void ensureInitialized() throws GeocoderException {
         if (m_geocoder == null) {
+            final HttpClient httpClient = new HttpClient(new MultiThreadedHttpConnectionManager());
+
             if (notEmpty(m_clientId) && notEmpty(m_clientKey)) {
                 try {
                     LOG.info("Initializing Google Geocoder using Client ID and Key.");
-                    m_geocoder = new AdvancedGeoCoder(m_clientId, m_clientKey);
+                    m_geocoder = new AdvancedGeoCoder(httpClient, m_clientId, m_clientKey);
                 } catch (final InvalidKeyException e) {
                     throw new GeocoderException("Unable to initialize Google Geocoder.", e);
                 }
@@ -76,10 +80,8 @@ public class GoogleGeocoderService implements GeocoderService {
 
             if (m_geocoder == null) {
                 LOG.info("Initializing Google Geocoder using default configuration.");
-                m_geocoder = new AdvancedGeoCoder();
+                m_geocoder = new AdvancedGeoCoder(httpClient);
             }
-
-            final HttpClient httpClient = m_geocoder.getHttpClient();
 
             /* Configure proxying, if necessary... */
             final String httpProxyHost = System.getProperty("http.proxyHost");
@@ -107,7 +109,13 @@ public class GoogleGeocoderService implements GeocoderService {
         ensureInitialized();
 
         final GeocoderRequest request = new GeocoderRequestBuilder().setAddress(address).setLanguage("en").getGeocoderRequest();
-        final GeocodeResponse response = m_geocoder.geocode(request);
+        GeocodeResponse response;
+        try {
+            response = m_geocoder.geocode(request);
+        } catch (IOException e) {
+            // Makes the assumption that IO related exceptions are temporary, which is suitable for most scenarios
+            throw new TemporaryGeocoderException("Failed to get coordinates for " + address + " using the Google Geocoder.", e);
+        }
 
         switch (response.getStatus()) {
         case OK:
