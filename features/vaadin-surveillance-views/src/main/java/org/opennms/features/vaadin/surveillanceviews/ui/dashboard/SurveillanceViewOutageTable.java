@@ -1,7 +1,8 @@
 package org.opennms.features.vaadin.surveillanceviews.ui.dashboard;
 
 import com.vaadin.data.util.BeanItemContainer;
-import com.vaadin.ui.Label;
+import com.vaadin.server.ExternalResource;
+import com.vaadin.ui.Link;
 import com.vaadin.ui.Table;
 import org.opennms.features.vaadin.surveillanceviews.service.NodeRtc;
 import org.opennms.features.vaadin.surveillanceviews.service.SurveillanceViewService;
@@ -21,7 +22,7 @@ public class SurveillanceViewOutageTable extends SurveillanceViewDetailTable {
 
         addStyleName("surveillance-view");
 
-
+/*
         addGeneratedColumn("node", new ColumnGenerator() {
             @Override
             public Object generateCell(Table table, final Object itemId, Object columnId) {
@@ -31,6 +32,19 @@ public class SurveillanceViewOutageTable extends SurveillanceViewDetailTable {
                 return label;
             }
         });
+*/
+
+        addGeneratedColumn("node", new ColumnGenerator() {
+            @Override
+            public Object generateCell(Table table, Object itemId, Object propertyId) {
+                NodeRtc nodeRtc = (NodeRtc) itemId;
+                Link link = new Link(nodeRtc.getNode().getLabel(), new ExternalResource("/opennms/element/node.jsp?node=" + nodeRtc.getNode().getNodeId()));
+                link.setPrimaryStyleName("surveillance-view");
+                link.addStyleName("white");
+                return link;
+            }
+        });
+
 
         addGeneratedColumn("currentOutages", new ColumnGenerator() {
             @Override
@@ -47,11 +61,6 @@ public class SurveillanceViewOutageTable extends SurveillanceViewDetailTable {
             }
         });
 
-        setVisibleColumns(new Object[]{"node", "currentOutages", "availability"});
-
-        setColumnHeader("node", "Node");
-        setColumnHeader("currentOutages", "Current Outages");
-        setColumnHeader("availability", "24 Hour Availability");
 
         setCellStyleGenerator(new CellStyleGenerator() {
             @Override
@@ -71,6 +80,11 @@ public class SurveillanceViewOutageTable extends SurveillanceViewDetailTable {
             }
         });
 
+        setColumnHeader("node", "Node");
+        setColumnHeader("currentOutages", "Current Outages");
+        setColumnHeader("availability", "24 Hour Availability");
+
+        setVisibleColumns(new Object[]{"node", "currentOutages", "availability"});
     }
 
     @Override

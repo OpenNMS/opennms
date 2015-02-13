@@ -1,6 +1,8 @@
 package org.opennms.features.vaadin.surveillanceviews.ui.dashboard;
 
 import com.vaadin.data.util.BeanItemContainer;
+import com.vaadin.server.ExternalResource;
+import com.vaadin.ui.Link;
 import com.vaadin.ui.Table;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.features.vaadin.surveillanceviews.service.SurveillanceViewService;
@@ -20,15 +22,18 @@ public class SurveillanceViewAlarmTable extends SurveillanceViewDetailTable {
 
         setContainerDataSource(m_beanItemContainer);
 
-        setVisibleColumns("nodeLabel", "logMsg", "counter", "firstEventTime", "lastEventTime");
-
-        setColumnHeader("nodeLabel", "Node");
-        setColumnHeader("logMsg", "Log Msg");
-        setColumnHeader("counter", "Count");
-        setColumnHeader("firstEventTime", "First Time");
-        setColumnHeader("lastEventTime", "Last Time");
 
         addStyleName("surveillance-view");
+
+        addGeneratedColumn("node", new ColumnGenerator() {
+            @Override
+            public Object generateCell(Table table, Object itemId, Object propertyId) {
+                OnmsAlarm onmsAlarm = (OnmsAlarm) itemId;
+                Link link = new Link(onmsAlarm.getNodeLabel(), new ExternalResource("/opennms/element/node.jsp?node=" + onmsAlarm.getNodeId()));
+                link.setPrimaryStyleName("surveillance-view");
+                return link;
+            }
+        });
 
         setCellStyleGenerator(new CellStyleGenerator() {
             @Override
@@ -45,6 +50,14 @@ public class SurveillanceViewAlarmTable extends SurveillanceViewDetailTable {
                 return style;
             }
         });
+
+        setColumnHeader("node", "Node");
+        setColumnHeader("logMsg", "Log Msg");
+        setColumnHeader("counter", "Count");
+        setColumnHeader("firstEventTime", "First Time");
+        setColumnHeader("lastEventTime", "Last Time");
+
+        setVisibleColumns("node", "logMsg", "counter", "firstEventTime", "lastEventTime");
     }
 
     @Override

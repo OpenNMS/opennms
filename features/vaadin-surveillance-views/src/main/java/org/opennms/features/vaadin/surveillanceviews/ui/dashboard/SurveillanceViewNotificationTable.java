@@ -1,6 +1,8 @@
 package org.opennms.features.vaadin.surveillanceviews.ui.dashboard;
 
 import com.vaadin.data.util.BeanItemContainer;
+import com.vaadin.server.ExternalResource;
+import com.vaadin.ui.Link;
 import com.vaadin.ui.Table;
 import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.CriteriaBuilder;
@@ -26,16 +28,17 @@ public class SurveillanceViewNotificationTable extends SurveillanceViewDetailTab
 
         setContainerDataSource(m_beanItemContainer);
 
-        setVisibleColumns("nodeLabel", "serviceType", "textMsg", "pageTime", "answeredBy", "respondTime");
-
-        setColumnHeader("nodeLabel", "Node");
-        setColumnHeader("serviceType", "Service");
-        setColumnHeader("textMsg", "Message");
-        setColumnHeader("pageTime", "Sent Time");
-        setColumnHeader("answeredBy", "Responder");
-        setColumnHeader("respondTime", "Respond Time");
-
         addStyleName("surveillance-view");
+
+        addGeneratedColumn("node", new ColumnGenerator() {
+            @Override
+            public Object generateCell(Table table, Object itemId, Object propertyId) {
+                OnmsNotification onmsNotification = (OnmsNotification) itemId;
+                Link link = new Link(onmsNotification.getNodeLabel(), new ExternalResource("/opennms/element/node.jsp?node=" + onmsNotification.getNodeId()));
+                link.setPrimaryStyleName("surveillance-view");
+                return link;
+            }
+        });
 
         setCellStyleGenerator(new CellStyleGenerator() {
             @Override
@@ -49,6 +52,15 @@ public class SurveillanceViewNotificationTable extends SurveillanceViewDetailTab
                 return style;
             }
         });
+
+        setColumnHeader("node", "Node");
+        setColumnHeader("serviceType", "Service");
+        setColumnHeader("textMsg", "Message");
+        setColumnHeader("pageTime", "Sent Time");
+        setColumnHeader("answeredBy", "Responder");
+        setColumnHeader("respondTime", "Respond Time");
+
+        setVisibleColumns("node", "serviceType", "textMsg", "pageTime", "answeredBy", "respondTime");
     }
 
     private List<OnmsNotification> getNotificationsWithCriterion(List<OnmsNode> nodes, String severity, Restriction... criterias) {
