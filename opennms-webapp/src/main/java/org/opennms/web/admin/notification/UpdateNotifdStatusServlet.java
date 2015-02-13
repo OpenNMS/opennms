@@ -30,7 +30,6 @@ package org.opennms.web.admin.notification;
 
 import java.io.IOException;
 
-import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -73,9 +72,8 @@ public class UpdateNotifdStatusServlet extends HttpServlet {
             throw new ServletException("Could not update notification status: " + e.getMessage(), e);
         }
 
-        // forward the request for proper display
-        RequestDispatcher dispatcher = this.getServletContext().getRequestDispatcher("/admin/index.jsp");
-        dispatcher.forward(request, response);
+        // Redirect to admin/index.jsp
+        response.sendRedirect("index.jsp");
     }
 
     protected void sendEvent(String uei, HttpServletRequest request) {
