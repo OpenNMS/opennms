@@ -59,7 +59,6 @@ public class FormPropertiesReader implements MessageBodyReader<MultivaluedMapImp
 
         final MultivaluedMapImpl result = new MultivaluedMapImpl();
 
-        @SuppressWarnings("unchecked")
         final Enumeration<String> en = m_httpServletRequest.getParameterNames();
         while (en.hasMoreElements()) {
             final String parmName = en.nextElement();
