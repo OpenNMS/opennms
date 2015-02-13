@@ -62,17 +62,4 @@ Which is rendered as:
 .This is a caption of the image
 image::../images/01_opennms-logo.png[]
 
-.Second included image
-[source]
-----
-.This is a caption of the image
-image::../images/02_example.png[]
-----
-
-Which is rendered as:
-
-.This is a caption of the image
-image::../images/02_example.png[]
-
-
 IMPORTANT: The image path for the images you include is relative to the *.adoc source file, where you use the image.
