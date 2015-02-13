@@ -41,8 +41,6 @@
 	<jsp:param name="breadcrumb" value="Applications" />
 </jsp:include>
 
-<link rel="stylesheet" href="css/font-awesome-4.0.3/css/font-awesome.min.css">
-
 <div class="row">
   <div class="col-md-8">
     <div class="panel panel-default">
