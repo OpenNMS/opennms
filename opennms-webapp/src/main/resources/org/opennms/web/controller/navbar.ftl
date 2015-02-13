@@ -13,9 +13,30 @@
       </a>
     </div>
 
-    <div id="headerinfo" style="display: none" class="nav navbar-nav navbar-right navbar-info">
-      ${currentDate?string["MMM d, y HH:mm z"]}
-    </div>
+    <#if request.remoteUser?has_content >
+      <div id="headerinfo" style="display: none" class="nav navbar-nav navbar-right navbar-info">
+        ${currentDate?string["MMM d, y HH:mm z"]}
+        <span class="fa-stack" style="text-shadow:none">
+        <#if noticeStatus = 'Unknown'>
+            <!-- Gray circle with bell inside -->
+            <i class="fa fa-circle fa-stack-2x text-muted"></i>
+            <i class="fa fa-circle-thin fa-stack-2x"></i>
+            <i class="fa fa-bell fa-stack-1x"></i>
+        </#if>
+        <#if noticeStatus = 'Off'>
+            <!-- Bell with red slash over it -->
+            <i class="fa fa-bell fa-stack-1x"></i>
+            <i class="fa fa-ban fa-stack-2x text-danger"></i>
+        </#if>
+        <#if noticeStatus = 'On'>
+            <!-- Green circle with bell inside -->
+            <i class="fa fa-circle fa-stack-2x text-success"></i>
+            <i class="fa fa-circle-thin fa-stack-2x"></i>
+            <i class="fa fa-bell fa-stack-1x"></i>
+        </#if>
+        </span>
+      </div>
+    </#if>
 
     <div style="margin-right: 15px" id="navbar" class="navbar-collapse collapse">
 		<ul class="nav navbar-nav navbar-right">
