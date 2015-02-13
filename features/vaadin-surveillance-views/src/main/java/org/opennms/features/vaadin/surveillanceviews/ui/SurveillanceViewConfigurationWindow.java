@@ -40,7 +40,7 @@ public class SurveillanceViewConfigurationWindow extends Window {
         setModal(true);
         setClosable(false);
         setResizable(false);
-        setWidth(70, Sizeable.Unit.PERCENTAGE);
+        setWidth(80, Sizeable.Unit.PERCENTAGE);
         setHeight(66, Sizeable.Unit.PERCENTAGE);
 
         /**
@@ -577,9 +577,9 @@ public class SurveillanceViewConfigurationWindow extends Window {
         gridLayout.addComponent(columnsTable);
         gridLayout.addComponent(columnTableFormLayout);
 
-        gridLayout.setColumnExpandRatio(1, 0.3f);
+        gridLayout.setColumnExpandRatio(1, 0.5f);
         gridLayout.setColumnExpandRatio(2, 1.0f);
-        gridLayout.setColumnExpandRatio(3, 0.3f);
+        gridLayout.setColumnExpandRatio(3, 0.5f);
         gridLayout.setColumnExpandRatio(4, 1.0f);
 
         /**

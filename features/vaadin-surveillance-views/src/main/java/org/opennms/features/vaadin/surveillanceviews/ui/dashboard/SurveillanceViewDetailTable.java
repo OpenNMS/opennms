@@ -1,10 +1,7 @@
 package org.opennms.features.vaadin.surveillanceviews.ui.dashboard;
 
-import com.vaadin.server.ExternalResource;
-import com.vaadin.ui.Link;
 import com.vaadin.ui.Table;
 import org.opennms.features.vaadin.surveillanceviews.service.SurveillanceViewService;
-import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsCategory;
 
 import java.util.Set;

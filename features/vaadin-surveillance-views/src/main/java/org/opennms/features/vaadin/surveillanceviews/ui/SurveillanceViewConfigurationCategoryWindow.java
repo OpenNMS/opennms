@@ -57,7 +57,7 @@ public class SurveillanceViewConfigurationCategoryWindow extends Window {
         labelField.setValue(def.getLabel());
         labelField.setImmediate(true);
         labelField.setCaption("Label");
-        labelField.setDescription("Label of this surveillance view");
+        labelField.setDescription("Label of this category");
         labelField.setWidth(100, Unit.PERCENTAGE);
 
         /**
@@ -73,23 +73,30 @@ public class SurveillanceViewConfigurationCategoryWindow extends Window {
         /**
          * Create selection box for the report category
          */
+
+        /*
         final NativeSelect reportCategorySelect = new NativeSelect();
         reportCategorySelect.setImmediate(true);
         reportCategorySelect.setCaption("Report category");
         reportCategorySelect.setDescription("Report category for this entry");
         reportCategorySelect.setWidth(100, Unit.PERCENTAGE);
+        */
 
         /**
          * Add data to the selection box
          */
+        /*
         for (String category : surveillanceViewService.getRtcCategories()) {
             reportCategorySelect.addItem(category);
         }
+        */
 
         /**
          * Preselect the right value
          */
+        /*
         reportCategorySelect.select(def.getReportCategory());
+        */
 
         /**
          * Categories table
@@ -122,7 +129,9 @@ public class SurveillanceViewConfigurationCategoryWindow extends Window {
         baseFormLayout.setSizeFull();
         baseFormLayout.setMargin(true);
         baseFormLayout.addComponent(labelField);
+        /*
         baseFormLayout.addComponent(reportCategorySelect);
+        */
         baseFormLayout.addComponent(categoriesTable);
 
         /**
@@ -187,8 +196,9 @@ public class SurveillanceViewConfigurationCategoryWindow extends Window {
                 }
 
                 finalDef.setLabel(labelField.getValue());
+                /*
                 finalDef.setReportCategory((String) reportCategorySelect.getValue());
-
+                */
                 saveActionListener.save(finalDef);
 
                 close();

@@ -38,7 +38,7 @@ import org.opennms.features.vaadin.surveillanceviews.model.View;
 import org.opennms.features.vaadin.surveillanceviews.service.SurveillanceViewService;
 import org.opennms.features.vaadin.surveillanceviews.ui.dashboard.SurveillanceViewAlarmTable;
 import org.opennms.features.vaadin.surveillanceviews.ui.dashboard.SurveillanceViewNotificationTable;
-import org.opennms.features.vaadin.surveillanceviews.ui.dashboard.SurveillanceViewOutageTable;
+import org.opennms.features.vaadin.surveillanceviews.ui.dashboard.SurveillanceViewNodeRtcTable;
 
 /**
  * The surveillance view application's "main" class
@@ -68,15 +68,15 @@ public class SurveillanceViewsUI extends UI {
 
         SurveillanceViewAlarmTable surveillanceViewAlarmTable = new SurveillanceViewAlarmTable(m_surveillanceViewService);
         SurveillanceViewNotificationTable surveillanceViewNotificationTable = new SurveillanceViewNotificationTable(m_surveillanceViewService);
-        SurveillanceViewOutageTable surveillanceViewOutageTable = new SurveillanceViewOutageTable(m_surveillanceViewService);
+        SurveillanceViewNodeRtcTable surveillanceViewNodeRtcTable = new SurveillanceViewNodeRtcTable(m_surveillanceViewService);
 
         secondLayout.addComponent(surveillanceViewAlarmTable);
         secondLayout.addComponent(surveillanceViewNotificationTable);
-        secondLayout.addComponent(surveillanceViewOutageTable);
+        secondLayout.addComponent(surveillanceViewNodeRtcTable);
 
         surveillanceViewTable.addDetailsTable(surveillanceViewAlarmTable);
         surveillanceViewTable.addDetailsTable(surveillanceViewNotificationTable);
-        surveillanceViewTable.addDetailsTable(surveillanceViewOutageTable);
+        surveillanceViewTable.addDetailsTable(surveillanceViewNodeRtcTable);
 
         rootLayout.addComponent(secondLayout);
         rootLayout.setExpandRatio(secondLayout, 1.0f);

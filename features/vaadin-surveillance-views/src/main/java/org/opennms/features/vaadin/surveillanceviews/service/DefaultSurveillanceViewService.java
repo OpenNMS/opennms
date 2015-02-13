@@ -1,18 +1,14 @@
 package org.opennms.features.vaadin.surveillanceviews.service;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.criteria.Alias;
 import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.criteria.Order;
+import org.opennms.core.criteria.restrictions.Restriction;
 import org.opennms.core.criteria.restrictions.Restrictions;
 import org.opennms.features.vaadin.surveillanceviews.model.Category;
 import org.opennms.features.vaadin.surveillanceviews.model.View;
-import org.opennms.netmgt.config.CategoryFactory;
 import org.opennms.netmgt.config.GroupDao;
-import org.opennms.netmgt.config.categories.CatFactory;
-import org.opennms.netmgt.config.categories.Categorygroup;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.AlarmRepository;
 import org.opennms.netmgt.dao.api.CategoryDao;
@@ -23,9 +19,11 @@ import org.opennms.netmgt.dao.api.NotificationDao;
 import org.opennms.netmgt.dao.api.OutageDao;
 import org.opennms.netmgt.dao.api.ResourceDao;
 import org.opennms.netmgt.dao.api.SurveillanceViewConfigDao;
+import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.OnmsNotification;
 import org.opennms.netmgt.model.OnmsOutage;
 import org.opennms.netmgt.model.SurveillanceStatus;
 import org.slf4j.Logger;
@@ -35,8 +33,6 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionOperations;
 
-import java.io.IOException;
-import java.lang.reflect.UndeclaredThrowableException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -200,6 +196,7 @@ public class DefaultSurveillanceViewService implements SurveillanceViewService {
      *
      * @return the list of Rtc categories.
      */
+    /*
     public List<String> getRtcCategories() {
 
         CatFactory cFactory = null;
@@ -235,24 +232,8 @@ public class DefaultSurveillanceViewService implements SurveillanceViewService {
 
         return categories;
     }
-
-    public AlarmDao getAlarmDao() {
-        return m_alarmDao;
-    }
-
-    public AlarmRepository getAlarmRepository() {
-        return m_alarmRepository;
-    }
-
-    public NodeDao getNodeDao() {
-        return m_nodeDao;
-    }
-
-    @Override
-    public NotificationDao getNotificationDao() {
-        return m_notificationDao;
-    }
-
+    */
+    
     public Set<OnmsCategory> getOnmsCategoriesFromViewCategories(final Collection<Category> viewCats) {
         final Set<OnmsCategory> categories = new HashSet<OnmsCategory>();
 
@@ -383,50 +364,120 @@ public class DefaultSurveillanceViewService implements SurveillanceViewService {
         return ((double) upMillis / (double) (serviceCount * (24 * 60 * 60 * 1000)));
     }
 
-    public List<NodeRtc> getRtcList(List<OnmsNode> nodes) {
-        CriteriaBuilder outageCb = new CriteriaBuilder(OnmsOutage.class);
+    private List<OnmsNode> retrieveNodesForCategories(Set<OnmsCategory> rowCategories, Set<OnmsCategory> colCategories) {
+        List<OnmsNode> nodes = new ArrayList<>();
 
-        outageCb.alias("monitoredService", "monitoredService", Alias.JoinType.INNER_JOIN);
-        outageCb.alias("monitoredService.ipInterface", "ipInterface", Alias.JoinType.INNER_JOIN);
-        outageCb.alias("monitoredService.ipInterface.node", "node", Alias.JoinType.INNER_JOIN);
-        outageCb.eq("monitoredService.status", "A");
-        outageCb.ne("ipInterface.isManaged", "D");
-        outageCb.ne("node.type", "D");
-
-        /*
-
-        System.out.println("--- IN ---");
-
-        for (OnmsNode onmsNode : nodes) {
-            System.out.println(onmsNode.getLabel());
+        if (rowCategories == null || colCategories == null) {
+            return nodes;
         }
 
-        System.out.println(outageCb.toCriteria());
+        if (rowCategories.size() == 0 || colCategories.size() == 0) {
+            if (rowCategories.size() == 0 && colCategories.size() > 0) {
+                nodes = m_nodeDao.findAllByCategoryList(colCategories);
+            }
 
-        */
+            if (rowCategories.size() > 0 && colCategories.size() == 0) {
+                nodes = m_nodeDao.findAllByCategoryList(rowCategories);
+            }
+        } else {
+            nodes = m_nodeDao.findAllByCategoryLists(rowCategories, colCategories);
+        }
 
-        CriteriaBuilder serviceCb = new CriteriaBuilder(OnmsMonitoredService.class);
+        return nodes;
+    }
 
-        serviceCb.alias("ipInterface", "ipInterface", Alias.JoinType.INNER_JOIN);
-        serviceCb.alias("ipInterface.node", "node", Alias.JoinType.INNER_JOIN);
-        serviceCb.alias("serviceType", "serviceType", Alias.JoinType.INNER_JOIN);
-        serviceCb.alias("currentOutages", "currentOutages", Alias.JoinType.INNER_JOIN);
-        // serviceCb.eq("monitoredService.status", "A");
-        serviceCb.eq("status", "A");
-        serviceCb.ne("ipInterface.isManaged", "D");
-        serviceCb.ne("node.type", "D");
+    @Override
+    public List<OnmsAlarm> getAlarmsForCategories(Set<OnmsCategory> rowCategories, Set<OnmsCategory> colCategories) {
+        List<OnmsNode> nodes = retrieveNodesForCategories(rowCategories, colCategories);
+
+        final CriteriaBuilder criteriaBuilder = new CriteriaBuilder(OnmsAlarm.class);
+
+        criteriaBuilder.alias("node", "node");
+        criteriaBuilder.alias("lastEvent", "event");
+        criteriaBuilder.ne("node.type", "D");
+        criteriaBuilder.limit(100);
+        criteriaBuilder.distinct();
+
+        if (nodes != null && nodes.size() > 0) {
+            criteriaBuilder.in("node", nodes);
+            return m_alarmDao.findMatching(criteriaBuilder.toCriteria());
+        }
+
+        return new ArrayList<>();
+    }
+
+    private List<OnmsNotification> getNotificationsWithCriterias(Map<OnmsNotification, String> customSeverity, List<OnmsNode> nodes, String severity, Restriction... criterias) {
+        CriteriaBuilder criteriaBuilder = new CriteriaBuilder(OnmsNotification.class);
+
+        criteriaBuilder.alias("node", "node");
+        criteriaBuilder.in("node", nodes);
+        criteriaBuilder.ne("node.type", "D");
+        criteriaBuilder.orderBy("pageTime", false);
+
+        Criteria myCriteria = criteriaBuilder.toCriteria();
+
+        for (Restriction criteria : criterias) {
+            myCriteria.addRestriction(criteria);
+        }
+
+        List<OnmsNotification> notifications = m_notificationDao.findMatching(myCriteria);
+
+        for (OnmsNotification onmsNotification : notifications) {
+            customSeverity.put(onmsNotification, severity);
+        }
+
+        return notifications;
+    }
+
+    @Override
+    public List<OnmsNotification> getNotificationsForCategories(Set<OnmsCategory> rowCategories, Set<OnmsCategory> colCategories, Map<OnmsNotification, String> customSeverity) {
+        List<OnmsNode> nodes = retrieveNodesForCategories(rowCategories, colCategories);
+
+        Date fifteenMinutesAgo = new Date(System.currentTimeMillis() - (15 * 60 * 1000));
+        Date oneWeekAgo = new Date(System.currentTimeMillis() - (7 * 24 * 60 * 60 * 1000));
+
+        customSeverity.clear();
+
+        if (nodes != null && nodes.size() > 0) {
+            List<OnmsNotification> notifications = new ArrayList<OnmsNotification>();
+            notifications.addAll(getNotificationsWithCriterias(customSeverity, nodes, "Critical", Restrictions.isNull("respondTime"), Restrictions.le("pageTime", fifteenMinutesAgo)));
+            notifications.addAll(getNotificationsWithCriterias(customSeverity, nodes, "Minor", Restrictions.isNull("respondTime"), Restrictions.gt("pageTime", fifteenMinutesAgo)));
+            notifications.addAll(getNotificationsWithCriterias(customSeverity, nodes, "Normal", Restrictions.isNotNull("respondTime"), Restrictions.gt("pageTime", oneWeekAgo)));
+            return notifications;
+        }
+
+        return new ArrayList<>();
+    }
+
+    @Override
+    public List<NodeRtc> getNoteRtcsForCategories(Set<OnmsCategory> rowCategories, Set<OnmsCategory> colCategories) {
+        List<OnmsNode> nodes = retrieveNodesForCategories(rowCategories, colCategories);
+
+        CriteriaBuilder outageCriteriaBuilder = new CriteriaBuilder(OnmsOutage.class);
+
+        outageCriteriaBuilder.alias("monitoredService", "monitoredService", Alias.JoinType.INNER_JOIN);
+        outageCriteriaBuilder.alias("monitoredService.ipInterface", "ipInterface", Alias.JoinType.INNER_JOIN);
+        outageCriteriaBuilder.alias("monitoredService.ipInterface.node", "node", Alias.JoinType.INNER_JOIN);
+        outageCriteriaBuilder.eq("monitoredService.status", "A");
+        outageCriteriaBuilder.ne("ipInterface.isManaged", "D");
+        outageCriteriaBuilder.ne("node.type", "D");
+
+        CriteriaBuilder serviceCriteriaBuilder = new CriteriaBuilder(OnmsMonitoredService.class);
+
+        serviceCriteriaBuilder.alias("ipInterface", "ipInterface", Alias.JoinType.INNER_JOIN);
+        serviceCriteriaBuilder.alias("ipInterface.node", "node", Alias.JoinType.INNER_JOIN);
+        serviceCriteriaBuilder.alias("serviceType", "serviceType", Alias.JoinType.INNER_JOIN);
+        serviceCriteriaBuilder.alias("currentOutages", "currentOutages", Alias.JoinType.INNER_JOIN);
+        serviceCriteriaBuilder.eq("status", "A");
+        serviceCriteriaBuilder.ne("ipInterface.isManaged", "D");
+        serviceCriteriaBuilder.ne("node.type", "D");
 
         if (nodes == null || nodes.isEmpty()) {
             return new ArrayList<>();
+        } else {
+            serviceCriteriaBuilder.in("ipInterface.node", nodes);
+            return getNodeListForCriteria(serviceCriteriaBuilder.toCriteria(), outageCriteriaBuilder.toCriteria());
         }
-
-        serviceCb.in("ipInterface.node", nodes);
-
-        return getNodeListForCriteria(serviceCb.toCriteria(), outageCb.toCriteria());
-    }
-
-    public TransactionOperations getTransactionOperations() {
-        return m_transactionOperations;
     }
 }
 
