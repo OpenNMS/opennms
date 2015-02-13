@@ -25,7 +25,6 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
-
 package org.opennms.features.vaadin.surveillanceviews.ui;
 
 import org.opennms.web.navigate.PageNavEntry;

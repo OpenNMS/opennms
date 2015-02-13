@@ -1,5 +1,3 @@
-package org.opennms.features.vaadin.surveillanceviews.model;
-
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
@@ -27,6 +25,7 @@ package org.opennms.features.vaadin.surveillanceviews.model;
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
+package org.opennms.features.vaadin.surveillanceviews.model;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;

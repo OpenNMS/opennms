@@ -1,9 +1,7 @@
-package org.opennms.features.vaadin.surveillanceviews.config;
-
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -27,6 +25,7 @@ package org.opennms.features.vaadin.surveillanceviews.config;
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
+package org.opennms.features.vaadin.surveillanceviews.config;
 
 import org.opennms.features.vaadin.surveillanceviews.model.SurveillanceViewConfiguration;
 import org.opennms.features.vaadin.surveillanceviews.model.View;

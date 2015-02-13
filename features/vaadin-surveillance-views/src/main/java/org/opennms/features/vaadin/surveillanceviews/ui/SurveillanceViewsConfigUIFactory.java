@@ -1,5 +1,3 @@
-package org.opennms.features.vaadin.surveillanceviews.ui;
-
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
@@ -27,6 +25,7 @@ package org.opennms.features.vaadin.surveillanceviews.ui;
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
+package org.opennms.features.vaadin.surveillanceviews.ui;
 
 import org.opennms.osgi.OnmsVaadinUIFactory;
 import org.osgi.service.blueprint.container.BlueprintContainer;

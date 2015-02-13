@@ -1,5 +1,3 @@
-package org.opennms.features.vaadin.surveillanceviews.ui;
-
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
@@ -27,6 +25,7 @@ package org.opennms.features.vaadin.surveillanceviews.ui;
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
+package org.opennms.features.vaadin.surveillanceviews.ui;
 
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.Title;
@@ -37,8 +36,8 @@ import org.opennms.features.vaadin.surveillanceviews.config.SurveillanceViewProv
 import org.opennms.features.vaadin.surveillanceviews.model.View;
 import org.opennms.features.vaadin.surveillanceviews.service.SurveillanceViewService;
 import org.opennms.features.vaadin.surveillanceviews.ui.dashboard.SurveillanceViewAlarmTable;
-import org.opennms.features.vaadin.surveillanceviews.ui.dashboard.SurveillanceViewNotificationTable;
 import org.opennms.features.vaadin.surveillanceviews.ui.dashboard.SurveillanceViewNodeRtcTable;
+import org.opennms.features.vaadin.surveillanceviews.ui.dashboard.SurveillanceViewNotificationTable;
 
 /**
  * The surveillance view application's "main" class

@@ -1,3 +1,30 @@
+/*******************************************************************************
+ * This file is part of OpenNMS(R).
+ *
+ * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * OpenNMS(R) is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with OpenNMS(R).  If not, see:
+ *      http://www.gnu.org/licenses/
+ *
+ * For more information contact:
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
+ *******************************************************************************/
 package org.opennms.features.vaadin.surveillanceviews.service;
 
 import org.opennms.core.criteria.Alias;
@@ -10,7 +37,6 @@ import org.opennms.features.vaadin.surveillanceviews.model.Category;
 import org.opennms.features.vaadin.surveillanceviews.model.View;
 import org.opennms.netmgt.config.GroupDao;
 import org.opennms.netmgt.dao.api.AlarmDao;
-import org.opennms.netmgt.dao.api.AlarmRepository;
 import org.opennms.netmgt.dao.api.CategoryDao;
 import org.opennms.netmgt.dao.api.GraphDao;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
@@ -18,7 +44,6 @@ import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.NotificationDao;
 import org.opennms.netmgt.dao.api.OutageDao;
 import org.opennms.netmgt.dao.api.ResourceDao;
-import org.opennms.netmgt.dao.api.SurveillanceViewConfigDao;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsMonitoredService;
@@ -59,12 +84,13 @@ public class DefaultSurveillanceViewService implements SurveillanceViewService {
     private ResourceDao m_resourceDao;
     private GraphDao m_graphDao;
     private NotificationDao m_notificationDao;
-    private SurveillanceViewConfigDao m_surveillanceViewConfigDao;
     private CategoryDao m_categoryDao;
     private AlarmDao m_alarmDao;
     private GroupDao m_groupDao;
     private OutageDao m_outageDao;
+    /*
     private AlarmRepository m_alarmRepository;
+     */
     private MonitoredServiceDao m_monitoredServiceDao;
     private TransactionOperations m_transactionOperations;
 
@@ -73,9 +99,11 @@ public class DefaultSurveillanceViewService implements SurveillanceViewService {
      *
      * @param alarmRepository the repository to be used
      */
+    /*
     public void setAlarmRepository(AlarmRepository alarmRepository) {
         this.m_alarmRepository = alarmRepository;
     }
+    */
 
     /**
      * Method to set the node dao.
@@ -120,15 +148,6 @@ public class DefaultSurveillanceViewService implements SurveillanceViewService {
      */
     public void setNotificationDao(NotificationDao notificationDao) {
         this.m_notificationDao = notificationDao;
-    }
-
-    /**
-     * Method to set the surveillance view config  dao.
-     *
-     * @param surveillanceViewConfigDao the {@link org.opennms.netmgt.dao.api.SurveillanceViewConfigDao} to be used
-     */
-    public void setSurveillanceViewConfigDao(SurveillanceViewConfigDao surveillanceViewConfigDao) {
-        this.m_surveillanceViewConfigDao = surveillanceViewConfigDao;
     }
 
     /**
@@ -233,7 +252,6 @@ public class DefaultSurveillanceViewService implements SurveillanceViewService {
         return categories;
     }
     */
-    
     public Set<OnmsCategory> getOnmsCategoriesFromViewCategories(final Collection<Category> viewCats) {
         final Set<OnmsCategory> categories = new HashSet<OnmsCategory>();
 
