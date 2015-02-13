@@ -120,6 +120,7 @@ public class AlarmsDashlet extends AbstractDashlet {
                     Page.getCurrent().getStyles().add(".alerts-font {color: #3ba300; font-size: 18px; line-height: normal; }");
                     Page.getCurrent().getStyles().add(".alerts-noalarms-font { font-size: 18px; line-height: normal; }");
                     Page.getCurrent().getStyles().add(".alerts { padding: 5px 5px; margin: 1px; }");
+                    Page.getCurrent().getStyles().add(".v-slot-alerts-font { overflow: hidden; }");
                 }
 
                 @Override
@@ -173,6 +174,7 @@ public class AlarmsDashlet extends AbstractDashlet {
                     Page.getCurrent().getStyles().add(".alerts-font {color: #3ba300; font-size: 11px; line-height: normal; }");
                     Page.getCurrent().getStyles().add(".alerts-noalarms-font { font-size: 11px; line-height: normal; }");
                     Page.getCurrent().getStyles().add(".alerts { padding: 5px 5px; margin: 1px; }");
+                    Page.getCurrent().getStyles().add(".v-slot-alerts-font { overflow: hidden; }");
                 }
 
                 @Override
