@@ -427,7 +427,7 @@ public class JniRrdStrategy implements RrdStrategy<JniRrdStrategy.CreateCommand 
     }
 
     private byte[] createGraphAsByteArray(String command, File workDir) throws IOException, RrdException {
-        String[] commandArray = StringUtils.createCommandArray(command, '@');
+        String[] commandArray = StringUtils.createCommandArray(command);
         Process process;
         try {
              process = Runtime.getRuntime().exec(commandArray, null, workDir);

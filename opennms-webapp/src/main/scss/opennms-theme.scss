@@ -790,6 +790,11 @@ Do not confuse it with the Bootstrap .pagination class.
   margin-left: 3px;
 }
 
+/* Used to set the color when using font-awesome icons */
+.icon-black {
+  color: black;
+}
+
 /* --------------------------------------------------
     :: Styles for DBIDs, foreign-source, and foreign-ID
     :: spans in the node list and node details pages

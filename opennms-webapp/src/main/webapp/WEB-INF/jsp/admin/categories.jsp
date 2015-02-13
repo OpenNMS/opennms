@@ -41,8 +41,6 @@
 	<jsp:param name="breadcrumb" value="Categories" />
 </jsp:include>
 
-<link rel="stylesheet" href="css/font-awesome-4.0.3/css/font-awesome.min.css">
-
 <script type="text/javascript">
 
    var surveillanceCategories = {
