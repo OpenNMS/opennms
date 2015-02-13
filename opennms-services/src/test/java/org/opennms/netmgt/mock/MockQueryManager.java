@@ -113,15 +113,20 @@ public class MockQueryManager implements QueryManager {
         // TODO Auto-generated method stub
 
     }
-    
-    
-    @Override
-    public void resolveOutage(int nodeId, String ipAddr, String svcName, int dbid, Date time) {
-        // TODO Auto-generated method stub
 
+    @Override
+    public Integer resolveOutagePendingRegainEventId(int nodeId, String ipAddr,
+            String svcName, Date date) {
+        // TODO Auto-generated method stub
+        return null;
     }
-    
-    
+
+    @Override
+    public void updateResolvedOutageWithEventId(int outageId,
+            int regainedEventId) {
+        // TODO Auto-generated method stub
+    }
+
     @Override
     public void reparentOutages(String ipAddr, int oldNodeId, int newNodeId) {
         // TODO Auto-generated method stub

@@ -47,12 +47,14 @@
 
   
 <c:if test="${isAdmin}">
+  <div class="btn-group" role="group">
   <form action="admin/distributed/locationMonitorPauseAll.htm" method="post" style="display:inline;">
-    <input type="submit" value="Pause All"/>
+    <button class="btn btn-default" type="submit">Pause All</button>
   </form>
   <form action="admin/distributed/locationMonitorResumeAll.htm" method="post" style="display:inline;">
-    <input type="submit" value="Resume All"/>
+    <button class="btn btn-default" type="submit">Resume All</button>
   </form>
+  </div>
 </c:if>
 
 <div class="panel panel-default">

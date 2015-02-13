@@ -16,6 +16,26 @@
 // Include your documentation sections here
 // include::text/myFile.adoc[]
 
+// Administration related Webinterface
+= Administrative Webinterface
+
+== Operator Board
+include::text/webui/opsboard/introduction.adoc[]
+include::text/webui/opsboard/dashlet/alarm-detail.adoc[]
+include::text/webui/opsboard/dashlet/alarms.adoc[]
+include::text/webui/opsboard/dashlet/charts.adoc[]
+include::text/webui/opsboard/dashlet/image.adoc[]
+include::text/webui/opsboard/dashlet/ksc.adoc[]
+include::text/webui/opsboard/dashlet/map.adoc[]
+include::text/webui/opsboard/dashlet/rrd.adoc[]
+include::text/webui/opsboard/dashlet/rtc.adoc[]
+include::text/webui/opsboard/dashlet/summary.adoc[]
+include::text/webui/opsboard/dashlet/surveillance.adoc[]
+include::text/webui/opsboard/dashlet/topology.adoc[]
+include::text/webui/opsboard/dashlet/url.adoc[]
+include::text/webui/opsboard/dashlet/boosting-behavior.adoc[]
+include::text/webui/opsboard/dashlet/criteria-builder.adoc[]
+
 // Include monitor documentation here
 == Service Assurance
 
@@ -45,6 +65,7 @@ include::text/poller/JDBCQueryMonitor.adoc[]
 include::text/poller/JolokiaBeanMonitor.adoc[]
 include::text/poller/LdapMonitor.adoc[]
 include::text/poller/LdapsMonitor.adoc[]
+include::text/poller/MemcachedMonitor.adoc[]
 include::text/poller/NetScalerGroupHealthMonitor.adoc[]
 include::text/poller/NtpMonitor.adoc[]
 include::text/poller/OmsaStorageMonitor.adoc[]
@@ -58,6 +79,7 @@ include::text/poller/SSLCertMonitor.adoc[]
 include::text/poller/StrafePingMonitor.adoc[]
 include::text/poller/SystemExecuteMonitor.adoc[]
 include::text/poller/Win32ServiceMonitor.adoc[]
+include::text/poller/XmpMonitor.adoc[]
 
 // Event description
 include::text/events.adoc[]

@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.correlation;
 
+import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.spring.BeanUtils;
@@ -63,6 +64,12 @@ public class CorrelatorIntegrationTest implements InitializingBean {
         BeanUtils.assertAutowiring(this);
     }
 
+    @After
+    public void tearDown() {
+        // Reset the event anticipator
+        m_eventIpcMgr.getEventAnticipator().reset();
+    }
+
     @Test
     public void testIt() throws Exception {
 
@@ -78,6 +85,11 @@ public class CorrelatorIntegrationTest implements InitializingBean {
 
     }
 
+    /**
+     * Test that the timer goes off as expected after 1000ms.
+     * 
+     * @throws Exception
+     */
     @Test
     public void testTimer() throws Exception {
 
@@ -90,11 +102,17 @@ public class CorrelatorIntegrationTest implements InitializingBean {
         verifyAnticipated();
     }
 
+    /**
+     * Test that the timer does not go off before it is cancelled.
+     * 
+     * @throws Exception
+     */
     @Test
     public void testTimerCancel() throws Exception {
 
         m_eventIpcMgr.broadcastNow(createEvent("timed", "Test"));
 
+        // Sleep for less than 1000ms
         Thread.sleep(500);
 
         m_eventIpcMgr.broadcastNow(createEvent("cancelTimer", "Test"));

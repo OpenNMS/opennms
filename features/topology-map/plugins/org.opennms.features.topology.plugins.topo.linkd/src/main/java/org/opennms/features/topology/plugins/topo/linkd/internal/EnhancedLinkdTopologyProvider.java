@@ -31,6 +31,7 @@ package org.opennms.features.topology.plugins.topo.linkd.internal;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
+
 import org.apache.commons.lang.StringUtils;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.OperationContext;
@@ -46,6 +47,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.xml.bind.JAXBException;
+
 import java.io.File;
 import java.net.MalformedURLException;
 import java.util.*;
@@ -413,18 +415,7 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
 
         LOG.debug("loadtopology: adding nodes without links: " + isAddNodeWithoutLink());
         if (isAddNodeWithoutLink()) {
-
-            List<OnmsNode> allNodes;
-            allNodes = getAllNodesNoACL();
-
-            for (OnmsNode onmsnode: allNodes) {
-                String nodeId = onmsnode.getNodeId();
-                if (getVertex(getVertexNamespace(), nodeId) == null) {
-                    LOG.debug("loadtopology: adding link-less node: " + onmsnode.getLabel());
-                    addVertices(getVertex(onmsnode));
-                }
-            }
-
+            addNodesWithoutLinks();
         }
 
         File configFile = new File(getConfigurationFile());

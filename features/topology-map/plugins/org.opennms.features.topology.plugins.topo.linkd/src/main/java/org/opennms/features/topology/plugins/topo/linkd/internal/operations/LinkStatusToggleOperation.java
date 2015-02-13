@@ -28,11 +28,14 @@
 
 package org.opennms.features.topology.plugins.topo.linkd.internal.operations;
 
+import org.apache.xpath.operations.Bool;
 import org.opennms.features.topology.api.AbstractCheckedOperation;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.OperationContext;
 import org.opennms.features.topology.api.topo.EdgeStatusProvider;
 import org.opennms.features.topology.api.topo.VertexRef;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceReference;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,8 +50,8 @@ public class LinkStatusToggleOperation extends AbstractCheckedOperation {
     private EdgeStatusProvider m_bridgeLinkStatusProvider;
     private EdgeStatusProvider m_cdpLinkStatusProvider;
     private List<EdgeStatusProvider> m_providers;
-    //TODO: add functionality to check bundle context when bundle is deregistered
-    //private BundleContext m_bundleContext;
+
+    private Boolean m_enlinkdIsActive = false;
 
     public void init() {
         m_providers = new ArrayList<EdgeStatusProvider>();
@@ -99,7 +102,7 @@ public class LinkStatusToggleOperation extends AbstractCheckedOperation {
 
     @Override
     public boolean display(List<VertexRef> targets, OperationContext operationContext) {
-        return true;
+        return m_enlinkdIsActive;
     }
 
     @Override
@@ -141,5 +144,11 @@ public class LinkStatusToggleOperation extends AbstractCheckedOperation {
 
     public void setCdpLinkStatusProvider(EdgeStatusProvider cdpLinkStatusProvider) {
         m_cdpLinkStatusProvider = cdpLinkStatusProvider;
+    }
+
+    public void setEnlinkdService(ServiceReference enlinkdService) {
+        if(enlinkdService != null){
+            m_enlinkdIsActive = true;
+        }
     }
 }

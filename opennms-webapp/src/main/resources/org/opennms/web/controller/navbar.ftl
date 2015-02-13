@@ -9,7 +9,7 @@
         <span class="icon-bar"></span>
       </button>
       <a class="navbar-brand" href="${baseHref}index.jsp">
-        <img id="logo" src="${baseHref}images/logo-bootstrap.svg" alt="OpenNMS" onerror="this.src='${baseHref}images/logo-bootstrap.png'" />
+        <img id="logo" src="${baseHref}images/horizon.svg" alt="OpenNMS" onerror="this.src='${baseHref}images/horizon_logo_small.png'" />
       </a>
     </div>
 
@@ -70,6 +70,8 @@
               <li><a name="nav-admin-notice-status" href="#" style="white-space: nowrap">Notices: <b id="notification${noticeStatus}">${noticeStatus}</b></a></li>
               <#if isAdmin >
                 <li><a name="nav-admin-admin" href="${baseHref}admin/index.jsp" style="white-space: nowrap">Configure OpenNMS</a></li>
+              </#if>
+              <#if isAdmin || isProvision >
                 <li><a name="nav-admin-quick-add" href="${baseHref}admin/node/add.htm" style="white-space: nowrap">Quick-Add Node</a></li>
               </#if>
               <li><a name="nav-admin-support" href="${baseHref}support/index.htm">Help/Support</a></li>

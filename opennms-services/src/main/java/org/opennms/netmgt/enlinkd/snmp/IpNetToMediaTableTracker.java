@@ -145,7 +145,8 @@ public class IpNetToMediaTableTracker extends TableTracker
 	                // This is the normal case that most agents conform to: the value is an ASCII 
 	                // string representing the colon-separated MAC address. We just need to reformat 
 	                // it to remove the colons and convert it into a 12-character string.
-	                return normalizeMacAddress(getValue(IPNETTOMEDIA_TABLE_PHYSADDR).toDisplayString());
+	                String mac = getValue(IPNETTOMEDIA_TABLE_PHYSADDR).toDisplayString();
+	                return mac == null || mac.trim().isEmpty() ? null : normalizeMacAddress(mac);
 	            }
 		    } catch (IllegalArgumentException e) {
 		        LOG.warn("IllegalArgument on ipnettomediatable", e);

@@ -43,7 +43,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
-import org.springframework.validation.BindException;
+import org.springframework.validation.BindingResult;
 
 /**
  * Web service layer implementation for statistics reports.
@@ -71,7 +71,7 @@ public class DefaultStatisticsReportService implements StatisticsReportService, 
 
     /** {@inheritDoc} */
     @Override
-    public StatisticsReportModel getReport(StatisticsReportCommand command, BindException errors) {
+    public StatisticsReportModel getReport(StatisticsReportCommand command, BindingResult errors) {
         StatisticsReportModel model = new StatisticsReportModel();
         model.setErrors(errors);
         

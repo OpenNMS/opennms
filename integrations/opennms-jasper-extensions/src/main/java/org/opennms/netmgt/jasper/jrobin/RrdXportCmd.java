@@ -32,14 +32,18 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.sf.jasperreports.engine.JRDataSource;
+import net.sf.jasperreports.engine.JRRewindableDataSource;
 
 import org.jrobin.core.RrdException;
 import org.jrobin.core.Util;
 import org.jrobin.data.DataProcessor;
 import org.jrobin.graph.RrdGraphConstants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 class RrdXportCmd extends RrdToolCmd implements RrdGraphConstants {
+    private static final Logger LOG = LoggerFactory.getLogger(RrdXportCmd.class);
+
     private DataProcessor dproc;
     private List<XPort> xports;
 
@@ -49,7 +53,7 @@ class RrdXportCmd extends RrdToolCmd implements RrdGraphConstants {
     }
 
     @Override
-    JRDataSource execute() throws RrdException, IOException {
+    JRRewindableDataSource execute() throws RrdException, IOException {
         String startStr = getOptionValue("s", "start", DEFAULT_START);
         String endStr = getOptionValue("e", "end", DEFAULT_END);
         long[] span = Util.getTimestamps(startStr, endStr);
@@ -79,12 +83,18 @@ class RrdXportCmd extends RrdToolCmd implements RrdGraphConstants {
                 throw new RrdException("Invalid XPORT syntax: " + words[i]);
             }
         }
-        JRDataSource result = xports.size() == 0 ? null : xport();
-        println(xports.size() == 0 ? "No XPORT statement found, nothing done" : result.toString());
+
+        JRRewindableDataSource result = null;
+        if (xports.size() == 0) {
+            LOG.warn("No XPORT statement found, nothing done.");
+        } else {
+            result = xport();
+        }
+
         return result;
     }
 
-    private JRDataSource xport() throws IOException, RrdException {
+    private JRRewindableDataSource xport() throws IOException, RrdException {
         dproc.processData();
         long[] timestamps = dproc.getTimestamps();
         

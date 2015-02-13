@@ -42,12 +42,15 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Properties;
+import java.util.concurrent.CountDownLatch;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.criteria.Criteria;
+import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.core.test.MockLogAppender;
@@ -62,8 +65,10 @@ import org.opennms.netmgt.config.DatabaseSchemaConfigFactory;
 import org.opennms.netmgt.config.OpennmsServerConfigFactory;
 import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
+import org.opennms.netmgt.dao.api.OutageDao;
 import org.opennms.netmgt.dao.mock.EventAnticipator;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
+import org.opennms.netmgt.dao.mock.MockEventIpcManager.SendNowHook;
 import org.opennms.netmgt.dao.support.NullRrdStrategy;
 import org.opennms.netmgt.eventd.AbstractEventUtil;
 import org.opennms.netmgt.events.api.EventConstants;
@@ -81,6 +86,8 @@ import org.opennms.netmgt.mock.MockVisitorAdapter;
 import org.opennms.netmgt.mock.OutageAnticipator;
 import org.opennms.netmgt.mock.PollAnticipator;
 import org.opennms.netmgt.mock.TestCapsdConfigManager;
+import org.opennms.netmgt.model.OnmsMonitoredService;
+import org.opennms.netmgt.model.OnmsOutage;
 import org.opennms.netmgt.model.events.EventUtils;
 import org.opennms.netmgt.poller.pollables.PollableNetwork;
 import org.opennms.netmgt.rrd.RrdUtils;
@@ -139,6 +146,9 @@ public class PollerTest implements TemporaryDatabaseAware<MockDatabase> {
     private QueryManager m_queryManager;
 
     @Autowired
+    private OutageDao m_outageDao;
+
+    @Autowired
     private MonitoredServiceDao m_monitoredServiceDao;
 
     @Autowired
@@ -185,6 +195,11 @@ public class PollerTest implements TemporaryDatabaseAware<MockDatabase> {
         m_network.addNode(4, "DownNode");
         m_network.addInterface("192.168.1.6");
         m_network.addService("SNMP");
+        m_network.addNode(5, "Loner");
+        m_network.addInterface("192.168.1.7");
+        m_network.addService("ICMP");
+        m_network.addService("SNMP");
+        MockService unmonitoredService = m_network.addService("NotMonitored");
 
         m_db.populate(m_network);
         DataSourceFactory.setInstance(m_db);
@@ -196,7 +211,7 @@ public class PollerTest implements TemporaryDatabaseAware<MockDatabase> {
         m_pollerConfig.addPackage("TestPackage");
         m_pollerConfig.addDowntime(1000L, 0L, -1L, false);
         m_pollerConfig.setDefaultPollInterval(1000L);
-        m_pollerConfig.populatePackage(m_network);
+        m_pollerConfig.populatePackage(m_network, unmonitoredService);
         m_pollerConfig.addPackage("TestPkg2");
         m_pollerConfig.addDowntime(1000L, 0L, -1L, false);
         m_pollerConfig.setDefaultPollInterval(2000L);
@@ -210,6 +225,7 @@ public class PollerTest implements TemporaryDatabaseAware<MockDatabase> {
         m_eventMgr.setEventAnticipator(m_anticipator);
         m_eventMgr.addEventListener(m_outageAnticipator);
         m_eventMgr.setSynchronous(false);
+        m_eventMgr.setNumSchedulerThreads(2);
 
         DefaultPollContext pollContext = new DefaultPollContext();
         pollContext.setEventManager(m_eventMgr);
@@ -1187,6 +1203,150 @@ public class PollerTest implements TemporaryDatabaseAware<MockDatabase> {
 
     }
 
+    /**
+     * Verifies that outages are properly handled when events
+     * arrive out of order. See NMS-7394 for details.
+     */
+    @Test
+    public void testNoDuplicateOutagesWithOutOfOrderEvents() {
+        MockInterface nodeIf = m_network.getInterface(1, "192.168.1.1");
+        MockService icmpService = m_network.getService(1, "192.168.1.1", "ICMP");
+        MockService smtpService = m_network.getService(1, "192.168.1.1", "SMTP");
+
+        // Start the poller
+        startDaemons();
+
+        // Kill the critical service on the interface and expect an interfaceDown:
+        // The node in question has multiple interfaces, so we don't expect a nodeDown.
+        resetAnticipated();
+        anticipateDown(nodeIf);
+
+        icmpService.bringDown();
+
+        verifyAnticipated(10000);
+
+        // There should now be a single outage for the SMTP service:
+        // The critical service on the interface is down, so all
+        // of the services on that interface are also marked as down.
+        List<OnmsOutage> smtpOutages = getOutages(smtpService);
+        assertEquals(1, smtpOutages.size());
+        assertEquals(null, smtpOutages.get(0).getIfRegainedService());
+
+        // Next, we will take the SMTP service offline and bring
+        // the ICMP service online in order to make
+        // the poller daemon generate a interfaceDown event
+        // followed by a nodeLostService event.
+        //
+        // The poller daemon will then  wait to receive these event back
+        // from eventd, so that they are populated with the database ids.
+        //
+        // When the interfaceDown event is received, it will close
+        // the previous outages, and when the nodeLostService event is
+        // received it will create a new outage.
+        //
+        // If these events are received in a different order then which
+        // they were sent, we will end up with two outages in the table.
+        // This can happen, as observed in NMS-7394, if both events
+        // are sent shortly one after another.
+        //
+        // In order to test the behavior of pollerd, we manually
+        // manipulate the order of these events.
+
+        // Stops all other events until the nodeLostService has been processed
+        EventOrderAlteringHook hook = new EventOrderAlteringHook(
+                EventConstants.NODE_LOST_SERVICE_EVENT_UEI);
+        m_eventMgr.setSendNowHook(hook);
+
+        anticipateUp(nodeIf);
+        anticipateDown(smtpService);
+
+        smtpService.bringDown();
+        icmpService.bringUp();
+
+        verifyAnticipated(10000);
+
+        // There should be two outages in the database:
+        // one closed with the event id populated and another one pending
+        smtpOutages = getOutages(smtpService);
+        assertEquals(2, smtpOutages.size());
+        assertNotNull(smtpOutages.get(0).getIfRegainedService());
+        assertNotNull(smtpOutages.get(0).getServiceRegainedEvent());
+        assertNull(smtpOutages.get(1).getIfRegainedService());
+    }
+
+    /**
+     * Halts all events until one with the given UEI has
+     * been successfully broadcasted.
+     *
+     * Requires the MockEventIPCManager to asynchronous and to have
+     * as many scheduler threads as there are waiting events + 1.
+     */
+    private static class EventOrderAlteringHook implements SendNowHook {
+        private final CountDownLatch m_latch = new CountDownLatch(1);
+
+        private final String m_uei;
+
+        public EventOrderAlteringHook(String uei) {
+            m_uei = uei;
+        }
+
+        @Override
+        public void beforeBroadcast(final Event event) {
+            if (m_uei.equalsIgnoreCase(event.getUei())) {
+                // pass
+            } else {
+                try {
+                    // stall
+                    m_latch.await();
+                } catch (InterruptedException e) {
+                    // Fail if we're interrupted
+                    throw new RuntimeException(e);
+                }
+            }
+        }
+
+        @Override
+        public void afterBroadcast(final Event event) {
+            if (m_uei.equalsIgnoreCase(event.getUei())) {
+                m_latch.countDown();
+            }
+        }
+    }
+
+    /**
+     * Test for NMS-7426.
+     */
+    @Test
+    public void testServicesWithoutPackagesAreMarkedAsNotPolled() {
+        MockService monitoredSvc = m_network.getService(5, "192.168.1.7", "SNMP");
+        MockService notMonitoredSvc = m_network.getService(5, "192.168.1.7", "NotMonitored");
+        OnmsMonitoredService notMonitored = m_monitoredServiceDao.get(
+                notMonitoredSvc.getNodeId(),
+                notMonitoredSvc.getAddress(),
+                notMonitoredSvc.getSvcName());
+
+        // The status should be set initially set to active
+        assertEquals("A", notMonitored.getStatus());
+
+        // Start the poller
+        startDaemons();
+
+        // Take a service down, and wait for the event
+        // We do this to make ensure the nodes services we're in fact scheduled
+        anticipateDown(monitoredSvc);
+
+        monitoredSvc.bringDown();
+
+        verifyAnticipated(10000);
+
+        // The status should now be set to not monitored
+        notMonitored = m_monitoredServiceDao.get(
+                notMonitoredSvc.getNodeId(),
+                notMonitoredSvc.getAddress(),
+                notMonitoredSvc.getSvcName());
+        assertEquals("N", notMonitored.getStatus());
+    }
+
     //
     // Utility methods
     //
@@ -1301,6 +1461,22 @@ public class PollerTest implements TemporaryDatabaseAware<MockDatabase> {
         };
         element.visit(markCritSvcDown);
 
+    }
+
+    /**
+     * Retrieves all of the outages (using DAOs) associated with
+     * the given service.
+     */
+    private List<OnmsOutage> getOutages(MockService svc) {
+        OnmsMonitoredService monitoredSvc = m_monitoredServiceDao.get(
+                svc.getNodeId(), svc.getAddress(), svc.getSvcName());
+
+        Criteria criteria = new CriteriaBuilder(OnmsOutage.class)
+            .eq("monitoredService", monitoredSvc)
+            .orderBy("ifLostService")
+            .toCriteria();
+
+        return m_outageDao.findMatching(criteria);
     }
 
     class OutageChecker extends Querier {

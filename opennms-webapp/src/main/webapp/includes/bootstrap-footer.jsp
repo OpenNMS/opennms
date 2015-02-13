@@ -62,7 +62,7 @@
 
     <footer id="footer">
       <p>
-        OpenNMS <a href="support/about.jsp">Copyright</a> &copy; 2002-2014
+        OpenNMS <a href="support/about.jsp">Copyright</a> &copy; 2002-2015
         <a href="http://www.opennms.com/">The OpenNMS Group, Inc.</a>
         OpenNMS&reg; is a registered trademark of
         <a href="http://www.opennms.com">The OpenNMS Group, Inc.</a>

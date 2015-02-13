@@ -312,7 +312,7 @@ if (request.getAttribute("success") != null) {
               <select id="version" name="version" class="form-control" onChange="onVersionChange()">
                 <%=getOptions(version, "v2c", "v1", "v2c", "v3")%>
               </select>
-              <p class="help-block"><b>Default: </b>v<%=SnmpConfiguration.DEFAULT_VERSION %></p>
+              <p class="help-block"><b>Default: </b>v2c</p>
             </div>
           </div>
 
