@@ -465,7 +465,12 @@ a.list-group-item.active:focus {
 .navbar-inverse .navbar-info {
   display: block !important;
   margin-right: 0;
-  padding: 5px;
+  padding-right: 5px;
+  padding-top: 2px;
+  @include navbar-inverse-color(white);
+  a {
+    @include navbar-inverse-color(white);
+  }
   h3 {
     margin: 0;
     font-size: $font-size-large !important;
