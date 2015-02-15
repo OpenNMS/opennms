@@ -46,10 +46,6 @@ import org.opennms.features.vaadin.surveillanceviews.service.SurveillanceViewSer
 public class SurveillanceViewsConfigUI extends UI {
 
     private SurveillanceViewService m_surveillanceViewService;
-    /**
-     * A {@link com.vaadin.ui.Notification} instance for displaying messages
-     */
-    private static Notification m_notification = new Notification("Message", Notification.Type.TRAY_NOTIFICATION);
 
     @Override
     protected void init(VaadinRequest request) {
@@ -65,16 +61,30 @@ public class SurveillanceViewsConfigUI extends UI {
      *
      * @param message     the message to be displayed
      * @param description the description of this message
+     * @param type        the type of this notification
      */
-    public void notifyMessage(String message, String description) {
+    public void notifyMessage(String message, String description, Notification.Type type) {
+        Notification m_notification = new Notification("Message", type);
+
         m_notification.setCaption(message);
         m_notification.setDescription(description);
         m_notification.setDelayMsec(1000);
+
         if (getUI() != null) {
             if (getPage() != null) {
                 m_notification.show(getUI().getPage());
             }
         }
+    }
+
+    /**
+     * Method for displaying notification for the user.
+     *
+     * @param message     the message to be displayed
+     * @param description the description of this message
+     */
+    public void notifyMessage(String message, String description) {
+        notifyMessage(message, description, Notification.Type.TRAY_NOTIFICATION);
     }
 
     /**

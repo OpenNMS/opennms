@@ -39,6 +39,7 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
@@ -652,6 +653,16 @@ public class SurveillanceViewConfigurationWindow extends Window {
         ok.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent event) {
+                if (!titleField.isValid()) {
+                    ((SurveillanceViewsConfigUI) getUI()).notifyMessage("Error", "Please enter a valid title", Notification.Type.ERROR_MESSAGE);
+                    return;
+                }
+
+                if (!refreshSecondsField.isValid()) {
+                    ((SurveillanceViewsConfigUI) getUI()).notifyMessage("Error", "Please enter a valid number of seconds in the refresh seconds field", Notification.Type.ERROR_MESSAGE);
+                    return;
+                }
+
                 if (titleField.isValid() && refreshSecondsField.isValid()) {
                     View finalView = new View();
 
@@ -662,6 +673,7 @@ public class SurveillanceViewConfigurationWindow extends Window {
                     for (RowDef rowDef : rows.getItemIds()) {
                         finalView.getRows().add(rowDef);
                     }
+
                     finalView.setName(titleField.getValue());
                     finalView.setRefreshSeconds(Integer.parseInt(refreshSecondsField.getValue()));
 
