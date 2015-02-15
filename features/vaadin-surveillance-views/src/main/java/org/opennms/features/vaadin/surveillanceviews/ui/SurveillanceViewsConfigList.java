@@ -37,8 +37,6 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
 import org.opennms.features.vaadin.surveillanceviews.config.SurveillanceViewProvider;
-import org.opennms.features.vaadin.surveillanceviews.model.ColumnDef;
-import org.opennms.features.vaadin.surveillanceviews.model.RowDef;
 import org.opennms.features.vaadin.surveillanceviews.model.View;
 import org.opennms.features.vaadin.surveillanceviews.service.SurveillanceViewService;
 
@@ -100,9 +98,6 @@ public class SurveillanceViewsConfigList extends VerticalLayout {
 
                 View view = new View();
                 view.setName(newName);
-
-                view.getColumns().add(new ColumnDef());
-                view.getRows().add(new RowDef());
 
                 getUI().addWindow(new SurveillanceViewConfigurationWindow(m_surveillanceViewService, view, new SurveillanceViewConfigurationWindow.SaveActionListener() {
                     @Override
@@ -199,9 +194,9 @@ public class SurveillanceViewsConfigList extends VerticalLayout {
                         Button button = new Button("Preview");
                         button.setDescription("Preview this Surveillance View configuration");
                         button.setStyleName("small");
-                        /**
-                         * button.addClickListener(new PreviewClickListener(WallboardOverview.this, (Wallboard) itemId));
-                         */
+
+                        button.addClickListener(new PreviewClickListener(m_surveillanceViewService, SurveillanceViewsConfigList.this, (View) itemId));
+
                         return button;
                     }
                 }

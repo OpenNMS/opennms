@@ -47,10 +47,6 @@ import java.util.Set;
 public interface SurveillanceViewService {
     List<OnmsCategory> getOnmsCategories();
 
-    /*
-    List<String> getRtcCategories();
-    */
-
     SurveillanceStatus[][] calculateCellStatus(final View view);
 
     Set<OnmsCategory> getOnmsCategoriesFromViewCategories(final Collection<Category> viewCats);

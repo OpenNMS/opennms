@@ -34,6 +34,7 @@ import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
@@ -45,6 +46,7 @@ import org.opennms.features.vaadin.surveillanceviews.model.RowDef;
 import org.opennms.features.vaadin.surveillanceviews.service.SurveillanceViewService;
 import org.opennms.netmgt.model.OnmsCategory;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -52,7 +54,7 @@ import java.util.Set;
 
 public class SurveillanceViewConfigurationCategoryWindow extends Window {
 
-    public SurveillanceViewConfigurationCategoryWindow(final SurveillanceViewService surveillanceViewService, final Def def, final SaveActionListener saveActionListener) {
+    public SurveillanceViewConfigurationCategoryWindow(final SurveillanceViewService surveillanceViewService, final Collection<?> defs, final Def def, final SaveActionListener saveActionListener) {
         /**
          * Setting the title
          */
@@ -92,37 +94,21 @@ public class SurveillanceViewConfigurationCategoryWindow extends Window {
         labelField.addValidator(new AbstractStringValidator("Please use an unique name for the surveillance view") {
             @Override
             protected boolean isValidValue(String s) {
-                return (!"".equals(s.trim()));
+                if ("".equals(s.trim())) {
+                    return false;
+                }
+
+                for (Def defx : (Collection<Def>) defs) {
+                    if (defx.getLabel().equals(s)) {
+                        if (defx != def) {
+                            return false;
+                        }
+                    }
+                }
+
+                return true;
             }
         });
-
-        /**
-         * Create selection box for the report category
-         */
-
-        /*
-        final NativeSelect reportCategorySelect = new NativeSelect();
-        reportCategorySelect.setImmediate(true);
-        reportCategorySelect.setCaption("Report category");
-        reportCategorySelect.setDescription("Report category for this entry");
-        reportCategorySelect.setWidth(100, Unit.PERCENTAGE);
-        */
-
-        /**
-         * Add data to the selection box
-         */
-        /*
-        for (String category : surveillanceViewService.getRtcCategories()) {
-            reportCategorySelect.addItem(category);
-        }
-        */
-
-        /**
-         * Preselect the right value
-         */
-        /*
-        reportCategorySelect.select(def.getReportCategory());
-        */
 
         /**
          * Categories table
@@ -137,7 +123,7 @@ public class SurveillanceViewConfigurationCategoryWindow extends Window {
         categoriesTable.setSelectable(true);
         categoriesTable.setMultiSelect(true);
 
-        List<OnmsCategory> categories = surveillanceViewService.getOnmsCategories();
+        final List<OnmsCategory> categories = surveillanceViewService.getOnmsCategories();
         final Map<Integer, OnmsCategory> categoriesMap = new HashMap<>();
 
         for (OnmsCategory onmsCategory : categories) {
@@ -155,9 +141,6 @@ public class SurveillanceViewConfigurationCategoryWindow extends Window {
         baseFormLayout.setSizeFull();
         baseFormLayout.setMargin(true);
         baseFormLayout.addComponent(labelField);
-        /*
-        baseFormLayout.addComponent(reportCategorySelect);
-        */
         baseFormLayout.addComponent(categoriesTable);
 
         /**
@@ -214,17 +197,23 @@ public class SurveillanceViewConfigurationCategoryWindow extends Window {
 
                 Set<Object> categories = (Set<Object>) categoriesTable.getValue();
 
-                for (Object object : categories) {
+                if (!labelField.isValid()) {
+                    ((SurveillanceViewsConfigUI) getUI()).notifyMessage("Error", "Please use an unique label for this category", Notification.Type.ERROR_MESSAGE);
+                    return;
+                }
 
+                if (categories.isEmpty()) {
+                    ((SurveillanceViewsConfigUI) getUI()).notifyMessage("Error", "You must choose at least one surveillance category", Notification.Type.ERROR_MESSAGE);
+                    return;
+                }
+
+                for (Object object : categories) {
                     Category category = new Category();
-                    category.setName(categoriesMap.get((Integer) object).getName());
+                    category.setName(categoriesMap.get(object).getName());
                     finalDef.getCategories().add(category);
                 }
 
                 finalDef.setLabel(labelField.getValue());
-                /*
-                finalDef.setReportCategory((String) reportCategorySelect.getValue());
-                */
                 saveActionListener.save(finalDef);
 
                 close();

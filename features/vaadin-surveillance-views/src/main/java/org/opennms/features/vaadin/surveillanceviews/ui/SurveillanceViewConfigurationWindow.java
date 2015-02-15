@@ -86,8 +86,14 @@ public class SurveillanceViewConfigurationWindow extends Window {
          */
         titleField.addValidator(new AbstractStringValidator("Please use an unique name for the surveillance view") {
             @Override
-            protected boolean isValidValue(String s) {
-                return (!SurveillanceViewProvider.getInstance().containsView(s) || view.getName().equals(s));
+            protected boolean isValidValue(String string) {
+                if ("".equals(string.trim())) {
+                    return false;
+                }
+                if (SurveillanceViewProvider.getInstance().containsView(string) && !view.getName().equals(string)) {
+                    return false;
+                }
+                return true;
             }
         });
 
@@ -103,12 +109,13 @@ public class SurveillanceViewConfigurationWindow extends Window {
         refreshSecondsField.addValidator(new AbstractStringValidator("Only numbers allowed here") {
             @Override
             protected boolean isValidValue(String s) {
+                int number;
                 try {
-                    Integer.parseInt(s);
+                    number = Integer.parseInt(s);
                 } catch (NumberFormatException numberFormatException) {
                     return false;
                 }
-                return true;
+                return (number >= 0);
             }
         });
 
@@ -173,7 +180,7 @@ public class SurveillanceViewConfigurationWindow extends Window {
         columnsAddButton.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent clickEvent) {
-                getUI().addWindow(new SurveillanceViewConfigurationCategoryWindow(surveillanceViewService, new ColumnDef(), new SurveillanceViewConfigurationCategoryWindow.SaveActionListener() {
+                getUI().addWindow(new SurveillanceViewConfigurationCategoryWindow(surveillanceViewService, columnsTable.getItemIds(), new ColumnDef(), new SurveillanceViewConfigurationCategoryWindow.SaveActionListener() {
                     @Override
                     public void save(Def def) {
                         columns.addItem((ColumnDef) def);
@@ -200,7 +207,7 @@ public class SurveillanceViewConfigurationWindow extends Window {
         columnsEditButton.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent clickEvent) {
-                getUI().addWindow(new SurveillanceViewConfigurationCategoryWindow(surveillanceViewService, (ColumnDef) columnsTable.getValue(), new SurveillanceViewConfigurationCategoryWindow.SaveActionListener() {
+                getUI().addWindow(new SurveillanceViewConfigurationCategoryWindow(surveillanceViewService, columnsTable.getItemIds(), (ColumnDef) columnsTable.getValue(), new SurveillanceViewConfigurationCategoryWindow.SaveActionListener() {
                     @Override
                     public void save(Def def) {
                         ColumnDef columnToBeReplaced = (ColumnDef) columnsTable.getValue();
@@ -406,7 +413,7 @@ public class SurveillanceViewConfigurationWindow extends Window {
         rowsAddButton.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent clickEvent) {
-                getUI().addWindow(new SurveillanceViewConfigurationCategoryWindow(surveillanceViewService, new RowDef(), new SurveillanceViewConfigurationCategoryWindow.SaveActionListener() {
+                getUI().addWindow(new SurveillanceViewConfigurationCategoryWindow(surveillanceViewService, rowsTable.getItemIds(), new RowDef(), new SurveillanceViewConfigurationCategoryWindow.SaveActionListener() {
                     @Override
                     public void save(Def def) {
                         rows.addItem((RowDef) def);
@@ -428,7 +435,7 @@ public class SurveillanceViewConfigurationWindow extends Window {
         rowsEditButton.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent clickEvent) {
-                getUI().addWindow(new SurveillanceViewConfigurationCategoryWindow(surveillanceViewService, (RowDef) rowsTable.getValue(), new SurveillanceViewConfigurationCategoryWindow.SaveActionListener() {
+                getUI().addWindow(new SurveillanceViewConfigurationCategoryWindow(surveillanceViewService, rowsTable.getItemIds(), (RowDef) rowsTable.getValue(), new SurveillanceViewConfigurationCategoryWindow.SaveActionListener() {
                     @Override
                     public void save(Def def) {
                         RowDef rowToBeReplaced = (RowDef) rowsTable.getValue();
@@ -654,31 +661,34 @@ public class SurveillanceViewConfigurationWindow extends Window {
             @Override
             public void buttonClick(Button.ClickEvent event) {
                 if (!titleField.isValid()) {
-                    ((SurveillanceViewsConfigUI) getUI()).notifyMessage("Error", "Please enter a valid title", Notification.Type.ERROR_MESSAGE);
+                    ((SurveillanceViewsConfigUI) getUI()).notifyMessage("Error", "Please use an unique title", Notification.Type.ERROR_MESSAGE);
                     return;
                 }
 
                 if (!refreshSecondsField.isValid()) {
-                    ((SurveillanceViewsConfigUI) getUI()).notifyMessage("Error", "Please enter a valid number of seconds in the refresh seconds field", Notification.Type.ERROR_MESSAGE);
+                    ((SurveillanceViewsConfigUI) getUI()).notifyMessage("Error", "Please enter a valid number in the \"Refresh seconds\" field", Notification.Type.ERROR_MESSAGE);
                     return;
                 }
 
-                if (titleField.isValid() && refreshSecondsField.isValid()) {
-                    View finalView = new View();
-
-                    for (ColumnDef columnDef : columns.getItemIds()) {
-                        finalView.getColumns().add(columnDef);
-                    }
-
-                    for (RowDef rowDef : rows.getItemIds()) {
-                        finalView.getRows().add(rowDef);
-                    }
-
-                    finalView.setName(titleField.getValue());
-                    finalView.setRefreshSeconds(Integer.parseInt(refreshSecondsField.getValue()));
-
-                    saveActionListener.save(finalView);
+                if (columns.getItemIds().isEmpty() || rows.getItemIds().isEmpty()) {
+                    ((SurveillanceViewsConfigUI) getUI()).notifyMessage("Error", "You must define at least one row category and one column category", Notification.Type.ERROR_MESSAGE);
+                    return;
                 }
+
+                View finalView = new View();
+
+                for (ColumnDef columnDef : columns.getItemIds()) {
+                    finalView.getColumns().add(columnDef);
+                }
+
+                for (RowDef rowDef : rows.getItemIds()) {
+                    finalView.getRows().add(rowDef);
+                }
+
+                finalView.setName(titleField.getValue());
+                finalView.setRefreshSeconds(Integer.parseInt(refreshSecondsField.getValue()));
+
+                saveActionListener.save(finalView);
 
                 close();
             }

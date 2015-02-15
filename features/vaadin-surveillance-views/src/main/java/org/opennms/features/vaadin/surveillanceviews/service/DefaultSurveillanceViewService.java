@@ -88,22 +88,8 @@ public class DefaultSurveillanceViewService implements SurveillanceViewService {
     private AlarmDao m_alarmDao;
     private GroupDao m_groupDao;
     private OutageDao m_outageDao;
-    /*
-    private AlarmRepository m_alarmRepository;
-     */
     private MonitoredServiceDao m_monitoredServiceDao;
     private TransactionOperations m_transactionOperations;
-
-    /**
-     * Method to set the alarm repository instance.
-     *
-     * @param alarmRepository the repository to be used
-     */
-    /*
-    public void setAlarmRepository(AlarmRepository alarmRepository) {
-        this.m_alarmRepository = alarmRepository;
-    }
-    */
 
     /**
      * Method to set the node dao.
@@ -210,48 +196,6 @@ public class DefaultSurveillanceViewService implements SurveillanceViewService {
         });
     }
 
-    /**
-     * Returns a list of Rtc catgories.
-     *
-     * @return the list of Rtc categories.
-     */
-    /*
-    public List<String> getRtcCategories() {
-
-        CatFactory cFactory = null;
-
-        try {
-            CategoryFactory.init();
-            cFactory = CategoryFactory.getInstance();
-
-        } catch (IOException ex) {
-            LOG.error("Failed to load categories information", ex);
-            throw new UndeclaredThrowableException(ex);
-        } catch (MarshalException ex) {
-            LOG.error("Failed to load categories information", ex);
-            throw new UndeclaredThrowableException(ex);
-        } catch (ValidationException ex) {
-            LOG.error("Failed to load categories information", ex);
-            throw new UndeclaredThrowableException(ex);
-        }
-
-        List<String> categories = new ArrayList<String>();
-
-        cFactory.getReadLock().lock();
-
-        try {
-            for (Categorygroup cg : cFactory.getConfig().getCategorygroupCollection()) {
-                for (final org.opennms.netmgt.config.categories.Category category : cg.getCategories().getCategoryCollection()) {
-                    categories.add(category.getLabel());
-                }
-            }
-        } finally {
-            cFactory.getReadLock().unlock();
-        }
-
-        return categories;
-    }
-    */
     public Set<OnmsCategory> getOnmsCategoriesFromViewCategories(final Collection<Category> viewCats) {
         final Set<OnmsCategory> categories = new HashSet<OnmsCategory>();
 
@@ -265,7 +209,6 @@ public class DefaultSurveillanceViewService implements SurveillanceViewService {
         }
         return categories;
     }
-
 
     public SurveillanceStatus[][] calculateCellStatus(final View view) {
         return m_transactionOperations.execute(new TransactionCallback<SurveillanceStatus[][]>() {
