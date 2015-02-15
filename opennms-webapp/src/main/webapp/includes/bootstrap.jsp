@@ -86,10 +86,7 @@
   <c:if test="${param.nostyles != 'true' }">
     <link rel="stylesheet" type="text/css" href="<%= baseHref %>css/bootstrap.css" media="screen" />
     <link rel="stylesheet" type="text/css" href="<%= baseHref %>css/opennms-theme.css" media="screen" />
-    <!-- <link rel="stylesheet" type="text/css" href="<%= baseHref %>css/styles.css" media="screen" />
-    <link rel="stylesheet" type="text/css" href="<%= baseHref %>css/gwt-asset.css" media="screen" />
-    <link rel="stylesheet" type="text/css" href="<%= baseHref %>css/onms-gwt-chrome.css" media="screen" />
-    <link rel="stylesheet" type="text/css" href="<%= baseHref %>css/print.css" media="print" /> -->
+    <link rel="stylesheet" type="text/css" href="<%= baseHref %>css/font-awesome-4.3.0/css/font-awesome.min.css" />
   </c:if>
   <link rel="shortcut icon" href="<%= baseHref %>favicon.ico" />
   <c:forEach var="link" items="${paramValues.link}">

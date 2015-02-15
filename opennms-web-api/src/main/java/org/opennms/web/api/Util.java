@@ -300,7 +300,6 @@ public abstract class Util extends Object {
 
         final List<String> ignoreList = Arrays.asList(ignores);
 
-        @SuppressWarnings("unchecked")
         final Enumeration<String> names = request.getParameterNames();
 
         while (names.hasMoreElements()) {
@@ -426,7 +425,6 @@ public abstract class Util extends Object {
 
         final List<String> ignoreList = Arrays.asList(ignores);
 
-        @SuppressWarnings("unchecked")
         final Enumeration<String> names = request.getParameterNames();
 
         while (names.hasMoreElements()) {

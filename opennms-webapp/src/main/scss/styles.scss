@@ -81,12 +81,6 @@ $font_2: sans-serif;
 	text-align: center;
 }
 
-//original selectors
-//span.NLdbid, span.NLfs, span.NLfid, span.NPdbid, span.NPfs, span.NPfid
-%extend_5 {
-}
-
-
 html {
 	@extend %extend_1;
 }
@@ -218,25 +212,19 @@ span {
 		line-height: 25px;
 	}
 	&.NLdbid {
-		@extend %extend_5;
 		display: none;
 	}
 	&.NLfs {
-		@extend %extend_5;
 		display: none;
 	}
 	&.NLfid {
-		@extend %extend_5;
 		display: none;
 	}
 	&.NPdbid {
-		@extend %extend_5;
 	}
 	&.NPfs {
-		@extend %extend_5;
 	}
 	&.NPfid {
-		@extend %extend_5;
 	}
 }
 applet {

@@ -461,7 +461,8 @@ $header-background-image: url("../images/headerbg.png") !default;
 .navbar-inverse .navbar-info {
 	display: block !important;
 	margin-right: 0;
-	padding: 5px;
+	padding-right: 5px;
+	padding-top: 2px;
 	@include navbar-inverse-color(white);
 	a {
 		@include navbar-inverse-color(white);
@@ -788,6 +789,11 @@ Do not confuse it with the Bootstrap .pagination class.
 /* Add a margin to the left of the elements equilavent to one &nbsp */
 .space-on-the-left {
   margin-left: 3px;
+}
+
+/* Used to set the color when using font-awesome icons */
+.icon-black {
+  color: black;
 }
 
 /* --------------------------------------------------

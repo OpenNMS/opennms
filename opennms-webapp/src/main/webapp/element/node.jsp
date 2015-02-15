@@ -48,8 +48,7 @@
         org.opennms.netmgt.config.PollOutagesConfigFactory,
         org.opennms.netmgt.config.poller.outages.Outage,
         org.opennms.netmgt.model.OnmsNode,
-        org.opennms.netmgt.poller.PathOutageManager,
-        org.opennms.netmgt.poller.PathOutageManagerDaoImpl,
+        org.opennms.netmgt.poller.PathOutageManagerJdbcImpl,
         org.opennms.web.api.Authentication,
         org.opennms.web.asset.Asset,
         org.opennms.web.asset.AssetModel,
@@ -179,25 +178,8 @@
 
     nodeModel.put("resources", m_resourceService.findNodeChildResources(node_db));
     nodeModel.put("vlans", NetworkElementFactory.getInstance(getServletContext()).getVlansOnNode(nodeId));
-    nodeModel.put("criticalPath", PathOutageManagerDaoImpl.getInstance().getPrettyCriticalPath(nodeId));
-    nodeModel.put("noCriticalPath", PathOutageManager.NO_CRITICAL_PATH);
-
-	// { IP address, service name }
-	String[] criticalPath = PathOutageManagerDaoImpl.getInstance().getCriticalPath(nodeId);
-	// { node label, node ID, # of nodes affected by critical path, path status }
-	String[] criticalPathData = PathOutageManagerDaoImpl.getInstance().getCriticalPathData(criticalPath[0], criticalPath[1]);
-
-	if((criticalPathData[0] == null) || (criticalPathData[0].equals(""))) {
-		// If we can't find the interface in the database, don't provide a link
-		nodeModel.put("criticalPathLink", null);
-	} else if (criticalPathData[0].indexOf("nodes have this IP") > -1) {
-		// If multiple nodes have this IP address, link to the nodeList.jsp with an IPLIKE filter
-		nodeModel.put("criticalPathLink", "element/nodeList.htm?iplike=" + criticalPath[0]);
-	} else {
-		// If one node contains the IP address, link directly to that node
-		nodeModel.put("criticalPathLink", "element/node.jsp?node=" + criticalPathData[1]);
-	}
-
+    nodeModel.put("criticalPath", PathOutageManagerJdbcImpl.getInstance().getPrettyCriticalPath(nodeId));
+    nodeModel.put("noCriticalPath", PathOutageManagerJdbcImpl.NO_CRITICAL_PATH);
     nodeModel.put("admin", request.isUserInRole(Authentication.ROLE_ADMIN));
     
     // get the child interfaces
@@ -314,10 +296,10 @@ function confirmAssetEdit() {
 
 <h4>
   <c:if test="${model.foreignSource != null}">
-    <div class="NPnode">Node: <strong>${model.label}</strong>&nbsp;&nbsp;&nbsp;<span class="NPdbid label label-default" title="Database ID: ${model.id}"><span class="glyphicon glyphicon-hdd"></span>&nbsp;${model.id}</span>&nbsp;<span class="NPfs label label-default" title="Requisition: ${model.foreignSource}"><span class="glyphicon glyphicon-list-alt"></span>&nbsp;${model.foreignSource}</span>&nbsp;<span class="NPfid label label-default" title="Foreign ID: ${model.foreignId}"><span class="glyphicon glyphicon-qrcode"></span>&nbsp;${model.foreignId}</span></div>
+    <div class="NPnode">Node: <strong>${model.label}</strong>&nbsp;&nbsp;&nbsp;<span class="NPdbid label label-default" title="Database ID: ${model.id}"><i class="fa fa-database"></i>&nbsp;${model.id}</span>&nbsp;<span class="NPfs label label-default" title="Requisition: ${model.foreignSource}"><i class="fa fa-list-alt"></i>&nbsp;${model.foreignSource}</span>&nbsp;<span class="NPfid label label-default" title="Foreign ID: ${model.foreignId}"><i class="fa fa-qrcode"></i>&nbsp;${model.foreignId}</span></div>
   </c:if>
   <c:if test="${model.foreignSource == null}">
-    <div class="NPnode">Node: <strong>${model.label}</strong>&nbsp;&nbsp;&nbsp;<span class="NPdbid label label-default" title="Database ID: ${model.id}"><span class="glyphicon glyphicon-hdd"></span>&nbsp;${model.id}</span></div>
+    <div class="NPnode">Node: <strong>${model.label}</strong>&nbsp;&nbsp;&nbsp;<span class="NPdbid label label-default" title="Database ID: ${model.id}"><i class="fa fa-database"></i>&nbsp;${model.id}</span></div>
   </c:if>
 </h4>
 
@@ -514,12 +496,7 @@ function confirmAssetEdit() {
     <div class="panel-body">
       <ul class="list-unstyled">
         <li>
-          <c:if test="${! empty model.criticalPathLink}">
-            <a href="<c:out value="${model.criticalPathLink}"/>">${model.criticalPath}</a>
-          </c:if>
-          <c:if test="${empty model.criticalPathLink}">
-            ${model.criticalPath}
-          </c:if>
+          ${model.criticalPath}
         </li>
       </ul> 
     </div>          

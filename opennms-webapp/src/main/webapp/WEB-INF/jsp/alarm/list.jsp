@@ -105,8 +105,6 @@
   <jsp:param name="breadcrumb" value="List" />
 </jsp:include>
 
-<link rel="stylesheet" href="css/font-awesome-4.0.3/css/font-awesome.min.css">
-
   <script type="text/javascript">
     function checkAllCheckboxes() {
        if( document.alarm_action_form.alarm.length ) {  
