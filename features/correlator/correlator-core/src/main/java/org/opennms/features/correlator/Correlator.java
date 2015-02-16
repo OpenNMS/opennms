@@ -26,6 +26,12 @@
  */
 package org.opennms.features.correlator;
 
+import org.kie.api.KieBase;
+import org.kie.api.KieBaseConfiguration;
+import org.kie.api.KieServices;
+import org.kie.api.conf.EventProcessingOption;
+import org.kie.api.runtime.KieContainer;
+import org.kie.api.runtime.StatelessKieSession;
 import org.opennms.netmgt.events.api.EventProxy;
 import org.opennms.netmgt.events.api.annotations.EventHandler;
 import org.opennms.netmgt.events.api.annotations.EventListener;
@@ -42,34 +48,35 @@ public class Correlator {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Correlator.class);
     private EventProxy eventProxy;
+    private StatelessKieSession kSession;
 
     public Correlator(EventProxy eventProxy) {
 
         //TODO DEBUG REMOVE  SystemOut
-        System.out.println("DEBUG testing correlator");
-        LOGGER.debug("DEBUG testing correlator");
+        System.out.println("DEBUG testing correlator - system out");
+         LOGGER.debug("DEBUG testing correlator - logger");
 
         if (eventProxy == null) {
             throw new RuntimeException("eventProxy cannot be null.");
         }
         this.eventProxy = eventProxy;
+        
+        KieServices kieServices = KieServices.Factory.get();
+        KieBaseConfiguration kBaseConfiguration = kieServices.newKieBaseConfiguration();
+        kBaseConfiguration.setOption(EventProcessingOption.STREAM);
+        KieContainer kContainer = kieServices.getKieClasspathContainer();
+        KieBase kBase = kContainer.newKieBase(kBaseConfiguration);
+        kSession = kBase.newStatelessKieSession();
     }
 
-    @EventHandler(uei = "uei.opennms.org/nodes/nodeDown")
-    public void handleEventNodeDown(Event e) {
+    @EventHandler(uei = EventHandler.ALL_UEIS)
+    public void handleEventAll(Event e) {
         //TODO DEBUG
-        LOGGER.debug("Received nodeDown configuration event: {}", e);
-        System.out.println("DEBUG event nodeDown Received: {}" + e);
+        LOGGER.debug("DEBUG Correlator - Received event: {}", e);
+        System.out.println("DEBUG Correlator - Received event: {}" + e);
+        kSession.execute(e);
     }
     
-    @EventHandler(uei = "*")
-    public void handleAllEvent(Event e) {
-        //TODO DEBUG
-        LOGGER.info("Received reload configuration event: {}", e);
-        System.out.println("DEBUG event gateway Received reload configuration event: {}" + e);
-        LOGGER.debug("DEBUG event gateway Received reload configuration event: {}" + e);
-    }
-
     public EventProxy getEventProxy() {
         return eventProxy;
     }

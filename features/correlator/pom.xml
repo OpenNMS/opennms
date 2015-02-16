@@ -13,8 +13,8 @@
     <name>OpenNMS :: Features :: Correlator</name>
     
     <modules>
-        <module>core</module>
-	<module>feature</module>
+        <module>correlator-core</module>
+	<module>correlator-feature</module>
     </modules>
     
 </project>
