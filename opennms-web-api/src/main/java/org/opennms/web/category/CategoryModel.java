@@ -80,7 +80,7 @@ public class CategoryModel extends Object {
             CategoryModel.m_instance = new CategoryModel();
         }
 
-        return (CategoryModel.m_instance );
+        return m_instance;
     }
 
     /** A mapping of category names to category instances. */
@@ -111,7 +111,7 @@ public class CategoryModel extends Object {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
 
-        return (Category) m_categoryMap.get(categoryName);
+        return m_categoryMap.get(categoryName);
     }
 
     /**
