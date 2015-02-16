@@ -50,6 +50,8 @@ public abstract class HttpUtils {
     /** Default buffer size for reading data. (Default is one kilobyte.) */
     public final static int DEFAULT_POST_BUFFER_SIZE = 1024;
 
+    public final static int DEFAULT_CONNECT_TIMEOUT = -1;
+
     /**
      * Post a given <code>InputStream</code> s data to a URL.
      *
@@ -62,7 +64,7 @@ public abstract class HttpUtils {
      * @throws java.io.IOException if any.
      */
     public static InputStream post(URL url, InputStream dataStream) throws IOException {
-        return (post(url, dataStream, null, null, DEFAULT_POST_BUFFER_SIZE));
+        return (post(url, dataStream, null, null, DEFAULT_POST_BUFFER_SIZE, DEFAULT_CONNECT_TIMEOUT));
     }
 
     /**
@@ -82,7 +84,7 @@ public abstract class HttpUtils {
      * @throws java.io.IOException if any.
      */
     public static InputStream post(URL url, InputStream dataStream, String username, String password) throws IOException {
-        return (post(url, dataStream, username, password, DEFAULT_POST_BUFFER_SIZE));
+        return (post(url, dataStream, username, password, DEFAULT_POST_BUFFER_SIZE, DEFAULT_CONNECT_TIMEOUT));
     }
 
     /**
@@ -104,7 +106,7 @@ public abstract class HttpUtils {
      * to get the HTTP server's response.
      * @throws java.io.IOException if any.
      */
-    public static InputStream post(URL url, InputStream dataStream, String username, String password, int bufSize) throws IOException {
+    public static InputStream post(URL url, InputStream dataStream, String username, String password, int bufSize, int timeout) throws IOException {
         if (url == null || dataStream == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
@@ -122,6 +124,9 @@ public abstract class HttpUtils {
         // in a post we both write output and read input
         conn.setDoOutput(true);
         conn.setDoInput(true);
+        if (timeout > 0) {
+            conn.setConnectTimeout(timeout);
+        }
 
         try {
             // the name of this method is post after all
@@ -179,7 +184,7 @@ public abstract class HttpUtils {
      * to get the HTTP server's response.
      * @throws java.io.IOException if any.
      */
-    public static InputStream post(URL url, Reader dataReader, String username, String password, int bufSize) throws IOException {
+    public static InputStream post(URL url, Reader dataReader, String username, String password, int bufSize, int timeout) throws IOException {
         if (url == null || dataReader == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
@@ -197,6 +202,9 @@ public abstract class HttpUtils {
         // in a post we both write output and read input
         conn.setDoOutput(true);
         conn.setDoInput(true);
+        if (timeout > 0) {
+            conn.setConnectTimeout(timeout);
+        }
 
         try {
             // the name of this method is post after all

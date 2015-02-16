@@ -30,6 +30,7 @@ package org.opennms.netmgt.rtc;
 
 import java.io.InputStream;
 import java.io.Reader;
+import java.net.ConnectException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
@@ -234,33 +235,48 @@ public class DataSender implements Fiber {
             LOG.debug("Subscribed to URL: {}\tcatlabel: {}\tuser:{}", url, catlabel, user);
         }
 
-        // send data
-        Reader inr = null;
-        InputStream inp = null;
-        try {
-            LOG.debug("DataSender: posting data to: {}", url);
+        m_dsrPool.execute(new Runnable() {
+            @Override
+            public void run() {
+                // send data
+                Reader inr = null;
+                InputStream inp = null;
+                try {
+                    LOG.debug("DataSender: posting data to: {}", url);
 
-            final EuiLevel euidata = m_euiMapper.convertToEuiLevelXML(cat);
-            inr = new PipedMarshaller(euidata).getReader();
-            inp = HttpUtils.post(postInfo.getURL(), inr, user, passwd, 8 * HttpUtils.DEFAULT_POST_BUFFER_SIZE);
+                    final EuiLevel euidata = m_euiMapper.convertToEuiLevelXML(cat);
+                    inr = new PipedMarshaller(euidata).getReader();
 
-            final byte[] tmp = new byte[1024];
-            int bytesRead;
-            while ((bytesRead = inp.read(tmp)) != -1) {
-                if (LOG.isDebugEnabled()) {
-                    if (bytesRead > 0) {
-                        LOG.debug("DataSender: post response: {}", new String(tmp, 0, bytesRead));
+                    // Connect with a fairly long timeout to allow the web UI time to register the
+                    // {@link RTCPostServlet}. Actually, this doesn't seem to work because the POST
+                    // will immediately throw a {@link ConnectException} if the web UI isn't ready
+                    // yet. Oh well.
+                    inp = HttpUtils.post(postInfo.getURL(), inr, user, passwd, 8 * HttpUtils.DEFAULT_POST_BUFFER_SIZE, 60000);
+
+                    final byte[] tmp = new byte[1024];
+                    int bytesRead;
+                    while ((bytesRead = inp.read(tmp)) != -1) {
+                        if (LOG.isDebugEnabled()) {
+                            if (bytesRead > 0) {
+                                LOG.debug("DataSender: post response: {}", new String(tmp, 0, bytesRead));
+                            }
+                        }
                     }
+
+                    LOG.debug("DataSender: posted data for category: {}", catlabel);
+                } catch (final ConnectException e) {
+                    // These exceptions will be thrown if we try to POST RTC data before the web UI is available.
+                    // Don't log a large stack trace for this because it will happen during startup before the
+                    // RTCPostServlet is ready to handle requests.
+                    LOG.warn("DataSender:  Unable to send category '{}' to URL '{}': {}", catlabel, url, e.getMessage());
+                } catch (final Throwable t) {
+                    LOG.warn("DataSender:  Unable to send category '{}' to URL '{}'", catlabel, url, t);
+                } finally {
+                    IOUtils.closeQuietly(inp);
+                    IOUtils.closeQuietly(inr);
                 }
             }
-
-            LOG.debug("DataSender: posted data for category: {}", catlabel);
-        } catch (final Throwable t) {
-            LOG.warn("DataSender:  Unable to send category '{}' to URL '{}'", catlabel, url, t);
-        } finally {
-            IOUtils.closeQuietly(inp);
-            IOUtils.closeQuietly(inr);
-        }
+        });
     }
 
     /**
@@ -339,7 +355,7 @@ public class DataSender implements Fiber {
                     try {
                         inr = new PipedMarshaller(euidata).getReader();
                         LOG.debug("DataSender: posting data to: {}", postInfo.getURLString());
-                        inp = HttpUtils.post(postInfo.getURL(), inr, postInfo.getUser(), postInfo.getPassword(), 8 * HttpUtils.DEFAULT_POST_BUFFER_SIZE);
+                        inp = HttpUtils.post(postInfo.getURL(), inr, postInfo.getUser(), postInfo.getPassword(), 8 * HttpUtils.DEFAULT_POST_BUFFER_SIZE, HttpUtils.DEFAULT_CONNECT_TIMEOUT);
                         LOG.debug("DataSender: posted data for category: {}", catlabel);
 
 
