@@ -22,24 +22,26 @@
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
                 <configuration>
-		<extensions>true</extensions>
+                    <extensions>true</extensions>
                     <instructions>
                         <Bundle-SymbolicName>${bundle.symbolicName}</Bundle-SymbolicName>
                         <Bundle-Version>${project.version}</Bundle-Version>
-                        <Export-Package>${bundle.namespace}.*;version="${project.version}"</Export-Package>
-                    </instructions>
+                        <Export-Package>${bundle.namespace}.*;version="${project.version}"</Export-Package>                        
+                    </instructions> 
                 </configuration>
             </plugin>
         </plugins>
     </build>
     
     <dependencies>
+        
         <!-- OpenNMS dependencies -->
         <dependency>
             <groupId>org.opennms</groupId>
             <artifactId>opennms-dao</artifactId>
             <scope>provided</scope>
         </dependency>
+        
         <dependency>
             <groupId>org.opennms</groupId>
             <artifactId>opennms-model</artifactId>
@@ -70,7 +72,21 @@
             <groupId>org.kie</groupId>
             <artifactId>kie-api</artifactId>
             <version>6.1.0.Final</version>
-            <type>jar</type>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.drools</groupId>
+            <artifactId>drools-compiler</artifactId>
+            <version>6.1.0.Final</version>
+            <scope>provided</scope>
+        </dependency>   
+
+        <dependency>
+            <groupId>org.drools</groupId>
+            <artifactId>drools-core</artifactId>
+            <version>6.1.0.Final</version>
+            <scope>provided</scope>
         </dependency>
 
         <!-- Logging -->
@@ -84,11 +100,6 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.easymock</groupId>
-            <artifactId>easymock</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>

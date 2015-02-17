@@ -1,0 +1,13 @@
+package org.opennms.features.correlator
+import org.opennms.netmgt.model.OnmsEvent
+
+declare org.opennms.netmgt.model.OnmsEvent
+    @role(event)
+end
+
+rule "Anything"
+when
+    $e : OnmsEvent( id != 0 )
+then
+    System.out.println("event in rule: " + $e.getId());
+end

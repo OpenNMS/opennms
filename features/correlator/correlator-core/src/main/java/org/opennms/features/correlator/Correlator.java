@@ -54,18 +54,19 @@ public class Correlator {
 
         //TODO DEBUG REMOVE  SystemOut
         System.out.println("DEBUG testing correlator - system out");
-         LOGGER.debug("DEBUG testing correlator - logger");
+        LOGGER.debug("DEBUG testing correlator - logger");
 
         if (eventProxy == null) {
             throw new RuntimeException("eventProxy cannot be null.");
         }
         this.eventProxy = eventProxy;
-        
+
         KieServices kieServices = KieServices.Factory.get();
+        //this line causes trubble with the classloader
         KieBaseConfiguration kBaseConfiguration = kieServices.newKieBaseConfiguration();
         kBaseConfiguration.setOption(EventProcessingOption.STREAM);
-        KieContainer kContainer = kieServices.getKieClasspathContainer();
-        KieBase kBase = kContainer.newKieBase(kBaseConfiguration);
+        KieContainer kieContainer = kieServices.getKieClasspathContainer();
+        KieBase kBase = kieContainer.newKieBase(kBaseConfiguration);
         kSession = kBase.newStatelessKieSession();
     }
 
@@ -76,7 +77,7 @@ public class Correlator {
         System.out.println("DEBUG Correlator - Received event: {}" + e);
         kSession.execute(e);
     }
-    
+
     public EventProxy getEventProxy() {
         return eventProxy;
     }
