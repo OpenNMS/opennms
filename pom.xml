@@ -1104,6 +1104,8 @@
     <oldAsmVersion>99.99.99-exclude-and-use-org.ow2.asm.asm-all-instead</oldAsmVersion>
     <asmVersion>5.0.3</asmVersion>
     <asciidoctorVersion>1.5.2</asciidoctorVersion>
+    <asciidoctorjVersion>1.5.2</asciidoctorjVersion>
+    <asciidoctorjPdfVersion>1.5.0-alpha.6</asciidoctorjPdfVersion>
     <activemqVersion>5.10.0</activemqVersion>
     <atomikosVersion>3.9.2</atomikosVersion>
     <camelVersion>2.13.2</camelVersion>
@@ -1138,8 +1140,8 @@
     <paxExamVersion>2.6.0</paxExamVersion>
     <powermockVersion>1.5.5</powermockVersion>
     <oroVersion>2.0.8</oroVersion>
-    <osgiVersion>4.3.1</osgiVersion>
-    <osgiEnterpriseVersion>4.2.0</osgiEnterpriseVersion>
+    <osgiVersion>5.0.0</osgiVersion>
+    <osgiEnterpriseVersion>5.0.0</osgiEnterpriseVersion>
     <slf4jVersion>1.7.7</slf4jVersion>
     <smackVersion>4.0.6</smackVersion>
     <springJaxbVersion>2.1.7</springJaxbVersion>

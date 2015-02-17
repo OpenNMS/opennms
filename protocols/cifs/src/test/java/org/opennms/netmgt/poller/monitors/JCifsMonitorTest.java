@@ -58,6 +58,15 @@ import org.opennms.netmgt.poller.mock.MonitorTestUtils;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
+/**
+ * WARNING: Powermock has a bug that prevents this test from running properly on 
+ * JDK version 1.7u65 or higher. We need to either update Powermock when the bug
+ * is fixed or see if the regression in the JDK is fixed so that the test runs.
+ * 
+ * @see https://code.google.com/p/powermock/issues/detail?id=504
+ * @see http://hg.openjdk.java.net/jdk9/hs-rt/hotspot/rev/4986ca806899
+ * @see http://www.takipiblog.com/oracles-latest-java-8-update-broke-your-tools-how-did-it-happen/
+ */
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({SmbFile.class, JCifsMonitor.class})
 public class JCifsMonitorTest {
