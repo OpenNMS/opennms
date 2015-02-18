@@ -205,11 +205,16 @@ public class SyslogdLoadTest implements InitializingBean {
         String testPduFormat = "2010-08-19 localhost foo%d: load test %d on tty1";
         SyslogClient sc = new SyslogClient(null, 10, SyslogClient.LOG_DEBUG);
         final long start = System.currentTimeMillis();
+        // Test by sending over a socket
+        //final DatagramSocket socket = new DatagramSocket();
         for (int i = 0; i < eventCount; i++) {
             int foo = foos.get(i);
             DatagramPacket pkt = sc.getPacket(SyslogClient.LOG_DEBUG, String.format(testPduFormat, foo, foo));
+            // Test by sending over a socket
+            //socket.send(pkt);
             WaterfallExecutor.waterfall(m_executorService, new SyslogConnection(pkt, MATCH_PATTERN, HOST_GROUP, MESSAGE_GROUP, UEI_LIST, HIDE_MESSAGE, DISCARD_UEI));
         }
+        //socket.close();
 
         long mid = System.currentTimeMillis();
         m_eventCounter.waitForFinish(120000);
@@ -375,7 +380,7 @@ public class SyslogdLoadTest implements InitializingBean {
         public void onEvent(final Event e) {
             final int current = m_eventCount.incrementAndGet();
             if (current % 100 == 0) {
-                System.err.println(current + " < " + m_expectedCount);
+                System.err.println(current + " out of " + m_expectedCount + " expected events received");
             }
         }
 

@@ -34,8 +34,6 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -45,10 +43,10 @@ import java.util.concurrent.TimeUnit;
 import org.opennms.core.concurrent.LogPreservingThreadFactory;
 import org.opennms.core.concurrent.WaterfallExecutor;
 import org.opennms.core.logging.Logging;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.config.syslogd.HideMessage;
 import org.opennms.netmgt.config.syslogd.UeiList;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @deprecated This class should be combined with {@link SyslogHandler}
@@ -111,9 +109,9 @@ class SyslogReceiver implements Runnable {
         m_HideMessages = hideMessages;
 
         m_executor = new ThreadPoolExecutor(
-            1,
-            Integer.MAX_VALUE,
-            100L,
+            Runtime.getRuntime().availableProcessors() * 2,
+            Runtime.getRuntime().availableProcessors() * 2,
+            1000L,
             TimeUnit.MILLISECONDS,
             new LinkedBlockingQueue<Runnable>(),
             new LogPreservingThreadFactory(getClass().getSimpleName(), Integer.MAX_VALUE)
@@ -171,13 +169,18 @@ class SyslogReceiver implements Runnable {
 
         // Increase the receive buffer for the socket
         try {
-            LOG.debug("Setting receive buffer size to {}", length);
-            m_dgSock.setReceiveBufferSize(length);
+            LOG.debug("Attempting to set receive buffer size to {}", Integer.MAX_VALUE);
+            m_dgSock.setReceiveBufferSize(Integer.MAX_VALUE);
+            LOG.debug("Actual receive buffer size is {}", m_dgSock.getReceiveBufferSize());
         } catch (SocketException e) {
             LOG.info("Failed to set the receive buffer to {}", length, e);
         }
         // set to avoid numerous tracing message
         boolean ioInterrupted = false;
+
+        // Construct one mutable {@link DatagramPacket} that will be used for receiving syslog messages 
+        DatagramPacket pkt = new DatagramPacket(buffer, length);
+
         // now start processing incoming requests
         while (!m_stop) {
             if (m_context.isInterrupted()) {
@@ -190,7 +193,6 @@ class SyslogReceiver implements Runnable {
                     LOG.debug("Waiting on a datagram to arrive");
                 }
 
-                DatagramPacket pkt = new DatagramPacket(buffer, length);
                 m_dgSock.receive(pkt);
 
                 //SyslogConnection *Must* copy packet data and InetAddress as DatagramPacket is a mutable type
