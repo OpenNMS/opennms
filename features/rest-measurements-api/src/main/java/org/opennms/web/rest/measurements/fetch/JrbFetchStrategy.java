@@ -71,7 +71,12 @@ public class JrbFetchStrategy implements MeasurementFetchStrategy {
 
         final long startInSeconds = (long) Math.floor(start / 1000);
         final long endInSeconds = (long) Math.floor(end / 1000);
-        final long stepInSeconds = (long) Math.floor(step / 1000);
+
+        long stepInSeconds = (long) Math.floor(step / 1000);
+        // The step must be strictly positive
+        if (stepInSeconds <= 0) {
+            stepInSeconds = 1;
+        }
 
         final DataProcessor dproc = new DataProcessor(startInSeconds, endInSeconds);
         if (maxrows > 0) {
