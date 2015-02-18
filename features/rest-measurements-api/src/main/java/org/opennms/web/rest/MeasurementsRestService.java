@@ -35,6 +35,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.SortedMap;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
@@ -96,9 +97,6 @@ public class MeasurementsRestService {
     private static final Logger LOG = LoggerFactory.getLogger(MeasurementsRestService.class);
 
     @Autowired
-    private ResourceDao m_resourceDao;
-
-    @Autowired
     private MeasurementFetchStrategy m_fetchStrategy;
 
     /**
@@ -152,6 +150,7 @@ public class MeasurementsRestService {
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     @Transactional(readOnly=true)
     public QueryResponse query(final QueryRequest request) {
+        Preconditions.checkState(m_fetchStrategy != null);
 
         // Compile the expressions
         final JexlEngine jexl = new JexlEngine();

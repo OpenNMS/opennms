@@ -14,7 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.google.common.collect.Lists;
 
 /**
- * Containts tests that can run irrespective of the fetch strategy.
+ * Contains tests that can run irrespective of the fetch strategy.
  *
  * @author Jesse White <jesse@opennms.org>
  */
