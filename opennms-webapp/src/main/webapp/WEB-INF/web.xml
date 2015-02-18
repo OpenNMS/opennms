@@ -694,10 +694,14 @@
   <servlet>
     <servlet-name>rtcPost</servlet-name>
     <servlet-class>org.opennms.web.category.RTCPostServlet</servlet-class>
+    <!-- Load on startup so that we can immediately start processing RTC POSTs -->
+    <load-on-startup>1</load-on-startup>
   </servlet>
   <servlet>
     <servlet-name>rtcRaw</servlet-name>
     <servlet-class>org.opennms.web.category.RTCDebugServlet</servlet-class>
+    <!-- Load on startup so that we can immediately start processing RTC POSTs -->
+    <load-on-startup>1</load-on-startup>
   </servlet>
   
   <servlet>

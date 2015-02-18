@@ -83,7 +83,16 @@
      </constructor-arg>
      <constructor-arg ref="daoContext" />
    </bean>
-        
+    
+    <bean id="rtcContext" class="org.springframework.context.support.ClassPathXmlApplicationContext">
+     <constructor-arg>
+       <list>
+         <value>META-INF/opennms/applicationContext-rtc.xml</value>
+       </list>
+     </constructor-arg>
+     <constructor-arg ref="daoContext" />
+    </bean>
+    
     <bean id="linkdContext" class="org.springframework.context.support.ClassPathXmlApplicationContext">
      <constructor-arg>
        <list>

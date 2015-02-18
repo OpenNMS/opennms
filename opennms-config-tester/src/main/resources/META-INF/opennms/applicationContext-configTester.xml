@@ -443,11 +443,7 @@ org.opennms.netmgt.filter.FilterParseException: SQL Exception occurred getting I
     <property name="targetMethod"><value>getBaseURL</value></property>
   </bean>
 
-  <bean id="rtcConfigFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-    <property name="staticMethod"><value>org.opennms.netmgt.config.RTCConfigFactory.init</value></property>
-  </bean>
-
-  <bean id="rtcConfigFactory" class="org.opennms.netmgt.config.RTCConfigFactory" depends-on="rtcConfigFactory-init" factory-method="getInstance"/>
+  <bean id="rtcConfigFactory" class="org.opennms.netmgt.config.RTCConfigFactory"/>
 
   <bean id="rwsConfigFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
     <property name="staticMethod"><value>org.opennms.netmgt.config.RWSConfigFactory.init</value></property>
