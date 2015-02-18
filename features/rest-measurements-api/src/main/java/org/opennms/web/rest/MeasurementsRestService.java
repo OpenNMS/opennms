@@ -111,7 +111,7 @@ public class MeasurementsRestService {
     @Transactional(readOnly=true)
     public QueryResponse simpleQuery(@PathParam("resourceId") final String resourceId,
             @PathParam("attribute") final String attribute,
-            @DefaultValue("−14400000") @QueryParam("start") final long start,
+            @DefaultValue("-14400000") @QueryParam("start") final long start,
             @DefaultValue("0") @QueryParam("end") final long end,
             @DefaultValue("300000") @QueryParam("step") final long step,
             @DefaultValue("0") @QueryParam("maxrows") final int maxrows,
