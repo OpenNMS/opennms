@@ -31,6 +31,7 @@ package org.opennms.netmgt.capsd.plugins;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.URISyntaxException;
+import java.security.GeneralSecurityException;
 import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
@@ -103,11 +104,15 @@ public class WebPlugin extends AbstractPlugin {
                 }
             }
 
-            if(ParameterMap.getKeyedBoolean(map,"auth-enabled",false)){
+            if(ParameterMap.getKeyedBoolean(map,"auth-enabled",false)) {
                 clientWrapper.addBasicCredentials(ParameterMap.getKeyedString(map, "auth-user", DEFAULT_USER), ParameterMap.getKeyedString(map, "auth-password", DEFAULT_PASSWORD));
                 if (ParameterMap.getKeyedBoolean(map, "auth-preemptive", true)) {
                     clientWrapper.usePreemptiveAuth();
                 }
+            }
+
+            if (ParameterMap.getKeyedBoolean(map, "use-ssl-filter", false)) {
+                clientWrapper.trustSelfSigned(ParameterMap.getKeyedString(map, "scheme", DEFAULT_SCHEME));
             }
 
             final CloseableHttpResponse response = clientWrapper.execute(getMethod);
@@ -147,6 +152,9 @@ public class WebPlugin extends AbstractPlugin {
             retval = false;
         } catch (final URISyntaxException e) {
             LOG.info(e.getMessage(), e);
+            retval = false;
+        } catch (GeneralSecurityException gse) {
+            LOG.error("Unable to set SSL trust to allow self-signed certificates", gse);
             retval = false;
         } finally {
             IOUtils.closeQuietly(clientWrapper);
