@@ -80,6 +80,8 @@ import javax.ws.rs.core.Response.Status;
  * Calculations may then be performed on these measurements
  * using JEXL expressions.
  *
+ * Units of time, including timestamps are expressed in milliseconds.
+ *
  * This API is designed to be similar to the one provided
  * by Newts.
  *
@@ -109,17 +111,15 @@ public class MeasurementsRestService {
     @Transactional(readOnly=true)
     public QueryResponse simpleQuery(@PathParam("resourceId") final String resourceId,
             @PathParam("attribute") final String attribute,
-            @DefaultValue("-14400") @QueryParam("start") final long start,
+            @DefaultValue("−14400000") @QueryParam("start") final long start,
             @DefaultValue("0") @QueryParam("end") final long end,
-            @DefaultValue("300") @QueryParam("step") final long step,
+            @DefaultValue("300000") @QueryParam("step") final long step,
+            @DefaultValue("0") @QueryParam("maxrows") final int maxrows,
             @DefaultValue("AVERAGE") @QueryParam("aggregation") final String aggregation) {
-
-        final Date now = new Date();
-        final long timestamp = now.getTime() / 1000;
 
         QueryRequest request = new QueryRequest();
         // If end is not strictly positive, use the current timestamp
-        request.setEnd(end > 0 ? end : timestamp);
+        request.setEnd(end > 0 ? end : new Date().getTime());
         // If start is negative, subtract it from the end
         request.setStart(start >= 0 ? start : request.getEnd() + start);
         // Make sure the resulting start time is not negative
@@ -128,6 +128,7 @@ public class MeasurementsRestService {
         }
 
         request.setStep(step);
+        request.setMaxRows(maxrows);
 
         // Use the attribute name as the label
         Source source = new Source(attribute, resourceId, attribute, false);
@@ -164,10 +165,12 @@ public class MeasurementsRestService {
         FetchResults results;
         try {
             results = m_fetchStrategy.fetch(
-			request.getStep(),
-                    request.getStart(),
-                    request.getEnd(),
-                    request.getSources());
+                        request.getStart(),
+                        request.getEnd(),
+                        request.getStep(),
+                        request.getMaxRows(),
+                        request.getSources()
+                        );
         } catch (Exception e) {
             throw getException(Status.INTERNAL_SERVER_ERROR, e, "Fetch failed");
         }

@@ -66,11 +66,18 @@ public class JrbFetchStrategy implements MeasurementFetchStrategy {
      * {@inheritDoc}
      */
     @Override
-    public FetchResults fetch(long step, long start, long end,
+    public FetchResults fetch(long start, long end, long step, int maxrows,
             List<Source> sources) throws IOException, RrdException {
 
-        final DataProcessor dproc = new DataProcessor(start, end);
-        dproc.setFetchRequestResolution(step);
+        final long startInSeconds = (long) Math.floor(start / 1000);
+        final long endInSeconds = (long) Math.floor(end / 1000);
+        final long stepInSeconds = (long) Math.floor(step / 1000);
+
+        final DataProcessor dproc = new DataProcessor(startInSeconds, endInSeconds);
+        if (maxrows > 0) {
+            dproc.setPixelCount(maxrows);
+        }
+        dproc.setFetchRequestResolution(stepInSeconds);
 
         for (final Source source : sources) {
             final OnmsResource resource = m_resourceDao.getResourceById(source
@@ -101,7 +108,7 @@ public class JrbFetchStrategy implements MeasurementFetchStrategy {
         long[] timestamps = dproc.getTimestamps();
 
         for (int i = 0; i < timestamps.length; i++) {
-            final long timestamp = timestamps[i] - dproc.getStep();
+            final long timestampInSeconds = timestamps[i] - dproc.getStep();
 
             Map<String, Double> data = new HashMap<String, Double>();
             for (Source source : sources) {
@@ -109,9 +116,9 @@ public class JrbFetchStrategy implements MeasurementFetchStrategy {
                         dproc.getValues(source.getLabel())[i]);
             }
 
-            rows.put(timestamp, data);
+            rows.put(timestampInSeconds * 1000, data);
         }
 
-        return new FetchResults(rows, dproc.getStep());
+        return new FetchResults(rows, dproc.getStep() * 1000);
     }
 }

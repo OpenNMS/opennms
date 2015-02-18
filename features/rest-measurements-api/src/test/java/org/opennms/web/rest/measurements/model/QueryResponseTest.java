@@ -61,14 +61,14 @@ public class QueryResponseTest extends XmlTestNoCastor<QueryResponse> {
         return Arrays.asList(new Object[][]{{
                 response,
                 "<query-response step=\"300\" start=\"1000\" end=\"2000\">" +
-                    "<metrics timestamp=\"0\">" +
+                    "<measurements timestamp=\"0\">" +
                         "<values>" +
                            "<entry>" +
                               "<key>x</key>" +
                               "<value>1.0</value>" +
                            "</entry>" +
                         "</values>" +
-                     "</metrics>" +
+                     "</measurements>" +
                 "</query-response>",
                 null
         }});

@@ -42,9 +42,9 @@ public abstract class MeasurementsRestServiceTest {
     @Test(expected=WebApplicationException.class)
     public void notFoundOnMissingResource() {
         QueryRequest request = new QueryRequest();
-        request.setStart(1414602000);
-        request.setEnd(1417046400);
-        request.setStep(1);
+        request.setStart(1414602000000L);
+        request.setEnd(1417046400000L);
+        request.setStep(1000L);
 
         Source source = new Source();
         source.setResourceId("node[99].interfaceSnmp[eth0-04013f75f101]");
@@ -59,9 +59,9 @@ public abstract class MeasurementsRestServiceTest {
     @Test(expected=WebApplicationException.class)
     public void notFoundOnMissingAttribute() {
         QueryRequest request = new QueryRequest();
-        request.setStart(1414602000);
-        request.setEnd(1417046400);
-        request.setStep(1);
+        request.setStart(1414602000000L);
+        request.setEnd(1417046400000L);
+        request.setStep(1000L);
 
         Source source = new Source();
         source.setResourceId("node[1].interfaceSnmp[eth0-04013f75f101]");

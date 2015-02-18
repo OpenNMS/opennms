@@ -88,21 +88,30 @@ public class JniRrdFetchStrategy implements MeasurementFetchStrategy {
      * {@inheritDoc}
      */
     @Override
-    public FetchResults fetch(long step, long start, long end,
-            List<Source> sources) throws RrdException {
+    public FetchResults fetch(long start, long end, long step, int maxrows,
+            List<Source> sources) throws IOException, RrdException {
+
         String rrdBinary = System.getProperty("rrd.binary");
         if (rrdBinary == null) {
             throw new RrdException("No RRD binary is set.");
         }
 
+        final long startInSeconds = (long) Math.floor(start / 1000);
+        final long endInSeconds = (long) Math.floor(end / 1000);
+        final long stepInSeconds = (long) Math.floor(step / 1000);
+
         final CommandLine cmdLine = new CommandLine(rrdBinary);
         cmdLine.addArgument("xport");
         cmdLine.addArgument("--step");
-        cmdLine.addArgument("" + step);
+        cmdLine.addArgument("" + stepInSeconds);
         cmdLine.addArgument("--start");
-        cmdLine.addArgument("" + start);
+        cmdLine.addArgument("" + startInSeconds);
         cmdLine.addArgument("--end");
-        cmdLine.addArgument("" + end);
+        cmdLine.addArgument("" + endInSeconds);
+        if (maxrows > 0) {
+            cmdLine.addArgument("--maxrows");
+            cmdLine.addArgument("" + maxrows);
+        }
 
         for (final Source source : sources) {
             final OnmsResource resource = m_resourceDao.getResourceById(source
@@ -172,9 +181,9 @@ public class JniRrdFetchStrategy implements MeasurementFetchStrategy {
             for (String column : rrdXport.getMeta().getLegends()) {
                 values.put(column, row.getValues().get(k++));
             }
-            rows.put(row.getTimestamp(), values);
+            rows.put(row.getTimestamp() * 1000, values);
         }
 
-        return new FetchResults(rows, rrdXport.getMeta().getStep());
+        return new FetchResults(rows, rrdXport.getMeta().getStep() * 1000);
     }
 }

@@ -44,9 +44,20 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement(name = "query-response")
 public class QueryResponse {
+
+    /**
+     * Step size in ms.
+     */
     private long step;
 
+    /**
+     * Timestamp in ms.
+     */
     private long start;
+
+    /**
+     * Timestamp in ms.
+     */
     private long end;
 
     private List<Measurement> measurements = Lists.newArrayListWithCapacity(0);
@@ -78,7 +89,7 @@ public class QueryResponse {
         this.end = end;
     }
 
-    @XmlElement(name = "metrics")
+    @XmlElement(name = "measurements")
     public List<Measurement> getMeasurements() {
         return this.measurements;
     }

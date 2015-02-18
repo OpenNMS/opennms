@@ -44,22 +44,29 @@ import java.util.List;
  */
 @XmlRootElement(name = "query-request")
 public class QueryRequest {
+
+    /**
+     * Timestamp in ms.
+     */
+    private long start;
+
+    /**
+     * Timestamp in ms.
+     */
+    private long end;
+
+    /**
+     * Step size in ms.
+     */
     private long step;
 
-    private long start;
-    private long end;
+    /**
+     * Maximum number of rows (i.e. pixel width of resulting graph)
+     */
+    private int maxrows = 0;
 
     private List<Source> sources = Lists.newArrayListWithCapacity(0);
     private List<Expression> expressions = Lists.newArrayListWithCapacity(0);
-
-    @XmlAttribute(name = "step")
-    public long getStep() {
-        return step;
-    }
-
-    public void setStep(long step) {
-        this.step = step;
-    }
 
     @XmlAttribute(name = "start")
     public long getStart() {
@@ -77,6 +84,24 @@ public class QueryRequest {
 
     public void setEnd(final long end) {
         this.end = end;
+    }
+
+    @XmlAttribute(name = "step")
+    public long getStep() {
+        return step;
+    }
+
+    public void setStep(long step) {
+        this.step = step;
+    }
+
+    @XmlAttribute(name = "maxrows")
+    public int getMaxRows() {
+        return maxrows;
+    }
+
+    public void setMaxRows(int maxrows) {
+        this.maxrows = maxrows;
     }
 
     @XmlElement(name = "source")

@@ -50,6 +50,7 @@ public class QueryRequestTest extends XmlTestNoCastor<QueryRequest> {
         request.setStep(300);
         request.setStart(1000);
         request.setEnd(2000);
+        request.setMaxRows(1);
 
         Source source = new Source("ifInOctets", "node[1].if", "ifInOctets", true);
         request.setSources(Lists.newArrayList(source));
@@ -59,7 +60,7 @@ public class QueryRequestTest extends XmlTestNoCastor<QueryRequest> {
 
         return Arrays.asList(new Object[][]{{
                 request,
-                "<query-request step=\"300\" start=\"1000\" end=\"2000\">" +
+                "<query-request step=\"300\" start=\"1000\" end=\"2000\" maxrows=\"1\">" +
                     "<expression transient=\"false\" label=\"ifInBits\">ifInOctets * 8</expression>" +
                     "<source aggregation=\"AVERAGE\" attribute=\"ifInOctets\" transient=\"true\" label=\"ifInOctets\" resourceId=\"node[1].if\"/>" +
                 "</query-request>",

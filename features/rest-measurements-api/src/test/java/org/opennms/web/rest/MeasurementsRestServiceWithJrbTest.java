@@ -84,9 +84,10 @@ public class MeasurementsRestServiceWithJrbTest extends MeasurementsRestServiceT
     @Test
     public void canRetrieveMeasurementsFromJrb() {
         QueryRequest request = new QueryRequest();
-        request.setStart(1414602000);
-        request.setEnd(1417046400);
-        request.setStep(1);
+        request.setStart(1414602000000L);
+        request.setEnd(1417046400000L);
+        request.setStep(1000L);
+        request.setMaxRows(700);
 
         Source ifInOctets = new Source();
         ifInOctets.setResourceId("node[1].interfaceSnmp[eth0-04013f75f101]");
@@ -108,11 +109,11 @@ public class MeasurementsRestServiceWithJrbTest extends MeasurementsRestServiceT
 
         QueryResponse response = m_svc.query(request);
 
-        assertEquals(3600, response.getStep());
+        assertEquals(3600000L, response.getStep());
         assertEquals(680, response.getMeasurements().size());
         Measurement metric = response.getMeasurements().get(0);
         Map<String, Double> values = metric.getValues();
-        assertEquals(1414598400, metric.getTimestamp());
+        assertEquals(1414598400000L, metric.getTimestamp());
         assertEquals(10252.8634939 * 8, values.get("bitsIn"), 0.0001);
         assertFalse("Transient values should be excluded.", values.containsKey("octetsIn"));
         assertFalse("Transient values should be excluded.", values.containsKey("eight"));

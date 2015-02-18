@@ -89,9 +89,10 @@ public class MeasurementsRestServiceWithRrdTest extends MeasurementsRestServiceT
     @Test
     public void canRetrieveMeasurementsFromRrd(){
         QueryRequest request = new QueryRequest();
-        request.setStart(1414602000);
-        request.setEnd(1417046400);
-        request.setStep(1);
+        request.setStart(1414602000000L);
+        request.setEnd(1417046400000L);
+        request.setStep(1000L);
+        request.setMaxRows(350);
 
         Source ifInOctets = new Source();
         ifInOctets.setResourceId("node[1].interfaceSnmp[eth0-04013f75f101]");
@@ -112,10 +113,11 @@ public class MeasurementsRestServiceWithRrdTest extends MeasurementsRestServiceT
 
         QueryResponse response = m_svc.query(request);
 
+        assertEquals(7200000L, response.getStep());
         assertEquals(341, response.getMeasurements().size());
         Measurement metric = response.getMeasurements().get(1);
         Map<String, Double> values = metric.getValues();
-        assertEquals(1414612800, metric.getTimestamp());
+        assertEquals(1414612800000L, metric.getTimestamp());
         assertEquals(4455.846126, values.get("octetsIn"), 0.0001);
         assertEquals(4455.846126 * 8, values.get("bitsIn"), 0.0001);
         assertFalse("Transient values should be excluded.", values.containsKey("eight"));

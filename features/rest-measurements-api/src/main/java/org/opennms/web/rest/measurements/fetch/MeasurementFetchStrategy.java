@@ -42,13 +42,14 @@ public interface MeasurementFetchStrategy {
     /**
      * Fetches the measurements for the given sources.
      *
-     * @param step       desired resolution in seconds - actual resolution might differ
-     * @param start      timestamp in seconds
-     * @param end        timestamp in seconds
+     * @param start      timestamp in milliseconds
+     * @param end        timestamp in milliseconds
+     * @param step       desired resolution in milliseconds - actual resolution might differ
+     * @param maxrows    maximum number of rows- no limit when <= 0
      * @param sources    array of sources - these should have unique labels
      * @return           null when a resource id or attribute cannot be found
      * @throws Exception
      */
-	public FetchResults fetch(final long step, final long start,
-            final long end, final List<Source> sources) throws Exception;
+    public FetchResults fetch(long start, long end, long step, int maxrows,
+            List<Source> sources) throws Exception;
 }
