@@ -329,7 +329,7 @@ public class AnnotationBasedEventListenerAdapter implements StoppableEventListen
     }
     
     private static void validateMethodAsEventExceptionHandler(Method method) {
-        Assert.state(method.getParameterTypes().length == 2, "Invalid number of paremeters. EventExceptionHandler methods must take 2 arguments with types (Event, ? extends Throwable)");
+        Assert.state(method.getParameterTypes().length == 2, "Invalid number of parameters. EventExceptionHandler methods must take 2 arguments with types (Event, ? extends Throwable)");
         Assert.state(ClassUtils.isAssignable(Event.class, method.getParameterTypes()[0]), "First parameter of incorrect type. EventExceptionHandler first paramenter must be of type Event");
         Assert.state(ClassUtils.isAssignable(Throwable.class, method.getParameterTypes()[1]), "Second parameter of incorrect type. EventExceptionHandler second paramenter must be of type ? extends Throwable");
     }
