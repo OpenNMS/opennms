@@ -42,7 +42,6 @@ import com.google.common.collect.Maps;
 import org.apache.commons.jexl2.JexlContext;
 import org.apache.commons.jexl2.JexlEngine;
 import org.apache.commons.jexl2.MapContext;
-import org.opennms.netmgt.dao.api.ResourceDao;
 import org.opennms.web.rest.measurements.fetch.FetchResults;
 import org.opennms.web.rest.measurements.fetch.MeasurementFetchStrategy;
 import org.opennms.web.rest.measurements.model.Expression;
