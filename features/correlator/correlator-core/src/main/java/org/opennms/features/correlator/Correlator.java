@@ -27,16 +27,14 @@
 package org.opennms.features.correlator;
 
 import org.kie.api.KieBase;
-import org.kie.api.KieBaseConfiguration;
 import org.kie.api.KieServices;
-import org.kie.api.conf.EventProcessingOption;
 import org.kie.api.runtime.KieContainer;
-import org.kie.api.runtime.StatelessKieSession;
+import org.kie.api.runtime.KieSession;
 import org.opennms.netmgt.events.api.EventProxy;
 import org.opennms.netmgt.events.api.annotations.EventHandler;
 import org.opennms.netmgt.events.api.annotations.EventListener;
-
 import org.opennms.netmgt.xml.event.Event;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,34 +46,34 @@ public class Correlator {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Correlator.class);
     private EventProxy eventProxy;
-    private StatelessKieSession kSession;
+    private KieSession kSession;
 
-    public Correlator(EventProxy eventProxy) {
-
-        //TODO DEBUG REMOVE  SystemOut
-        System.out.println("DEBUG testing correlator - system out");
-        LOGGER.debug("DEBUG testing correlator - logger");
-
-        if (eventProxy == null) {
-            throw new RuntimeException("eventProxy cannot be null.");
-        }
-        this.eventProxy = eventProxy;
-
+    public void start() {
         KieServices kieServices = KieServices.Factory.get();
-        //this line causes trubble with the classloader
-        KieBaseConfiguration kBaseConfiguration = kieServices.newKieBaseConfiguration();
-        kBaseConfiguration.setOption(EventProcessingOption.STREAM);
-        KieContainer kieContainer = kieServices.getKieClasspathContainer();
-        KieBase kBase = kieContainer.newKieBase(kBaseConfiguration);
-        kSession = kBase.newStatelessKieSession();
+        KieContainer kieContainer = kieServices.getKieClasspathContainer(getClass().getClassLoader());
+//        Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
+        KieBase kBase = kieContainer.getKieBase("onmsKBase");
+        this.kSession = kBase.newKieSession();
+
+//        KieBaseConfiguration kBaseConfiguration = kieServices.newKieBaseConfiguration();
+//        kBaseConfiguration.setOption(EventProcessingOption.STREAM);
+    }
+
+    public void stop() {
+        if (kSession != null) {
+            kSession.dispose();
+            LOGGER.debug("Correlator - disposing kSession: {}", kSession);
+        } else {
+            LOGGER.debug("Correlator - no kSession to dispose: {}", kSession);
+        }
     }
 
     @EventHandler(uei = EventHandler.ALL_UEIS)
     public void handleEventAll(Event e) {
-        //TODO DEBUG
-        LOGGER.debug("DEBUG Correlator - Received event: {}", e);
-        System.out.println("DEBUG Correlator - Received event: {}" + e);
-        kSession.execute(e);
+        LOGGER.debug("Correlator!! ksession='{}' \t event='{}'", kSession, e);
+        kSession.insert(e);
+        int amountOfRulesFired = kSession.fireAllRules();
+        LOGGER.debug("Correlator - Received event: {} \t fired {} rules against it. UIE was {}", e.getDbid(), amountOfRulesFired, e.getUei());
     }
 
     public EventProxy getEventProxy() {

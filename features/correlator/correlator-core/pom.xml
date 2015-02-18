@@ -16,6 +16,12 @@
     <name>OpenNMS :: Features :: Correlator :: Core</name>
     
     <build>
+        <resources>
+            <resource>
+                <directory>${project.basedir}/src/main/resources</directory>
+                <filtering>false</filtering>
+            </resource>
+        </resources>
         <plugins>
             <plugin>
                 <!-- build a simple set of public/private classes into an OSGi bundle -->

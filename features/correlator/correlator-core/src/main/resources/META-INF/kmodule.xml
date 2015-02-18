@@ -1,2 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<kmodule xmlns="http://jboss.org/kie/6.0.0/kmodule"/>
+<kmodule xmlns="http://jboss.org/kie/6.0.0/kmodule">
+    <kbase name="onmsKBase" packages="org.opennms.features.correlator" default="true">
+        <ksession name="onmsKSession" default="true" />
+    </kbase>
+</kmodule>
