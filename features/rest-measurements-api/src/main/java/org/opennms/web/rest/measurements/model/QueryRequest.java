@@ -66,6 +66,7 @@ public class QueryRequest {
     private int maxrows = 0;
 
     private List<Source> sources = Lists.newArrayListWithCapacity(0);
+
     private List<Expression> expressions = Lists.newArrayListWithCapacity(0);
 
     @XmlAttribute(name = "start")

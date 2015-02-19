@@ -69,7 +69,7 @@ import com.google.common.collect.Lists;
         "classpath:/META-INF/opennms/applicationContext-measurements-test-rrd.xml"
 })
 @JUnitConfigurationEnvironment
-@JUnitTemporaryDatabase(reuseDatabase=false)
+@JUnitTemporaryDatabase
 @Transactional
 @Ignore
 public class MeasurementsRestServiceWithRrdTest extends MeasurementsRestServiceTest {

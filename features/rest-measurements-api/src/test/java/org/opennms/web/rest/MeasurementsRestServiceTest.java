@@ -2,7 +2,12 @@ package org.opennms.web.rest;
 
 import javax.ws.rs.WebApplicationException;
 
+import org.hamcrest.BaseMatcher;
+import org.hamcrest.Description;
+import org.hamcrest.Matcher;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.support.DefaultResourceDao;
@@ -29,6 +34,9 @@ public abstract class MeasurementsRestServiceTest {
     @Autowired
     protected NodeDao m_nodeDao;
 
+    @Rule
+    public ExpectedException exception = ExpectedException.none();
+
     public void setUp() {
         BeanUtils.assertAutowiring(this);
 
@@ -39,37 +47,82 @@ public abstract class MeasurementsRestServiceTest {
         m_nodeDao.flush();
     }
 
-    @Test(expected=WebApplicationException.class)
+    @Test
     public void notFoundOnMissingResource() {
-        QueryRequest request = new QueryRequest();
+        final QueryRequest request = buildRequest();
+        request.getSources().get(0).setResourceId("node[99].interfaceSnmp[eth0-04013f75f101]");
+
+        exception.expect(exceptionWithResponseCode(404));
+        m_svc.query(request);
+    }
+
+    @Test
+    public void notFoundOnMissingAttribute() {
+        final QueryRequest request = buildRequest();
+        request.getSources().get(0).setAttribute("n0tIfInOctets");
+
+        exception.expect(exceptionWithResponseCode(404));
+        m_svc.query(request);
+    }
+
+    @Test
+    public void badRequestOnMissingLabel() {
+        final QueryRequest request = buildRequest();
+        request.getSources().get(0).setLabel(null);
+
+        exception.expect(exceptionWithResponseCode(400));
+        m_svc.query(request);
+    }
+
+    @Test
+    public void badRequestOnMissingAttribute() {
+        final QueryRequest request = buildRequest();
+        request.getSources().get(0).setResourceId(null);
+
+        exception.expect(exceptionWithResponseCode(400));
+        m_svc.query(request);
+    }
+
+    @Test
+    public void badRequestOnMissingResourceId() {
+        final QueryRequest request = buildRequest();
+        request.getSources().get(0).setResourceId(null);
+
+        exception.expect(exceptionWithResponseCode(400));
+        m_svc.query(request);
+    }
+
+    private static Matcher<?> exceptionWithResponseCode(final int status) {
+        return new BaseMatcher<WebApplicationException>() {
+            @Override
+            public boolean matches(Object o) {
+                if (!(o instanceof WebApplicationException)) {
+                    return false;
+                }
+                WebApplicationException e = (WebApplicationException)o;
+                return e.getResponse().getStatus() == status;
+            }
+
+            @Override
+            public void describeTo(Description description) {
+                description.appendText("invalid status code");
+            }
+        };
+    }
+
+    private static QueryRequest buildRequest() {
+        final QueryRequest request = new QueryRequest();
         request.setStart(1414602000000L);
         request.setEnd(1417046400000L);
         request.setStep(1000L);
 
-        Source source = new Source();
-        source.setResourceId("node[99].interfaceSnmp[eth0-04013f75f101]");
+        final Source source = new Source();
+        source.setResourceId("node[1].interfaceSnmp[eth0-04013f75f101]");
         source.setAttribute("ifInOctets");
         source.setAggregation("AVERAGE");
         source.setLabel("octetsIn");
         request.setSources(Lists.newArrayList(source));
 
-        m_svc.query(request);
-    }
-
-    @Test(expected=WebApplicationException.class)
-    public void notFoundOnMissingAttribute() {
-        QueryRequest request = new QueryRequest();
-        request.setStart(1414602000000L);
-        request.setEnd(1417046400000L);
-        request.setStep(1000L);
-
-        Source source = new Source();
-        source.setResourceId("node[1].interfaceSnmp[eth0-04013f75f101]");
-        source.setAttribute("n0tIfInOctets");
-        source.setAggregation("AVERAGE");
-        source.setLabel("octetsIn");
-        request.setSources(Lists.newArrayList(source));
-
-        m_svc.query(request);
+        return request;
     }
 }

@@ -41,6 +41,7 @@ import com.google.common.collect.Maps;
 
 import org.apache.commons.jexl2.JexlContext;
 import org.apache.commons.jexl2.JexlEngine;
+import org.apache.commons.jexl2.JexlException;
 import org.apache.commons.jexl2.MapContext;
 import org.opennms.web.rest.measurements.fetch.FetchResults;
 import org.opennms.web.rest.measurements.fetch.MeasurementFetchStrategy;
@@ -132,7 +133,6 @@ public class MeasurementsRestService {
         source.setAggregation(aggregation);
         request.setSources(Lists.newArrayList(source));
 
-        LOG.debug("Executing simple query with {}", request);
         return query(request);
     }
 
@@ -150,13 +150,20 @@ public class MeasurementsRestService {
     @Transactional(readOnly=true)
     public QueryResponse query(final QueryRequest request) {
         Preconditions.checkState(m_fetchStrategy != null);
+        validateQueryRequest(request);
+
+        LOG.debug("Executing query with {}", request);
 
         // Compile the expressions
         final JexlEngine jexl = new JexlEngine();
         final LinkedHashMap<String, org.apache.commons.jexl2.Expression> expressions = Maps.newLinkedHashMap();
         for (final Expression e : request.getExpressions()) {
-            expressions.put(e.getLabel(),
-                            jexl.createExpression(e.getExpression()));
+            try {
+                expressions.put(e.getLabel(),
+                        jexl.createExpression(e.getExpression()));
+            } catch (JexlException ex) {
+                throw getException(Status.BAD_REQUEST, ex, "Invalid expression: {}", e.getExpression());
+            }
         }
 
         // Fetch the measurements
@@ -202,19 +209,22 @@ public class MeasurementsRestService {
                     Object derived = expressionEntry.getValue().evaluate(context);
                     row.put(expressionEntry.getKey(), toDouble(derived));
                 } catch (NullPointerException|NumberFormatException e) {
-                    throw getException(Status.BAD_REQUEST, e, "Expression with label '{}' could not be cast to a Double.",
+                    throw getException(Status.BAD_REQUEST, e, "The return value from expression with label '{}' could not be cast to a Double.",
+                            expressionEntry.getKey());
+                } catch (JexlException e) {
+                    throw getException(Status.BAD_REQUEST, e, "Failed evaluate expression with label: {}",
                             expressionEntry.getKey());
                 }
             }
 
-            // Remove any transient values from sources
+            // Remove any transient values belonging to sources
             for (final Source source : request.getSources()) {
                 if (source.getTransient()) {
                     row.remove(source.getLabel());
                 }
             }
 
-            // Remove any transient values from expressions
+            // Remove any transient values belonging to expressions
             for (final Expression e : request.getExpressions()) {
                 if (e.getTransient()) {
                     row.remove(e.getLabel());
@@ -226,7 +236,7 @@ public class MeasurementsRestService {
                 continue;
             }
 
-            // Add the measurement to the result-set
+            // Add the row to the result-set
             measurements.add(new Measurement(rowEntry.getKey(), row));
         }
 
@@ -234,6 +244,35 @@ public class MeasurementsRestService {
         response.setMeasurements(measurements);
 
         return response;
+    }
+
+    /**
+     * Validates the query request, in order to avoid triggering
+     * internal server errors for invalid input.
+     *
+     * @throws WebApplicationException if validation fails.
+     */
+    private static void validateQueryRequest(final QueryRequest request) {
+        if (request.getEnd() < 0) {
+            throw getException(Status.BAD_REQUEST, "Query end must be >= 0: {}", request.getEnd());
+        }
+        if (request.getStep() <= 0) {
+            throw getException(Status.BAD_REQUEST, "Query step must be > 0: {}", request.getStep());
+        }
+        for (final Source source : request.getSources()) {
+            if (source.getResourceId() == null
+                    || source.getAttribute() == null
+                    || source.getLabel() == null
+                    || source.getAggregation() == null) {
+                throw getException(Status.BAD_REQUEST, "Query source fields must be set: {}", source);
+            }
+        }
+        for (final Expression expression : request.getExpressions()) {
+            if (expression.getExpression() == null
+                    || expression.getLabel() == null) {
+                throw getException(Status.BAD_REQUEST, "Query expression fields must be set: {}", expression);
+            }
+        }
     }
 
     /**
