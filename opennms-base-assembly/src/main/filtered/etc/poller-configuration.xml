@@ -4,8 +4,6 @@
                       pathOutageEnabled="false"
                       serviceUnresponsiveEnabled="false"> 
 
-  <!-- Warning: any manual change on this file requires to restart OpenNMS in order to to take effect. -->
-
   <node-outage status="on">
     <critical-service name="ICMP" />
   </node-outage>

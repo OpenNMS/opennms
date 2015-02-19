@@ -29,7 +29,9 @@
 package org.opennms.netmgt.poller.pollables;
 
 import java.net.InetAddress;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.xml.event.Event;
@@ -105,6 +107,15 @@ public class PollableNetwork extends PollableContainer {
      */
     public PollableNode getNode(int nodeId) {
         return (PollableNode)getMember(Integer.valueOf(nodeId));
+    }
+
+    public List<Long> getNodeIds() {
+        List<Long> nodeIds = new ArrayList<Long>();
+        for (PollableElement e : getMembers()) {
+            int nodeId = ((PollableNode)e).getNodeId();
+            nodeIds.add(new Long(nodeId));
+        }
+        return nodeIds;
     }
 
     /**
