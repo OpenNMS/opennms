@@ -30,11 +30,10 @@ package org.opennms.netmgt.syslogd;
 
 import java.io.IOException;
 import java.io.InterruptedIOException;
-import java.net.InetSocketAddress;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
-import java.nio.ByteBuffer;
-import java.nio.channels.DatagramChannel;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -56,9 +55,8 @@ import org.slf4j.LoggerFactory;
  * @author <a href="http://www.oculan.com">Oculan Corporation</a>
  * @fiddler joed
  */
-class SyslogReceiverNioImpl implements SyslogReceiver {
-
-    private static final Logger LOG = LoggerFactory.getLogger(SyslogReceiverNioImpl.class);
+class SyslogReceiverJavaNetImpl implements SyslogReceiver {
+    private static final Logger LOG = LoggerFactory.getLogger(SyslogReceiverJavaNetImpl.class);
 
     private static final int SOCKET_TIMEOUT = 500;
 
@@ -67,7 +65,10 @@ class SyslogReceiverNioImpl implements SyslogReceiver {
      */
     private volatile boolean m_stop;
 
-    private final DatagramChannel m_channel;
+    /**
+     * The UDP socket for receipt and transmission of packets from agents.
+     */
+    private final DatagramSocket m_dgSock;
 
     /**
      * The context thread
@@ -89,17 +90,17 @@ class SyslogReceiverNioImpl implements SyslogReceiver {
     private final ExecutorService m_executor;
 
     /**
-     * Construct a new receiver
+     * construct a new receiver
      *
      * @param sock
      * @param matchPattern
      * @param hostGroup
      * @param messageGroup
      */
-    SyslogReceiverNioImpl(DatagramChannel channel, String matchPattern, int hostGroup, int messageGroup,
+    SyslogReceiverJavaNetImpl(DatagramSocket sock, String matchPattern, int hostGroup, int messageGroup,
                    UeiList ueiList, HideMessage hideMessages, String discardUei) {
         m_stop = false;
-        m_channel = channel;
+        m_dgSock = sock;
         m_matchPattern = matchPattern;
         m_hostGroup = hostGroup;
         m_messageGroup = messageGroup;
@@ -117,7 +118,7 @@ class SyslogReceiverNioImpl implements SyslogReceiver {
         );
     }
 
-    /**
+    /*
      * stop the current receiver
      * @throws InterruptedException
      * 
@@ -154,11 +155,15 @@ class SyslogReceiverNioImpl implements SyslogReceiver {
         } else
             LOG.debug("Thread context started");
 
+        // allocate a buffer
+        final int length = 0xffff;
+        final byte[] buffer = new byte[length];
+
         // set an SO timeout to make sure we don't block forever
         // if a socket is closed.
         try {
             LOG.debug("Setting socket timeout to {}ms", SOCKET_TIMEOUT);
-            m_channel.socket().setSoTimeout(SOCKET_TIMEOUT);
+            m_dgSock.setSoTimeout(SOCKET_TIMEOUT);
         } catch (SocketException e) {
             LOG.warn("An I/O error occured while trying to set the socket timeout", e);
         }
@@ -166,18 +171,16 @@ class SyslogReceiverNioImpl implements SyslogReceiver {
         // Increase the receive buffer for the socket
         try {
             LOG.debug("Attempting to set receive buffer size to {}", Integer.MAX_VALUE);
-            m_channel.socket().setReceiveBufferSize(Integer.MAX_VALUE);
-            LOG.debug("Actual receive buffer size is {}", m_channel.socket().getReceiveBufferSize());
+            m_dgSock.setReceiveBufferSize(Integer.MAX_VALUE);
+            LOG.debug("Actual receive buffer size is {}", m_dgSock.getReceiveBufferSize());
         } catch (SocketException e) {
             LOG.info("Failed to set the receive buffer to {}", Integer.MAX_VALUE, e);
         }
-
         // set to avoid numerous tracing message
         boolean ioInterrupted = false;
 
-        // Allocate a buffer that's big enough to handle any sane syslog message
-        ByteBuffer buffer = ByteBuffer.allocate(0xffff);
-        buffer.clear();
+        // Construct one mutable {@link DatagramPacket} that will be used for receiving syslog messages 
+        DatagramPacket pkt = new DatagramPacket(buffer, length);
 
         // now start processing incoming requests
         while (!m_stop) {
@@ -191,19 +194,11 @@ class SyslogReceiverNioImpl implements SyslogReceiver {
                     LOG.debug("Waiting on a datagram to arrive");
                 }
 
-                // Write the datagram into the ByteBuffer
-                InetSocketAddress source = (InetSocketAddress)m_channel.receive(buffer);
+                m_dgSock.receive(pkt);
 
-                // Flip the buffer from write to read mode
-                buffer.flip();
-
-                WaterfallExecutor.waterfall(m_executor, new SyslogConnection(source, buffer, m_matchPattern, m_hostGroup, m_messageGroup, m_UeiList, m_HideMessages, m_discardUei));
-
-                // Clear the buffer so that it's ready for writing again
-                buffer.clear();
-
-                // reset the flag
-                ioInterrupted = false; 
+                //SyslogConnection *Must* copy packet data and InetAddress as DatagramPacket is a mutable type
+                WaterfallExecutor.waterfall(m_executor, new SyslogConnection(pkt, m_matchPattern, m_hostGroup, m_messageGroup, m_UeiList, m_HideMessages, m_discardUei));
+                ioInterrupted = false; // reset the flag
             } catch (SocketTimeoutException e) {
                 ioInterrupted = true;
                 continue;
