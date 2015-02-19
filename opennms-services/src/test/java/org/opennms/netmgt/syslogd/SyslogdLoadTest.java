@@ -38,7 +38,10 @@ import java.net.BindException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.net.SocketAddress;
 import java.net.UnknownHostException;
+import java.nio.ByteBuffer;
+import java.nio.channels.DatagramChannel;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -203,18 +206,43 @@ public class SyslogdLoadTest implements InitializingBean {
         m_eventCounter.setAnticipated(eventCount);
 
         String testPduFormat = "2010-08-19 localhost foo%d: load test %d on tty1";
-        SyslogClient sc = new SyslogClient(null, 10, SyslogClient.LOG_DEBUG);
+        SyslogClient sc = new SyslogClient(null, 10, SyslogClient.LOG_USER);
         final long start = System.currentTimeMillis();
-        // Test by sending over a socket
-        //final DatagramSocket socket = new DatagramSocket();
+
+        // Test by directly invoking the SyslogConnection task
         for (int i = 0; i < eventCount; i++) {
             int foo = foos.get(i);
             DatagramPacket pkt = sc.getPacket(SyslogClient.LOG_DEBUG, String.format(testPduFormat, foo, foo));
-            // Test by sending over a socket
-            //socket.send(pkt);
             WaterfallExecutor.waterfall(m_executorService, new SyslogConnection(pkt, MATCH_PATTERN, HOST_GROUP, MESSAGE_GROUP, UEI_LIST, HIDE_MESSAGE, DISCARD_UEI));
         }
-        //socket.close();
+
+        /*
+        // Test by sending over a java.net socket
+        final DatagramSocket socket = new DatagramSocket();
+        for (int i = 0; i < eventCount; i++) {
+            int foo = foos.get(i);
+            DatagramPacket pkt = sc.getPacket(SyslogClient.LOG_DEBUG, String.format(testPduFormat, foo, foo));
+            socket.send(pkt);
+        }
+        socket.close();
+
+        // Test by sending over an NIO channel
+        SocketAddress address = new InetSocketAddress(InetAddressUtils.getLocalHostAddress(), SyslogClient.PORT);
+        final DatagramChannel channel = DatagramChannel.open();
+        final ByteBuffer buffer = ByteBuffer.allocate(0xffff);
+        buffer.clear();
+        System.err.println("Starting to send packets");
+        long startTime = System.currentTimeMillis();
+        for (int i = 0; i < eventCount; i++) {
+            int foo = foos.get(i);
+            buffer.put(SyslogClient.getPacketPayload(SyslogClient.LOG_USER, null, SyslogClient.LOG_DEBUG, String.format(testPduFormat, foo, foo)));
+            buffer.flip();
+            channel.send(buffer, address);
+            buffer.clear();
+        }
+        System.err.println(String.format("Sent %d packets in %d milliseconds", eventCount, System.currentTimeMillis() - startTime));
+        channel.close();
+        */
 
         long mid = System.currentTimeMillis();
         m_eventCounter.waitForFinish(120000);
