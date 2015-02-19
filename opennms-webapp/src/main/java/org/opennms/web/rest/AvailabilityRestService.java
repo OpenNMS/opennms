@@ -29,6 +29,7 @@
 package org.opennms.web.rest;
 
 import java.io.IOException;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -37,6 +38,7 @@ import java.util.Map;
 import javax.servlet.ServletException;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
@@ -52,9 +54,11 @@ import javax.xml.bind.annotation.XmlRootElement;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.config.api.JaxbListWrapper;
-import org.opennms.core.xml.JaxbUtils;
+import org.opennms.web.category.AvailabilityNode;
 import org.opennms.web.category.Category;
 import org.opennms.web.category.CategoryList;
+import org.opennms.web.category.CategoryModel;
+import org.opennms.web.category.NodeList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
@@ -75,6 +79,7 @@ import com.sun.jersey.spi.resource.PerRequest;
 @Scope("prototype")
 @Path("availability")
 @Transactional
+@Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
 public class AvailabilityRestService extends OnmsRestService {
     private static final Logger LOG = LoggerFactory.getLogger(AvailabilityRestService.class);
 
@@ -103,23 +108,66 @@ public class AvailabilityRestService extends OnmsRestService {
     }
 
     @GET
-    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     public AvailabilityData getNodeAvailability() {
         readLock();
         try {
-            final Map<String, List<Category>> categoryData = m_categoryList.getCategoryData();
-            LOG.debug("categoryData: {}", categoryData);
-            final AvailabilityData availabilityData = new AvailabilityData(categoryData);
-            try {
-                final String s = JaxbUtils.marshal(availabilityData);
-                System.err.println(s);
-            } catch (final RuntimeException e) {
-                e.printStackTrace();
-            }
-            return availabilityData;
+            return new AvailabilityData(m_categoryList.getCategoryData());
         } catch (final MarshalException | ValidationException | IOException e) {
-            LOG.debug("Failed to get availability data.", e);
+            LOG.debug("Failed to get availability data: {}", e.getMessage(), e);
             throw getException(Status.BAD_REQUEST, "Failed to get availability data.");
+        } finally {
+            readUnlock();
+        }
+    }
+
+    @GET
+    @Path("/{category}")
+    public Category getCategory(@PathParam("category") final String categoryName) {
+        readLock();
+        try {
+            final String category = URLDecoder.decode(categoryName, "UTF-8");
+            return CategoryModel.getInstance().getCategory(category);
+        } catch (final MarshalException | ValidationException | IOException e) {
+            LOG.debug("Failed to get availability data for category {}: {}", categoryName, e.getMessage(), e);
+            throw getException(Status.BAD_REQUEST, "Failed to get availability data for category " + categoryName);
+        } finally {
+            readUnlock();
+        }
+    }
+
+    @GET
+    @Path("/{category}/nodes")
+    public NodeList getNodes(@PathParam("category") final String categoryName) {
+        readLock();
+        try {
+            final String category = URLDecoder.decode(categoryName, "UTF-8");
+            final Category cat = CategoryModel.getInstance().getCategory(category);
+            if (cat != null) {
+                return cat.getNodes();
+            }
+            return null;
+        } catch (final MarshalException | ValidationException | IOException e) {
+            LOG.debug("Failed to get availability data for category {}: {}", categoryName, e.getMessage(), e);
+            throw getException(Status.BAD_REQUEST, "Failed to get availability data for category " + categoryName);
+        } finally {
+            readUnlock();
+        }
+    }
+
+    @GET
+    @Path("/{category}/nodes/{nodeId}")
+    public AvailabilityNode getNode(@PathParam("category") final String categoryName, @PathParam("nodeId") final Long nodeId) {
+        readLock();
+        try {
+            final String category = URLDecoder.decode(categoryName, "UTF-8");
+            final Category cat = CategoryModel.getInstance().getCategory(category);
+            if (cat != null) {
+                return cat.getNode(nodeId);
+            }
+            return null;
+        } catch (final MarshalException | ValidationException | IOException e) {
+            LOG.debug("Failed to get availability data for category {}: {}", categoryName, e.getMessage(), e);
+            throw getException(Status.BAD_REQUEST, "Failed to get availability data for category " + categoryName);
         } finally {
             readUnlock();
         }
