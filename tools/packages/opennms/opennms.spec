@@ -96,7 +96,7 @@ Requires(pre):	jicmp6
 Requires:	jicmp6
 Requires(pre):	%{jdk}
 Requires:	%{jdk}
-Obsoletes:	%{name} < 1.3.11
+Obsoletes:	opennms < 1.3.11
 
 %description core
 The core backend.  This package contains the main daemon responsible
@@ -168,7 +168,7 @@ Group:		Applications/System
 Requires(pre):	%{name}-core = %{version}-%{release}
 Requires:	%{name}-core = %{version}-%{release}
 Provides:	%{name}-webui = %{version}-%{release}
-Obsoletes:	%{name}-webapp < 1.3.11
+Obsoletes:	opennms-webapp < 1.3.11
 
 %description webapp-jetty
 The web UI.  This is the Jetty version, which runs
