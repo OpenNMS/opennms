@@ -31,7 +31,10 @@ package org.opennms.netmgt.syslogd;
 import java.io.UnsupportedEncodingException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.SocketAddress;
 import java.net.UnknownHostException;
+import java.nio.ByteBuffer;
 import java.util.concurrent.Callable;
 
 import org.opennms.netmgt.config.syslogd.HideMessage;
@@ -84,6 +87,16 @@ public class SyslogConnection implements Callable<Callable<?>> {
         _hideMessages = hideMessages;
     }
 
+    public SyslogConnection(final InetSocketAddress source, final ByteBuffer buffer, final String matchPattern, final int hostGroup, final int messageGroup, final UeiList ueiList, final HideMessage hideMessages, final String discardUei) {
+        _packet = copyPacket(source, buffer);
+        _matchPattern = matchPattern;
+        _hostGroup = hostGroup;
+        _messageGroup = messageGroup;
+        _discardUei = discardUei;
+        _ueiList = ueiList;
+        _hideMessages = hideMessages;
+    }
+
     /**
      * <p>call</p>
      */
@@ -124,5 +137,22 @@ public class SyslogConnection implements Callable<Callable<?>> {
             LOG.warn("unable to clone InetAddress object for {}", packet.getAddress());
         }
         return null;
+    }
+
+    private static DatagramPacket copyPacket(final InetSocketAddress source, final ByteBuffer buffer) {
+        byte[] message = new byte[0xffff];
+        int i = 0;
+        // Copy the buffer into the byte array
+        while (buffer.hasRemaining()) {
+            message[i++] = buffer.get();
+        }
+        DatagramPacket retPacket = new DatagramPacket(
+            message,
+            0,
+            i,
+            source.getAddress(),
+            source.getPort()
+        );
+        return retPacket;
     }
 }
