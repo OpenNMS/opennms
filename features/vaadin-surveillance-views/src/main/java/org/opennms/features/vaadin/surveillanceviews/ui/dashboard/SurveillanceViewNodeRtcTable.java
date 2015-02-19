@@ -52,6 +52,7 @@ public class SurveillanceViewNodeRtcTable extends SurveillanceViewDetailTable {
             public Object generateCell(Table table, Object itemId, Object propertyId) {
                 SurveillanceViewService.NodeRtc nodeRtc = (SurveillanceViewService.NodeRtc) itemId;
                 Link link = new Link(nodeRtc.getNode().getLabel(), new ExternalResource("/opennms/element/node.jsp?node=" + nodeRtc.getNode().getNodeId()));
+                link.setTargetName("_top");
                 link.setPrimaryStyleName("surveillance-view");
                 link.addStyleName("white");
                 return link;

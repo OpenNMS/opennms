@@ -55,6 +55,7 @@ public class SurveillanceViewNotificationTable extends SurveillanceViewDetailTab
             public Object generateCell(Table table, Object itemId, Object propertyId) {
                 OnmsNotification onmsNotification = (OnmsNotification) itemId;
                 Link link = new Link(onmsNotification.getNodeLabel(), new ExternalResource("/opennms/element/node.jsp?node=" + onmsNotification.getNodeId()));
+                link.setTargetName("_top");
                 link.setPrimaryStyleName("surveillance-view");
                 return link;
             }

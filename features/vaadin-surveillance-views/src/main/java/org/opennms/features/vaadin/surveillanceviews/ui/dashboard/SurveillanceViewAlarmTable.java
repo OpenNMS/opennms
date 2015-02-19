@@ -54,6 +54,7 @@ public class SurveillanceViewAlarmTable extends SurveillanceViewDetailTable {
             public Object generateCell(Table table, Object itemId, Object propertyId) {
                 OnmsAlarm onmsAlarm = (OnmsAlarm) itemId;
                 Link link = new Link(onmsAlarm.getNodeLabel(), new ExternalResource("/opennms/element/node.jsp?node=" + onmsAlarm.getNodeId()));
+                link.setTargetName("_top");
                 link.setPrimaryStyleName("surveillance-view");
                 return link;
             }
