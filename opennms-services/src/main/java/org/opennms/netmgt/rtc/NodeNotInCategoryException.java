@@ -26,28 +26,28 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.rtc.jmx;
+package org.opennms.netmgt.rtc;
 
-import org.opennms.netmgt.daemon.AbstractSpringContextJmxServiceDaemon;
+public final class NodeNotInCategoryException extends Exception {
 
-/**
- * <p>Rtcd class.</p>
- *
- * @author ranger
- * @version $Id: $
- */
-public class Rtcd extends AbstractSpringContextJmxServiceDaemon<org.opennms.netmgt.rtc.RTCManager> implements RtcdMBean {
+    private static final long serialVersionUID = 6032225432638186067L;
 
-    /** {@inheritDoc} */
-    @Override
-    protected String getLoggingPrefix() {
-        return "OpenNMS.Rtcd";
+	/**
+     * Default class constructor. Constructs a new exception with a default
+     * message.
+     */
+    public NodeNotInCategoryException() {
+        super("NodeNotInCategoryException");
     }
 
-    /** {@inheritDoc} */
-    @Override
-    protected String getSpringContext() {
-        return "rtcContext";
+    /**
+     * Constructs a new exception with the passed string as the message
+     * encapsulated in the exception.
+     *
+     * @param s
+     *            The exception's message.
+     */
+    public NodeNotInCategoryException(String s) {
+        super(s);
     }
-
 }

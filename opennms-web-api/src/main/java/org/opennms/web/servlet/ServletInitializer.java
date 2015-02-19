@@ -33,7 +33,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Enumeration;
+import java.util.Collections;
 import java.util.Properties;
 
 import javax.servlet.ServletContext;
@@ -51,16 +51,9 @@ import org.slf4j.LoggerFactory;
  * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
-public class ServletInitializer extends Object {
-	
-	private static final Logger LOG = LoggerFactory.getLogger(ServletInitializer.class);
+public abstract class ServletInitializer {
 
-    /**
-     * Private, empty constructor so that this class cannot be instantiated
-     * outside of itself.
-     */
-    private ServletInitializer() {
-    }
+    private static final Logger LOG = LoggerFactory.getLogger(ServletInitializer.class);
 
     /**
      * Initialize servlet and JSP configuration on the first invocation of this
@@ -121,24 +114,17 @@ public class ServletInitializer extends Object {
         	throw new ServletException("Could not load version.properties", e);
         }
 
-        for (Enumeration<Object> opennmsKeys = opennmsProperties.keys(); opennmsKeys.hasMoreElements(); ) {
-        	Object key = opennmsKeys.nextElement();
+        for (Object key : opennmsProperties.keySet()) {
         	if (!properties.containsKey(key)) {
         		properties.put(key, opennmsProperties.get(key));
         	}
         }
 
-        Enumeration<?> initParamNames = context.getInitParameterNames();
-        while (initParamNames.hasMoreElements()) {
-        	String name = (String) initParamNames.nextElement();
+        for (String name : Collections.list(context.getInitParameterNames())) {
         	properties.put(name, context.getInitParameter(name));
         }
 
         Vault.setProperties(properties);
-        Vault.setHomeDir(homeDir);
-
-        // This is done inside "Vault.getDataSource" to ensure that "Vault" could be used by "IfLabel" - See Bug 4117
-        // Vault.setDataSource(DataSourceFactory.getInstance());
     }
 
     private static void loadPropertiesFromFile(Properties opennmsProperties, String propertiesFile) throws FileNotFoundException, ServletException, IOException {
@@ -156,34 +142,4 @@ public class ServletInitializer extends Object {
             configurationStream.close();
         }
     }
-
-    /**
-     * Releases all shared resources on the first invocation of this method. All
-     * other invocations are ignored. This method is synchronized to ensure only
-     * the first invocation performs the destruction.
-     *
-     * <p>
-     * Call this method in the <code>destroy</code> method of your servlet or
-     * JSP.
-     * </p>
-     *
-     * @param context
-     *            the <code>ServletContext</code> instance in which your
-     *            servlet is running
-     * @throws javax.servlet.ServletException if any.
-     */
-    public static synchronized void destroy(ServletContext context) throws ServletException {
-    }
-
-    /**
-     * Return the absolute pathname of where OpenNMS's configuration can be
-     * found.
-     *
-     * @deprecated Use {@link Vault#getHomeDir Vault.getHomeDir}instead.
-     * @return a {@link java.lang.String} object.
-     */
-    public static String getHomeDir() {
-        return (Vault.getHomeDir());
-    }
-
 }

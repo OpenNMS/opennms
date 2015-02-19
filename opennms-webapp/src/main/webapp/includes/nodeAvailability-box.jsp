@@ -166,7 +166,7 @@
                 String warnClass = "Indeterminate";
 
                 if (service.isManaged()) {
-                  double svcValue = m_model.getServiceAvailability(nodeId, ipAddr, service.getServiceId());
+                  double svcValue = CategoryModel.getServiceAvailability(nodeId, ipAddr, service.getServiceId());
                   availClass = CategoryUtil.getCategoryClass(m_normalThreshold, m_warningThreshold, svcValue);
                   availValue = CategoryUtil.formatValue(svcValue) + "%";
 

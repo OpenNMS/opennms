@@ -39,11 +39,13 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.netmgt.capsd.EventUtils;
 import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventIpcManager;
 import org.opennms.netmgt.events.api.EventListener;
+import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.poller.pollables.PollableInterface;
 import org.opennms.netmgt.poller.pollables.PollableNetwork;
 import org.opennms.netmgt.poller.pollables.PollableNode;
@@ -167,6 +169,8 @@ final class PollerEventProcessor implements EventListener {
         // categories updated
         ueiList.add(EventConstants.NODE_CATEGORY_MEMBERSHIP_CHANGED_EVENT_UEI);
 
+        // for reloading poller configuration and re-scheduling pollers
+        ueiList.add(EventConstants.RELOAD_DAEMON_CONFIG_UEI);
 
         // Subscribe to eventd
         getEventManager().addEventListener(this, ueiList);
@@ -464,11 +468,47 @@ final class PollerEventProcessor implements EventListener {
 
     }
 
+    private void reloadConfigHandler(Event event) {
+        final String daemonName = "Pollerd";
+        boolean isPoller = false;
+        for (Parm parm : event.getParmCollection()) {
+            if (EventConstants.PARM_DAEMON_NAME.equals(parm.getParmName()) && daemonName.equalsIgnoreCase(parm.getValue().getContent())) {
+                isPoller = true;
+                break;
+            }
+        }
+        if (isPoller) {
+            LOG.info("reloadConfigHandler: reloading poller configuration");
+            final String targetFile = ConfigFileConstants.getFileName(ConfigFileConstants.POLLER_CONF_FILE_NAME);
+            EventBuilder ebldr = null;
+            try {
+                getPollerConfig().update();
+                rescheduleAllServices(event);
+                // Preparing successful event
+                ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_SUCCESSFUL_UEI, daemonName);
+                ebldr.addParam(EventConstants.PARM_DAEMON_NAME, daemonName);
+                ebldr.addParam(EventConstants.PARM_CONFIG_FILE_NAME, targetFile);
+            } catch (Throwable e) {
+                // Preparing failed event
+                LOG.error("reloadConfigHandler: Error reloading/processing poller configuration: {}", e.getMessage(), e);
+                ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_FAILED_UEI, daemonName);
+                ebldr.addParam(EventConstants.PARM_DAEMON_NAME, daemonName);
+                ebldr.addParam(EventConstants.PARM_CONFIG_FILE_NAME, targetFile);
+                ebldr.addParam(EventConstants.PARM_REASON, e.getMessage());
+            }
+            finally {
+                if (ebldr != null) {
+                    getEventManager().sendNow(ebldr.getEvent());
+                }
+            }
+        } else {
+            LOG.warn("reloadConfigHandler: invalid parameters");
+        }
+    }
+
     /**
      * Constructor
      * 
-     * @param pollableServices
-     *            List of all the PollableService objects scheduled for polling
      */
     PollerEventProcessor(Poller poller) {
 
@@ -515,6 +555,10 @@ final class PollerEventProcessor implements EventListener {
 
             thresholdsConfigChangeHandler();
 
+        } else if (event.getUei().equals(EventConstants.RELOAD_DAEMON_CONFIG_UEI))  {
+            LOG.info("Reloading poller configuration in pollerd");
+
+            reloadConfigHandler(event);
         } else if(!event.hasNodeid()) {
             // For all other events, if the event doesn't have a nodeId it can't be processed.
 
@@ -580,7 +624,6 @@ final class PollerEventProcessor implements EventListener {
             if (event.getNodeid() > 0) {
                 serviceReschedule(event);
             }
-
         } // end single event process
 
     } // end onEvent()
@@ -592,10 +635,27 @@ final class PollerEventProcessor implements EventListener {
             LOG.warn("Invalid node ID for event, skipping service reschedule: {}", event);
             return;
         }
-
         String nodeLabel = EventUtils.getParm(event, EventConstants.PARM_NODE_LABEL);
 
-        Date closeDate = event.getTime();
+        getPollerConfig().rebuildPackageIpListMap();
+        serviceReschedule(nodeId, nodeLabel, event);
+    }
+
+    private void rescheduleAllServices(Event event) {
+        LOG.info("Poller configuration has been changed, rescheduling services.");
+        getPollerConfig().rebuildPackageIpListMap();
+        for (Long nodeId : getNetwork().getNodeIds()) {
+            serviceReschedule(nodeId, null,  event);
+        }
+    }
+
+    private void serviceReschedule(Long nodeId, String nodeLabel, Event sourceEvent) { 
+        if (nodeId == null || nodeId <= 0) {
+            LOG.warn("Invalid node ID for event, skipping service reschedule: {}", sourceEvent);
+            return;
+        }
+
+        Date closeDate = sourceEvent.getTime();
 
         final Set<Service> databaseServices = new HashSet<>();
 
@@ -645,7 +705,7 @@ final class PollerEventProcessor implements EventListener {
             if (!databaseServices.contains(polledService)) {
                 // We are polling the service, but it no longer exists.  Stop polling and close outages.
                 LOG.debug("{} should no longer be polled.  Resolving outages.", polledService);
-                closeOutagesForService(event, nodeId, closeDate, polledService);
+                closeOutagesForService(sourceEvent, nodeId, closeDate, polledService);
                 iter.remove();
             }
         }
@@ -654,14 +714,12 @@ final class PollerEventProcessor implements EventListener {
         // add it to the list of to-be-polled services
         polledServices.addAll(databaseServices);
 
-        getPollerConfig().rebuildPackageIpListMap();
-
         for (final Service polledService : polledServices) {
             LOG.debug("{} is being scheduled (or rescheduled) for polling.", polledService);
             getPoller().scheduleService(nodeId.intValue(),nodeLabel,polledService.getAddress(),polledService.getServiceName());
             if (!getPollerConfig().isPolled(polledService.getAddress(), polledService.getServiceName())) {
                 LOG.debug("{} is no longer polled.  Closing any pending outages.", polledService);
-                closeOutagesForService(event, nodeId, closeDate, polledService);
+                closeOutagesForService(sourceEvent, nodeId, closeDate, polledService);
             }
         }
     }

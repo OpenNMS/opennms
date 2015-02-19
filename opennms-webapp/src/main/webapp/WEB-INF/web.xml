@@ -422,6 +422,14 @@
       <param-name>com.sun.jersey.config.property.packages</param-name>
       <param-value>org.codehaus.jackson.jaxrs;org.opennms.web.rest;org.opennms.web.rest.config</param-value>
     </init-param>
+    <init-param>
+      <param-name>com.sun.jersey.spi.container.ContainerRequestFilters</param-name>
+      <param-value>com.sun.jersey.api.container.filter.GZIPContentEncodingFilter</param-value>
+    </init-param>
+    <init-param>
+      <param-name>com.sun.jersey.spi.container.ContainerResponseFilters</param-name>
+      <param-value>com.sun.jersey.api.container.filter.GZIPContentEncodingFilter</param-value>
+    </init-param>
     <load-on-startup>1</load-on-startup>
   </servlet>
 
@@ -686,10 +694,14 @@
   <servlet>
     <servlet-name>rtcPost</servlet-name>
     <servlet-class>org.opennms.web.category.RTCPostServlet</servlet-class>
+    <!-- Load on startup so that we can immediately start processing RTC POSTs -->
+    <load-on-startup>1</load-on-startup>
   </servlet>
   <servlet>
     <servlet-name>rtcRaw</servlet-name>
     <servlet-class>org.opennms.web.category.RTCDebugServlet</servlet-class>
+    <!-- Load on startup so that we can immediately start processing RTC POSTs -->
+    <load-on-startup>1</load-on-startup>
   </servlet>
   
   <servlet>

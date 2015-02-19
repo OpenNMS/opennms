@@ -1,3 +1,9 @@
+opennms (15.0.1-1) stable; urgency=medium
+
+  * New upstream release.  This release primarily contains bugfixes over 15.0.0.
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Wed, 11 Feb 2015 15:55:00 -0500
+
 opennms (15.0.0-1) stable; urgency=low
 
   * New upstream release.  This release contains a web UI framework update, as well
