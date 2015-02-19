@@ -173,7 +173,7 @@ class SyslogReceiver implements Runnable {
             m_dgSock.setReceiveBufferSize(Integer.MAX_VALUE);
             LOG.debug("Actual receive buffer size is {}", m_dgSock.getReceiveBufferSize());
         } catch (SocketException e) {
-            LOG.info("Failed to set the receive buffer to {}", length, e);
+            LOG.info("Failed to set the receive buffer to {}", Integer.MAX_VALUE, e);
         }
         // set to avoid numerous tracing message
         boolean ioInterrupted = false;
