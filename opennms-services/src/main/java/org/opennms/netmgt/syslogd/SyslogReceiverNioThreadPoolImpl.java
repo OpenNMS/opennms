@@ -54,7 +54,7 @@ import org.slf4j.LoggerFactory;
  * @author <a href="http://www.oculan.com">Oculan Corporation</a>
  * @fiddler joed
  */
-class SyslogReceiverNioImpl implements SyslogReceiver {
+class SyslogReceiverNioThreadPoolImpl implements SyslogReceiver {
 
     private static final Logger LOG = LoggerFactory.getLogger(SyslogReceiverNioImpl.class);
 
@@ -86,6 +86,8 @@ class SyslogReceiverNioImpl implements SyslogReceiver {
 
     private final ExecutorService m_executor;
 
+    private final ExecutorService m_socketReceivers;
+
     /**
      * Construct a new receiver
      *
@@ -94,7 +96,7 @@ class SyslogReceiverNioImpl implements SyslogReceiver {
      * @param hostGroup
      * @param messageGroup
      */
-    SyslogReceiverNioImpl(DatagramChannel channel, String matchPattern, int hostGroup, int messageGroup,
+    SyslogReceiverNioThreadPoolImpl(DatagramChannel channel, String matchPattern, int hostGroup, int messageGroup,
                    UeiList ueiList, HideMessage hideMessages, String discardUei) {
         m_stop = false;
         m_channel = channel;
@@ -113,6 +115,18 @@ class SyslogReceiverNioImpl implements SyslogReceiver {
             new LinkedBlockingQueue<Runnable>(),
             new LogPreservingThreadFactory(getClass().getSimpleName(), Integer.MAX_VALUE)
         );
+
+        // This thread pool is used to process {@link DatagramChannel#receive(ByteBuffer)} calls
+        // on the syslog port. By using multiple threads, we can optimize the receipt of
+        // packet data from the syslog port and avoid discarding UDP syslog packets.
+        m_socketReceivers = new ThreadPoolExecutor(
+            Runtime.getRuntime().availableProcessors(),
+            Runtime.getRuntime().availableProcessors(),
+            1000L,
+            TimeUnit.MILLISECONDS,
+            new LinkedBlockingQueue<Runnable>(),
+            new LogPreservingThreadFactory(getClass().getSimpleName() + "-SocketReceiver", Integer.MAX_VALUE)
+        );
     }
 
     /**
@@ -123,6 +137,9 @@ class SyslogReceiverNioImpl implements SyslogReceiver {
     @Override
     public void stop() throws InterruptedException {
         m_stop = true;
+
+        // Shut down the thread pool that is processing DatagramChannel.receive() calls
+        m_socketReceivers.shutdown();
 
         // Shut down the thread pools that are executing SyslogConnection and SyslogProcessor tasks
         m_executor.shutdown();
@@ -170,59 +187,65 @@ class SyslogReceiverNioImpl implements SyslogReceiver {
             LOG.info("Failed to set the receive buffer to {}", Integer.MAX_VALUE, e);
         }
 
-        // set to avoid numerous tracing message
-        boolean ioInterrupted = false;
+        for (int i = 0; i < Runtime.getRuntime().availableProcessors(); i++) {
+            m_socketReceivers.execute(new Runnable() {
+                public void run() {
 
-        // Allocate a buffer that's big enough to handle any sane syslog message
-        ByteBuffer buffer = ByteBuffer.allocate(0xffff);
-        buffer.clear();
+                    // set to avoid numerous tracing message
+                    boolean ioInterrupted = false;
 
-        // now start processing incoming requests
-        while (!m_stop) {
-            if (m_context.isInterrupted()) {
-                LOG.debug("Thread context interrupted");
-                break;
-            }
+                    // Allocate a buffer that's big enough to handle any sane syslog message
+                    ByteBuffer buffer = ByteBuffer.allocate(0xffff);
+                    buffer.clear();
 
-            try {
-                if (!ioInterrupted) {
-                    LOG.debug("Waiting on a datagram to arrive");
+                    // now start processing incoming requests
+                    while (!m_stop) {
+                        if (m_context.isInterrupted()) {
+                            LOG.debug("Thread context interrupted");
+                            break;
+                        }
+
+                        try {
+                            if (!ioInterrupted) {
+                                LOG.debug("Waiting on a datagram to arrive");
+                            }
+
+                            // Write the datagram into the ByteBuffer
+                            InetSocketAddress source = (InetSocketAddress)m_channel.receive(buffer);
+
+                            // Flip the buffer from write to read mode
+                            buffer.flip();
+
+                            WaterfallExecutor.waterfall(m_executor, new SyslogConnection(source, buffer, m_matchPattern, m_hostGroup, m_messageGroup, m_UeiList, m_HideMessages, m_discardUei));
+
+                            // Clear the buffer so that it's ready for writing again
+                            buffer.clear();
+
+                            // reset the flag
+                            ioInterrupted = false; 
+                        } catch (SocketTimeoutException e) {
+                            ioInterrupted = true;
+                            continue;
+                        } catch (InterruptedIOException e) {
+                            ioInterrupted = true;
+                            continue;
+                        } catch (ExecutionException e) {
+                            LOG.error("Task execution failed in {}", this.getClass().getSimpleName(), e);
+                            break;
+                        } catch (InterruptedException e) {
+                            LOG.error("Task interrupted in {}", this.getClass().getSimpleName(), e);
+                            break;
+                        } catch (IOException e) {
+                            LOG.error("An I/O exception occured on the datagram receipt port, exiting", e);
+                            break;
+                        }
+
+                    } // end while status OK
+
+                    LOG.debug("Thread context exiting");
                 }
-
-                // Write the datagram into the ByteBuffer
-                InetSocketAddress source = (InetSocketAddress)m_channel.receive(buffer);
-
-                // Flip the buffer from write to read mode
-                buffer.flip();
-
-                WaterfallExecutor.waterfall(m_executor, new SyslogConnection(source, buffer, m_matchPattern, m_hostGroup, m_messageGroup, m_UeiList, m_HideMessages, m_discardUei));
-
-                // Clear the buffer so that it's ready for writing again
-                buffer.clear();
-
-                // reset the flag
-                ioInterrupted = false; 
-            } catch (SocketTimeoutException e) {
-                ioInterrupted = true;
-                continue;
-            } catch (InterruptedIOException e) {
-                ioInterrupted = true;
-                continue;
-            } catch (ExecutionException e) {
-                LOG.error("Task execution failed in {}", this.getClass().getSimpleName(), e);
-                break;
-            } catch (InterruptedException e) {
-                LOG.error("Task interrupted in {}", this.getClass().getSimpleName(), e);
-                break;
-            } catch (IOException e) {
-                LOG.error("An I/O exception occured on the datagram receipt port, exiting", e);
-                break;
-            }
-
-        } // end while status OK
-
-        LOG.debug("Thread context exiting");
-
+            });
+        }
     }
 
     /**
