@@ -148,7 +148,7 @@
       String serviceClass;
 
       if( service.isManaged() ) {
-        svcValue = this.model.getServiceAvailability(nodeId, ipAddr, service.getServiceId());
+        svcValue = CategoryModel.getServiceAvailability(nodeId, ipAddr, service.getServiceId());
         serviceClass = CategoryUtil.getCategoryClass(this.normalThreshold, this.warningThreshold, svcValue);
       } else {
         serviceClass = "Indeterminate";
