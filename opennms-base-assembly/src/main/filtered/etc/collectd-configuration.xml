@@ -3,8 +3,6 @@
 <collectd-configuration
         threads="50">
 
-    <!-- Warning: any manual change on this file requires to restart OpenNMS in order to to take effect. -->
-
     <package name="vmware3">
         <filter><![CDATA[(IPADDR != '0.0.0.0') & (categoryName == 'VMware3')]]></filter>
         <service name="VMware-VirtualMachine" interval="300000" user-defined="false" status="on">
