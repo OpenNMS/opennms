@@ -56,7 +56,7 @@ import org.slf4j.LoggerFactory;
  */
 class SyslogReceiverNioThreadPoolImpl implements SyslogReceiver {
 
-    private static final Logger LOG = LoggerFactory.getLogger(SyslogReceiverNioImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(SyslogReceiverNioThreadPoolImpl.class);
 
     private static final int SOCKET_TIMEOUT = 500;
 
