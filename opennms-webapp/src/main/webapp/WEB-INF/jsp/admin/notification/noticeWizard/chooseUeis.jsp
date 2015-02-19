@@ -2,8 +2,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2015 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -66,6 +66,55 @@ $(document).ready(function() {
     $('#regexp').prop('disabled', ueiLabel !== 'REGEX_FIELD');
   }
 
+  var allUeiOptions = $("#uei > option");
+  var unavailableUeiOptGroup = $("#uei > optgroup");
+
+  function filterUeiList() {
+    var filterText = $("#uei-list-filter").val().toLowerCase();
+    $("#uei").empty();
+    if (filterText.length == 0) {
+      $("#uei").append(allUeiOptions);
+      $("#uei").append(unavailableUeiOptGroup);
+    } else {
+      allUeiOptions.each(function ( index, element ) {
+        if ( $(this).text().toLowerCase().indexOf(filterText) != -1) {
+          $("#uei").append( $(this) );
+        }
+      });
+    }
+    $('#filteringModal').modal('hide');
+    $('#uei-list-filter').focus();
+  }
+
+  $("#uei-list-filter").keydown(function(event) {
+    if (event.which == 27) {
+      event.preventDefault();
+      if ($("#uei-list-filter").val().length > 0) {
+        $('#uei-list-filter').val("");
+        $('#filteringModal').modal('show');
+      }
+    }
+  });
+
+  $("#uei").keydown(function(event) {
+    if (event.which == 27) {
+      event.preventDefault();
+      if ($("#uei-list-filter").val().length > 0) {
+        $('#uei-list-filter').val("");
+        $('#filteringModal').modal('show');
+      }
+    }
+  });
+
+  $("#uei-list-filter").keypress(function(event) {
+    if (event.which == 13) {
+      event.preventDefault();
+      $('#filteringModal').modal('show');
+    }
+  });
+
+  $("#filteringModal").on( "shown.bs.modal", function() { filterUeiList(); } );
+
   $("select#uei").change(function(e) {
     toggleRegexpField();
   });
@@ -94,6 +143,16 @@ $(document).ready(function() {
 
 </script>
 
+<div id="filteringModal" class="modal fade" tabindex="-1">
+  <div class="modal-dialog modal-sm">
+    <div class="modal-content">
+      <div class="modal-body">
+        <i class="fa fa-spinner"></i> Filtering
+      </div>
+    </div>
+  </div>
+</div>
+
 <h2>${model.title}</h2>
 
 <form method="post" name="events"
@@ -104,13 +163,14 @@ $(document).ready(function() {
   <div class="col-md-6">
     <div class="panel panel-default">
       <div class="panel-heading">
-        <h3 class="panel-title">Choose the event uei that will trigger this notification.</h3>
+        <h3 class="panel-title">Choose the event UEI that will trigger this notification.</h3>
       </div>
       <table class="table table-condensed">
         <tr>
           <td valign="top" align="left">
             <div class="form-group">
               <label for="uei" class="control-label">Events</label>
+              <input id="uei-list-filter" name="uei-list-filter" type="text" class="form-control" size="96" value="" placeholder="Filter displayed events..." />
               <select id="uei" name="uei" class="form-control" size="20" >
               ${model.eventSelect}
               </select>
