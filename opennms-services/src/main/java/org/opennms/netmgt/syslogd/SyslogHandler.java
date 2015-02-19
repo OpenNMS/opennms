@@ -55,6 +55,9 @@ import org.slf4j.LoggerFactory;
  */
 public final class SyslogHandler implements Fiber {
     private static final Logger LOG = LoggerFactory.getLogger(SyslogHandler.class);
+
+    private final boolean USE_NIO = false;
+
     /**
      * The UDP receiver thread.
      */
@@ -157,36 +160,44 @@ public final class SyslogHandler implements Fiber {
         m_status = STARTING;
 
         try {
-            // java.net version
-            if (m_dgIp != null && m_dgIp.length() != 0) {
-                m_dgSock = new DatagramSocket(m_dgPort, InetAddressUtils.addr(m_dgIp));
-            } else {
-                m_dgSock = new DatagramSocket(m_dgPort);
-            }
+            if (USE_NIO) {
+                // NIO SyslogReceiver implementation
 
-            m_receiver = new SyslogReceiverJavaNetImpl(m_dgSock, m_ForwardingRegexp,
+                DatagramChannel channel = DatagramChannel.open();
+                if (m_dgIp != null && m_dgIp.length() != 0) {
+                    channel.socket().bind(new InetSocketAddress(InetAddressUtils.addr(m_dgIp), m_dgPort));
+                } else {
+                    channel.socket().bind(new InetSocketAddress(m_dgPort));
+                }
+
+                m_receiver = new SyslogReceiverNioThreadPoolImpl(
+                    channel,
+                    m_ForwardingRegexp,
                     m_MatchingGroupHost,
                     m_MatchingGroupMessage,
                     m_UeiList,
                     m_HideMessages,
-                    m_DiscardUei);
-
-            /*
-            // NIO version
-            DatagramChannel channel = DatagramChannel.open();
-            if (m_dgIp != null && m_dgIp.length() != 0) {
-                channel.socket().bind(new InetSocketAddress(InetAddressUtils.addr(m_dgIp), m_dgPort));
+                    m_DiscardUei
+                );
             } else {
-                channel.socket().bind(new InetSocketAddress(m_dgPort));
-            }
+                // java.net SyslogReceiver implementation
 
-            m_receiver = new SyslogReceiverNioImpl(channel, m_ForwardingRegexp,
+                if (m_dgIp != null && m_dgIp.length() != 0) {
+                    m_dgSock = new DatagramSocket(m_dgPort, InetAddressUtils.addr(m_dgIp));
+                } else {
+                    m_dgSock = new DatagramSocket(m_dgPort);
+                }
+
+                m_receiver = new SyslogReceiverJavaNetImpl(
+                    m_dgSock,
+                    m_ForwardingRegexp,
                     m_MatchingGroupHost,
                     m_MatchingGroupMessage,
                     m_UeiList,
                     m_HideMessages,
-                    m_DiscardUei);
-            */
+                    m_DiscardUei
+                );
+            }
 
             if (m_logPrefix != null) {
                 m_receiver.setLogPrefix(m_logPrefix);
