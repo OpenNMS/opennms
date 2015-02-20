@@ -107,7 +107,7 @@ public class DefaultRtcService implements RtcService, InitializingBean {
             if (!service.getIpInterface().getNode().equals(lastNode) && lastNode != null) {
                 Double availability = calculateAvailability(serviceCount, downMillisCount, periodEnd.getTime() - periodStart.getTime());
                 
-                model.addNode(new RtcNodeModel.RtcNode(lastNode, serviceCount, serviceDownCount, availability));
+                model.addNode(new RtcNode(lastNode, serviceCount, serviceDownCount, availability));
                 
                 serviceCount = 0;
                 serviceDownCount = 0;
@@ -131,7 +131,7 @@ public class DefaultRtcService implements RtcService, InitializingBean {
         if (lastNode != null) {
             Double availability = calculateAvailability(serviceCount, downMillisCount, periodEnd.getTime() - periodStart.getTime());
             
-            model.addNode(new RtcNodeModel.RtcNode(lastNode, serviceCount, serviceDownCount, availability));
+            model.addNode(new RtcNode(lastNode, serviceCount, serviceDownCount, availability));
         }
         
         return model;
