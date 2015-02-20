@@ -36,11 +36,11 @@ import java.io.InputStream;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.net.BindException;
 import java.net.DatagramPacket;
+import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -60,8 +60,6 @@ import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.InetAddressUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.config.SyslogdConfigFactory;
 import org.opennms.netmgt.config.syslogd.HideMessage;
 import org.opennms.netmgt.config.syslogd.Match;
@@ -77,6 +75,8 @@ import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Events;
 import org.opennms.netmgt.xml.event.Log;
 import org.opennms.test.JUnitConfigurationEnvironment;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -116,10 +116,7 @@ public class SyslogdLoadTest implements InitializingBean {
     
     private Syslogd m_syslogd;
 
-    private final List<ExecutorService> m_executorServices = Arrays.asList(new ExecutorService[] {
-            Executors.newFixedThreadPool(3),
-            Executors.newFixedThreadPool(3)
-    });
+    private final ExecutorService m_executorService = Executors.newCachedThreadPool();
 
     static {
         UeiMatch ueiMatch;
@@ -207,13 +204,49 @@ public class SyslogdLoadTest implements InitializingBean {
         m_eventCounter.setAnticipated(eventCount);
 
         String testPduFormat = "2010-08-19 localhost foo%d: load test %d on tty1";
-        SyslogClient sc = new SyslogClient(null, 10, SyslogClient.LOG_DEBUG);
+        SyslogClient sc = new SyslogClient(null, 10, SyslogClient.LOG_USER);
+
+        // Test by directly invoking the SyslogConnection task
+        System.err.println("Starting to send packets");
         final long start = System.currentTimeMillis();
         for (int i = 0; i < eventCount; i++) {
             int foo = foos.get(i);
             DatagramPacket pkt = sc.getPacket(SyslogClient.LOG_DEBUG, String.format(testPduFormat, foo, foo));
-            WaterfallExecutor.waterfall(m_executorServices, new SyslogConnection(pkt, MATCH_PATTERN, HOST_GROUP, MESSAGE_GROUP, UEI_LIST, HIDE_MESSAGE, DISCARD_UEI));
+            WaterfallExecutor.waterfall(m_executorService, new SyslogConnection(pkt, MATCH_PATTERN, HOST_GROUP, MESSAGE_GROUP, UEI_LIST, HIDE_MESSAGE, DISCARD_UEI));
         }
+
+        /*
+        // Test by sending over a java.net socket
+        final DatagramSocket socket = new DatagramSocket();
+        System.err.println("Starting to send packets");
+        final long start = System.currentTimeMillis();
+        for (int i = 0; i < eventCount; i++) {
+            int foo = foos.get(i);
+            DatagramPacket pkt = sc.getPacket(SyslogClient.LOG_DEBUG, String.format(testPduFormat, foo, foo));
+            socket.send(pkt);
+        }
+        socket.close();
+        */
+
+        /*
+        // Test by sending over an NIO channel
+        SocketAddress address = new InetSocketAddress(InetAddressUtils.getLocalHostAddress(), SyslogClient.PORT);
+        final DatagramChannel channel = DatagramChannel.open();
+        final ByteBuffer buffer = ByteBuffer.allocate(0xffff);
+        buffer.clear();
+        System.err.println("Starting to send packets");
+        final long start = System.currentTimeMillis();
+        for (int i = 0; i < eventCount; i++) {
+            int foo = foos.get(i);
+            buffer.put(SyslogClient.getPacketPayload(SyslogClient.LOG_USER, null, SyslogClient.LOG_DEBUG, String.format(testPduFormat, foo, foo)));
+            buffer.flip();
+            channel.send(buffer, address);
+            buffer.clear();
+        }
+        channel.close();
+        */
+
+        System.err.println(String.format("Sent %d packets in %d milliseconds", eventCount, System.currentTimeMillis() - start));
 
         long mid = System.currentTimeMillis();
         m_eventCounter.waitForFinish(120000);
@@ -238,12 +271,12 @@ public class SyslogdLoadTest implements InitializingBean {
         // handle an invalid packet
         byte[] bytes = "<34>1 2010-08-19T22:14:15.000Z localhost - - - - BOMfoo0: load test 0 on tty1\0".getBytes();
         DatagramPacket pkt = new DatagramPacket(bytes, bytes.length, address, SyslogClient.PORT);
-        WaterfallExecutor.waterfall(m_executorServices, new SyslogConnection(pkt, MATCH_PATTERN, HOST_GROUP, MESSAGE_GROUP, UEI_LIST, HIDE_MESSAGE, DISCARD_UEI));
+        WaterfallExecutor.waterfall(m_executorService, new SyslogConnection(pkt, MATCH_PATTERN, HOST_GROUP, MESSAGE_GROUP, UEI_LIST, HIDE_MESSAGE, DISCARD_UEI));
 
         // handle a valid packet
         bytes = "<34>1 2003-10-11T22:14:15.000Z plonk -ev/pts/8\0".getBytes();
         pkt = new DatagramPacket(bytes, bytes.length, address, SyslogClient.PORT);
-        WaterfallExecutor.waterfall(m_executorServices, new SyslogConnection(pkt, MATCH_PATTERN, HOST_GROUP, MESSAGE_GROUP, UEI_LIST, HIDE_MESSAGE, DISCARD_UEI));
+        WaterfallExecutor.waterfall(m_executorService, new SyslogConnection(pkt, MATCH_PATTERN, HOST_GROUP, MESSAGE_GROUP, UEI_LIST, HIDE_MESSAGE, DISCARD_UEI));
 
         m_eventCounter.waitForFinish(120000);
         
@@ -264,12 +297,12 @@ public class SyslogdLoadTest implements InitializingBean {
         // handle an invalid packet
         byte[] bytes = "<34>main: 2010-08-19 localhost foo0: load test 0 on tty1\0".getBytes();
         DatagramPacket pkt = new DatagramPacket(bytes, bytes.length, address, SyslogClient.PORT);
-        WaterfallExecutor.waterfall(m_executorServices, new SyslogConnection(pkt, MATCH_PATTERN, HOST_GROUP, MESSAGE_GROUP, UEI_LIST, HIDE_MESSAGE, DISCARD_UEI));
+        WaterfallExecutor.waterfall(m_executorService, new SyslogConnection(pkt, MATCH_PATTERN, HOST_GROUP, MESSAGE_GROUP, UEI_LIST, HIDE_MESSAGE, DISCARD_UEI));
 
         // handle a valid packet
         bytes = "<34>monkeysatemybrain!\0".getBytes();
         pkt = new DatagramPacket(bytes, bytes.length, address, SyslogClient.PORT);
-        WaterfallExecutor.waterfall(m_executorServices, new SyslogConnection(pkt, MATCH_PATTERN, HOST_GROUP, MESSAGE_GROUP, UEI_LIST, HIDE_MESSAGE, DISCARD_UEI));
+        WaterfallExecutor.waterfall(m_executorService, new SyslogConnection(pkt, MATCH_PATTERN, HOST_GROUP, MESSAGE_GROUP, UEI_LIST, HIDE_MESSAGE, DISCARD_UEI));
 
         m_eventCounter.waitForFinish(120000);
         
@@ -379,7 +412,7 @@ public class SyslogdLoadTest implements InitializingBean {
         public void onEvent(final Event e) {
             final int current = m_eventCount.incrementAndGet();
             if (current % 100 == 0) {
-                System.err.println(current + " < " + m_expectedCount);
+                System.err.println(current + " out of " + m_expectedCount + " expected events received");
             }
         }
 
