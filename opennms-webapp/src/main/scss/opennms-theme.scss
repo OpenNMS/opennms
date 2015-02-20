@@ -461,7 +461,8 @@ $header-background-image: url("../images/headerbg.png") !default;
 .navbar-inverse .navbar-info {
 	display: block !important;
 	margin-right: 0;
-	padding: 5px;
+	padding-right: 5px;
+	padding-top: 2px;
 	@include navbar-inverse-color(white);
 	a {
 		@include navbar-inverse-color(white);
@@ -668,6 +669,10 @@ $header-background-image: url("../images/headerbg.png") !default;
 /* =15.0 Miscellaneous and Workarounds
 ----------------------------------------------- */
 
+.graph-aux-controls {
+	text-align: right;
+}
+
 #footer {
 	clear: both;
 	text-align: center;
@@ -786,31 +791,18 @@ Do not confuse it with the Bootstrap .pagination class.
   margin-left: 3px;
 }
 
+/* Used to set the color when using font-awesome icons */
+.icon-black {
+  color: black;
+}
+
 /* --------------------------------------------------
     :: Styles for DBIDs, foreign-source, and foreign-ID
     :: spans in the node list and node details pages
     -------------------------------------------------- */
 
-span.NLdbid, span.NLfs, span.NLfid, span.NPdbid, span.NPfs, span.NPfid {
-	background-repeat: no-repeat;
-	padding-left: 17px;
-	padding-right: 4px;
-}
-
 span.NLdbid, span.NLfs, span.NLfid {
 	display: none;
-}
-
-span.NLdbid, span.NPdbid {
-	background-image: url(../images/nodelist/dbid-16.png);
-}
-
-span.NLfs, span.NPfs {
-	background-image: url(../images/nodelist/foreignsource-16.png);
-}
-
-span.NLfid, span.NPfid {
-	background-image: url(../images/nodelist/foreignid-16.png);
 }
 
 div.NLnode:hover span.NLdbid, div.NLnode:hover span.NLfs, div.NLnode:hover span.NLfid {

@@ -33,7 +33,6 @@ import static org.opennms.core.utils.InetAddressUtils.addr;
 import java.net.InetAddress;
 import java.util.concurrent.Callable;
 
-import org.opennms.core.concurrent.WaterfallCallable;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.api.EventConfDao;
 import org.opennms.netmgt.events.api.EventIpcManager;
@@ -59,7 +58,7 @@ import org.springframework.util.Assert;
  * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
  *  
  */
-class TrapQueueProcessor implements WaterfallCallable, InitializingBean {
+class TrapQueueProcessor implements Callable<Callable<?>>, InitializingBean {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(TrapQueueProcessor.class);
 	

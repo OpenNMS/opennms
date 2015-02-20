@@ -43,6 +43,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableTable;
 import com.google.common.collect.Maps;
 import com.google.common.collect.RowSortedTable;
+import com.google.common.collect.TreeBasedTable;
 
 /**
  * Performs Holt-Winters forecasting on a given column of
@@ -122,5 +123,28 @@ public class HWForecast implements Filter {
             table.put(idxTarget, m_config.getOutputPrefix() + "Upr", outputTable.get(i, "upr"));
             table.put(idxTarget, "Timestamp", (double)new Date(lastTimestamp.getTime() + stepInMs * idxForecast).getTime());
         }
+    }
+
+    public static void checkForecastSupport() throws Exception {
+        // Verify the HW filter
+        String qs = "ANALYTICS:HoltWinters=HW:X:12:1:0.95";
+        RrdDataSourceFilter dse = new RrdDataSourceFilter(qs);
+
+        // Use constant values for the Y column
+        RowSortedTable<Integer, String, Double> table = TreeBasedTable.create();
+        for (int i = 0; i < 100; i++) {
+            table.put(i, "Timestamp", (double)(i * 1000));
+            table.put(i, "X", 1.0d);
+        }
+
+        // Apply the filter
+        dse.filter(table);
+
+        // Verify the outlier filter
+        qs = "ANALYTICS:OutlierFilter=X:0.99";
+        dse = new RrdDataSourceFilter(qs);
+
+        // Apply the filter
+        dse.filter(table);
     }
 }

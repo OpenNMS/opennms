@@ -86,16 +86,17 @@
   <c:if test="${param.nostyles != 'true' }">
     <link rel="stylesheet" type="text/css" href="<%= baseHref %>css/bootstrap.css" media="screen" />
     <link rel="stylesheet" type="text/css" href="<%= baseHref %>css/opennms-theme.css" media="screen" />
-    <!-- <link rel="stylesheet" type="text/css" href="<%= baseHref %>css/styles.css" media="screen" />
-    <link rel="stylesheet" type="text/css" href="<%= baseHref %>css/gwt-asset.css" media="screen" />
-    <link rel="stylesheet" type="text/css" href="<%= baseHref %>css/onms-gwt-chrome.css" media="screen" />
-    <link rel="stylesheet" type="text/css" href="<%= baseHref %>css/print.css" media="print" /> -->
+    <link rel="stylesheet" type="text/css" href="<%= baseHref %>css/font-awesome-4.3.0/css/font-awesome.min.css" />
   </c:if>
   <link rel="shortcut icon" href="<%= baseHref %>favicon.ico" />
   <c:forEach var="link" items="${paramValues.link}">
     <c:out value="${link}" escapeXml="false" />
   </c:forEach>
   <script type="text/javascript" src="<%= baseHref %>js/global.js"></script>
+
+    <script type="text/javascript" src="lib/jquery/dist/jquery.js"></script>
+    <script type="text/javascript" src="lib/bootstrap/dist/js/bootstrap.js"></script>
+
     <c:if test="${!empty pageContext.request.remoteUser && !param.disableCoreWeb}">
         <script type="text/javascript" src="<%= baseHref %>coreweb/coreweb.nocache.js"></script>
     </c:if>
@@ -108,8 +109,6 @@
       <script type="text/javascript" src='<%= baseHref %>resources/spring/Spring.js'></script>
       <script type="text/javascript" src='<%= baseHref %>resources/spring/Spring-Dojo.js'></script>
     </c:if>
-    <script type="text/javascript" src="lib/jquery/dist/jquery.js"></script>
-    <script type="text/javascript" src="lib/bootstrap/dist/js/bootstrap.js"></script>
 
 <c:forEach var="script" items="${paramValues.script}">
     <c:out value="${script}" escapeXml="false" />
