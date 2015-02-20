@@ -29,6 +29,7 @@ package org.opennms.features.vaadin.surveillanceviews.ui.dashboard;
 
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.server.ExternalResource;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.Link;
 import com.vaadin.ui.Table;
 import org.opennms.features.vaadin.surveillanceviews.service.SurveillanceViewService;
@@ -43,8 +44,8 @@ public class SurveillanceViewNotificationTable extends SurveillanceViewDetailTab
     private BeanItemContainer<OnmsNotification> m_beanItemContainer = new BeanItemContainer<OnmsNotification>(OnmsNotification.class);
     private HashMap<OnmsNotification, String> m_customSeverity = new HashMap<>();
 
-    public SurveillanceViewNotificationTable(SurveillanceViewService surveillanceViewService) {
-        super("Notifications", surveillanceViewService);
+    public SurveillanceViewNotificationTable(SurveillanceViewService surveillanceViewService, boolean enabled) {
+        super("Notifications", surveillanceViewService, enabled);
 
         setContainerDataSource(m_beanItemContainer);
 
@@ -54,10 +55,15 @@ public class SurveillanceViewNotificationTable extends SurveillanceViewDetailTab
             @Override
             public Object generateCell(Table table, Object itemId, Object propertyId) {
                 OnmsNotification onmsNotification = (OnmsNotification) itemId;
-                Link link = new Link(onmsNotification.getNodeLabel(), new ExternalResource("/opennms/element/node.jsp?node=" + onmsNotification.getNodeId()));
-                link.setTargetName("_top");
-                link.setPrimaryStyleName("surveillance-view");
-                return link;
+                if (m_enabled) {
+                    Link link = new Link(onmsNotification.getNodeLabel(), new ExternalResource("/opennms/element/node.jsp?node=" + onmsNotification.getNodeId()));
+                    link.setTargetName("_top");
+                    link.setPrimaryStyleName("surveillance-view");
+                    link.setEnabled(m_enabled);
+                    return link;
+                } else {
+                    return new Label(onmsNotification.getNodeLabel());
+                }
             }
         });
 

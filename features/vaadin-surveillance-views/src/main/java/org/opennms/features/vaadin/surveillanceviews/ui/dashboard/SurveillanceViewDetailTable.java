@@ -35,10 +35,14 @@ import java.util.Set;
 
 public abstract class SurveillanceViewDetailTable extends Table {
     private SurveillanceViewService m_surveillanceViewService;
+    protected boolean m_enabled;
 
-    public SurveillanceViewDetailTable(String title, SurveillanceViewService surveillanceViewService) {
+    public SurveillanceViewDetailTable(String title, SurveillanceViewService surveillanceViewService, boolean enabled) {
         super(title);
+
         m_surveillanceViewService = surveillanceViewService;
+        m_enabled = enabled;
+        
         setSizeFull();
         setPageLength(5);
     }

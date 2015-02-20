@@ -36,9 +36,6 @@ import com.vaadin.ui.VerticalLayout;
 import org.opennms.features.vaadin.surveillanceviews.config.SurveillanceViewProvider;
 import org.opennms.features.vaadin.surveillanceviews.model.View;
 import org.opennms.features.vaadin.surveillanceviews.service.SurveillanceViewService;
-import org.opennms.features.vaadin.surveillanceviews.ui.dashboard.SurveillanceViewAlarmTable;
-import org.opennms.features.vaadin.surveillanceviews.ui.dashboard.SurveillanceViewNodeRtcTable;
-import org.opennms.features.vaadin.surveillanceviews.ui.dashboard.SurveillanceViewNotificationTable;
 
 /**
  * The surveillance view application's "main" class
@@ -53,46 +50,17 @@ public class SurveillanceViewsUI extends UI {
 
     @Override
     protected void init(VaadinRequest request) {
-
         VerticalLayout rootLayout = new VerticalLayout();
         rootLayout.setSpacing(true);
-        //rootLayout.setSizeFull();
 
         String viewName = request.getParameter("viewName") == null ? "default" : request.getParameter("viewName");
         boolean dashboard = request.getParameter("dashboard") != null && "true".equals(request.getParameter("dashboard"));
 
         View view = SurveillanceViewProvider.getInstance().getView("default");
 
-        SurveillanceViewTable surveillanceViewTable = new SurveillanceViewTable(view, m_surveillanceViewService);
-/*
-        for (Map.Entry<String, String[]> entry : request.getParameterMap().entrySet()) {
-            rootLayout.addComponent(new Label("Key: '" + entry.getKey() + "'"));
-        }
-*/
         rootLayout.addComponent(new Label("viewName=" + viewName));
         rootLayout.addComponent(new Label("dashboard=" + dashboard));
-
-        rootLayout.addComponent(surveillanceViewTable);
-
-        if (dashboard) {
-            VerticalLayout secondLayout = new VerticalLayout();
-            secondLayout.setSpacing(true);
-
-            SurveillanceViewAlarmTable surveillanceViewAlarmTable = new SurveillanceViewAlarmTable(m_surveillanceViewService);
-            SurveillanceViewNotificationTable surveillanceViewNotificationTable = new SurveillanceViewNotificationTable(m_surveillanceViewService);
-            SurveillanceViewNodeRtcTable surveillanceViewNodeRtcTable = new SurveillanceViewNodeRtcTable(m_surveillanceViewService);
-
-            secondLayout.addComponent(surveillanceViewAlarmTable);
-            secondLayout.addComponent(surveillanceViewNotificationTable);
-            secondLayout.addComponent(surveillanceViewNodeRtcTable);
-
-            surveillanceViewTable.addDetailsTable(surveillanceViewAlarmTable);
-            surveillanceViewTable.addDetailsTable(surveillanceViewNotificationTable);
-            surveillanceViewTable.addDetailsTable(surveillanceViewNodeRtcTable);
-
-            rootLayout.addComponent(secondLayout);
-            rootLayout.setExpandRatio(secondLayout, 1.0f);
-        }
+        rootLayout.addComponent(new SurveillanceView(view, m_surveillanceViewService, dashboard, true));
 
         setContent(rootLayout);
     }

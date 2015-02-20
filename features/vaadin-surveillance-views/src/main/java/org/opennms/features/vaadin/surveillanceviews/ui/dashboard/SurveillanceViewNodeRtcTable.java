@@ -29,6 +29,7 @@ package org.opennms.features.vaadin.surveillanceviews.ui.dashboard;
 
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.server.ExternalResource;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.Link;
 import com.vaadin.ui.Table;
 import org.opennms.features.vaadin.surveillanceviews.service.SurveillanceViewService;
@@ -40,8 +41,8 @@ import java.util.Set;
 public class SurveillanceViewNodeRtcTable extends SurveillanceViewDetailTable {
     private BeanItemContainer<SurveillanceViewService.NodeRtc> m_beanItemContainer = new BeanItemContainer<SurveillanceViewService.NodeRtc>(SurveillanceViewService.NodeRtc.class);
 
-    public SurveillanceViewNodeRtcTable(SurveillanceViewService surveillanceViewService) {
-        super("Outages", surveillanceViewService);
+    public SurveillanceViewNodeRtcTable(SurveillanceViewService surveillanceViewService, boolean enabled) {
+        super("Outages", surveillanceViewService, enabled);
 
         setContainerDataSource(m_beanItemContainer);
 
@@ -51,11 +52,18 @@ public class SurveillanceViewNodeRtcTable extends SurveillanceViewDetailTable {
             @Override
             public Object generateCell(Table table, Object itemId, Object propertyId) {
                 SurveillanceViewService.NodeRtc nodeRtc = (SurveillanceViewService.NodeRtc) itemId;
-                Link link = new Link(nodeRtc.getNode().getLabel(), new ExternalResource("/opennms/element/node.jsp?node=" + nodeRtc.getNode().getNodeId()));
-                link.setTargetName("_top");
-                link.setPrimaryStyleName("surveillance-view");
-                link.addStyleName("white");
-                return link;
+                if (m_enabled) {
+                    Link link = new Link(nodeRtc.getNode().getLabel(), new ExternalResource("/opennms/element/node.jsp?node=" + nodeRtc.getNode().getNodeId()));
+                    link.setTargetName("_top");
+                    link.setPrimaryStyleName("surveillance-view");
+                    link.addStyleName("white");
+                    return link;
+                } else {
+                    Label label = new Label(nodeRtc.getNode().getLabel());
+                    label.setPrimaryStyleName("surveillance-view");
+                    label.addStyleName("white");
+                    return label;
+                }
             }
         });
 

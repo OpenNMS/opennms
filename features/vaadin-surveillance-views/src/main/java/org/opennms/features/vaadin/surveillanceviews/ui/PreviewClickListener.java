@@ -92,28 +92,7 @@ public class PreviewClickListener implements Button.ClickListener {
                         setSpacing(true);
                         setSizeFull();
 
-                        SurveillanceViewTable surveillanceViewTable = new SurveillanceViewTable(m_view, m_surveillanceViewService);
-
-                        addComponent(surveillanceViewTable);
-
-                        VerticalLayout secondLayout = new VerticalLayout();
-                        secondLayout.setSpacing(true);
-
-                        SurveillanceViewAlarmTable surveillanceViewAlarmTable = new SurveillanceViewAlarmTable(m_surveillanceViewService);
-                        SurveillanceViewNotificationTable surveillanceViewNotificationTable = new SurveillanceViewNotificationTable(m_surveillanceViewService);
-                        SurveillanceViewNodeRtcTable surveillanceViewNodeRtcTable = new SurveillanceViewNodeRtcTable(m_surveillanceViewService);
-
-                        secondLayout.addComponent(surveillanceViewAlarmTable);
-                        secondLayout.addComponent(surveillanceViewNotificationTable);
-                        secondLayout.addComponent(surveillanceViewNodeRtcTable);
-
-                        surveillanceViewTable.addDetailsTable(surveillanceViewAlarmTable);
-                        surveillanceViewTable.addDetailsTable(surveillanceViewNotificationTable);
-                        surveillanceViewTable.addDetailsTable(surveillanceViewNodeRtcTable);
-
-                        addComponent(secondLayout);
-
-                        setExpandRatio(secondLayout, 1.0f);
+                        addComponent(new SurveillanceView(m_view, m_surveillanceViewService, false, false));
                     }
                 });
 

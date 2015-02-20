@@ -29,6 +29,7 @@ package org.opennms.features.vaadin.surveillanceviews.ui.dashboard;
 
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.server.ExternalResource;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.Link;
 import com.vaadin.ui.Table;
 import org.opennms.features.vaadin.surveillanceviews.service.SurveillanceViewService;
@@ -42,8 +43,8 @@ public class SurveillanceViewAlarmTable extends SurveillanceViewDetailTable {
 
     private BeanItemContainer<OnmsAlarm> m_beanItemContainer = new BeanItemContainer<OnmsAlarm>(OnmsAlarm.class);
 
-    public SurveillanceViewAlarmTable(SurveillanceViewService surveillanceViewService) {
-        super("Alarms", surveillanceViewService);
+    public SurveillanceViewAlarmTable(SurveillanceViewService surveillanceViewService, boolean enabled) {
+        super("Alarms", surveillanceViewService, enabled);
 
         setContainerDataSource(m_beanItemContainer);
 
@@ -53,10 +54,15 @@ public class SurveillanceViewAlarmTable extends SurveillanceViewDetailTable {
             @Override
             public Object generateCell(Table table, Object itemId, Object propertyId) {
                 OnmsAlarm onmsAlarm = (OnmsAlarm) itemId;
-                Link link = new Link(onmsAlarm.getNodeLabel(), new ExternalResource("/opennms/element/node.jsp?node=" + onmsAlarm.getNodeId()));
-                link.setTargetName("_top");
-                link.setPrimaryStyleName("surveillance-view");
-                return link;
+                if (m_enabled) {
+                    Link link = new Link(onmsAlarm.getNodeLabel(), new ExternalResource("/opennms/element/node.jsp?node=" + onmsAlarm.getNodeId()));
+                    link.setTargetName("_top");
+                    link.setPrimaryStyleName("surveillance-view");
+                    link.setEnabled(m_enabled);
+                    return link;
+                } else {
+                    return new Label(onmsAlarm.getNodeLabel());
+                }
             }
         });
 
