@@ -34,7 +34,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring" %>
 
-<jsp:include page="/includes/header.jsp" flush="false">
+<jsp:include page="/includes/bootstrap.jsp" flush="false">
   <jsp:param name="title" value="Remote Poller Details" />
   <jsp:param name="headTitle" value="Remote Poller Details" />
   <jsp:param name="breadcrumb" value="<a href='admin/index.jsp'>Admin</a>" />
@@ -43,135 +43,144 @@
 </jsp:include>
 
 <c:choose>
+
   <c:when test="${model.errors.errorCount > 0}">
-    <h3><spring:message code="error"/></h3>
-    <div class="boxWrapper">
-      <ul class="error">
-        <c:forEach var="err" items="${model.errors.allErrors}">
-          <li><spring:message message="${err}"/></li>
-        </c:forEach>
-      </ul>
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title"><spring:message code="error"/></h3>
+      </div>
+      <div class="panel-body">
+        <ul class="error">
+          <c:forEach var="err" items="${model.errors.allErrors}">
+            <li><spring:message message="${err}"/></li>
+          </c:forEach>
+        </ul>
+      </div>
     </div>
   </c:when>
   
   <c:otherwise>
     <c:set var="monitor" value="${model.locationMonitors[0]}"/>
-    
-    <h3><spring:message code="distributed.locationMonitorDetails.title"/></h3>
-    <table>
-      <tr>
-        <th><spring:message code="distributed.area"/></th>
-        <td>${monitor.area}</td>
-      </tr>
-      <tr>
-        <th><spring:message code="distributed.definitionName"/></th>
-        <td>${monitor.definitionName}</td>
-      </tr>
-      <tr>
-        <th><spring:message code="distributed.id"/></th>
-        <td>${monitor.id}</td>
-      </tr>
-      <tr>
-        <th><spring:message code="distributed.hostName"/></th>
-        <td>${monitor.hostName}</td>
-      </tr>
-      <tr>
-        <th><spring:message code="distributed.ipAddress"/></th>
-        <td>${monitor.ipAddress}</td>
-      </tr>
-      <tr>
-        <th><spring:message code="distributed.connectionHostName"/></th>
-        <td>${monitor.connectionHostName}</td>
-      </tr>
-      <tr>
-        <th><spring:message code="distributed.connectionIpAddress"/></th>
-        <td>${monitor.connectionIpAddress}</td>
-      </tr>
-      <tr>
-        <th><spring:message code="distributed.status"/></th>
-        <td><spring:message code="distributed.status.value.${monitor.status}" text="${monitor.status}"/></td>
-      </tr>
-      <tr>
-        <th><spring:message code="distributed.lastCheckInTime"/></th>
-        <td>
-          <c:choose>
-            <c:when test="${!empty monitor.lastCheckInTime}">
-              <fmt:formatDate value="${monitor.lastCheckInTime}" type="date" dateStyle="short"/>
-              <fmt:formatDate value="${monitor.lastCheckInTime}" type="time" dateStyle="short"/>
-            </c:when>
-          
-            <c:otherwise>
-              Never
-            </c:otherwise>
-          </c:choose>
-        </td>
-      </tr> 
-    </table>
-    
-    <h3><spring:message code="distributed.locationMonitorDetails.additionalTitle"/></h3>
-    <table>
-      <c:forEach items="${monitor.additionalDetails}" var="detail">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title"><spring:message code="distributed.locationMonitorDetails.title"/></h3>
+      </div>
+      <table class="table table-condensed">
         <tr>
-          <th>
-            <spring:message code="distributed.detail.${detail.key}" text="${detail.key}"/>
-          </th>
-          <td>
-            ${detail.value}
-          </td>
+          <th><spring:message code="distributed.area"/></th>
+          <td>${monitor.area}</td>
         </tr>
-      </c:forEach>
-    </table>
+        <tr>
+          <th><spring:message code="distributed.definitionName"/></th>
+          <td>${monitor.definitionName}</td>
+        </tr>
+        <tr>
+          <th><spring:message code="distributed.id"/></th>
+          <td>${monitor.id}</td>
+        </tr>
+        <tr>
+          <th><spring:message code="distributed.hostName"/></th>
+          <td>${monitor.hostName}</td>
+        </tr>
+        <tr>
+          <th><spring:message code="distributed.ipAddress"/></th>
+          <td>${monitor.ipAddress}</td>
+        </tr>
+        <tr>
+          <th><spring:message code="distributed.connectionHostName"/></th>
+          <td>${monitor.connectionHostName}</td>
+        </tr>
+        <tr>
+          <th><spring:message code="distributed.connectionIpAddress"/></th>
+          <td>${monitor.connectionIpAddress}</td>
+        </tr>
+        <tr>
+          <th><spring:message code="distributed.status"/></th>
+          <td><spring:message code="distributed.status.value.${monitor.status}" text="${monitor.status}"/></td>
+        </tr>
+        <tr>
+          <th><spring:message code="distributed.lastCheckInTime"/></th>
+          <td>
+            <c:choose>
+              <c:when test="${!empty monitor.lastCheckInTime}">
+                <fmt:formatDate value="${monitor.lastCheckInTime}" type="date" dateStyle="short"/>
+                <fmt:formatDate value="${monitor.lastCheckInTime}" type="time" dateStyle="short"/>
+              </c:when>
+              <c:otherwise>
+                Never
+              </c:otherwise>
+            </c:choose>
+          </td>
+        </tr> 
+      </table>
+    </div>
+
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title"><spring:message code="distributed.locationMonitorDetails.additionalTitle"/></h3>
+      </div>
+      <table class="table table-condensed">
+        <c:forEach items="${monitor.additionalDetails}" var="detail">
+          <tr>
+            <th>
+              <spring:message code="distributed.detail.${detail.key}" text="${detail.key}"/>
+            </th>
+            <td>
+              ${detail.value}
+            </td>
+          </tr>
+        </c:forEach>
+      </table>
+    </div>
     
     <c:if test="${isAdmin}">
       <script type="text/javascript" >
-          function confirmDelete() {
-              if (confirm("Are you sure you want to proceed? This action will permanently delete all data for this remote poller in the database and cannot be undone.")) {
-                  document.deleteForm.submit();
-              }
+        function confirmDelete() {
+          if (confirm("Are you sure you want to proceed? This action will permanently delete all data for this remote poller in the database and cannot be undone.")) {
+            document.deleteForm.submit();
           }
+        }
       </script>
       
-      <h3>Manage Remote Poller</h3>
-      <div class="boxWrapper">
-        <form action="admin/distributed/locationMonitorDelete.htm" method="post" name="deleteForm">
-          <input type="hidden" name="monitorId" value="${monitor.id}"/>
-        </form>
-        <input type="button" value="Delete" onClick="confirmDelete();"/>
-  
-        <c:choose>
-          <c:when test="${monitor.status != 'PAUSED'}">
-            <form action="admin/distributed/locationMonitorPause.htm" method="post">
-              <p>
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h3 class="panel-title">Manage Remote Poller</h3>
+        </div>
+        <div class="panel-body">
+          <form action="admin/distributed/locationMonitorDelete.htm" method="post" name="deleteForm">
+            <input type="hidden" name="monitorId" value="${monitor.id}"/>
+          </form>
+          <button class="btn btn-default" type="button" onClick="confirmDelete();">Delete</button>
+          <c:choose>
+            <c:when test="${monitor.status != 'PAUSED'}">
+              <form action="admin/distributed/locationMonitorPause.htm" method="post">
                 <input type="hidden" name="monitorId" value="${monitor.id}"/>
-                <input type="submit" value="Pause"/>
-              </p>
-            </form>
-          </c:when>
-            
-          <c:otherwise>
-            <form action="admin/distributed/locationMonitorResume.htm" method="post">
-              <p>
+                <button class="btn btn-default" type="submit">Pause</button>
+              </form>
+            </c:when>
+            <c:otherwise>
+              <form action="admin/distributed/locationMonitorResume.htm" method="post">
                 <input type="hidden" name="monitorId" value="${monitor.id}"/>
-                <input type="submit" value="Resume"/>
-              </p>
-            </form>
-          </c:otherwise>
-        </c:choose>
-  
-        <p>
-          <b>Delete</b> will delete all database data for this remote poller
-          and cause the remote poller to shut down when it next checks in.
-        </p>
-        
-        <p>
-          <b>Pause</b> will cause the remote poller to stop polling when it
-          next checks in. The remote poller can be unpaused to re-enable
-          polling.
-        </p>
+                <button class="btn btn-default" type="submit">Resume</button>
+              </form>
+            </c:otherwise>
+          </c:choose>
+          <br/>
+          <p>
+            <b>Delete</b> will delete all database data for this remote poller
+            and cause the remote poller to shut down when it next checks in.
+          </p>
+          <p>
+            <b>Pause</b> will cause the remote poller to stop polling when it
+            next checks in. The remote poller can be unpaused to re-enable
+            polling.
+          </p>
+        </div>
       </div>
     </c:if>
   
   </c:otherwise>
+
 </c:choose>
 
-<jsp:include page="/includes/footer.jsp" flush="false"/>
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="false"/>

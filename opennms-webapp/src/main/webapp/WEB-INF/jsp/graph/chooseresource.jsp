@@ -36,7 +36,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 
-<jsp:include page="/includes/header.jsp" flush="false" >
+<jsp:include page="/includes/bootstrap.jsp" flush="false" >
   <jsp:param name="title" value="Choose Resource" />
   <jsp:param name="headTitle" value="Choose" />
   <jsp:param name="headTitle" value="Resource Graphs" />
@@ -163,11 +163,7 @@
           }
       }
   </script>
-  <div class="onms">
-  <h2>
-    ${model.resource.resourceType.label}: <a href="<c:url value='${model.resource.link}'/>">${model.resource.label}</a>
-  </h2> 
-  </div>
+  <h4><strong>${model.resource.resourceType.label}:</strong> <a href="<c:url value='${model.resource.link}'/>">${model.resource.label}</a></h4> 
   <c:choose>
   <c:when test="${empty model.resourceTypes}">
       <p>
@@ -176,14 +172,16 @@
   </c:when>
   
   <c:otherwise>
-  <div>
-    <h3 class="o-box">Node Resources</h3>
-    <div class="boxWrapper">
-        <opennms:reportSelectionList id="choose-resource" dataObject="data"></opennms:reportSelectionList>
-        <!-- for IE -->
-        <div name="opennms-reportSelectionList" id="choose-resource-ie" dataObject="data"></div>
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h3 class="panel-title">Node Resources</h3>
     </div>
-  </div>
+    <div class="panel-body">
+        <opennms:reportSelectionList id="choose-resource" dataObject="data" targetUrl="${model.endUrl}"></opennms:reportSelectionList>
+        <!-- for IE -->
+        <div name="opennms-reportSelectionList" id="choose-resource-ie" dataObject="data" targetUrl="${model.endUrl}"></div>
+    </div> <!-- panel-body -->
+  </div> <!-- panel -->
       <%--<h3 class="o-box">
         Choose resources to query
       </h3>
@@ -237,4 +235,4 @@
       <jsp:include page="/includes/footnote1.jsp" flush="false" />
   </c:if>
 
-<jsp:include page="/includes/footer.jsp" flush="false" />
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />

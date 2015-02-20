@@ -34,14 +34,14 @@
 	session="true"
 %>
 
-<jsp:include page="/includes/header.jsp" flush="false" >
-  <jsp:param name="title" value="JMX Config Generator Web UI ALPHA" />
-  <jsp:param name="headTitle" value="JMX Config Generator Web UI ALPHA" />
+<jsp:include page="/includes/bootstrap.jsp" flush="false" >
+  <jsp:param name="title" value="JMX Configuration Generator" />
+  <jsp:param name="headTitle" value="JMX Configuration Generator" />
   <jsp:param name="location" value="admin" />
   <jsp:param name="breadcrumb" value="<a href='admin/index.jsp'>Admin</a>" />
-  <jsp:param name="breadcrumb" value="JMX Config Generator Web UI ALPHA" />
+  <jsp:param name="breadcrumb" value="JMX Configuration Generator" />
   <jsp:param name="vaadinEmbeddedStyles" value="true" />
 </jsp:include>
 
 <iframe src="osgi/jmx-config-tool" frameborder="0" style="height:100%; width:100%;"></iframe>
-<jsp:include page="/includes/footer.jsp" flush="true"/>
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="true"/>

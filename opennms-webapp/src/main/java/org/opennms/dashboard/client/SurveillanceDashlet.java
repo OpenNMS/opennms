@@ -104,6 +104,7 @@ public class SurveillanceDashlet extends Dashlet {
         
         public SurveillanceView(Dashlet dashlet) {
             super(dashlet);
+            m_grid.setStyleName("table table-condensed table-bordered severity");
             m_grid.addTableListener(new TableListener() {
 
                 @Override
@@ -177,8 +178,8 @@ public class SurveillanceDashlet extends Dashlet {
                 for(int col = 0; col < data.getColumnCount(); col++) {
                     SurveillanceIntersection cell = data.getCell(row, col);
                     m_grid.setText(row+1, col+1, cell.getData());
-                    m_grid.getCellFormatter().setStyleName(row+1, col+1, cell.getStatus());
-                    m_grid.getCellFormatter().addStyleName(row+1, col+1, "divider");
+                    m_grid.getCellFormatter().setStyleName(row+1, col+1, "severity-" + cell.getStatus().toLowerCase());
+                    m_grid.getCellFormatter().addStyleName(row+1, col+1, "divider bright");
                 }
                 
                 m_grid.getRowFormatter().setStyleName(row+1, "CellStatus");
@@ -198,7 +199,7 @@ public class SurveillanceDashlet extends Dashlet {
      * @param dashboard a {@link org.opennms.dashboard.client.Dashboard} object.
      */
     public SurveillanceDashlet(Dashboard dashboard) {
-        super(dashboard, "Surveillance View");
+        super(dashboard, "Surveillance View", false);
         m_view = new SurveillanceView(this);
         m_loader = new SurveillanceLoader();
 

@@ -57,7 +57,7 @@
     
 %>
 
-<jsp:include page="/includes/header.jsp" flush="false" >
+<jsp:include page="/includes/bootstrap.jsp" flush="false" >
   <jsp:param name="title" value="Error" />
   <jsp:param name="headTitle" value="Connection Error" />
   <jsp:param name="headTitle" value="Error" />
@@ -75,4 +75,4 @@
   Is the OpenNMS daemon running?
 </p>
 
-<jsp:include page="/includes/footer.jsp" flush="false" />
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />

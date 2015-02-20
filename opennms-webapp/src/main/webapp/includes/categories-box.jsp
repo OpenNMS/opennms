@@ -60,27 +60,30 @@
 	Map<String, List<Category>> categoryData = m_category_list.getCategoryData();
 
 	long earliestUpdate = m_category_list.getEarliestUpdate(categoryData);
-	boolean opennmsDisconnect =
-		m_category_list.isDisconnected(earliestUpdate);
+	boolean opennmsDisconnect = m_category_list.isDisconnected(earliestUpdate);
+
+	String titleName = "Availability Over the Past 24 Hours";
+	if (opennmsDisconnect) {
+		titleName = "Waiting for availability data...";
+		if (earliestUpdate > 0) {
+			titleName += new Date(earliestUpdate).toString();
+		} else {
+			titleName += "one or more categories have never been updated.";
+		}
+	}
 %>
-<%	if (opennmsDisconnect) { %>
-	    <h3 class="o-box">Waiting for availability data... - 
-		Last update:
-<%=		(earliestUpdate > 0 ?
-			 new Date(earliestUpdate).toString() :
-			 "one or more categories have never been updated.") %>
-	      </h3>
-<%	} else { %>
-	    <h3 class="o-box">Availability Over the Past 24 Hours</h3>
-<%	} %>
 
+<div class="panel panel-default fix-subpixel">
+  <div class="panel-heading">
+    <h3 class="panel-title"><%= titleName %></h3>
+  </div>
 
-<table class="o-box onms-table">
+<table class="table table-condensed severity">
 <%
 	for (Iterator<String> i = categoryData.keySet().iterator(); i.hasNext(); ) {
 	    String sectionName = i.next();
 %>
-	<thead>
+	<thead class="dark">
 		<tr>
 			<th><%= sectionName %></th>
 			<th align="right">Outages</th>
@@ -94,7 +97,7 @@
 		Category category = j.next();
 		String categoryName = category.getName();
 %>
-	<tr class="CellStatus">
+	<tr>
 		<td>
           <% if (category.getLastUpdated() != null) { %>
 		    <a href="<%= response.encodeURL("rtc/category.jsp?category=" + Util.encode(categoryName)) %>"
@@ -105,11 +108,11 @@
             <%= categoryName %>
           <% } %>
 		</td>
-		<td class="<%= (opennmsDisconnect ? "Indeterminate" : category.getOutageClass()) %>"
+		<td class="severity-<%= (opennmsDisconnect ? "indeterminate" : category.getOutageClass().toLowerCase()) %> bright divider"
 	        align="right"
 		    title="Updated: <%= category.getLastUpdated() %>"><%= category.getOutageText() %>
 		</td>
-		<td class="<%= (opennmsDisconnect ? "Indeterminate" : category.getAvailClass()) %>"
+		<td class="severity-<%= (opennmsDisconnect ? "indeterminate" : category.getAvailClass().toLowerCase()) %> bright divider"
 		    align="right" 
 		    title="Updated: <%= category.getLastUpdated() %>"><%= category.getAvailText() %>
 		</td>
@@ -120,3 +123,5 @@
 	}
 %>
 </table>
+<!-- </div> -->
+</div>

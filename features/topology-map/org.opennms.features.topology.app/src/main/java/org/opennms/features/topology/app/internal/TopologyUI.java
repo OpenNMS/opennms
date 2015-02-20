@@ -44,6 +44,7 @@ import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.MenuBar.MenuItem;
 import com.vaadin.ui.TabSheet.SelectedTabChangeEvent;
 import com.vaadin.ui.TabSheet.SelectedTabChangeListener;
+
 import org.opennms.features.topology.api.*;
 import org.opennms.features.topology.api.OperationContext.DisplayLocation;
 import org.opennms.features.topology.api.support.VertexHopGraphProvider;
@@ -69,9 +70,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServletRequest;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.util.*;
 
 @SuppressWarnings("serial")
@@ -160,7 +163,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
     int m_settingFragment = 0;
     private SearchBox m_searchBox;
 
-    private String getHeader(HttpServletRequest request) {
+    private String getHeader(HttpServletRequest request) throws Exception {
         if(m_headerProvider == null) {
             return "";
         } else {
@@ -184,7 +187,12 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
     protected void init(final VaadinRequest request) {
         FontAwesomeIcons.load(new ThemeResource("font-awesome/css/font-awesome.min.css"));
 
-        m_headerHtml = getHeader(new HttpServletRequestVaadinImpl(request));
+        try {
+            URL pageUrl = Page.getCurrent().getLocation().toURL();
+            m_headerHtml = getHeader(new HttpServletRequestVaadinImpl(request, pageUrl));
+        } catch (final Exception e) {
+            LOG.error("failed to get header HTML for request " + request.getPathInfo(), e.getCause());
+        }
 
         //create VaadinApplicationContext
         m_applicationContext = m_serviceManager.createApplicationContext(new VaadinApplicationContextCreator() {
@@ -346,6 +354,8 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
     private void createLayouts() {
         m_rootLayout = new VerticalLayout();
         m_rootLayout.setSizeFull();
+        m_rootLayout.addStyleName("root-layout");
+        m_rootLayout.addStyleName("topo-root-layout");
         setContent(m_rootLayout);
 
         addHeader();

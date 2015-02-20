@@ -44,8 +44,6 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.SurveillanceStatus;
 
 public class TestNodeDao implements NodeDao {
-
-
 	@Override
 	public OnmsNode get(Integer id) {
 		OnmsNode node = new OnmsNode();
@@ -261,5 +259,9 @@ public class TestNodeDao implements NodeDao {
 	public Integer getPreviousNodeId(Integer nodeId) {
 		return null;
 	}
-	
+
+    @Override
+    public Map<Integer, String> getAllLabelsById() {
+        return null;
+    }
 }

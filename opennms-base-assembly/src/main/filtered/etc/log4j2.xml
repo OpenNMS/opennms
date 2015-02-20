@@ -191,7 +191,6 @@
         <KeyValuePair key="reports"              value="WARN" />
         <KeyValuePair key="rtc"                  value="WARN" />
         <KeyValuePair key="statsd"               value="WARN" />
-        <KeyValuePair key="syslogd"              value="WARN" />
         <KeyValuePair key="scriptd"              value="WARN" />
         <KeyValuePair key="snmp-poller"          value="WARN" />
         <KeyValuePair key="syslogd"              value="WARN" />

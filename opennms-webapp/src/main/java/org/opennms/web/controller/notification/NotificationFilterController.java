@@ -178,24 +178,28 @@ public class NotificationFilterController extends AbstractController implements 
         
         // really inefficient, is there a better way to do this?
         for (Notification notice : notices) {
-            eventIds.add(notice.getEventId());
-            if (!nodeLabels.containsKey(notice.getNodeId())) {
-                String[] labels = null;
-                OnmsNode node = m_nodeDao.get(notice.getNodeId());
-                if (node != null) {
-                    String longLabel = node.getLabel();
-                    if( longLabel == null ) {
-                        labels = new String[] { "&lt;No Node Label&gt;", "&lt;No Node Label&gt;" };
-                    } else {
-                        if ( longLabel.length() > 32 ) {
-                            String shortLabel = longLabel.substring( 0, 31 ) + "...";                        
-                            labels = new String[] { shortLabel, longLabel };
+            if (notice.getEventId() > 0) {
+                eventIds.add(notice.getEventId());
+            }
+            if (notice.getNodeId() > 0) {
+                if (!nodeLabels.containsKey(notice.getNodeId())) {
+                    String[] labels = null;
+                    OnmsNode node = m_nodeDao.get(notice.getNodeId());
+                    if (node != null) {
+                        String longLabel = node.getLabel();
+                        if( longLabel == null ) {
+                            labels = new String[] { "&lt;No Node Label&gt;", "&lt;No Node Label&gt;" };
                         } else {
-                            labels = new String[] { longLabel, longLabel };
+                            if ( longLabel.length() > 32 ) {
+                                String shortLabel = longLabel.substring( 0, 31 ) + "...";                        
+                                labels = new String[] { shortLabel, longLabel };
+                            } else {
+                                labels = new String[] { longLabel, longLabel };
+                            }
                         }
                     }
+                    nodeLabels.put( notice.getNodeId(), labels );
                 }
-                nodeLabels.put( notice.getNodeId(), labels );
             }
         }
         

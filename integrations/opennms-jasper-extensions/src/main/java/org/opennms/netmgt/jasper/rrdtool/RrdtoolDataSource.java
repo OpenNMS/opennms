@@ -30,17 +30,18 @@ package org.opennms.netmgt.jasper.rrdtool;
 
 import java.util.Date;
 
-import net.sf.jasperreports.engine.JRDataSource;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRField;
+import net.sf.jasperreports.engine.JRRewindableDataSource;
 
-public class RrdtoolDataSource implements JRDataSource {
+public class RrdtoolDataSource implements JRRewindableDataSource {
 
 	private int m_currentRow = -1;
 	private Xport m_data;
 
 	public RrdtoolDataSource(Xport data) {
 		this.m_data = data;
+		moveFirst();
 	}
 
         @Override
@@ -77,4 +78,8 @@ public class RrdtoolDataSource implements JRDataSource {
 		return -1;
 	}
 
+    @Override
+    public void moveFirst() {
+        m_currentRow = -1;
+    }
 }

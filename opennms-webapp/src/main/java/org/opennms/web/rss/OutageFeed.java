@@ -31,6 +31,7 @@ package org.opennms.web.rss;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import org.opennms.netmgt.model.outage.OutageSummary;
 import org.opennms.web.outage.OutageModel;
@@ -87,10 +88,10 @@ public class OutageFeed extends AbstractFeed {
         feed.setDescription("OpenNMS Nodes with Outages");
         feed.setLink(getUrlBase() + "outage/list.htm");
 
-        ArrayList<SyndEntry> entries = new ArrayList<SyndEntry>();
+        List<SyndEntry> entries = new ArrayList<SyndEntry>();
 
         try {
-            OutageModel model = new OutageModel();    
+            OutageModel model = new OutageModel();
             Date date = new Date();
             date.setTime(date.getTime() - (1000 * 60 * 60 * 24));
             OutageSummary[] summaries = model.getAllOutageSummaries(date);
@@ -111,10 +112,11 @@ public class OutageFeed extends AbstractFeed {
                     entry.setTitle(sanitizeTitle(summary.getNodeLabel()));
                     entry.setUpdatedDate(summary.getTimeDown());
                 } else {
-                    entry.setTitle(sanitizeTitle(summary.getNodeLabel()) + " (resolved)");
+                    entry.setTitle(sanitizeTitle(summary.getNodeLabel()) + " (Resolved)");
                     entry.setUpdatedDate(summary.getTimeUp());
                 }
                 entry.setLink(link);
+                entry.setAuthor("OpenNMS");
                 
                 entries.add(entry);
             }

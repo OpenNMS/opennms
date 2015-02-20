@@ -38,7 +38,7 @@
 
 <% final String baseHref = org.opennms.web.api.Util.calculateUrlBase( request ); %>
 
-<jsp:include page="/includes/header.jsp" flush="false" >
+<jsp:include page="/includes/bootstrap.jsp" flush="false" >
   <jsp:param name="title" value="Key SNMP Customized Performance Reports" />
   <jsp:param name="headTitle" value="Performance " />
   <jsp:param name="headTitle" value="Reports" />
@@ -50,41 +50,42 @@
 </jsp:include>
 
 <script type="text/javascript">
- 
-    function saveGraph()
-    {
-        document.customize_graph.action.value="Save";
-        document.customize_graph.submit();
-    }
+  function saveGraph()
+  {
+    document.customize_graph.action.value="Save";
+    document.customize_graph.submit();
+  }
 
-    function chooseResource()
-    {
-        document.customize_graph.action.value="ChooseResource";
+  function chooseResource()
+  {
+    document.customize_graph.action.value="ChooseResource";
+    document.customize_graph.submit();
+  }
+      
+  function updateGraph()
+  {
+    document.customize_graph.action.value="Update";
+    document.customize_graph.submit();
+  }
+ 
+  function cancelGraph()
+  {
+    if (confirm("Do you really want to cancel graph configuration changes?")) {
+        document.customize_graph.action.value="Cancel";
         document.customize_graph.submit();
     }
-        
-    function updateGraph()
-    {
-        document.customize_graph.action.value="Update";
-        document.customize_graph.submit();
-    }
-   
-    function cancelGraph()
-    {
-        if (confirm("Do you really want to cancel graph configuration changes?")) {
-            document.customize_graph.action.value="Cancel";
-            document.customize_graph.submit();
-        }
-    }
-  
+  }  
 </script>
 
-<h2>Customized Report Graph Definition</h2>
+<h4>Customized Report Graph Definition</h4>
 
-  <c:choose>
-    <c:when test="${fn:length(prefabGraphs) == 0}">
-      <h3>No graph options available</h3>
-      <div class="boxWrapper">
+<c:choose>
+  <c:when test="${fn:length(prefabGraphs) == 0}">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">No graph options available</h3>
+      </div>
+      <div class="panel-body">
         <p>
           No graph options are available.
           This resource might not have any data that can be graphed with
@@ -94,152 +95,137 @@
           that appropriate reports are defined.  
         </p>
       </div>
-    </c:when>
-                
-    <c:otherwise>
-      <h3>Sample graph</h3>
-      <div class="boxWrapper">
-                    <table class="normal">
-                        <tr>
-                            <td class="normal" align="right">
-                                ${resultSet.title}
-                                <br/>
-                                  <c:if test="${!empty resultSet.resource.parent}">
-                                    ${resultSet.resource.parent.resourceType.label}:
-                                    <c:choose>
-                                      <c:when test="${!empty resultSet.resource.parent.link}">
-                                        <a href="<c:url value='${resultSet.resource.parent.link}'/>">${resultSet.resource.parent.label}</a>
-                                      </c:when>
-                                      <c:otherwise>
-                                        ${resultSet.resource.parent.label}
-                                      </c:otherwise>
-                                    </c:choose>
-                                    <br />
-                                  </c:if>
-                              
-                                  ${resultSet.resource.resourceType.label}:
-                                  <c:choose>
-                                    <c:when test="${!empty resultSet.resource.link}">
-                                      <a href="<c:url value='${resultSet.resource.link}'/>">${resultSet.resource.label}</a>
-                                    </c:when>
-                                    <c:otherwise>
-                                      ${resultSet.resource.label}
-                                    </c:otherwise>
-                                  </c:choose>
-
-                                <br/>
-                                <b>From</b> ${resultSet.start}
-                                <br/>
-                                <b>To</b> ${resultSet.end}
-                            </td>
-              
-                            <td class="normal" align="left">
-                              <c:url var="graphUrl" value="${baseHref}graph/graph.png">
-                                <c:param name="resourceId" value="${resultSet.resource.id}"/>
-                                <c:param name="report" value="${resultSet.prefabGraph.name}"/>
-                                <c:param name="start" value="${resultSet.start.time}"/>
-                                <c:param name="end" value="${resultSet.end.time}"/>
-                                <c:param name="zoom" value="true"/>
-                              </c:url>
-                              
-                              <img src="${graphUrl}" alt="Resource graph: ${resultSet.prefabGraph.title}" />
-                            </td>
-                        </tr>
-                    </table>
+    </div>
+  </c:when>
+  <c:otherwise>
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Sample graph</h3>
       </div>
-
-      <h3>Choose graph options</h3>
-      <div class="boxWrapper">
-
-      <form name="customize_graph" method="get" action="<%= baseHref %>KSC/formProcGraph.htm" >
-        <input type="hidden" name="<%=FormProcGraphController.Parameters.action%>" value="none" />
-
-                    <table class="normal">
-                        <tr>
-                          <td class="normal">
-                            Title
-                          </td>
-                          <td class="normal">
-                            <input type="text" name="<%=FormProcGraphController.Parameters.title%>" value="${resultSet.title}" size="40" maxlength="40"/>
-                          </td>
-                        </tr>
-                        <tr>
-                            <td class="normal">
-                              Timespan
-                            </td>
-                            <td class="normal">
-                                <select name="<%=FormProcGraphController.Parameters.timespan%>">
-                                  <c:forEach var="option" items="${timeSpans}">
-                                    <c:choose>
-                                      <c:when test="${timeSpan == option.key}">
-                                        <c:set var="timespanSelected">selected="selected"</c:set>
-                                      </c:when>
-                                      
-                                      <c:otherwise>
-                                        <c:set var="timespanSelected" value=""/>
-                                      </c:otherwise>
-                                    </c:choose>
-                                    <option value="${option.key}" ${timespanSelected}>${option.value}</option>
-                                  </c:forEach>
-                                </select>  
-                                (This selects the relative start and stop times for the report) 
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="normal">
-                                Prefabricated Report
-                            </td>
-                            <td class="normal">
-                                <select name="<%=FormProcGraphController.Parameters.graphtype%>">
-                                  <c:forEach var="prefabGraph" items="${prefabGraphs}">
-                                    <c:choose>
-                                      <c:when test="${resultSet.prefabGraph.name == prefabGraph.name}">
-                                        <c:set var="prefabSelected">selected="selected"</c:set>
-                                      </c:when>
-                                      
-                                      <c:otherwise>
-                                        <c:set var="prefabSelected" value=""/>
-                                      </c:otherwise>
-                                    </c:choose>
-                                    <option value="${prefabGraph.name}" ${prefabSelected}>${prefabGraph.name}</option>
-                                  </c:forEach>
-                                </select>  
-                                (This selects the prefabricated graph report to use) 
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="normal">
-                                <!-- Select Graph Index -->
-                                Graph Index  
-                            </td>
-                            <td class="normal">
-                                <select name="<%=FormProcGraphController.Parameters.graphindex%>">
-                                  <c:forEach var="index" begin="1" end="${maxGraphIndex}">
-                                    <c:choose>
-                                      <c:when test="${index == (graphIndex + 1)}">
-                                        <c:set var="indexSelected">selected="selected"</c:set>
-                                      </c:when>
-                                      
-                                      <c:otherwise>
-                                        <c:set var="indexSelected" value=""/>
-                                      </c:otherwise>
-                                    </c:choose>
-                                    <option value="${index}" ${indexSelected}>${index}</option>
-                                  </c:forEach>
-                                </select>  
-                                (This selects the desired position in the report for the graph to be inserted) 
-                            </td>
-                        </tr>
-                    </table>
-
-                    <input type="button" value="Cancel edits to this graph" onclick="cancelGraph()" alt="Cancel this graph configuration"/>
-                    <input type="button" value="Refresh sample view" onclick="updateGraph()" alt="Update changes to sample graph"/>
-                    <input type="button" value="Choose different resource" onclick="chooseResource()" alt="Choose a different resource to graph"/>
-                    <input type="button" value="Done with edits to this graph" onclick="saveGraph()" alt="Done with this graph configuration"/>
-      </form>
+      <table class="table">
+        <tr>
+          <td align="right">
+            ${resultSet.title}
+            <br/>
+              <c:if test="${!empty resultSet.resource.parent}">
+                ${resultSet.resource.parent.resourceType.label}:
+                <c:choose>
+                  <c:when test="${!empty resultSet.resource.parent.link}">
+                    <a href="<c:url value='${resultSet.resource.parent.link}'/>">${resultSet.resource.parent.label}</a>
+                  </c:when>
+                  <c:otherwise>
+                    ${resultSet.resource.parent.label}
+                  </c:otherwise>
+                </c:choose>
+                <br />
+              </c:if>
+              ${resultSet.resource.resourceType.label}:
+              <c:choose>
+                <c:when test="${!empty resultSet.resource.link}">
+                  <a href="<c:url value='${resultSet.resource.link}'/>">${resultSet.resource.label}</a>
+                </c:when>
+                <c:otherwise>
+                  ${resultSet.resource.label}
+                </c:otherwise>
+              </c:choose>
+            <br/>
+            <b>From</b> ${resultSet.start}
+            <br/>
+            <b>To</b> ${resultSet.end}
+          </td>
+          <td align="left">
+            <c:url var="graphUrl" value="${baseHref}graph/graph.png">
+              <c:param name="resourceId" value="${resultSet.resource.id}"/>
+              <c:param name="report" value="${resultSet.prefabGraph.name}"/>
+              <c:param name="start" value="${resultSet.start.time}"/>
+              <c:param name="end" value="${resultSet.end.time}"/>
+              <c:param name="zoom" value="true"/>
+            </c:url>
+            <img src="${graphUrl}" alt="Resource graph: ${resultSet.prefabGraph.title}" />
+          </td>
+        </tr>
+      </table>
+    </div>
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Choose graph options</h3>
       </div>
+      <div class="panel-body">
+        <form class="form-horizontal" name="customize_graph" method="get" action="<%= baseHref %>KSC/formProcGraph.htm">
+          <input type="hidden" name="<%=FormProcGraphController.Parameters.action%>" value="none" />
+          <div class="form-group">
+            <label class="col-md-2 label-control">Title</label>
+            <div class="col-md-4">
+              <input class="form-control" type="text" name="<%=FormProcGraphController.Parameters.title%>" value="${resultSet.title}" size="40" maxlength="40"/>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-md-2 label-control">Timespan</label>
+            <div class="col-md-4">
+              <select class="form-control" name="<%=FormProcGraphController.Parameters.timespan%>">
+                <c:forEach var="option" items="${timeSpans}">
+                  <c:choose>
+                    <c:when test="${timeSpan == option.key}">
+                      <c:set var="timespanSelected">selected="selected"</c:set>
+                    </c:when>
+                    <c:otherwise>
+                      <c:set var="timespanSelected" value=""/>
+                    </c:otherwise>
+                  </c:choose>
+                  <option value="${option.key}" ${timespanSelected}>${option.value}</option>
+                </c:forEach>
+              </select>
+              <span class="help-block">This selects the relative start and stop times for the report</span>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-md-2 label-control">Prefabricated Report</label>
+            <div class="col-md-4">
+              <select class="form-control col-md-4" name="<%=FormProcGraphController.Parameters.graphtype%>">
+                <c:forEach var="prefabGraph" items="${prefabGraphs}">
+                  <c:choose>
+                    <c:when test="${resultSet.prefabGraph.name == prefabGraph.name}">
+                      <c:set var="prefabSelected">selected="selected"</c:set>
+                    </c:when>
+                    <c:otherwise>
+                      <c:set var="prefabSelected" value=""/>
+                    </c:otherwise>
+                  </c:choose>
+                  <option value="${prefabGraph.name}" ${prefabSelected}>${prefabGraph.name}</option>
+                </c:forEach>
+              </select>
+              <span class="help-block">This selects the relative start and stop times for the report</span>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-md-2 label-control">Graph Index</label>
+            <div class="col-md-4">
+              <select class="form-control col-md-4" name="<%=FormProcGraphController.Parameters.graphindex%>">
+                <c:forEach var="index" begin="1" end="${maxGraphIndex}">
+                  <c:choose>
+                    <c:when test="${index == (graphIndex + 1)}">
+                      <c:set var="indexSelected">selected="selected"</c:set>
+                    </c:when>
+                    <c:otherwise>
+                      <c:set var="indexSelected" value=""/>
+                    </c:otherwise>
+                  </c:choose>
+                  <option value="${index}" ${indexSelected}>${index}</option>
+                </c:forEach>
+              </select>
+              <span class="help-block">This selects the relative start and stop times for the report</span>
+            </div>
+          </div>
+          <div class="btn-group">
+            <button type="button" class="btn btn-default" onclick="cancelGraph()" alt="Cancel this graph configuration">Cancel edits to this graph</button>
+            <button type="button" class="btn btn-default" onclick="updateGraph()" alt="Update changes to sample graph">Refresh sample view</button>
+            <button type="button" class="btn btn-default" onclick="chooseResource()" alt="Choose a different resource to graph">Choose different resource</button>
+            <button type="button" class="btn btn-default" onclick="saveGraph()" alt="Done with this graph configuration">Done with edits to this graph</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </c:otherwise>
+</c:choose>
 
-    </c:otherwise>
-  </c:choose>
-
-<jsp:include page="/includes/footer.jsp" flush="false" />
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />

@@ -89,6 +89,16 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer> im
     }
 
     /** {@inheritDoc} */
+    public Map<Integer, String> getAllLabelsById() {
+        Map<Integer, String> labelsByNodeId = new HashMap<Integer, String>();
+        List<? extends Object[]> rows = findObjects(new Object[0].getClass(), "select n.id, n.label from OnmsNode as n");
+        for (Object row[] : rows) {
+            labelsByNodeId.put((Integer)row[0], (String)row[1]);
+        }
+        return labelsByNodeId;
+    }
+
+    /** {@inheritDoc} */
     @Override
     public List<OnmsNode> findNodes(final OnmsDistPoller distPoller) {
         return find("from OnmsNode where distPoller = ?", distPoller);

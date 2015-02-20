@@ -59,7 +59,7 @@
 <%
     String hostName = InetAddressUtils.getLocalHostName();
 %>
-<jsp:include page="/includes/header.jsp" flush="false" >
+<jsp:include page="/includes/bootstrap.jsp" flush="false" >
   <jsp:param name="title" value="Send Event" />
   <jsp:param name="headTitle" value="Send Event" />
   <jsp:param name="headTitle" value="Admin" />
@@ -73,6 +73,7 @@
   <jsp:param name="script" value='<script type="text/javascript" src="js/jquery/ui/jquery.ui.position.js"></script>' />
   <jsp:param name="script" value='<script type="text/javascript" src="js/jquery/ui/jquery.ui.autocomplete.js"></script>' />
 </jsp:include>
+
 <style type="text/css">
         /* TODO shouldn't be necessary */
         .ui-button { margin-left: -1px; }
@@ -184,106 +185,105 @@
 
 </script>
 
-<h3>Send Event to OpenNMS</h3>
+<form role="form" class="form-horizontal" method="post" name="sendevent" id="form.sendevent" action="admin/postevent.jsp">
 
-<form method="post" name="sendevent"
-      id="form.sendevent"
-      action="admin/postevent.jsp" >
-      <table width="50%">
-        <tr>
-          <td valign="top" align="left">
-            <h4>Events</h4>
-            <select NAME="uei" SIZE="1" id="input.uei" >
-               <option value="">--Select One--</option>
-               <%=buildEventSelect()%>
+<div class="row">
+  <div class="col-md-6">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Send Event to OpenNMS</h3>
+      </div>
+      <div class="panel-body">
+        <div class="form-group">
+          <label for="input.uei" class="col-sm-2 control-label">Event</label>
+          <div class="col-sm-10">
+            <select name="uei" class="form-control" id="input.uei" >
+              <option value="">--Select One--</option>
+              <%=buildEventSelect()%>
             </select>
-          </td>
-        </tr>
-        <tr>
-          <td valign="top" align="left">
-            <div class="ui-widget">
-              <label>UUID:</label>
-              <input id="uuid" name="uuid" type="text" value="" size="64" />
-            </div>
-          </td>
-        </tr>
-        <tr>
-          <td valign="top" align="left">
-            <div class="ui-widget">
-              <label>Node ID:</label>
-              <select id="nodeSelect" name="nodeSelect" style="display: none"></select>
-            </div>
-          </td>
-        </tr>
-        <tr>
-          <td valign="top" align="left">
-            <label>Source Hostname:</label>
-            <input id="hostname" name="hostname" type="text" value="<%=hostName%>" />
-          </td>
-        </tr>
-        <tr>
-          <td valign="top" align="left">
-            <div class="ui-widget">
-              <label>Interface:</label>
-              <select id="interfaceSelect" name="interfaceSelect" style="display: none"></select>
-            </div>
-          </td>
-        </tr>
-        <tr>
-          <td valign="top" align="left">
-            <label>Service:</label>
-            <input id="service" name="service" type="text" value="" />
-          </td>
-        </tr>
-        <tr>
-          <td valign="top" align="left">
-            <label>Parameters</label>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="uuid" class="col-sm-2 control-label">UUID</label>
+          <div class="col-sm-10">
+            <input id="uuid" name="uuid" class="form-control" type="text" value="" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="nodeSelect" class="col-sm-2 control-label">Node ID:</label>
+          <div class="col-sm-10">
+            <select id="nodeSelect" name="nodeSelect" class="form-control" style="display: none"></select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="hostname" class="col-sm-2 control-label">Source Hostname:</label>
+          <div class="col-sm-10">
+            <input id="hostname" name="hostname" class="form-control" type="text" value="<%=hostName%>" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="interfaceSelect" class="col-sm-2 control-label">Interface:</label>
+          <div class="col-sm-10">
+            <select id="interfaceSelect" name="interfaceSelect" class="form-control" style="display: none"></select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="service" class="col-sm-2 control-label">Service:</label>
+          <div class="col-sm-10">
+            <input id="service" name="service" class="form-control" type="text" value="" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="service" class="col-sm-2 control-label">Parameters:</label>
+          <div class="col-sm-10">
             <div id="parmlist"></div>
             <br/>
             <a id="addparm">Add additional parameter</a>
-          </td>
-        </tr>
-        <tr>
-          <td valign="top" align="left">
-            <h4>Description</h4>
-            <textarea id="description" name="description" cols="60" rows="5" style="resize: none;"></textarea>
-          </td>
-        </tr>
-        <tr>
-          <td valign="top" align="left">
-            <h4>Severity: </h4>
-            <select NAME="severity" SIZE="1" >
-              <option value="">--Select One--</option>
-              <option>Indeterminate</option>
-              <option>Cleared</option>
-              <option>Normal</option>
-              <option>Warning</option>
-              <option>Minor</option>
-              <option>Major</option>
-              <option>Critical</option>
-            </select>
-          </td>
-        </tr>
-        <tr>
-          <td valign="top" align="left">
-            <h4>Operator Instructions</h4>
-            <textarea id="operinstruct" name="operinstruct" cols="60" rows="5" style="resize: none;"></textarea>
-          </td>
-        </tr>
-        <tr>
-          <td colspan="2">
-            <input type="reset"/>
-          </td>
-        </tr>
-        <tr>
-          <td colspan="2">
-           <a href="javascript:next()">Send Event &#155;&#155;&#155;</a>
-          </td>
-        </tr>
-      </table>
-    </form>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="description" class="col-sm-2 control-label">Description:</label>
+          <div class="col-sm-10">
+            <textarea id="description" name="description" class="form-control" rows="5" style="resize: none;"></textarea>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="input_severity" class="col-sm-2 control-label">Description:</label>
+          <div class="col-sm-10">
+                <select name="severity" id="input_severity" class="form-control">
+                  <option value="">--Select One--</option>
+                  <option>Indeterminate</option>
+                  <option>Cleared</option>
+                  <option>Normal</option>
+                  <option>Warning</option>
+                  <option>Minor</option>
+                  <option>Major</option>
+                  <option>Critical</option>
+                </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="operinstruct" class="col-sm-2 control-label">Operator Instructions:</label>
+          <div class="col-sm-10">
+            <textarea id="operinstruct" name="operinstruct" class="form-control" rows="5" style="resize: none;"></textarea>
+          </div>
+        </div>
+        <div class="form-group">
+          <div class="col-sm-2 col-sm-offset-2">
+            <input type="reset" class="btn btn-default"/>
+          </div>
+        </div>
+      </div> <!-- panel-body -->
+      <div class="panel-footer">
+        <a href="javascript:next()">Send Event &#155;&#155;&#155;</a>
+      </div> <!-- panel-footer -->
+    </div> <!-- panel -->
+  </div> <!-- column -->
+</div> <!-- row -->
 
-<jsp:include page="/includes/footer.jsp" flush="false" />
+</form>
+
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />
 
 <%!
     public String buildEventSelect()

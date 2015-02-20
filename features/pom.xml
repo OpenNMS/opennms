@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>opennms</artifactId>
-    <version>14.0.3</version>
+    <version>14.0.3-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>org.opennms.features</artifactId>
@@ -51,6 +51,7 @@
     <!-- GWT UI plugins -->
     <module>node-page-list</module>
     <module>opennms-gwt-theme</module>
+    <module>gwt-bootstrap</module>
     <module>gwt-suggestion-combobox</module>
     <module>gwt-ksc-combobox</module>
     <module>gwt-ksc-add</module>

@@ -47,7 +47,7 @@
 %>
 
 
-<jsp:include page="/includes/header.jsp" flush="false" >
+<jsp:include page="/includes/bootstrap.jsp" flush="false" >
   <jsp:param name="title" value="Build Rule" />
   <jsp:param name="headTitle" value="Choose Target" />
   <jsp:param name="headTitle" value="Admin" />
@@ -73,8 +73,16 @@
 
 </script>
 
-    <h2><%=(newNotice.getName()!=null ? "Editing notice: " + newNotice.getName() + "<br/>" : "")%></h2>
-    <h3><% String mode = request.getParameter("mode");
+<h2><%=(newNotice.getName()!=null ? "Editing notice: " + newNotice.getName() + "<br/>" : "")%></h2>
+
+<form method="post" name="rule"
+     action="admin/notification/noticeWizard/notificationWizard" >
+     <input type="hidden" name="sourcePage" value="<%=NotificationWizardServlet.SOURCE_PAGE_RULE%>"/>
+     <input type="hidden" name="nextPage" value=""/>
+
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title"><% String mode = request.getParameter("mode");
            if ("failed".equals(mode)) { %>
               <font color="FF0000">The rule as entered is invalid, possibly due to a malformed TCP/IP address or invalid
 		      rule syntax. Please correct the rule to continue.</font>
@@ -82,11 +90,8 @@
               Build the rule that determines if a notification is sent for this event based on the interface and service information contained in the event.
            <% } %>
     </h3>
-<form method="post" name="rule"
-      action="admin/notification/noticeWizard/notificationWizard" >
-      <input type="hidden" name="sourcePage" value="<%=NotificationWizardServlet.SOURCE_PAGE_RULE%>"/>
-      <input type="hidden" name="nextPage" value=""/>
-      <table>
+  </div>
+      <table class="table table-condensed">
         <tr>
           <td valign="top" align="left">
             <p>Filtering on TCP/IP address uses a very flexible format, allowing you
@@ -109,33 +114,39 @@
 	       desired address fields for *.*.*.*.
 	       <br/>Otherwise, you may enter any valid rule.
 	    </p>
-	    Current Rule:<br/>
-	    <input type="text" size=100 name="newRule" value="<%=newRule%>"/>
+            <div class="form-group">
+              <label for="input_newRule">Current Rule:</label>
+	      <input type="text" class="form-control" size=100 id="input_newRule" name="newRule" value="<%=newRule%>"/>
+            </div>
           </td>
         </tr>
         <tr>
           <td valign="top" align="left">
-			<table>
-				<tr>
-					<td>
+            <div class="row">
+              <div class="col-md-6">
               			<p>Select each service you would like to filter on in conjunction with the TCP/IP address in the previous column.
                			   For example highlighting both HTTP and FTP will match TCP/IP addresses that support HTTP <b>OR</b> FTP.
              			</p>
-             			Services:<br/><select size="10" multiple name="services"><%=buildServiceOptions(newRule)%></select>
-          			</td>
-          			<td valign="top" align="left">
+                <div class="form-group">
+                  <label for="input_services" class="control-label">Services:</label>
+                  <select class="form-control" size="10" multiple id="input_services" name="services"><%=buildServiceOptions(newRule)%></select>
+                </div>
+              </div> <!-- column -->
+              <div class="col-md-6">
               			<p>Select each service you would like to do a NOT filter on in conjunction with the TCP/IP address. Highlighting
               			   multiple items ANDs them--for example, highlighting HTTP and FTP will match events (NOT on HTTP) AND (NOT on FTP).
               			</p>
-              			"NOT" Services:<br/><select size="10" multiple name="notServices"><%=buildNotServiceOptions(newRule)%></select>
-          			</td>
-        		</tr>
-			</table>
+                <div class="form-group">
+                  <label for="input_notServices" class="control-label">"NOT" Services:</label>
+                  <select class="form-control" size="10" multiple name="notServices"><%=buildNotServiceOptions(newRule)%></select>
+                </div>
+              </div> <!-- column -->
+            </div> <!-- row -->
 			</td>
 		</tr>
         <tr>
           <td colspan="2">
-            <input type="reset" value="Reset Address and Services"/>
+            <input type="reset" class="btn btn-default" value="Reset Address and Services"/>
           </td>
         </tr>
         <tr>
@@ -151,7 +162,7 @@
       </table>
     </form>
 
-<jsp:include page="/includes/footer.jsp" flush="false" />
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />
 
 <%!
     public String buildServiceOptions(String rule)

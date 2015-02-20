@@ -33,6 +33,7 @@ import java.io.InputStream;
 import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.net.URLDecoder;
 import java.security.NoSuchAlgorithmException;
 
 import javax.net.ssl.SSLContext;
@@ -188,10 +189,14 @@ public class HttpUrlConnection extends URLConnection {
             }
             // Add User Authentication
             String[] userInfo = m_url.getUserInfo() == null ? null :  m_url.getUserInfo().split(":");
-            if (userInfo != null) {
-                UsernamePasswordCredentials credentials = new UsernamePasswordCredentials(userInfo[0], userInfo[1]);
+            if (userInfo != null && userInfo.length == 2) {
+                // If the URL contains a username/password, it might need to be decoded
+                String uname = URLDecoder.decode(userInfo[0], "UTF-8");
+                String pwd = URLDecoder.decode(userInfo[1], "UTF-8");
+                UsernamePasswordCredentials credentials = new UsernamePasswordCredentials(uname, pwd);
                 request.addHeader(BasicScheme.authenticate(credentials, "UTF-8", false));
             }
+
             // Get Response
             HttpResponse response = m_client.execute(request);
             return response.getEntity().getContent();

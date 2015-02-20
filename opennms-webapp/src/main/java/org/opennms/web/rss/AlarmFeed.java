@@ -29,6 +29,7 @@
 package org.opennms.web.rss;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.servlet.ServletContext;
 
@@ -46,6 +47,8 @@ import org.opennms.web.alarm.filter.NodeFilter;
 import org.opennms.web.alarm.filter.SeverityFilter;
 import org.opennms.web.filter.Filter;
 
+import com.sun.syndication.feed.synd.SyndContent;
+import com.sun.syndication.feed.synd.SyndContentImpl;
 import com.sun.syndication.feed.synd.SyndEntry;
 import com.sun.syndication.feed.synd.SyndEntryImpl;
 import com.sun.syndication.feed.synd.SyndFeed;
@@ -80,19 +83,20 @@ public class AlarmFeed extends AbstractFeed {
      *
      * @return a {@link com.sun.syndication.feed.synd.SyndFeed} object.
      */
-    public SyndFeed getFeed(ServletContext servletContext) {
+    @Override
+    public SyndFeed getFeed() {
         SyndFeed feed = new SyndFeedImpl();
 
         feed.setTitle("Alarms");
         feed.setDescription("OpenNMS Alarms");
         feed.setLink(getUrlBase() + "alarm/list.htm");
 
-        ArrayList<SyndEntry> entries = new ArrayList<SyndEntry>();
+        List<SyndEntry> entries = new ArrayList<SyndEntry>();
 
-        ArrayList<Filter> filters = new ArrayList<Filter>();
+        List<Filter> filters = new ArrayList<Filter>();
         if (this.getRequest().getParameter("node") != null) {
             Integer nodeId = WebSecurityUtils.safeParseInt(this.getRequest().getParameter("node"));
-            filters.add(new NodeFilter(nodeId, servletContext));
+            filters.add(new NodeFilter(nodeId, getServletContext()));
         }
         if (this.getRequest().getParameter("severity") != null) {
             String sev = this.getRequest().getParameter("severity");
@@ -121,6 +125,12 @@ public class AlarmFeed extends AbstractFeed {
                 entry.setUpdatedDate(alarm.getFirstEventTime());
             }
             entry.setLink(getUrlBase() + "alarm/detail.htm?id=" + alarm.getId());
+            entry.setAuthor("OpenNMS");
+            
+            SyndContent content = new SyndContentImpl();
+            content.setType("text/html");
+            content.setValue(alarm.getDescription());
+            entry.setDescription(content);
             
             entries.add(entry);
         }

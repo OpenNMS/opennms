@@ -393,8 +393,16 @@ public class MockNodeDao extends AbstractMockDao<OnmsNode, Integer> implements N
         return previous;
     }
 
+    @Override
+    public Map<Integer, String> getAllLabelsById() {
+        Map<Integer, String> allLabelsById = new HashMap<Integer, String>();
+        for (final OnmsNode node : findAll()) {
+            allLabelsById.put(node.getId(), node.getLabel());
+        }
+        return allLabelsById;
+    }
+
     public int getNextNodeId() {
         return m_id.get() + 1;
     }
-
 }

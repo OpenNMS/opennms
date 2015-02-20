@@ -71,7 +71,7 @@
     }
 %>
 
-<jsp:include page="/includes/header.jsp" flush="false" >
+<jsp:include page="/includes/bootstrap.jsp" flush="false" >
   <jsp:param name="title" value="Manage/Unmanage Interfaces and Services" />
   <jsp:param name="headTitle" value="Node Management" />
   <jsp:param name="headTitle" value="Admin" />
@@ -182,87 +182,100 @@
         }
 %>
 
-<h2>Node: <%=nodeLabel%></h2>
+<h3>Node: <%=nodeLabel%></h3>
 
 <hr/>
     
 <form method="post" name="manageAll" action="admin/manageNode" onsubmit="return applyChanges();">
 
-  <h3>Manage and Unmanage Interfaces and Services</h3>
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title">Manage and Unmanage Interfaces and Services</h3>
+  </div>
+  <div class="panel-body">
+    <!--
+    <p>
+      The two tables below represent each managed and unmanged interface,
+      and service combination.  The 'Managed' column indicates if the
+      interface or service is managed or not, with checked rows meaning
+      the interface or service is managed, and unchecked meaning not managed.
+      Each different interface has a dark grey row and no service column,
+      and each service on that interface is listed below on light grey rows.
+    </p>
 
-  <!--
-  <p>
-    The two tables below represent each managed and unmanged interface,
-    and service combination.  The 'Managed' column indicates if the
-    interface or service is managed or not, with checked rows meaning
-    the interface or service is managed, and unchecked meaning not managed.
-    Each different interface has a dark grey row and no service column,
-    and each service on that interface is listed below on light grey rows.
-  </p>
+    <p>
+      Managing or Unmanaging an interface will automatically mark each
+      service on that interface as managed or unmanaged accordingly.  A
+      service cannot be managed if its interface is not managed.
+    </p>
+    -->
 
-  <p>
-    Managing or Unmanaging an interface will automatically mark each
-    service on that interface as managed or unmanaged accordingly.  A
-    service cannot be managed if its interface is not managed.
-  </p>
-  -->
+    <p>
+      The table below represent each managed and unmanged interface,
+      and service combination.  The 'Managed' column indicates if the
+      service is managed or not on the interface, with checked rows meaning
+      the interface/service is managed, and unchecked meaning not managed.
+    </p>
 
-  <p>
-    The table below represent each managed and unmanged interface,
-    and service combination.  The 'Managed' column indicates if the
-    service is managed or not on the interface, with checked rows meaning
-    the interface/service is managed, and unchecked meaning not managed.
-  </p>
+    <%
+      ManagedInterface firstInterface = (ManagedInterface) interfaces.get(0);
+      int nodeId = firstInterface.getNodeid();
+    %>
 
-  <%
-    ManagedInterface firstInterface = (ManagedInterface) interfaces.get(0);
-    int nodeId = firstInterface.getNodeid();
-  %>
+    <input type="hidden" name="node" value="<%= nodeId %>"/>
 
-  <input type="hidden" name="node" value="<%= nodeId %>"/>
+    <div class="form-group">
+      <input type="submit" class="btn btn-default" value="Apply Changes"/>
+      <input type="button" class="btn btn-default" value="Cancel" onclick="cancel()"/>
+      <input type="button" class="btn btn-default" value="Select All" onclick="checkAll()"/>
+      <input type="button" class="btn btn-default" value="Unselect All" onclick="uncheckAll()"/>
+      <input type="reset" class="btn btn-default" />
+    </div>
 
-  <input type="submit" value="Apply Changes"/>
-  <input type="button" value="Cancel" onclick="cancel()"/>
-  <input type="button" value="Select All" onclick="checkAll()"/>
-  <input type="button" value="Unselect All" onclick="uncheckAll()"/>
-  <input type="reset"/>
+    <div class="row">
+    <% if (interfaces.size() > 0) { %>
+      <div class="col-md-6">
+        <table class="table table-condensed">
+          <tr>
+            <th class="text-center" width="5%">Managed</th>
+            <th class="text-center" width="10%">Interface</th>
+            <th class="text-center" width="10%">Service</th>
+          </tr>
 
-  <% if (interfaces.size() > 0) { %>
-    <table class="standard">
-      <tr>
-        <td class="standardheader" align="center" width="5%">Managed</td>
-        <td class="standardheader" align="center" width="10%">Interface</td>
-        <td class="standardheader" align="center" width="10%">Service</td>
-      </tr>
-            
-      <%=buildManageTableRows(interfaces, 0, midInterfaceIndex)%>
-    </table>
-  <% } /*end if*/ %>
-        
-  <%-- See if there is a second column to draw --%>
-  <% if (midInterfaceIndex < interfaces.size()) { %>
-    <table class="standard">
-      <tr>
-        <td class="standardheader" align="center" width="5%">Managed</td>
-        <td class="standardheader" align="center" width="10%">Interface</td>
-        <td class="standardheader" align="center" width="10%">Service</td>
-      </tr>
+          <%=buildManageTableRows(interfaces, 0, midInterfaceIndex)%>
+        </table>
+      </div>
+    <% } /*end if*/ %>
 
-      <%=buildManageTableRows(interfaces, midInterfaceIndex, interfaces.size())%>
-    </table>
-  <% } /*end if */ %>
-      
-  <br/>
+    <%-- See if there is a second column to draw --%>
+    <% if (midInterfaceIndex < interfaces.size()) { %>
+      <div class="col-md-6">
+        <table class="table table-condensed">
+          <tr>
+            <th class="text-center" width="5%">Managed</td>
+            <th class="text-center" width="10%">Interface</td>
+            <th class="text-center" width="10%">Service</td>
+          </tr>
 
-  <input type="submit" value="Apply Changes"/>
-  <input type="button" value="Cancel" onclick="cancel()"/> 
-  <input type="button" value="Select All" onclick="checkAll()"/>
-  <input type="button" value="Unselect All" onclick="uncheckAll()"/>
-  <input type="reset"/>
+          <%=buildManageTableRows(interfaces, midInterfaceIndex, interfaces.size())%>
+        </table>
+      </div>
+    <% } /*end if */ %>
+    </div>
+
+    <div class="form-group">
+      <input type="submit" class="btn btn-default" value="Apply Changes"/>
+      <input type="button" class="btn btn-default" value="Cancel" onclick="cancel()"/>
+      <input type="button" class="btn btn-default" value="Select All" onclick="checkAll()"/>
+      <input type="button" class="btn btn-default" value="Unselect All" onclick="uncheckAll()"/>
+      <input type="reset" class="btn btn-default" />
+    </div>
+  </div> <!-- panel-body -->
+</div> <!-- panel -->
 
 </form>
 
-<jsp:include page="/includes/footer.jsp" flush="true"/>
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="true"/>
 
 <%!
       public String buildManageTableRows(List<ManagedInterface> interfaces, int start, int stop)
@@ -333,11 +346,11 @@
       {
           StringBuffer row = new StringBuffer( "<tr>");
           
-          row.append("<td class=\"standard\" width=\"5%\" align=\"center\">");
+          row.append("<td class=\"text-center\" width=\"5%\">");
           row.append("<input type=\"checkbox\" name=\"serviceCheck\" value=\"").append(key).append("\" onclick=\"javascript:verifyManagedInterface(" + interfaceIndex + ", " + serviceIndex + ")\" ").append(status).append(" >");
           row.append("</td>").append("\n");
-          row.append("<td class=\"standard\" width=\"10%\" align=\"center\">").append(address).append("</td>").append("\n");
-          row.append("<td class=\"standard\" width=\"10%\" align=\"center\">").append(service).append("</td></tr>").append("\n");
+          row.append("<td class=\"text-center\" width=\"10%\">").append(address).append("</td>").append("\n");
+          row.append("<td class=\"text-center\" width=\"10%\">").append(service).append("</td></tr>").append("\n");
           
           return row.toString();
       }

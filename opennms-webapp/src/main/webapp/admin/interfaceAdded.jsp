@@ -34,7 +34,7 @@
 	session="true"
 %>
 
-<jsp:include page="/includes/header.jsp" flush="false" >
+<jsp:include page="/includes/bootstrap.jsp" flush="false" >
   <jsp:param name="title" value="Interface Added" />
   <jsp:param name="headTitle" value="Interface Added" />
   <jsp:param name="headTitle" value="Admin" />
@@ -44,9 +44,15 @@
   <jsp:param name="breadcrumb" value="Interface Added" />
 </jsp:include>
 
-<h3>Finished Adding Interface</h3>
-<p>
-  It may take some time for the interface to be scanned and categories updated.
-</p>
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title">Finished Adding Interface</h3>
+  </div>
+  <div class="panel-body">
+    <p>
+      It may take some time for the interface to be scanned and categories updated.
+    </p>
+  </div>
+</div> <!-- panel -->
 
-<jsp:include page="/includes/footer.jsp" flush="true"/>
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="true"/>
