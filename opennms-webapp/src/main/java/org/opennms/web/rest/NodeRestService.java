@@ -310,17 +310,6 @@ public class NodeRestService extends OnmsRestService {
         return m_context.getResource(HardwareInventoryResource.class);
     }
 
-    /**
-     * <p>getMetricsResource</p>
-     *
-     * @return a {@link org.opennms.web.rest.MetricsResource} object.
-     */
-    @Path("{nodeCriteria}/metrics")
-    public MetricsResourceResource getMetricsResource() {
-        LOG.debug("getMetricsResource()");
-        return m_context.getResource(MetricsResourceResource.class);
-    }
-
     @GET
     @Path("/{nodeCriteria}/categories")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
