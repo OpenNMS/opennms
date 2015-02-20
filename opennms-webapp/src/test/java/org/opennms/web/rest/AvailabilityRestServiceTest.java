@@ -100,20 +100,6 @@ public class AvailabilityRestServiceTest extends AbstractSpringJerseyRestTestCas
 
     @Test
     @JUnitTemporaryDatabase
-    public void testGetAvailabilityForCategory() throws Exception {
-        String xml = sendRequest(GET, "/availability/categories/Network+Interfaces", new HashMap<String,String>(), 200);
-        assertNotNull(xml);
-    }
-
-    @Test
-    @JUnitTemporaryDatabase
-    public void testGetAvailabilityNodesForCategory() throws Exception {
-        String xml = sendRequest(GET, "/availability/categories/Network+Interfaces/nodes", new HashMap<String,String>(), 200);
-        assertNotNull(xml);
-    }
-
-    @Test
-    @JUnitTemporaryDatabase
     public void testGetAvailabilityNode() throws Exception {
         final OnmsNode node = m_populator.getNode1();
         final AvailabilityRestService ars = new AvailabilityRestService();
