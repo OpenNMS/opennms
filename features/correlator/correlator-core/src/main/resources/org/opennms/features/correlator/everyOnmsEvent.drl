@@ -1,13 +1,27 @@
 package org.opennms.features.correlator
-import org.opennms.netmgt.model.OnmsEvent
+import org.opennms.netmgt.xml.event.Event
 
-declare org.opennms.netmgt.model.OnmsEvent
+declare org.opennms.netmgt.xml.event.Event
     @role(event)
 end
 
-rule "Anything"
+rule "Anything Very New"
 when
-    $e : OnmsEvent( id != 0 )
+    $e : Object()
 then
-    System.out.println("event in rule: " + $e.getId());
+    System.out.println("object in rule: " + $e);
+end
+
+rule "Any Event Rule"
+when
+    $e : Event()
+then
+    System.out.println("event in rule: " + $e.getDescr());
+end
+
+rule "Some Events Rule"
+when
+    $e : Event(descr == "This event is sent by the WebUI when a user has successfully authenticated")
+then
+    System.out.println("WebUI login success in rule: " + $e);
 end

@@ -51,13 +51,41 @@ public class Correlator {
     public void start() {
         KieServices kieServices = KieServices.Factory.get();
         KieContainer kieContainer = kieServices.getKieClasspathContainer(getClass().getClassLoader());
-//        Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
-        KieBase kBase = kieContainer.getKieBase("onmsKBase");
+//        KieContainer kieContainer = kieServices.getKieClasspathContainer(this.getClass().getClassLoader());
+        Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
+        KieBase kBase = kieContainer.getKieBase();
         this.kSession = kBase.newKieSession();
 
 //        KieBaseConfiguration kBaseConfiguration = kieServices.newKieBaseConfiguration();
 //        kBaseConfiguration.setOption(EventProcessingOption.STREAM);
     }
+//    public void start() {
+//        KieServices kieServices = KieServices.Factory.get();
+//        KieFileSystem kfs = kieServices.newKieFileSystem();
+//
+//        // for each DRL file, referenced by a plain old path name:
+//        FileInputStream fis = null;
+//        try {
+//            fis = new FileInputStream("/tmp/rule.drl");
+//        } catch (FileNotFoundException ex) {
+//            LOGGER.error("reading rule file failed: '{}'", ex.getMessage());
+//        }
+//        kfs.write("src/main/resources/rule.drl",
+//                kieServices.getResources().newInputStreamResource(fis));
+//
+//        KieBuilder kieBuilder = kieServices.newKieBuilder(kfs).buildAll();
+//        Results results = kieBuilder.getResults();
+//        if (results.hasMessages(Message.Level.ERROR)) {
+//            LOGGER.error("building rule kjar failed: '{}'", results.getMessages());
+//            throw new IllegalStateException("### errors ###");
+//        }
+//
+//        KieContainer kieContainer
+//                = kieServices.newKieContainer(kieServices.getRepository().getDefaultReleaseId());
+//
+//        KieBase kieBase = kieContainer.getKieBase();
+//        kSession = kieContainer.newKieSession();
+//    }
 
     public void stop() {
         if (kSession != null) {

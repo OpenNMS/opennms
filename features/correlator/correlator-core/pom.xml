@@ -12,6 +12,7 @@
     <properties>
         <bundle.symbolicName>org.opennms.features.correlator.core</bundle.symbolicName>
         <bundle.namespace>org.opennms.features.correlator</bundle.namespace>
+        <droolsVersion>6.2.0.CR4</droolsVersion>
     </properties>
     <name>OpenNMS :: Features :: Correlator :: Core</name>
     
@@ -32,13 +33,12 @@
                     <instructions>
                         <Bundle-SymbolicName>${bundle.symbolicName}</Bundle-SymbolicName>
                         <Bundle-Version>${project.version}</Bundle-Version>
-                        <Export-Package>${bundle.namespace}.*;version="${project.version}"</Export-Package>                        
+                        <Export-Package>${bundle.namespace}.*;version="${project.version}"</Export-Package>
                     </instructions> 
                 </configuration>
             </plugin>
         </plugins>
     </build>
-    
     <dependencies>
         
         <!-- OpenNMS dependencies -->
@@ -77,24 +77,31 @@
         <dependency>
             <groupId>org.kie</groupId>
             <artifactId>kie-api</artifactId>
-            <version>6.1.0.Final</version>
+            <version>${droolsVersion}</version>
             <scope>provided</scope>
         </dependency>
 
         <dependency>
             <groupId>org.drools</groupId>
             <artifactId>drools-compiler</artifactId>
-            <version>6.1.0.Final</version>
+            <version>${droolsVersion}</version>
             <scope>provided</scope>
         </dependency>   
 
         <dependency>
             <groupId>org.drools</groupId>
+            <artifactId>drools-osgi-integration</artifactId>
+            <version>${droolsVersion}</version>
+            <scope>provided</scope>
+        </dependency>  
+
+        <dependency>
+            <groupId>org.drools</groupId>
             <artifactId>drools-core</artifactId>
-            <version>6.1.0.Final</version>
+            <version>${droolsVersion}</version>
             <scope>provided</scope>
         </dependency>
-
+                
         <!-- Logging -->
         <dependency>
             <groupId>org.slf4j</groupId>

@@ -10,7 +10,9 @@
     <artifactId>correlator-feature</artifactId>
     <packaging>pom</packaging>
     <name>OpenNMS :: Features :: Correlator :: Feature</name>
-    
+    <properties>
+        <droolsVersion>6.2.0.CR4</droolsVersion>
+    </properties>
     <build>
         <plugins>
             <plugin>
@@ -21,10 +23,12 @@
                         <bundle>mvn:com.google.protobuf/protobuf-java/2.6.1</bundle>
                         <bundle>wrap:mvn:javax.inject/javax.inject/1</bundle>
                         <bundle>mvn:org.mvel/mvel2/2.2.4.Final</bundle>
-                        <bundle>wrap:mvn:org.kie/kie-internal/6.1.0.Final</bundle>
-                        <bundle>wrap:mvn:org.kie/kie-api/6.1.0.Final</bundle>
-                        <bundle>mvn:org.drools/drools-core/6.1.0.Final</bundle>
-                        <bundle>mvn:org.drools/drools-compiler/6.1.0.Final</bundle>
+                        <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.antlr-runtime/3.5.2_1</bundle>
+                        <bundle>wrap:mvn:org.kie/kie-internal/${droolsVersion}</bundle>
+                        <bundle>wrap:mvn:org.kie/kie-api/${droolsVersion}</bundle>
+                        <bundle>mvn:org.drools/drools-core/${droolsVersion}</bundle>
+                        <bundle>mvn:org.drools/drools-compiler/${droolsVersion}</bundle>
+                        <bundle>mvn:org.drools/drools-osgi-integration/${droolsVersion}</bundle>
                     </bundles>
                     <features>
                         <feature>camel-xstream</feature>
