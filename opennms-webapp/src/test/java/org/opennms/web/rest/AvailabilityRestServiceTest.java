@@ -37,16 +37,18 @@ import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.rest.AbstractSpringJerseyRestTestCase;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.dao.DatabasePopulator;
+import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.test.JUnitConfigurationEnvironment;
+import org.opennms.web.category.AvailabilityNode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
-import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.context.support.WebApplicationContextUtils;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @WebAppConfiguration
@@ -70,19 +72,21 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
+@Transactional
 public class AvailabilityRestServiceTest extends AbstractSpringJerseyRestTestCase {
     @Autowired
     TransactionTemplate m_template;
 
+    @Autowired
+    DatabasePopulator m_populator;
+
     @Override
     protected void afterServletStart() {
-        final WebApplicationContext context = WebApplicationContextUtils.getWebApplicationContext(getServletContext());
-        final DatabasePopulator dbp = context.getBean("databasePopulator", DatabasePopulator.class);
         m_template.execute(new TransactionCallbackWithoutResult() {
 
             @Override
-            protected void doInTransactionWithoutResult(TransactionStatus status) {
-                dbp.populateDatabase();
+            protected void doInTransactionWithoutResult(final TransactionStatus status) {
+                m_populator.populateDatabase();
             }
         });
     }
@@ -92,5 +96,18 @@ public class AvailabilityRestServiceTest extends AbstractSpringJerseyRestTestCas
     public void testGetAvailability() throws Exception {
         String xml = sendRequest(GET, "/availability", new HashMap<String,String>(), 200);
         assertNotNull(xml);
+    }
+
+    @Test
+    @JUnitTemporaryDatabase
+    public void testGetAvailabilityNode() throws Exception {
+        final OnmsNode node = m_populator.getNode1();
+        final AvailabilityRestService ars = new AvailabilityRestService();
+        ars.setNodeDao(m_populator.getNodeDao());
+        ars.setIpInterfaceDao(m_populator.getIpInterfaceDao());
+        ars.setMonitoredServiceDao(m_populator.getMonitoredServiceDao());
+        final AvailabilityNode an = ars.getAvailabilityNode(node.getId());
+        assertNotNull(an);
+        System.err.println(JaxbUtils.marshal(an));
     }
 }
