@@ -2,8 +2,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2015 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -30,7 +30,7 @@
 --%>
 
 <%@page language="java" contentType="text/html" session="false" import="org.opennms.core.utils.WebSecurityUtils,org.opennms.web.servlet.MissingParameterException" %>
-
+<%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%!
     protected static final String DEFAULT_LIMIT_PARAM_NAME    = "limit";
     protected static final String DEFAULT_MULTIPLE_PARAM_NAME = "multiple";
@@ -55,16 +55,25 @@
         throw new MissingParameterException("baseurl", new String[] {"itemCount", "baseurl"});
     }
 
-    //optional parameter limit    
-    String limitString = request.getParameter("limit");
-
-    //optional parameter multiple    
-    String multipleString = request.getParameter("multiple");
-
     //optional parameter, limitname
     String limitName = request.getParameter("limitname");
     if(limitName == null) {
         limitName = DEFAULT_LIMIT_PARAM_NAME;
+    }
+
+    //optional parameter limit
+    String limitString = request.getParameter(limitName);
+
+    // Remove any limit parameters in the baseUrl
+    if (limitString != null) {
+        baseUrl = baseUrl.replace("&"+limitName+"="+limitString, "");
+        baseUrl = baseUrl.replace("&amp;"+limitName+"="+limitString, "");
+        if (baseUrl.endsWith("&")) {
+            baseUrl = baseUrl.substring(0,baseUrl.length()-1);
+        }
+        if (baseUrl.endsWith("&amp;")) {
+            baseUrl = baseUrl.substring(0,baseUrl.length()-5);
+        }
     }
 
     //optional parameter, multiplename
@@ -73,9 +82,12 @@
         multipleName = DEFAULT_MULTIPLE_PARAM_NAME;
     }
 
-    //get the count    
+    //optional parameter multiple
+    String multipleString = request.getParameter(multipleName);
+
+    //get the count
     long itemCount = WebSecurityUtils.safeParseLong(itemCountString);
-    
+
     //get the limit, use the default if not set in the request
     int limit    = (limitString != null) ? WebSecurityUtils.safeParseInt(limitString) : DEFAULT_LIMIT;
     if (limit < 1) {
@@ -85,23 +97,14 @@
     // get the multiple, use the default if not set in the request
     int multiple = (multipleString != null) ? Math.max(DEFAULT_MULTIPLE, WebSecurityUtils.safeParseInt(multipleString)) : DEFAULT_MULTIPLE;
 
-    //format the base url to accept limit and multiple parameters
-    if( baseUrl.indexOf("?") < 0 ) {
-        //does not contain a "?", so append one
-        baseUrl = baseUrl + "?";
-    }
-    
-    if ( baseUrl.indexOf(limitName) < 0) {
-        baseUrl = baseUrl + "&amp;" + limitName + "=" + limit;
-    }
-
     //calculate the start and end numbers of the results that we are showing
     long startResult = (multiple==0) ? 1 : multiple*limit+1;
     long endResult = startResult + itemCount - 1;
 
+    Integer limitList[] = { 10, 25, 50, 100, 250, 500, 1000, 2000 };
 %>
 
- <% if (limit > 0 ) { %> 
+ <% if ( itemCount > 0 && limit > 0 ) { %>
   <div class="text-center">
   <strong>Results <%=startResult%>-<%=endResult%></strong>
   </div>
@@ -109,16 +112,37 @@
   <div class="text-center">
   <strong>All Results</strong>
   </div>
- <% } %> 
+ <% } %>
 
-  <% if( itemCount >= limit || multiple > 0 ) { %>
+<c:url var="baseUrl" value="<%=baseUrl%>"></c:url>
+<c:url var="firstUrl" value="<%=baseUrl%>">
+  <c:param name="<%=limitName%>" value="<%=Integer.toString(limit)%>"/>
+  <c:param name="<%=multipleName%>" value="0"/>
+</c:url>
+<c:url var="previousUrl" value="<%=baseUrl%>">
+  <c:param name="<%=limitName%>" value="<%=Integer.toString(limit)%>"/>
+  <c:param name="<%=multipleName%>" value="<%=multiple==0?"0":Integer.toString(multiple-1)%>"/>
+</c:url>
+<c:url var="nextUrl" value="<%=baseUrl%>">
+  <c:param name="<%=limitName%>" value="<%=Integer.toString(limit)%>"/>
+  <c:param name="<%=multipleName%>" value="<%=Integer.toString(multiple+1)%>"/>
+</c:url>
+
   <nav>
-  <ul class="pager" style="text-align:center;">
-    <li class="<%=multiple > 0 ? "" : "disabled"%>"><a href="<%=baseUrl%>&amp;<%=multipleName%>=0">First</a></li>
-    <li class="<%=multiple > 0 ? "" : "disabled"%>"><a href="<%=baseUrl%>&amp;<%=multipleName%>=<%=multiple-1%>">Previous</a></li>  
-    <li class="<%=itemCount >= limit ? "" : "disabled"%>"><a href="<%=baseUrl%>&amp;<%=multipleName%>=<%=multiple+1%>">Next</a></li>
+  <ul class="pagination pagination-sm nav navbar-nav navbar-right">
+  <% if( itemCount >= limit || multiple > 0 ) { %>
+    <li class="<%=multiple > 0 ? "" : "disabled"%>"><a href="${firstUrl}">First</a></li>
+    <li class="<%=multiple > 0 ? "" : "disabled"%>"><a href="${previousUrl}">Previous</a></li>
+    <li class="<%=itemCount >= limit ? "" : "disabled"%>"><a href="${nextUrl}">Next</a></li>
+  <% } %>
+    <li class="dropdown">
+      <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Limit <span class="caret"></span></a>
+      <ul class="dropdown-menu" role="menu">
+        <% for ( int i : limitList ) { %>
+        <li class="<%=i==limit ? "disabled":""%>"><a href='${baseUrl}&<%=limitName%>=<%=i%>'><%=i%></a></li>
+        <% } %>
+      </ul>
+    </li>
   </ul>
   </nav>
-  <% } else { %>
-   <br/>
-  <% } %>
+  <br/>
