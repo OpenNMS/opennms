@@ -28,7 +28,6 @@
 
 package org.opennms.web.rest;
 
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
 
@@ -89,33 +88,74 @@ public class MeasurementsRestServiceWithJrbTest extends MeasurementsRestServiceT
         request.setStep(1000L);
         request.setMaxRows(700);
 
+        // Average
+        Source ifInOctetsAvg = new Source();
+        ifInOctetsAvg.setResourceId("node[1].interfaceSnmp[eth0-04013f75f101]");
+        ifInOctetsAvg.setAttribute("ifInOctets");
+        ifInOctetsAvg.setAggregation("AVERAGE");
+        ifInOctetsAvg.setLabel("ifInOctetsAvg");
+
+        // Min
+        Source ifInOctetsMin = new Source();
+        ifInOctetsMin.setResourceId("node[1].interfaceSnmp[eth0-04013f75f101]");
+        ifInOctetsMin.setAttribute("ifInOctets");
+        ifInOctetsMin.setAggregation("MIN");
+        ifInOctetsMin.setLabel("ifInOctetsMin");
+
+        // Max
+        Source ifInOctetsMax = new Source();
+        ifInOctetsMax.setResourceId("node[1].interfaceSnmp[eth0-04013f75f101]");
+        ifInOctetsMax.setAttribute("ifInOctets");
+        ifInOctetsMax.setAggregation("MAX");
+        ifInOctetsMax.setLabel("ifInOctetsMax");
+
+        request.setSources(Lists.newArrayList(
+                ifInOctetsAvg,
+                ifInOctetsMin,
+                ifInOctetsMax
+                ));
+
+        // Perform the query
+        QueryResponse response = m_svc.query(request);
+        System.err.println(response);
+
+        // Validate the results
+        assertEquals(3600000L, response.getStep());
+        assertEquals(680, response.getMeasurements().size());
+        Measurement metric = response.getMeasurements().get(8);
+        Map<String, Double> values = metric.getValues();
+
+        assertEquals(1414627200000L, metric.getTimestamp());
+        assertEquals(270.66140826873385, values.get("ifInOctetsAvg"), 0.0001);
+        assertEquals(259.54086378737543, values.get("ifInOctetsMin"), 0.0001);
+        assertEquals(67872.22455490529, values.get("ifInOctetsMax"), 0.0001);
+    }
+
+    @Test
+    public void canPerformExpressions() {
+        QueryRequest request = new QueryRequest();
+        request.setStart(1414602000000L);
+        request.setEnd(1417046400000L);
+        request.setStep(1000L);
+        request.setMaxRows(700);
+
         Source ifInOctets = new Source();
         ifInOctets.setResourceId("node[1].interfaceSnmp[eth0-04013f75f101]");
         ifInOctets.setAttribute("ifInOctets");
-        ifInOctets.setAggregation("AVERAGE");
-        ifInOctets.setTransient(true);
-        ifInOctets.setLabel("octetsIn");
+        ifInOctets.setAggregation("MIN");
+        ifInOctets.setLabel("ifInOctets");
         request.setSources(Lists.newArrayList(ifInOctets));
 
-        Expression eightAsConstant = new Expression();
-        eightAsConstant.setLabel("eight");
-        eightAsConstant.setExpression("8");
-        eightAsConstant.setTransient(true);
-
-        Expression octetsToBytes = new Expression();
-        octetsToBytes.setLabel("bitsIn");
-        octetsToBytes.setExpression("octetsIn * eight");
-        request.setExpressions(Lists.newArrayList(eightAsConstant, octetsToBytes));
+        Expression scale = new Expression();
+        scale.setLabel("ifInOctetsScaled");
+        scale.setExpression("ifInOctets * 2.0");
+        request.setExpressions(Lists.newArrayList(scale));
 
         QueryResponse response = m_svc.query(request);
-
-        assertEquals(3600000L, response.getStep());
-        assertEquals(680, response.getMeasurements().size());
         Measurement metric = response.getMeasurements().get(0);
         Map<String, Double> values = metric.getValues();
-        assertEquals(1414598400000L, metric.getTimestamp());
-        assertEquals(10252.8634939 * 8, values.get("bitsIn"), 0.0001);
-        assertFalse("Transient values should be excluded.", values.containsKey("octetsIn"));
-        assertFalse("Transient values should be excluded.", values.containsKey("eight"));
+
+        assertEquals(10252.8634939, values.get("ifInOctets"), 0.0001);
+        assertEquals(10252.8634939 * 2, values.get("ifInOctetsScaled"), 0.0001);
     }
 }
