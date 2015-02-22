@@ -423,13 +423,31 @@ public class Category {
     @XmlElementWrapper(name="nodes")
     @XmlElement(name="node")
     public List<Long> getNodeIds() {
-        final List<Long> ids = new ArrayList<>();
+        final List<Long> nodeIds = new ArrayList<>();
         if (m_rtcCategory != null) {
             for (final Node node : m_rtcCategory.getNodeCollection()) {
-                ids.add(node.getNodeid());
+                nodeIds.add(node.getNodeid());
             }
         }
-        return ids;
+        return nodeIds;
+    }
+
+    public NodeList getNodes() {
+        if (m_rtcCategory != null) {
+            return NodeList.forNodes(m_rtcCategory.getNodeCollection());
+        }
+        return new NodeList();
+    }
+
+    public AvailabilityNode getNode(final Long nodeId) {
+        if (m_rtcCategory != null) {
+            for (final Node node : m_rtcCategory.getNodeCollection()) {
+                if (node.getNodeid() == nodeId) {
+                    return new AvailabilityNode(node);
+                }
+            }
+        }
+        return null;
     }
 
     /**

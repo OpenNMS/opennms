@@ -126,12 +126,17 @@ public class SyslogClient {
         }
     }
 
-    private int MakePriorityCode(int facility, int priority) {
+    private static int makePriorityCode(int facility, int priority) {
         return ((facility & LOG_FACMASK) | priority);
     }
 
     public DatagramPacket getPacket(final int priority, final String msg) {
-        int pricode = MakePriorityCode(facility, priority);
+        byte[] bytes = getPacketPayload(facility, ident, priority, msg);
+        return new DatagramPacket(bytes, bytes.length, address, PORT);
+    }
+
+    public static byte[] getPacketPayload(final int facility, final String ident, final int priority, final String msg) {
+        int pricode = makePriorityCode(facility, priority);
         Integer priObj = Integer.valueOf(pricode);
 
         StringBuffer sb = new StringBuffer();
@@ -139,9 +144,6 @@ public class SyslogClient {
         sb.append("<").append(Integer.toString(priObj.intValue())).append(">");
         sb.append(ident).append(": ").append(msg).append("\0");
 
-        final byte[] bytes = sb.toString().getBytes();
-        return new DatagramPacket(bytes, bytes.length, address, PORT);
+        return sb.toString().getBytes();
     }
-
 }
-

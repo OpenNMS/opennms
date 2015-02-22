@@ -28,7 +28,10 @@
 
 package org.opennms.web.rest;
 
+import static org.opennms.core.utils.InetAddressUtils.str;
+
 import java.io.IOException;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -37,6 +40,7 @@ import java.util.Map;
 import javax.servlet.ServletException;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
@@ -52,11 +56,22 @@ import javax.xml.bind.annotation.XmlRootElement;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.config.api.JaxbListWrapper;
-import org.opennms.core.xml.JaxbUtils;
+import org.opennms.netmgt.dao.api.IpInterfaceDao;
+import org.opennms.netmgt.dao.api.MonitoredServiceDao;
+import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.model.OnmsIpInterface;
+import org.opennms.netmgt.model.OnmsMonitoredService;
+import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.web.category.AvailabilityIpInterface;
+import org.opennms.web.category.AvailabilityMonitoredService;
+import org.opennms.web.category.AvailabilityNode;
 import org.opennms.web.category.Category;
 import org.opennms.web.category.CategoryList;
+import org.opennms.web.category.CategoryModel;
+import org.opennms.web.category.NodeList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -75,6 +90,7 @@ import com.sun.jersey.spi.resource.PerRequest;
 @Scope("prototype")
 @Path("availability")
 @Transactional
+@Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
 public class AvailabilityRestService extends OnmsRestService {
     private static final Logger LOG = LoggerFactory.getLogger(AvailabilityRestService.class);
 
@@ -83,9 +99,18 @@ public class AvailabilityRestService extends OnmsRestService {
         try {
             assertCategoryListExists();
         } catch (final ServletException e) {
-            LOG.debug("Failed to create category list.", e);
+            LOG.warn("Failed to create category list.", e);
         }
     }
+
+    @Autowired
+    NodeDao m_nodeDao;
+
+    @Autowired
+    IpInterfaceDao m_ipInterfaceDao;
+
+    @Autowired
+    MonitoredServiceDao m_monitoredServiceDao;
 
     @Context 
     UriInfo m_uriInfo;
@@ -103,25 +128,115 @@ public class AvailabilityRestService extends OnmsRestService {
     }
 
     @GET
-    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     public AvailabilityData getNodeAvailability() {
         readLock();
         try {
-            final Map<String, List<Category>> categoryData = m_categoryList.getCategoryData();
-            LOG.debug("categoryData: {}", categoryData);
-            final AvailabilityData availabilityData = new AvailabilityData(categoryData);
-            try {
-                final String s = JaxbUtils.marshal(availabilityData);
-                System.err.println(s);
-            } catch (final RuntimeException e) {
-                e.printStackTrace();
-            }
-            return availabilityData;
+            return new AvailabilityData(m_categoryList.getCategoryData());
         } catch (final MarshalException | ValidationException | IOException e) {
-            LOG.debug("Failed to get availability data.", e);
+            LOG.warn("Failed to get availability data: {}", e.getMessage(), e);
             throw getException(Status.BAD_REQUEST, "Failed to get availability data.");
         } finally {
             readUnlock();
+        }
+    }
+
+    @GET
+    @Path("/categories/{category}")
+    public Category getCategory(@PathParam("category") final String categoryName) {
+        readLock();
+        try {
+            final String category = URLDecoder.decode(categoryName, "UTF-8");
+            return CategoryModel.getInstance().getCategory(category);
+        } catch (final MarshalException | ValidationException | IOException e) {
+            LOG.warn("Failed to get availability data for category {}: {}", categoryName, e.getMessage(), e);
+            throw getException(Status.BAD_REQUEST, "Failed to get availability data for category " + categoryName);
+        } finally {
+            readUnlock();
+        }
+    }
+
+    @GET
+    @Path("/categories/{category}/nodes")
+    public NodeList getCategoryNodes(@PathParam("category") final String categoryName) {
+        readLock();
+        try {
+            final String category = URLDecoder.decode(categoryName, "UTF-8");
+            final Category cat = CategoryModel.getInstance().getCategory(category);
+            if (cat != null) {
+                return cat.getNodes();
+            }
+            return null;
+        } catch (final MarshalException | ValidationException | IOException e) {
+            LOG.warn("Failed to get availability data for category {}: {}", categoryName, e.getMessage(), e);
+            throw getException(Status.BAD_REQUEST, "Failed to get availability data for category " + categoryName);
+        } finally {
+            readUnlock();
+        }
+    }
+
+    @GET
+    @Path("/categories/{category}/nodes/{nodeId}")
+    public AvailabilityNode getCategoryNode(@PathParam("category") final String categoryName, @PathParam("nodeId") final Long nodeId) {
+        readLock();
+        try {
+            final String category = URLDecoder.decode(categoryName, "UTF-8");
+            final Category cat = CategoryModel.getInstance().getCategory(category);
+            if (cat != null) {
+                return getAvailabilityNode(cat.getNode(nodeId).getId().intValue());
+            }
+            return null;
+        } catch (final Exception e) {
+            LOG.warn("Failed to get availability data for category {}: {}", categoryName, e.getMessage(), e);
+            throw getException(Status.BAD_REQUEST, "Failed to get availability data for category " + categoryName);
+        } finally {
+            readUnlock();
+        }
+    }
+
+    @GET
+    @Path("/nodes/{nodeId}")
+    public AvailabilityNode getNode(@PathParam("nodeId") final Integer nodeId) {
+        readLock();
+        try {
+            return getAvailabilityNode(nodeId);
+        } catch (final Exception e) {
+            LOG.warn("Failed to get availability data for node {}: {}", nodeId, e.getMessage(), e);
+            throw getException(Status.BAD_REQUEST, "Failed to get availability data for node " + nodeId);
+        } finally {
+            readUnlock();
+        }
+    }
+
+    AvailabilityNode getAvailabilityNode(final int id) throws Exception {
+        final CategoryModel categoryModel = CategoryModel.getInstance();
+
+        final OnmsNode dbNode = m_nodeDao.get(id);
+        initialize(dbNode);
+
+        if (dbNode == null) {
+            return null;
+        }
+        final double nodeAvail = categoryModel.getNodeAvailability(id);
+
+        final AvailabilityNode node = new AvailabilityNode(dbNode, nodeAvail);
+        for (final OnmsIpInterface iface : dbNode.getIpInterfaces()) {
+            final double ifaceAvail = categoryModel.getInterfaceAvailability(id, str(iface.getIpAddress()));
+            final AvailabilityIpInterface ai = new AvailabilityIpInterface(iface, ifaceAvail);
+            for (final OnmsMonitoredService svc : iface.getMonitoredServices()) {
+                final double serviceAvail = categoryModel.getServiceAvailability(id, str(iface.getIpAddress()), svc.getServiceId());
+                final AvailabilityMonitoredService ams = new AvailabilityMonitoredService(svc, serviceAvail);
+                ai.addService(ams);
+            }
+            node.addIpInterface(ai);
+        }
+        return node;
+    }
+
+    private void initialize(final OnmsNode dbNode) {
+        m_nodeDao.initialize(dbNode);
+        m_nodeDao.initialize(dbNode.getIpInterfaces());
+        for (final OnmsIpInterface iface : dbNode.getIpInterfaces()) {
+            m_nodeDao.initialize(iface.getMonitoredServices());
         }
     }
 
@@ -175,5 +290,17 @@ public class AvailabilityRestService extends OnmsRestService {
         public List<Category> getObjects() {
             return super.getObjects();
         }
+    }
+
+    void setNodeDao(final NodeDao dao) {
+        m_nodeDao = dao;
+    }
+
+    void setIpInterfaceDao(final IpInterfaceDao dao) {
+        m_ipInterfaceDao = dao;
+    }
+
+    void setMonitoredServiceDao(final MonitoredServiceDao dao) {
+        m_monitoredServiceDao = dao;
     }
 }
