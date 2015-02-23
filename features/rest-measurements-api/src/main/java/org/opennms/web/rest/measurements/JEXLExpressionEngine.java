@@ -27,6 +27,18 @@ import com.google.common.collect.Maps;
 public class JEXLExpressionEngine implements ExpressionEngine {
 
     /**
+     * Use a single insteax of the JEXL engine, which is thread-safe.
+     */
+    private final JexlEngine jexl = new JexlEngine();
+
+    public JEXLExpressionEngine() {
+        // Add additional functions to the engine
+        Map<String, Object> functions = Maps.newHashMap();
+        functions.put("math", Math.class);
+        jexl.setFunctions(functions);
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -35,7 +47,6 @@ public class JEXLExpressionEngine implements ExpressionEngine {
         Preconditions.checkNotNull(results, "results argument");
 
         // Compile the expressions
-        final JexlEngine jexl = new JexlEngine();
         final LinkedHashMap<String, org.apache.commons.jexl2.Expression> expressions = Maps.newLinkedHashMap();
         for (final Expression e : request.getExpressions()) {
             try {

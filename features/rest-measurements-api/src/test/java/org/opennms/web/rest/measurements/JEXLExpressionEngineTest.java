@@ -101,6 +101,26 @@ public class JEXLExpressionEngineTest {
         assertEquals(12, measurements.get(0).getValues().get("y"), 0.0001);
     }
 
+    @Test
+    public void canPerformSin() throws ExpressionException {
+        QueryRequest request = new QueryRequest();
+
+        Source constant = new Source();
+        constant.setLabel("x");
+        request.setSources(Lists.newArrayList(constant));
+
+        Expression linearCombination = new Expression();
+        linearCombination.setLabel("y");
+        linearCombination.setExpression("math:sin(x)");
+        request.setExpressions(Lists.newArrayList(linearCombination));
+
+        FetchResults results = buildResults("x", 1, 1);
+
+        List<Measurement> measurements = jexlExpressionEngine.getMeasurements(request, results);
+
+        assertEquals(Math.sin(1.0d), measurements.get(0).getValues().get("y"), 0.0001);
+    }
+
     private static FetchResults buildResults(String column, long length, double value) {
         SortedMap<Long, Map<String, Double>> rows = Maps.newTreeMap();
         for (long i = 0; i < length; i++) {
