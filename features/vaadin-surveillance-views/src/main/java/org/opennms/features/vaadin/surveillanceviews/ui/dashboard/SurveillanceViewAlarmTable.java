@@ -29,9 +29,10 @@ package org.opennms.features.vaadin.surveillanceviews.ui.dashboard;
 
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.server.ExternalResource;
-import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Button;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Link;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.Table;
 import org.opennms.features.vaadin.surveillanceviews.service.SurveillanceViewService;
 import org.opennms.netmgt.model.OnmsAlarm;
@@ -75,6 +76,18 @@ public class SurveillanceViewAlarmTable extends SurveillanceViewDetailTable {
             }
         });
 
+        addGeneratedColumn("icon", new ColumnGenerator() {
+            @Override
+            public Object generateCell(Table table, Object itemId, Object propertyId) {
+                return getClickableIcon("glyphicon glyphicon-warning-sign", new Button.ClickListener() {
+                    @Override
+                    public void buttonClick(Button.ClickEvent clickEvent) {
+                        Notification.show("Alarm");
+                    }
+                });
+            }
+        });
+
         setCellStyleGenerator(new CellStyleGenerator() {
             @Override
             public String getStyle(final Table source, final Object itemId, final Object propertyId) {
@@ -90,13 +103,14 @@ public class SurveillanceViewAlarmTable extends SurveillanceViewDetailTable {
             }
         });
 
+        setColumnHeader("icon", "");
         setColumnHeader("node", "Node");
         setColumnHeader("logMsg", "Log Msg");
         setColumnHeader("counter", "Count");
         setColumnHeader("firstEventTime", "First Time");
         setColumnHeader("lastEventTime", "Last Time");
 
-        setVisibleColumns("node", "logMsg", "counter", "firstEventTime", "lastEventTime");
+        setVisibleColumns("icon", "node", "logMsg", "counter", "firstEventTime", "lastEventTime");
     }
 
     @Override

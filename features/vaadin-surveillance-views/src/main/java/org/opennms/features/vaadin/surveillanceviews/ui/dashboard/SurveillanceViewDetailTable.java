@@ -27,9 +27,11 @@
  *******************************************************************************/
 package org.opennms.features.vaadin.surveillanceviews.ui.dashboard;
 
+import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Table;
+import com.vaadin.ui.themes.BaseTheme;
 import org.opennms.features.vaadin.surveillanceviews.service.SurveillanceViewService;
 import org.opennms.netmgt.model.OnmsCategory;
 
@@ -68,5 +70,14 @@ public abstract class SurveillanceViewDetailTable extends Table {
         horizontalLayout.addComponent(contentLabel);
 
         return horizontalLayout;
+    }
+
+    protected Button getClickableIcon(String glyphIcon, Button.ClickListener clickListener) {
+        Button button = new Button("<span class=\"" + glyphIcon + "\" aria-hidden=\"true\"></span>");
+        button.setHtmlContentAllowed(true);
+        button.setStyleName(BaseTheme.BUTTON_LINK);
+        button.addStyleName("icon");
+        button.addClickListener(clickListener);
+        return button;
     }
 }

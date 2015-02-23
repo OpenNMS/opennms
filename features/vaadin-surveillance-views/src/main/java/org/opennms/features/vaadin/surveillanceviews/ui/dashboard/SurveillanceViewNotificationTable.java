@@ -29,8 +29,10 @@ package org.opennms.features.vaadin.surveillanceviews.ui.dashboard;
 
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.server.ExternalResource;
+import com.vaadin.ui.Button;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Link;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.Table;
 import org.opennms.features.vaadin.surveillanceviews.service.SurveillanceViewService;
 import org.opennms.netmgt.model.OnmsCategory;
@@ -75,6 +77,19 @@ public class SurveillanceViewNotificationTable extends SurveillanceViewDetailTab
             }
         });
 
+        addGeneratedColumn("icon", new ColumnGenerator() {
+            @Override
+            public Object generateCell(Table table, Object itemId, Object propertyId) {
+                return getClickableIcon("glyphicon glyphicon-bell", new Button.ClickListener() {
+                    @Override
+                    public void buttonClick(Button.ClickEvent clickEvent) {
+                        Notification.show("Notification");
+                    }
+                });
+            }
+        });
+
+        setColumnHeader("icon", "");
         setColumnHeader("node", "Node");
         setColumnHeader("serviceType", "Service");
         setColumnHeader("textMsg", "Message");
@@ -82,7 +97,7 @@ public class SurveillanceViewNotificationTable extends SurveillanceViewDetailTab
         setColumnHeader("answeredBy", "Responder");
         setColumnHeader("respondTime", "Respond Time");
 
-        setVisibleColumns("node", "serviceType", "textMsg", "pageTime", "answeredBy", "respondTime");
+        setVisibleColumns("icon", "node", "serviceType", "textMsg", "pageTime", "answeredBy", "respondTime");
     }
 
     @Override
