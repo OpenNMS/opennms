@@ -199,6 +199,22 @@ public class Installer {
         checkIPv6();
 
         /*
+         * Make sure we can execute the rrdtool binary when the
+         * JniRrdStrategy is enabled.
+         */
+
+        boolean using_jni_rrd_strategy = System.getProperty("org.opennms.rrd.strategyClass", "")
+                .contains("JniRrdStrategy");
+
+        if (using_jni_rrd_strategy) {
+            File rrd_binary = new File(System.getProperty("rrd.binary"));
+            if (!rrd_binary.canExecute()) {
+                throw new Exception("Cannot execute the rrdtool binary '" + rrd_binary.getAbsolutePath()
+                        + "' required by the current RRD strategy. Update the rrd.binary field in opennms.properties appropriately.");
+            }
+        }
+
+        /*
          * make sure we can load the ICMP library before we go any farther
          */
 
@@ -397,6 +413,8 @@ public class Installer {
         
         loadEtcPropertiesFile("opennms.properties");
         loadEtcPropertiesFile("model-importer.properties");
+        // Used to retrieve 'org.opennms.rrd.strategyClass'
+        loadEtcPropertiesFile("rrd-configuration.properties");
         
         m_install_servletdir = fetchProperty("install.servlet.dir");
         m_import_dir = fetchProperty("importer.requisition.dir");
