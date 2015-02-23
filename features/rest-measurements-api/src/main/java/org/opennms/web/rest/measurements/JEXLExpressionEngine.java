@@ -24,7 +24,7 @@ import com.google.common.collect.Maps;
 public class JEXLExpressionEngine implements ExpressionEngine {
 
     /**
-     * Use a single insteax of the JEXL engine, which is thread-safe.
+     * Use a single instance of the JEXL engine, which is thread-safe.
      */
     private final JexlEngine jexl = new JexlEngine();
 
@@ -32,6 +32,7 @@ public class JEXLExpressionEngine implements ExpressionEngine {
         // Add additional functions to the engine
         Map<String, Object> functions = Maps.newHashMap();
         functions.put("math", Math.class);
+        functions.put("strictmath", StrictMath.class);
         jexl.setFunctions(functions);
     }
 
@@ -81,6 +82,7 @@ public class JEXLExpressionEngine implements ExpressionEngine {
                 // overwriting values from the last loop
                 jexlValues.putAll(values);
 
+                // Evaluate the expression
                 try {
                     Object derived = expressionEntry.getValue().evaluate(context);
                     values.put(expressionEntry.getKey(), Utils.toDouble(derived));
