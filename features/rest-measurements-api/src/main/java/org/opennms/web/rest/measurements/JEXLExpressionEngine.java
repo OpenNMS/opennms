@@ -1,9 +1,7 @@
 package org.opennms.web.rest.measurements;
 
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.SortedMap;
 
 import org.apache.commons.jexl2.JexlContext;
 import org.apache.commons.jexl2.JexlEngine;
@@ -16,7 +14,6 @@ import org.opennms.web.rest.measurements.model.QueryRequest;
 import org.opennms.web.rest.measurements.model.Source;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 /**
@@ -42,7 +39,7 @@ public class JEXLExpressionEngine implements ExpressionEngine {
      * {@inheritDoc}
      */
     @Override
-    public List<Measurement> getMeasurements(final QueryRequest request, final FetchResults results) throws ExpressionException {
+    public void applyExpressions(final QueryRequest request, final FetchResults results) throws ExpressionException {
         Preconditions.checkNotNull(request, "request argument");
         Preconditions.checkNotNull(results, "results argument");
 
@@ -69,22 +66,24 @@ public class JEXLExpressionEngine implements ExpressionEngine {
         jexlValues.put("__inf", Double.POSITIVE_INFINITY);
         jexlValues.put("__neg_inf", Double.NEGATIVE_INFINITY);
 
-        // Iterate through all of the rows, apply the expressions, remove
-        // any transient values and then store the results in a measurement
-        final List<Measurement> measurements = Lists.newArrayListWithCapacity(results.getRows().size());
-        for (final SortedMap.Entry<Long, Map<String, Double>> rowEntry : results.getRows().entrySet()) {
-            final Map<String, Double> row = rowEntry.getValue();
+        // Iterate through all of the rows, apply the expressions
+        // and remove any transient values
+        for (final Measurement measurement : results.getMeasurements()) {
+            final Map<String, Double> values = measurement.getValues();
 
             // Evaluate every expression, in the same order as which they appeared in the query
             // and store the results back in the row, allowing expressions to use previous results.
             for (final Map.Entry<String, org.apache.commons.jexl2.Expression> expressionEntry : expressions.entrySet()) {
+                // Update the timestamp
+                jexlValues.put("timestamp", measurement.getTimestamp());
+
                 // Add all of the values from the row to the context
                 // overwriting values from the last loop
-                jexlValues.putAll(row);
+                jexlValues.putAll(values);
 
                 try {
                     Object derived = expressionEntry.getValue().evaluate(context);
-                    row.put(expressionEntry.getKey(), Utils.toDouble(derived));
+                    values.put(expressionEntry.getKey(), Utils.toDouble(derived));
                 } catch (NullPointerException|NumberFormatException e) {
                     throw new ExpressionException("The return value from expression with label '" +
                             expressionEntry.getKey() + "' could not be cast to a Double.", e);
@@ -97,26 +96,16 @@ public class JEXLExpressionEngine implements ExpressionEngine {
             // Remove any transient values belonging to sources
             for (final Source source : request.getSources()) {
                 if (source.getTransient()) {
-                    row.remove(source.getLabel());
+                    values.remove(source.getLabel());
                 }
             }
 
             // Remove any transient values belonging to expressions
             for (final Expression e : request.getExpressions()) {
                 if (e.getTransient()) {
-                    row.remove(e.getLabel());
+                    values.remove(e.getLabel());
                 }
             }
-
-            // Exclude empty rows from the result set
-            if (row.keySet().size() < 1) {
-                continue;
-            }
-
-            // Add the row to the result-set
-            measurements.add(new Measurement(rowEntry.getKey(), row));
         }
-
-        return measurements;
     }
 }

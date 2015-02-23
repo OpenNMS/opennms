@@ -29,14 +29,16 @@
 package org.opennms.web.rest.measurements.fetch;
 
 import java.io.IOException;
-import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.SortedMap;
 
 import org.jrobin.core.RrdException;
 import org.jrobin.data.DataProcessor;
 import org.opennms.netmgt.dao.api.ResourceDao;
+import org.opennms.web.rest.measurements.model.Measurement;
 import org.opennms.web.rest.measurements.model.Source;
+
+import com.google.common.collect.Maps;
 
 /**
  * Used to fetch measurements from JRB files.
@@ -54,9 +56,9 @@ public class JrbFetchStrategy extends AbstractRrdBasedFetchStrategy {
      * {@inheritDoc}
      */
     @Override
-    protected long getRows(long start, long end, long step, int maxrows,
+    protected long fetchMeasurements(long start, long end, long step, int maxrows,
             Map<Source, String> rrdsBySource,
-            SortedMap<Long, Map<String, Double>> rows) throws RrdException {
+            List<Measurement> measurements) throws RrdException {
 
         final long startInSeconds = (long) Math.floor(start / 1000);
         final long endInSeconds = (long) Math.floor(end / 1000);
@@ -92,13 +94,13 @@ public class JrbFetchStrategy extends AbstractRrdBasedFetchStrategy {
         for (int i = 0; i < timestamps.length; i++) {
             final long timestampInSeconds = timestamps[i] - dproc.getStep();
 
-            final Map<String, Double> data = new HashMap<String, Double>();
+            final Map<String, Double> values = Maps.newHashMap();
             for (Source source : rrdsBySource.keySet()) {
-                data.put(source.getLabel(),
+                values.put(source.getLabel(),
                         dproc.getValues(source.getLabel())[i]);
             }
 
-            rows.put(timestampInSeconds * 1000, data);
+            measurements.add(new Measurement(timestampInSeconds * 1000, values));
         }
 
         // Actual step size

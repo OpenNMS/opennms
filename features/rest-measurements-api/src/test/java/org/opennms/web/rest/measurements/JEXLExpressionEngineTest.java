@@ -32,9 +32,7 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.List;
 import java.util.Map;
-import java.util.SortedMap;
 
-import org.easymock.EasyMock;
 import org.junit.Test;
 import org.opennms.web.rest.measurements.fetch.FetchResults;
 import org.opennms.web.rest.measurements.model.Expression;
@@ -51,85 +49,76 @@ public class JEXLExpressionEngineTest {
 
     @Test(expected=ExpressionException.class)
     public void failsWhenExpressionHasInvalidSyntax() throws ExpressionException {
-        QueryRequest request = new QueryRequest();
-
-        Expression invalid = new Expression();
-        invalid.setLabel("expressionWithInvalidSyntax");
-        invalid.setExpression("/");
-        request.setExpressions(Lists.newArrayList(invalid));
-
-        FetchResults results = EasyMock.createNiceMock(FetchResults.class);
-
-        jexlExpressionEngine.getMeasurements(request, results);
+        peformExpression("/");
     }
 
     @Test(expected=ExpressionException.class)
     public void failsWhenExpressionDoesNotReturnADouble() throws ExpressionException {
-        QueryRequest request = new QueryRequest();
-
-        Source constant = new Source();
-        constant.setLabel("one");
-        request.setSources(Lists.newArrayList(constant));
-
-        Expression invalid = new Expression();
-        invalid.setLabel("expressionWithInvalidReturnType");
-        invalid.setExpression("!(!true)");
-        request.setExpressions(Lists.newArrayList(invalid));
-
-        FetchResults results = buildResults("one", 1, 1);
-
-        jexlExpressionEngine.getMeasurements(request, results);
+        peformExpression("!(!true)");
     }
 
     @Test
     public void canPerformLinearCombination() throws ExpressionException {
-        QueryRequest request = new QueryRequest();
-
-        Source constant = new Source();
-        constant.setLabel("x");
-        request.setSources(Lists.newArrayList(constant));
-
-        Expression linearCombination = new Expression();
-        linearCombination.setLabel("y");
-        linearCombination.setExpression("x * 5 + 7");
-        request.setExpressions(Lists.newArrayList(linearCombination));
-
-        FetchResults results = buildResults("x", 1, 1);
-
-        List<Measurement> measurements = jexlExpressionEngine.getMeasurements(request, results);
-
-        assertEquals(12, measurements.get(0).getValues().get("y"), 0.0001);
+        Double results[] = peformExpression("x * 5 + 7");
+        assertEquals(12, results[1], 0.0001);
     }
 
     @Test
     public void canPerformSin() throws ExpressionException {
+        Double results[] = peformExpression("math:sin(x)");
+        assertEquals(Math.sin(1.0d), results[1], 0.0001);
+    }
+
+    @Test
+    public void canReferenceTimestamp() throws ExpressionException {
+        Double results[] = peformExpression("timestamp / 125.0d");
+        assertEquals(400.0d, results[50], 0.0001);
+    }
+
+    @Test
+    public void canReferenceConstant() throws ExpressionException {
+        Map<String, Object> constants = Maps.newHashMap();
+        constants.put("speed", 65);
+
+        Double results[] = peformExpression("speed / 0.62137", constants);
+        assertEquals(104.607560713, results[0], 0.0001);
+    }
+
+    private Double[] peformExpression(String expression) throws ExpressionException {
+        Map<String, Object> constants = Maps.newHashMap();
+        return peformExpression(expression, constants);
+    }
+
+    private Double[] peformExpression(String expression, Map<String, Object> constants) throws ExpressionException {
+        // Build a simple request with the given expression
         QueryRequest request = new QueryRequest();
 
         Source constant = new Source();
         constant.setLabel("x");
         request.setSources(Lists.newArrayList(constant));
 
-        Expression linearCombination = new Expression();
-        linearCombination.setLabel("y");
-        linearCombination.setExpression("math:sin(x)");
-        request.setExpressions(Lists.newArrayList(linearCombination));
+        Expression exp = new Expression();
+        exp.setLabel("y");
+        exp.setExpression(expression);
+        request.setExpressions(Lists.newArrayList(exp));
 
-        FetchResults results = buildResults("x", 1, 1);
-
-        List<Measurement> measurements = jexlExpressionEngine.getMeasurements(request, results);
-
-        assertEquals(Math.sin(1.0d), measurements.get(0).getValues().get("y"), 0.0001);
-    }
-
-    private static FetchResults buildResults(String column, long length, double value) {
-        SortedMap<Long, Map<String, Double>> rows = Maps.newTreeMap();
-        for (long i = 0; i < length; i++) {
-            Map<String, Double> row = Maps.newHashMap();
-            row.put(column, value);
-            rows.put(i, row);
+        // Build the fetch results with known values
+        List<Measurement> measurements = Lists.newLinkedList();
+        for (long i = 0; i < 100; i++) {
+            Map<String, Double> values = Maps.newHashMap();
+            values.put("x", Double.valueOf(i));
+            measurements.add(new Measurement(i * 1000, values));
         }
+        FetchResults results = new FetchResults(measurements, 1, constants);
 
-        Map<String, Object> constants = Maps.newHashMap();
-        return new FetchResults(rows, 1, constants);
+        // Use the engine to evaluate the expression
+        jexlExpressionEngine.applyExpressions(request, results);
+
+        // Gather the results
+        List<Double> values = Lists.newArrayList();
+        for (Measurement measurement : results.getMeasurements()) {
+            values.add(measurement.getValues().get("y"));
+        }
+        return values.toArray(new Double[values.size()]);
     }
 }

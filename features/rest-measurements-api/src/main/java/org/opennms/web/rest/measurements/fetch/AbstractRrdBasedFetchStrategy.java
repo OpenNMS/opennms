@@ -31,17 +31,18 @@ package org.opennms.web.rest.measurements.fetch;
 import java.io.File;
 import java.util.List;
 import java.util.Map;
-import java.util.SortedMap;
 
 import org.jrobin.core.RrdException;
 import org.opennms.netmgt.dao.api.ResourceDao;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.RrdGraphAttribute;
 import org.opennms.web.rest.measurements.Utils;
+import org.opennms.web.rest.measurements.model.Measurement;
 import org.opennms.web.rest.measurements.model.Source;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 /**
@@ -111,19 +112,19 @@ public abstract class AbstractRrdBasedFetchStrategy implements MeasurementFetchS
         }
 
         // Use to store the results
-        final SortedMap<Long, Map<String, Double>> rows = Maps.newTreeMap();
+        final List<Measurement> measurements = Lists.newLinkedList();
 
         // Fetch
-        final long actualStep = getRows(start, end, step, maxrows, rrdsBySource, rows);
+        final long actualStep = fetchMeasurements(start, end, step, maxrows, rrdsBySource, measurements);
 
-        return new FetchResults(rows, actualStep, constants);
+        return new FetchResults(measurements, actualStep, constants);
     }
 
     /**
      * Performs the actual retrieval of the values from the RRD/JRB files.
      */
-    protected abstract long getRows(long start, long end, long step, int maxrows,
+    protected abstract long fetchMeasurements(long start, long end, long step, int maxrows,
             Map<Source, String> rrdsBySource,
-            SortedMap<Long, Map<String, Double>> rows) throws RrdException;
+            List<Measurement> measurements) throws RrdException;
 
 }

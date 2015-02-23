@@ -28,15 +28,11 @@
 
 package org.opennms.web.rest.measurements;
 
-import java.util.List;
-
 import org.opennms.web.rest.measurements.fetch.FetchResults;
-import org.opennms.web.rest.measurements.model.Measurement;
 import org.opennms.web.rest.measurements.model.QueryRequest;
 
 /**
- * Used to apply arbitrary expressions to the fetch results and transform
- * the results into measurements.
+ * Used to apply arbitrary expressions to the fetched measurements.
  *
  * @author jwhite
  */
@@ -48,6 +44,6 @@ public interface ExpressionEngine {
      *
      * @throws ExpressionException
      */
-    public List<Measurement> getMeasurements(QueryRequest request, FetchResults results) throws ExpressionException;
+    public void applyExpressions(QueryRequest request, FetchResults results) throws ExpressionException;
 
 }

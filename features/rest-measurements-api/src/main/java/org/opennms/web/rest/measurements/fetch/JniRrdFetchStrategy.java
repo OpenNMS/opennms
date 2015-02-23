@@ -31,8 +31,8 @@ package org.opennms.web.rest.measurements.fetch;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.StringReader;
+import java.util.List;
 import java.util.Map;
-import java.util.SortedMap;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -48,6 +48,7 @@ import org.jrobin.core.RrdException;
 import org.opennms.netmgt.dao.api.ResourceDao;
 import org.opennms.netmgt.rrd.model.RrdXport;
 import org.opennms.netmgt.rrd.model.XRow;
+import org.opennms.web.rest.measurements.model.Measurement;
 import org.opennms.web.rest.measurements.model.Source;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -78,9 +79,10 @@ public class JniRrdFetchStrategy extends AbstractRrdBasedFetchStrategy {
      * {@inheritDoc}
      */
     @Override
-    protected long getRows(long start, long end, long step, int maxrows,
+    protected long fetchMeasurements(long start, long end, long step, int maxrows,
             Map<Source, String> rrdsBySource,
-            SortedMap<Long, Map<String, Double>> rows) throws RrdException {
+            List<Measurement> measurements) throws RrdException {
+
         String rrdBinary = System.getProperty("rrd.binary");
         if (rrdBinary == null) {
             throw new RrdException("No RRD binary is set.");
@@ -161,7 +163,7 @@ public class JniRrdFetchStrategy extends AbstractRrdBasedFetchStrategy {
             for (String column : rrdXport.getMeta().getLegends()) {
                 values.put(column, row.getValues().get(k++));
             }
-            rows.put(row.getTimestamp() * 1000, values);
+            measurements.add(new Measurement(row.getTimestamp() * 1000, values));
         }
 
         // Actual step size

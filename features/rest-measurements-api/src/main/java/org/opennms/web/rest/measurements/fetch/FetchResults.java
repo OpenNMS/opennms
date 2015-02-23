@@ -28,8 +28,10 @@
 
 package org.opennms.web.rest.measurements.fetch;
 
+import java.util.List;
 import java.util.Map;
-import java.util.SortedMap;
+
+import org.opennms.web.rest.measurements.model.Measurement;
 
 /**
  * Used to store the results of a fetch.
@@ -38,20 +40,20 @@ import java.util.SortedMap;
  */
 public class FetchResults {
 
-    private final Map<String, Object> m_constants;
+    private final List<Measurement> m_measurements;
 
-    private final SortedMap<Long, Map<String, Double>> m_rows;
+    private final Map<String, Object> m_constants;
 
     private final long m_step;
 
-    public FetchResults(SortedMap<Long, Map<String, Double>> rows, long step, Map<String, Object> constants) {
-        m_rows = rows;
+    public FetchResults(List<Measurement> measurements, long step, Map<String, Object> constants) {
+        m_measurements = measurements;
         m_step = step;
         m_constants = constants;
     }
 
-    public SortedMap<Long, Map<String, Double>> getRows() {
-        return m_rows;
+    public List<Measurement> getMeasurements() {
+        return m_measurements;
     }
 
     public long getStep() {

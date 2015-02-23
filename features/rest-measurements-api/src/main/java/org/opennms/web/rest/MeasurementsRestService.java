@@ -29,7 +29,6 @@
 package org.opennms.web.rest;
 
 import java.util.Date;
-import java.util.List;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
@@ -40,7 +39,6 @@ import org.opennms.web.rest.measurements.JEXLExpressionEngine;
 import org.opennms.web.rest.measurements.fetch.FetchResults;
 import org.opennms.web.rest.measurements.fetch.MeasurementFetchStrategy;
 import org.opennms.web.rest.measurements.model.Expression;
-import org.opennms.web.rest.measurements.model.Measurement;
 import org.opennms.web.rest.measurements.model.QueryRequest;
 import org.opennms.web.rest.measurements.model.QueryResponse;
 import org.opennms.web.rest.measurements.model.Source;
@@ -169,10 +167,9 @@ public class MeasurementsRestService {
             throw getException(Status.NOT_FOUND, "Resource or attribute not found for {}", request);
         }
 
-        // Derive the measurements from the fetch results and expressions
-        List<Measurement> measurements;
+        // Apply the expression to the fetch results and remove any transient values
         try {
-            measurements = expressionEngine.getMeasurements(request, results);
+            expressionEngine.applyExpressions(request, results);
         } catch (ExpressionException e) {
             throw getException(Status.BAD_REQUEST, e, "An error occured while evaluating an expression.");
         }
@@ -182,7 +179,7 @@ public class MeasurementsRestService {
         response.setStart(request.getStart());
         response.setEnd(request.getEnd());
         response.setStep(results.getStep());
-        response.setMeasurements(measurements);
+        response.setMeasurements(results.getMeasurements());
 
         return response;
     }
