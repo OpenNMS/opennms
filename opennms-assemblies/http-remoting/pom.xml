@@ -242,7 +242,7 @@
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
-      <artifactId>opennms-icmp-jna</artifactId>
+      <artifactId>opennms-rrdtool-api</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>
