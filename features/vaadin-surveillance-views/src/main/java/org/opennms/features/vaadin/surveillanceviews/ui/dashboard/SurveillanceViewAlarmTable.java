@@ -28,20 +28,26 @@
 package org.opennms.features.vaadin.surveillanceviews.ui.dashboard;
 
 import com.vaadin.data.util.BeanItemContainer;
-import com.vaadin.server.ExternalResource;
+import com.vaadin.server.Page;
+import com.vaadin.server.VaadinServlet;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Link;
-import com.vaadin.ui.Notification;
 import com.vaadin.ui.Table;
+import com.vaadin.ui.themes.BaseTheme;
+import org.opennms.features.topology.api.support.InfoWindow;
 import org.opennms.features.vaadin.surveillanceviews.service.SurveillanceViewService;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URL;
 import java.util.List;
 import java.util.Set;
 
 public class SurveillanceViewAlarmTable extends SurveillanceViewDetailTable {
+    private static final Logger LOG = LoggerFactory.getLogger(SurveillanceViewAlarmTable.class);
 
     private BeanItemContainer<OnmsAlarm> m_beanItemContainer = new BeanItemContainer<OnmsAlarm>(OnmsAlarm.class);
 
@@ -54,17 +60,39 @@ public class SurveillanceViewAlarmTable extends SurveillanceViewDetailTable {
 
         addGeneratedColumn("node", new ColumnGenerator() {
             @Override
-            public Object generateCell(Table table, Object itemId, Object propertyId) {
-                OnmsAlarm onmsAlarm = (OnmsAlarm) itemId;
-                if (m_enabled) {
-                    Link link = new Link(onmsAlarm.getNodeLabel(), new ExternalResource("/opennms/element/node.jsp?node=" + onmsAlarm.getNodeId()));
-                    link.setTargetName("_top");
-                    link.setPrimaryStyleName("surveillance-view");
-                    link.setEnabled(m_enabled);
-                    return link;
-                } else {
-                    return new Label(onmsAlarm.getNodeLabel());
-                }
+            public Object generateCell(Table table, final Object itemId, Object propertyId) {
+                final OnmsAlarm onmsAlarm = (OnmsAlarm) itemId;
+
+                Button button = new Button(onmsAlarm.getNodeLabel());
+                button.setPrimaryStyleName(BaseTheme.BUTTON_LINK);
+                button.setEnabled(m_enabled);
+
+                button.addClickListener(new Button.ClickListener() {
+                    @Override
+                    public void buttonClick(Button.ClickEvent clickEvent) {
+
+                        final int nodeId = onmsAlarm.getNodeId();
+
+                        final URI currentLocation = Page.getCurrent().getLocation();
+                        final String contextRoot = VaadinServlet.getCurrent().getServletContext().getContextPath();
+                        final String redirectFragment = contextRoot + "/element/node.jsp?quiet=true&node=" + nodeId;
+
+                        LOG.debug("node {} clicked, current location = {}, uri = {}", nodeId, currentLocation, redirectFragment);
+
+                        try {
+                            SurveillanceViewAlarmTable.this.getUI().addWindow(new InfoWindow(new URL(currentLocation.toURL(), redirectFragment), new InfoWindow.LabelCreator() {
+                                @Override
+                                public String getLabel() {
+                                    return "Node Info " + nodeId;
+                                }
+                            }));
+                        } catch (MalformedURLException e) {
+                            LOG.error(e.getMessage(), e);
+                        }
+                    }
+                });
+
+                return button;
             }
         });
 
@@ -78,11 +106,30 @@ public class SurveillanceViewAlarmTable extends SurveillanceViewDetailTable {
 
         addGeneratedColumn("icon", new ColumnGenerator() {
             @Override
-            public Object generateCell(Table table, Object itemId, Object propertyId) {
+            public Object generateCell(Table table, final Object itemId, Object propertyId) {
                 return getClickableIcon("glyphicon glyphicon-warning-sign", new Button.ClickListener() {
                     @Override
                     public void buttonClick(Button.ClickEvent clickEvent) {
-                        Notification.show("Alarm");
+
+                        OnmsAlarm alarm = (OnmsAlarm) itemId;
+                        final int alarmId = alarm.getId();
+
+                        final URI currentLocation = Page.getCurrent().getLocation();
+                        final String contextRoot = VaadinServlet.getCurrent().getServletContext().getContextPath();
+                        final String redirectFragment = contextRoot + "/alarm/detail.htm?quiet=true&id=" + alarmId;
+
+                        LOG.debug("alarm {} clicked, current location = {}, uri = {}", alarmId, currentLocation, redirectFragment);
+
+                        try {
+                            SurveillanceViewAlarmTable.this.getUI().addWindow(new InfoWindow(new URL(currentLocation.toURL(), redirectFragment), new InfoWindow.LabelCreator() {
+                                @Override
+                                public String getLabel() {
+                                    return "Alarm Info " + alarmId;
+                                }
+                            }));
+                        } catch (MalformedURLException e) {
+                            LOG.error(e.getMessage(), e);
+                        }
                     }
                 });
             }

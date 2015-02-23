@@ -28,21 +28,27 @@
 package org.opennms.features.vaadin.surveillanceviews.ui.dashboard;
 
 import com.vaadin.data.util.BeanItemContainer;
-import com.vaadin.server.ExternalResource;
+import com.vaadin.server.Page;
+import com.vaadin.server.VaadinServlet;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Link;
-import com.vaadin.ui.Notification;
 import com.vaadin.ui.Table;
+import com.vaadin.ui.themes.BaseTheme;
+import org.opennms.features.topology.api.support.InfoWindow;
 import org.opennms.features.vaadin.surveillanceviews.service.SurveillanceViewService;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsNotification;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
 public class SurveillanceViewNotificationTable extends SurveillanceViewDetailTable {
+    private static final Logger LOG = LoggerFactory.getLogger(SurveillanceViewNotificationTable.class);
     private BeanItemContainer<OnmsNotification> m_beanItemContainer = new BeanItemContainer<OnmsNotification>(OnmsNotification.class);
     private HashMap<OnmsNotification, String> m_customSeverity = new HashMap<>();
 
@@ -56,16 +62,38 @@ public class SurveillanceViewNotificationTable extends SurveillanceViewDetailTab
         addGeneratedColumn("node", new ColumnGenerator() {
             @Override
             public Object generateCell(Table table, Object itemId, Object propertyId) {
-                OnmsNotification onmsNotification = (OnmsNotification) itemId;
-                if (m_enabled) {
-                    Link link = new Link(onmsNotification.getNodeLabel(), new ExternalResource("/opennms/element/node.jsp?node=" + onmsNotification.getNodeId()));
-                    link.setTargetName("_top");
-                    link.setPrimaryStyleName("surveillance-view");
-                    link.setEnabled(m_enabled);
-                    return link;
-                } else {
-                    return new Label(onmsNotification.getNodeLabel());
-                }
+                final OnmsNotification onmsNotification = (OnmsNotification) itemId;
+
+                Button button = new Button(onmsNotification.getNodeLabel());
+                button.setPrimaryStyleName(BaseTheme.BUTTON_LINK);
+                button.setEnabled(m_enabled);
+
+                button.addClickListener(new Button.ClickListener() {
+                    @Override
+                    public void buttonClick(Button.ClickEvent clickEvent) {
+
+                        final int nodeId = onmsNotification.getNodeId();
+
+                        final URI currentLocation = Page.getCurrent().getLocation();
+                        final String contextRoot = VaadinServlet.getCurrent().getServletContext().getContextPath();
+                        final String redirectFragment = contextRoot + "/element/node.jsp?quiet=true&node=" + nodeId;
+
+                        LOG.debug("node {} clicked, current location = {}, uri = {}", nodeId, currentLocation, redirectFragment);
+
+                        try {
+                            SurveillanceViewNotificationTable.this.getUI().addWindow(new InfoWindow(new URL(currentLocation.toURL(), redirectFragment), new InfoWindow.LabelCreator() {
+                                @Override
+                                public String getLabel() {
+                                    return "Node Info " + nodeId;
+                                }
+                            }));
+                        } catch (MalformedURLException e) {
+                            LOG.error(e.getMessage(), e);
+                        }
+                    }
+                });
+
+                return button;
             }
         });
 
@@ -79,11 +107,30 @@ public class SurveillanceViewNotificationTable extends SurveillanceViewDetailTab
 
         addGeneratedColumn("icon", new ColumnGenerator() {
             @Override
-            public Object generateCell(Table table, Object itemId, Object propertyId) {
+            public Object generateCell(Table table, final Object itemId, Object propertyId) {
                 return getClickableIcon("glyphicon glyphicon-bell", new Button.ClickListener() {
                     @Override
                     public void buttonClick(Button.ClickEvent clickEvent) {
-                        Notification.show("Notification");
+
+                        OnmsNotification onmsNotification = (OnmsNotification) itemId;
+                        final int notificationId = onmsNotification.getNotifyId();
+
+                        final URI currentLocation = Page.getCurrent().getLocation();
+                        final String contextRoot = VaadinServlet.getCurrent().getServletContext().getContextPath();
+                        final String redirectFragment = contextRoot + "/notification/detail.jsp?quiet=true&notice=" + notificationId;
+
+                        LOG.debug("notification {} clicked, current location = {}, uri = {}", notificationId, currentLocation, redirectFragment);
+
+                        try {
+                            SurveillanceViewNotificationTable.this.getUI().addWindow(new InfoWindow(new URL(currentLocation.toURL(), redirectFragment), new InfoWindow.LabelCreator() {
+                                @Override
+                                public String getLabel() {
+                                    return "Notification Info " + notificationId;
+                                }
+                            }));
+                        } catch (MalformedURLException e) {
+                            LOG.error(e.getMessage(), e);
+                        }
                     }
                 });
             }

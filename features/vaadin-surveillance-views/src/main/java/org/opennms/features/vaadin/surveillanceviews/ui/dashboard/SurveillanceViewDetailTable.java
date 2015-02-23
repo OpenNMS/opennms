@@ -77,6 +77,7 @@ public abstract class SurveillanceViewDetailTable extends Table {
         button.setHtmlContentAllowed(true);
         button.setStyleName(BaseTheme.BUTTON_LINK);
         button.addStyleName("icon");
+        button.setEnabled(m_enabled);
         button.addClickListener(clickListener);
         return button;
     }

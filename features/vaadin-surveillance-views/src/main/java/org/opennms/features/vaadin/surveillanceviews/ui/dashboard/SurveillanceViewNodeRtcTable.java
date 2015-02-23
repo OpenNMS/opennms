@@ -28,18 +28,26 @@
 package org.opennms.features.vaadin.surveillanceviews.ui.dashboard;
 
 import com.vaadin.data.util.BeanItemContainer;
-import com.vaadin.server.ExternalResource;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Link;
+import com.vaadin.server.Page;
+import com.vaadin.server.VaadinServlet;
+import com.vaadin.ui.Button;
 import com.vaadin.ui.Table;
+import com.vaadin.ui.themes.BaseTheme;
+import org.opennms.features.topology.api.support.InfoWindow;
 import org.opennms.features.vaadin.surveillanceviews.service.SurveillanceViewService;
 import org.opennms.netmgt.model.OnmsCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URL;
 import java.util.List;
 import java.util.Set;
 
 public class SurveillanceViewNodeRtcTable extends SurveillanceViewDetailTable {
+    private static final Logger LOG = LoggerFactory.getLogger(SurveillanceViewNodeRtcTable.class);
+
     private BeanItemContainer<SurveillanceViewService.NodeRtc> m_beanItemContainer = new BeanItemContainer<SurveillanceViewService.NodeRtc>(SurveillanceViewService.NodeRtc.class);
 
     public SurveillanceViewNodeRtcTable(SurveillanceViewService surveillanceViewService, boolean enabled) {
@@ -52,19 +60,39 @@ public class SurveillanceViewNodeRtcTable extends SurveillanceViewDetailTable {
         addGeneratedColumn("node", new ColumnGenerator() {
             @Override
             public Object generateCell(Table table, Object itemId, Object propertyId) {
-                SurveillanceViewService.NodeRtc nodeRtc = (SurveillanceViewService.NodeRtc) itemId;
-                if (m_enabled) {
-                    Link link = new Link(nodeRtc.getNode().getLabel(), new ExternalResource("/opennms/element/node.jsp?node=" + nodeRtc.getNode().getNodeId()));
-                    link.setTargetName("_top");
-                    link.setPrimaryStyleName("surveillance-view");
-                    link.addStyleName("white");
-                    return link;
-                } else {
-                    Label label = new Label(nodeRtc.getNode().getLabel());
-                    label.setPrimaryStyleName("surveillance-view");
-                    label.addStyleName("white");
-                    return label;
-                }
+                final SurveillanceViewService.NodeRtc nodeRtc = (SurveillanceViewService.NodeRtc) itemId;
+
+                Button button = new Button(nodeRtc.getNode().getLabel());
+                button.setPrimaryStyleName(BaseTheme.BUTTON_LINK);
+                button.setEnabled(m_enabled);
+                button.addStyleName("white");
+
+                button.addClickListener(new Button.ClickListener() {
+                    @Override
+                    public void buttonClick(Button.ClickEvent clickEvent) {
+
+                        final int nodeId = nodeRtc.getNode().getId();
+
+                        final URI currentLocation = Page.getCurrent().getLocation();
+                        final String contextRoot = VaadinServlet.getCurrent().getServletContext().getContextPath();
+                        final String redirectFragment = contextRoot + "/element/node.jsp?quiet=true&node=" + nodeId;
+
+                        LOG.debug("node {} clicked, current location = {}, uri = {}", nodeId, currentLocation, redirectFragment);
+
+                        try {
+                            SurveillanceViewNodeRtcTable.this.getUI().addWindow(new InfoWindow(new URL(currentLocation.toURL(), redirectFragment), new InfoWindow.LabelCreator() {
+                                @Override
+                                public String getLabel() {
+                                    return "Node Info " + nodeId;
+                                }
+                            }));
+                        } catch (MalformedURLException e) {
+                            LOG.error(e.getMessage(), e);
+                        }
+                    }
+                });
+
+                return button;
             }
         });
 

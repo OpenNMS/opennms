@@ -27,17 +27,12 @@
  *******************************************************************************/
 package org.opennms.features.vaadin.surveillanceviews.ui;
 
-import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
-import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import org.opennms.features.vaadin.surveillanceviews.model.View;
 import org.opennms.features.vaadin.surveillanceviews.service.SurveillanceViewService;
-import org.opennms.features.vaadin.surveillanceviews.ui.dashboard.SurveillanceViewAlarmTable;
-import org.opennms.features.vaadin.surveillanceviews.ui.dashboard.SurveillanceViewNodeRtcTable;
-import org.opennms.features.vaadin.surveillanceviews.ui.dashboard.SurveillanceViewNotificationTable;
 
 /**
  * Class implementing {@link com.vaadin.ui.Button.ClickListener} for creating the preview window.
@@ -76,7 +71,7 @@ public class PreviewClickListener implements Button.ClickListener {
         final Window window = new Window("Preview");
 
         window.setModal(true);
-        window.setClosable(false);
+        window.setClosable(true);
         window.setResizable(false);
 
         window.setWidth("80%");
@@ -93,25 +88,6 @@ public class PreviewClickListener implements Button.ClickListener {
                         setSizeFull();
 
                         addComponent(new SurveillanceView(m_view, m_surveillanceViewService, false, false));
-                    }
-                });
-
-                addComponent(new HorizontalLayout() {
-                    {
-                        setMargin(true);
-                        setSpacing(true);
-                        setWidth("100%");
-
-                        Button closeButton = new Button("Close");
-
-                        addComponent(closeButton);
-                        setComponentAlignment(closeButton, Alignment.MIDDLE_RIGHT);
-                        closeButton.addClickListener(new Button.ClickListener() {
-                            @Override
-                            public void buttonClick(Button.ClickEvent clickEvent) {
-                                window.close();
-                            }
-                        });
                     }
                 });
             }

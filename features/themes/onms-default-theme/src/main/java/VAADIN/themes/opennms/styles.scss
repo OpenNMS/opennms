@@ -545,5 +545,12 @@ $header-background-image: url("images/headerbg.png") !default;
 .surveillance-view .v-button-caption {
   padding-left: 2px;
   padding-right: 4px;
+  cursor: pointer;
   color: #366903;
+}
+
+.surveillance-view .link {
+  color: #366903;
+  cursor: pointer;
+  opacity: 1.0;
 }
