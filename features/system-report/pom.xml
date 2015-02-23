@@ -43,6 +43,10 @@
       <groupId>org.opennms</groupId>
       <artifactId>opennms-rrd-jrobin</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-rrdtool-api</artifactId>
+    </dependency>
     <!-- test dependencies -->
     <dependency>
       <groupId>org.opennms.core.test-api</groupId>
