@@ -1,5 +1,6 @@
+
 [[poller-ldap-monitor]]
-=== LdapMonitor
+==== LdapMonitor
 
 The LDAP monitor tests for LDAP service availability.
 The LDAP monitor first tries to establish a TCP connection on the specified port.
@@ -9,7 +10,7 @@ The scope of the LDAP search is limited to the immediate subordinates of the bas
 The LDAP search is anonymous by default.
 The LDAP monitor makes use of the _com.novell.ldap.LDAPConnection_ class.
 
-==== Monitor facts
+===== Monitor facts
 
 [options="autowidth"]
 |===
@@ -17,7 +18,7 @@ The LDAP monitor makes use of the _com.novell.ldap.LDAPConnection_ class.
 | Remote Enabled | true
 |===
 
-==== Configuration and Usage
+===== Configuration and Usage
 
 .Monitor specific parameters for the LdapMonitor
 [options="header, autowidth"]
@@ -30,11 +31,11 @@ The LDAP monitor makes use of the _com.novell.ldap.LDAPConnection_ class.
 | `searchbase`    | The base distinguished name to search from.                       | optional | `base`
 | `searchfilter`  | The LDAP search's filter.                                         | optional | `(objectclass=*)`
 | `timeout`       | Time in milliseconds to wait for a result from the search.        | optional | `3000`
-| `version`       | The version of the LDAP protocol to use, specified as an integer. 
+| `version`       | The version of the LDAP protocol to use, specified as an integer.
                     Note: Only LDAPv3 is supported at the moment.                     | optional | `3`
 |===
 
-==== Examples
+===== Examples
 
 [source, xml]
 ----

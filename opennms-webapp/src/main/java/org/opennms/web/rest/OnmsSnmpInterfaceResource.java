@@ -62,6 +62,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -91,6 +92,7 @@ public class OnmsSnmpInterfaceResource extends OnmsRestService {
     private SnmpInterfaceDao m_snmpInterfaceDao;
     
     @Autowired
+    @Qualifier("eventProxy")
     private EventProxy m_eventProxy;
     
     @Context 

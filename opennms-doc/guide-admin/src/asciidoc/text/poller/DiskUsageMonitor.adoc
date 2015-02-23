@@ -1,5 +1,5 @@
 
-=== DiskUsageMonitor
+==== DiskUsageMonitor
 
 The DiskUsageMonitor monitor can be used to test the amount of free space available on certain storages of a node.
 
@@ -14,7 +14,7 @@ Therefore systems against which it is to be used must have an SNMP agent support
 Most modern _SNMP agents_, including most distributions of the _Net-SNMP agent_ and the _SNMP service_ that ships with _Microsoft Windows_, support this _MIB_.
 Out-of-box support for _HOST-RESOURCES-MIB_ among commercial _Unix_ operating systems may be somewhat spotty.
 
-==== Monitor facts
+===== Monitor facts
 
 [options="autowidth"]
 |===
@@ -22,7 +22,7 @@ Out-of-box support for _HOST-RESOURCES-MIB_ among commercial _Unix_ operating sy
 | Remote Enabled | false, relies on SNMP configuration.
 |===
 
-==== Configuration and Usage
+===== Configuration and Usage
 
 .Monitor specific parameters for the DiskUsageMonitor
 [options="header, autowidth"]
@@ -50,7 +50,8 @@ Out-of-box support for _HOST-RESOURCES-MIB_ among commercial _Unix_ operating sy
 | `timeout`    |  Timeout in milliseconds for retrieving the values.                                                | optional | `from snmp-config.xml`
 |===
 
-==== Examples
+===== Examples
+
 [source, xml]
 ----
 <!-- Make sure there's at least 5% of free space available on storages ending with "/home" -->
@@ -64,5 +65,6 @@ Out-of-box support for _HOST-RESOURCES-MIB_ among commercial _Unix_ operating sy
 <monitor service="DiskUsage-home" class-name="org.opennms.netmgt.poller.monitors.DiskUsageMonitor" />
 ----
 
-==== DiskUsageMonitor vs thresholds
+===== DiskUsageMonitor vs thresholds
+
 Storages' available free space can also be monitored using thresholds if you are already collecting these data.

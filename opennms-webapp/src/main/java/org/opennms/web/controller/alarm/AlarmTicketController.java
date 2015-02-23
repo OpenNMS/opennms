@@ -78,7 +78,6 @@ public class AlarmTicketController extends MultiActionController {
     public ModelAndView create(HttpServletRequest request, HttpServletResponse response, CommandBean bean) throws Exception {
     	Map<String,String> parameters = new HashMap<String, String>();
     	parameters.put(EventConstants.PARM_USER, request.getRemoteUser());
-    	@SuppressWarnings("unchecked")
 		Enumeration<String> paramNames = request.getParameterNames();
         while(paramNames.hasMoreElements()) {        
         	String paramName = paramNames.nextElement();

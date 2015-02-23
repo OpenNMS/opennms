@@ -63,7 +63,7 @@
             }
 %>
 
-<jsp:include page="/includes/header.jsp" flush="false" >
+<jsp:include page="/includes/bootstrap.jsp" flush="false" >
   <jsp:param name="title" value="Choose Targets" />
   <jsp:param name="headTitle" value="Choose Targets" />
   <jsp:param name="headTitle" value="Admin" />
@@ -158,23 +158,25 @@
 <h2><%=(newPath.getName() != null ? "Editing path: "
                             + newPath.getName() + "<br/>" : "")%></h2>
 
-<h3>Choose the users and groups to send the notice to.</h3>
-
 <form method="post" name="targets"
 action="admin/notification/destinationWizard" >
 <%=Util.makeHiddenTags(request)%>
 <input type="hidden" name="sourcePage" value="chooseTargets.jsp"/>
 <input type="hidden" name="nextPage"/>
 
-<table>
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title">Choose the users and groups to send the notice to.</h3>
+  </div>
+  <table class="table table-condensed table-borderless">
         <tr>
-          <td valign="top"><h4>Send to Selected Users:</h4></td>
+          <td valign="top"><h3>Send to Selected Users:</h3></td>
           <td>&nbsp;</td>
-          <td valign="top"><h4>Send to Selected Groups:</h4></td>
+          <td valign="top"><h3>Send to Selected Groups:</h3></td>
           <td>&nbsp;</td>
-          <td valign="top"><h4>Send to Selected Roles:</h4></td>
+          <td valign="top"><h3>Send to Selected Roles:</h3></td>
           <td>&nbsp;</td>
-          <td valign="top"><h4>Send to Email Addresses:</h4></td>
+          <td valign="top"><h3>Send to Email Addresses:</h3></td>
         </tr>
         <tr>
           <td valign="top">Highlight each user that needs to receive the notice.</td>
@@ -189,7 +191,7 @@ action="admin/notification/destinationWizard" >
         </tr>
         <tr>
           <td width="25%" valign="top" align="left">
-            <select width="200" style="width: 200px" name="users" size="10" multiple>
+            <select class="form-control" name="users" size="10" multiple>
              <%
                          for (Map.Entry<String,Boolean> entry : getUsers(targets).entrySet()) {
                              String key = entry.getKey();
@@ -208,7 +210,7 @@ action="admin/notification/destinationWizard" >
           </td>
           <td>&nbsp;</td>
           <td width="25%" valign="top" align="left">
-            <select width="200" style="width: 200px" name="groups" size="10" multiple>
+            <select class="form-control" name="groups" size="10" multiple>
              <%
                          for (Map.Entry<String,Boolean> entry : getGroups(targets).entrySet()) {
                              String key = entry.getKey();
@@ -227,7 +229,7 @@ action="admin/notification/destinationWizard" >
            </td>
            <td>&nbsp;</td>
           <td width="25%" valign="top" align="left">
-            <select width="200" style="width: 200px" name="roles" size="10" multiple>
+            <select class="form-control" name="roles" size="10" multiple>
              <%
                      for (Map.Entry<String,Boolean> entry : getRoles(targets).entrySet()) {
                          String key = entry.getKey();
@@ -246,9 +248,9 @@ action="admin/notification/destinationWizard" >
            </td>
            <td>&nbsp;</td>
            <td width="25%" valign="top" align="left">
-            <input type="button" value="Add Address" onclick="javascript:addAddress()"/>
+            <input type="button" class="btn btn-default" value="Add Address" onclick="javascript:addAddress()"/>
             <br/>&nbsp;<br/>
-            <select width="200" style="width: 200px" name="emails" size="7" multiple>
+            <select class="form-control" name="emails" size="7" multiple>
              <%
                  for (String key : getEmails(targets).keySet()) {
              %>
@@ -258,24 +260,24 @@ action="admin/notification/destinationWizard" >
             %>
             </select>
             <br/>
-            <input type="button" value="Remove Address" onclick="javascript:removeAddress()"/>
+            <input type="button" class="btn btn-default" value="Remove Address" onclick="javascript:removeAddress()"/>
             </td>
             
         </tr>
         <tr>
           <td colspan="2">
-            <input type="reset"/>
+            <input type="reset" class="btn btn-default"/>
           </td>
         </tr>
-        <tr>
-          <td colspan="2">
-           <a href="javascript:next()">Next &#155;&#155;&#155;</a>
-          </td>
-        </tr>
-      </table>
-    </form>
+  </table>
+  <div class="panel-footer">
+    <a href="javascript:next()">Next &#155;&#155;&#155;</a>
+  </div>
+</div> <!-- panel -->
 
-<jsp:include page="/includes/footer.jsp" flush="false" />
+</form>
+
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />
 
 <%!
 public Map<String,Boolean> getUsers(Collection<Target> targets) throws ServletException {

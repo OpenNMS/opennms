@@ -28,71 +28,64 @@
 
 package org.opennms.smoketest;
 
-import org.junit.Before;
-import org.junit.FixMethodOrder;
-import org.junit.Test;
-import org.junit.runners.MethodSorters;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
-@FixMethodOrder(MethodSorters.NAME_ASCENDING)
+import org.junit.Before;
+import org.junit.Test;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
+
 public class SupportPageTest extends OpenNMSSeleniumTestCase {
     @Before
     public void setUp() throws Exception {
-    	super.setUp();
-    	supportPage();
-    }
-
-    private void supportPage() throws Exception {
-        frontPage();
-        clickAndWait("link=Support");
-    }
-
-    @Test
-    public void a_testAllTextIsPresent() throws Exception {
-        waitForText("Commercial Support");
-        waitForText("About");
-        waitForText("Other Support Options");
-    }
-
-    @Test
-    public void b_testAllLinksArePresent() throws InterruptedException {		
-        waitForElement("link=About the OpenNMS Web Console");
-        waitForElement("link=Release Notes");
-        waitForElement("link=Online Documentation");
-        waitForElement("link=Generate a System Report");
-        waitForElement("link=Open a Bug or Enhancement Request");
-        waitForElement("link=Chat with Developers on IRC");
-        waitForElement("link=the OpenNMS.com support page");
-    }
-    @Test
-    public void c_testAllFormsArePresent() throws InterruptedException {
-        waitForText("Username:");
-        waitForText("Password:");
-        waitForElement("css=input[type=reset]");
-        assertEquals("Log In", selenium.getValue("css=input[type=submit]"));
-    }
-    @Test
-    public void d_testAllLinks() throws Exception {
-        clickAndWait("link=About the OpenNMS Web Console");
-        waitForText("OpenNMS Web Console");
-        waitForText("License and Copyright");
-        waitForText("OSI Certified Open Source Software");
-        waitForText("Version:");
-
         supportPage();
-        waitForElement("//a[@href='http://www.opennms.org/documentation/ReleaseNotesStable.html#whats-new']");
-        waitForElement("//a[@href='http://www.opennms.org/wiki/']");
+    }
 
-        clickAndWait("link=Generate a System Report");
-        waitForText("Plugins");
-        waitForText("Report Type");
-        waitForElement("name=formatter");
-        assertEquals("", selenium.getValue("css=input[type=submit]"));
-        waitForText("Output");
-        waitForText("Choose which plugins to enable:");
+    @Test
+    public void testAllLinksArePresent() throws InterruptedException {
+        for (final String text : new String[] {
+                "About the OpenNMS Web Console",
+                "Release Notes",
+                "Online Documentation",
+                "Generate a System Report",
+                "Open a Bug or Enhancement Request",
+                "Chat with Developers on IRC"
+        }) {
+            assertNotNull("Link with text '" + text + "' must exist.", m_driver.findElement(By.linkText(text)));
+        }
+    }
 
-        supportPage();
-        waitForElement("//a[@href='http://issues.opennms.org/']");
-        waitForElement("//a[@href='irc://irc.freenode.net/%23opennms']");
+    @Test
+    public void testAllFormsArePresent() throws InterruptedException {
+        final WebElement form = m_driver.findElement(By.cssSelector("form[action='support/index.htm']"));
+        assertNotNull(form);
+        assertNotNull(form.findElement(By.cssSelector("input[type=text][name=username]")));
+        assertNotNull(form.findElement(By.cssSelector("input[type=password][name=password]")));
+    }
+
+    @Test
+    public void testAboutPage() throws Exception {
+        final WebElement about = m_driver.findElement(By.linkText("About the OpenNMS Web Console"));
+        assertNotNull(about);
+        about.click();
+        assertNotNull(m_driver.findElement(By.xpath("//h3[text()='License and Copyright']")));
+        assertNotNull(m_driver.findElement(By.xpath("//th[text()='Version:']")));
+    }
+    
+    @Test
+    public void testSystemReport() throws Exception {
+        final WebElement generate = m_driver.findElement(By.linkText("Generate a System Report"));
+        assertNotNull(generate);
+        generate.click();
+        // checkboxes are selected by default
+        final WebElement allCheckbox = m_driver.findElement(By.cssSelector("input[type=checkbox][name=all]"));
+        assertNotNull(allCheckbox);
+        assertTrue(m_driver.findElement(By.cssSelector("input[type=checkbox][name=plugins][value=Java]")).isSelected());
+        // deselect the "all" checkbox
+        allCheckbox.click();
+        assertFalse(m_driver.findElement(By.cssSelector("input[type=checkbox][name=plugins][value=Java]")).isSelected());
     }
 
 }

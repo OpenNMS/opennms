@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>opennms-provision</artifactId>
-    <version>15.0.0-SNAPSHOT</version>
+    <version>16.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-provision-persistence</artifactId>
@@ -80,8 +80,8 @@
       <type>pom</type>
     </dependency>
     <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>servlet-api</artifactId>
+      <groupId>org.eclipse.jetty.orbit</groupId>
+      <artifactId>javax.servlet</artifactId>
     </dependency>
     <dependency>
       <groupId>joda-time</groupId>
@@ -159,6 +159,11 @@
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-rrd-jrobin</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-rrdtool-api</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>

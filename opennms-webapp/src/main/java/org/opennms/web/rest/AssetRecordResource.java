@@ -52,6 +52,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -74,6 +75,7 @@ public class AssetRecordResource extends OnmsRestService {
     private NodeDao m_nodeDao;    
     
     @Autowired
+    @Qualifier("eventProxy")
     private EventProxy m_eventProxy;
     
     /**

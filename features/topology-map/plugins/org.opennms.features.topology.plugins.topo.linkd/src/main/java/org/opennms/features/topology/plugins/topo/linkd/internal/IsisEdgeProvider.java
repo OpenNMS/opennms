@@ -28,7 +28,6 @@
 
 package org.opennms.features.topology.plugins.topo.linkd.internal;
 
-import org.opennms.features.topology.api.support.VertexHopGraphProvider;
 import org.opennms.features.topology.api.topo.*;
 
 import java.util.Collection;

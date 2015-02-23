@@ -2187,7 +2187,10 @@
   <event-file>events/RMON.events.xml</event-file>
   <event-file>events/Sensaphone.events.xml</event-file>
   <event-file>events/Sentry.events.xml</event-file>
+  <event-file>events/Siemens-HiPath3000.events.xml</event-file>
+  <event-file>events/Siemens-HiPath3000-HG1500.events.xml</event-file>
   <event-file>events/Siemens-HiPath4000.events.xml</event-file>
+  <event-file>events/Siemens-HiPath8000-OpenScapeVoice.events.xml</event-file>
   <event-file>events/SNA-NAU.events.xml</event-file>
   <event-file>events/SNMP-REPEATER.events.xml</event-file>
   <event-file>events/Snort.events.xml</event-file>

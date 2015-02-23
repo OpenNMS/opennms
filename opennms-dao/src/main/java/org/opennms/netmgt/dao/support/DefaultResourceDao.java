@@ -522,8 +522,13 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
             boolean storeByFS = ResourceTypeUtils.isStoreByForeignSource();
             if (nodeSourcefound || (responseTimeFound && storeByFS)) {
                 LOG.debug("findNodeResources: adding resource for {}:{}", node.getForeignSource(), node.getForeignId());
-                resources.add(m_nodeSourceResourceType.createChildResource(node.getForeignSource() + ":" + node.getForeignId()));
-                nodesFound.add(node.getId());
+                final OnmsResource childResource = m_nodeSourceResourceType.createChildResource(node.getForeignSource() + ":" + node.getForeignId());
+                if (childResource != null) {
+                    resources.add(childResource);
+                    nodesFound.add(node.getId());
+                } else {
+                    LOG.debug("findNodeResources: failed to get resource for {}:{}", node.getForeignSource(), node.getForeignId());
+                }
             }
             if (nodeIdfound || (responseTimeFound && !storeByFS)) {
                 LOG.debug("findNodeResources: adding resources for nodeId {}", node.getId());

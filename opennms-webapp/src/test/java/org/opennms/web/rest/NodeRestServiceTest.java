@@ -50,6 +50,7 @@ import javax.xml.bind.Unmarshaller;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.MockLogAppender;
@@ -493,6 +494,25 @@ public class NodeRestServiceTest extends AbstractSpringJerseyRestTestCase {
         sendRequest(GET, "/nodes/1/hardwareInventory/9", 400);
     }
 
+    @Test
+    @JUnitTemporaryDatabase
+    @Ignore
+    public void testMetricsResource() throws Exception {
+        createIpInterface();
+        System.err.println("testMetricsResource(): createIpInterface()");
+        String url = "/nodes/1/metrics";
+        System.err.println("sendRequest('GET', '"+url+"', 200);");
+        String xml = sendRequest(GET, url, 200);
+        System.err.println(xml);
+        assertTrue(xml.contains("<name>ICMP</name>"));
+        url += "/ICMP";
+        sendPut(url, "status=A", 303, "/nodes/1/ipinterfaces/10.10.10.10/services/ICMP");
+        xml = sendRequest(GET, url, 200);
+        assertTrue(xml.contains("status=\"A\""));
+        sendRequest(DELETE, url, 200);
+        sendRequest(GET, url, 204);
+    }
+    
     @Override
     protected void createNode() throws Exception {
         String node = "<node type=\"A\" label=\"TestMachine" + m_nodeCounter + "\">" +

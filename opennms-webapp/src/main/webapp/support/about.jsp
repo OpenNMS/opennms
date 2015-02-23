@@ -2,8 +2,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2015 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -60,64 +60,84 @@
    	}
 %> 
 
-<jsp:include page="/includes/header.jsp" flush="false" >
+<jsp:include page="/includes/bootstrap.jsp" flush="false" >
   <jsp:param name="title" value="About" />
   <jsp:param name="headTitle" value="About" />
   <jsp:param name="breadcrumb" value="<a href='support/index.htm'>Support</a>" />
   <jsp:param name="breadcrumb" value="About" />
 </jsp:include>
 
-<h3>OpenNMS Web Console</h3>
-
-<table class="standard">
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h3 class="panel-title">OpenNMS Web Console</h3>
+    </div>
+<table class="table table-condensed">
   <tr>
-    <td class="standardheader">Version:</td>
-    <td class="standard"><%=Vault.getProperty("version.display")%></td>
+    <th>Version:</th>
+    <td><%=Vault.getProperty("version.display")%></td>
   </tr>
 
   <tr>
-    <td class="standardheader">Server Time:</td>
-    <td class="standard"><%=new java.util.Date()%></td>
+    <th>Server Time:</th>
+    <td><%=new java.util.Date()%></td>
   </tr>
   <tr>
-    <td class="standardheader">Client Time:</td>
-    <td class="standard"><script type="text/javascript"> document.write( new Date().toString()) </script></td>
+    <th>Client Time:</th>
+    <td><script type="text/javascript"> document.write( new Date().toString()) </script></td>
   </tr>
   <tr>
-    <td class="standardheader">Java Version:</td>
-    <td class="standard"><%=System.getProperty( "java.version" )%> <%=System.getProperty( "java.vendor" )%></td>
-  </tr>  
-  <tr>
-    <td class="standardheader">Java Virtual Machine:</td>
-    <td class="standard"><%=System.getProperty( "java.vm.version" )%> <%=System.getProperty( "java.vm.vendor" )%></td>
+    <th>Java Version:</th>
+    <td><%=System.getProperty( "java.version" )%> (<%=System.getProperty( "java.vendor" )%>)</td>
   </tr>
   <tr>
-    <td class="standardheader">Operating System:</td>
-    <td class="standard"><%=System.getProperty( "os.name" )%> <%=System.getProperty( "os.version" )%> (<%=System.getProperty( "os.arch" )%>)</td>
+    <th>Java Runtime:</td>
+    <td><%=System.getProperty( "java.runtime.name" )%> (<%=System.getProperty( "java.runtime.version" )%>)</td>
   </tr>
   <tr>
-    <td class="standardheader">Servlet Container:</td>
-    <td class="standard"><%=application.getServerInfo()%> (Servlet Spec <%=application.getMajorVersion()%>.<%=application.getMinorVersion()%>)</td>
+    <th>Java Specification:</th>
+    <td><%=System.getProperty( "java.specification.name" )%> (<%=System.getProperty( "java.specification.vendor" )%>, <%=System.getProperty( "java.specification.version" )%>)</td>
   </tr>
   <tr>
-    <td class="standardheader">User Agent:</td>
-    <td class="standard"><%=WebSecurityUtils.sanitizeString(request.getHeader( "User-Agent" ), false)%></td>
+    <th>Java Virtual Machine:</th>
+    <td><%=System.getProperty( "java.vm.name" )%> (<%=System.getProperty( "java.vm.vendor" )%>, <%=System.getProperty( "java.vm.version" )%>)</td>
+    <%-- java.vm.info doesn't appear to be part of the standard Java system properties--%>
+    <%-- <%=System.getProperty( "java.vm.info" )%> --%>
   </tr>
   <tr>
-    <td class="standardheader">Database Type:</td>
-    <td class="standard"><%=dbName%></td>
+    <th>Java Virtual Machine Specification:</th>
+    <td><%=System.getProperty( "java.vm.specification.name" )%> (<%=System.getProperty( "java.vm.specification.vendor" )%>, <%=System.getProperty( "java.vm.specification.version" )%>)</td>
   </tr>
   <tr>
-    <td class="standardheader">Database Version:</td>
-    <td class="standard"><%=dbVersion%></td>
+    <th>Operating System:</th>
+    <td><%=System.getProperty( "os.name" )%> <%=System.getProperty( "os.version" )%> (<%=System.getProperty( "os.arch" )%>)</td>
+  </tr>
+  <tr>
+    <th>Servlet Container:</th>
+    <td><%=application.getServerInfo()%> (Servlet Spec <%=application.getMajorVersion()%>.<%=application.getMinorVersion()%>)</td>
+  </tr>
+  <tr>
+    <th>User Agent:</th>
+    <td><%=WebSecurityUtils.sanitizeString(request.getHeader( "User-Agent" ), false)%></td>
+  </tr>
+  <tr>
+    <th>Database Type:</th>
+    <td><%=dbName%></td>
+  </tr>
+  <tr>
+    <th>Database Version:</th>
+    <td><%=dbVersion%></td>
   </tr>
 </table>
-<hr />
-<h3>License and Copyright</h3>
-<div class="boxWrapper">
+</div>
+
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title">License and Copyright</h3>
+  </div>
+  <div class="panel-body">
   <p>
     The <a href="http://www.opennms.org/">OpenNMS&reg;</a> software, as
-    distributed here, is copyright &copy; 2002-2014
+    distributed here, is copyright &copy; 2002-2015
     <a href="http://www.opennms.com">The OpenNMS Group, Inc.</a>.
     <a href="http://www.opennms.org/">OpenNMS&reg;</a> is a registered
     trademark of <a href="http://www.opennms.com">The OpenNMS Group, Inc.</a>
@@ -156,11 +176,17 @@
   <p>
     Free Software Foundation, Inc.<br/>
     59 Temple Place - Suite 330<br/>
-    Boston, MA  02111-1307, USA</p>
+    Boston, MA  02111-1307, USA
+  </p>
+  </div>
 </div>
-<hr />
-<h3>OSI Certified Open Source Software</h3>
-<div class="boxWrapper">
+
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title">OSI Certified Open Source Software</h3>
+  </div>
+  <div class="panel-body">
+
 <a target="_new" href="http://www.opensource.org/"><img src="images/osi-certified.png" style="float: left;" alt="OSI Certified"/></a>
 <p>This software is OSI Certified Open Source Software.<br/>
   OSI Certified is a certification mark of the
@@ -168,41 +194,47 @@
 </p>
 <div style="clear:both;"></div>
 </div>
-<hr />
-<h3>Supporting Applications</h3>
+</div>
 
-	<table>
-	   <tr>
-      
-      	   <td style="border-right: none;">
-		<p align="center">
-        	Powered By Jetty<br/>
-		<a href="http://www.eclipse.org/jetty/" target="_new"><img src="images/powered_by_jetty.png" hspace="0" vspace="0"
-      		   border="0" alt="eclipse.org/jetty/" align="center"></a>.
-      		</p>
-	   </td>
-           <td style="border-left: none; border-right: none;">
-		<p align="center">
-		Support for Tobi Oetiker's RRDTool<br/>
-        	<a href="http://www.rrdtool.org/" target="_new"><img src="images/rrdtool-logo-dark.png" hspace="0" vspace="0" width="121" height="48"
-           	border="0" alt="www.rrdtool.org" align="center"></a>
-      		</p>      
-	   </td>
-           <td style="border-left: none;">
-		<p align="center">
-		PostgreSQL Powered<br/>
-        	<a href="http://www.postgresql.org/" target="_new"><img src="images/pg-power_95x51_4.gif" hspace="0" vspace="0" width="95" height="51"
-           	border="0" alt="www.postgresql.org" align="center"></a>
-      		</p>      
-	   </td>
-	   </tr>
-	</table>
- 
-                                   
+<div class="panel panel-default">
+	<div class="panel-heading">
+		<h3 class="panel-title">Supporting Applications and Frameworks</h3>
+	</div>
+	<div class="panel-body">
+		<div class="col-md-3">
+			<p align="center">
+				Powered By Jetty<br />
+				<a href="http://www.eclipse.org/jetty/" target="_new">
+					<img src="images/powered_by_jetty.png" style="border:0;" alt="eclipse.org/jetty/">
+				</a>
+			</p>
+		</div>
 
-<jsp:include page="/includes/bookmarkAll.jsp" flush="false" >
-  <jsp:param name="adminrole" 
-   value="<%= role %>" />
-</jsp:include>
+		<div class="col-md-3">
+			<p align="center">
+				Support for Tobi Oetiker's RRDTool<br />
+				<a href="http://www.rrdtool.org/" target="_new">
+					<img src="images/rrdtool-logo-dark.png" style="border:0;padding:1em;" alt="www.rrdtool.org">
+				</a>
+			</p>
+		</div>
 
-<jsp:include page="/includes/footer.jsp" flush="false"/>
+		<div class="col-md-3">
+			<p align="center">
+				PostgreSQL Powered<br /> <a href="http://www.postgresql.org/"
+					target="_new"><img src="images/pg-power_95x51_4.gif" style="border:0;padding:1em;" alt="www.postgresql.org"></a>
+			</p>
+		</div>
+
+		<div class="col-md-3">
+			<p align="center">
+				Powered by Hibernate ORM<br />
+				<a href="http://hibernate.org/" target="_new">
+					<img src="images/hibernate_logo.gif" style="border:0;" alt="hibernate.org">
+				</a>
+			</p>
+		</div>
+	</div>
+</div>
+
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="false"/>

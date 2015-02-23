@@ -13,7 +13,7 @@
 	<property name="arguments">
       <list>
 	    <bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-	      <property name="targetObject"><ref local="populatedTemporaryDatabaseTestCase"/></property>
+	      <property name="targetObject" ref="populatedTemporaryDatabaseTestCase"/>
 	      <property name="targetMethod"><value>getDataSource</value></property>
 	    </bean>
       </list>

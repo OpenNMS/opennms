@@ -32,7 +32,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 
-<jsp:include page="/includes/header.jsp" flush="false" >
+<jsp:include page="/includes/bootstrap.jsp" flush="false" >
 	<jsp:param name="title" value="Requisition Node" />
 	<jsp:param name="headTitle" value="Provisioning Requisitions" />
 	<jsp:param name="headTitle" value="Add Node" />
@@ -46,19 +46,26 @@
 
 <c:if test="${success}">
 	<div style="border: 1px solid black; background-color: #bbffcc; margin: 2px; padding: 3px;">
-		<h2>Success</h2>
+		<h3>Success</h3>
 		<p>Your node has been added to the ${foreignSource} requisition.</p>
 	</div>
 </c:if>
 
-<div class="TwoColLeft">
+<div class="row">
+  <div class="col-md-5">
 <c:choose>
 <c:when test="${empty requisitions}">
-	<h2>Missing Requisition</h2>
-	<p>You must first <a href='admin/provisioningGroups.htm'>create and import a requisition</a> before using this page.</p>
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Missing Requisition</h3>
+      </div>
+      <div class="panel-body">
+        <p>You must first <a href='admin/provisioningGroups.htm'>create and import a requisition</a> before using this page.</p>
+      </div>
+    </div> <!-- panel -->
 </c:when>
 <c:otherwise>
-<form action="admin/node/add.htm">
+<form role="form" class="form-horizontal" action="admin/node/add.htm">
 	<script type="text/javascript">
 	function addCategoryRow() {
 		var categoryMembershipTable = document.getElementById("categoryMembershipTable");
@@ -69,121 +76,160 @@
 	}
 	</script>
 	<input type="hidden" name="actionCode" value="add" />
-	<h3>Basic Attributes (required)</h3>
-	<div class="boxWrapper">
-		<table class="normal">
-			<tr>
-				<td>Requisition:</td>
-				<td colspan="3">
-					<select name="foreignSource">
-						<c:forEach var="req" items="${requisitions}">
-							<option><c:out value="${req.foreignSource}" /></option>
-						</c:forEach>
-					</select>
-				</td>
-			</tr>
-			<tr>
-				<td>IP Address:</td>
-				<td><input type="text" name="ipAddress" /></td>
 
-				<td>Node Label:</td>
-				<td><input type="text" name="nodeLabel" /></td>
-			</tr>
-		</table>
-	</div>
+        <div class="panel panel-default">
+          <div class="panel-heading">
+	    <h3 class="panel-title">Basic Attributes (required)</h3>
+          </div>
+          <div class="panel-body">
+            <div class="form-group">
+              <label for="input_foreignSource" class="col-sm-2 control-label">Requisition:</label>
+              <div class="col-sm-10">
+                <select name="foreignSource" class="form-control">
+                  <c:forEach var="req" items="${requisitions}">
+                  <option><c:out value="${req.foreignSource}" /></option>
+                  </c:forEach>
+                </select>
+              </div>
+            </div>
 
-	<h3>Surveillance Category Memberships (optional)</h3>
-	<div class="boxWrapper">
-		<table class="normal">
-		<tbody id="categoryMembershipTable">
-			<tr id="initialCategoryRow">
-				<td>Category:</td>
-				<td>
-					<select name="category">
-							<option value="">--</option>
-						<c:forEach var="cat" items="${categories}">
-							<option><c:out value="${cat}" /></option>
-						</c:forEach>
-					</select>
-				</td>
+            <div class="form-group">
+              <label for="input_ipAddress" class="col-sm-2 control-label">IP Address:</label>
+              <div class="col-sm-10">
+                <input type="text" class="form-control" name="ipAddress" id="input_ipAddress" />
+              </div>
+            </div>
 
-				<td>Category:</td>
-				<td>
-					<select name="category">
-							<option value="">--</option>
-						<c:forEach var="cat" items="${categories}">
-							<option><c:out value="${cat}" /></option>
-						</c:forEach>
-					</select>
-				</td>
-				<td><a href="javascript:addCategoryRow()">More...</a></td>
-			</tr>
-		</tbody>
-		</table>
-	</div>
+            <div class="form-group">
+              <label for="input_nodeLabel" class="col-sm-2 control-label">Node Label:</label>
+              <div class="col-sm-10">
+                <input type="text" class="form-control" name="nodeLabel" id="input_nodeLabel" />
+              </div>
+            </div>
+          </div> <!-- panel-body -->
+        </div> <!-- panel -->
 
-	<h3>SNMP Parameters (optional)</h3>
-	<div class="boxWrapper">
-		<table class="normal">
-			<tr>
-				<td>Community String:</td>
-				<td><input type="text" name="community" /></td>
+        <div class="panel panel-default">
+          <div class="panel-heading">
+	    <h3 class="panel-title">Surveillance Category Memberships (optional)</h3>
+          </div>
+          <div class="panel-body" id="categoryMembershipTable">
+            <div class="form-group" id="initialCategoryRow">
+              <label class="control-label col-sm-2">Category:</label>
+              <div class="col-sm-3">
+                <select name="category" class="form-control">
+                  <option value="">--</option>
+                  <c:forEach var="cat" items="${categories}">
+                    <option><c:out value="${cat}" /></option>
+                  </c:forEach>
+                </select>
+              </div>
+              <label class="control-label col-sm-2">Category:</label>
+              <div class="col-sm-3">
+                <select name="category" class="form-control">
+                  <option value="">--</option>
+                  <c:forEach var="cat" items="${categories}">
+                    <option><c:out value="${cat}" /></option>
+                  </c:forEach>
+                </select>
+              </div>
+              <div class="col-sm-2">
+                <a href="javascript:addCategoryRow()" class="btn btn-default">More...</a>
+              </div>
+            </div>
+          </div> <!-- panel-body -->
+        </div> <!-- panel -->
 
-				<td>Version</td>
-				<td><select name="snmpVersion"><option>v1</option><option selected>v2c</option></select></td>
+        <div class="panel panel-default">
+          <div class="panel-heading">
+	    <h3 class="panel-title">SNMP Parameters (optional)</h3>
+          </div>
+          <div class="panel-body">
+            <div class="form-group">
+              <label class="control-label col-sm-2">Version:</label>
+              <div class="col-sm-10">
+                <select name="snmpVersion" class="form-control"><option>v1</option><option selected>v2c</option></select>
+              </div>
+            </div>
 
-				<td colspan="2">&nbsp;</td>
-			</tr>
-			<tr>
-			    <td><label for="noSNMP">No SNMP:</label></td>
-			    <td><input id="noSNMP" type="checkbox" name="noSNMP" value="true" selected="false" /></td>
-			</tr>
-		</table>
-	</div>
+            <div class="form-group">
+              <label class="control-label col-sm-2">Community String:</label>
+              <div class="col-sm-10">
+                <input type="text" name="community" class="form-control" />
+              </div>
+            </div>
 
-	<h3>CLI Authentication Parameters (optional)</h3>
-	<div class="boxWrapper">
-		<table class="normal">
-			<tr>
-				<td>Device Username:</td>
-				<td colspan="3"><input type="text" name="deviceUsername" /></td>
-			</tr>
-			<tr>
-				<td>Device Password:</td>
-				<td><input type="text" name="devicePassword" /></td>
-				
-				<td>Enable Password:</td>
-				<td><input type="text" name="enablePassword" /></td>
-			</tr>
-			<tr>
-				<td>Access Method:</td>
-				<td>
-					<select name="accessMethod" >
-					<option value="" selected="selected">--</option>
-					<option value="rsh">RSH</option>
-					<option value="ssh">SSH</option>
-					<option value="telnet">Telnet</option>
-					</select>  
-				</td>
-				<td><label for="autoEnableControl">Auto Enable:</label></td>
-				<td>
-					<input id="autoEnableControl" type="checkbox" name="autoEnable" selected="false" />
-				</td>
-			</tr>
-		</table>
-	</div>
+            <div class="form-group">
+              <label class="control-label col-sm-2">No SNMP:</label>
+              <div class="col-sm-10">
+                <input id="noSNMP" type="checkbox" name="noSNMP" value="true" selected="false" />
+              </div>
+            </div>
+          </div> <!-- panel-body -->
+        </div> <!-- panel -->
 
-	<input type="submit" value="Provision" />
-	<input type="reset" />
+        <div class="panel panel-default">
+          <div class="panel-heading">
+	    <h3 class="panel-title">CLI Authentication Parameters (optional)</h3>
+          </div>
+          <div class="panel-body">
+            <div class="form-group">
+              <label class="control-label col-sm-2">Device Username:</label>
+              <div class="col-sm-10">
+                <input type="text" name="deviceUsername" class="form-control" />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="control-label col-sm-2">Device Password:</label>
+              <div class="col-sm-10">
+                <input type="text" name="devicePassword" class="form-control" />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="control-label col-sm-2">Enable Password:</label>
+              <div class="col-sm-10">
+                <input type="text" name="enablePassword" class="form-control" />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="control-label col-sm-2">Access Password:</label>
+              <div class="col-sm-10">
+                <select name="accessMethod" class="form-control" >
+                  <option value="" selected="selected">--</option>
+                  <option value="rsh">RSH</option>
+                  <option value="ssh">SSH</option>
+                  <option value="telnet">Telnet</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="control-label col-sm-2">Auto Enable:</label>
+              <div class="col-sm-10">
+                <input id="autoEnableControl" type="checkbox" name="autoEnable" selected="false" />
+              </div>
+            </div>
+          </div> <!-- panel-body -->
+          <div class="panel-footer">
+	    <input type="submit" value="Provision" class="btn btn-default" />
+	    <input type="reset" class="btn btn-default" />
+          </div>
+        </div> <!-- panel -->
 </form>
 
 </c:otherwise>
 </c:choose> <!--  empty requisitions -->
-</div>
+  </div> <!-- column -->
 
-<div class="TwoColRight">
-	<h3>Node Quick-Add</h3>
-	<div class="boxWrapper">
+  <div class="col-md-7">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+	<h3 class="panel-title">Node Quick-Add</h3>
+      </div>
+      <div class="panel-body">
 		<p>
 		This workflow provides a quick way to add a node to an existing
 		provisioning requisition in this OpenNMS system.
@@ -224,9 +270,9 @@
 		or more provisioning adapters are configured to use them. Typically this is the
 		case if OpenNMS is integrated with an external configuration management system.
 		</p>
-	</div>
-</div>
+      </div> <!-- panel-body -->
+    </div> <!-- panel -->
+  </div> <!-- column -->
+</div> <!-- row -->
 
-<br />
-
-<jsp:include page="/includes/footer.jsp" flush="false" />
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />

@@ -31,9 +31,12 @@ package org.opennms.gwt.web.ui.asset.client.view;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.gwtbootstrap3.client.ui.Button;
+import org.gwtbootstrap3.client.ui.Heading;
+import org.gwtbootstrap3.client.ui.Modal;
+import org.gwtbootstrap3.client.ui.Panel;
 import org.opennms.gwt.web.ui.asset.client.AssetPageConstants;
 import org.opennms.gwt.web.ui.asset.client.presenter.AssetPagePresenter;
-import org.opennms.gwt.web.ui.asset.client.tools.DisclosurePanelCookie;
 import org.opennms.gwt.web.ui.asset.client.tools.fieldsets.FieldSet;
 import org.opennms.gwt.web.ui.asset.client.tools.fieldsets.FieldSetDateBox;
 import org.opennms.gwt.web.ui.asset.client.tools.fieldsets.FieldSetListBox;
@@ -48,23 +51,17 @@ import org.opennms.gwt.web.ui.asset.shared.AssetCommand;
 import org.opennms.gwt.web.ui.asset.shared.AssetSuggCommand;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.i18n.client.DateTimeFormat.PredefinedFormat;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiTemplate;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Anchor;
-import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.DialogBox;
-import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.SimplePanel;
-import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
@@ -91,20 +88,20 @@ public class AssetNodePageImpl extends Composite implements AssetPagePresenter.D
     AssetCommand m_asset;
 
     @UiField
-    Label nodeInfoLabel;
+    Heading nodeInfoLabel;
     @UiField
     Anchor nodeInfoLink;
 
     @UiField
-    VerticalPanel mainPanel;
+    FlowPanel mainPanel;
 
     @UiField
-    Label lInfoTop;
+    Heading lInfoTop;
     @UiField
-    Label lInfoBottom;
+    Heading lInfoBottom;
 
     @UiField
-    DisclosurePanelCookie snmpDiscPanel;
+    Panel snmpDiscPanel;
 
     @UiField
     FieldSetTextDisplay sSystemId;
@@ -262,6 +259,12 @@ public class AssetNodePageImpl extends Composite implements AssetPagePresenter.D
     Button saveButton;
     @UiField
     Button resetButton;
+
+    @UiField
+    Modal errorModal;
+
+    @UiField
+    HTML errorModalHtml;
 
     @UiField
     Label lastModified;
@@ -742,30 +745,8 @@ public class AssetNodePageImpl extends Composite implements AssetPagePresenter.D
         if (throwable != null) {
             error = throwable.toString();
         }
-        final DialogBox dialog = new DialogBox();
-        dialog.setText(description);
-        VerticalPanel panel = new VerticalPanel();
-        HTMLPanel html = new HTMLPanel(error);
-        html.setStyleName("Message");
-        panel.add(html);
-
-        Button ok = new Button("OK");
-        SimplePanel buttonPanel = new SimplePanel();
-        buttonPanel.setWidget(ok);
-        buttonPanel.setStyleName("Button");
-        panel.add(buttonPanel);
-
-        dialog.setPopupPosition(Window.getScrollLeft() + 100, Window.getScrollTop() + 100);
-        dialog.setWidget(panel);
-        ok.addClickHandler(new ClickHandler() {
-
-            @Override
-            public void onClick(ClickEvent arg0) {
-                dialog.hide();
-            }
-        });
-
-        dialog.show();
+        errorModalHtml.setHTML(description + error);
+        errorModal.show();
     }
 
     @Override

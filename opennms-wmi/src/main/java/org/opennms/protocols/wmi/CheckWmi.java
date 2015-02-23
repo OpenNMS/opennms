@@ -29,7 +29,6 @@
 package org.opennms.protocols.wmi;
 
 import java.io.PrintWriter;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.cli.CommandLine;
@@ -69,7 +68,7 @@ public abstract class CheckWmi {
 
 	    @SuppressWarnings("unchecked")
 		List<String> arguments = (List<String>)cmd.getArgList();
-		if (arguments.size() < 2) {
+		if (arguments.size() < 3) {
 			usage(options, cmd);
 			System.exit(1);
 		}

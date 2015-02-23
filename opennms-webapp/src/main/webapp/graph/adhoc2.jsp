@@ -91,7 +91,7 @@
 
 %>
 
-<jsp:include page="/includes/header.jsp" flush="false" >
+<jsp:include page="/includes/bootstrap.jsp" flush="false" >
   <jsp:param name="title" value="Custom Resource Graphs" />
   <jsp:param name="headTitle" value="Custom" />
   <jsp:param name="headTitle" value="Resource Graphs" />
@@ -174,7 +174,7 @@
               
               <br/>
 
-              <select name="ds" size="6">
+              <select class="multi-select" name="ds" size="6">
                 <c:forEach var="attribute" items="${resource.attributes}">
                   <c:choose>
                     <c:when test="${! anythingSelected}">
@@ -262,4 +262,4 @@
   <jsp:include page="/includes/footnote1.jsp" flush="false" />
 </c:if>
 
-<jsp:include page="/includes/footer.jsp" flush="false" />
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />

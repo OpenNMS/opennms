@@ -35,16 +35,13 @@ import edu.uci.ics.jung.graph.util.Pair;
 
 import org.apache.commons.collections15.Factory;
 import org.apache.commons.collections15.map.LazyMap;
-import org.opennms.features.topology.api.BoundingBox;
 import org.opennms.features.topology.api.DblBoundingBox;
 import org.opennms.features.topology.app.internal.jung.QuadTree.Node;
 import org.opennms.features.topology.app.internal.jung.QuadTree.Visitor;
 
 import java.awt.geom.Point2D;
-import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Random;
 
 public class D3TopoLayout<V, E> extends AbstractLayout<V, E> implements IterativeContext {
 

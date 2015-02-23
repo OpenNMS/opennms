@@ -3,7 +3,7 @@
   default-lazy-init="true"
   xsi:schemaLocation="
     http://www.springframework.org/schema/beans
-    http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+    http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
 ">
    
    <bean id="pollerBackEndContext" class="org.springframework.context.support.ClassPathXmlApplicationContext">

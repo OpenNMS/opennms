@@ -37,7 +37,7 @@ import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.StatisticsReport;
 import org.opennms.web.controller.statisticsReports.PrettyOnmsResource;
 import org.springframework.util.Assert;
-import org.springframework.validation.BindException;
+import org.springframework.validation.BindingResult;
 
 /**
  * Model object for web statistics reports.
@@ -129,7 +129,7 @@ public class StatisticsReportModel {
         }
     }
     
-    private BindException m_errors;
+    private BindingResult m_errors;
     private StatisticsReport m_report;
     private SortedSet<Datum> m_data = new TreeSet<Datum>();
     
@@ -160,17 +160,17 @@ public class StatisticsReportModel {
     /**
      * <p>getErrors</p>
      *
-     * @return a {@link org.springframework.validation.BindException} object.
+     * @return a {@link org.springframework.validation.BindingResult} object.
      */
-    public BindException getErrors() {
+    public BindingResult getErrors() {
         return m_errors;
     }
     /**
      * <p>setErrors</p>
      *
-     * @param errors a {@link org.springframework.validation.BindException} object.
+     * @param errors a {@link org.springframework.validation.BindingResult} object.
      */
-    public void setErrors(BindException errors) {
+    public void setErrors(BindingResult errors) {
         m_errors = errors;
     }
     /**

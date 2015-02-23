@@ -45,7 +45,6 @@ import org.hibernate.criterion.Restrictions;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.dao.api.EventDao;
-import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventParameterUtils;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsCriteria;

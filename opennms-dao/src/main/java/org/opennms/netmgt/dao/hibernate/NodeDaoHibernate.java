@@ -47,7 +47,6 @@ import org.opennms.core.criteria.Alias.JoinType;
 import org.opennms.core.criteria.Order;
 import org.opennms.core.criteria.restrictions.EqRestriction;
 import org.opennms.core.criteria.restrictions.NeRestriction;
-import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsDistPoller;
@@ -94,6 +93,16 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer> im
     public String getLabelForId(Integer id) {
         List<String> list = findObjects(String.class, "select n.label from OnmsNode as n where n.id = ?", id);
         return list == null || list.isEmpty() ? null : list.get(0);
+    }
+
+    /** {@inheritDoc} */
+    public Map<Integer, String> getAllLabelsById() {
+        Map<Integer, String> labelsByNodeId = new HashMap<Integer, String>();
+        List<? extends Object[]> rows = findObjects(new Object[0].getClass(), "select n.id, n.label from OnmsNode as n");
+        for (Object row[] : rows) {
+            labelsByNodeId.put((Integer)row[0], (String)row[1]);
+        }
+        return labelsByNodeId;
     }
 
     /** {@inheritDoc} */
@@ -320,7 +329,7 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer> im
     @SuppressWarnings("unchecked")
     @Override
     public Map<String, Integer> getForeignIdToNodeIdMap(String foreignSource) {
-        List<Object[]> pairs = getHibernateTemplate().find("select n.id, n.foreignId from OnmsNode n where n.foreignSource = ?", foreignSource);
+        List<Object[]> pairs = (List<Object[]>)getHibernateTemplate().find("select n.id, n.foreignId from OnmsNode n where n.foreignSource = ?", foreignSource);
         Map<String, Integer> foreignIdMap = new HashMap<String, Integer>();
         for (Object[] pair : pairs) {
             foreignIdMap.put((String)pair[1], (Integer)pair[0]);

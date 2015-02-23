@@ -30,6 +30,7 @@ package org.opennms.dashboard.client;
 
 import com.google.gwt.user.client.ui.DockPanel;
 import com.google.gwt.user.client.ui.FlexTable;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
 /**
@@ -44,7 +45,6 @@ import com.google.gwt.user.client.ui.VerticalPanel;
  */
 public abstract class PageableTableView extends DashletView implements Pageable {
 
-    private VerticalPanel m_panel = new VerticalPanel();
 	private FlexTable m_table = new FlexTable();
 	private Pager m_pager;
 	private String[] m_headings;
@@ -58,10 +58,9 @@ public abstract class PageableTableView extends DashletView implements Pageable 
         initializeTable(headings);
         
         m_pager = new Pager(this);
-        
-        //m_panel.add(m_pager);
-        m_panel.add(m_table);
-        initWidget(m_panel);
+
+        m_table.setStyleName("table table-condensed table-bordered severity");
+        initWidget(m_table);
         
     }
     

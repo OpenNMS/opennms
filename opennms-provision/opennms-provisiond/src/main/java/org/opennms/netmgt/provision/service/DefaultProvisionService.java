@@ -170,7 +170,7 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
     private ForeignSourceRepository m_foreignSourceRepository;
 
     @Autowired
-    @Qualifier("fastPending")
+    @Qualifier("fastFilePending")
     private ForeignSourceRepository m_pendingForeignSourceRepository;
 
     @Autowired

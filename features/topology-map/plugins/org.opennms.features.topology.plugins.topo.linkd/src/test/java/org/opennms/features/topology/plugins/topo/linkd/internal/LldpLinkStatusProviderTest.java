@@ -154,7 +154,7 @@ public class LldpLinkStatusProviderTest {
     }
 
     private List<OnmsAlarm> createAlarm() {
-        return Collections.EMPTY_LIST;
+        return Collections.emptyList();
     }
 
     private List<OnmsAlarm> createDownAlarm(){

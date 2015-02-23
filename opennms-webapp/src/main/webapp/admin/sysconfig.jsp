@@ -38,7 +38,7 @@
 %>
 
 
-<jsp:include page="/includes/header.jsp" flush="false" >
+<jsp:include page="/includes/bootstrap.jsp" flush="false" >
   <jsp:param name="title" value="OpenNMS System Configuration" />
   <jsp:param name="headTitle" value="System Configuration" />
   <jsp:param name="headTitle" value="Admin" />
@@ -48,7 +48,6 @@
 </jsp:include>
 
 <script type="text/javascript">
-    
         function cancel()
         {
                 document.snmpConfigForm.action="admin/index.jsp";
@@ -56,92 +55,93 @@
         }
 </script>
 
+<div class="row">
+  <div class="col-md-6">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">OpenNMS Configuration</h3>
+      </div>
+      <table class="table">
+        <tr>
+          <th>OpenNMS Version:</th>
+          <td><%=Vault.getProperty("version.display")%></td>
+        </tr>
+        <tr>
+          <th>Home Directory:</th>
+          <td><%=Vault.getProperty("opennms.home")%></td>
+        </tr>
+        <tr>
+          <th>RRD store by group enabled?</th>
+          <td><%=Vault.getProperty("org.opennms.rrd.storeByGroup")%></td>
+        </tr>
+        <tr>
+          <th>RRD store by foreign source enabled?</th>
+          <td><%=Vault.getProperty("org.opennms.rrd.storeByForeignSource")%></td>
+        </tr>
+        <tr>
+          <th>Web-Application Logfiles:</th>
+          <td><%=Vault.getProperty("opennms.webapplogs.dir")%></td>
+        </tr>
+        <tr>
+          <th>Reports directory:</th>
+          <td><%=Vault.getProperty("opennms.report.dir")%></td>
+        </tr>
+        <tr>
+          <th>Jetty HTTP host:</th>
+          <td><%=Vault.getProperty("org.opennms.netmgt.jetty.host")%></td>
+        </tr>
+        <tr>
+          <th>Jetty HTTP port:</th>
+          <td><%=Vault.getProperty("org.opennms.netmgt.jetty.port")%></td>
+        </tr>
+         <tr>
+          <th>Jetty HTTPS host:</th>
+          <td><%=Vault.getProperty("org.opennms.netmgt.jetty.https-host")%></td>
+        </tr>
+        <tr>
+          <th>Jetty HTTPS port:</th>
+          <td><%=Vault.getProperty("org.opennms.netmgt.jetty.https-port")%></td>
+        </tr>
+      </table>
+    </div> <!-- panel -->
+  </div> <!-- column -->
+  <div class="col-md-6">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">System Configuration</h3>
+      </div>
+      <table class="table">
+        <tr>
+          <th>Server&nbsp;Time:</th>
+          <td><%=new java.util.Date()%></td>
+        </tr>
+        <tr>
+          <th>Client&nbsp;Time:</th>
+          <td><script type="text/javascript"> document.write( new Date().toString()) </script></td>
+        </tr>
+        <tr>
+          <th>Java&nbsp;Version:</th>
+          <td><%=System.getProperty( "java.version" )%> <%=System.getProperty( "java.vendor" )%></td>
+        </tr>
+        <tr>
+          <th>Java&nbsp;Virtual&nbsp;Machine:</th>
+          <td><%=System.getProperty( "java.vm.version" )%> <%=System.getProperty( "java.vm.vendor" )%></td>
+        </tr>
+        <tr>
+          <th>Operating&nbsp;System:</th>
+          <td><%=System.getProperty( "os.name" )%> <%=System.getProperty( "os.version" )%> (<%=System.getProperty( "os.arch" )%>)</td>
+        </tr>
+        <tr>
+          <th>Servlet&nbsp;Container:</th>
+          <td><%=application.getServerInfo()%> (Servlet Spec <%=application.getMajorVersion()%>.<%=application.getMinorVersion()%>)</td>
+        </tr>
+        <tr>
+          <th>User&nbsp;Agent:</th>
+          <td><%=request.getHeader( "User-Agent" )%></td>
+        </tr>
+      </table>
+    </div> <!-- panel -->
+  </div> <!-- column -->
+</div> <!-- row -->
 
-  <div class="TwoColLeft">
-  <h3>OpenNMS Configuration</h3>
-  	<div class="boxWrapper">
- 	<table class="standard">
- 	  <tr>
-    <td class="standardheader">OpenNMS Version:</td>
-    <td class="standard"><%=Vault.getProperty("version.display")%></td>
-  </tr>
- 	<tr>
-    <td class="standardheader">Home Directory:</td>
-    <td class="standard"><%=Vault.getProperty("opennms.home")%></td>
-  </tr>
-  <tr>
-    <td class="standardheader">RRD store by group enabled?</td>
-    <td class="standard"><%=Vault.getProperty("org.opennms.rrd.storeByGroup")%></td>
-  </tr>
-  <tr>
-    <td class="standardheader">RRD store by foreign source enabled?</td>
-    <td class="standard"><%=Vault.getProperty("org.opennms.rrd.storeByForeignSource")%></td>
-  </tr>
-  <tr>
-    <td class="standardheader">Web-Application Logfiles:</td>
-    <td class="standard"><%=Vault.getProperty("opennms.webapplogs.dir")%></td>
-  </tr>
-  <tr>
-    <td class="standardheader">Reports directory:</td>
-    <td class="standard"><%=Vault.getProperty("opennms.report.dir")%></td>
-  </tr>
-  <tr>
-    <td class="standardheader">Jetty HTTP host:</td>
-    <td class="standard"><%=Vault.getProperty("org.opennms.netmgt.jetty.host")%></td>
-  </tr>
-  <tr>
-    <td class="standardheader">Jetty HTTP port:</td>
-    <td class="standard"><%=Vault.getProperty("org.opennms.netmgt.jetty.port")%></td>
-  </tr>
-   <tr>
-    <td class="standardheader">Jetty HTTPS host:</td>
-    <td class="standard"><%=Vault.getProperty("org.opennms.netmgt.jetty.https-host")%></td>
-  </tr>
-  <tr>
-    <td class="standardheader">Jetty HTTPS port:</td>
-    <td class="standard"><%=Vault.getProperty("org.opennms.netmgt.jetty.https-port")%></td>
-  </tr>
-
-</table>
-</div>
-</div>
-<div class="TwoColRight">
-  <h3>System Configuration</h3>
-  	<div class="boxWrapper">
- 	<table class="standard">
-  <tr>
-    <td class="standardheader">Server&nbsp;Time:</td>
-    <td class="standard"><%=new java.util.Date()%></td>
-  </tr>
-  <tr>
-    <td class="standardheader">Client&nbsp;Time:</td>
-    <td class="standard"><script type="text/javascript"> document.write( new Date().toString()) </script></td>
-  </tr>
-  <tr>
-    <td class="standardheader">Java&nbsp;Version:</td>
-    <td class="standard"><%=System.getProperty( "java.version" )%> <%=System.getProperty( "java.vendor" )%></td>
-  </tr>  
-  <tr>
-    <td class="standardheader">Java&nbsp;Virtual&nbsp;Machine:</td>
-    <td class="standard"><%=System.getProperty( "java.vm.version" )%> <%=System.getProperty( "java.vm.vendor" )%></td>
-  </tr>
-  <tr>
-    <td class="standardheader">Operating&nbsp;System:</td>
-    <td class="standard"><%=System.getProperty( "os.name" )%> <%=System.getProperty( "os.version" )%> (<%=System.getProperty( "os.arch" )%>)</td>
-  </tr>
-  <tr>
-    <td class="standardheader">Servlet&nbsp;Container:</td>
-    <td class="standard"><%=application.getServerInfo()%> (Servlet Spec <%=application.getMajorVersion()%>.<%=application.getMinorVersion()%>)</td>
-  </tr>
-  <tr>
-    <td class="standardheader">User&nbsp;Agent:</td>
-    <td class="standard"><%=request.getHeader( "User-Agent" )%></td>
-  </tr>    
-</table>
-</div>
-  </div>
-
-  <div class="TwoColRAdmin">
-  </div>
-
-<jsp:include page="/includes/footer.jsp" flush="false" />
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />

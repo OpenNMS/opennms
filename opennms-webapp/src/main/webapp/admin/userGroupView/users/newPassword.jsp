@@ -34,7 +34,7 @@
 	session="true"
 %>
 
-<jsp:include page="/includes/header.jsp" flush="false" >
+<jsp:include page="/includes/bootstrap.jsp" flush="false" >
   <jsp:param name="title" value="New Password" />
   <jsp:param name="headTitle" value="New Password" />
   <jsp:param name="headTitle" value="Users" />
@@ -59,47 +59,40 @@
 }
 </script>
 
-<h3>Please enter a new password and confirm</h3>
-
-<br/>
-
-<form method="post" name="goForm">
-
-<table>
-  <tr>
-    <td width="10%">
-      Password:
-    </td>
-    <td width="100%">
-      <input type="password" name="pass1">
-    </td>
-  </tr>
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title">Please enter a new password and confirm</h3>
+  </div>
+  <div class="panel-body">
+    <form role="form" class="form-horizontal" method="post" name="goForm">
+      <div class="form-group">
+        <label for="pass1" class="col-sm-2 control-label">Password</label>
+        <div class="col-sm-10">
+          <input type="password" class="form-control" id="pass1" name="pass1">
+        </div>
+      </div>
   
-  <tr>
-    <td width="10%">
-      Confirm Password:
-    </td>
-    <td width="100%">
-      <input type="password" name="pass2">
-    </td>
-  </tr>
-  
-  <tr>
-    <td>
-      <input type="button" value="OK" onclick="verifyGoForm()">
-    </td>
-    <td>
-      <input type="button" value="Cancel" onclick="window.close()">
-    </tr>
-</table>
-</form>
+      <div class="form-group">
+        <label for="pass2" class="col-sm-2 control-label">Confirm Password</label>
+        <div class="col-sm-10">
+          <input type="password" class="form-control" id="pass2" name="pass2">
+        </div>
+      </div>
 
-<p>
-  Note: Be sure to click "Finish" at the bottom of the user page to save
-  changes.
-</p>
+      <div class="form-group">
+        <div class="col-sm-offset-2 col-sm-10">
+          <button type="button" class="btn btn-default" onclick="verifyGoForm()">OK</button>
+          <button type="button" class="btn btn-default" onclick="window.close()">Cancel</button>
+        </div>
+      </div>
+    </form>
+    <p>
+      Note: Be sure to click "Finish" at the bottom of the user page to save
+      changes.
+    </p>
+  </div> <!-- panel-body -->
+</div> <!-- panel -->
 
-<jsp:include page="/includes/footer.jsp" flush="false" >
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="false" >
   <jsp:param name="quiet" value="true" />
 </jsp:include>
-

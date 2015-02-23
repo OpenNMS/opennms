@@ -95,22 +95,22 @@
    </entry>
 
    <entry key="distributed.status.style.REGISTERED">
-     Warning
+     severity-Warning
    </entry>
    <entry key="distributed.status.style.STARTED">
-     Normal
+     severity-Normal
    </entry>
    <entry key="distributed.status.style.STOPPED">
-     Minor
+     severity-Minor
    </entry>
    <entry key="distributed.status.style.DISCONNECTED">
-     Indeterminate
+     severity-Indeterminate
    </entry>
    <entry key="distributed.status.style.PAUSED">
-     Minor
+     severity-Minor
    </entry>
    <entry key="distributed.status.style._DEFAULT">
-     Indeterminate
+     severity-Indeterminate
    </entry>
    
    <entry key="distributed.lastCheckInTime">

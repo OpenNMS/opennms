@@ -4,7 +4,7 @@
 :lang: en
 :icons: font
 :toc: left
-:toclevels: 8
+:toclevels: 3
 :numbered:
 
 = Users Guide
@@ -15,3 +15,5 @@
 
 // Include your documentation sections here
 // include::text/myFile.adoc[]
+
+include::text/dashboard.adoc[]

@@ -50,7 +50,7 @@ public class FilterFavoriteDaoHibernate extends AbstractDaoHibernate<OnmsFilterF
         return getHibernateTemplate().execute(new HibernateCallback<OnmsFilterFavorite>() {
             @Override
             public OnmsFilterFavorite doInHibernate(Session session) throws HibernateException, SQLException {
-                Query query = session.createQuery("from OnmsFilterFavorite f where f.username = :userName and f.filterName = :filterName");
+                Query query = session.createQuery("from OnmsFilterFavorite f where f.username = :userName and f.name = :filterName order by f.name");
                 query.setParameter("filterName", filterName);
                 query.setParameter("userName", userName);
                 Object result = query.uniqueResult();
@@ -65,7 +65,7 @@ public class FilterFavoriteDaoHibernate extends AbstractDaoHibernate<OnmsFilterF
         return getHibernateTemplate().execute(new HibernateCallback<List<OnmsFilterFavorite>>() {
             @Override
             public List<OnmsFilterFavorite> doInHibernate(Session session) throws HibernateException, SQLException {
-                Query query = session.createQuery("from OnmsFilterFavorite f where f.username = :userName and f.page = :page");
+                Query query = session.createQuery("from OnmsFilterFavorite f where f.username = :userName and f.page = :page order by f.name");
                 query.setParameter("userName", userName);
                 query.setParameter("page", page);
                 return query.list();
@@ -79,7 +79,7 @@ public class FilterFavoriteDaoHibernate extends AbstractDaoHibernate<OnmsFilterF
         List<OnmsFilterFavorite> favorites = getHibernateTemplate().execute(new HibernateCallback<List<OnmsFilterFavorite>>() {
             @Override
             public List<OnmsFilterFavorite> doInHibernate(Session session) throws HibernateException, SQLException {
-                Query query = session.createQuery("from OnmsFilterFavorite f where f.username = :userName and f.page = :page and f.name = :filterName");
+                Query query = session.createQuery("from OnmsFilterFavorite f where f.username = :userName and f.page = :page and f.name = :filterName order by f.name");
                 query.setParameter("userName", userName);
                 query.setParameter("page", page);
                 query.setParameter("filterName", filterName);

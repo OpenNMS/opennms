@@ -4,7 +4,7 @@
     <relativePath>../poms/compiled/</relativePath>
     <groupId>org.opennms.features.sms-reflector.build</groupId>
     <artifactId>compiled-bundle-settings</artifactId>
-    <version>15.0.0-SNAPSHOT</version>
+    <version>16.0.0-SNAPSHOT</version>
   </parent>
   <properties>
     <bundle.symbolicName>org.opennms.features.sms-reflector.sms-service</bundle.symbolicName>
@@ -89,24 +89,6 @@
     <dependency>
       <groupId>org.springframework.osgi</groupId>
       <artifactId>spring-osgi-core</artifactId>
-      <exclusions>
-        <exclusion>
-          <groupId>org.springframework</groupId>
-          <artifactId>org.springframework.aop</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.springframework</groupId>
-          <artifactId>org.springframework.beans</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.springframework</groupId>
-          <artifactId>org.springframework.context</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.springframework</groupId>
-          <artifactId>org.springframework.core</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
     <dependency>
       <groupId>commons-io</groupId>

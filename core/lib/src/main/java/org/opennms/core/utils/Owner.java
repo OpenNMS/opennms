@@ -36,10 +36,10 @@ package org.opennms.core.utils;
  */
 public class Owner implements Comparable<Owner> {
     
-    private String m_roleid;
-    private String m_user;
-    private int m_schedIndex;
-    private int m_timeIndex;
+    private final String m_roleid;
+    private final String m_user;
+    private final int m_schedIndex;
+    private final int m_timeIndex;
 
     /**
      * <p>Constructor for Owner.</p>

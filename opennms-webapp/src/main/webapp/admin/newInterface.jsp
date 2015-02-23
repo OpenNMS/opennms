@@ -35,7 +35,7 @@
 %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
-<jsp:include page="/includes/header.jsp" flush="false" >
+<jsp:include page="/includes/bootstrap.jsp" flush="false" >
   <jsp:param name="title" value="Add Interface" />
   <jsp:param name="headTitle" value="Add Interface" />
   <jsp:param name="headTitle" value="Admin" />
@@ -77,41 +77,49 @@
         }
 </script>
 
-<div class="TwoColLAdmin">
-<form method="post" name="newIpForm" onsubmit="return verifyIpAddress();">
-  <h3>Enter IP address</h3>
-  <div class="boxWrapper">
-    <c:if test="${param.action == 'redo'}">
-      <ul class="error">
-        <li>
-          The IP address ${param.ipAddress} already exists.
-          Please enter a different IP address.
-        </li>
-      </ul>
-    </c:if>
+<div class="row">
+  <div class="col-md-4">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Enter IP Address</h3>
+      </div>
+      <div class="panel-body">
+        <form method="post" name="newIpForm" onsubmit="return verifyIpAddress();">
+            <c:if test="${param.action == 'redo'}">
+              <p class="text-danger">
+                  The IP address ${param.ipAddress} already exists.
+                  Please enter a different IP address.
+              </p>
+            </c:if>
 
-    <p>
-      IP address:
-      <input size="15" name="ipAddress">
-    </p>
+            <div class="form-group">
+              <label for="input_ipAddress">IP address:</label>
+              <input size="15" name="ipAddress" class="form-control">
+            </div>
 
-    <p>
-      <input type="submit" value="Add">
-      <input type="button" value="Cancel" onclick="cancel()">
-    </p>
+            <div class="form-group">
+              <input type="submit" class="btn btn-default" value="Add">
+              <input type="button" class="btn btn-default" value="Cancel" onclick="cancel()">
+            </div>
+        </form>
+      </div> <!-- panel-body -->
+    </div> <!-- panel -->
+  </div> <!-- column -->
 
-  </div>
-</form>
-</div>
-
-        <div class="TwoColRAdmin">
-      <h3>Add Interface</h3>
+  <div class="col-md-8">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Add Interface</h3>
+      </div>
+      <div class="panel-body">
         <p>
         Enter in a valid IP address to generate a newSuspectEvent. This will add a node to the OpenNMS
         database for this device. Note: if the IP address already exists in OpenNMS, use "Rescan" from
         the node page to update it. Also, if no services exist for this IP, it will still be added.
         </p>
-  </div>
-  <hr />
+      </div> <!-- panel-body -->
+    </div> <!-- panel -->
+  </div> <!-- column -->
+</div> <!-- row -->
 
-<jsp:include page="/includes/footer.jsp" flush="false" />
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />

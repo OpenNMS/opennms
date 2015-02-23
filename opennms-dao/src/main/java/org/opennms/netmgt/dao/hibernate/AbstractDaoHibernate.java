@@ -111,7 +111,7 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> extends Hi
      */
     @SuppressWarnings("unchecked")
     public List<T> find(final String query) {
-        return getHibernateTemplate().find(query);
+        return (List<T>)getHibernateTemplate().find(query);
     }
 
     /**
@@ -123,7 +123,7 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> extends Hi
      */
     @SuppressWarnings("unchecked")
     public List<T> find(final String query, final Object... values) {
-        return getHibernateTemplate().find(query, values);
+        return (List<T>)getHibernateTemplate().find(query, values);
     }
     
     /**
@@ -137,7 +137,7 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> extends Hi
      */
     public <S> List<S> findObjects(final Class<S> clazz, final String query, final Object... values) {
         @SuppressWarnings("unchecked")
-        final List<S> notifs = getHibernateTemplate().find(query, values);
+        final List<S> notifs = (List<S>)getHibernateTemplate().find(query, values);
         return notifs;
     }
 
@@ -277,7 +277,7 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> extends Hi
             }
             
         };
-        return getHibernateTemplate().executeFind(callback);
+        return (List<S>)getHibernateTemplate().executeFind(callback);
     }
     
     @SuppressWarnings("unchecked")
@@ -291,7 +291,7 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> extends Hi
 				return (List<T>)(hibernateCriteria.list());
             }
         };
-        return getHibernateTemplate().executeFind(callback);
+        return (List<T>)getHibernateTemplate().executeFind(callback);
     }
     
     /** {@inheritDoc} */
@@ -327,7 +327,7 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> extends Hi
                 return (List<T>)attachedCrit.list();
             }
         };
-        return getHibernateTemplate().executeFind(callback);
+        return (List<T>)getHibernateTemplate().executeFind(callback);
     }
     
     /** {@inheritDoc} */

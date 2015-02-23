@@ -35,7 +35,7 @@
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 
-<jsp:include page="/includes/header.jsp" flush="false" >
+<jsp:include page="/includes/bootstrap.jsp" flush="false" >
   <jsp:param name="title" value="Database Reports" />
   <jsp:param name="headTitle" value="Database Reports" />
   <jsp:param name="breadcrumb" value="<a href='report/index.jsp'>Reports</a>" />
@@ -44,20 +44,25 @@
   <jsp:param name="breadcrumb" value="Run"/>
 </jsp:include>
 
-<h3>Report Error</h3>
-<div class="boxWrapper">
-    <form:form cssClass="stdform">
-        <p><span class="indent">
-            <c:forEach var="message" items="${flowRequestContext.messageContext.allMessages}">
-                <span class="info">${message.text}</span><br/>
-            </c:forEach>
+<div class="row" >
+    <div class="col-md-12">
+        <div class="panel panel-success">
+            <div class="panel-heading">
+                <h3 class="panel-title">Report Error</h3>
+            </div>
+            <div class="panel-body">
+                <form:form role="form">
+                    <c:forEach var="message" items="${flowRequestContext.messageContext.allMessages}">
+                        <div class="alert alert-danger" rol="alert">${message.text}</div>
+                    </c:forEach>
+                    <%--An error has occurred and it has not been possible to run or schedule your report.--%>
+                    <input type="submit" class="btn btn-default" id="proceed" name="_eventId_proceed" value="Finished" />&#160;
+                </form:form>
+            </div>
 
-            <%--An error has occurred and it has not been possible to run or schedule your report.--%>
-        </span></p>
-        <span class="indent">
-            <input type="submit" id="proceed" name="_eventId_proceed" value="Finished" />&#160;
-        </span>
-    </form:form>
+        </div>
+    </div>
 </div>
 
-<jsp:include page="/includes/footer.jsp" flush="false" />
+
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />

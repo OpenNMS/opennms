@@ -31,7 +31,6 @@ package org.opennms.netmgt.config.api;
 import java.net.InetAddress;
 import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.locks.Lock;
 
 import org.opennms.netmgt.model.discovery.IPPollAddress;
 import org.opennms.netmgt.model.discovery.IPPollRange;
