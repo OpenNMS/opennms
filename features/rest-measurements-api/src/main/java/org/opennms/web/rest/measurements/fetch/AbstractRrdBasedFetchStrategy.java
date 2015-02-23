@@ -37,7 +37,7 @@ import org.jrobin.core.RrdException;
 import org.opennms.netmgt.dao.api.ResourceDao;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.RrdGraphAttribute;
-import org.opennms.web.rest.MeasurementsRestService;
+import org.opennms.web.rest.measurements.Utils;
 import org.opennms.web.rest.measurements.model.Source;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -94,7 +94,7 @@ public abstract class AbstractRrdBasedFetchStrategy implements MeasurementFetchS
                 // Attempt to cast the value as a double, fall back to keeping it as a string
                 Object propertyValue;
                 try {
-                    propertyValue = MeasurementsRestService.toDouble(propertyEntry.getValue());
+                    propertyValue = Utils.toDouble(propertyEntry.getValue());
                 } catch (Throwable t) {
                     propertyValue = propertyEntry.getValue();
                 }

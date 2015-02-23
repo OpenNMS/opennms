@@ -29,19 +29,14 @@
 package org.opennms.web.rest;
 
 import java.util.Date;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.SortedMap;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 
-import org.apache.commons.jexl2.JexlContext;
-import org.apache.commons.jexl2.JexlEngine;
-import org.apache.commons.jexl2.JexlException;
-import org.apache.commons.jexl2.MapContext;
+import org.opennms.web.rest.measurements.ExpressionEngine;
+import org.opennms.web.rest.measurements.ExpressionException;
+import org.opennms.web.rest.measurements.JEXLExpressionEngine;
 import org.opennms.web.rest.measurements.fetch.FetchResults;
 import org.opennms.web.rest.measurements.fetch.MeasurementFetchStrategy;
 import org.opennms.web.rest.measurements.model.Expression;
@@ -98,6 +93,8 @@ public class MeasurementsRestService {
     @Autowired
     private MeasurementFetchStrategy m_fetchStrategy;
 
+    private final ExpressionEngine expressionEngine = new JEXLExpressionEngine();
+
     /**
      * Retrieves the measurements for a single attribute.
      */
@@ -153,18 +150,6 @@ public class MeasurementsRestService {
 
         LOG.debug("Executing query with {}", request);
 
-        // Compile the expressions
-        final JexlEngine jexl = new JexlEngine();
-        final LinkedHashMap<String, org.apache.commons.jexl2.Expression> expressions = Maps.newLinkedHashMap();
-        for (final Expression e : request.getExpressions()) {
-            try {
-                expressions.put(e.getLabel(),
-                        jexl.createExpression(e.getExpression()));
-            } catch (JexlException ex) {
-                throw getException(Status.BAD_REQUEST, ex, "Invalid expression: {}", e.getExpression());
-            }
-        }
-
         // Fetch the measurements
         FetchResults results;
         try {
@@ -184,72 +169,19 @@ public class MeasurementsRestService {
             throw getException(Status.NOT_FOUND, "Resource or attribute not found for {}", request);
         }
 
-        // Prepare the response
+        // Derive the measurements from the fetch results and expressions
+        List<Measurement> measurements;
+        try {
+            measurements = expressionEngine.getMeasurements(request, results);
+        } catch (ExpressionException e) {
+            throw getException(Status.BAD_REQUEST, e, "An error occured while evaluating an expression.");
+        }
+
+        // Build the response
         final QueryResponse response = new QueryResponse();
         response.setStart(request.getStart());
         response.setEnd(request.getEnd());
         response.setStep(results.getStep());
-
-        // The JEXL context
-        final Map<String, Object> jexlValues = Maps.newHashMap();
-        final JexlContext context = new MapContext(jexlValues);
-
-        // Add constants (i.e. values from strings.properties)
-        // retrieved by the fetch operation
-        jexlValues.putAll(results.getConstants());
-
-        // Add some additional constants for ease of use
-        jexlValues.put("__inf", Double.POSITIVE_INFINITY);
-        jexlValues.put("__neg_inf", Double.NEGATIVE_INFINITY);
-
-        // Perform the calculations and compile the results
-        final List<Measurement> measurements = Lists.newArrayListWithCapacity(results.getRows().size());
-        for (final SortedMap.Entry<Long, Map<String, Double>> rowEntry : results.getRows().entrySet()) {
-            final Map<String, Double> row = rowEntry.getValue();
-
-            // Evaluate every expression, in the same order as which they appeared in the query
-            // and store the results back in the row, allowing expressions to use previous results.
-            for (final Map.Entry<String, org.apache.commons.jexl2.Expression> expressionEntry : expressions.entrySet()) {
-                // Add all of the values from the row to the context
-                // overwriting values from the last loop
-                jexlValues.putAll(row);
-
-                try {
-                    Object derived = expressionEntry.getValue().evaluate(context);
-                    row.put(expressionEntry.getKey(), toDouble(derived));
-                } catch (NullPointerException|NumberFormatException e) {
-                    throw getException(Status.BAD_REQUEST, e, "The return value from expression with label '{}' could not be cast to a Double.",
-                            expressionEntry.getKey());
-                } catch (JexlException e) {
-                    throw getException(Status.BAD_REQUEST, e, "Failed evaluate expression with label: {}",
-                            expressionEntry.getKey());
-                }
-            }
-
-            // Remove any transient values belonging to sources
-            for (final Source source : request.getSources()) {
-                if (source.getTransient()) {
-                    row.remove(source.getLabel());
-                }
-            }
-
-            // Remove any transient values belonging to expressions
-            for (final Expression e : request.getExpressions()) {
-                if (e.getTransient()) {
-                    row.remove(e.getLabel());
-                }
-            }
-
-            // Exclude empty rows from the result set
-            if (row.keySet().size() < 1) {
-                continue;
-            }
-
-            // Add the row to the result-set
-            measurements.add(new Measurement(rowEntry.getKey(), row));
-        }
-
-        // Complete the response
         response.setMeasurements(measurements);
 
         return response;
@@ -281,21 +213,6 @@ public class MeasurementsRestService {
                     || expression.getLabel() == null) {
                 throw getException(Status.BAD_REQUEST, "Query expression fields must be set: {}", expression);
             }
-        }
-    }
-
-    /**
-     * Used to cast the results of a JEXL expression to a Double.
-     *
-     * @throws NullPointerException when o is null
-     * @throws NumberFormatException when the cast fails
-     */
-    public static Double toDouble(Object o) {
-        if (o instanceof Double) {
-            return (Double)o;
-        } else {
-            // Simple way of casting integers, floats and longs
-            return Double.valueOf(o.toString());
         }
     }
 
