@@ -431,4 +431,15 @@
 			</staticText>
 		</band>
 	</detail>
+	<noData>
+		<band height="63">
+			<textField>
+				<reportElement positionType="FixRelativeToBottom" mode="Transparent" x="2" y="0" width="799" height="63" uuid="766b3f62-9737-4457-b6de-5d46efb9422a"/>
+				<textElement>
+					<font size="13" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Failed to find one or more required RRD files with rrddir: '" + $P{rrdDir} + "/snmp', nodeid: '" + $P{nodeId} + "', resourcetype: '" + $P{ifResourceId} + "', dsname: 'ifInOctets,ifOutOctets' and string: 'ifSpeed'"]]></textFieldExpression>
+			</textField>
+		</band>
+	</noData>
 </jasperReport>
