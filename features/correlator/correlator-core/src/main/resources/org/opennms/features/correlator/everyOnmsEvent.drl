@@ -1,27 +1,59 @@
 package org.opennms.features.correlator
 import org.opennms.netmgt.xml.event.Event
 
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
+
+global org.slf4j.Logger LOGGER;
+
 declare org.opennms.netmgt.xml.event.Event
     @role(event)
+    @timestamp(creationTime)
 end
 
 rule "Anything Very New"
 when
     $e : Object()
 then
-    System.out.println("object in rule: " + $e);
+//    LOGGER.debug("object in rule: '{}'", $e);
 end
 
 rule "Any Event Rule"
 when
     $e : Event()
 then
-    System.out.println("event in rule: " + $e.getDescr());
+//    LOGGER.debug("event in rule: '{}' timestamp: '{}'", $e.getDescr(), $e.getCreationTime());
 end
 
-rule "Some Events Rule"
+rule "WebUI login success"
 when
-    $e : Event(descr == "This event is sent by the WebUI when a user has successfully authenticated")
+    $e : Event(uei == "uei.opennms.org/internal/authentication/successfulLogin")
 then
-    System.out.println("WebUI login success in rule: " + $e);
+    LOGGER.debug("WebUI login -success- in rule: '{}'", $e.getCreationTime());
+end
+
+rule "WebUI login failed"
+when
+    $e : Event(uei == "uei.opennms.org/internal/authentication/failure")
+then
+    LOGGER.debug("WebUI login -failure- in rule: '{}'", $e.getCreationTime());
+end
+
+rule "WebUI login brute force check alert"
+when
+    $s : Event(uei == "uei.opennms.org/internal/authentication/successfulLogin")
+    Number(doubleValue > 5) from accumulate(
+        Event(uei == "uei.opennms.org/internal/authentication/failure") over window:time(2m), count()
+    )
+then
+    LOGGER.debug("WebUI login brute force success identified!");
+end
+
+rule "WebUI login brute force check"
+when
+    Number(doubleValue > 5) from accumulate(
+        Event(uei == "uei.opennms.org/internal/authentication/failure") over window:time(2m), count()
+    )
+then
+    LOGGER.debug("WebUI login brute force identified!");
 end

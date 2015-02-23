@@ -39,7 +39,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * @author Markus Neumann
+ * @author Markus Neumann Markus@OpenNMS.com
  */
 @EventListener(name = "Correlator", logPrefix = "Correlator-LogPrefix")
 public class Correlator {
@@ -54,6 +54,7 @@ public class Correlator {
         Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
         KieBase kBase = kieContainer.getKieBase();
         this.kSession = kBase.newKieSession();
+        this.kSession.setGlobal("LOGGER", LOGGER);
     }
 
     public void stop() {
@@ -67,10 +68,10 @@ public class Correlator {
 
     @EventHandler(uei = EventHandler.ALL_UEIS)
     public void handleEventAll(Event e) {
-        LOGGER.debug("Correlator!! ksession='{}' \t event='{}'", kSession, e);
+//        LOGGER.debug("Correlator!! ksession='{}' \t event='{}'", kSession, e);
         kSession.insert(e);
         int amountOfRulesFired = kSession.fireAllRules();
-        LOGGER.debug("Correlator - Received event: {} \t fired {} rules against it. UIE was {}", e.getDbid(), amountOfRulesFired, e.getUei());
+//        LOGGER.debug("Correlator - Received event: {} \t fired {} rules against it. UIE was {}", e.getDbid(), amountOfRulesFired, e.getUei());
     }
 
     public EventProxy getEventProxy() {
