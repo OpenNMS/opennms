@@ -27,6 +27,8 @@
  *******************************************************************************/
 package org.opennms.features.vaadin.surveillanceviews.ui.dashboard;
 
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.Table;
 import org.opennms.features.vaadin.surveillanceviews.service.SurveillanceViewService;
 import org.opennms.netmgt.model.OnmsCategory;
@@ -42,7 +44,7 @@ public abstract class SurveillanceViewDetailTable extends Table {
 
         m_surveillanceViewService = surveillanceViewService;
         m_enabled = enabled;
-        
+
         setSizeFull();
         setPageLength(5);
     }
@@ -52,4 +54,19 @@ public abstract class SurveillanceViewDetailTable extends Table {
     }
 
     public abstract void refreshDetails(Set<OnmsCategory> rowCategories, Set<OnmsCategory> colCategories);
+
+    protected HorizontalLayout getImageSeverityLayout(String content) {
+        HorizontalLayout horizontalLayout = new HorizontalLayout();
+
+        Label placeholder = new Label();
+        placeholder.addStyleName("placeholder");
+        horizontalLayout.addComponent(placeholder);
+
+        Label contentLabel = new Label(content);
+        contentLabel.addStyleName("content");
+
+        horizontalLayout.addComponent(contentLabel);
+
+        return horizontalLayout;
+    }
 }

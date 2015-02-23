@@ -80,6 +80,8 @@ public class SurveillanceView extends VerticalLayout {
         this.m_dashboard = dashboard;
         this.m_enabled = enabled;
 
+        setSpacing(true);
+
         setView(selectedView);
     }
 

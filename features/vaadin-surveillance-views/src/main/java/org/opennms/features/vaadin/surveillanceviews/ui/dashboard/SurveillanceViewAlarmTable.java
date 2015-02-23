@@ -29,6 +29,7 @@ package org.opennms.features.vaadin.surveillanceviews.ui.dashboard;
 
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.server.ExternalResource;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Link;
 import com.vaadin.ui.Table;
@@ -63,6 +64,14 @@ public class SurveillanceViewAlarmTable extends SurveillanceViewDetailTable {
                 } else {
                     return new Label(onmsAlarm.getNodeLabel());
                 }
+            }
+        });
+
+        addGeneratedColumn("logMsg", new ColumnGenerator() {
+            @Override
+            public Object generateCell(Table table, Object itemId, Object propertyId) {
+                OnmsAlarm onmsAlarm = (OnmsAlarm) itemId;
+                return getImageSeverityLayout(onmsAlarm.getLogMsg());
             }
         });
 

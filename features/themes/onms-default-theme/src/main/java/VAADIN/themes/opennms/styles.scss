@@ -209,6 +209,7 @@ $header-background-image: url("images/headerbg.png") !default;
   padding: 0px 0px 0px 0px;
   background-color: #ffffff;
 }
+
 /*
 .v-table-cell-content-marked {
   background: #57a7ed;
@@ -237,28 +238,17 @@ $header-background-image: url("images/headerbg.png") !default;
 }
 
 .surveillance-view .v-table-caption-container {
-  overflow: hidden;
+  overflow: visible;
   white-space: nowrap;
-  margin-left: 6px;
   padding-right: 0px;
   margin-left: 4px;
   text-transform: none;
-  /*
-    For Vaadin Theme Runo:
-
-    padding: 9px 0px 9px 0px;
-    overflow: visible;
-    color: #393a3c;
-    font-size: 15px;
-    text-shadow: #ffffff 0 1px 0;
-    margin-left: 4px;
-  */
 }
 
 .surveillance-view .v-table-cell-wrapper {
   line-height: normal;
   padding: 0px 0px 0px 0px;
-  word-break: break-word;
+  word-break: break-all;
   white-space: normal;
 }
 
@@ -268,7 +258,6 @@ $header-background-image: url("images/headerbg.png") !default;
   border-top: 1px solid #999999;
   line-height: 30px;
   padding-left: 4px;
-  td-padding-left: 4px;
   width: 100%;
 }
 
@@ -281,7 +270,6 @@ $header-background-image: url("images/headerbg.png") !default;
   background-position: left top;
   line-height: 30px;
   padding-left: 18px;
-  td-padding-left: 18px;
 }
 
 .surveillance-view .major {
@@ -293,7 +281,6 @@ $header-background-image: url("images/headerbg.png") !default;
   background-position: left top;
   line-height: 30px;
   padding-left: 18px;
-  td-padding-left: 18px;
 }
 
 .surveillance-view .minor {
@@ -305,7 +292,6 @@ $header-background-image: url("images/headerbg.png") !default;
   background-position: left top;
   line-height: 30px;
   padding-left: 18px;
-  td-padding-left: 18px;
 }
 
 .surveillance-view .warning {
@@ -317,7 +303,6 @@ $header-background-image: url("images/headerbg.png") !default;
   background-position: left top;
   line-height: 30px;
   padding-left: 18px;
-  td-padding-left: 18px;
 }
 
 .surveillance-view .indeterminate {
@@ -329,7 +314,6 @@ $header-background-image: url("images/headerbg.png") !default;
   background-position: left top;
   line-height: 30px;
   padding-left: 18px;
-  td-padding-left: 18px;
 }
 
 .surveillance-view .normal {
@@ -341,7 +325,6 @@ $header-background-image: url("images/headerbg.png") !default;
   background-position: left top;
   line-height: 30px;
   padding-left: 18px;
-  td-padding-left: 18px;
 }
 
 .surveillance-view .cleared {
@@ -353,7 +336,6 @@ $header-background-image: url("images/headerbg.png") !default;
   background-position: left top;
   line-height: 30px;
   padding-left: 18px;
-  td-padding-left: 18px;
 }
 
 .surveillance-view .v-table-cell-content-white {
@@ -361,7 +343,6 @@ $header-background-image: url("images/headerbg.png") !default;
   background-color: #ffffff;
   border-top: 1px solid #999999;
   padding-left: 4px;
-  td-padding-left: 4px;
 }
 
 .surveillance-view .v-table-cell-content-critical {
@@ -370,7 +351,6 @@ $header-background-image: url("images/headerbg.png") !default;
   border-top: 1px solid #999999;
   line-height: 30px;
   padding-left: 4px;
-  td-padding-left: 4px;
   height:30px;
   padding-top: 6px;
 }
@@ -381,7 +361,6 @@ $header-background-image: url("images/headerbg.png") !default;
   border-top: 1px solid #999999;
   line-height: 30px;
   padding-left: 4px;
-  td-padding-left: 4px;
   height:30px;
   padding-top: 6px;
 }
@@ -392,7 +371,6 @@ $header-background-image: url("images/headerbg.png") !default;
   border-top: 1px solid #999999;
   line-height: 30px;
   padding-left: 4px;
-  td-padding-left: 4px;
   height:30px;
   padding-top: 6px;
 }
@@ -403,7 +381,6 @@ $header-background-image: url("images/headerbg.png") !default;
   border-top: 1px solid #999999;
   line-height: 30px;
   padding-left: 4px;
-  td-padding-left: 4px;
   height:30px;
   padding-top: 6px;
 }
@@ -414,7 +391,6 @@ $header-background-image: url("images/headerbg.png") !default;
   border-top: 1px solid #999999;
   line-height: 30px;
   padding-left: 4px;
-  td-padding-left: 4px;
   height:30px;
   padding-top: 6px;
 }
@@ -425,7 +401,6 @@ $header-background-image: url("images/headerbg.png") !default;
   border-top: 1px solid #999999;
   line-height: 30px;
   padding-left: 4px;
-  td-padding-left: 4px;
   height:30px;
   padding-top: 6px;
 }
@@ -449,10 +424,9 @@ $header-background-image: url("images/headerbg.png") !default;
   background-repeat: repeat-y;
   background-position: left top;
   line-height: 30px;
-  padding-left: 18px;
-  td-padding-left: 18px;
   height:30px;
   padding-top: 6px;
+  padding-right: 4px;
 }
 
 .surveillance-view .v-table-cell-content-major-image {
@@ -463,10 +437,9 @@ $header-background-image: url("images/headerbg.png") !default;
   background-repeat: repeat-y;
   background-position: left top;
   line-height: 30px;
-  padding-left: 18px;
-  td-padding-left: 18px;
   height:30px;
   padding-top: 6px;
+  padding-right: 4px;
 }
 
 .surveillance-view .v-table-cell-content-minor-image {
@@ -477,10 +450,9 @@ $header-background-image: url("images/headerbg.png") !default;
   background-repeat: repeat-y;
   background-position: left top;
   line-height: 30px;
-  padding-left: 18px;
-  td-padding-left: 18px;
   height:30px;
   padding-top: 6px;
+  padding-right: 4px;
 }
 
 .surveillance-view .v-table-cell-content-warning-image {
@@ -491,10 +463,9 @@ $header-background-image: url("images/headerbg.png") !default;
   background-repeat: repeat-y;
   background-position: left top;
   line-height: 30px;
-  padding-left: 18px;
-  td-padding-left: 18px;
   height:30px;
   padding-top: 6px;
+  padding-right: 4px;
 }
 
 .surveillance-view .v-table-cell-content-indeterminate-image {
@@ -505,10 +476,9 @@ $header-background-image: url("images/headerbg.png") !default;
   background-repeat: repeat-y;
   background-position: left top;
   line-height: 30px;
-  padding-left: 18px;
-  td-padding-left: 18px;
   height:30px;
   padding-top: 6px;
+  padding-right: 4px;
 }
 
 .surveillance-view .v-table-cell-content-normal-image {
@@ -519,10 +489,9 @@ $header-background-image: url("images/headerbg.png") !default;
   background-repeat: repeat-y;
   background-position: left top;
   line-height: 30px;
-  padding-left: 18px;
-  td-padding-left: 18px;
   height:30px;
   padding-top: 6px;
+  padding-right: 4px;
 }
 
 .surveillance-view .v-table-cell-content-cleared-image {
@@ -533,8 +502,42 @@ $header-background-image: url("images/headerbg.png") !default;
   background-repeat: repeat-y;
   background-position: left top;
   line-height: 30px;
-  padding-left: 18px;
-  td-padding-left: 18px;
+  height:30px;
+  padding-top: 6px;
+  padding-right: 4px;
+}
+
+.surveillance-view .placeholder {
+  width: 22px;
+  float:left;
+}
+
+.surveillance-view .content {
+  float: left;
+  word-break: break-all;
+  white-space: normal;
+}
+
+.surveillance-view .v-table-cell-content-rtc-normal {
+  color: black;
+  background-color: #d7e1cd;
+  border-top: 1px solid #999999;
+  background-image: url(../../../../images/bgNormal.png);
+  background-repeat: repeat-y;
+  background-position: left top;
+  line-height: 30px;
+  height:30px;
+  padding-top: 6px;
+}
+
+.surveillance-view .v-table-cell-content-rtc-critical {
+  color: black;
+  background-color: #f5cdcd;
+  border-top: 1px solid #999999;
+  background-image: url(../../../../images/bgCritical.png);
+  background-repeat: repeat-y;
+  background-position: left top;
+  line-height: 30px;
   height:30px;
   padding-top: 6px;
 }

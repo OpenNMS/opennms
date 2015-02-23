@@ -29,6 +29,7 @@ package org.opennms.features.vaadin.surveillanceviews.ui.dashboard;
 
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.server.ExternalResource;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Link;
 import com.vaadin.ui.Table;
@@ -71,14 +72,15 @@ public class SurveillanceViewNodeRtcTable extends SurveillanceViewDetailTable {
             @Override
             public Object generateCell(Table table, final Object itemId, Object columnId) {
                 SurveillanceViewService.NodeRtc nodeRtc = (SurveillanceViewService.NodeRtc) itemId;
-                return nodeRtc.getDownServiceCount() + " of " + nodeRtc.getDownServiceCount();
+                return getImageSeverityLayout(nodeRtc.getDownServiceCount() + " of " + nodeRtc.getDownServiceCount());
             }
         });
 
         addGeneratedColumn("availability", new ColumnGenerator() {
             @Override
-            public Object generateCell(Table table, final Object itemId, Object columnId) {
-                return ((SurveillanceViewService.NodeRtc) itemId).getAvailabilityAsString();
+            public Object generateCell(Table table, final Object itemId, Object propertyId) {
+                SurveillanceViewService.NodeRtc nodeRtc = (SurveillanceViewService.NodeRtc) itemId;
+                return getImageSeverityLayout(nodeRtc.getAvailabilityAsString());
             }
         });
 
@@ -87,11 +89,12 @@ public class SurveillanceViewNodeRtcTable extends SurveillanceViewDetailTable {
             public String getStyle(Table table, Object itemId, Object propertyId) {
                 String style = null;
                 SurveillanceViewService.NodeRtc nodeRtc = (SurveillanceViewService.NodeRtc) itemId;
+
                 if (!"node".equals(propertyId)) {
                     if (nodeRtc.getAvailability() == 1.0) {
-                        style = "normal-image";
+                        style = "rtc-normal";
                     } else {
-                        style = "critical-image";
+                        style = "rtc-critical";
                     }
                 }
                 return style;
