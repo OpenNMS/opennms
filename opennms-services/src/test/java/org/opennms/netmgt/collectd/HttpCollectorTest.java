@@ -218,6 +218,7 @@ public class HttpCollectorTest implements TestContextAware, InitializingBean {
         int stepSizeInSecs = 1;
 
         int stepSizeInMillis = stepSizeInSecs*1000;
+        final int rangeSizeInMillis = stepSizeInMillis + 20000;
 
         m_collectionSpecification.initialize(m_collectionAgent);
 
@@ -231,15 +232,15 @@ public class HttpCollectorTest implements TestContextAware, InitializingBean {
 
         // This is the value of documentCount from the first test page
         // documentCount = Gauge32: 5
-        assertEquals("documentCount", Double.valueOf(5.0), RrdUtils.fetchLastValueInRange(documentCountRrdFile.getAbsolutePath(), "documentCount", stepSizeInMillis, stepSizeInMillis));
+        assertEquals("documentCount", Double.valueOf(5.0), RrdUtils.fetchLastValueInRange(documentCountRrdFile.getAbsolutePath(), "documentCount", stepSizeInMillis, rangeSizeInMillis));
 
         // This is the value of documentType from the first test page
         // someNumber = Gauge32: 17
-        assertEquals("documentType", Double.valueOf(17.0), RrdUtils.fetchLastValueInRange(someNumberRrdFile.getAbsolutePath(), "someNumber", stepSizeInMillis, stepSizeInMillis));
+        assertEquals("documentType", Double.valueOf(17.0), RrdUtils.fetchLastValueInRange(someNumberRrdFile.getAbsolutePath(), "someNumber", stepSizeInMillis, rangeSizeInMillis));
 
         // This is the value of greatAnswer from the second test page
         //someNumber = Gauge32: 42
-        assertEquals("greatAnswer", Double.valueOf(42.0), RrdUtils.fetchLastValueInRange(greatAnswerRrdFile.getAbsolutePath(), "greatAnswer", stepSizeInMillis, stepSizeInMillis));
+        assertEquals("greatAnswer", Double.valueOf(42.0), RrdUtils.fetchLastValueInRange(greatAnswerRrdFile.getAbsolutePath(), "greatAnswer", stepSizeInMillis, rangeSizeInMillis));
 
         m_collectionSpecification.release(m_collectionAgent);
     }
@@ -269,6 +270,7 @@ public class HttpCollectorTest implements TestContextAware, InitializingBean {
         int stepSizeInSecs = 1;
 
         int stepSizeInMillis = stepSizeInSecs*1000;
+        final int rangeSizeInMillis = stepSizeInMillis + 20000;
 
         m_collectionSpecification.initialize(m_collectionAgent);
 
@@ -282,13 +284,13 @@ public class HttpCollectorTest implements TestContextAware, InitializingBean {
         File cpuLoadRrdFile       = new File(nodeDir, CollectorTestUtils.rrd("CPULoad"));
 
         // Total Accesses: 175483
-        assertEquals("TotalAccesses", Double.valueOf(175483.0), RrdUtils.fetchLastValueInRange(documentCountRrdFile.getAbsolutePath(), "TotalAccesses", stepSizeInMillis, stepSizeInMillis));
+        assertEquals("TotalAccesses", Double.valueOf(175483.0), RrdUtils.fetchLastValueInRange(documentCountRrdFile.getAbsolutePath(), "TotalAccesses", stepSizeInMillis, rangeSizeInMillis));
 
         // IdleWorkers: 12
-        assertEquals("IdleWorkers", Double.valueOf(12.0), RrdUtils.fetchLastValueInRange(someNumberRrdFile.getAbsolutePath(), "IdleWorkers", stepSizeInMillis, stepSizeInMillis));
+        assertEquals("IdleWorkers", Double.valueOf(12.0), RrdUtils.fetchLastValueInRange(someNumberRrdFile.getAbsolutePath(), "IdleWorkers", stepSizeInMillis, rangeSizeInMillis));
 
         // CPU Load: .497069
-        assertEquals("CPULoad", Double.valueOf(0.497069), RrdUtils.fetchLastValueInRange(cpuLoadRrdFile.getAbsolutePath(), "CPULoad", stepSizeInMillis, stepSizeInMillis));
+        assertEquals("CPULoad", Double.valueOf(0.497069), RrdUtils.fetchLastValueInRange(cpuLoadRrdFile.getAbsolutePath(), "CPULoad", stepSizeInMillis, rangeSizeInMillis));
         m_collectionSpecification.release(m_collectionAgent);
     }
 
@@ -347,6 +349,7 @@ public class HttpCollectorTest implements TestContextAware, InitializingBean {
             int stepSizeInSecs = 1;
 
             int stepSizeInMillis = stepSizeInSecs*1000;
+            final int rangeSizeInMillis = stepSizeInMillis + 20000;
 
             m_collectionSpecification.initialize(m_collectionAgent);
 
@@ -360,13 +363,13 @@ public class HttpCollectorTest implements TestContextAware, InitializingBean {
             File cpuLoadRrdFile       = new File(nodeDir, CollectorTestUtils.rrd("CPULoad"));
 
             // Total Accesses: 175483
-            assertEquals("TotalAccesses", Double.valueOf(175483.0), RrdUtils.fetchLastValueInRange(documentCountRrdFile.getAbsolutePath(), "TotalAccesses", stepSizeInMillis, stepSizeInMillis));
-
+            assertEquals("TotalAccesses", Double.valueOf(175483.0), RrdUtils.fetchLastValueInRange(documentCountRrdFile.getAbsolutePath(), "TotalAccesses", stepSizeInMillis, rangeSizeInMillis));
+    
             // IdleWorkers: 12
-            assertEquals("IdleWorkers", Double.valueOf(12.0), RrdUtils.fetchLastValueInRange(someNumberRrdFile.getAbsolutePath(), "IdleWorkers", stepSizeInMillis, stepSizeInMillis));
+            assertEquals("IdleWorkers", Double.valueOf(12.0), RrdUtils.fetchLastValueInRange(someNumberRrdFile.getAbsolutePath(), "IdleWorkers", stepSizeInMillis, rangeSizeInMillis));
 
             // CPU Load: .497069
-            assertEquals("CPULoad", Double.valueOf(0.497069), RrdUtils.fetchLastValueInRange(cpuLoadRrdFile.getAbsolutePath(), "CPULoad", stepSizeInMillis, stepSizeInMillis));
+            assertEquals("CPULoad", Double.valueOf(0.497069), RrdUtils.fetchLastValueInRange(cpuLoadRrdFile.getAbsolutePath(), "CPULoad", stepSizeInMillis, rangeSizeInMillis));
             m_collectionSpecification.release(m_collectionAgent);
         } finally {
             Locale.setDefault(defaultLocale);
