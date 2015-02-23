@@ -65,7 +65,7 @@ import com.google.common.collect.Lists;
         "classpath:/META-INF/opennms/applicationContext-measurements-test-jrb.xml"
 })
 @JUnitConfigurationEnvironment
-@JUnitTemporaryDatabase
+@JUnitTemporaryDatabase(reuseDatabase=false) // relies on setUp()
 @Transactional
 public class MeasurementsRestServiceWithJrbTest extends MeasurementsRestServiceTest {
 
@@ -142,20 +142,21 @@ public class MeasurementsRestServiceWithJrbTest extends MeasurementsRestServiceT
         Source ifInOctets = new Source();
         ifInOctets.setResourceId("node[1].interfaceSnmp[eth0-04013f75f101]");
         ifInOctets.setAttribute("ifInOctets");
-        ifInOctets.setAggregation("MIN");
+        ifInOctets.setAggregation("MAX");
         ifInOctets.setLabel("ifInOctets");
         request.setSources(Lists.newArrayList(ifInOctets));
 
         Expression scale = new Expression();
-        scale.setLabel("ifInOctetsScaled");
-        scale.setExpression("ifInOctets * 2.0");
+        scale.setLabel("ifUsage");
+        // References a variable from strings.properties
+        scale.setExpression("ifInOctets * 8 / ifInOctets.ifSpeed");
         request.setExpressions(Lists.newArrayList(scale));
 
         QueryResponse response = m_svc.query(request);
-        Measurement metric = response.getMeasurements().get(0);
+        Measurement metric = response.getMeasurements().get(3);
         Map<String, Double> values = metric.getValues();
 
-        assertEquals(10252.8634939, values.get("ifInOctets"), 0.0001);
-        assertEquals(10252.8634939 * 2, values.get("ifInOctetsScaled"), 0.0001);
+        assertEquals(975.3053156146178, values.get("ifInOctets"), 0.0001);
+        assertEquals(975.3053156146178 * 8d / 1000.0d, values.get("ifUsage"), 0.0001);
     }
 }

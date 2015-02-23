@@ -29,10 +29,8 @@
 package org.opennms.web.rest.measurements.fetch;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
-import java.util.List;
 import java.util.Map;
 import java.util.SortedMap;
 
@@ -48,13 +46,9 @@ import org.apache.commons.exec.PumpStreamHandler;
 import org.apache.commons.lang.StringUtils;
 import org.jrobin.core.RrdException;
 import org.opennms.netmgt.dao.api.ResourceDao;
-import org.opennms.netmgt.model.OnmsResource;
-import org.opennms.netmgt.model.RrdGraphAttribute;
 import org.opennms.netmgt.rrd.model.RrdXport;
 import org.opennms.netmgt.rrd.model.XRow;
 import org.opennms.web.rest.measurements.model.Source;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
@@ -68,11 +62,7 @@ import com.google.common.collect.Maps;
  * @author Jesse White <jesse@opennms.org>
  * @author Dustin Frisch <fooker@lab.sh>
  */
-public class JniRrdFetchStrategy implements MeasurementFetchStrategy {
-
-    private static final Logger LOG = LoggerFactory.getLogger(JrbFetchStrategy.class);
-
-    private final ResourceDao m_resourceDao;
+public class JniRrdFetchStrategy extends AbstractRrdBasedFetchStrategy {
 
     /**
      * Maximum runtime of 'rrdtool xport' in milliseconds before failing and
@@ -81,16 +71,16 @@ public class JniRrdFetchStrategy implements MeasurementFetchStrategy {
     public static final long XPORT_TIMEOUT_MS = 120000;
 
     public JniRrdFetchStrategy(final ResourceDao resourceDao) {
-        m_resourceDao = resourceDao;
+        super(resourceDao);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public FetchResults fetch(long start, long end, long step, int maxrows,
-            List<Source> sources) throws IOException, RrdException {
-
+    protected long getRows(long start, long end, long step, int maxrows,
+            Map<Source, String> rrdsBySource,
+            SortedMap<Long, Map<String, Double>> rows) throws RrdException {
         String rrdBinary = System.getProperty("rrd.binary");
         if (rrdBinary == null) {
             throw new RrdException("No RRD binary is set.");
@@ -118,23 +108,9 @@ public class JniRrdFetchStrategy implements MeasurementFetchStrategy {
             cmdLine.addArgument("" + maxrows);
         }
 
-        for (final Source source : sources) {
-            final OnmsResource resource = m_resourceDao.getResourceById(source
-                    .getResourceId());
-            if (resource == null) {
-                LOG.error("No resource with id: {}", source.getResourceId());
-                return null;
-            }
-
-            final RrdGraphAttribute rrdGraphAttribute = resource
-                    .getRrdGraphAttributes().get(source.getAttribute());
-            if (rrdGraphAttribute == null) {
-                LOG.error("No attribute with name: {}", source.getAttribute());
-                return null;
-            }
-
-            final String rrdFile = System.getProperty("rrd.base.dir")
-                    + File.separator + rrdGraphAttribute.getRrdRelativePath();
+        for (final Map.Entry<Source, String> entry : rrdsBySource.entrySet()) {
+            final Source source = entry.getKey();
+            final String rrdFile = entry.getValue();
 
             cmdLine.addArgument(String.format("DEF:%s=%s:%s:%s",
                     source.getLabel(), rrdFile, source.getAttribute(),
@@ -179,7 +155,6 @@ public class JniRrdFetchStrategy implements MeasurementFetchStrategy {
         }
 
         // Format
-        final SortedMap<Long, Map<String, Double>> rows = Maps.newTreeMap();
         for (final XRow row : rrdXport.getRows()) {
             Map<String, Double> values = Maps.newHashMap();
             int k = 0;
@@ -189,6 +164,7 @@ public class JniRrdFetchStrategy implements MeasurementFetchStrategy {
             rows.put(row.getTimestamp() * 1000, values);
         }
 
-        return new FetchResults(rows, rrdXport.getMeta().getStep() * 1000);
+        // Actual step size
+        return rrdXport.getMeta().getStep() * 1000;
     }
 }

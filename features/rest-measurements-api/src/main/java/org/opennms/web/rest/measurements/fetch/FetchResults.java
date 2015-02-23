@@ -38,20 +38,27 @@ import java.util.SortedMap;
  */
 public class FetchResults {
 
-    private SortedMap<Long, Map<String, Double>> rows;
+    private final Map<String, Object> m_constants;
 
-    private long step;
+    private final SortedMap<Long, Map<String, Double>> m_rows;
 
-    public FetchResults(SortedMap<Long, Map<String, Double>> rows, long step) {
-        this.rows = rows;
-        this.step = step;
+    private final long m_step;
+
+    public FetchResults(SortedMap<Long, Map<String, Double>> rows, long step, Map<String, Object> constants) {
+        m_rows = rows;
+        m_step = step;
+        m_constants = constants;
     }
 
     public SortedMap<Long, Map<String, Double>> getRows() {
-        return rows;
+        return m_rows;
     }
 
     public long getStep() {
-        return step;
+        return m_step;
+    }
+
+    public Map<String, Object> getConstants() {
+        return m_constants;
     }
 }

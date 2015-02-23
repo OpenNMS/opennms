@@ -28,23 +28,15 @@
 
 package org.opennms.web.rest.measurements.fetch;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.SortedMap;
 
 import org.jrobin.core.RrdException;
 import org.jrobin.data.DataProcessor;
 import org.opennms.netmgt.dao.api.ResourceDao;
-import org.opennms.netmgt.model.OnmsResource;
-import org.opennms.netmgt.model.RrdGraphAttribute;
 import org.opennms.web.rest.measurements.model.Source;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.google.common.collect.Maps;
 
 /**
  * Used to fetch measurements from JRB files.
@@ -52,22 +44,19 @@ import com.google.common.collect.Maps;
  * @author Jesse White <jesse@opennms.org>
  * @author Dustin Frisch <fooker@lab.sh>
  */
-public class JrbFetchStrategy implements MeasurementFetchStrategy {
-
-    private static final Logger LOG = LoggerFactory.getLogger(JrbFetchStrategy.class);
-
-    private final ResourceDao m_resourceDao;
+public class JrbFetchStrategy extends AbstractRrdBasedFetchStrategy {
 
     public JrbFetchStrategy(final ResourceDao resourceDao) {
-        m_resourceDao = resourceDao;
+        super(resourceDao);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public FetchResults fetch(long start, long end, long step, int maxrows,
-            List<Source> sources) throws IOException, RrdException {
+    protected long getRows(long start, long end, long step, int maxrows,
+            Map<Source, String> rrdsBySource,
+            SortedMap<Long, Map<String, Double>> rows) throws RrdException {
 
         final long startInSeconds = (long) Math.floor(start / 1000);
         final long endInSeconds = (long) Math.floor(end / 1000);
@@ -84,39 +73,27 @@ public class JrbFetchStrategy implements MeasurementFetchStrategy {
         }
         dproc.setFetchRequestResolution(stepInSeconds);
 
-        for (final Source source : sources) {
-            final OnmsResource resource = m_resourceDao.getResourceById(source
-                    .getResourceId());
-            if (resource == null) {
-                LOG.error("No resource with id: {}", source.getResourceId());
-                return null;
-            }
+        for (final Map.Entry<Source, String> entry : rrdsBySource.entrySet()) {
+            final Source source = entry.getKey();
+            final String rrdFile = entry.getValue();
 
-            final RrdGraphAttribute rrdGraphAttribute = resource
-                    .getRrdGraphAttributes().get(source.getAttribute());
-            if (rrdGraphAttribute == null) {
-                LOG.error("No attribute with name: {}", source.getAttribute());
-                return null;
-            }
-
-            final String file = System.getProperty("rrd.base.dir")
-                    + File.separator + rrdGraphAttribute.getRrdRelativePath();
-
-            dproc.addDatasource(source.getLabel(), file, source.getAttribute(),
+            dproc.addDatasource(source.getLabel(), rrdFile, source.getAttribute(),
                     source.getAggregation());
         }
 
-        SortedMap<Long, Map<String, Double>> rows = Maps.newTreeMap();
+        try {
+            dproc.processData();
+        } catch (IOException e) {
+            throw new RrdException("JRB processing failed.", e);
+        }
 
-        dproc.processData();
-
-        long[] timestamps = dproc.getTimestamps();
+        final long[] timestamps = dproc.getTimestamps();
 
         for (int i = 0; i < timestamps.length; i++) {
             final long timestampInSeconds = timestamps[i] - dproc.getStep();
 
-            Map<String, Double> data = new HashMap<String, Double>();
-            for (Source source : sources) {
+            final Map<String, Double> data = new HashMap<String, Double>();
+            for (Source source : rrdsBySource.keySet()) {
                 data.put(source.getLabel(),
                         dproc.getValues(source.getLabel())[i]);
             }
@@ -124,6 +101,7 @@ public class JrbFetchStrategy implements MeasurementFetchStrategy {
             rows.put(timestampInSeconds * 1000, data);
         }
 
-        return new FetchResults(rows, dproc.getStep() * 1000);
+        // Actual step size
+        return dproc.getStep() * 1000;
     }
 }

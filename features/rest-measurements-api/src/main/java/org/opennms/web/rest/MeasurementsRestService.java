@@ -29,7 +29,6 @@
 package org.opennms.web.rest;
 
 import java.util.Date;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -191,19 +190,29 @@ public class MeasurementsRestService {
         response.setEnd(request.getEnd());
         response.setStep(results.getStep());
 
+        // The JEXL context
+        final Map<String, Object> jexlValues = Maps.newHashMap();
+        final JexlContext context = new MapContext(jexlValues);
+
+        // Add constants (i.e. values from strings.properties)
+        // retrieved by the fetch operation
+        jexlValues.putAll(results.getConstants());
+
+        // Add some additional constants for ease of use
+        jexlValues.put("__inf", Double.POSITIVE_INFINITY);
+        jexlValues.put("__neg_inf", Double.NEGATIVE_INFINITY);
+
         // Perform the calculations and compile the results
         final List<Measurement> measurements = Lists.newArrayListWithCapacity(results.getRows().size());
         for (final SortedMap.Entry<Long, Map<String, Double>> rowEntry : results.getRows().entrySet()) {
             final Map<String, Double> row = rowEntry.getValue();
 
             // Evaluate every expression, in the same order as which they appeared in the query
-            // and store the results in the row. This allows for expressions to use previous results.
+            // and store the results back in the row, allowing expressions to use previous results.
             for (final Map.Entry<String, org.apache.commons.jexl2.Expression> expressionEntry : expressions.entrySet()) {
-                Map<String, Object> jexlValues = new HashMap<String, Object>(row);
-                // Add some additional constants for ease of use
-                jexlValues.put("__inf", Double.POSITIVE_INFINITY);
-                jexlValues.put("__neg_inf", Double.NEGATIVE_INFINITY);
-                final JexlContext context = new MapContext(jexlValues);
+                // Add all of the values from the row to the context
+                // overwriting values from the last loop
+                jexlValues.putAll(row);
 
                 try {
                     Object derived = expressionEntry.getValue().evaluate(context);
@@ -281,7 +290,7 @@ public class MeasurementsRestService {
      * @throws NullPointerException when o is null
      * @throws NumberFormatException when the cast fails
      */
-    private static Double toDouble(Object o) {
+    public static Double toDouble(Object o) {
         if (o instanceof Double) {
             return (Double)o;
         } else {
