@@ -113,7 +113,7 @@ public class PageSequenceMonitorTest {
     private void setPageSequenceParam(String virtualHost) {
         String virtualHostParam;
         if (virtualHost == null) {
-            virtualHostParam = "";
+            virtualHostParam = "http-version=\"1.0\"";
         } else {
             virtualHostParam = "virtual-host=\"" + virtualHost + "\"";
         }
@@ -400,7 +400,7 @@ public class PageSequenceMonitorTest {
         m_params.put("page-sequence", "" +
             "<?xml version=\"1.0\"?>" +
             "<page-sequence>\n" + 
-            "  <page host=\"localhost\" virtual-host=\"localhost\" path=\"/opennms/\" port=\"10342\" requireIPv6=\"true\"/>\n" +
+            "  <page host=\"localhost\" http-version=\"1.0\" path=\"/opennms/\" port=\"10342\" requireIPv6=\"true\"/>\n" +
             "</page-sequence>\n");
 
         PollStatus status = m_monitor.poll(getHttpService("localhost"), m_params);
@@ -413,7 +413,7 @@ public class PageSequenceMonitorTest {
         m_params.put("page-sequence", "" +
             "<?xml version=\"1.0\"?>" +
             "<page-sequence>\n" + 
-            "  <page host=\"localhost\" virtual-host=\"localhost\" path=\"/opennms/\" port=\"10342\" requireIPv4=\"true\"/>\n" +
+            "  <page host=\"localhost\" http-version=\"1.0\" path=\"/opennms/\" port=\"10342\" requireIPv4=\"true\"/>\n" +
             "</page-sequence>\n");
 
         PollStatus status = m_monitor.poll(getHttpService("localhost"), m_params);
