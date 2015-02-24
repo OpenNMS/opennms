@@ -60,6 +60,11 @@ import com.google.common.collect.Maps;
 /**
  * Used to fetch measurements from RRD files.
  *
+ * As of Feb 24th the jrrd library does not support 'xport' commands.
+ * See http://issues.opennms.org/browse/JRRD-3.
+ *
+ * Instead we call the rrdtool binary via exec.
+ *
  * @author Jesse White <jesse@opennms.org>
  * @author Dustin Frisch <fooker@lab.sh>
  */
