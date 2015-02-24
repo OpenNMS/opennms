@@ -343,7 +343,7 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
                     default:
                         pv = HttpVersion.HTTP_1_1; break;
                     }
-                    if (pv == HttpVersion.HTTP_1_1 && getVirtualHost(svc) == null) {
+                    if (HttpVersion.HTTP_1_1.equals(pv) && getVirtualHost(svc) == null) {
                         LOG.warn("Page {} is configured to use HTTP/1.1, but does not have a virtual host set!  Falling back to HTTP/1.0.", m_page.getPath());
                         pv = HttpVersion.HTTP_1_0;
                     }
