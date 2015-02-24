@@ -233,6 +233,11 @@
       <artifactId>opennms-icmp-jna</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-rrdtool-api</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
   <repositories>

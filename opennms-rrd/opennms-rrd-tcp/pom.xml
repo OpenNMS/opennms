@@ -54,6 +54,11 @@
       <artifactId>opennms-rrd-jrobin</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-rrdtool-api</artifactId>
+      <scope>test</scope>
+    </dependency>
     <!-- 
       Doesn't work properly with urllib2 requests; see
       TcpRrdStrategyTest.java for more details.
