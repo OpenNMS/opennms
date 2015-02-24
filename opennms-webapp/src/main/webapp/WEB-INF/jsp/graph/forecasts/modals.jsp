@@ -57,12 +57,24 @@ try {
     <c:param name="title" value="Interface Utilization Forecast" />
     <c:param name="prefix" value="iuf" />
     <c:param name="reportId" value="InterfaceUtilizationForecast" />
-    <c:param name="graphNames" value="mib2.traffic-inout,mib2.HCtraffic-inout" />
+    <c:param name="graphNames" value="mib2.traffic-inout" />
     <c:param name="jsimpl" value="forecasts/interfaceUtilizationForecast.jsp" />
     <c:param name="showNetworkTab" value="true" />
     <c:param name="depsSatisfied" value="${canForecast}" />
 </c:import>
 
+<%--
+    Interface Utilization Forecast (HC)
+--%>
+<c:import url="forecasts/modal.jsp">
+    <c:param name="title" value="Interface Utilization Forecast (High Speed)" />
+    <c:param name="prefix" value="iufhc" />
+    <c:param name="reportId" value="InterfaceUtilizationForecastHC" />
+    <c:param name="graphNames" value="mib2.HCtraffic-inout" />
+    <c:param name="jsimpl" value="forecasts/interfaceUtilizationForecast.jsp" />
+    <c:param name="showNetworkTab" value="true" />
+    <c:param name="depsSatisfied" value="${canForecast}" />
+</c:import>
 
 <%--
     Disk Utilization Forecast
