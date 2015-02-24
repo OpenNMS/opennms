@@ -365,6 +365,10 @@ public class OpenNMSSeleniumTestCase {
         m_driver.get(BASE_URL + "opennms/support/index.htm");
     }
 
+    protected void remotingPage() {
+        m_driver.get(BASE_URL + "opennms-remoting/index.html");
+    }
+
     protected void goBack() {
         LOG.warn("goBack() is supposedly not supported on Safari!");
         m_driver.navigate().back();
