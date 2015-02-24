@@ -23,9 +23,9 @@
   </repositories>
   <dependencies>
     <dependency>
-      <groupId>org.jrobin</groupId>
-      <artifactId>jrobin</artifactId>
-      <version>1.6.0</version>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>jrobin-dependencies</artifactId>
+        <type>pom</type>
     </dependency>
     <dependency>
       <groupId>commons-cli</groupId>
