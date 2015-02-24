@@ -94,6 +94,10 @@ Requires(pre):	jicmp
 Requires:	jicmp
 Requires(pre):	jicmp6
 Requires:	jicmp6
+Requires(pre):  jrrd
+Requires:       jrrd
+Requires(pre):  rrdtool
+Requires:       rrdtool
 Requires(pre):	%{jdk}
 Requires:	%{jdk}
 Obsoletes:	opennms < 1.3.11
