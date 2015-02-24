@@ -89,18 +89,16 @@ public class JrbFetchStrategy extends AbstractRrdBasedFetchStrategy {
             throw new RrdException("JRB processing failed.", e);
         }
 
-        final long[] timestamps = dproc.getTimestamps();
+        final long[] timestampInSeconds = dproc.getTimestamps();
 
-        for (int i = 0; i < timestamps.length; i++) {
-            final long timestampInSeconds = timestamps[i] - dproc.getStep();
-
+        for (int i = 0; i < timestampInSeconds.length; i++) {
             final Map<String, Double> values = Maps.newHashMap();
             for (Source source : rrdsBySource.keySet()) {
                 values.put(source.getLabel(),
                         dproc.getValues(source.getLabel())[i]);
             }
 
-            measurements.add(new Measurement(timestampInSeconds * 1000, values));
+            measurements.add(new Measurement(timestampInSeconds[i] * 1000, values));
         }
 
         // Actual step size

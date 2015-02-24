@@ -117,7 +117,6 @@ public class MeasurementsRestServiceWithJrbTest extends MeasurementsRestServiceT
 
         // Perform the query
         QueryResponse response = m_svc.query(request);
-        System.err.println(response);
 
         // Validate the results
         assertEquals(3600000L, response.getStep());
@@ -125,7 +124,7 @@ public class MeasurementsRestServiceWithJrbTest extends MeasurementsRestServiceT
         Measurement metric = response.getMeasurements().get(8);
         Map<String, Double> values = metric.getValues();
 
-        assertEquals(1414627200000L, metric.getTimestamp());
+        assertEquals(1414630800000L, metric.getTimestamp());
         assertEquals(270.66140826873385, values.get("ifInOctetsAvg"), 0.0001);
         assertEquals(259.54086378737543, values.get("ifInOctetsMin"), 0.0001);
         assertEquals(67872.22455490529, values.get("ifInOctetsMax"), 0.0001);
