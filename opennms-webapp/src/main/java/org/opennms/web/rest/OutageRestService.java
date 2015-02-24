@@ -37,12 +37,13 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 
-import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.criteria.Alias.JoinType;
+import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.criteria.restrictions.Restrictions;
 import org.opennms.netmgt.dao.api.OutageDao;
 import org.opennms.netmgt.model.OnmsOutage;
@@ -103,7 +104,12 @@ public class OutageRestService extends OnmsRestService {
         readLock();
         try {
             if ("summaries".equals(outageId)) {
-                return Response.ok(new OutageSummaryCollection(m_outageDao.getNodeOutageSummaries(10))).build();
+                final MultivaluedMap<String,String> parms = m_uriInfo.getQueryParameters(true);
+                int limit = 10;
+                if (parms.containsKey("limit")) {
+                    limit = Integer.parseInt(parms.getFirst("limit"));
+                }
+                return Response.ok(new OutageSummaryCollection(m_outageDao.getNodeOutageSummaries(limit))).build();
             } else {
                 return Response.ok(m_outageDao.get(Integer.valueOf(outageId))).build();
             }
