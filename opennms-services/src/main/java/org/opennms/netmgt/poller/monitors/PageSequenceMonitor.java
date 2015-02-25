@@ -51,12 +51,15 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.http.Header;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
+import org.apache.http.HttpVersion;
 import org.apache.http.NameValuePair;
+import org.apache.http.ProtocolVersion;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.params.ClientPNames;
 import org.apache.http.client.params.CookiePolicy;
@@ -328,6 +331,25 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
                     }
                     // method.getParams().setParameter(ClientPNames.VIRTUAL_HOST, host);
                     method.setHeader("Host", host.toHostString()); // This will override the Host header as the HttpClient always going to add it even if it is not specified.
+                }
+
+                if (method instanceof HttpRequestBase) {
+                    ProtocolVersion pv;
+                    switch (m_page.getHttpVersion()) {
+                    case "0.9":
+                        pv = HttpVersion.HTTP_0_9; break;
+                    case "1.0":
+                        pv = HttpVersion.HTTP_1_0; break;
+                    default:
+                        pv = HttpVersion.HTTP_1_1; break;
+                    }
+                    if (HttpVersion.HTTP_1_1.equals(pv) && getVirtualHost(svc) == null) {
+                        LOG.warn("Page {} is configured to use HTTP/1.1, but does not have a virtual host set!  Falling back to HTTP/1.0.", m_page.getPath());
+                        pv = HttpVersion.HTTP_1_0;
+                    }
+                    ((HttpRequestBase)method).setProtocolVersion(pv);
+                } else {
+                    LOG.warn("Unable to determine how to set {} to use HTTP {}.", m_page.getPath(), m_page.getHttpVersion());
                 }
 
                 if (getUserAgent() != null) {
