@@ -37,7 +37,7 @@ import org.opennms.netmgt.model.OnmsCategory;
 
 import java.util.Set;
 
-public abstract class SurveillanceViewDetailTable extends Table {
+public abstract class SurveillanceViewDetailTable extends Table implements SurveillanceViewDetail {
     private SurveillanceViewService m_surveillanceViewService;
     protected boolean m_enabled;
 
@@ -54,8 +54,6 @@ public abstract class SurveillanceViewDetailTable extends Table {
     protected SurveillanceViewService getSurveillanceViewService() {
         return m_surveillanceViewService;
     }
-
-    public abstract void refreshDetails(Set<OnmsCategory> rowCategories, Set<OnmsCategory> colCategories);
 
     protected HorizontalLayout getImageSeverityLayout(String content) {
         HorizontalLayout horizontalLayout = new HorizontalLayout();

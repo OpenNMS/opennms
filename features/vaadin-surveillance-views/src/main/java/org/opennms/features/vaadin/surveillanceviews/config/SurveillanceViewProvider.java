@@ -121,6 +121,15 @@ public class SurveillanceViewProvider {
     }
 
     /**
+     * Returns the default {@link View}.
+     *
+     * @return the {@link View} instance if found, null otherwise
+     */
+    public synchronized View getDefaultView() {
+        return getView(m_surveillanceViewConfiguration.getDefaultView());
+    }
+
+    /**
      * Returns the loaded {@link org.opennms.features.vaadin.surveillanceviews.model.SurveillanceViewConfiguration} instance
      *
      * @return the loaded config instance

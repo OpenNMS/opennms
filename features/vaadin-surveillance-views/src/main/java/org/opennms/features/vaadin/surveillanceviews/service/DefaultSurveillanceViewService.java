@@ -33,9 +33,11 @@ import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.criteria.Order;
 import org.opennms.core.criteria.restrictions.Restriction;
 import org.opennms.core.criteria.restrictions.Restrictions;
+import org.opennms.features.vaadin.surveillanceviews.config.SurveillanceViewProvider;
 import org.opennms.features.vaadin.surveillanceviews.model.Category;
 import org.opennms.features.vaadin.surveillanceviews.model.View;
 import org.opennms.netmgt.config.GroupDao;
+import org.opennms.netmgt.config.groups.Group;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.CategoryDao;
 import org.opennms.netmgt.dao.api.GraphDao;
@@ -439,6 +441,96 @@ public class DefaultSurveillanceViewService implements SurveillanceViewService {
             serviceCriteriaBuilder.in("ipInterface.node", nodes);
             return getNodeListForCriteria(serviceCriteriaBuilder.toCriteria(), outageCriteriaBuilder.toCriteria());
         }
+    }
+
+/*
+    public String[][] getResources(SurveillanceSet set) {
+        OnmsCriteria criteria = new OnmsCriteria(OnmsNode.class, "node");
+        addCriteriaForSurveillanceSet(criteria, set);
+        criteria.add(org.hibernate.criterion.Restrictions.ne("node.type", "D"));
+        criteria.addOrder(org.hibernate.criterion.Order.asc("node.label"));
+
+        List<OnmsNode> nodes = m_nodeDao.findMatching(criteria);
+
+        List<OnmsResource> resources = new ArrayList<OnmsResource>();
+        for (OnmsNode node : nodes) {
+            OnmsResource resource = m_resourceDao.getResourceForNode(node);
+            if (resource != null && (resource.getAttributes().size() > 0 || resource.getChildResources().size() > 0)) {
+                resources.add(resource);
+            }
+        }
+
+        List<String[]> labels = new ArrayList<String[]>(resources.size());
+        for (OnmsResource resource : resources) {
+            labels.add(new String[] { resource.getId(), resource.getResourceType().getLabel() + ": " + resource.getLabel() });
+        }
+
+        return labels.toArray(new String[labels.size()][]);
+    }
+
+    public String[][] getChildResources(String id) {
+        OnmsResource parentResource = m_resourceDao.getResourceById(id);
+        if (parentResource == null) {
+            return null;
+        }
+
+        List<OnmsResource> resources = parentResource.getChildResources();
+
+        List<String[]> labels = new ArrayList<String[]>(resources.size());
+        for (OnmsResource resource : resources) {
+            labels.add(new String[]{resource.getId(), resource.getResourceType().getLabel() + ": " + resource.getLabel()});
+        }
+
+        return labels.toArray(new String[labels.size()][]);
+    }
+
+    public String[][] getPrefabGraphs(String id) {
+        OnmsResource resource = m_resourceDao.getResourceById(id);
+        if (resource == null) {
+            return null;
+        }
+
+        PrefabGraph[] graphs = m_graphDao.getPrefabGraphsForResource(resource);
+
+        List<String[]> labels = new ArrayList<String[]>(graphs.length);
+        for (PrefabGraph graph : graphs) {
+            labels.add(new String[]{graph.getName(), graph.getName()});
+        }
+
+        return labels.toArray(new String[labels.size()][]);
+    }
+    */
+
+    private View getView(String username) {
+
+        LOG.debug("Looking for surveillance view that matches user '{}'", username);
+
+        View userView = SurveillanceViewProvider.getInstance().getView(username);
+
+        if (userView != null) {
+            LOG.debug("Found surveillance view '{}' matching user name '{}'", userView.getName(), username);
+            return userView;
+        }
+
+        List<Group> groups = m_groupDao.findGroupsForUser(username);
+
+        for (Group group : groups) {
+            View groupView = SurveillanceViewProvider.getInstance().getView(group.getName());
+            if (groupView != null) {
+                LOG.debug("Found surveillance view '{}' matching group '{}' name for user '{}'", groupView.getName(), group.getName(), username);
+                return groupView;
+            }
+        }
+
+        View defaultView = SurveillanceViewProvider.getInstance().getDefaultView();
+        if (defaultView == null) {
+            String message = "There is no default surveillance view and we could not find a surviellance view for the user's username ('" + username + "') or any of their groups";
+            LOG.warn(message);
+            throw new ObjectRetrievalFailureException(View.class, message);
+        }
+
+        LOG.debug("Did not find a surveillance view matching the user's user name or one of their group names.  Using the default view for user '{}'", username);
+        return defaultView;
     }
 }
 

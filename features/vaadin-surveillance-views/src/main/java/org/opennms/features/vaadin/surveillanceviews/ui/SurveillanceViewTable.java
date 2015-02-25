@@ -35,7 +35,7 @@ import org.opennms.features.vaadin.surveillanceviews.model.ColumnDef;
 import org.opennms.features.vaadin.surveillanceviews.model.RowDef;
 import org.opennms.features.vaadin.surveillanceviews.model.View;
 import org.opennms.features.vaadin.surveillanceviews.service.SurveillanceViewService;
-import org.opennms.features.vaadin.surveillanceviews.ui.dashboard.SurveillanceViewDetailTable;
+import org.opennms.features.vaadin.surveillanceviews.ui.dashboard.SurveillanceViewDetail;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.SurveillanceStatus;
 
@@ -57,7 +57,7 @@ public class SurveillanceViewTable extends Table {
 
     private TableSelectionMode m_selectionType = TableSelectionMode.ALL_SELECTED;
     private Object m_selectedItemId, m_selectedPropertyId;
-    private List<SurveillanceViewDetailTable> m_detailTables = new ArrayList<SurveillanceViewDetailTable>();
+    private List<SurveillanceViewDetail> m_detailTables = new ArrayList<SurveillanceViewDetail>();
 
     private Set<OnmsCategory> m_selectedRowCategories = null;
     private Set<OnmsCategory> m_selectedColumnCategories = null;
@@ -235,14 +235,14 @@ public class SurveillanceViewTable extends Table {
     }
 
     private void updateDetailsTable() {
-        for (SurveillanceViewDetailTable surveillanceViewDetailTable : m_detailTables) {
-            surveillanceViewDetailTable.refreshDetails(m_selectedRowCategories, m_selectedColumnCategories);
+        for (SurveillanceViewDetail surveillanceViewDetail : m_detailTables) {
+            surveillanceViewDetail.refreshDetails(m_selectedRowCategories, m_selectedColumnCategories);
         }
     }
 
-    public void addDetailsTable(SurveillanceViewDetailTable surveillanceViewDetailTable) {
-        m_detailTables.add(surveillanceViewDetailTable);
-        surveillanceViewDetailTable.refreshDetails(m_selectedRowCategories, m_selectedColumnCategories);
+    public void addDetailsTable(SurveillanceViewDetail surveillanceViewDetail) {
+        m_detailTables.add(surveillanceViewDetail);
+        surveillanceViewDetail.refreshDetails(m_selectedRowCategories, m_selectedColumnCategories);
     }
 }
 

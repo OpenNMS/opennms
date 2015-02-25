@@ -36,6 +36,10 @@ import com.vaadin.ui.VerticalLayout;
 import org.opennms.features.vaadin.surveillanceviews.config.SurveillanceViewProvider;
 import org.opennms.features.vaadin.surveillanceviews.model.View;
 import org.opennms.features.vaadin.surveillanceviews.service.SurveillanceViewService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 /**
  * The surveillance view application's "main" class
@@ -46,6 +50,8 @@ import org.opennms.features.vaadin.surveillanceviews.service.SurveillanceViewSer
 @Theme("opennms")
 @Title("OpenNMS Surveillance Views")
 public class SurveillanceViewsUI extends UI {
+    private static final Logger LOG = LoggerFactory.getLogger(SurveillanceViewsUI.class);
+
     private SurveillanceViewService m_surveillanceViewService;
 
     @Override
@@ -55,12 +61,25 @@ public class SurveillanceViewsUI extends UI {
 
         String viewName = request.getParameter("viewName") == null ? "default" : request.getParameter("viewName");
         boolean dashboard = request.getParameter("dashboard") != null && "true".equals(request.getParameter("dashboard"));
+        String username = request.getRemoteUser();
 
         View view = SurveillanceViewProvider.getInstance().getView("default");
 
         rootLayout.addComponent(new Label("viewName=" + viewName));
         rootLayout.addComponent(new Label("dashboard=" + dashboard));
-        rootLayout.addComponent(new SurveillanceView(view, m_surveillanceViewService, dashboard, true));
+        rootLayout.addComponent(new Label("username=" + username));
+
+        boolean isDashboardRole = true;
+
+        SecurityContext context = SecurityContextHolder.getContext();
+
+        if ((context != null) && !(context.toString().contains(org.opennms.web.api.Authentication.ROLE_DASHBOARD))) {
+            isDashboardRole = false;
+        }
+
+        LOG.debug("User {} is in dashboard role? {}", username, isDashboardRole);
+
+        rootLayout.addComponent(new SurveillanceView(view, m_surveillanceViewService, dashboard, !isDashboardRole));
 
         setContent(rootLayout);
     }
