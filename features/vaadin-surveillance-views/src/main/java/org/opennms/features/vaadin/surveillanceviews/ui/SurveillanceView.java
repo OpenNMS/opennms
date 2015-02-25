@@ -10,6 +10,7 @@ import org.opennms.features.vaadin.surveillanceviews.config.SurveillanceViewProv
 import org.opennms.features.vaadin.surveillanceviews.model.View;
 import org.opennms.features.vaadin.surveillanceviews.service.SurveillanceViewService;
 import org.opennms.features.vaadin.surveillanceviews.ui.dashboard.SurveillanceViewAlarmTable;
+import org.opennms.features.vaadin.surveillanceviews.ui.dashboard.SurveillanceViewGraphComponent;
 import org.opennms.features.vaadin.surveillanceviews.ui.dashboard.SurveillanceViewNodeRtcTable;
 import org.opennms.features.vaadin.surveillanceviews.ui.dashboard.SurveillanceViewNotificationTable;
 
@@ -21,7 +22,7 @@ public class SurveillanceView extends VerticalLayout {
         private Label m_label;
         private NativeSelect m_nativeSelect;
 
-        public SurveillanceViewTableHeader() {
+        private SurveillanceViewTableHeader() {
             setWidth(100, Unit.PERCENTAGE);
             setSpacing(false);
             setPrimaryStyleName("v-caption-surveillance-view");
@@ -111,10 +112,12 @@ public class SurveillanceView extends VerticalLayout {
             SurveillanceViewAlarmTable surveillanceViewAlarmTable = new SurveillanceViewAlarmTable(m_surveillanceViewService, m_enabled);
             SurveillanceViewNotificationTable surveillanceViewNotificationTable = new SurveillanceViewNotificationTable(m_surveillanceViewService, m_enabled);
             SurveillanceViewNodeRtcTable surveillanceViewNodeRtcTable = new SurveillanceViewNodeRtcTable(m_surveillanceViewService, m_enabled);
+            SurveillanceViewGraphComponent surveillanceViewGraphComponent = new SurveillanceViewGraphComponent(m_surveillanceViewService, m_enabled);
 
             lowerLayout.addComponent(surveillanceViewAlarmTable);
             lowerLayout.addComponent(surveillanceViewNotificationTable);
             lowerLayout.addComponent(surveillanceViewNodeRtcTable);
+            lowerLayout.addComponent(surveillanceViewGraphComponent);
 
             m_surveillanceViewTable.addDetailsTable(surveillanceViewAlarmTable);
             m_surveillanceViewTable.addDetailsTable(surveillanceViewNotificationTable);
