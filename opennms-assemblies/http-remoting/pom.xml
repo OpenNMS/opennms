@@ -191,6 +191,18 @@
       <artifactId>org.opennms.features.springframework-security</artifactId>
       <scope>provided</scope>
     </dependency>
+    <!--
+      Make sure that org.opennms.core.soa is marked as 'provided' so that we don't
+      include the JAR for it in this webapp. Otherwise, we will run into classloader
+      issues when trying to expose the ServiceRegistry over Spring RMI.
+      
+      @see http://issues.opennms.org/browse/NMS-7464
+    -->
+    <dependency>
+      <groupId>org.opennms.core</groupId>
+      <artifactId>org.opennms.core.soa</artifactId>
+      <scope>provided</scope>
+    </dependency>
     <dependency>
       <groupId>org.opennms.core</groupId>
       <artifactId>org.opennms.core.spring-web</artifactId>

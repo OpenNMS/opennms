@@ -113,7 +113,7 @@ public class PageSequenceMonitorTest {
     private void setPageSequenceParam(String virtualHost) {
         String virtualHostParam;
         if (virtualHost == null) {
-            virtualHostParam = "";
+            virtualHostParam = "http-version=\"1.0\"";
         } else {
             virtualHostParam = "virtual-host=\"" + virtualHost + "\"";
         }
