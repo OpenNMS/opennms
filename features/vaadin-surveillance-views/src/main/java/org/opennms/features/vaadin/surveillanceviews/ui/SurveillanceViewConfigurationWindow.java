@@ -50,11 +50,14 @@ import org.opennms.features.vaadin.surveillanceviews.model.Def;
 import org.opennms.features.vaadin.surveillanceviews.model.RowDef;
 import org.opennms.features.vaadin.surveillanceviews.model.View;
 import org.opennms.features.vaadin.surveillanceviews.service.SurveillanceViewService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class SurveillanceViewConfigurationWindow extends Window {
+    private static final Logger LOG = LoggerFactory.getLogger(SurveillanceViewConfigurationWindow.class);
 
     public SurveillanceViewConfigurationWindow(final SurveillanceViewService surveillanceViewService, final View view, final SaveActionListener saveActionListener) {
         /**

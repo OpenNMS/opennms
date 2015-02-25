@@ -33,6 +33,8 @@ import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsNotification;
+import org.opennms.netmgt.model.OnmsResource;
+import org.opennms.netmgt.model.OnmsResourceType;
 import org.opennms.netmgt.model.SurveillanceStatus;
 
 import java.text.DecimalFormat;
@@ -55,7 +57,19 @@ public interface SurveillanceViewService {
 
     List<OnmsNotification> getNotificationsForCategories(Set<OnmsCategory> rowCategories, Set<OnmsCategory> colCategories, Map<OnmsNotification, String> customSeverity);
 
+    List<OnmsNode> getNodesForCategories(Set<OnmsCategory> rowCategories, Set<OnmsCategory> colCategories);
+
     List<NodeRtc> getNoteRtcsForCategories(Set<OnmsCategory> rowCategories, Set<OnmsCategory> colCategories);
+
+    Map<OnmsResourceType, List<OnmsResource>> getResourceTypeMapForNodeId(final String nodeId);
+
+    Map<String, String> getGraphResultsForResourceId(final String resourceId);
+
+    Map<OnmsResourceType, List<OnmsResource>> getResourceTypeMapForNodeId(int nodeId);
+
+    Map<String, String> getGraphNameTitleMappingForResourceId(final String resourceId);
+
+    String imageUrlForGraph(String query, int width, int height);
 
     class NodeRtc {
         private static final DecimalFormat AVAILABILITY_FORMAT = new DecimalFormat("0.000%");

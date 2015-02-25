@@ -29,6 +29,8 @@ package org.opennms.features.vaadin.surveillanceviews.config;
 
 import org.opennms.features.vaadin.surveillanceviews.model.SurveillanceViewConfiguration;
 import org.opennms.features.vaadin.surveillanceviews.model.View;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.xml.bind.JAXB;
 import java.io.File;
@@ -37,6 +39,8 @@ import java.io.File;
  * This class is used for loading, holding and saving of {@link SurveillanceViewConfiguration} definitions.
  */
 public class SurveillanceViewProvider {
+    private static final Logger LOG = LoggerFactory.getLogger(SurveillanceViewProvider.class);
+
     /**
      * Instance variable for this singleton object
      */

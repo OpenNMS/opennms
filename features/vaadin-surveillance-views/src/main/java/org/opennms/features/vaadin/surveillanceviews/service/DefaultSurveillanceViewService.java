@@ -52,7 +52,11 @@ import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsNotification;
 import org.opennms.netmgt.model.OnmsOutage;
+import org.opennms.netmgt.model.OnmsResource;
+import org.opennms.netmgt.model.OnmsResourceType;
+import org.opennms.netmgt.model.PrefabGraph;
 import org.opennms.netmgt.model.SurveillanceStatus;
+import org.opennms.web.api.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.orm.ObjectRetrievalFailureException;
@@ -61,13 +65,18 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionOperations;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 
 /**
  * Service class that encapsulate helper methods for surveillance views.
@@ -327,7 +336,8 @@ public class DefaultSurveillanceViewService implements SurveillanceViewService {
         return ((double) upMillis / (double) (serviceCount * (24 * 60 * 60 * 1000)));
     }
 
-    private List<OnmsNode> retrieveNodesForCategories(Set<OnmsCategory> rowCategories, Set<OnmsCategory> colCategories) {
+    @Override
+    public List<OnmsNode> getNodesForCategories(Set<OnmsCategory> rowCategories, Set<OnmsCategory> colCategories) {
         List<OnmsNode> nodes = new ArrayList<>();
 
         if (rowCategories == null || colCategories == null) {
@@ -351,7 +361,7 @@ public class DefaultSurveillanceViewService implements SurveillanceViewService {
 
     @Override
     public List<OnmsAlarm> getAlarmsForCategories(Set<OnmsCategory> rowCategories, Set<OnmsCategory> colCategories) {
-        List<OnmsNode> nodes = retrieveNodesForCategories(rowCategories, colCategories);
+        List<OnmsNode> nodes = getNodesForCategories(rowCategories, colCategories);
 
         final CriteriaBuilder criteriaBuilder = new CriteriaBuilder(OnmsAlarm.class);
 
@@ -394,7 +404,7 @@ public class DefaultSurveillanceViewService implements SurveillanceViewService {
 
     @Override
     public List<OnmsNotification> getNotificationsForCategories(Set<OnmsCategory> rowCategories, Set<OnmsCategory> colCategories, Map<OnmsNotification, String> customSeverity) {
-        List<OnmsNode> nodes = retrieveNodesForCategories(rowCategories, colCategories);
+        List<OnmsNode> nodes = getNodesForCategories(rowCategories, colCategories);
 
         Date fifteenMinutesAgo = new Date(System.currentTimeMillis() - (15 * 60 * 1000));
         Date oneWeekAgo = new Date(System.currentTimeMillis() - (7 * 24 * 60 * 60 * 1000));
@@ -414,7 +424,7 @@ public class DefaultSurveillanceViewService implements SurveillanceViewService {
 
     @Override
     public List<NodeRtc> getNoteRtcsForCategories(Set<OnmsCategory> rowCategories, Set<OnmsCategory> colCategories) {
-        List<OnmsNode> nodes = retrieveNodesForCategories(rowCategories, colCategories);
+        List<OnmsNode> nodes = getNodesForCategories(rowCategories, colCategories);
 
         CriteriaBuilder outageCriteriaBuilder = new CriteriaBuilder(OnmsOutage.class);
 
@@ -443,6 +453,122 @@ public class DefaultSurveillanceViewService implements SurveillanceViewService {
         }
     }
 
+    /**
+     * Creates the image url for a given graph parameter and width/height.
+     *
+     * @param query         the parameter combination for this report graph
+     * @param width         the width
+     * @param height        the height
+     * @param calendarField the calendar field to substract from
+     * @param calendarDiff  the value to be substracted
+     * @return the url string
+     */
+    public String imageUrlForGraph(String query, int width, int height, int calendarField, int calendarDiff) {
+        Calendar cal = new GregorianCalendar();
+        long end = cal.getTime().getTime();
+        cal.add(calendarField, -calendarDiff);
+        long start = cal.getTime().getTime();
+        return "/opennms/graph/graph.png?" + query + "&start=" + start + "&end=" + end + (width > 0 ? "&width=" + width : "") + (height > 0 ? "&height=" + height : "");
+    }
+
+    /**
+     * Creates the image url for a given graph parameter and width/height.
+     *
+     * @param query  the parameter combination for this report graph
+     * @param width  the width
+     * @param height the height
+     * @return the url string
+     */
+    public String imageUrlForGraph(String query, int width, int height) {
+        return imageUrlForGraph(query, width, height, Calendar.HOUR_OF_DAY, 1);
+    }
+
+    public Map<OnmsResourceType, List<OnmsResource>> getResourceTypeMapForNodeId(int nodeId) {
+        return getResourceTypeMapForNodeId(String.valueOf(nodeId));
+    }
+
+    public Map<String, String> getGraphNameTitleMappingForResourceId(final String resourceId) {
+        return m_transactionOperations.execute(new TransactionCallback<Map<String, String>>() {
+            @Override
+            public Map<String, String> doInTransaction(TransactionStatus transactionStatus) {
+                OnmsResource resource = m_resourceDao.getResourceById(resourceId);
+                PrefabGraph[] queries = m_graphDao.getPrefabGraphsForResource(resource);
+
+                Map<String, String> graphResults = new TreeMap<String, String>();
+
+                for (PrefabGraph query : queries) {
+                    graphResults.put(query.getName(), query.getTitle());
+                }
+
+                return graphResults;
+            }
+        });
+    }
+
+    public Map<OnmsResourceType, List<OnmsResource>> getResourceTypeMapForNodeId(final String nodeId) {
+        return m_transactionOperations.execute(new TransactionCallback<Map<OnmsResourceType, List<OnmsResource>>>() {
+            @Override
+            public Map<OnmsResourceType, List<OnmsResource>> doInTransaction(TransactionStatus transactionStatus) {
+                OnmsResource resource = m_resourceDao.getResourceById("node[" + nodeId + "]");
+
+                Map<OnmsResourceType, List<OnmsResource>> resourceTypeMap = new LinkedHashMap<OnmsResourceType, List<OnmsResource>>();
+                for (OnmsResource childResource : resource.getChildResources()) {
+                    if (!resourceTypeMap.containsKey(childResource.getResourceType())) {
+                        resourceTypeMap.put(childResource.getResourceType(), new LinkedList<OnmsResource>());
+                    }
+                    resourceTypeMap.get(childResource.getResourceType()).add(checkLabelForQuotes(childResource));
+                }
+
+                return resourceTypeMap;
+            }
+        });
+    }
+
+    public Map<String, String> getGraphResultsForResourceId(final String resourceId) {
+        return m_transactionOperations.execute(new TransactionCallback<Map<String, String>>() {
+            @Override
+            public Map<String, String> doInTransaction(TransactionStatus transactionStatus) {
+                OnmsResource resource = m_resourceDao.getResourceById(resourceId);
+                PrefabGraph[] queries = m_graphDao.getPrefabGraphsForResource(resource);
+
+                Map<String, String> graphResults = new TreeMap<String, String>();
+
+                for (PrefabGraph query : queries) {
+                    graphResults.put(query.getName(), "resourceId=" + resourceId + "&report=" + query.getName());
+                }
+
+                return graphResults;
+            }
+        });
+    }
+
+    private OnmsResource checkLabelForQuotes(OnmsResource childResource) {
+        String lbl = Util.convertToJsSafeString(childResource.getLabel());
+        OnmsResource resource = new OnmsResource(childResource.getName(), lbl, childResource.getResourceType(), childResource.getAttributes());
+        resource.setParent(childResource.getParent());
+        resource.setEntity(childResource.getEntity());
+        resource.setLink(childResource.getLink());
+        return resource;
+    }
+/*
+    public getResourcesForNode(OnmsNode node) {
+
+        OnmsResource resource = m_resourceDao.getResourceForNode(node);
+
+        if (resource != null && (resource.getAttributes().size() > 0 || resource.getChildResources().size() > 0)) {
+            resources.add(resource);
+
+        }
+
+        return null;
+
+        String[] labels = new ArrayList<String[]>(resources.size());
+
+        for (OnmsResource resource : resources) {
+            labels.add(new String[] { resource.getId(), resource.getResourceType().getLabel() + ": " + resource.getLabel() });
+        }
+    }
+    */
 /*
     public String[][] getResources(SurveillanceSet set) {
         OnmsCriteria criteria = new OnmsCriteria(OnmsNode.class, "node");

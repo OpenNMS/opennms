@@ -166,7 +166,7 @@ public class SurveillanceViewAlarmTable extends SurveillanceViewDetailTable {
 
         m_beanItemContainer.removeAllItems();
 
-        if (alarms != null & !alarms.isEmpty()) {
+        if (alarms != null && !alarms.isEmpty()) {
             for (OnmsAlarm alarm : alarms) {
                 m_beanItemContainer.addItem(alarm);
             }

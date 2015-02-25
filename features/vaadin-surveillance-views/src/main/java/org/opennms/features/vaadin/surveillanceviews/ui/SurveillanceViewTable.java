@@ -38,6 +38,8 @@ import org.opennms.features.vaadin.surveillanceviews.service.SurveillanceViewSer
 import org.opennms.features.vaadin.surveillanceviews.ui.dashboard.SurveillanceViewDetail;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.SurveillanceStatus;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -48,6 +50,7 @@ import java.util.Map;
 import java.util.Set;
 
 public class SurveillanceViewTable extends Table {
+    private static final Logger LOG = LoggerFactory.getLogger(SurveillanceViewTable.class);
 
     private SurveillanceViewService m_surveillanceViewService;
 

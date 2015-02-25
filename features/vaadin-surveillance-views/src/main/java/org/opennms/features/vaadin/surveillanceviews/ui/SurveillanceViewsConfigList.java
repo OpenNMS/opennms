@@ -39,8 +39,11 @@ import com.vaadin.ui.VerticalLayout;
 import org.opennms.features.vaadin.surveillanceviews.config.SurveillanceViewProvider;
 import org.opennms.features.vaadin.surveillanceviews.model.View;
 import org.opennms.features.vaadin.surveillanceviews.service.SurveillanceViewService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class SurveillanceViewsConfigList extends VerticalLayout {
+    private static final Logger LOG = LoggerFactory.getLogger(SurveillanceViewsConfigList.class);
 
     /**
      * The {@link Table} this component uses to display {@link View} configurations

@@ -34,6 +34,8 @@ import com.vaadin.ui.Notification;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import org.opennms.features.vaadin.surveillanceviews.service.SurveillanceViewService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The surveillance view config application's "main" class
@@ -44,6 +46,7 @@ import org.opennms.features.vaadin.surveillanceviews.service.SurveillanceViewSer
 @Theme("opennms")
 @Title("OpenNMS Surveillance Views")
 public class SurveillanceViewsConfigUI extends UI {
+    private static final Logger LOG = LoggerFactory.getLogger(SurveillanceViewsConfigUI.class);
 
     private SurveillanceViewService m_surveillanceViewService;
 

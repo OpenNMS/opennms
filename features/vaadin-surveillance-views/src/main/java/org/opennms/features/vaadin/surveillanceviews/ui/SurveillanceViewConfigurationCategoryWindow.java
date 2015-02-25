@@ -45,6 +45,8 @@ import org.opennms.features.vaadin.surveillanceviews.model.Def;
 import org.opennms.features.vaadin.surveillanceviews.model.RowDef;
 import org.opennms.features.vaadin.surveillanceviews.service.SurveillanceViewService;
 import org.opennms.netmgt.model.OnmsCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -53,6 +55,7 @@ import java.util.Map;
 import java.util.Set;
 
 public class SurveillanceViewConfigurationCategoryWindow extends Window {
+    private static final Logger LOG = LoggerFactory.getLogger(SurveillanceViewConfigurationCategoryWindow.class);
 
     public SurveillanceViewConfigurationCategoryWindow(final SurveillanceViewService surveillanceViewService, final Collection<?> defs, final Def def, final SaveActionListener saveActionListener) {
         /**
