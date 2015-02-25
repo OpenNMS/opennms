@@ -29,13 +29,11 @@
 package org.opennms.web.rest.measurements.fetch;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.Map;
 
 import org.jrobin.core.RrdException;
 import org.jrobin.data.DataProcessor;
 import org.opennms.netmgt.dao.api.ResourceDao;
-import org.opennms.web.rest.measurements.model.Measurement;
 import org.opennms.web.rest.measurements.model.Source;
 
 import com.google.common.collect.Maps;
@@ -46,9 +44,9 @@ import com.google.common.collect.Maps;
  * @author Jesse White <jesse@opennms.org>
  * @author Dustin Frisch <fooker@lab.sh>
  */
-public class JrbFetchStrategy extends AbstractRrdBasedFetchStrategy {
+public class JrobinFetchStrategy extends AbstractRrdBasedFetchStrategy {
 
-    public JrbFetchStrategy(final ResourceDao resourceDao) {
+    public JrobinFetchStrategy(final ResourceDao resourceDao) {
         super(resourceDao);
     }
 
@@ -56,9 +54,8 @@ public class JrbFetchStrategy extends AbstractRrdBasedFetchStrategy {
      * {@inheritDoc}
      */
     @Override
-    protected long fetchMeasurements(long start, long end, long step, int maxrows,
-            Map<Source, String> rrdsBySource,
-            List<Measurement> measurements) throws RrdException {
+    protected FetchResults fetchMeasurements(long start, long end, long step, int maxrows,
+            Map<Source, String> rrdsBySource, Map<String, Object> constants) throws RrdException {
 
         final long startInSeconds = (long) Math.floor(start / 1000);
         final long endInSeconds = (long) Math.floor(end / 1000);
@@ -89,19 +86,18 @@ public class JrbFetchStrategy extends AbstractRrdBasedFetchStrategy {
             throw new RrdException("JRB processing failed.", e);
         }
 
-        final long[] timestampInSeconds = dproc.getTimestamps();
+        final long[] timestamps = dproc.getTimestamps();
 
-        for (int i = 0; i < timestampInSeconds.length; i++) {
-            final Map<String, Double> values = Maps.newHashMap();
-            for (Source source : rrdsBySource.keySet()) {
-                values.put(source.getLabel(),
-                        dproc.getValues(source.getLabel())[i]);
-            }
-
-            measurements.add(new Measurement(timestampInSeconds[i] * 1000, values));
+        // Convert the timestamps to milliseconds
+        for (int i = 0; i < timestamps.length; i++) {
+            timestamps[i] *= 1000;
         }
 
-        // Actual step size
-        return dproc.getStep() * 1000;
+        final Map<String, double[]> columns = Maps.newHashMapWithExpectedSize(rrdsBySource.keySet().size());
+        for (Source source : rrdsBySource.keySet()) {
+            columns.put(source.getLabel(), dproc.getValues(source.getLabel()));
+        }
+
+        return new FetchResults(timestamps, columns, dproc.getStep() * 1000, constants);
     }
 }

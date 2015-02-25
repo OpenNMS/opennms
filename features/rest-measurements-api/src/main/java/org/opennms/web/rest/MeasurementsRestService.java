@@ -29,6 +29,7 @@
 package org.opennms.web.rest;
 
 import java.util.Date;
+import java.util.Map;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
@@ -167,11 +168,25 @@ public class MeasurementsRestService {
             throw getException(Status.NOT_FOUND, "Resource or attribute not found for {}", request);
         }
 
-        // Apply the expression to the fetch results and remove any transient values
+        // Apply the expression to the fetch results
         try {
             expressionEngine.applyExpressions(request, results);
         } catch (ExpressionException e) {
             throw getException(Status.BAD_REQUEST, e, "An error occured while evaluating an expression.");
+        }
+
+        final Map<String, double[]> columns = results.getColumns();
+
+        // Remove any transient values belonging to sources
+        for (final Source source : request.getSources()) {
+            if (source.getTransient()) {
+                columns.remove(source.getLabel());
+            }
+        }
+
+        // Return a 204 if there are no columns
+        if (columns.keySet().size() == 0) {
+            throw getException(Status.NO_CONTENT, "No content.");
         }
 
         // Build the response
@@ -179,7 +194,8 @@ public class MeasurementsRestService {
         response.setStart(request.getStart());
         response.setEnd(request.getEnd());
         response.setStep(results.getStep());
-        response.setMeasurements(results.getMeasurements());
+        response.setTimestamps(results.getTimestamps());
+        response.setColumns(columns);
 
         return response;
     }

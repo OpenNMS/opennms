@@ -41,7 +41,6 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.opennms.web.rest.measurements.model.Expression;
-import org.opennms.web.rest.measurements.model.Measurement;
 import org.opennms.web.rest.measurements.model.QueryRequest;
 import org.opennms.web.rest.measurements.model.QueryResponse;
 import org.opennms.web.rest.measurements.model.Source;
@@ -119,15 +118,18 @@ public class MeasurementsRestServiceWithJrbTest extends MeasurementsRestServiceT
         QueryResponse response = m_svc.query(request);
 
         // Validate the results
-        assertEquals(3600000L, response.getStep());
-        assertEquals(680, response.getMeasurements().size());
-        Measurement metric = response.getMeasurements().get(8);
-        Map<String, Double> values = metric.getValues();
+        long timestamps[] = response.getTimestamps();
+        final Map<String, double[]> columns = response.columnsWithLabels();
 
-        assertEquals(1414630800000L, metric.getTimestamp());
-        assertEquals(270.66140826873385, values.get("ifInOctetsAvg"), 0.0001);
-        assertEquals(259.54086378737543, values.get("ifInOctetsMin"), 0.0001);
-        assertEquals(67872.22455490529, values.get("ifInOctetsMax"), 0.0001);
+        assertEquals(3600000L, response.getStep());
+        assertEquals(680, timestamps.length);
+
+        // Verify the values at an arbitrary index
+        final int idx = 8;
+        assertEquals(1414630800000L, timestamps[idx]);
+        assertEquals(270.66140826873385, columns.get("ifInOctetsAvg")[idx], 0.0001);
+        assertEquals(259.54086378737543, columns.get("ifInOctetsMin")[idx], 0.0001);
+        assertEquals(67872.22455490529, columns.get("ifInOctetsMax")[idx], 0.0001);
     }
 
     @Test
@@ -152,10 +154,10 @@ public class MeasurementsRestServiceWithJrbTest extends MeasurementsRestServiceT
         request.setExpressions(Lists.newArrayList(scale));
 
         QueryResponse response = m_svc.query(request);
-        Measurement metric = response.getMeasurements().get(3);
-        Map<String, Double> values = metric.getValues();
 
-        assertEquals(975.3053156146178, values.get("ifInOctets"), 0.0001);
-        assertEquals(975.3053156146178 * 8d / 1000.0d, values.get("ifUsage"), 0.0001);
+        final int idx = 3;
+        final Map<String, double[]> columns = response.columnsWithLabels();
+        assertEquals(975.3053156146178, columns.get("ifInOctets")[idx], 0.0001);
+        assertEquals(975.3053156146178 * 8d / 1000.0d, columns.get("ifUsage")[idx], 0.0001);
     }
 }

@@ -37,12 +37,10 @@ import org.opennms.netmgt.dao.api.ResourceDao;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.RrdGraphAttribute;
 import org.opennms.web.rest.measurements.Utils;
-import org.opennms.web.rest.measurements.model.Measurement;
 import org.opennms.web.rest.measurements.model.Source;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 /**
@@ -111,20 +109,14 @@ public abstract class AbstractRrdBasedFetchStrategy implements MeasurementFetchS
             rrdsBySource.put(source, rrdFile);
         }
 
-        // Use to store the results
-        final List<Measurement> measurements = Lists.newLinkedList();
-
         // Fetch
-        final long actualStep = fetchMeasurements(start, end, step, maxrows, rrdsBySource, measurements);
-
-        return new FetchResults(measurements, actualStep, constants);
+        return fetchMeasurements(start, end, step, maxrows, rrdsBySource, constants);
     }
 
     /**
      * Performs the actual retrieval of the values from the RRD/JRB files.
      */
-    protected abstract long fetchMeasurements(long start, long end, long step, int maxrows,
-            Map<Source, String> rrdsBySource,
-            List<Measurement> measurements) throws RrdException;
+    protected abstract FetchResults fetchMeasurements(long start, long end, long step, int maxrows,
+            Map<Source, String> rrdsBySource, Map<String, Object> constants) throws RrdException;
 
 }

@@ -28,13 +28,16 @@
 
 package org.opennms.web.rest.measurements.model;
 
-import com.google.common.collect.Lists;
-
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+
+import com.google.common.collect.Maps;
 
 /**
  * Query response.
@@ -60,11 +63,24 @@ public class QueryResponse {
      */
     private long end;
 
-    private List<Measurement> measurements = Lists.newArrayListWithCapacity(0);
+    /**
+     * Row timestamps in ms.
+     */
+    private long[] timestamps;
+
+    /**
+     * Column names
+     */
+    private String[] labels;
+
+    /**
+     * Column values
+     */
+    private WrappedPrimitive[] columns;
 
     @XmlAttribute(name = "step")
     public long getStep() {
-        return this.step;
+        return step;
     }
 
     public void setStep(long step) {
@@ -73,7 +89,7 @@ public class QueryResponse {
 
     @XmlAttribute(name = "start")
     public long getStart() {
-        return this.start;
+        return start;
     }
 
     public void setStart(final long start) {
@@ -82,20 +98,79 @@ public class QueryResponse {
 
     @XmlAttribute(name = "end")
     public long getEnd() {
-        return this.end;
+        return end;
     }
 
     public void setEnd(final long end) {
         this.end = end;
     }
 
-    @XmlElement(name = "measurements")
-    public List<Measurement> getMeasurements() {
-        return this.measurements;
+    @XmlElement(name = "timestamps")
+    public long[] getTimestamps() {
+        return timestamps;
     }
 
-    public void setMeasurements(final List<Measurement> measurements) {
-        this.measurements = measurements;
+    /**
+     * Required by JAXB.
+     */
+    public void setTimestamps(final ArrayList<Long> timestamps) {
+        final int N = timestamps.size();
+        this.timestamps = new long[N];
+        for (int i = 0; i < N; i++) {
+            this.timestamps[i] = timestamps.get(i);
+        }
+    }
+
+    public void setTimestamps(final long[] timestamps) {
+        this.timestamps = timestamps;
+    }
+
+    @XmlElement(name="labels")
+    public String[] getLabels() {
+        return labels;
+    }
+
+    public void setLabels(final String[] labels) {
+        this.labels = labels;
+    }
+
+    @XmlElement(name="columns")
+    public WrappedPrimitive[] getColumns() {
+        return columns;
+    }
+
+    public void setColumns(final WrappedPrimitive[] columns) {
+        this.columns = columns;
+    }
+
+    public void setColumns(final List<double[]> doubles) {
+        final int N = doubles.size();
+        this.columns = new WrappedPrimitive[N];
+        for (int i = 0; i < N; i++) {
+            this.columns[i] = new WrappedPrimitive(doubles.get(i));
+        }
+    }
+
+    public void setColumns(final Map<String, double[]> columns) {
+        final int N = columns.keySet().size();
+        this.labels = new String[N];
+        this.columns = new WrappedPrimitive[N];
+        int k = 0;
+        for (final Map.Entry<String, double[]> entry : columns.entrySet()) {
+            this.labels[k] = entry.getKey();
+            this.columns[k++] = new WrappedPrimitive(entry.getValue());
+        }
+    }
+
+    /**
+     * Convenience method.
+     */
+    public Map<String, double[]> columnsWithLabels() {
+        final Map<String, double[]> mappedValues = Maps.newHashMap();
+        for (int i = 0; i < labels.length; i++) {
+            mappedValues.put(labels[i], columns[i].getList());
+        }
+        return mappedValues;
     }
 
     @Override
@@ -113,13 +188,15 @@ public class QueryResponse {
        return   com.google.common.base.Objects.equal(this.step, other.step)
              && com.google.common.base.Objects.equal(this.start, other.start)
              && com.google.common.base.Objects.equal(this.end, other.end)
-             && com.google.common.base.Objects.equal(this.measurements, other.measurements);
+             && Arrays.equals(this.timestamps, other.timestamps)
+             && Arrays.equals(this.labels, other.labels)
+             && Arrays.equals(this.columns, other.columns);
     }
 
     @Override
     public int hashCode() {
        return com.google.common.base.Objects.hashCode(
-                 this.step, this.start, this.end, this.measurements);
+                 this.step, this.start, this.end, this.timestamps, this.labels, this.columns);
     }
 
     @Override
@@ -128,7 +205,61 @@ public class QueryResponse {
                  .add("Step", this.step)
                  .add("Start", this.start)
                  .add("End", this.end)
-                 .add("Measurements", this.measurements)
+                 .add("Timestamps", Arrays.toString(this.timestamps))
+                 .add("Labels", Arrays.toString(this.labels))
+                 .add("Columns", Arrays.toString(this.columns))
                  .toString();
+    }
+
+    /**
+     * Used to wrap an array of primitive doubles in order
+     * to avoid boxing for marshaling.
+     */
+    @XmlRootElement
+    public static class WrappedPrimitive {
+        private double[] values;
+
+        public WrappedPrimitive() {
+        }
+
+        public WrappedPrimitive(double[] values) {
+            this.values = values;
+        }
+
+        @XmlElement(name="values")
+        public double[] getList() {
+            return values;
+        }
+
+        public void setList(double[] values) {
+            this.values = values;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (obj == null)
+            {
+               return false;
+            }
+            if (getClass() != obj.getClass())
+            {
+               return false;
+            }
+            final WrappedPrimitive other = (WrappedPrimitive) obj;
+
+            return Arrays.equals(this.values, other.values);
+        }
+
+        @Override
+        public int hashCode() {
+           return com.google.common.base.Objects.hashCode(this.values);
+        }
+
+        @Override
+        public String toString() {
+           return com.google.common.base.Objects.toStringHelper(this)
+                     .add("Values", Arrays.toString(this.values))
+                     .toString();
+        }
     }
 }

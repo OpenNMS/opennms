@@ -36,14 +36,12 @@ import java.io.File;
 import java.util.Map;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.opennms.web.rest.measurements.model.Expression;
-import org.opennms.web.rest.measurements.model.Measurement;
 import org.opennms.web.rest.measurements.model.QueryRequest;
 import org.opennms.web.rest.measurements.model.QueryResponse;
 import org.opennms.web.rest.measurements.model.Source;
@@ -71,7 +69,6 @@ import com.google.common.collect.Lists;
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
 @Transactional
-@Ignore
 public class MeasurementsRestServiceWithRrdTest extends MeasurementsRestServiceTest {
 
     @Before
@@ -113,13 +110,18 @@ public class MeasurementsRestServiceWithRrdTest extends MeasurementsRestServiceT
 
         QueryResponse response = m_svc.query(request);
 
+        // Validate the results
+        long timestamps[] = response.getTimestamps();
+        final Map<String, double[]> columns = response.columnsWithLabels();
+
         assertEquals(7200000L, response.getStep());
-        assertEquals(341, response.getMeasurements().size());
-        Measurement metric = response.getMeasurements().get(1);
-        Map<String, Double> values = metric.getValues();
-        assertEquals(1414612800000L, metric.getTimestamp());
-        assertEquals(4455.846126, values.get("octetsIn"), 0.0001);
-        assertEquals(4455.846126 * 8, values.get("bitsIn"), 0.0001);
-        assertFalse("Transient values should be excluded.", values.containsKey("eight"));
+        assertEquals(341, timestamps.length);
+
+        // Verify the values at an arbitrary index
+        final int idx = 1;
+        assertEquals(1414612800000L, timestamps[idx]);
+        assertEquals(4455.846126, columns.get("octetsIn")[idx], 0.0001);
+        assertEquals(4455.846126 * 8, columns.get("bitsIn")[idx], 0.0001);
+        assertFalse("Transient values should be excluded.", columns.containsKey("eight"));
     }
 }

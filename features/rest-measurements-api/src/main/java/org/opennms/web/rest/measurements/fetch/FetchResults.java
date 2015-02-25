@@ -28,10 +28,9 @@
 
 package org.opennms.web.rest.measurements.fetch;
 
-import java.util.List;
 import java.util.Map;
 
-import org.opennms.web.rest.measurements.model.Measurement;
+import com.google.common.base.Preconditions;
 
 /**
  * Used to store the results of a fetch.
@@ -40,20 +39,31 @@ import org.opennms.web.rest.measurements.model.Measurement;
  */
 public class FetchResults {
 
-    private final List<Measurement> m_measurements;
+    private final long[] m_timestamps;
 
-    private final Map<String, Object> m_constants;
+    private final Map<String, double[]> m_columns;
 
     private final long m_step;
 
-    public FetchResults(List<Measurement> measurements, long step, Map<String, Object> constants) {
-        m_measurements = measurements;
+    private final Map<String, Object> m_constants;
+
+    public FetchResults(final long[] timestamps, Map<String, double[]> columns, final long step, final Map<String, Object> constants) {
+        Preconditions.checkNotNull(timestamps, "timestamps argument");
+        Preconditions.checkNotNull(columns, "columns argument");
+        Preconditions.checkNotNull(constants, "constants argument");
+
+        m_timestamps = timestamps;
+        m_columns = columns;
         m_step = step;
         m_constants = constants;
     }
 
-    public List<Measurement> getMeasurements() {
-        return m_measurements;
+    public long[] getTimestamps() {
+        return m_timestamps;
+    }
+
+    public Map<String, double[]> getColumns() {
+        return m_columns;
     }
 
     public long getStep() {

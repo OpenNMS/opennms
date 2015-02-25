@@ -53,9 +53,9 @@ public class MeasurementFetchStrategyFactory {
 		RrdStrategy<?, ?> strategy = findRrdStrategy();
 
 		if (strategy instanceof JniRrdStrategy) {
-			return new JniRrdFetchStrategy(m_resourceDao);
+			return new RrdtoolXportFetchStrategy(m_resourceDao);
         } else if (strategy instanceof JRobinRrdStrategy) {
-		return new JrbFetchStrategy(m_resourceDao);
+		return new JrobinFetchStrategy(m_resourceDao);
         } else {
             throw new RuntimeException("Unsupported RRD strategy: " + strategy.getClass());
         }

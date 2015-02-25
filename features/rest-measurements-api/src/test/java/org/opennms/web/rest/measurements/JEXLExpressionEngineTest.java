@@ -30,13 +30,11 @@ package org.opennms.web.rest.measurements;
 
 import static org.junit.Assert.assertEquals;
 
-import java.util.List;
 import java.util.Map;
 
 import org.junit.Test;
 import org.opennms.web.rest.measurements.fetch.FetchResults;
 import org.opennms.web.rest.measurements.model.Expression;
-import org.opennms.web.rest.measurements.model.Measurement;
 import org.opennms.web.rest.measurements.model.QueryRequest;
 import org.opennms.web.rest.measurements.model.Source;
 
@@ -59,19 +57,19 @@ public class JEXLExpressionEngineTest {
 
     @Test
     public void canPerformLinearCombination() throws ExpressionException {
-        Double results[] = peformExpression("x * 5 + 7");
+        double results[] = peformExpression("x * 5 + 7");
         assertEquals(12, results[1], 0.0001);
     }
 
     @Test
     public void canPerformSin() throws ExpressionException {
-        Double results[] = peformExpression("math:sin(x)");
+        double results[] = peformExpression("math:sin(x)");
         assertEquals(Math.sin(1.0d), results[1], 0.0001);
     }
 
     @Test
     public void canReferenceTimestamp() throws ExpressionException {
-        Double results[] = peformExpression("timestamp / 125.0d");
+        double results[] = peformExpression("timestamp / 125.0d");
         assertEquals(400.0d, results[50], 0.0001);
     }
 
@@ -80,16 +78,16 @@ public class JEXLExpressionEngineTest {
         Map<String, Object> constants = Maps.newHashMap();
         constants.put("speed", 65);
 
-        Double results[] = peformExpression("speed / 0.62137", constants);
+        double results[] = peformExpression("speed / 0.62137", constants);
         assertEquals(104.607560713, results[0], 0.0001);
     }
 
-    private Double[] peformExpression(String expression) throws ExpressionException {
+    private double[] peformExpression(String expression) throws ExpressionException {
         Map<String, Object> constants = Maps.newHashMap();
         return peformExpression(expression, constants);
     }
 
-    private Double[] peformExpression(String expression, Map<String, Object> constants) throws ExpressionException {
+    private double[] peformExpression(String expression, Map<String, Object> constants) throws ExpressionException {
         // Build a simple request with the given expression
         QueryRequest request = new QueryRequest();
 
@@ -103,22 +101,21 @@ public class JEXLExpressionEngineTest {
         request.setExpressions(Lists.newArrayList(exp));
 
         // Build the fetch results with known values
-        List<Measurement> measurements = Lists.newLinkedList();
-        for (long i = 0; i < 100; i++) {
-            Map<String, Double> values = Maps.newHashMap();
-            values.put("x", Double.valueOf(i));
-            measurements.add(new Measurement(i * 1000, values));
+        final int N = 100;
+        long timestamps[] = new long[N];
+        double xValues[] = new double[N];
+        for (int i = 0; i < N; i++) {
+            timestamps[i] = i * 1000;
+            xValues[i] = Double.valueOf(i);
         }
-        FetchResults results = new FetchResults(measurements, 1, constants);
+        Map<String, double[]> values = Maps.newHashMap();
+        values.put("x", xValues);
+        FetchResults results = new FetchResults(timestamps, values, 1, constants);
 
         // Use the engine to evaluate the expression
         jexlExpressionEngine.applyExpressions(request, results);
 
-        // Gather the results
-        List<Double> values = Lists.newArrayList();
-        for (Measurement measurement : results.getMeasurements()) {
-            values.add(measurement.getValues().get("y"));
-        }
-        return values.toArray(new Double[values.size()]);
+        // Retrieve the results
+        return results.getColumns().get("y");
     }
 }

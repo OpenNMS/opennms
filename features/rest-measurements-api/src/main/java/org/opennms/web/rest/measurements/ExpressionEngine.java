@@ -39,8 +39,7 @@ import org.opennms.web.rest.measurements.model.QueryRequest;
 public interface ExpressionEngine {
 
     /**
-     * Transient values from the results or expressions are not included
-     * in the measurements.
+     * Applies the expressions the to results.
      *
      * @throws ExpressionException
      */

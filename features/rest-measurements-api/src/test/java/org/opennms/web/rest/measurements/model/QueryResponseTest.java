@@ -53,22 +53,28 @@ public class QueryResponseTest extends XmlTestNoCastor<QueryResponse> {
         response.setStart(1000);
         response.setEnd(2000);
 
-        Map<String, Double> values = Maps.newHashMap();
-        values.put("x", 1.0d);
-        Measurement measurement = new Measurement(0, values);
-        response.setMeasurements(Lists.newArrayList(measurement));
+        response.setTimestamps(Lists.newArrayList(1L, 2L));
+
+        final Map<String, double[]> columns = Maps.newLinkedHashMap();
+        columns.put("x", new double[]{1.0d, 1.1d});
+        columns.put("y", new double[]{2.0d, 2.1d});
+        response.setColumns(columns);
 
         return Arrays.asList(new Object[][]{{
                 response,
                 "<query-response step=\"300\" start=\"1000\" end=\"2000\">" +
-                    "<measurements timestamp=\"0\">" +
-                        "<values>" +
-                           "<entry>" +
-                              "<key>x</key>" +
-                              "<value>1.0</value>" +
-                           "</entry>" +
-                        "</values>" +
-                     "</measurements>" +
+                    "<columns>" +
+                       "<values>1.0</values>" +
+                       "<values>1.1</values>" +
+                    "</columns>" +
+                    "<columns>" +
+                       "<values>2.0</values>" +
+                       "<values>2.1</values>" +
+                    "</columns>" +
+                    "<labels>x</labels>" +
+                    "<labels>y</labels>" +
+                    "<timestamps>1</timestamps>" +
+                    "<timestamps>2</timestamps>" +
                 "</query-response>",
                 null
         }});

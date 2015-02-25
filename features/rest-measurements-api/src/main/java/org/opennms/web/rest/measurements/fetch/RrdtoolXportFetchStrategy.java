@@ -31,7 +31,6 @@ package org.opennms.web.rest.measurements.fetch;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.StringReader;
-import java.util.List;
 import java.util.Map;
 
 import javax.xml.bind.JAXBContext;
@@ -48,7 +47,6 @@ import org.jrobin.core.RrdException;
 import org.opennms.netmgt.dao.api.ResourceDao;
 import org.opennms.netmgt.rrd.model.RrdXport;
 import org.opennms.netmgt.rrd.model.XRow;
-import org.opennms.web.rest.measurements.model.Measurement;
 import org.opennms.web.rest.measurements.model.Source;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -58,17 +56,16 @@ import org.xml.sax.helpers.XMLReaderFactory;
 import com.google.common.collect.Maps;
 
 /**
- * Used to fetch measurements from RRD files.
+ * Used to fetch measurements from RRD files by invoking
+ * rrdtool via exec.
  *
  * As of Feb 24th the jrrd library does not support 'xport' commands.
  * See http://issues.opennms.org/browse/JRRD-3.
  *
- * Instead we call the rrdtool binary via exec.
- *
  * @author Jesse White <jesse@opennms.org>
  * @author Dustin Frisch <fooker@lab.sh>
  */
-public class JniRrdFetchStrategy extends AbstractRrdBasedFetchStrategy {
+public class RrdtoolXportFetchStrategy extends AbstractRrdBasedFetchStrategy {
 
     /**
      * Maximum runtime of 'rrdtool xport' in milliseconds before failing and
@@ -76,7 +73,7 @@ public class JniRrdFetchStrategy extends AbstractRrdBasedFetchStrategy {
      */
     public static final long XPORT_TIMEOUT_MS = 120000;
 
-    public JniRrdFetchStrategy(final ResourceDao resourceDao) {
+    public RrdtoolXportFetchStrategy(final ResourceDao resourceDao) {
         super(resourceDao);
     }
 
@@ -84,9 +81,8 @@ public class JniRrdFetchStrategy extends AbstractRrdBasedFetchStrategy {
      * {@inheritDoc}
      */
     @Override
-    protected long fetchMeasurements(long start, long end, long step, int maxrows,
-            Map<Source, String> rrdsBySource,
-            List<Measurement> measurements) throws RrdException {
+    protected FetchResults fetchMeasurements(long start, long end, long step, int maxrows,
+            Map<Source, String> rrdsBySource, Map<String, Object> constants) throws RrdException {
 
         String rrdBinary = System.getProperty("rrd.binary");
         if (rrdBinary == null) {
@@ -161,17 +157,30 @@ public class JniRrdFetchStrategy extends AbstractRrdBasedFetchStrategy {
             throw new RrdException("Failed to parse the RRD export output.", e);
         }
 
-        // Format
+        final int numRows = rrdXport.getRows().size();
+        final int numColumns = rrdXport.getMeta().getLegends().size();
+
+        final long timestamps[] = new long[numRows];
+        final double values[][] = new double[numColumns][numRows];
+
+        // Convert rows to columns
+        int i = 0;
         for (final XRow row : rrdXport.getRows()) {
-            Map<String, Double> values = Maps.newHashMap();
-            int k = 0;
-            for (String column : rrdXport.getMeta().getLegends()) {
-                values.put(column, row.getValues().get(k++));
+            timestamps[i] = row.getTimestamp() * 1000;
+            for (int j = 0; j < numColumns; j++) {
+                values[j][i] = row.getValues().get(j);
             }
-            measurements.add(new Measurement(row.getTimestamp() * 1000, values));
+            i++;
         }
 
-        // Actual step size
-        return rrdXport.getMeta().getStep() * 1000;
+        // Map the columns by label
+        // The legend entries are in the same order as the column values
+        final Map<String, double[]> columns = Maps.newHashMapWithExpectedSize(numColumns);
+        i = 0;
+        for (String label : rrdXport.getMeta().getLegends()) {
+            columns.put(label, values[i++]);
+        }
+
+        return new FetchResults(timestamps, columns, rrdXport.getMeta().getStep() * 1000, constants);
     }
 }
