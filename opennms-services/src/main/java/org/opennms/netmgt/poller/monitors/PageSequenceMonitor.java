@@ -53,6 +53,7 @@ import org.apache.http.HttpException;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpRequestInterceptor;
+import org.apache.http.HttpVersion;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -90,16 +91,15 @@ import org.slf4j.LoggerFactory;
  * that allows it to be used along with other plug-ins by the service poller framework.
  *
  * @author <a mailto:brozow@opennms.org>Mathew Brozowski</a>
- * @version $Id: $
  */
 @Distributable
 public class PageSequenceMonitor extends AbstractServiceMonitor {
-    
-    
+
+
     private static final Logger LOG = LoggerFactory.getLogger(PageSequenceMonitor.class);
-    
+
     protected static class SequenceTracker{
-        
+
         TimeoutTracker m_tracker;
         public SequenceTracker(Map<String, Object> parameterMap, int defaultSequenceRetry, int defaultTimeout) {
             final Map<String, Object> parameters = new HashMap<String, Object>();
@@ -125,7 +125,7 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
             return m_tracker.elapsedTimeInMillis();
         }
     }
-    
+
     private static final int DEFAULT_SEQUENCE_RETRY = 0;
 
     //FIXME: This should be wired with Spring
@@ -202,7 +202,7 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
                     responseTimes.put(page.getDsName(), page.getResponseTime());
                 }
             }
-            
+
         }
 
         protected Properties getSequenceProperties() {
@@ -328,6 +328,15 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
                 } else {
                     HttpHost host = new HttpHost(getVirtualHost(svc), uri.getPort());
                     clientWrapper.setVirtualHost(host.toHostString());
+                }
+
+                switch(m_page.getHttpVersion()) {
+                    case "0.9":
+                        clientWrapper.setVersion(HttpVersion.HTTP_0_9); break;
+                    case "1.0":
+                        clientWrapper.setVersion(HttpVersion.HTTP_1_0); break;
+                    default:
+                        clientWrapper.setVersion(HttpVersion.HTTP_1_1); break;
                 }
 
                 if (getUserAgent() != null && !getUserAgent().trim().isEmpty()) {
@@ -652,24 +661,24 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
         PollStatus serviceStatus = PollStatus.unavailable("Poll not completed yet");
 
         Map<String,Number> responseTimes = new LinkedHashMap<String,Number>();
-        
+
         SequenceTracker tracker = new SequenceTracker(parameterMap, DEFAULT_SEQUENCE_RETRY, DEFAULT_TIMEOUT);
         for(tracker.reset(); tracker.shouldRetry() && !serviceStatus.isAvailable(); tracker.nextAttempt() ) {
             HttpClientWrapper clientWrapper = null;
             try {
                 PageSequenceMonitorParameters parms = PageSequenceMonitorParameters.get(parameterMap);
-    
+
                 clientWrapper = parms.createHttpClient();
 
                 tracker.startAttempt();
                 responseTimes.put("response-time", Double.NaN);
                 parms.getPageSequence().execute(clientWrapper, svc, responseTimes);
-    
+
                 double responseTime = tracker.elapsedTimeInMillis();
                 serviceStatus = PollStatus.available();
                 responseTimes.put("response-time", responseTime);
                 serviceStatus.setProperties(responseTimes);
-    
+
             } catch (PageSequenceMonitorException e) {
                 serviceStatus = PollStatus.unavailable(e.getMessage());
                 serviceStatus.setProperties(responseTimes);
@@ -681,7 +690,7 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
                 IOUtils.closeQuietly(clientWrapper);
             }
         }
-        
+
         return serviceStatus;
     }
 }
