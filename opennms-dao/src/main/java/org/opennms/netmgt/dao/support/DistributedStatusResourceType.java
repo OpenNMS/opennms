@@ -43,6 +43,7 @@ import org.opennms.netmgt.dao.api.ResourceDao;
 import org.opennms.netmgt.model.LocationMonitorIpInterface;
 import org.opennms.netmgt.model.OnmsAttribute;
 import org.opennms.netmgt.model.OnmsIpInterface;
+import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.OnmsResourceType;
 import org.opennms.netmgt.model.ResourceTypeUtils;
@@ -122,7 +123,25 @@ public class DistributedStatusResourceType implements OnmsResourceType {
         
         return OnmsResource.sortIntoResourceList(resources);
     }
-    
+
+    /** {@inheritDoc} */
+    @Override
+    public OnmsResource getChildByName(OnmsResource parent, String name) {
+        // Grab the node entity
+        final OnmsNode node = ResourceTypeUtils.getNodeFromResource(parent);
+
+        // Load all of the resources and search. This is not the most efficient approach,
+        // but resources of this type should be sparse.
+        for (OnmsResource resource : getResourcesForNode(node.getId())) {
+            if (resource.getName().equals(name)) {
+                resource.setParent(parent);
+                return resource;
+            }
+        }
+
+        throw new ObjectRetrievalFailureException(OnmsResource.class, "No child with name '" + name + "' found on '" + parent + "'");
+    }
+
     /**
      * <p>getResourcesForLocationMonitor</p>
      *

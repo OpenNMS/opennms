@@ -556,6 +556,11 @@
       <artifactId>org.opennms.features.springframework-security</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.opennms.features</groupId>
+      <artifactId>org.opennms.features.rest-measurements-api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
       <groupId>org.apache.xmlgraphics</groupId>
       <artifactId>batik-dom</artifactId>
     </dependency>
@@ -590,10 +595,6 @@
     <dependency>
       <groupId>rome</groupId>
       <artifactId>rome</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>struts</groupId>
-      <artifactId>struts</artifactId>
     </dependency>
     <!-- dependencies for SMS monitors -->
     <!--

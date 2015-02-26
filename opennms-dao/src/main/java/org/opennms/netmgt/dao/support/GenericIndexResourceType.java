@@ -45,6 +45,7 @@ import org.opennms.netmgt.collection.api.StorageStrategy;
 import org.opennms.netmgt.dao.api.ResourceDao;
 import org.opennms.netmgt.model.ExternalValueAttribute;
 import org.opennms.netmgt.model.OnmsAttribute;
+import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.OnmsResourceType;
 import org.opennms.netmgt.model.ResourceTypeUtils;
@@ -162,7 +163,24 @@ public class GenericIndexResourceType implements OnmsResourceType {
         }
         return OnmsResource.sortIntoResourceList(resources);
     }
-    
+
+    /** {@inheritDoc} */
+    @Override
+    public OnmsResource getChildByName(OnmsResource parent, String index) {
+        // Grab the node entity
+        final OnmsNode node = ResourceTypeUtils.getNodeFromResource(parent);
+
+        OnmsResource resource;
+        if (ResourceTypeUtils.isStoreByForeignSource()) {
+            final String nodeSource = String.format("%s:%s", node.getForeignSource(), node.getForeignId());
+            resource = getResourceByNodeSourceAndIndex(nodeSource, index);
+        } else {
+            resource = getResourceByNodeAndIndex(node.getId(), index);
+        }
+        resource.setParent(parent);
+        return resource;
+    }
+
     /**
      * <p>getQueryableIndexesForNode</p>
      *

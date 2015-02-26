@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:onmsgi="http://xmlns.opennms.org/xsd/spring/onms-osgi"
+       xsi:schemaLocation="
+           http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+           http://www.springframework.org/schema/context
+           http://www.springframework.org/schema/context/spring-context-4.0.xsd
+           http://xmlns.opennms.org/xsd/spring/onms-osgi
+           http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd">
+
+  <context:annotation-config />
+
+  <bean id="measurementFetchStrategyFactory" class="org.opennms.web.rest.measurements.fetch.MeasurementFetchStrategyFactory" />
+
+  <bean id="measurementFetchStrategy" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" lazy-init="true">
+    <property name="targetObject" ref="measurementFetchStrategyFactory"/>
+    <property name="targetMethod" value="getFetchStrategy"/>
+  </bean>
+
+  <onmsgi:service interface="org.opennms.web.rest.measurements.fetch.MeasurementFetchStrategy" ref="measurementFetchStrategy"/>
+
+</beans>

@@ -51,6 +51,9 @@
     <!-- webapps -->
     <module>root-webapp</module>
 
+    <!-- REST -->
+    <module>rest-measurements-api</module>
+
     <!-- GWT UI plugins -->
     <module>node-page-list</module>
     <module>opennms-gwt-theme</module>
