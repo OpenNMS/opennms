@@ -199,5 +199,9 @@
       <artifactId>dnsjava-dependencies</artifactId>
       <type>pom</type>
     </dependency>
+    <dependency>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
+    </dependency>
   </dependencies>
 </project>
