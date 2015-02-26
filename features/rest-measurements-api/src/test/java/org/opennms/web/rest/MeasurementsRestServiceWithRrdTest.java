@@ -36,6 +36,7 @@ import java.io.File;
 import java.util.Map;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
@@ -69,6 +70,7 @@ import com.google.common.collect.Lists;
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
 @Transactional
+@Ignore
 public class MeasurementsRestServiceWithRrdTest extends MeasurementsRestServiceTest {
 
     @Before
