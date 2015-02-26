@@ -72,6 +72,8 @@ public class SurveillanceViewTable extends Table {
 
     private Map<String, OnmsCategory> m_onmsCategoryMap = new HashMap<>();
 
+    private View m_view;
+
     private boolean m_enabled, m_dashboard;
 
     public SurveillanceViewTable(final View view, SurveillanceViewService surveillanceViewService, boolean dashboard, boolean enabled) {
@@ -80,8 +82,9 @@ public class SurveillanceViewTable extends Table {
         this.m_surveillanceViewService = surveillanceViewService;
         this.m_enabled = enabled;
         this.m_dashboard = dashboard;
+        this.m_view = view;
 
-        m_cells = m_surveillanceViewService.calculateCellStatus(view);
+        refresh();
 
         List<OnmsCategory> onmsCategories = m_surveillanceViewService.getOnmsCategories();
 
@@ -119,6 +122,7 @@ public class SurveillanceViewTable extends Table {
 
                     int rowIndex = view.getRows().indexOf(view.getRowDef((String) itemId));
                     int colIndex = view.getColumns().indexOf(view.getColumnDef((String) columnId));
+
                     SurveillanceStatus surveillanceStatus = m_cells[rowIndex][colIndex];
 
                     Label label = new Label(surveillanceStatus.getDownEntityCount() + " of " + surveillanceStatus.getTotalEntityCount());
@@ -227,6 +231,13 @@ public class SurveillanceViewTable extends Table {
                 return style;
             }
         });
+    }
+
+    public synchronized void refresh() {
+        m_cells = m_surveillanceViewService.calculateCellStatus(m_view);
+        refreshRowCache();
+        updateDetailsTable();
+        markAsDirtyRecursive();
     }
 
     private Set<OnmsCategory> getOnmsCategoriesForNames(Collection<String> collection) {

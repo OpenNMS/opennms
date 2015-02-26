@@ -256,9 +256,11 @@ $header-background-image: url("images/headerbg.png") !default;
   color: black;
   background-color: #ffffff;
   border-top: 1px solid #999999;
-  line-height: 30px;
+  line-height: normal;
   padding-left: 4px;
   width: 100%;
+  padding-top: 6px;
+  padding-bottom: 6px;
 }
 
 .surveillance-view .critical {
@@ -268,8 +270,10 @@ $header-background-image: url("images/headerbg.png") !default;
   background-image: url(../../../../images/bgCritical.png);
   background-repeat: repeat-y;
   background-position: left top;
-  line-height: 30px;
+  line-height: normal;
   padding-left: 18px;
+  padding-top: 6px;
+  padding-bottom: 6px;
 }
 
 .surveillance-view .major {
@@ -279,8 +283,10 @@ $header-background-image: url("images/headerbg.png") !default;
   background-image: url(../../../../images/bgMajor.png);
   background-repeat: repeat-y;
   background-position: left top;
-  line-height: 30px;
+  line-height: normal;
   padding-left: 18px;
+  padding-top: 6px;
+  padding-bottom: 6px;
 }
 
 .surveillance-view .minor {
@@ -290,8 +296,10 @@ $header-background-image: url("images/headerbg.png") !default;
   background-image: url(../../../../images/bgMinor.png);
   background-repeat: repeat-y;
   background-position: left top;
-  line-height: 30px;
+  line-height: normal;
   padding-left: 18px;
+  padding-top: 6px;
+  padding-bottom: 6px;
 }
 
 .surveillance-view .warning {
@@ -301,8 +309,10 @@ $header-background-image: url("images/headerbg.png") !default;
   background-image: url(../../../../images/bgWarning.png);
   background-repeat: repeat-y;
   background-position: left top;
-  line-height: 30px;
+  line-height: normal;
   padding-left: 18px;
+  padding-top: 6px;
+  padding-bottom: 6px;
 }
 
 .surveillance-view .indeterminate {
@@ -312,8 +322,10 @@ $header-background-image: url("images/headerbg.png") !default;
   background-image: url(../../../../images/bgIndeterminate.png);
   background-repeat: repeat-y;
   background-position: left top;
-  line-height: 30px;
+  line-height: normal;
   padding-left: 18px;
+  padding-top: 6px;
+  padding-bottom: 6px;
 }
 
 .surveillance-view .normal {
@@ -323,8 +335,10 @@ $header-background-image: url("images/headerbg.png") !default;
   background-image: url(../../../../images/bgNormal.png);
   background-repeat: repeat-y;
   background-position: left top;
-  line-height: 30px;
+  line-height: normal;
   padding-left: 18px;
+  padding-top: 6px;
+  padding-bottom: 6px;
 }
 
 .surveillance-view .cleared {
@@ -334,8 +348,10 @@ $header-background-image: url("images/headerbg.png") !default;
   background-image: url(../../../../images/bgCleared.png);
   background-repeat: repeat-y;
   background-position: left top;
-  line-height: 30px;
+  line-height: normal;
   padding-left: 18px;
+  padding-top: 6px;
+  padding-bottom: 6px;
 }
 
 .surveillance-view .v-table-cell-content-white {
@@ -351,8 +367,9 @@ $header-background-image: url("images/headerbg.png") !default;
   border-top: 1px solid #999999;
   line-height: 30px;
   padding-left: 4px;
-  height:30px;
+  //height:30px;
   padding-top: 6px;
+  padding-bottom: 6px;
 }
 
 .surveillance-view .v-table-cell-content-major {
@@ -361,8 +378,9 @@ $header-background-image: url("images/headerbg.png") !default;
   border-top: 1px solid #999999;
   line-height: 30px;
   padding-left: 4px;
-  height:30px;
+  //height:30px;
   padding-top: 6px;
+  padding-bottom: 6px;
 }
 
 .surveillance-view .v-table-cell-content-minor {
@@ -371,8 +389,9 @@ $header-background-image: url("images/headerbg.png") !default;
   border-top: 1px solid #999999;
   line-height: 30px;
   padding-left: 4px;
-  height:30px;
+  //height:30px;
   padding-top: 6px;
+  padding-bottom: 6px;
 }
 
 .surveillance-view .v-table-cell-content-warning {
@@ -381,8 +400,9 @@ $header-background-image: url("images/headerbg.png") !default;
   border-top: 1px solid #999999;
   line-height: 30px;
   padding-left: 4px;
-  height:30px;
+  //height:30px;
   padding-top: 6px;
+  padding-bottom: 6px;
 }
 
 .surveillance-view .v-table-cell-content-indeterminate {
@@ -391,8 +411,9 @@ $header-background-image: url("images/headerbg.png") !default;
   border-top: 1px solid #999999;
   line-height: 30px;
   padding-left: 4px;
-  height:30px;
+  //height:30px;
   padding-top: 6px;
+  padding-bottom: 6px;
 }
 
 .surveillance-view .v-table-cell-content-normal {
@@ -401,8 +422,9 @@ $header-background-image: url("images/headerbg.png") !default;
   border-top: 1px solid #999999;
   line-height: 30px;
   padding-left: 4px;
-  height:30px;
+  //height:30px;
   padding-top: 6px;
+  padding-bottom: 6px;
 }
 
 .surveillance-view .v-table-cell-content-cleared {
@@ -411,9 +433,9 @@ $header-background-image: url("images/headerbg.png") !default;
   border-top: 1px solid #999999;
   line-height: 30px;
   padding-left: 4px;
-  td-padding-left: 4px;
-  height:30px;
+  //height:30px;
   padding-top: 6px;
+  padding-bottom: 6px;
 }
 
 .surveillance-view .v-table-cell-content-critical-image {
@@ -424,8 +446,9 @@ $header-background-image: url("images/headerbg.png") !default;
   background-repeat: repeat-y;
   background-position: left top;
   line-height: 30px;
-  height:30px;
+  //height:30px;
   padding-top: 6px;
+  padding-bottom: 6px;
   padding-right: 4px;
 }
 
@@ -437,8 +460,9 @@ $header-background-image: url("images/headerbg.png") !default;
   background-repeat: repeat-y;
   background-position: left top;
   line-height: 30px;
-  height:30px;
+  //height:30px;
   padding-top: 6px;
+  padding-bottom: 6px;
   padding-right: 4px;
 }
 
@@ -450,8 +474,9 @@ $header-background-image: url("images/headerbg.png") !default;
   background-repeat: repeat-y;
   background-position: left top;
   line-height: 30px;
-  height:30px;
+  //height:30px;
   padding-top: 6px;
+  padding-bottom: 6px;
   padding-right: 4px;
 }
 
@@ -465,6 +490,7 @@ $header-background-image: url("images/headerbg.png") !default;
   line-height: 30px;
   height:30px;
   padding-top: 6px;
+  padding-bottom: 6px;
   padding-right: 4px;
 }
 
@@ -476,8 +502,9 @@ $header-background-image: url("images/headerbg.png") !default;
   background-repeat: repeat-y;
   background-position: left top;
   line-height: 30px;
-  height:30px;
+  //height:30px;
   padding-top: 6px;
+  padding-bottom: 6px;
   padding-right: 4px;
 }
 
@@ -489,8 +516,9 @@ $header-background-image: url("images/headerbg.png") !default;
   background-repeat: repeat-y;
   background-position: left top;
   line-height: 30px;
-  height:30px;
+  //height:30px;
   padding-top: 6px;
+  padding-bottom: 6px;
   padding-right: 4px;
 }
 
@@ -502,8 +530,9 @@ $header-background-image: url("images/headerbg.png") !default;
   background-repeat: repeat-y;
   background-position: left top;
   line-height: 30px;
-  height:30px;
+  //height:30px;
   padding-top: 6px;
+  padding-bottom: 6px;
   padding-right: 4px;
 }
 
@@ -526,7 +555,7 @@ $header-background-image: url("images/headerbg.png") !default;
   background-repeat: repeat-y;
   background-position: left top;
   line-height: 30px;
-  height:30px;
+  //height:30px;
   padding-top: 6px;
 }
 
@@ -538,7 +567,7 @@ $header-background-image: url("images/headerbg.png") !default;
   background-repeat: repeat-y;
   background-position: left top;
   line-height: 30px;
-  height:30px;
+  //height:30px;
   padding-top: 6px;
 }
 
@@ -547,6 +576,10 @@ $header-background-image: url("images/headerbg.png") !default;
   padding-right: 4px;
   cursor: pointer;
   color: #366903;
+}
+
+.surveillance-view .v-select-select{
+  box-sizing: border-box;
 }
 
 .surveillance-view .link {

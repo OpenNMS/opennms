@@ -137,7 +137,7 @@ public class SurveillanceViewNodeRtcTable extends SurveillanceViewDetailTable {
     }
 
     @Override
-    public void refreshDetails(Set<OnmsCategory> rowCategories, Set<OnmsCategory> colCategories) {
+    public synchronized void refreshDetails(Set<OnmsCategory> rowCategories, Set<OnmsCategory> colCategories) {
         List<SurveillanceViewService.NodeRtc> nodeRtcs = getSurveillanceViewService().getNoteRtcsForCategories(rowCategories, colCategories);
 
         m_beanItemContainer.removeAllItems();

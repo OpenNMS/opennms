@@ -208,17 +208,22 @@ public class DefaultSurveillanceViewService implements SurveillanceViewService {
     }
 
     public Set<OnmsCategory> getOnmsCategoriesFromViewCategories(final Collection<Category> viewCats) {
-        final Set<OnmsCategory> categories = new HashSet<OnmsCategory>();
+        return m_transactionOperations.execute(new TransactionCallback<Set<OnmsCategory>>() {
+            @Override
+            public Set<OnmsCategory> doInTransaction(TransactionStatus transactionStatus) {
+                final Set<OnmsCategory> categories = new HashSet<OnmsCategory>();
 
-        for (final Category viewCat : viewCats) {
-            final OnmsCategory category = m_categoryDao.findByName(viewCat.getName());
+                for (final Category viewCat : viewCats) {
+                    final OnmsCategory category = m_categoryDao.findByName(viewCat.getName());
 
-            if (category == null) {
-                throw new ObjectRetrievalFailureException(OnmsCategory.class, viewCat.getName(), "Unable to locate OnmsCategory named: " + viewCat.getName() + " as specified in the surveillance view configuration file", null);
+                    if (category == null) {
+                        throw new ObjectRetrievalFailureException(OnmsCategory.class, viewCat.getName(), "Unable to locate OnmsCategory named: " + viewCat.getName() + " as specified in the surveillance view configuration file", null);
+                    }
+                    categories.add(category);
+                }
+                return categories;
             }
-            categories.add(category);
-        }
-        return categories;
+        });
     }
 
     public SurveillanceStatus[][] calculateCellStatus(final View view) {
@@ -241,7 +246,7 @@ public class DefaultSurveillanceViewService implements SurveillanceViewService {
         });
     }
 
-    private List<NodeRtc> getNodeListForCriteria(Criteria serviceCriteria, Criteria outageCriteria) {
+    private List<NodeRtc> getNodeListForCriteria(final Criteria serviceCriteria, final Criteria outageCriteria) {
         List<Order> ordersService = new ArrayList<>();
         ordersService.add(Order.asc("node.label"));
         ordersService.add(Order.asc("node.id"));
@@ -337,49 +342,59 @@ public class DefaultSurveillanceViewService implements SurveillanceViewService {
     }
 
     @Override
-    public List<OnmsNode> getNodesForCategories(Set<OnmsCategory> rowCategories, Set<OnmsCategory> colCategories) {
-        List<OnmsNode> nodes = new ArrayList<>();
+    public List<OnmsNode> getNodesForCategories(final Set<OnmsCategory> rowCategories, final Set<OnmsCategory> colCategories) {
+        return m_transactionOperations.execute(new TransactionCallback<List<OnmsNode>>() {
+            @Override
+            public List<OnmsNode> doInTransaction(TransactionStatus transactionStatus) {
+                List<OnmsNode> nodes = new ArrayList<>();
 
-        if (rowCategories == null || colCategories == null) {
-            return nodes;
-        }
+                if (rowCategories == null || colCategories == null) {
+                    return nodes;
+                }
 
-        if (rowCategories.size() == 0 || colCategories.size() == 0) {
-            if (rowCategories.size() == 0 && colCategories.size() > 0) {
-                nodes = m_nodeDao.findAllByCategoryList(colCategories);
+                if (rowCategories.size() == 0 || colCategories.size() == 0) {
+                    if (rowCategories.size() == 0 && colCategories.size() > 0) {
+                        nodes = m_nodeDao.findAllByCategoryList(colCategories);
+                    }
+
+                    if (rowCategories.size() > 0 && colCategories.size() == 0) {
+                        nodes = m_nodeDao.findAllByCategoryList(rowCategories);
+                    }
+                } else {
+                    nodes = m_nodeDao.findAllByCategoryLists(rowCategories, colCategories);
+                }
+
+                return nodes;
             }
-
-            if (rowCategories.size() > 0 && colCategories.size() == 0) {
-                nodes = m_nodeDao.findAllByCategoryList(rowCategories);
-            }
-        } else {
-            nodes = m_nodeDao.findAllByCategoryLists(rowCategories, colCategories);
-        }
-
-        return nodes;
+        });
     }
 
     @Override
-    public List<OnmsAlarm> getAlarmsForCategories(Set<OnmsCategory> rowCategories, Set<OnmsCategory> colCategories) {
-        List<OnmsNode> nodes = getNodesForCategories(rowCategories, colCategories);
+    public List<OnmsAlarm> getAlarmsForCategories(final Set<OnmsCategory> rowCategories, final Set<OnmsCategory> colCategories) {
+        return m_transactionOperations.execute(new TransactionCallback<List<OnmsAlarm>>() {
+            @Override
+            public List<OnmsAlarm> doInTransaction(TransactionStatus transactionStatus) {
+                List<OnmsNode> nodes = getNodesForCategories(rowCategories, colCategories);
 
-        final CriteriaBuilder criteriaBuilder = new CriteriaBuilder(OnmsAlarm.class);
+                final CriteriaBuilder criteriaBuilder = new CriteriaBuilder(OnmsAlarm.class);
 
-        criteriaBuilder.alias("node", "node");
-        criteriaBuilder.alias("lastEvent", "event");
-        criteriaBuilder.ne("node.type", "D");
-        criteriaBuilder.limit(100);
-        criteriaBuilder.distinct();
+                criteriaBuilder.alias("node", "node");
+                criteriaBuilder.alias("lastEvent", "event");
+                criteriaBuilder.ne("node.type", "D");
+                criteriaBuilder.limit(100);
+                criteriaBuilder.distinct();
 
-        if (nodes != null && nodes.size() > 0) {
-            criteriaBuilder.in("node", nodes);
-            return m_alarmDao.findMatching(criteriaBuilder.toCriteria());
-        }
+                if (nodes != null && nodes.size() > 0) {
+                    criteriaBuilder.in("node", nodes);
+                    return m_alarmDao.findMatching(criteriaBuilder.toCriteria());
+                }
 
-        return new ArrayList<>();
+                return new ArrayList<>();
+            }
+        });
     }
 
-    private List<OnmsNotification> getNotificationsWithCriterias(Map<OnmsNotification, String> customSeverity, List<OnmsNode> nodes, String severity, Restriction... criterias) {
+    private List<OnmsNotification> getNotificationsWithCriterias(final Map<OnmsNotification, String> customSeverity, final List<OnmsNode> nodes, final String severity, final Restriction... criterias) {
         CriteriaBuilder criteriaBuilder = new CriteriaBuilder(OnmsNotification.class);
 
         criteriaBuilder.alias("node", "node");
@@ -403,54 +418,64 @@ public class DefaultSurveillanceViewService implements SurveillanceViewService {
     }
 
     @Override
-    public List<OnmsNotification> getNotificationsForCategories(Set<OnmsCategory> rowCategories, Set<OnmsCategory> colCategories, Map<OnmsNotification, String> customSeverity) {
-        List<OnmsNode> nodes = getNodesForCategories(rowCategories, colCategories);
+    public List<OnmsNotification> getNotificationsForCategories(final Set<OnmsCategory> rowCategories, final Set<OnmsCategory> colCategories, final Map<OnmsNotification, String> customSeverity) {
+        return m_transactionOperations.execute(new TransactionCallback<List<OnmsNotification>>() {
+            @Override
+            public List<OnmsNotification> doInTransaction(TransactionStatus transactionStatus) {
+                List<OnmsNode> nodes = getNodesForCategories(rowCategories, colCategories);
 
-        Date fifteenMinutesAgo = new Date(System.currentTimeMillis() - (15 * 60 * 1000));
-        Date oneWeekAgo = new Date(System.currentTimeMillis() - (7 * 24 * 60 * 60 * 1000));
+                Date fifteenMinutesAgo = new Date(System.currentTimeMillis() - (15 * 60 * 1000));
+                Date oneWeekAgo = new Date(System.currentTimeMillis() - (7 * 24 * 60 * 60 * 1000));
 
-        customSeverity.clear();
+                customSeverity.clear();
 
-        if (nodes != null && nodes.size() > 0) {
-            List<OnmsNotification> notifications = new ArrayList<OnmsNotification>();
-            notifications.addAll(getNotificationsWithCriterias(customSeverity, nodes, "Critical", Restrictions.isNull("respondTime"), Restrictions.le("pageTime", fifteenMinutesAgo)));
-            notifications.addAll(getNotificationsWithCriterias(customSeverity, nodes, "Minor", Restrictions.isNull("respondTime"), Restrictions.gt("pageTime", fifteenMinutesAgo)));
-            notifications.addAll(getNotificationsWithCriterias(customSeverity, nodes, "Normal", Restrictions.isNotNull("respondTime"), Restrictions.gt("pageTime", oneWeekAgo)));
-            return notifications;
-        }
+                if (nodes != null && nodes.size() > 0) {
+                    List<OnmsNotification> notifications = new ArrayList<OnmsNotification>();
+                    notifications.addAll(getNotificationsWithCriterias(customSeverity, nodes, "Critical", Restrictions.isNull("respondTime"), Restrictions.le("pageTime", fifteenMinutesAgo)));
+                    notifications.addAll(getNotificationsWithCriterias(customSeverity, nodes, "Minor", Restrictions.isNull("respondTime"), Restrictions.gt("pageTime", fifteenMinutesAgo)));
+                    notifications.addAll(getNotificationsWithCriterias(customSeverity, nodes, "Normal", Restrictions.isNotNull("respondTime"), Restrictions.gt("pageTime", oneWeekAgo)));
+                    return notifications;
+                }
 
-        return new ArrayList<>();
+                return new ArrayList<>();
+            }
+        });
     }
 
     @Override
-    public List<NodeRtc> getNoteRtcsForCategories(Set<OnmsCategory> rowCategories, Set<OnmsCategory> colCategories) {
-        List<OnmsNode> nodes = getNodesForCategories(rowCategories, colCategories);
+    public List<NodeRtc> getNoteRtcsForCategories(final Set<OnmsCategory> rowCategories, final Set<OnmsCategory> colCategories) {
+        return m_transactionOperations.execute(new TransactionCallback<List<NodeRtc>>() {
+            @Override
+            public List<NodeRtc> doInTransaction(TransactionStatus transactionStatus) {
+                List<OnmsNode> nodes = getNodesForCategories(rowCategories, colCategories);
 
-        CriteriaBuilder outageCriteriaBuilder = new CriteriaBuilder(OnmsOutage.class);
+                CriteriaBuilder outageCriteriaBuilder = new CriteriaBuilder(OnmsOutage.class);
 
-        outageCriteriaBuilder.alias("monitoredService", "monitoredService", Alias.JoinType.INNER_JOIN);
-        outageCriteriaBuilder.alias("monitoredService.ipInterface", "ipInterface", Alias.JoinType.INNER_JOIN);
-        outageCriteriaBuilder.alias("monitoredService.ipInterface.node", "node", Alias.JoinType.INNER_JOIN);
-        outageCriteriaBuilder.eq("monitoredService.status", "A");
-        outageCriteriaBuilder.ne("ipInterface.isManaged", "D");
-        outageCriteriaBuilder.ne("node.type", "D");
+                outageCriteriaBuilder.alias("monitoredService", "monitoredService", Alias.JoinType.INNER_JOIN);
+                outageCriteriaBuilder.alias("monitoredService.ipInterface", "ipInterface", Alias.JoinType.INNER_JOIN);
+                outageCriteriaBuilder.alias("monitoredService.ipInterface.node", "node", Alias.JoinType.INNER_JOIN);
+                outageCriteriaBuilder.eq("monitoredService.status", "A");
+                outageCriteriaBuilder.ne("ipInterface.isManaged", "D");
+                outageCriteriaBuilder.ne("node.type", "D");
 
-        CriteriaBuilder serviceCriteriaBuilder = new CriteriaBuilder(OnmsMonitoredService.class);
+                CriteriaBuilder serviceCriteriaBuilder = new CriteriaBuilder(OnmsMonitoredService.class);
 
-        serviceCriteriaBuilder.alias("ipInterface", "ipInterface", Alias.JoinType.INNER_JOIN);
-        serviceCriteriaBuilder.alias("ipInterface.node", "node", Alias.JoinType.INNER_JOIN);
-        serviceCriteriaBuilder.alias("serviceType", "serviceType", Alias.JoinType.INNER_JOIN);
-        serviceCriteriaBuilder.alias("currentOutages", "currentOutages", Alias.JoinType.INNER_JOIN);
-        serviceCriteriaBuilder.eq("status", "A");
-        serviceCriteriaBuilder.ne("ipInterface.isManaged", "D");
-        serviceCriteriaBuilder.ne("node.type", "D");
+                serviceCriteriaBuilder.alias("ipInterface", "ipInterface", Alias.JoinType.INNER_JOIN);
+                serviceCriteriaBuilder.alias("ipInterface.node", "node", Alias.JoinType.INNER_JOIN);
+                serviceCriteriaBuilder.alias("serviceType", "serviceType", Alias.JoinType.INNER_JOIN);
+                serviceCriteriaBuilder.alias("currentOutages", "currentOutages", Alias.JoinType.INNER_JOIN);
+                serviceCriteriaBuilder.eq("status", "A");
+                serviceCriteriaBuilder.ne("ipInterface.isManaged", "D");
+                serviceCriteriaBuilder.ne("node.type", "D");
 
-        if (nodes == null || nodes.isEmpty()) {
-            return new ArrayList<>();
-        } else {
-            serviceCriteriaBuilder.in("ipInterface.node", nodes);
-            return getNodeListForCriteria(serviceCriteriaBuilder.toCriteria(), outageCriteriaBuilder.toCriteria());
-        }
+                if (nodes == null || nodes.isEmpty()) {
+                    return new ArrayList<>();
+                } else {
+                    serviceCriteriaBuilder.in("ipInterface.node", nodes);
+                    return getNodeListForCriteria(serviceCriteriaBuilder.toCriteria(), outageCriteriaBuilder.toCriteria());
+                }
+            }
+        });
     }
 
     /**
@@ -485,24 +510,6 @@ public class DefaultSurveillanceViewService implements SurveillanceViewService {
 
     public Map<OnmsResourceType, List<OnmsResource>> getResourceTypeMapForNodeId(int nodeId) {
         return getResourceTypeMapForNodeId(String.valueOf(nodeId));
-    }
-
-    public Map<String, String> getGraphNameTitleMappingForResourceId(final String resourceId) {
-        return m_transactionOperations.execute(new TransactionCallback<Map<String, String>>() {
-            @Override
-            public Map<String, String> doInTransaction(TransactionStatus transactionStatus) {
-                OnmsResource resource = m_resourceDao.getResourceById(resourceId);
-                PrefabGraph[] queries = m_graphDao.getPrefabGraphsForResource(resource);
-
-                Map<String, String> graphResults = new TreeMap<String, String>();
-
-                for (PrefabGraph query : queries) {
-                    graphResults.put(query.getName(), query.getTitle());
-                }
-
-                return graphResults;
-            }
-        });
     }
 
     public Map<OnmsResourceType, List<OnmsResource>> getResourceTypeMapForNodeId(final String nodeId) {
@@ -550,84 +557,9 @@ public class DefaultSurveillanceViewService implements SurveillanceViewService {
         resource.setLink(childResource.getLink());
         return resource;
     }
-/*
-    public getResourcesForNode(OnmsNode node) {
 
-        OnmsResource resource = m_resourceDao.getResourceForNode(node);
-
-        if (resource != null && (resource.getAttributes().size() > 0 || resource.getChildResources().size() > 0)) {
-            resources.add(resource);
-
-        }
-
-        return null;
-
-        String[] labels = new ArrayList<String[]>(resources.size());
-
-        for (OnmsResource resource : resources) {
-            labels.add(new String[] { resource.getId(), resource.getResourceType().getLabel() + ": " + resource.getLabel() });
-        }
-    }
-    */
-/*
-    public String[][] getResources(SurveillanceSet set) {
-        OnmsCriteria criteria = new OnmsCriteria(OnmsNode.class, "node");
-        addCriteriaForSurveillanceSet(criteria, set);
-        criteria.add(org.hibernate.criterion.Restrictions.ne("node.type", "D"));
-        criteria.addOrder(org.hibernate.criterion.Order.asc("node.label"));
-
-        List<OnmsNode> nodes = m_nodeDao.findMatching(criteria);
-
-        List<OnmsResource> resources = new ArrayList<OnmsResource>();
-        for (OnmsNode node : nodes) {
-            OnmsResource resource = m_resourceDao.getResourceForNode(node);
-            if (resource != null && (resource.getAttributes().size() > 0 || resource.getChildResources().size() > 0)) {
-                resources.add(resource);
-            }
-        }
-
-        List<String[]> labels = new ArrayList<String[]>(resources.size());
-        for (OnmsResource resource : resources) {
-            labels.add(new String[] { resource.getId(), resource.getResourceType().getLabel() + ": " + resource.getLabel() });
-        }
-
-        return labels.toArray(new String[labels.size()][]);
-    }
-
-    public String[][] getChildResources(String id) {
-        OnmsResource parentResource = m_resourceDao.getResourceById(id);
-        if (parentResource == null) {
-            return null;
-        }
-
-        List<OnmsResource> resources = parentResource.getChildResources();
-
-        List<String[]> labels = new ArrayList<String[]>(resources.size());
-        for (OnmsResource resource : resources) {
-            labels.add(new String[]{resource.getId(), resource.getResourceType().getLabel() + ": " + resource.getLabel()});
-        }
-
-        return labels.toArray(new String[labels.size()][]);
-    }
-
-    public String[][] getPrefabGraphs(String id) {
-        OnmsResource resource = m_resourceDao.getResourceById(id);
-        if (resource == null) {
-            return null;
-        }
-
-        PrefabGraph[] graphs = m_graphDao.getPrefabGraphsForResource(resource);
-
-        List<String[]> labels = new ArrayList<String[]>(graphs.length);
-        for (PrefabGraph graph : graphs) {
-            labels.add(new String[]{graph.getName(), graph.getName()});
-        }
-
-        return labels.toArray(new String[labels.size()][]);
-    }
-    */
-
-    private View getView(String username) {
+    @Override
+    public View selectDefaultViewForUsername(String username) {
 
         LOG.debug("Looking for surveillance view that matches user '{}'", username);
 

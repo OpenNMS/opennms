@@ -27,10 +27,11 @@
  *******************************************************************************/
 package org.opennms.features.vaadin.surveillanceviews.ui;
 
+import com.github.wolfie.refresher.Refresher;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.Title;
+import com.vaadin.event.UIEvents;
 import com.vaadin.server.VaadinRequest;
-import com.vaadin.ui.Label;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import org.opennms.features.vaadin.surveillanceviews.config.SurveillanceViewProvider;
@@ -59,15 +60,26 @@ public class SurveillanceViewsUI extends UI {
         VerticalLayout rootLayout = new VerticalLayout();
         rootLayout.setSpacing(true);
 
-        String viewName = request.getParameter("viewName") == null ? "default" : request.getParameter("viewName");
+        String viewName = request.getParameter("viewName");
         boolean dashboard = request.getParameter("dashboard") != null && "true".equals(request.getParameter("dashboard"));
         String username = request.getRemoteUser();
 
-        View view = SurveillanceViewProvider.getInstance().getView("default");
+        View view;
 
+        if (viewName == null) {
+            view = m_surveillanceViewService.selectDefaultViewForUsername(username);
+            viewName = view.getName();
+        } else {
+            view = SurveillanceViewProvider.getInstance().getView(viewName);
+        }
+
+        /*
         rootLayout.addComponent(new Label("viewName=" + viewName));
         rootLayout.addComponent(new Label("dashboard=" + dashboard));
         rootLayout.addComponent(new Label("username=" + username));
+        */
+
+        setPollInterval(1000);
 
         boolean isDashboardRole = true;
 
@@ -82,6 +94,10 @@ public class SurveillanceViewsUI extends UI {
         rootLayout.addComponent(new SurveillanceView(view, m_surveillanceViewService, dashboard, !isDashboardRole));
 
         setContent(rootLayout);
+
+        final Refresher refresher = new Refresher();
+        refresher.setRefreshInterval(500);
+        addExtension(refresher);
     }
 
     /**

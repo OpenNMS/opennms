@@ -67,9 +67,9 @@ public interface SurveillanceViewService {
 
     Map<OnmsResourceType, List<OnmsResource>> getResourceTypeMapForNodeId(int nodeId);
 
-    Map<String, String> getGraphNameTitleMappingForResourceId(final String resourceId);
-
     String imageUrlForGraph(String query, int width, int height);
+
+    View selectDefaultViewForUsername(String username);
 
     class NodeRtc {
         private static final DecimalFormat AVAILABILITY_FORMAT = new DecimalFormat("0.000%");

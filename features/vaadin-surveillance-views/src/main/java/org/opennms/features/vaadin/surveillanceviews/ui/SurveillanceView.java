@@ -28,6 +28,7 @@
 package org.opennms.features.vaadin.surveillanceviews.ui;
 
 import com.vaadin.data.Property;
+import com.vaadin.event.UIEvents;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
@@ -45,7 +46,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
-public class SurveillanceView extends VerticalLayout {
+public class SurveillanceView extends VerticalLayout implements UIEvents.PollListener {
     private static final Logger LOG = LoggerFactory.getLogger(SurveillanceView.class);
 
     private class SurveillanceViewTableHeader extends HorizontalLayout {
@@ -103,6 +104,8 @@ public class SurveillanceView extends VerticalLayout {
     private SurveillanceViewTableHeader m_surveillanceViewTableHeader;
     private VerticalLayout upperLayout, lowerLayout;
     private boolean m_dashboard = false, m_enabled = true;
+    private int m_countdown;
+    private boolean m_refreshEnabled = false;
 
     public SurveillanceView(View selectedView, SurveillanceViewService surveillanceViewService, boolean dashboard, boolean enabled) {
         this.m_surveillanceViewService = surveillanceViewService;
@@ -114,10 +117,46 @@ public class SurveillanceView extends VerticalLayout {
         setSpacing(true);
 
         setView(selectedView);
+
+        addAttachListener(new AttachListener() {
+            @Override
+            public void attach(AttachEvent attachEvent) {
+                getUI().addPollListener(SurveillanceView.this);
+
+            }
+        });
+
+        addDetachListener(new DetachListener() {
+            @Override
+            public void detach(DetachEvent detachEvent) {
+                getUI().removePollListener(SurveillanceView.this);
+            }
+        });
+    }
+
+    @Override
+    public void poll(UIEvents.PollEvent pollEvent) {
+        if (m_refreshEnabled) {
+            m_countdown--;
+        }
+
+        if (m_countdown < 0) {
+            m_countdown = m_view.getRefreshSeconds();
+
+            getUI().access(new Runnable() {
+                @Override
+                public void run() {
+                    m_surveillanceViewTable.refresh();
+                }
+            });
+        }
     }
 
     public void setView(View view) {
         m_view = view;
+
+        m_refreshEnabled = (m_view.getRefreshSeconds() > 0);
+        m_countdown = m_view.getRefreshSeconds();
 
         m_surveillanceViewTableHeader.setCaptionText("Surveillance view: " + m_view.getName());
         m_surveillanceViewTableHeader.select(m_view.getName());

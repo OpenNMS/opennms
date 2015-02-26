@@ -31,6 +31,7 @@ import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.server.Page;
 import com.vaadin.server.VaadinServlet;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.themes.BaseTheme;
 import org.opennms.features.topology.api.support.InfoWindow;
@@ -61,8 +62,34 @@ public class SurveillanceViewNotificationTable extends SurveillanceViewDetailTab
 
         addGeneratedColumn("node", new ColumnGenerator() {
             @Override
-            public Object generateCell(Table table, Object itemId, Object propertyId) {
+            public Object generateCell(final Table table, final Object itemId, final Object propertyId) {
                 final OnmsNotification onmsNotification = (OnmsNotification) itemId;
+
+                Button icon = getClickableIcon("glyphicon glyphicon-bell", new Button.ClickListener() {
+                    @Override
+                    public void buttonClick(Button.ClickEvent clickEvent) {
+
+                        OnmsNotification onmsNotification = (OnmsNotification) itemId;
+                        final int notificationId = onmsNotification.getNotifyId();
+
+                        final URI currentLocation = Page.getCurrent().getLocation();
+                        final String contextRoot = VaadinServlet.getCurrent().getServletContext().getContextPath();
+                        final String redirectFragment = contextRoot + "/notification/detail.jsp?quiet=true&notice=" + notificationId;
+
+                        LOG.debug("notification {} clicked, current location = {}, uri = {}", notificationId, currentLocation, redirectFragment);
+
+                        try {
+                            SurveillanceViewNotificationTable.this.getUI().addWindow(new InfoWindow(new URL(currentLocation.toURL(), redirectFragment), new InfoWindow.LabelCreator() {
+                                @Override
+                                public String getLabel() {
+                                    return "Notification Info " + notificationId;
+                                }
+                            }));
+                        } catch (MalformedURLException e) {
+                            LOG.error(e.getMessage(), e);
+                        }
+                    }
+                });
 
                 Button button = new Button(onmsNotification.getNodeLabel());
                 button.setPrimaryStyleName(BaseTheme.BUTTON_LINK);
@@ -93,7 +120,14 @@ public class SurveillanceViewNotificationTable extends SurveillanceViewDetailTab
                     }
                 });
 
-                return button;
+                HorizontalLayout horizontalLayout = new HorizontalLayout();
+
+                horizontalLayout.addComponent(icon);
+                horizontalLayout.addComponent(button);
+
+                horizontalLayout.setSpacing(true);
+
+                return horizontalLayout;
             }
         });
 
@@ -105,38 +139,6 @@ public class SurveillanceViewNotificationTable extends SurveillanceViewDetailTab
             }
         });
 
-        addGeneratedColumn("icon", new ColumnGenerator() {
-            @Override
-            public Object generateCell(Table table, final Object itemId, Object propertyId) {
-                return getClickableIcon("glyphicon glyphicon-bell", new Button.ClickListener() {
-                    @Override
-                    public void buttonClick(Button.ClickEvent clickEvent) {
-
-                        OnmsNotification onmsNotification = (OnmsNotification) itemId;
-                        final int notificationId = onmsNotification.getNotifyId();
-
-                        final URI currentLocation = Page.getCurrent().getLocation();
-                        final String contextRoot = VaadinServlet.getCurrent().getServletContext().getContextPath();
-                        final String redirectFragment = contextRoot + "/notification/detail.jsp?quiet=true&notice=" + notificationId;
-
-                        LOG.debug("notification {} clicked, current location = {}, uri = {}", notificationId, currentLocation, redirectFragment);
-
-                        try {
-                            SurveillanceViewNotificationTable.this.getUI().addWindow(new InfoWindow(new URL(currentLocation.toURL(), redirectFragment), new InfoWindow.LabelCreator() {
-                                @Override
-                                public String getLabel() {
-                                    return "Notification Info " + notificationId;
-                                }
-                            }));
-                        } catch (MalformedURLException e) {
-                            LOG.error(e.getMessage(), e);
-                        }
-                    }
-                });
-            }
-        });
-
-        setColumnHeader("icon", "");
         setColumnHeader("node", "Node");
         setColumnHeader("serviceType", "Service");
         setColumnHeader("textMsg", "Message");
@@ -144,7 +146,7 @@ public class SurveillanceViewNotificationTable extends SurveillanceViewDetailTab
         setColumnHeader("answeredBy", "Responder");
         setColumnHeader("respondTime", "Respond Time");
 
-        setVisibleColumns("icon", "node", "serviceType", "textMsg", "pageTime", "answeredBy", "respondTime");
+        setVisibleColumns( "node", "serviceType", "textMsg", "pageTime", "answeredBy", "respondTime");
     }
 
     @Override

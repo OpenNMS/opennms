@@ -29,11 +29,16 @@ package org.opennms.features.vaadin.surveillanceviews.ui.dashboard;
 
 import com.vaadin.data.Property;
 import com.vaadin.server.ExternalResource;
+import com.vaadin.server.Page;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Image;
+import com.vaadin.ui.JavaScript;
+import com.vaadin.ui.JavaScriptFunction;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.NativeSelect;
 import com.vaadin.ui.VerticalLayout;
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.opennms.features.vaadin.surveillanceviews.service.SurveillanceViewService;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsNode;
@@ -48,13 +53,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class SurveillanceViewGraphComponent extends VerticalLayout implements SurveillanceViewDetail {
+public class SurveillanceViewGraphComponent extends VerticalLayout implements SurveillanceViewDetail, Page.BrowserWindowResizeListener {
     private static final Logger LOG = LoggerFactory.getLogger(SurveillanceViewGraphComponent.class);
 
     private SurveillanceViewService m_surveillanceViewService;
     protected boolean m_enabled;
     private NativeSelect m_nodeSelect, m_resourceSelect, m_graphSelect;
-    private HorizontalLayout m_imageLayout;
+    private VerticalLayout m_imageLayout;
+    private int m_width = 1000;
 
     public SurveillanceViewGraphComponent(SurveillanceViewService surveillanceViewService, boolean enabled) {
 
@@ -134,7 +140,7 @@ public class SurveillanceViewGraphComponent extends VerticalLayout implements Su
                 String string = (String) m_graphSelect.getValue();
 
                 if (string != null) {
-                    replaceImage(getSurveillanceViewService().imageUrlForGraph(string, 1000, 200));
+                    replaceImage(getSurveillanceViewService().imageUrlForGraph(string, m_width, 200));
                 } else {
                     replaceImage(null);
                 }
@@ -145,16 +151,61 @@ public class SurveillanceViewGraphComponent extends VerticalLayout implements Su
         m_resourceSelect.setSizeFull();
         m_graphSelect.setSizeFull();
 
-        m_imageLayout = new HorizontalLayout();
-        m_imageLayout.setSizeFull();
+        m_nodeSelect.addStyleName("surveillance-view");
+        m_resourceSelect.addStyleName("surveillance-view");
+        m_graphSelect.addStyleName("surveillance-view");
 
-        VerticalLayout verticalLayout = new VerticalLayout();
+
+        m_imageLayout = new VerticalLayout();
+        m_imageLayout.setSizeUndefined();
+        m_imageLayout.setWidth(100, Unit.PERCENTAGE);
+        m_imageLayout.setHeight(300, Unit.PIXELS);
+
+        HorizontalLayout verticalLayout = new HorizontalLayout();
+        verticalLayout.setSizeFull();
         verticalLayout.addComponent(m_nodeSelect);
         verticalLayout.addComponent(m_resourceSelect);
         verticalLayout.addComponent(m_graphSelect);
 
+        m_imageLayout.setId("imageLayout");
+
+        JavaScript.getCurrent().addFunction("myImageLayoutWidth", new JavaScriptFunction() {
+            @Override
+            public void call(final JSONArray arguments) throws JSONException {
+                m_width = arguments.getInt(0);
+            }
+        });
+
+
+        addAttachListener(new AttachListener() {
+            @Override
+            public void attach(AttachEvent attachEvent) {
+                getUI().getPage().addBrowserWindowResizeListener(SurveillanceViewGraphComponent.this);
+
+                JavaScript.getCurrent().execute("myImageLayoutWidth(document.getElementById('" + m_imageLayout.getId() + "').clientWidth);");
+            }
+        });
+
+        addDetachListener(new DetachListener() {
+            @Override
+            public void detach(DetachEvent detachEvent) {
+                getUI().getPage().removeBrowserWindowResizeListener(SurveillanceViewGraphComponent.this);
+            }
+        });
+
         addComponent(verticalLayout);
         addComponent(m_imageLayout);
+    }
+
+    @Override
+    public void browserWindowResized(Page.BrowserWindowResizeEvent browserWindowResizeEvent) {
+        JavaScript.getCurrent().execute("myImageLayoutWidth(document.getElementById('" + m_imageLayout.getId() + "').clientWidth);");
+
+        String string = (String) m_graphSelect.getValue();
+
+        if (string != null) {
+            replaceImage(getSurveillanceViewService().imageUrlForGraph(string, m_width, 200));
+        }
     }
 
     private void replaceImage(String url) {
@@ -173,7 +224,7 @@ public class SurveillanceViewGraphComponent extends VerticalLayout implements Su
     }
 
     @Override
-    public void refreshDetails(Set<OnmsCategory> rowCategories, Set<OnmsCategory> colCategories) {
+    public synchronized void refreshDetails(Set<OnmsCategory> rowCategories, Set<OnmsCategory> colCategories) {
         List<OnmsNode> nodes = getSurveillanceViewService().getNodesForCategories(rowCategories, colCategories);
 
         OnmsNode selectedNode = (OnmsNode) m_nodeSelect.getValue();

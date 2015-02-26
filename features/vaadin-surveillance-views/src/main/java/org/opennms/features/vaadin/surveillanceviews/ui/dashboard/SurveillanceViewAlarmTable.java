@@ -30,7 +30,9 @@ package org.opennms.features.vaadin.surveillanceviews.ui.dashboard;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.server.Page;
 import com.vaadin.server.VaadinServlet;
+import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.themes.BaseTheme;
 import org.opennms.features.topology.api.support.InfoWindow;
@@ -60,8 +62,33 @@ public class SurveillanceViewAlarmTable extends SurveillanceViewDetailTable {
 
         addGeneratedColumn("node", new ColumnGenerator() {
             @Override
-            public Object generateCell(Table table, final Object itemId, Object propertyId) {
+            public Object generateCell(final Table table, final Object itemId, final Object propertyId) {
                 final OnmsAlarm onmsAlarm = (OnmsAlarm) itemId;
+
+                Button icon = getClickableIcon("glyphicon glyphicon-warning-sign", new Button.ClickListener() {
+                    @Override
+                    public void buttonClick(Button.ClickEvent clickEvent) {
+                        OnmsAlarm alarm = (OnmsAlarm) itemId;
+                        final int alarmId = alarm.getId();
+
+                        final URI currentLocation = Page.getCurrent().getLocation();
+                        final String contextRoot = VaadinServlet.getCurrent().getServletContext().getContextPath();
+                        final String redirectFragment = contextRoot + "/alarm/detail.htm?quiet=true&id=" + alarmId;
+
+                        LOG.debug("alarm {} clicked, current location = {}, uri = {}", alarmId, currentLocation, redirectFragment);
+
+                        try {
+                            SurveillanceViewAlarmTable.this.getUI().addWindow(new InfoWindow(new URL(currentLocation.toURL(), redirectFragment), new InfoWindow.LabelCreator() {
+                                @Override
+                                public String getLabel() {
+                                    return "Alarm Info " + alarmId;
+                                }
+                            }));
+                        } catch (MalformedURLException e) {
+                            LOG.error(e.getMessage(), e);
+                        }
+                    }
+                });
 
                 Button button = new Button(onmsAlarm.getNodeLabel());
                 button.setPrimaryStyleName(BaseTheme.BUTTON_LINK);
@@ -92,7 +119,14 @@ public class SurveillanceViewAlarmTable extends SurveillanceViewDetailTable {
                     }
                 });
 
-                return button;
+                HorizontalLayout horizontalLayout = new HorizontalLayout();
+
+                horizontalLayout.addComponent(icon);
+                horizontalLayout.addComponent(button);
+
+                horizontalLayout.setSpacing(true);
+
+                return horizontalLayout;
             }
         });
 
@@ -101,37 +135,6 @@ public class SurveillanceViewAlarmTable extends SurveillanceViewDetailTable {
             public Object generateCell(Table table, Object itemId, Object propertyId) {
                 OnmsAlarm onmsAlarm = (OnmsAlarm) itemId;
                 return getImageSeverityLayout(onmsAlarm.getLogMsg());
-            }
-        });
-
-        addGeneratedColumn("icon", new ColumnGenerator() {
-            @Override
-            public Object generateCell(Table table, final Object itemId, Object propertyId) {
-                return getClickableIcon("glyphicon glyphicon-warning-sign", new Button.ClickListener() {
-                    @Override
-                    public void buttonClick(Button.ClickEvent clickEvent) {
-
-                        OnmsAlarm alarm = (OnmsAlarm) itemId;
-                        final int alarmId = alarm.getId();
-
-                        final URI currentLocation = Page.getCurrent().getLocation();
-                        final String contextRoot = VaadinServlet.getCurrent().getServletContext().getContextPath();
-                        final String redirectFragment = contextRoot + "/alarm/detail.htm?quiet=true&id=" + alarmId;
-
-                        LOG.debug("alarm {} clicked, current location = {}, uri = {}", alarmId, currentLocation, redirectFragment);
-
-                        try {
-                            SurveillanceViewAlarmTable.this.getUI().addWindow(new InfoWindow(new URL(currentLocation.toURL(), redirectFragment), new InfoWindow.LabelCreator() {
-                                @Override
-                                public String getLabel() {
-                                    return "Alarm Info " + alarmId;
-                                }
-                            }));
-                        } catch (MalformedURLException e) {
-                            LOG.error(e.getMessage(), e);
-                        }
-                    }
-                });
             }
         });
 
@@ -150,18 +153,17 @@ public class SurveillanceViewAlarmTable extends SurveillanceViewDetailTable {
             }
         });
 
-        setColumnHeader("icon", "");
         setColumnHeader("node", "Node");
         setColumnHeader("logMsg", "Log Msg");
         setColumnHeader("counter", "Count");
         setColumnHeader("firstEventTime", "First Time");
         setColumnHeader("lastEventTime", "Last Time");
 
-        setVisibleColumns("icon", "node", "logMsg", "counter", "firstEventTime", "lastEventTime");
+        setVisibleColumns("node", "logMsg", "counter", "firstEventTime", "lastEventTime");
     }
 
     @Override
-    public void refreshDetails(Set<OnmsCategory> rowCategories, Set<OnmsCategory> colCategories) {
+    public synchronized void refreshDetails(Set<OnmsCategory> rowCategories, Set<OnmsCategory> colCategories) {
         List<OnmsAlarm> alarms = getSurveillanceViewService().getAlarmsForCategories(rowCategories, colCategories);
 
         m_beanItemContainer.removeAllItems();
@@ -171,6 +173,7 @@ public class SurveillanceViewAlarmTable extends SurveillanceViewDetailTable {
                 m_beanItemContainer.addItem(alarm);
             }
         }
+
         sort(new Object[]{"firstEventTime"}, new boolean[]{true});
 
         refreshRowCache();
