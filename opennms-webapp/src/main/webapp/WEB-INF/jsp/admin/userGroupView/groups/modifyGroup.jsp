@@ -227,9 +227,7 @@
             selectAllSelected();
             selectAllSelectedCategories();
             document.modifyGroup.operation.value="save";
-            return true;
-        } else {
-            return false;
+            document.modifyGroup.submit();
         }
     }
     
@@ -292,7 +290,7 @@
     }
 </script>
 
-<form role="form" class="form-horizontal" method="post" name="modifyGroup" onsubmit="return saveGroup();">
+<form role="form" class="form-horizontal" method="post" id="modifyGroup" name="modifyGroup">
   <input type="hidden" name="groupName" value="<%=group.getName()%>"/>
   <input type="hidden" name="operation"/>
 
@@ -343,22 +341,26 @@
               </tr>
               <tr>
                 <td align="center">
-	          <label class="control-label">Available Users</label>
+                  <label class="control-label">Available Users</label>
                   <%=createSelectList("availableUsers", availableUsers)%><br/>
-                  <p align="center">
-                  <button type="button" class="btn btn-default" name="availableAll" onClick="javascript:selectAllAvailable()">Select All</button><br/>
-                  <button type="button" class="btn btn-default" id="users.doAdd" onClick="javascript:addUsers()">&nbsp;&#155;&#155;&nbsp;</button></p>
+                  <div class="btn-group-vertical" align="center">
+                    <button type="button" class="btn btn-default" name="availableAll" onClick="javascript:selectAllAvailable()">Select All</button>
+                    <button type="button" class="btn btn-default" id="users.doAdd" onClick="javascript:addUsers()">&nbsp;&#155;&#155;&nbsp;</button>
+                  </div>
                 </td>
                 <td align="center">
-	          <label class="control-label">Currently in Group</label>
+                  <label class="control-label">Currently in Group</label>
                   <%=createSelectList("selectedUsers", selectedUsers)%><br/>
-                  <p align="center">
-                  <button type="button" class="btn btn-default" name="selectedAll" onClick="javascript:selectAllSelected()">Select All</button><br/>
-                  <button type="button" class="btn btn-default" id="users.doRemove" onClick="javascript:removeUsers()">&nbsp;&#139;&#139;&nbsp;</button></p>
+                  <div class="btn-group-vertical" align="center">
+                    <button type="button" class="btn btn-default" name="selectedAll" onClick="javascript:selectAllSelected()">Select All</button>
+                    <button type="button" class="btn btn-default" id="users.doRemove" onClick="javascript:removeUsers()">&nbsp;&#139;&#139;&nbsp;</button>
+                  </div>
                 </td>
                 <td>
-                  <button type="button" class="btn btn-default" onClick="javascript:move(-1)">Move Up</button> <br/>
-                  <button type="button" class="btn btn-default" onClick="javascript:move(1)">Move Down</button>
+                  <div class="btn-group-vertical">
+                    <button type="button" class="btn btn-default" onClick="javascript:move(-1)">Move Up</button>
+                    <button type="button" class="btn btn-default" onClick="javascript:move(1)">Move Down</button>
+                  </div>
                 </td>
               </tr>
             </table>
@@ -374,21 +376,24 @@
 	                <td align="center">
 	                  <label class="control-label">Available Categories</label>
 	                  <%=createSelectList("availableCategories", categoryListNotInGroup)%><br/>
-	                  <p align="center">
-	                  
-	                  <button type="button" class="btn btn-default" name="availableAll" onClick="javascript:selectAllAvailableCategories()">Select All</button><br/>
-	                  <button type="button" class="btn btn-default" id="categories.doAdd" onClick="javascript:addCategories()">&nbsp;&#155;&#155;&nbsp;</button></p>
+                    <div class="btn-group-vertical" align="center">
+  	                  <button type="button" class="btn btn-default" name="availableAll" onClick="javascript:selectAllAvailableCategories()">Select All</button>
+  	                  <button type="button" class="btn btn-default" id="categories.doAdd" onClick="javascript:addCategories()">&nbsp;&#155;&#155;&nbsp;</button>
+                    </div>
 	                </td>
 	                <td align="center">
 	                  <label class="control-label">Currently in Group</label>
 	                  <%=createSelectList("selectedCategories", categoryListInGroup)%><br/>
-	                  <p align="center">
-	                  <button type="button" class="btn btn-default" name="selectedAll" onClick="javascript:selectAllSelectedCategories()">Select All</button><br/>
-	                  <button type="button" class="btn btn-default" id="categories.doRemove" onClick="javascript:removeCategories()">&nbsp;&#139;&#139;&nbsp;</button></p>
+                    <div class="btn-group-vertical" align="center">
+  	                  <button type="button" class="btn btn-default" name="selectedAll" onClick="javascript:selectAllSelectedCategories()">Select All</button>
+  	                  <button type="button" class="btn btn-default" id="categories.doRemove" onClick="javascript:removeCategories()">&nbsp;&#139;&#139;&nbsp;</button>
+                    <div>
 	                </td>
 	                <td>
-	                  <button type="button" class="btn btn-default" onClick="javascript:moveCat(-1)">Move Up</button><br/>
-	                  <button type="button" class="btn btn-default" onClick="javascript:moveCat(1)">Move Down</button>
+                    <div class="btn-group-vertical">
+  	                  <button type="button" class="btn btn-default" onClick="javascript:moveCat(-1)">Move Up</button>
+  	                  <button type="button" class="btn btn-default" onClick="javascript:moveCat(1)">Move Down</button>
+                    </div>
 	                </td>
 	              </tr>
 	            </table>
@@ -452,8 +457,8 @@
       <div class="form-group top-buffer">
         <div class="col-sm-12">
           <input type="hidden" name="dutySchedules" value="<%=group.getDutySchedules().size()%>"/>
-          <button id="addSchedule" class="btn btn-default" name="addSchedule" onClick="javascript:addGroupDutySchedules()">Add This Many Schedules</button>
-          <select name="numSchedules" class="btn btn-default" value="3" size="1">
+          <button id="addSchedule" class="btn btn-default" name="addSchedule" onclick="addGroupDutySchedules()">Add This Many Schedules</button>
+          <select name="numSchedules" class="btn btn-default" value="3">
             <option value="1">1</option>
             <option value="2">2</option>
             <option value="3">3</option>
@@ -467,7 +472,7 @@
 
       <div class="form-group">
         <div class="col-sm-12">
-          <button type="button" name="addSchedule" class="btn btn-default" onClick="javascript:removeGroupDutySchedules()">Remove Checked Schedules</button>
+          <button type="button" name="addSchedule" class="btn btn-default" onclick="removeGroupDutySchedules()">Remove Checked Schedules</button>
         </div>
       </div>
     </div> <!-- panel -->
@@ -476,8 +481,8 @@
 
 <div class="row">
   <div class="col-md-12">
-    <button type="submit" class="btn btn-default" name="finish">Finish</button>
-    <button type="button" class="btn btn-default" name="cancel" onClick="javascript:cancelGroup()">Cancel</button>
+    <button type="button" class="btn btn-default" name="finish" onclick="saveGroup()">Finish</button>
+    <button type="button" class="btn btn-default" name="cancel" onclick="cancelGroup()">Cancel</button>
   </div> <!-- column -->
 </div> <!-- row -->
 

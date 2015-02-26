@@ -13,6 +13,8 @@ import java.util.Set;
 import javax.net.ssl.SSLContext;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.http.Header;
+import org.apache.http.HttpException;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpRequestInterceptor;
@@ -45,6 +47,7 @@ import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.DefaultHttpRequestRetryHandler;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.client.LaxRedirectStrategy;
 import org.apache.http.impl.conn.BasicHttpClientConnectionManager;
 import org.apache.http.impl.conn.SystemDefaultRoutePlanner;
 import org.apache.http.protocol.HTTP;
@@ -59,6 +62,7 @@ public class HttpClientWrapper implements Closeable {
     private CloseableHttpClient m_httpClient;
     private CookieStore m_cookieStore;
 
+    private boolean m_useLaxRedirect = false;
     private boolean m_reuseConnections = true;
     private boolean m_usePreemptiveAuth = false;
     private boolean m_useSystemProxySettings;
@@ -79,6 +83,20 @@ public class HttpClientWrapper implements Closeable {
 
     protected HttpClientWrapper() {
         m_cookieStore = new BasicCookieStore();
+        // According to the HTTP specification, adding the default ports to the host header is optional.
+        // If the default ports are added, several Web Servers like Microsoft IIS 7.5 will complain about it, and could lead to unwanted results.
+        addRequestInterceptor(new HttpRequestInterceptor() {
+            @Override
+            public void process(HttpRequest request, HttpContext context) throws HttpException, IOException {
+                Header host = request.getFirstHeader(HTTP.TARGET_HOST);
+                if (host != null) {
+                    if (host.getValue().endsWith(":80") || host.getValue().endsWith(":443")) {
+                        request.setHeader(HTTP.TARGET_HOST, host.getValue().replaceFirst(":\\d+", ""));
+                        LOG.info("httpRequestInterceptor: removing default port from host header");
+                    }
+                }
+            }
+        });
     }
 
     /**
@@ -189,6 +207,18 @@ public class HttpClientWrapper implements Closeable {
     }
 
     /**
+     * Use LAX redirect strategy.
+     * Automatically redirects all HEAD, GET and POST requests.
+     * This strategy relaxes restrictions on automatic redirection of POST methods imposed by the HTTP specification.
+     */
+    public HttpClientWrapper useLaxRedirect() {
+        LOG.debug("useLaxRedirect()");
+        assertNotInitialized();
+        m_useLaxRedirect = true;
+        return this;
+    }
+
+    /**
      * Set the socket timeout on connections.
      */
     public HttpClientWrapper setSocketTimeout(final Integer socketTimeout) {
@@ -274,7 +304,7 @@ public class HttpClientWrapper implements Closeable {
      * Note that when you are done with the response, you must call {@link #closeResponse()} so that it gets cleaned up properly.
      */
     public CloseableHttpResponse execute(final HttpUriRequest method) throws ClientProtocolException, IOException {
-        System.err.println("execute: " + this.toString());
+        LOG.debug("execute: " + this.toString() + "; method: " + method.toString());
         // override some headers with our versions
         final HttpRequestWrapper requestWrapper = HttpRequestWrapper.wrap(method);
         if (m_userAgent != null && !m_userAgent.trim().isEmpty()) {
@@ -363,7 +393,9 @@ public class HttpClientWrapper implements Closeable {
             for (final HttpResponseInterceptor interceptor : m_responseInterceptors) {
                 httpClientBuilder.addInterceptorLast(interceptor);
             }
-
+            if (m_useLaxRedirect) {
+                httpClientBuilder.setRedirectStrategy(new LaxRedirectStrategy());
+            }
             httpClientBuilder.setDefaultRequestConfig(requestConfigBuilder.build());
             m_httpClient = httpClientBuilder.build();
         }

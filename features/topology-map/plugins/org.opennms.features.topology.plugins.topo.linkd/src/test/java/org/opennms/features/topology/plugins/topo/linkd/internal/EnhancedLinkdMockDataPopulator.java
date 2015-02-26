@@ -40,7 +40,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public class EnhancedLinkdMockDataPopulator {
@@ -365,11 +367,11 @@ public class EnhancedLinkdMockDataPopulator {
     }
 
     public void setUpMock() {
-
         //EasyMock.expect(m_dataLinkInterfaceDao.findAll()).andReturn(getLinks()).anyTimes();
         EasyMock.expect(m_lldpLinkDao.findAll()).andReturn(getLinks()).anyTimes();
         EasyMock.expect(m_ospfLinkDao.findAll()).andReturn(getOspfLinks()).anyTimes();
-        EasyMock.expect(m_nodeDao.findAll()).andReturn(getNodes()).anyTimes();
+        EasyMock.expect(m_nodeDao.getAllLabelsById());
+        EasyMock.expectLastCall().andReturn(getNodeLabelsById()).anyTimes();
 
         for (int i=1;i<9;i++) {
             EasyMock.expect(m_nodeDao.get(i)).andReturn(getNode(i)).anyTimes();
@@ -385,6 +387,7 @@ public class EnhancedLinkdMockDataPopulator {
         EasyMock.replay(m_snmpInterfaceDao);
         EasyMock.replay(m_ipInterfaceDao);
     }
+
     public OnmsNode getNode(Integer id) {
         OnmsNode node= null;
         switch (id) {
@@ -611,6 +614,14 @@ public class EnhancedLinkdMockDataPopulator {
         Assert.assertArrayEquals(topologyProvider.getEdgeIdsForVertex(new DefaultVertexRef(vertexNamespace, "7")), edgeidsforvertex7);
         Assert.assertArrayEquals(topologyProvider.getEdgeIdsForVertex(new DefaultVertexRef(vertexNamespace, "8")), edgeidsforvertex8);
 
+    }
+
+    public Map<Integer, String> getNodeLabelsById() {
+        Map<Integer, String> nodeLabelsById = new HashMap<Integer, String>();
+        for (OnmsNode node : getNodes()) {
+            nodeLabelsById.put(node.getId(), node.getLabel());
+        }
+        return nodeLabelsById;
     }
 
     public List<OnmsNode> getNodes() {

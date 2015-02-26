@@ -223,6 +223,7 @@ public class PageSequenceMonitorTest {
     }
 
     @Test
+    @Ignore("This test doesn't work against the new version of the website")
     public void testVirtualHostBadBehaviorForWordpressPlugin() throws Exception {
         m_params.put("page-sequence", "" +
             "<?xml version=\"1.0\"?>" +
@@ -399,7 +400,7 @@ public class PageSequenceMonitorTest {
         m_params.put("page-sequence", "" +
             "<?xml version=\"1.0\"?>" +
             "<page-sequence>\n" + 
-            "  <page host=\"localhost\" path=\"/opennms/\" port=\"10342\" requireIPv6=\"true\"/>\n" +
+            "  <page host=\"localhost\" virtual-host=\"localhost\" path=\"/opennms/\" port=\"10342\" requireIPv6=\"true\"/>\n" +
             "</page-sequence>\n");
 
         PollStatus status = m_monitor.poll(getHttpService("localhost"), m_params);
@@ -412,7 +413,7 @@ public class PageSequenceMonitorTest {
         m_params.put("page-sequence", "" +
             "<?xml version=\"1.0\"?>" +
             "<page-sequence>\n" + 
-            "  <page host=\"localhost\" path=\"/opennms/\" port=\"10342\" requireIPv4=\"true\"/>\n" +
+            "  <page host=\"localhost\" virtual-host=\"localhost\" path=\"/opennms/\" port=\"10342\" requireIPv4=\"true\"/>\n" +
             "</page-sequence>\n");
 
         PollStatus status = m_monitor.poll(getHttpService("localhost"), m_params);

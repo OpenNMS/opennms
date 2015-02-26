@@ -2,7 +2,7 @@
 <beans xmlns="http://www.springframework.org/schema/beans" 
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:tx="http://www.springframework.org/schema/tx" 
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd"
        default-lazy-init="true">
 
   <bean id="configTester" class="org.opennms.netmgt.config.tester.ConfigTester">
@@ -288,7 +288,7 @@ org.opennms.netmgt.filter.FilterParseException: SQL Exception occurred getting I
   <bean id="specFile-constructor" class="org.opennms.netmgt.importer.specification.SpecFile"/>
     
   <bean id="specFile" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-	<property name="targetObject"><ref local="specFile-constructor"/></property>
+	<property name="targetObject" ref="specFile-constructor" />
     <property name="targetMethod"><value>loadResource</value></property>
     <property name="arguments">
       <list>
@@ -352,7 +352,7 @@ org.opennms.netmgt.filter.FilterParseException: SQL Exception occurred getting I
   <bean id="otrsConfigDao" class="org.opennms.netmgt.ticketer.otrs.DefaultOtrsConfigDao"/>
 
   <bean id="otrsConfigDaoCheck" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-	<property name="targetObject"><ref local="otrsConfigDao"/></property>
+	<property name="targetObject" ref="otrsConfigDao" />
     <property name="targetMethod"><value>getEndpoint</value></property>
   </bean>
 
@@ -377,7 +377,7 @@ org.opennms.netmgt.filter.FilterParseException: SQL Exception occurred getting I
   <bean id="pollerConfigProperties-constructor" class="java.util.Properties"/>
   
   <bean id="pollerConfigProperties" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-	<property name="targetObject"><ref local="pollerConfigProperties-constructor"/></property>
+	<property name="targetObject" ref="pollerConfigProperties-constructor" />
     <property name="targetMethod"><value>load</value></property>
     <property name="arguments">
       <list>
@@ -439,15 +439,11 @@ org.opennms.netmgt.filter.FilterParseException: SQL Exception occurred getting I
   <bean id="rtConfigDao" class="org.opennms.netmgt.rt.ReadOnlyRtConfigDao"/>
 
   <bean id="rtConfigDaoCheck" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-	<property name="targetObject"><ref local="rtConfigDao"/></property>
+	<property name="targetObject" ref="rtConfigDao" />
     <property name="targetMethod"><value>getBaseURL</value></property>
   </bean>
 
-  <bean id="rtcConfigFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-    <property name="staticMethod"><value>org.opennms.netmgt.config.RTCConfigFactory.init</value></property>
-  </bean>
-
-  <bean id="rtcConfigFactory" class="org.opennms.netmgt.config.RTCConfigFactory" depends-on="rtcConfigFactory-init" factory-method="getInstance"/>
+  <bean id="rtcConfigFactory" class="org.opennms.netmgt.config.RTCConfigFactory"/>
 
   <bean id="rwsConfigFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
     <property name="staticMethod"><value>org.opennms.netmgt.config.RWSConfigFactory.init</value></property>

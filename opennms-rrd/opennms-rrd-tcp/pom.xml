@@ -3,11 +3,11 @@
   <parent>
     <artifactId>opennms-rrd</artifactId>
     <groupId>org.opennms</groupId>
-    <version>15.0.0-PJSM-SNAPSHOT</version>
+    <version>16.0.0-PJSM-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-rrd-tcp</artifactId>
-  <name>OpenNMS RDD TCP Export Implementation</name>
+  <name>OpenNMS RRD TCP Export Implementation</name>
   <packaging>bundle</packaging>
   <build>
     <plugins>
@@ -52,6 +52,11 @@
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-rrd-jrobin</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-rrdtool-api</artifactId>
       <scope>test</scope>
     </dependency>
     <!-- 

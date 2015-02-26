@@ -112,7 +112,7 @@ public class ShowNCSPathOperation implements Operation {
             private static final long serialVersionUID = 1L;
 
             @Override
-            public Field createField(Item item, Object propertyId, Component uiContext) {
+            public Field<?> createField(Item item, Object propertyId, Component uiContext) {
                 String pid = (String) propertyId;
 
                 ComboBox select = new ComboBox();

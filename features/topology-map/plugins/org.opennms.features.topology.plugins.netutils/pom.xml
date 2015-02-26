@@ -7,7 +7,7 @@
 		<relativePath>../../poms/compiled/</relativePath>
 		<groupId>org.opennms.features.topology.build</groupId>
 		<artifactId>compiled-bundle-settings</artifactId>
-		<version>15.0.0-PJSM-SNAPSHOT</version>
+		<version>16.0.0-PJSM-SNAPSHOT</version>
 	</parent>
 
 	<groupId>org.opennms.features.topology</groupId>
@@ -188,8 +188,8 @@
 		</dependency>
 
 		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>servlet-api</artifactId>
+			<groupId>org.eclipse.jetty.orbit</groupId>
+			<artifactId>javax.servlet</artifactId>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>

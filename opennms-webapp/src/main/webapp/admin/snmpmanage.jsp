@@ -112,8 +112,8 @@
        <div class="col-md-6">
               <table class="table table-condensed table-bordered">
                 <tr class="text-center">
-                  <th>Node ID</td>
-                  <th>Node Label</td>
+                  <th>Node ID</th>
+                  <th>Node Label</th>
                 </tr>
                 <%=buildTableRows(nodes, 0, midNodeIndex)%>
               </table>
@@ -125,8 +125,8 @@
         <div class="col-md-6">
               <table class="table table-condensed table-bordered">
                 <tr class="text-center">
-                  <th>Node ID</td>
-                  <th>Node Label</td>
+                  <th>Node ID</th>
+                  <th>Node Label</th>
                 </tr>
                 <%=buildTableRows(nodes, midNodeIndex, nodes.size())%>
               </table>

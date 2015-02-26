@@ -113,7 +113,7 @@
             <% } %>
           </td>
 
-          <th>Regained&nbsp;Service&nbsp;Event</td>
+          <th>Regained&nbsp;Service&nbsp;Event</th>
           <td>
             <% Integer regainedEventId = outage.getRegainedServiceEventId(); %>
             <% if(regainedEventId != null && regainedEventId > 0) { %>

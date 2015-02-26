@@ -1,5 +1,6 @@
 
-=== Win32ServiceMonitor
+==== Win32ServiceMonitor
+
 The Win32ServiceMonitor enables OpenNMS to monitor the running state of any Windows service.
 The service status is monitored using the Microsoft Windows(R) provided SNMP agent providing the link:http://technet.microsoft.com/en-us/library/cc977581.aspx[LAN Manager MIB-II].
 For this reason it is required the SNMP agent and OpenNMS is correctly configured to allow queries against part of the _MIB_ tree.
@@ -9,7 +10,7 @@ The status of the service is monitored by polling the
 
 of a given service by the display name.
 
-==== Monitor facts
+===== Monitor facts
 
 [options="autowidth"]
 |===
@@ -17,7 +18,7 @@ of a given service by the display name.
 | Remote Enabled | false
 |===
 
-==== Configuration and Usage
+===== Configuration and Usage
 
 .Monitor specific parameters for the Win32ServiceMonitor
 [options="header, autowidth"]
@@ -35,7 +36,7 @@ The `service-name` is sometime encoded in languages other than English.
 Like in French, the _Task Scheduler_ service is _Planificateur de tâche_.
 Because of the "â" (non-English character), the OID value is encoded in hexa (0x50 6C 61 6E 69 66 69 63 61 74 65 75 72 20 64 65 20 74 C3 A2 63 68 65 73).
 
-==== Troubleshooting
+===== Troubleshooting
 If you've created a _Win32ServiceMonitor_ poller and are having difficulties with it not being monitored properly on your hosts, chances are there is a difference in the name of the service you've created, and the actual name in the registry.
 
 For example, I need to monitor a process called _Example Service_ on one of our production servers.
@@ -54,7 +55,8 @@ NOTE: Note the extra space before the close quote.
 The extra space at the end of the name was difficult to notice in the service manager GUI, but is easily visible in the `snmpwalk` output.
 The right way to fix this would be to correct the service _Display name_ field on the server, however, the intent of this procedure is to recommend verifying the true name using `snmpwalk` as opposed to relying on the service manager GUI.
 
-==== Examples
+===== Examples
+
 Monitoring the service running state of the _Task Scheduler_ on an English local Microsoft Windows(R) Server requires at minimum the following entry in the `poller-configuration.xml`.
 
 [source, xml]

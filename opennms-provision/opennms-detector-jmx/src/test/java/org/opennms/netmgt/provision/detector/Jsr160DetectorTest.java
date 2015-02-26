@@ -127,7 +127,7 @@ public class Jsr160DetectorTest implements InitializingBean {
     @Test(timeout=90000)
     public void testDetectorWrongUrlPath() throws IOException, MalformedObjectNameException, NullPointerException, InstanceAlreadyExistsException, MBeanRegistrationException, NotCompliantMBeanException {
         
-        m_detector.setPort(9000);
+        m_detector.setPort(9123);
         m_detector.setUrlPath("/wrongurlpath");
         m_detector.init();
 

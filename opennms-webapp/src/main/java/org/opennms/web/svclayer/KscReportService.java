@@ -84,13 +84,20 @@ public interface KscReportService {
      * <p>getTimeSpans</p>
      *
      * @param includeNone a boolean.
-     * @return a java$util$Map object.
+     * @return a {@link java.util.Map} object.
      */
     public Map<String, String> getTimeSpans(boolean includeNone);
     /**
      * <p>getReportList</p>
      *
-     * @return a java$util$Map object.
+     * @return a {@link java.util.Map} object.
      */
     public Map<Integer, String> getReportList();
+
+    /**
+     * <p>getReportMap</p>
+     *
+     * @return a {@link java.util.Map} object.
+     */
+    public Map<Integer, Report> getReportMap();
 }

@@ -47,6 +47,7 @@ import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.datasource.DelegatingDataSource;
+import org.springframework.test.annotation.DirtiesContext.HierarchyMode;
 import org.springframework.test.context.TestContext;
 import org.springframework.test.context.TestExecutionListener;
 import org.springframework.test.context.support.AbstractTestExecutionListener;
@@ -102,13 +103,13 @@ public class TemporaryDatabaseExecutionListener extends AbstractTestExecutionLis
             // exist even if they were rolled back after a previous test execution.
             //
             if (jtd.dirtiesContext()) {
-                testContext.markApplicationContextDirty();
+                testContext.markApplicationContextDirty(HierarchyMode.CURRENT_LEVEL);
                 testContext.setAttribute(DependencyInjectionTestExecutionListener.REINJECT_DEPENDENCIES_ATTRIBUTE, Boolean.TRUE);
             } else {
                 final DataSource dataSource = DataSourceFactory.getInstance();
                 final TemporaryDatabase tempDb = findTemporaryDatabase(dataSource);
                 if (tempDb != m_databases.peek()) {
-                    testContext.markApplicationContextDirty();
+                    testContext.markApplicationContextDirty(HierarchyMode.CURRENT_LEVEL);
                     testContext.setAttribute(DependencyInjectionTestExecutionListener.REINJECT_DEPENDENCIES_ATTRIBUTE, Boolean.TRUE);
                 }
             }

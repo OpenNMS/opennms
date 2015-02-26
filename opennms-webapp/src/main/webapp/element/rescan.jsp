@@ -106,8 +106,10 @@
           <p>
             <input type="hidden" name="node" value="<%=nodeId%>" />
             <input type="hidden" name="returnUrl" value="${fn:escapeXml(returnUrl)}" />
-            <input type="submit" value="Rescan" />
-            <input type="button" value="Cancel" onClick="window.open('<%= Util.calculateUrlBase(request)%>${returnUrl}', '_self')" />
+            <div class="btn-group" role="group">
+              <button class="btn btn-default" type="submit">Rescan</button>
+              <button class="btn btn-default" type="button" onClick="window.open('<%= Util.calculateUrlBase(request)%>${returnUrl}', '_self')">Cancel</button>
+            </div>
           </p>
         </form>
       </div>

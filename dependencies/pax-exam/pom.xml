@@ -3,7 +3,7 @@
   <parent>
     <artifactId>dependencies</artifactId>
     <groupId>org.opennms</groupId>
-    <version>15.0.0-PJSM-SNAPSHOT</version>
+    <version>16.0.0-PJSM-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.dependencies</groupId>
@@ -67,7 +67,7 @@
     <dependency>
       <groupId>org.apache.karaf.itests</groupId>
       <artifactId>itests</artifactId>
-      <version>${karafVersion}</version>
+      <version>${karafPaxExamVersion}</version>
       <classifier>tests</classifier>
     </dependency>
     <!--

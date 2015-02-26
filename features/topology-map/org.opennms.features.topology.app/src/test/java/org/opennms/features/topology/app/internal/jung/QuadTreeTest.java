@@ -29,10 +29,6 @@
 package org.opennms.features.topology.app.internal.jung;
 
 import org.junit.Test;
-import org.opennms.features.topology.api.Point;
-import org.opennms.features.topology.api.topo.Vertex;
-
-import java.awt.geom.Point2D;
 
 public class QuadTreeTest {
 

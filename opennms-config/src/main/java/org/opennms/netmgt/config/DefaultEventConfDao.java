@@ -32,8 +32,11 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
@@ -67,7 +70,13 @@ public class DefaultEventConfDao implements EventConfDao, InitializingBean {
 	private Resource m_configResource;
 
 	private Partition m_partition;
-	
+
+    /**
+     * Used to keep track of the last modified time for the loaded event files.
+     * See the reloadConfig() for details.
+     */
+    private Map<String, Long> m_lastModifiedEventFiles = new LinkedHashMap<String, Long>();
+
     private static class EventLabelComparator implements Comparator<Event>, Serializable {
 
         private static final long serialVersionUID = 7976730920523203921L;
@@ -92,7 +101,7 @@ public class DefaultEventConfDao implements EventConfDao, InitializingBean {
 	@Override
 	public void reload() throws DataAccessException {
 		try {
-			loadConfig();
+		    reloadConfig();
 		} catch (Exception e) {
 			throw new DataRetrievalFailureException("Unabled to load " + m_configResource, e);
 		}
@@ -273,22 +282,50 @@ public class DefaultEventConfDao implements EventConfDao, InitializingBean {
 		}
 		
 	}
-	
+
+    private synchronized void reloadConfig() throws DataAccessException {
+        try {
+            // Load the root event file
+            Events events = JaxbUtils.unmarshal(Events.class, m_configResource);
+
+            // Hash the list of event files for efficient lookup
+            Set<String> eventFiles = new HashSet<String>();
+            eventFiles.addAll(events.getEventFileCollection());
+
+            // Copy the loaded event files from the current root to the new root
+            // if and only if they exist in the new root
+            for (String eventFile : m_events.getEventFile()) {
+                if (!eventFiles.contains(eventFile)) {
+                    m_lastModifiedEventFiles.remove(eventFile);
+                    continue;
+                }
+                events.addLoadedEventFile(eventFile, m_events.getLoadEventsByFile(eventFile));
+            }
+
+            // Load/reload the event files as necessary
+            events.loadEventFilesIfModified(m_configResource, m_lastModifiedEventFiles);
+
+            // Order the events for efficient searching
+            events.initialize(m_partition, new EventOrdering());
+
+            m_events = events;
+        } catch (Exception e) {
+            throw new DataRetrievalFailureException("Unabled to load " + m_configResource, e);
+        }
+    }
+
 	private synchronized void loadConfig() throws DataAccessException {
 		try {
 			Events events = JaxbUtils.unmarshal(Events.class, m_configResource);
-			events.loadEventFiles(m_configResource);
-			
+			m_lastModifiedEventFiles = events.loadEventFiles(m_configResource);
+
 			m_partition = new EnterpriseIdPartition();
 			events.initialize(m_partition, new EventOrdering());
 
 			m_events = events;
-
 		} catch (Exception e) {
 			throw new DataRetrievalFailureException("Unabled to load " + m_configResource, e);
 		}
-
 	}
-
 }
 

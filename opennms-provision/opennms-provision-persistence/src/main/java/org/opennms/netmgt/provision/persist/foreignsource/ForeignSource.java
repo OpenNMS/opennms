@@ -34,6 +34,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 
+import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
@@ -46,10 +47,10 @@ import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.apache.commons.lang.builder.CompareToBuilder;
 import org.joda.time.Duration;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.opennms.core.xml.ValidateUsing;
 import org.opennms.netmgt.provision.persist.StringIntervalAdapter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>ForeignSource class.</p>
@@ -64,6 +65,7 @@ public class ForeignSource implements Serializable, Comparable<ForeignSource> {
     private static final long serialVersionUID = -1903289015976502808L;
 
     @XmlAttribute(name="name", required=true)
+    @NotNull
     private String m_name;
 
     @XmlAttribute(name="date-stamp")
@@ -150,7 +152,7 @@ public class ForeignSource implements Serializable, Comparable<ForeignSource> {
      */
     @XmlTransient
     public Date getDateStampAsDate() {
-        return m_dateStamp.toGregorianCalendar().getTime();
+        return m_dateStamp == null ? null : m_dateStamp.toGregorianCalendar().getTime();
     }
     /**
      * <p>setDateStamp</p>

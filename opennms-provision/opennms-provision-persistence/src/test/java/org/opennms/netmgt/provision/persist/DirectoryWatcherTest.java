@@ -114,12 +114,12 @@ public class DirectoryWatcherTest {
 	public void testGetFilesNames() {
 		assertEquals(set("file1.xml", "file2.xml"), m_watcher.getFileNames());
 		assertEquals(set("file1", "file2"), m_watcher.getBaseNamesWithExtension(".xml"));
-		assertEquals(set(), m_watcher.getBaseNamesWithExtension(".txt"));
+		assertEquals(Collections.emptySet(), m_watcher.getBaseNamesWithExtension(".txt"));
 	}
 	
 	
-	public <T> Set<T> set(T... items) {
-		Set<T> set = new LinkedHashSet<T>();
+	private static Set<String> set(String... items) {
+		Set<String> set = new LinkedHashSet<String>();
 		Collections.addAll(set, items);
 		return set;
 	}
