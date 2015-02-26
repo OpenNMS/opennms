@@ -53,8 +53,8 @@ public class NodeSourceResourceType implements OnmsResourceType {
     private static final Logger LOG = LoggerFactory.getLogger(NodeSourceResourceType.class);
 
     private static final Set<OnmsAttribute> s_emptyAttributeSet = Collections.unmodifiableSet(new HashSet<OnmsAttribute>());
-    private ResourceDao m_resourceDao;
-    private NodeDao m_nodeDao;
+    private final ResourceDao m_resourceDao;
+    private final NodeDao m_nodeDao;
 
     /**
      * <p>Constructor for NodeSourceResourceType.</p>
@@ -96,6 +96,13 @@ public class NodeSourceResourceType implements OnmsResourceType {
     /** {@inheritDoc} */
     @Override
     public List<OnmsResource> getResourcesForNode(int nodeId) {
+        return null;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public OnmsResource getChildByName(OnmsResource parent, String name) {
+        // Nodes are top-level resources
         return null;
     }
 
@@ -158,6 +165,7 @@ public class NodeSourceResourceType implements OnmsResourceType {
         final String label = ident[0] + ":" + node.getLabel();
         NodeSourceChildResourceLoader loader = new NodeSourceChildResourceLoader(nodeSource, node.getId());
         OnmsResource resource = new OnmsResource(nodeSource, label, this, s_emptyAttributeSet, new LazyList<OnmsResource>(loader));
+        resource.setEntity(node);
         loader.setParent(resource);
 
         return resource;
@@ -203,6 +211,4 @@ public class NodeSourceResourceType implements OnmsResourceType {
             return resourceTypes;
         }
     }
-
-
 }
