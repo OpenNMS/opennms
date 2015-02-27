@@ -36,10 +36,8 @@ import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -53,6 +51,7 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.CollectdConfigFactory;
 import org.opennms.netmgt.config.DataCollectionConfigDao;
 import org.opennms.netmgt.config.datacollection.ResourceType;
+import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.LocationMonitorDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.filter.FilterDao;
@@ -77,7 +76,8 @@ public class DefaultResourceDaoTest extends TestCase {
     private CollectdConfigFactory m_collectdConfig;
     private DataCollectionConfigDao m_dataCollectionConfigDao;
     private DefaultResourceDao m_resourceDao;
-    
+    private IpInterfaceDao m_ipInterfaceDao;
+
     private FileAnticipator m_fileAnticipator;
 
     private FilterDao m_filterDao;
@@ -93,7 +93,8 @@ public class DefaultResourceDaoTest extends TestCase {
         m_locationMonitorDao = m_easyMockUtils.createMock(LocationMonitorDao.class);
         m_dataCollectionConfigDao = m_easyMockUtils.createMock(DataCollectionConfigDao.class);
         m_filterDao = m_easyMockUtils.createMock(FilterDao.class);
-        
+        m_ipInterfaceDao = m_easyMockUtils.createMock(IpInterfaceDao.class);
+
         FilterDaoFactory.setInstance(m_filterDao);
         
         expect(m_filterDao.getActiveIPAddressList("IPADDR IPLIKE *.*.*.*")).andReturn(new ArrayList<InetAddress>(0)).anyTimes();
@@ -105,6 +106,7 @@ public class DefaultResourceDaoTest extends TestCase {
         m_resourceDao = new DefaultResourceDao();
         m_resourceDao.setNodeDao(m_nodeDao);
         m_resourceDao.setLocationMonitorDao(m_locationMonitorDao);
+        m_resourceDao.setIpInterfaceDao(m_ipInterfaceDao);
         m_resourceDao.setCollectdConfig(m_collectdConfig);
         m_resourceDao.setRrdDirectory(m_fileAnticipator.getTempDir());
         m_resourceDao.setDataCollectionConfigDao(m_dataCollectionConfigDao);
@@ -155,23 +157,21 @@ public class DefaultResourceDaoTest extends TestCase {
 
     public void testGetResourceByIdNewTwoLevel() throws Exception {
         OnmsIpInterface ip = createIpInterfaceOnNode();
-        expect(m_nodeDao.get(ip.getNode().getId())).andReturn(ip.getNode()).times(3);
-
-        Collection<LocationMonitorIpInterface> locMons = new HashSet<LocationMonitorIpInterface>();
-        expect(m_locationMonitorDao.findStatusChangesForNodeForUniqueMonitorAndInterface(1)).andReturn(locMons).times(1);
+        expect(m_nodeDao.get(ip.getNode().getId())).andReturn(ip.getNode()).times(1);
+        expect(m_ipInterfaceDao.get(ip.getNode(), "192.168.1.1")).andReturn(ip).times(1);
         expect(m_dataCollectionConfigDao.getLastUpdate()).andReturn(new Date(System.currentTimeMillis()-86400000l)).anyTimes();
-        
+
         File response = m_fileAnticipator.tempDir("response");
         File ipDir = m_fileAnticipator.tempDir(response, "192.168.1.1");
         m_fileAnticipator.tempFile(ipDir, "icmp" + RrdUtils.getExtension());
-                
+
         m_easyMockUtils.replayAll();
         OnmsResource resource = m_resourceDao.getResourceById("node[1].responseTime[192.168.1.1]");
         m_easyMockUtils.verifyAll();
         
         assertNotNull("resource should not be null", resource);
     }
-    
+
     public void testGetTopLevelResourceNodeExists() throws Exception {
         OnmsNode node = createNode();
         expect(m_nodeDao.get(node.getId())).andReturn(node).times(1);

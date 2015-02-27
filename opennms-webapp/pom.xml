@@ -659,11 +659,6 @@
       <artifactId>rome</artifactId>
       <scope>${onmsLibScope}</scope>
     </dependency>
-    <dependency>
-      <groupId>struts</groupId>
-      <artifactId>struts</artifactId>
-      <scope>${onmsLibScope}</scope>
-    </dependency>
 
     <!-- indirect 3rd-party dependencies that belong in WEB-INF/lib -->
     <!-- these should all be <scope>compile</scope> -->

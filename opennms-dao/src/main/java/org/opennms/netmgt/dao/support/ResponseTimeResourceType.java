@@ -36,6 +36,7 @@ import java.util.Set;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LazySet;
+import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.ResourceDao;
 import org.opennms.netmgt.model.OnmsAttribute;
@@ -55,18 +56,20 @@ public class ResponseTimeResourceType implements OnmsResourceType {
     
     private static final Logger LOG = LoggerFactory.getLogger(ResponseTimeResourceType.class);
     
-    private ResourceDao m_resourceDao;
-    private NodeDao m_nodeDao;
-    
+    private final ResourceDao m_resourceDao;
+    private final NodeDao m_nodeDao;
+    private final IpInterfaceDao m_ipInterfaceDao;
+
     /**
      * <p>Constructor for ResponseTimeResourceType.</p>
      *
      * @param resourceDao a {@link org.opennms.netmgt.dao.api.ResourceDao} object.
      * @param nodeDao a {@link org.opennms.netmgt.dao.api.NodeDao} object.
      */
-    public ResponseTimeResourceType(final ResourceDao resourceDao, final NodeDao nodeDao) {
+    public ResponseTimeResourceType(final ResourceDao resourceDao, final NodeDao nodeDao, final IpInterfaceDao ipInterfaceDao) {
         m_resourceDao = resourceDao;
         m_nodeDao = nodeDao;
+        m_ipInterfaceDao = ipInterfaceDao;
     }
     
     /**
@@ -116,6 +119,24 @@ public class ResponseTimeResourceType implements OnmsResourceType {
         }
 
         return resources;
+    }
+
+    @Override
+    public OnmsResource getChildByName(OnmsResource parent, String ipAddress) {
+        // Grab the node entity
+        final OnmsNode node = ResourceTypeUtils.getNodeFromResource(parent);
+
+        // Grab the interface
+        final OnmsIpInterface matchingIf = m_ipInterfaceDao.get(node, ipAddress);
+        if (matchingIf == null) {
+            throw new ObjectRetrievalFailureException(OnmsIpInterface.class, "No interface with ipAddr "
+                    + ipAddress + " could be found on node with id " + node.getId());
+        }
+
+        // Create the resource
+        final OnmsResource resource = createResource(matchingIf);
+        resource.setParent(parent);
+        return resource;
     }
 
     private File getInterfaceDirectory(final String ipAddr, final boolean verify) {

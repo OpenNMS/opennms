@@ -29,18 +29,20 @@
 package org.opennms.netmgt.dao.support;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
 import org.opennms.netmgt.dao.api.ResourceDao;
 import org.opennms.netmgt.model.OnmsAttribute;
+import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.OnmsResourceType;
 import org.opennms.netmgt.model.ResourceTypeUtils;
 import org.opennms.netmgt.rrd.RrdFileConstants;
 import org.springframework.orm.ObjectRetrievalFailureException;
+
+import com.google.common.collect.Lists;
 
 public class NodeSnmpResourceType implements OnmsResourceType {
 
@@ -102,17 +104,47 @@ public class NodeSnmpResourceType implements OnmsResourceType {
     /** {@inheritDoc} */
     @Override
     public List<OnmsResource> getResourcesForNode(int nodeId) {
-        ArrayList<OnmsResource> resources = new ArrayList<OnmsResource>();
-
-        Set<OnmsAttribute> attributes = ResourceTypeUtils.getAttributesAtRelativePath(m_resourceDao.getRrdDirectory(), getRelativePathForResource(nodeId));
-        
-        OnmsResource resource = new OnmsResource("", "Node-level Performance Data", this, attributes);
-        resources.add(resource);
-        return resources;
+        return Lists.newArrayList(getResourceForNode(Integer.toString(nodeId)));
     }
-    
-    private String getRelativePathForResource(int nodeId) {
-        return ResourceTypeUtils.SNMP_DIRECTORY + File.separator + Integer.toString(nodeId);
+
+    /** {@inheritDoc} */
+    @Override
+    public OnmsResource getChildByName(OnmsResource parent, String name) {
+        // Node-level SNMP resources always have a blank name
+        if (!"".equals(name)) {
+            throw new ObjectRetrievalFailureException(OnmsResource.class, "Unsupported name '" + name + "' for node SNMP resource type.");
+        }
+
+        // Grab the node entity
+        final OnmsNode node = ResourceTypeUtils.getNodeFromResource(parent);
+
+        // Build the resource
+        OnmsResource resource;
+        if (ResourceTypeUtils.isStoreByForeignSource()) {
+            resource = getResourceForNodeSource(String.format("%s:%s",
+                    node.getForeignSource(), node.getForeignId()));
+        } else {
+            resource = getResourceForNode(Integer.toString(node.getId()));
+        }
+        resource.setParent(parent);
+        return resource;
+    }
+
+    private OnmsResource getResourceForNode(String nodeId) {
+        final Set<OnmsAttribute> attributes = ResourceTypeUtils.getAttributesAtRelativePath(m_resourceDao.getRrdDirectory(), getRelativePathForResource(nodeId));
+
+        return new OnmsResource("", "Node-level Performance Data", this, attributes);
+    }
+
+    private OnmsResource getResourceForNodeSource(String nodeSource) {
+        final File relPath = new File(ResourceTypeUtils.SNMP_DIRECTORY, ResourceTypeUtils.getRelativeNodeSourceDirectory(nodeSource).toString());
+        final Set<OnmsAttribute> attributes = ResourceTypeUtils.getAttributesAtRelativePath(m_resourceDao.getRrdDirectory(), relPath.toString());
+
+        return new OnmsResource("", "Node-level Performance Data", this, attributes);
+    }
+
+    private String getRelativePathForResource(String nodeId) {
+        return ResourceTypeUtils.SNMP_DIRECTORY + File.separator + nodeId;
     }
 
     /**
@@ -152,14 +184,7 @@ public class NodeSnmpResourceType implements OnmsResourceType {
     /** {@inheritDoc} */
     @Override
     public List<OnmsResource> getResourcesForNodeSource(String nodeSource, int nodeId) {
-        ArrayList<OnmsResource> resources = new ArrayList<OnmsResource>();
-        File relPath = new File(ResourceTypeUtils.SNMP_DIRECTORY, ResourceTypeUtils.getRelativeNodeSourceDirectory(nodeSource).toString());
-
-        Set<OnmsAttribute> attributes = ResourceTypeUtils.getAttributesAtRelativePath(m_resourceDao.getRrdDirectory(), relPath.toString());
-
-        OnmsResource resource = new OnmsResource("", "Node-level Performance Data", this, attributes);
-        resources.add(resource);
-        return resources;
+        return Lists.newArrayList(getResourceForNodeSource(nodeSource));
     }
 
 }
