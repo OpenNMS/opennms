@@ -55,7 +55,7 @@ public class Correlator {
         KieBase kBase = kieContainer.getKieBase();
         this.kSession = kBase.newKieSession();
         this.kSession.setGlobal("LOGGER", LOGGER);
-    }
+        }
 
     public void stop() {
         if (kSession != null) {
@@ -63,8 +63,8 @@ public class Correlator {
             LOGGER.debug("Correlator - disposing kSession: {}", kSession);
         } else {
             LOGGER.debug("Correlator - no kSession to dispose: {}", kSession);
+            }
         }
-    }
 
     @EventHandler(uei = EventHandler.ALL_UEIS)
     public void handleEventAll(Event e) {
@@ -72,7 +72,7 @@ public class Correlator {
         kSession.insert(e);
         int amountOfRulesFired = kSession.fireAllRules();
 //        LOGGER.debug("Correlator - Received event: {} \t fired {} rules against it. UIE was {}", e.getDbid(), amountOfRulesFired, e.getUei());
-    }
+        }
 
     public EventProxy getEventProxy() {
         return eventProxy;
