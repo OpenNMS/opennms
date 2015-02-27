@@ -37,21 +37,26 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import org.opennms.netmgt.capsd.CapsdDbSyncer;
-import org.opennms.netmgt.config.CapsdConfig;
 import org.opennms.netmgt.config.PollerConfig;
-import org.opennms.netmgt.config.capsd.ProtocolPlugin;
 import org.opennms.netmgt.config.poller.Downtime;
 import org.opennms.netmgt.config.poller.Filter;
 import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.config.poller.Parameter;
 import org.opennms.netmgt.config.poller.Rrd;
 import org.opennms.netmgt.config.poller.Service;
+import org.opennms.netmgt.dao.api.ServiceTypeDao;
+import org.opennms.netmgt.dao.support.CreateIfNecessaryTemplate;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventIpcManager;
+import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
+import org.springframework.transaction.support.TransactionTemplate;
 
 /**
  * <p>OpenNMSProvisioner class.</p>
@@ -71,14 +76,6 @@ public class OpenNMSProvisioner implements Provisioner {
     private static final String DNS_MONITOR = "org.opennms.netmgt.poller.monitors.DnsMonitor";
     private static final String ICMP_MONITOR = "org.opennms.netmgt.poller.monitors.IcmpMonitor";
 
-    private static final String JDBC_PLUGIN = "org.opennms.netmgt.capsd.plugins.JDBCPlugin";
-    private static final String HTTPS_PLUGIN = "org.opennms.netmgt.capsd.plugins.HttpsPlugin";
-    private static final String HTTP_PLUGIN = "org.opennms.netmgt.capsd.plugins.HttpPlugin";
-    private static final String TCP_PLUGIN = "org.opennms.netmgt.capsd.plugins.TcpPlugin";
-    private static final String DNS_PLUGIN = "org.opennms.netmgt.capsd.plugins.DnsPlugin";
-    private static final String ICMP_PLUGIN = "org.opennms.netmgt.capsd.plugins.IcmpPlugin";
-
-
     private static class Parm {
         String m_key;
         String m_val;
@@ -89,11 +86,17 @@ public class OpenNMSProvisioner implements Provisioner {
 
     }
 
-    private CapsdConfig m_capsdConfig;
     private PollerConfig m_pollerConfig;
     private EventIpcManager m_eventManager;
-    private CapsdDbSyncer m_capsdDbSyncer;
 
+    @Autowired
+    private ServiceTypeDao m_serviceTypeDao;
+
+    @Autowired
+    private PlatformTransactionManager m_transactionManager;
+
+    @Autowired
+    private TransactionTemplate m_transactionTemplate;
 
     private void checkRetries(final int retries) {
         if (retries < 0) throw new IllegalArgumentException("Illegal retries "+retries+". Must be >= 0");
@@ -189,14 +192,14 @@ public class OpenNMSProvisioner implements Provisioner {
     @Override
     public boolean addServiceICMP(final String serviceId, final int retry, final int timeout, final int interval, final int downTimeInterval, final int downTimeDuration) {
         validateSchedule(retry, timeout, interval, downTimeInterval, downTimeDuration);
-        return addService(serviceId, retry, timeout, interval, downTimeInterval, downTimeDuration, ICMP_MONITOR, ICMP_PLUGIN);
+        return addService(serviceId, retry, timeout, interval, downTimeInterval, downTimeDuration, ICMP_MONITOR);
     }
     
-    private boolean addService(final String serviceId, final int retries, final int timeout, final int interval, final int downTimeInterval, final int downTimeDuration, final String monitor, final String plugin) {
-        return addService(serviceId, retries, timeout, interval, downTimeInterval, downTimeDuration, monitor, plugin, new Parm[0]);
+    private boolean addService(final String serviceId, final int retries, final int timeout, final int interval, final int downTimeInterval, final int downTimeDuration, final String monitor) {
+        return addService(serviceId, retries, timeout, interval, downTimeInterval, downTimeDuration, monitor, new Parm[0]);
     }
     
-    private boolean addService(final String serviceId, final int retries, final int timeout, final int interval, final int downTimeInterval, final int downTimeDuration, final String monitor, final String plugin, final Parm[] entries) {
+    private boolean addService(final String serviceId, final int retries, final int timeout, final int interval, final int downTimeInterval, final int downTimeDuration, final String monitor, final Parm[] entries) {
     	final String pkgName = serviceId;
     	final Package pkg = getPackage(pkgName, interval, downTimeInterval, downTimeDuration);
 
@@ -220,32 +223,42 @@ public class OpenNMSProvisioner implements Provisioner {
         } else {
             LOG.debug("No need to add a new monitor for {}", serviceId);
         }
-        
-        if (m_capsdConfig.getProtocolPlugin(serviceId) == null) {
-        	final ProtocolPlugin pPlugin = new ProtocolPlugin();
-            pPlugin.setProtocol(serviceId);
-            pPlugin.setClassName(plugin);
-            pPlugin.setScan("off");
-            m_capsdConfig.addProtocolPlugin(pPlugin);
-        }
-        
+
+        m_transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus arg0) {
+		        // Add the service to the database if necessary.
+		        // This code is stolen from DefaultProvisionService.loadServiceType()
+		        new CreateIfNecessaryTemplate<OnmsServiceType, ServiceTypeDao>(m_transactionManager, m_serviceTypeDao) {
+
+		            @Override
+		            protected OnmsServiceType query() {
+		                return m_serviceTypeDao.findByName(serviceId);
+		            }
+
+		            @Override
+		            public OnmsServiceType doInsert() {
+		                OnmsServiceType type = new OnmsServiceType(serviceId);
+		                m_serviceTypeDao.save(type);
+		                m_serviceTypeDao.flush();
+		                return type;
+		            }
+
+		        }.execute();
+			}
+		});
+
         saveConfigs();
         return true;
     }
     private void saveConfigs() {
         try {
-            m_capsdConfig.save();
-            syncServices();
             m_pollerConfig.save();
 
             m_eventManager.sendNow(new EventBuilder(EventConstants.SCHEDOUTAGES_CHANGED_EVENT_UEI, "OpenNMSProvisioner").getEvent());
         } catch (final Throwable e) {
             throw new RuntimeException("Error saving poller or capsd configuration: " + e, e);
         }
-    }
-    
-    private void syncServices() {
-        getCapsdDbSyncer().syncServicesTable();
     }
     
     private void addServiceToPackage(final Package pkg, final String serviceId, final int interval, final Properties parms) {
@@ -264,7 +277,7 @@ public class OpenNMSProvisioner implements Provisioner {
         }
     }
     private void setParameter(final Service svc, final String key, final String value) {
-    	Parameter parm = findParamterWithKey(svc, key);
+    	Parameter parm = findParameterWithKey(svc, key);
         if (parm == null) {
             parm = new Parameter();
             svc.addParameter(parm);
@@ -280,7 +293,7 @@ public class OpenNMSProvisioner implements Provisioner {
      * @param key a {@link java.lang.String} object.
      * @return a {@link org.opennms.netmgt.config.poller.Parameter} object.
      */
-    public Parameter findParamterWithKey(final Service svc, final String key) {
+    public Parameter findParameterWithKey(final Service svc, final String key) {
         for (final Parameter parameter : svc.getParameters()) {
             if (key.equals(parameter.getKey())) {
                 return parameter;
@@ -332,7 +345,7 @@ public class OpenNMSProvisioner implements Provisioner {
                 new Parm("lookup", lookup),
         };
         
-        return addService(serviceId, retry, timeout, interval, downTimeInterval, downTimeDuration, DNS_MONITOR, DNS_PLUGIN, parm);
+        return addService(serviceId, retry, timeout, interval, downTimeInterval, downTimeDuration, DNS_MONITOR, parm);
     }
 
     /** {@inheritDoc} */
@@ -347,7 +360,7 @@ public class OpenNMSProvisioner implements Provisioner {
                 new Parm("banner", banner),
         };
         
-        return addService(serviceId, retry, timeout, interval, downTimeInterval, downTimeDuration, TCP_MONITOR, TCP_PLUGIN, parm);
+        return addService(serviceId, retry, timeout, interval, downTimeInterval, downTimeDuration, TCP_MONITOR, parm);
     }
 
     /** {@inheritDoc} */
@@ -384,7 +397,7 @@ public class OpenNMSProvisioner implements Provisioner {
             parmList.add(new Parm("user-agent", agent));
         }
         
-        return addService(serviceId, retry, timeout, interval, downTimeInterval, downTimeDuration, HTTP_MONITOR, HTTP_PLUGIN, parmList.toArray(new Parm[parmList.size()]));
+        return addService(serviceId, retry, timeout, interval, downTimeInterval, downTimeDuration, HTTP_MONITOR, parmList.toArray(new Parm[parmList.size()]));
     }
 
     /** {@inheritDoc} */
@@ -421,7 +434,7 @@ public class OpenNMSProvisioner implements Provisioner {
             parmList.add(new Parm("user-agent", agent));
         }
         
-        return addService(serviceId, retry, timeout, interval, downTimeInterval, downTimeDuration, HTTPS_MONITOR, HTTPS_PLUGIN, parmList.toArray(new Parm[parmList.size()]));
+        return addService(serviceId, retry, timeout, interval, downTimeInterval, downTimeDuration, HTTPS_MONITOR, parmList.toArray(new Parm[parmList.size()]));
     }
 
     /** {@inheritDoc} */
@@ -440,7 +453,7 @@ public class OpenNMSProvisioner implements Provisioner {
                 new Parm("password", password),
         };
         
-        return addService(serviceId, retry, timeout, interval, downTimeInterval, downTimeDuration, JDBC_MONITOR, JDBC_PLUGIN, parm);
+        return addService(serviceId, retry, timeout, interval, downTimeInterval, downTimeDuration, JDBC_MONITOR, parm);
     }
     
     /** {@inheritDoc} */
@@ -518,15 +531,7 @@ public class OpenNMSProvisioner implements Provisioner {
         
         return m;
     }
-    
-    /**
-     * <p>setCapsdConfig</p>
-     *
-     * @param capsdConfig a {@link org.opennms.netmgt.config.CapsdConfig} object.
-     */
-    public void setCapsdConfig(final CapsdConfig capsdConfig) {
-        m_capsdConfig = capsdConfig;
-    }
+
     /**
      * <p>setPollerConfig</p>
      *
@@ -543,18 +548,4 @@ public class OpenNMSProvisioner implements Provisioner {
     public void setEventManager(final EventIpcManager eventManager) {
         m_eventManager = eventManager;
     }
-    
-    private CapsdDbSyncer getCapsdDbSyncer() {
-        return m_capsdDbSyncer;
-    }
-
-    /**
-     * <p>setCapsdDbSyncer</p>
-     *
-     * @param capsdDbSyncer a {@link org.opennms.netmgt.capsd.CapsdDbSyncer} object.
-     */
-    public void setCapsdDbSyncer(final CapsdDbSyncer capsdDbSyncer) {
-        m_capsdDbSyncer = capsdDbSyncer;
-    }
-
 }

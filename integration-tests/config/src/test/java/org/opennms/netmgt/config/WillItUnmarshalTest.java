@@ -55,7 +55,6 @@ import org.opennms.netmgt.alarmd.northbounder.syslog.SyslogNorthbounderConfig;
 import org.opennms.netmgt.config.ackd.AckdConfiguration;
 import org.opennms.netmgt.config.actiond.ActiondConfiguration;
 import org.opennms.netmgt.config.ami.AmiConfig;
-import org.opennms.netmgt.config.capsd.CapsdConfiguration;
 import org.opennms.netmgt.config.categories.Catinfo;
 import org.opennms.netmgt.config.charts.ChartConfiguration;
 import org.opennms.netmgt.config.collectd.CollectdConfiguration;
@@ -191,8 +190,6 @@ public class WillItUnmarshalTest {
         addFile(Source.CONFIG, "actiond-configuration.xml", ActiondConfiguration.class, Impl.JAXB);
         addFile(Source.CONFIG, "ami-config.xml", AmiConfig.class, Impl.JAXB);
         addFile(Source.CONFIG, "availability-reports.xml", OpennmsReports.class, Impl.CASTOR);
-        addFile(Source.CONFIG, "capsd-configuration.xml", CapsdConfiguration.class, Impl.CASTOR);
-        addFile(Source.EXAMPLE, "capsd-configuration.xml", CapsdConfiguration.class, Impl.CASTOR);
         addFile(Source.CONFIG, "categories.xml", Catinfo.class, Impl.CASTOR);
         addFile(Source.CONFIG, "chart-configuration.xml", ChartConfiguration.class, Impl.CASTOR);
         addFile(Source.CONFIG, "collectd-configuration.xml", CollectdConfiguration.class, Impl.JAXB);

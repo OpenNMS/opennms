@@ -56,14 +56,6 @@
 
 	<!--  collectd config factory is now init'd in the dao context -->
 
-	<bean id="init-capsdConfig-factory" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-		<property name="staticMethod"><value>org.opennms.netmgt.config.CapsdConfigFactory.init</value></property>
-	</bean>
-
-	<bean id="capsdConfig" class="org.opennms.netmgt.config.CapsdConfigFactory" depends-on="init-capsdConfig-factory" factory-method="getInstance"/>
-	
-	<onmsgi:service interface="org.opennms.netmgt.config.CapsdConfig" ref="capsdConfig" />
-	
     <bean id="init-wmiPeerFactory" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
 		<property name="staticMethod"><value>org.opennms.netmgt.config.WmiPeerFactory.init</value></property>
 	</bean>
