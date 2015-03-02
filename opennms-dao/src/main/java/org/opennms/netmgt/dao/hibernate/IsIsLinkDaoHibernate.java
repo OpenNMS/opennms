@@ -29,7 +29,6 @@
 package org.opennms.netmgt.dao.hibernate;
 
 import java.sql.SQLException;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 

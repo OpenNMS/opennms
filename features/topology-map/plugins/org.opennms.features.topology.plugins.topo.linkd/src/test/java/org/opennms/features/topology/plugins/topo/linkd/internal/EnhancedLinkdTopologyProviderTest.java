@@ -38,7 +38,6 @@ import org.opennms.features.topology.api.OperationContext;
 import org.opennms.features.topology.api.topo.*;
 import org.opennms.netmgt.dao.api.DataLinkInterfaceDao;
 import org.opennms.netmgt.dao.api.LldpLinkDao;
-import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.OspfLinkDao;
 import org.opennms.netmgt.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,6 +45,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import javax.xml.bind.JAXBException;
+
 import java.io.File;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
@@ -78,6 +78,7 @@ public class EnhancedLinkdTopologyProviderTest {
     @Before
     public void setUp() throws Exception{
         MockLogAppender.setupLogging();
+
         m_databasePopulator.populateDatabase();
         m_databasePopulator.setUpMock();
         m_originalFilename = m_topologyProvider.getConfigurationFile();
@@ -477,7 +478,6 @@ public class EnhancedLinkdTopologyProviderTest {
         Assert.assertEquals(topologyProvider.getVertex(namespace, "g0").getParent(), null);
         Assert.assertEquals(topologyProvider.getVertex(namespace, "g1").getParent(), null);
         Assert.assertEquals(topologyProvider.getVertex(namespace, "g2").getParent(), topologyProvider.getVertex(namespace, "g1"));
-
     }
 
     // checks that the vertex and the node are equal

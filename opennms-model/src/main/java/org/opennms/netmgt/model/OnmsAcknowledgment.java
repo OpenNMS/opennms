@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.model;
 
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.util.Collection;
 import java.util.Date;

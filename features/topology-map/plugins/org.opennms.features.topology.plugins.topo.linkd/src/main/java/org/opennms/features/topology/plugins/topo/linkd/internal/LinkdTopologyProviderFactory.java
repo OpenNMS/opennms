@@ -37,7 +37,7 @@ import org.osgi.service.blueprint.container.BlueprintContainer;
  */
 public class LinkdTopologyProviderFactory {
     
-    public static AbstractLinkdTopologyProvider createLinkdTopologyProvider(BlueprintContainer container, ServiceReference enlinkd, ServiceReference linkd) {
+    public static AbstractLinkdTopologyProvider createLinkdTopologyProvider(BlueprintContainer container, ServiceReference<?> enlinkd, ServiceReference<?> linkd) {
         System.err.println("Creating topology provider");
         if (enlinkd != null || linkd == null) {
             System.err.println("returning enhanced topology provider");
@@ -49,7 +49,7 @@ public class LinkdTopologyProviderFactory {
 
     }
     
-    public static String providerLabel(ServiceReference enlinkd, ServiceReference linkd) {
+    public static String providerLabel(ServiceReference<?> enlinkd, ServiceReference<?> linkd) {
         return (enlinkd != null || linkd == null) ? "Enhanced Linkd" : "Linkd";
     }
 

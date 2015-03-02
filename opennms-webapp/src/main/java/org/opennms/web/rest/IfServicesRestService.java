@@ -58,6 +58,7 @@ import org.opennms.netmgt.model.events.EventBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -101,6 +102,7 @@ public class IfServicesRestService extends OnmsRestService {
     private MonitoredServiceDao m_serviceDao;
 
     @Autowired
+    @Qualifier("eventProxy")
     private EventProxy m_eventProxy;
 
     @Context 

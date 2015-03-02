@@ -30,7 +30,6 @@ package org.opennms.netmgt.provision.service;
 
 import org.opennms.core.tasks.BatchTask;
 import org.opennms.core.tasks.DefaultTaskCoordinator;
-import org.opennms.core.tasks.RunInBatch;
 import org.opennms.core.tasks.Task;
 import org.opennms.netmgt.config.api.SnmpAgentConfigFactory;
 import org.opennms.netmgt.events.api.EventForwarder;
@@ -45,7 +44,7 @@ import org.slf4j.LoggerFactory;
  * @author agalue
  * @version $Id: $
  */
-public class ForceRescanScan implements RunInBatch {
+public class ForceRescanScan implements Scan {
     private static final Logger LOG = LoggerFactory.getLogger(ForceRescanScan.class);
     private Integer m_nodeId;
     private ProvisionService m_provisionService;
@@ -70,11 +69,7 @@ public class ForceRescanScan implements RunInBatch {
         m_taskCoordinator = taskCoordinator;
     }
 
-    /**
-     * <p>createTask</p>
-     *
-     * @return a {@link org.opennms.core.tasks.Task} object.
-     */
+    @Override
     public Task createTask() {
         return m_taskCoordinator.createBatch().add(this).get();
     }

@@ -128,7 +128,6 @@ public class AlarmRepositoryHibernate implements AlarmRepository, InitializingBe
             ack.setAckTime(timestamp);
             ack.setAckAction(AckAction.CLEAR);
             m_ackDao.processAck(ack);
-            m_alarmDao.update(alarm);
         }
     }
 

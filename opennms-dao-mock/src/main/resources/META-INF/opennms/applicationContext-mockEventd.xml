@@ -3,9 +3,9 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
 	xmlns:util="http://www.springframework.org/schema/util" xmlns:onmsgi="http://xmlns.opennms.org/xsd/spring/onms-osgi"
 	xsi:schemaLocation="
-        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
-        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.2.xsd
-        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.2.xsd
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd
+        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.0.xsd
         http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd
     ">
 
@@ -22,10 +22,10 @@
 				<!-- This EventProcessor can be used to perform regex replacements on 
 					incoming parm values. It was added in 1.11 and because of performance concerns, 
 					it is commented-out for now. -->
-				<!-- <ref local="eventParmRegexFilter"/> -->
-				<ref local="eventExpander" />
-				<ref local="eventWriter" />
-				<ref local="eventIpcBroadcastProcessor" />
+				<!-- <ref bean="eventParmRegexFilter"/> -->
+				<ref bean="eventExpander" />
+				<ref bean="eventWriter" />
+				<ref bean="eventIpcBroadcastProcessor" />
 			</list>
 		</property>
 	</bean>
@@ -47,7 +47,7 @@
 	</onmsgi:service>
 
 	<bean id="eventIpcBroadcastProcessor" class="org.opennms.netmgt.eventd.processor.EventIpcBroadcastProcessor">
-		<property name="eventIpcBroadcaster"><ref local="eventIpcManagerImpl" /></property>
+		<property name="eventIpcBroadcaster" ref="eventIpcManagerImpl" />
 	</bean>
 
 	<bean id="eventExpander" class="org.opennms.netmgt.eventd.EventExpander">

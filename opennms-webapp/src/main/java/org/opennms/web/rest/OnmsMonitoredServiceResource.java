@@ -63,6 +63,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -105,6 +106,7 @@ public class OnmsMonitoredServiceResource extends OnmsRestService {
     private ServiceTypeDao m_serviceTypeDao;
     
     @Autowired
+    @Qualifier("eventProxy")
     private EventProxy m_eventProxy;
 
     /**

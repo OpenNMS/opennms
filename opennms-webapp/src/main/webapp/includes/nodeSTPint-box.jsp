@@ -61,8 +61,11 @@
    	StpInterface[] stpifs = NetworkElementFactory.getInstance(getServletContext()).getStpInterface(nodeId);
 
 %>
-<h3>Node STP Interface Info</h3>
-<table>
+<div class="panel panel-default">
+<div class="panel-heading">
+  <h3 class="panel-title">Node STP Interface Info</h3>
+</div>
+<table class="table table-condensed">
 <% if(stpifs.length == 0) { %>
   <tr>
     <td>There are no STP interfaces on this node.</td>
@@ -127,3 +130,4 @@
               <% } %>
        <% } %>
 </table>
+</div> <!-- panel -->

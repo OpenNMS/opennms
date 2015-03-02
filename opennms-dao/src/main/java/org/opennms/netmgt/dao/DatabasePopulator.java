@@ -110,13 +110,13 @@ import org.springframework.transaction.support.TransactionOperations;
  */
 public class DatabasePopulator {
 	
-	public static interface Extension<T extends OnmsDao> {
+	public static interface Extension<T extends OnmsDao<?,?>> {
 		DaoSupport<T> getDaoSupport();
 		void onPopulate(DatabasePopulator populator, T dao);
 		void onShutdown(DatabasePopulator populator, T dao);
 	}
 	
-	public static class DaoSupport<T extends OnmsDao> {
+	public static class DaoSupport<T extends OnmsDao<?,?>> {
 		private final Class<T> daoClass;
 		private final T daoObject;
 		
@@ -126,7 +126,7 @@ public class DatabasePopulator {
 		}
 		
 		public Class<T> getDaoClass() {
-			return this.daoClass;
+			return (Class<T>)this.daoClass;
 		}
 		
 		public T getDao() {
@@ -167,10 +167,10 @@ public class DatabasePopulator {
     
     private final List<Extension> extensions = new ArrayList<Extension>();
     
-    private Map<Class<? super OnmsDao>, OnmsDao> daoRegistry = new HashMap<Class<? super OnmsDao>, OnmsDao>();
+    private Map<Class<? super OnmsDao<?,?>>, OnmsDao<?,?>> daoRegistry = new HashMap<Class<? super OnmsDao<?,?>>, OnmsDao<?,?>>();
     
-    public <T extends OnmsDao> T lookupDao(Class<? super OnmsDao> daoClass) {
-    	for (Class<? super OnmsDao> eachDaoClass : daoRegistry.keySet()) {
+    public <T extends OnmsDao<?,?>> T lookupDao(Class<? super OnmsDao<?,?>> daoClass) {
+    	for (Class<? super OnmsDao<?,?>> eachDaoClass : daoRegistry.keySet()) {
     		if (eachDaoClass.isAssignableFrom(daoClass)) {
     			return (T)daoRegistry.get(eachDaoClass);
     		}
@@ -178,10 +178,10 @@ public class DatabasePopulator {
     	return null;
     }
 
-    public void registerDao(Class<? super OnmsDao> daoClass, OnmsDao dao) {
+    public void registerDao(Class<? super OnmsDao<?,?>> daoClass, OnmsDao<?,?> dao) {
     	if (dao == null || daoClass == null) return;
     	// check if not already added
-    	for (Class<? super OnmsDao> eachDaoClass : daoRegistry.keySet()) {
+    	for (Class<? super OnmsDao<?,?>> eachDaoClass : daoRegistry.keySet()) {
     		if (eachDaoClass.isAssignableFrom(daoClass)) {
     			return; // a super class for this is already added (ignore)
     		}
@@ -236,7 +236,7 @@ public class DatabasePopulator {
         LOG.debug("= DatabasePopulatorExtension Reset Starting =");
     	for (Extension eachExtension : extensions) {
     			DaoSupport daoSupport = eachExtension.getDaoSupport();
-    			OnmsDao dao = daoSupport != null && daoSupport.getDaoClass() != null ? lookupDao(daoSupport.getDaoClass()) : null;
+    			OnmsDao<?,?> dao = daoSupport != null && daoSupport.getDaoClass() != null ? lookupDao(daoSupport.getDaoClass()) : null;
 
     			eachExtension.onShutdown(this, dao);
     			if (dao != null) {
@@ -372,8 +372,8 @@ public class DatabasePopulator {
         LOG.debug("= DatabasePopulatorExtension Populate Starting =");
         for (Extension eachExtension : extensions) {
         	DaoSupport daoSupport = eachExtension.getDaoSupport();
-        	OnmsDao dao = daoSupport != null ? daoSupport.getDao() : null;
-        	Class<? super OnmsDao> daoClass = daoSupport != null ? daoSupport.getDaoClass() : null;
+        	OnmsDao<?,?> dao = daoSupport != null ? daoSupport.getDao() : null;
+        	Class<? super OnmsDao<?,?>> daoClass = daoSupport != null ? daoSupport.getDaoClass() : null;
         	registerDao(daoClass, dao);
 
         	dao = lookupDao(daoClass);

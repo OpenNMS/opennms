@@ -1,12 +1,12 @@
 
-=== JDBCStoredProcedureMonitor
+==== JDBCStoredProcedureMonitor
 
-The _JDBCStoredProcedureMonitor_ checks the result of a stored procedure in a remote database. 
+The _JDBCStoredProcedureMonitor_ checks the result of a stored procedure in a remote database.
 The result of the stored procedure has to be a boolean value (representing true or false).
 The service associated with this monitor is marked as up if the stored procedure returns true and it is marked as down in all other cases.
 It is based on the http://www.oracle.com/technetwork/java/javase/jdbc/index.html[JDBC] technology to connect and communicate with the database.
 
-==== Monitor facts
+===== Monitor facts
 
 [options="autowidth"]
 |===
@@ -14,7 +14,7 @@ It is based on the http://www.oracle.com/technetwork/java/javase/jdbc/index.html
 | Remote Enabled | false
 |===
 
-==== Configuration and Usage
+===== Configuration and Usage
 
 .Monitor specific parameters for the JDBCStoredProcedureMonitor
 [options="header, autowidth"]
@@ -30,10 +30,10 @@ It is based on the http://www.oracle.com/technetwork/java/javase/jdbc/index.html
 | `schema`           | Name of the database schema in which the stored procedure is       | optional | `test`
 |===
 
-NOTE: The +OPENNMS_JDBC_HOSTNAME+ is replaced in the +url+ parameter the IP or resolved hostname of the interface the monitored service is assigned to. 
+NOTE: The +OPENNMS_JDBC_HOSTNAME+ is replaced in the +url+ parameter the IP or resolved hostname of the interface the monitored service is assigned to.
 
 
-==== Provide the database driver
+===== Provide the database driver
 
 The _JDBCStoredProcedureMonitor_ is based on _JDBC_ and requires a _JDBC driver_ to communicate with any database.
 Due to the fact that OpenNMS itself uses a _PostgreSQL_ database, the _PostgreSQL JDBC driver_ is available out of the box.
@@ -43,8 +43,9 @@ To use the _JDBCStoredProcedureMonitor_ from a remote poller, the _driver-jar_ h
 This may be tricky or impossible when using the _Java Webstart Remote Poller_, because of code signing requirements.
 
 
-==== Examples
-The following example checks a stored procedure added to the _PostgreSQL_ database used by OpenNMS. 
+===== Examples
+
+The following example checks a stored procedure added to the _PostgreSQL_ database used by OpenNMS.
 The stored procedure returns true as long as less than 250000 events are in the events table of OpenNMS.
 
 Stored procedure

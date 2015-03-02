@@ -128,11 +128,6 @@ public class ConfigTesterTest {
     }
 
     @Test
-    public void testCapsdConfiguration() {
-        testConfigFile("capsd-configuration.xml");
-    }
-
-    @Test
     public void testCategories() {
         testConfigFile("categories.xml");
     }

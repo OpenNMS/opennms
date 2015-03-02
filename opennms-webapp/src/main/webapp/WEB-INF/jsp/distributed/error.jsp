@@ -34,18 +34,22 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring" %>
 
-<jsp:include page="/includes/header.jsp" flush="false">
+<jsp:include page="/includes/bootstrap.jsp" flush="false">
   <jsp:param name="title" value="Error" />
   <jsp:param name="headTitle" value="Error" />
 </jsp:include>
 
-<h3><spring:message code="error"/></h3>
-<div class="boxWrapper">
-  <ul class="error">
-    <c:forEach var="err" items="${errors.allErrors}">
-      <li><spring:message message="${err}"/></li>
-    </c:forEach>
-  </ul>
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title"><spring:message code="error"/></h3>
+  </div>
+  <div class="panel-body">
+    <ul class="error">
+      <c:forEach var="err" items="${errors.allErrors}">
+        <li><spring:message message="${err}"/></li>
+      </c:forEach>
+    </ul>
+  </div>
 </div>
 
-<jsp:include page="/includes/footer.jsp" flush="false"/>
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="false"/>

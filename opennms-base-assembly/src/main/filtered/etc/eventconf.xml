@@ -2069,6 +2069,7 @@
   <event-file>events/Cisco.SCE.events.xml</event-file>
   <event-file>events/Cisco2.events.xml</event-file>
   <event-file>events/Cisco.events.xml</event-file>
+  <event-file>events/CitrixNetScaler.events.xml</event-file>
   <event-file>events/Colubris.events.xml</event-file>
   <event-file>events/ComtechEFData.events.xml</event-file>
   <event-file>events/Concord.events.xml</event-file>
@@ -2144,6 +2145,7 @@
   <event-file>events/McAfee.events.xml</event-file>
   <event-file>events/MGE-UPS.events.xml</event-file>
   <event-file>events/Microsoft.events.xml</event-file>
+  <event-file>events/MikrotikRouterOS.events.xml</event-file>
   <event-file>events/Multicast.standard.events.xml</event-file>
   <event-file>events/MPLS.events.xml</event-file>
   <event-file>events/MRV.events.xml</event-file>
@@ -2152,7 +2154,6 @@
   <event-file>events/NetApp.events.xml</event-file>
   <event-file>events/Netbotz.events.xml</event-file>
   <event-file>events/Netgear.events.xml</event-file>
-  <event-file>events/Netscalar.events.xml</event-file>
   <event-file>events/Netscreen.events.xml</event-file>
   <event-file>events/NetSNMP.events.xml</event-file>
   <event-file>events/Nokia.events.xml</event-file>
@@ -2164,7 +2165,9 @@
   <event-file>events/OSPF.events.xml</event-file>
   <event-file>events/Overland.events.xml</event-file>
   <event-file>events/Overture.events.xml</event-file>
+  <event-file>events/Procmail.syslog.events.xml</event-file>
   <event-file>events/POSIX.syslog.events.xml</event-file>
+  <event-file>events/Postfix.syslog.events.xml</event-file>
   <event-file>events/Packeteer.events.xml</event-file>
   <event-file>events/Patrol.events.xml</event-file>
   <event-file>events/PCube.events.xml</event-file>
@@ -2184,6 +2187,10 @@
   <event-file>events/RMON.events.xml</event-file>
   <event-file>events/Sensaphone.events.xml</event-file>
   <event-file>events/Sentry.events.xml</event-file>
+  <event-file>events/Siemens-HiPath3000.events.xml</event-file>
+  <event-file>events/Siemens-HiPath3000-HG1500.events.xml</event-file>
+  <event-file>events/Siemens-HiPath4000.events.xml</event-file>
+  <event-file>events/Siemens-HiPath8000-OpenScapeVoice.events.xml</event-file>
   <event-file>events/SNA-NAU.events.xml</event-file>
   <event-file>events/SNMP-REPEATER.events.xml</event-file>
   <event-file>events/Snort.events.xml</event-file>
@@ -2201,6 +2208,7 @@
   <event-file>events/TUT.events.xml</event-file>
   <event-file>events/UPS-MIB.events.xml</event-file>
   <event-file>events/Uptime.events.xml</event-file>
+  <event-file>events/Veeam_Backup-Replication.events.xml</event-file>
   <event-file>events/Veraz.events.xml</event-file>
   <event-file>events/VMWare.env.events.xml</event-file>
   <event-file>events/VMWare.vc.events.xml</event-file>

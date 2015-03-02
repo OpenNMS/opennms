@@ -65,9 +65,14 @@ public class DefaultResourceListPresenter implements Presenter, DefaultResourceL
     private DefaultResourceListView<ResourceListItem> m_view;
     private SearchPopupDisplay m_searchPopup;
     private List<ResourceListItem> m_dataList;
+    private final String m_targetUrl;
     private String m_baseUrl;
 
     public DefaultResourceListPresenter(DefaultResourceListView<ResourceListItem> view, SearchPopupDisplay searchPopup, JsArray<ResourceListItem> dataList, String baseUrl) {
+        this(view, searchPopup, dataList, null, baseUrl);
+    }
+
+    public DefaultResourceListPresenter(DefaultResourceListView<ResourceListItem> view, SearchPopupDisplay searchPopup, JsArray<ResourceListItem> dataList, String targetUrl, String baseUrl) {
         setView(view);
         getView().setPresenter(this);
         
@@ -75,10 +80,11 @@ public class DefaultResourceListPresenter implements Presenter, DefaultResourceL
         
         m_dataList = convertJsArrayToList(dataList);
         getView().setDataList(m_dataList);
-        
+
+        m_targetUrl = targetUrl;
         setBaseUrl(baseUrl);
     }
-    
+
     private List<ResourceListItem> convertJsArrayToList(JsArray<ResourceListItem> resourceList) {
         List<ResourceListItem> data = new ArrayList<ResourceListItem>();
         if (resourceList != null) {
@@ -151,7 +157,10 @@ public class DefaultResourceListPresenter implements Presenter, DefaultResourceL
         url.append("graph/chooseresource.htm");
         url.append("?reports=all");
         url.append("&parentResourceId=" + getView().getSelectedResource().getId());
-        
+        if (m_targetUrl != null) {
+            url.append("&endUrl=").append(m_targetUrl);
+        }
+
         Location.assign(url.toString());
     }
 

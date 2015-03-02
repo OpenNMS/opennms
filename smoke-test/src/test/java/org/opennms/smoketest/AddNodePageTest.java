@@ -28,47 +28,72 @@
 
 package org.opennms.smoketest;
 
+import static org.junit.Assert.assertEquals;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
+import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.smoketest.expectations.ExpectationBuilder;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.Select;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class AddNodePageTest extends OpenNMSSeleniumTestCase {
+    private static final String m_unreachableIp = InetAddressUtils.str(InetAddressUtils.UNPINGABLE_ADDRESS);
+
     @Before
     public void setUp() throws Exception {
         deleteTestRequisition();
-        super.setUp();
     }
 
     @After
     public void tearDown() throws Exception {
         deleteTestRequisition();
-        super.tearDown();
     }
 
     @Test
     public void testAddNodePage() throws Exception {
-        selenium.open("/opennms/admin/node/add.htm");
-        clickAndWait("link=Admin");
-        clickAndWait("link=Manage Provisioning Requisitions");
-        selenium.type("css=form[name=takeAction] > div > input[name=groupName]", "test");
-        clickAndWait("css=input[type=submit]");
-        clickAndWait("//input[@value='Synchronize']");
+        // Visit the provisioning page
+        provisioningPage();
 
-        goToMainPage();
-        clickAndWait("link=Add Node");
+        // Add a foreign source named REQUISITION_NAME
+        m_driver.findElement(By.cssSelector("form[name=takeAction] input[name=groupName]")).sendKeys(REQUISITION_NAME);
+        m_driver.findElement(By.cssSelector("form[name=takeAction] input[type=submit]")).click();
 
-        waitForText("Category:");
-        assertEquals("Provision", selenium.getValue("css=input[type=submit]"));
-        waitForElement("css=input[type=reset]");
-        waitForText("Enable Password:");
-        waitForText("Node Quick-Add");
-        waitForText("CLI Authentication Parameters (optional)");
-        waitForText("SNMP Parameters (optional)");
-        waitForText("Surveillance Category Memberships (optional)");
-        waitForText("Basic Attributes (required)");
+        // Synchronize the empty requisition
+        findElementByXpath("//input[@value='Synchronize']").click();
+
+        frontPage();
+        clickMenuItem("name=nav-admin-top", "Quick-Add Node", BASE_URL + "opennms/admin/node/add.htm");
+
+        // Make sure there is a Provision button on the page
+        final WebElement submitButton = m_driver.findElement(By.cssSelector("input[type=submit][value=Provision]"));
+        assertEquals("Provision", submitButton.getAttribute("value"));
+
+        // Select our test foreign source
+        final WebElement selectElement = m_driver.findElement(By.cssSelector("select[name=foreignSource]"));
+        final Select sel = new Select(selectElement);
+        sel.selectByVisibleText(REQUISITION_NAME);
+
+        // Add an unreachable IP address to the requisition
+        findElementByName("ipAddress").sendKeys(m_unreachableIp);
+        findElementByName("nodeLabel").sendKeys("AddNodePageTest");
+
+        // Submit
+        submitButton.click();
+
+        // Click on the Provisioning Requisitions breadcrumb
+        findElementByLink("Provisioning Requisitions").click();
+        findElementById("edit_req_anchor_" + REQUISITION_NAME).click();
+
+        new ExpectationBuilder("css=input[value=AddNodePageTest]").check(m_driver);
+
+        provisioningPage();
+        wait.until(new WaitForNodesInDatabase(1));
     }
 
 }

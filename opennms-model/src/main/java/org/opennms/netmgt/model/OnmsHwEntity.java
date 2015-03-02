@@ -749,7 +749,7 @@ public class OnmsHwEntity implements Serializable, Comparable<OnmsHwEntity> {
      */
     @Transient
     public boolean isRoot() {
-        return m_parent == null || m_entPhysicalIndex == 0;
+        return m_parent == null || m_entPhysicalContainedIn == 0;
     }
 
     /**

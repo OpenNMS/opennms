@@ -46,17 +46,19 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.uibinder.client.UiTemplate;
 import com.google.gwt.user.cellview.client.CellList;
 import com.google.gwt.user.cellview.client.SimplePager;
-import com.google.gwt.user.client.ui.Button;
+
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.LayoutPanel;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.PopupPanel.PositionCallback;
-import com.google.gwt.user.client.ui.TextBox;
+
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.ListDataProvider;
 import com.google.gwt.view.client.SelectionChangeEvent;
 import com.google.gwt.view.client.SingleSelectionModel;
+import org.gwtbootstrap3.client.ui.Button;
+import org.gwtbootstrap3.client.ui.TextBox;
 
 public class SuggestionComboboxViewImpl extends Composite implements SuggestionComboboxView<NodeDetail> {
     
@@ -98,9 +100,6 @@ public class SuggestionComboboxViewImpl extends Composite implements SuggestionC
     interface SuggestionComboboxViewUiBinder extends UiBinder<Widget, SuggestionComboboxViewImpl> {}
     
     @UiField
-    LayoutPanel m_layoutPanel;
-    
-    @UiField
     TextBox m_textBox;
     
     @UiField
@@ -118,7 +117,7 @@ public class SuggestionComboboxViewImpl extends Composite implements SuggestionC
     
     public SuggestionComboboxViewImpl() {
         initWidget(uiBinder.createAndBindUi(this));
-        m_layoutPanel.setSize("100%", "23px");
+
         m_textBox.addKeyDownHandler(new KeyDownHandler() {
 
             @Override

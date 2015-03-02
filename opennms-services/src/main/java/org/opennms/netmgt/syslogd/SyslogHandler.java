@@ -30,16 +30,18 @@ package org.opennms.netmgt.syslogd;
 
 import java.io.IOException;
 import java.net.DatagramSocket;
+import java.net.InetSocketAddress;
+import java.nio.channels.DatagramChannel;
 
 import org.opennms.core.fiber.Fiber;
 import org.opennms.core.utils.InetAddressUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.config.SyslogdConfig;
 import org.opennms.netmgt.config.syslogd.HideMessage;
 import org.opennms.netmgt.config.syslogd.UeiList;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.EventReceipt;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class implements the User Datagram Protocol (UDP) event receiver. When
@@ -53,6 +55,9 @@ import org.opennms.netmgt.xml.event.EventReceipt;
  */
 public final class SyslogHandler implements Fiber {
     private static final Logger LOG = LoggerFactory.getLogger(SyslogHandler.class);
+
+    private final boolean USE_NIO = false;
+
     /**
      * The UDP receiver thread.
      */
@@ -155,18 +160,44 @@ public final class SyslogHandler implements Fiber {
         m_status = STARTING;
 
         try {
-            if (m_dgIp != null && m_dgIp.length() != 0) {
-                m_dgSock = new DatagramSocket(m_dgPort, InetAddressUtils.addr(m_dgIp));
-            } else {
-                m_dgSock = new DatagramSocket(m_dgPort);
-            }
+            if (USE_NIO) {
+                // NIO SyslogReceiver implementation
 
-            m_receiver = new SyslogReceiver(m_dgSock, m_ForwardingRegexp,
+                DatagramChannel channel = DatagramChannel.open();
+                if (m_dgIp != null && m_dgIp.length() != 0) {
+                    channel.socket().bind(new InetSocketAddress(InetAddressUtils.addr(m_dgIp), m_dgPort));
+                } else {
+                    channel.socket().bind(new InetSocketAddress(m_dgPort));
+                }
+
+                m_receiver = new SyslogReceiverNioThreadPoolImpl(
+                    channel,
+                    m_ForwardingRegexp,
                     m_MatchingGroupHost,
                     m_MatchingGroupMessage,
                     m_UeiList,
                     m_HideMessages,
-                    m_DiscardUei);
+                    m_DiscardUei
+                );
+            } else {
+                // java.net SyslogReceiver implementation
+
+                if (m_dgIp != null && m_dgIp.length() != 0) {
+                    m_dgSock = new DatagramSocket(m_dgPort, InetAddressUtils.addr(m_dgIp));
+                } else {
+                    m_dgSock = new DatagramSocket(m_dgPort);
+                }
+
+                m_receiver = new SyslogReceiverJavaNetImpl(
+                    m_dgSock,
+                    m_ForwardingRegexp,
+                    m_MatchingGroupHost,
+                    m_MatchingGroupMessage,
+                    m_UeiList,
+                    m_HideMessages,
+                    m_DiscardUei
+                );
+            }
 
             if (m_logPrefix != null) {
                 m_receiver.setLogPrefix(m_logPrefix);
@@ -211,7 +242,9 @@ public final class SyslogHandler implements Fiber {
             LOG.warn("The thread was interrupted while attempting to join sub-threads", e);
         }
 
-        m_dgSock.close();
+        if (m_dgSock != null) {
+            m_dgSock.close();
+        }
 
         m_status = STOPPED;
     }

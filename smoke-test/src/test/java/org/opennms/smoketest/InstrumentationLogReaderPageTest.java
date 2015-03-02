@@ -28,49 +28,38 @@
 
 package org.opennms.smoketest;
 
-import org.junit.Before;
-import org.junit.FixMethodOrder;
-import org.junit.Test;
-import org.junit.runners.MethodSorters;
+import static org.junit.Assert.assertEquals;
 
-@FixMethodOrder(MethodSorters.NAME_ASCENDING)
+import org.junit.Before;
+import org.junit.Test;
+import org.openqa.selenium.By;
+
 public class InstrumentationLogReaderPageTest extends OpenNMSSeleniumTestCase {
     @Before
     public void setUp() throws Exception {
-        super.setUp();
-        selenium.open("/opennms/admin/index.jsp");
-        waitForPageToLoad();
-        clickAndWait("link=Instrumentation Log Reader");
+        adminPage();
+        findElementByLink("Instrumentation Log Reader").click();
     }
 
     @Test
-    public void a_testInstrumentationLogReaderPage() throws Exception {
-        selenium.type("name=searchString", "test");
-        clickAndWait("css=#ILRfilter > input[type=submit]");
-        assertEquals("test", selenium.getValue("name=searchString"));
-        clickAndWait("css=#ILRreset > input[type=submit]");
-        assertEquals("", selenium.getValue("name=searchString"));
-        waitForText("Service");
-        waitForText("Threads Used:");
-        waitForElement("link=Collections");
-        waitForElement("link=Average Collection Time");
-        waitForElement("link=Unsuccessful Percentage");
-        waitForElement("link=Average Persistence Time");
+    public void testInstrumentationLogReaderPage() throws Exception {
+        enterText(By.name("searchString"), "test");
+        assertEquals("test", findElementByName("searchString").getAttribute("value"));
+        findElementByXpath("//button[@type='submit' and text()='Submit']").click();
+        findElementByXpath("//button[@type='submit' and text()='Reset']").click();
+        assertEquals("", findElementByName("searchString").getAttribute("value"));
     }
 
     @Test
-    public void b_testSortingLinks() throws InterruptedException {
-        clickAndWait("link=Collections");
-        waitForElement("link=Collections ^");
-        clickAndWait("link=Collections ^");
-        waitForElement("link=Collections v");
-        clickAndWait("link=Average Successful Collection Time");
-        waitForElement("link=Average Successful Collection Time ^");
-        clickAndWait("link=Average Successful Collection Time ^");
-        waitForElement("link=Average Successful Collection Time v");
-        clickAndWait("link=Average Persistence Time");
-        waitForElement("link=Average Persistence Time ^");
-        clickAndWait("link=Average Persistence Time ^");
-        waitForElement("link=Average Persistence Time v");
+    public void testSortingLinks() throws InterruptedException {
+        findElementByLink("Collections").click();
+        findElementByXpath("//a[text()='Collections ^']").click();
+        findElementByXpath("//a[text()='Collections v']").click();
+        findElementByLink("Average Successful Collection Time").click();
+        findElementByXpath("//a[text()='Average Successful Collection Time ^']").click();
+        findElementByXpath("//a[text()='Average Successful Collection Time v']").click();
+        findElementByLink("Average Persistence Time").click();
+        findElementByXpath("//a[text()='Average Persistence Time ^']").click();
+        findElementByXpath("//a[text()='Average Persistence Time v']").click();
     }
 }

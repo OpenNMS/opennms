@@ -62,7 +62,12 @@ public class MockResourceType implements OnmsResourceType {
     public List<OnmsResource> getResourcesForNode(int nodeId) {
         return null;
     }
-    
+
+    @Override
+    public OnmsResource getChildByName(OnmsResource parent, String name) {
+        return null;
+    }
+
     @Override
     public List<OnmsResource> getResourcesForNodeSource(String nodeSource, int nodeId) {
         return null;

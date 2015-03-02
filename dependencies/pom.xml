@@ -3,7 +3,7 @@
   <parent>
     <artifactId>opennms</artifactId>
     <groupId>org.opennms</groupId>
-    <version>15.0.0-SNAPSHOT</version>
+    <version>16.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>dependencies</artifactId>
@@ -44,6 +44,7 @@
     <module>rancid</module>
     <module>rxtx</module>
     <module>servlet</module>
+    <module>smack</module>
     <module>smslib</module>
     <module>snmp4j</module>
     <module>snmp4j-agent</module>

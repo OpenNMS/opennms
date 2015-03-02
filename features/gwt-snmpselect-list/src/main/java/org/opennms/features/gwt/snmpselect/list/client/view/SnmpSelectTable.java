@@ -31,14 +31,12 @@ package org.opennms.features.gwt.snmpselect.list.client.view;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.gwtbootstrap3.client.ui.gwt.CellTable;
 import org.opennms.features.gwt.snmpselect.list.client.view.handler.SnmpSelectTableCollectUpdateHandler;
-import org.opennms.features.gwt.tableresources.client.OnmsTableResources;
 
 import com.google.gwt.cell.client.FieldUpdater;
 import com.google.gwt.cell.client.SelectionCell;
 import com.google.gwt.cell.client.TextCell;
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.user.cellview.client.CellTable;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.RowStyles;
 
@@ -55,7 +53,7 @@ public class SnmpSelectTable extends CellTable<SnmpCellListItem> {
     private SnmpSelectTableCollectUpdateHandler m_fieldUpdater;
     
     public SnmpSelectTable() {
-        super(15, (CellTable.Resources) GWT.create(OnmsTableResources.class));
+        super(12);
         initializeColumns();
     }
 

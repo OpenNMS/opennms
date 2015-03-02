@@ -30,11 +30,13 @@ package org.opennms.netmgt.rtc;
 
 import java.io.InputStream;
 import java.io.Reader;
+import java.net.ConnectException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
@@ -46,10 +48,16 @@ import org.opennms.core.concurrent.LogPreservingThreadFactory;
 import org.opennms.core.fiber.Fiber;
 import org.opennms.core.utils.HttpUtils;
 import org.opennms.netmgt.config.RTCConfigFactory;
+import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.events.api.annotations.EventHandler;
+import org.opennms.netmgt.events.api.annotations.EventListener;
 import org.opennms.netmgt.rtc.datablock.HttpPostInfo;
 import org.opennms.netmgt.rtc.datablock.RTCCategory;
 import org.opennms.netmgt.rtc.utils.EuiLevelMapper;
 import org.opennms.netmgt.rtc.utils.PipedMarshaller;
+import org.opennms.netmgt.xml.event.Event;
+import org.opennms.netmgt.xml.event.Parm;
+import org.opennms.netmgt.xml.event.Value;
 import org.opennms.netmgt.xml.rtc.EuiLevel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,26 +67,22 @@ import org.slf4j.LoggerFactory;
  * 
  * When the RTCManager's timers go off, the DataSender is prompted to send data,
  * which it does by maintaining a 'SendRequest' runnable queue so as to not
- * block the RTCManager
+ * block the RTCManager.
  * 
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Nataraj</A>
  * @author <A HREF="mailto:weave@oculan.com">Brian Weaver</A>
  * @author <A HREF="http://www.opennms.org">OpenNMS.org</A>
  */
-final class DataSender implements Fiber {
+@EventListener(name="RTC:DataSender", logPrefix="rtc")
+public class DataSender implements Fiber {
 
     private static final Logger LOG = LoggerFactory.getLogger(DataSender.class);
-
-    /**
-     * The category map
-     */
-    private final Map<String,RTCCategory> m_categories;
 
     /**
      * The listeners like the WebUI that send a URL to which the data is to be
      * sent
      */
-    private final Map<String, Set<HttpPostInfo>> m_catUrlMap;
+    private final Map<String, Set<HttpPostInfo>> m_catUrlMap = new HashMap<String, Set<HttpPostInfo>>();
 
     /**
      * The data sender thread pool
@@ -101,6 +105,8 @@ final class DataSender implements Fiber {
      */
     private int m_status;
 
+	private final AvailabilityService m_dataMgr;
+
     /**
      * Inner class to send data to all the categories - this runnable prevents
      * the RTCManager from having to block until data is computed, converted to
@@ -117,22 +123,6 @@ final class DataSender implements Fiber {
     }
 
     /**
-     * Set the current thread's priority to the passed value and return the old
-     * priority
-     */
-    private int setCurrentThreadPriority(final int priority) {
-        final Thread currentThread = Thread.currentThread();
-        final int oldPriority = currentThread.getPriority();
-        try {
-            currentThread.setPriority(priority);
-        } catch (final Throwable t) {
-            LOG.debug("Error setting thread priority: ", t);
-        }
-
-        return oldPriority;
-    }
-
-    /**
      * The constructor for this object
      *
      * @param categories
@@ -140,22 +130,19 @@ final class DataSender implements Fiber {
      * @param numSenders
      *            The number of senders.
      */
-    public DataSender(final Map<String, RTCCategory> categories, final int numSenders) {
-        m_categories = categories;
-
-        // create the category URL map
-        m_catUrlMap = new HashMap<String, Set<HttpPostInfo>>();
+    public DataSender(final AvailabilityService dataMgr, final RTCConfigFactory configFactory) {
+        m_dataMgr = dataMgr;
 
         // create and start the data sender pool
-        m_dsrPool = Executors.newFixedThreadPool(numSenders,
-                                                 new LogPreservingThreadFactory(getClass().getSimpleName(), numSenders)
-                );
+        m_dsrPool = Executors.newFixedThreadPool(configFactory.getSenders(),
+            new LogPreservingThreadFactory(getClass().getSimpleName(), configFactory.getSenders())
+        );
 
         // create category converter
-        m_euiMapper = new EuiLevelMapper();
+        m_euiMapper = new EuiLevelMapper(m_dataMgr);
 
         // get post error limit
-        POST_ERROR_LIMIT = RTCConfigFactory.getInstance().getErrorsBeforeUrlUnsubscribe();
+        POST_ERROR_LIMIT = configFactory.getErrorsBeforeUrlUnsubscribe();
     }
 
     /**
@@ -219,7 +206,7 @@ final class DataSender implements Fiber {
     public synchronized void subscribe(final String url, final String catlabel, final String user, final String passwd) {
         // send category data to the newly subscribed URL
         // look up info for this category
-        final RTCCategory cat = m_categories.get(catlabel);
+        final RTCCategory cat = m_dataMgr.getCategories().get(catlabel);
         if (cat == null) {
             // oops! category for which we have no info!
             LOG.warn("RTC: No information available for category: {}", catlabel);
@@ -248,41 +235,48 @@ final class DataSender implements Fiber {
             LOG.debug("Subscribed to URL: {}\tcatlabel: {}\tuser:{}", url, catlabel, user);
         }
 
-        // send data
-        Reader inr = null;
-        InputStream inp = null;
-        try {
-            LOG.debug("DataSender: posting data to: {}", url);
+        m_dsrPool.execute(new Runnable() {
+            @Override
+            public void run() {
+                // send data
+                Reader inr = null;
+                InputStream inp = null;
+                try {
+                    LOG.debug("DataSender: posting data to: {}", url);
 
-            // Run at a higher than normal priority since we do have to send
-            // the update on time
-            final int oldPriority = setCurrentThreadPriority(Thread.MAX_PRIORITY);
+                    final EuiLevel euidata = m_euiMapper.convertToEuiLevelXML(cat);
+                    inr = new PipedMarshaller(euidata).getReader();
 
-            final EuiLevel euidata = m_euiMapper.convertToEuiLevelXML(cat);
-            inr = new PipedMarshaller(euidata).getReader();
-            inp = HttpUtils.post(postInfo.getURL(), inr, user, passwd, 8 * HttpUtils.DEFAULT_POST_BUFFER_SIZE);
+                    // Connect with a fairly long timeout to allow the web UI time to register the
+                    // {@link RTCPostServlet}. Actually, this doesn't seem to work because the POST
+                    // will immediately throw a {@link ConnectException} if the web UI isn't ready
+                    // yet. Oh well.
+                    inp = HttpUtils.post(postInfo.getURL(), inr, user, passwd, 8 * HttpUtils.DEFAULT_POST_BUFFER_SIZE, 60000);
 
-            final byte[] tmp = new byte[1024];
-            int bytesRead;
-            while ((bytesRead = inp.read(tmp)) != -1) {
-                if (LOG.isDebugEnabled()) {
-                    if (bytesRead > 0) {
-                        LOG.debug("DataSender: post response: {}", new String(tmp, 0, bytesRead));
+                    final byte[] tmp = new byte[1024];
+                    int bytesRead;
+                    while ((bytesRead = inp.read(tmp)) != -1) {
+                        if (LOG.isDebugEnabled()) {
+                            if (bytesRead > 0) {
+                                LOG.debug("DataSender: post response: {}", new String(tmp, 0, bytesRead));
+                            }
+                        }
                     }
+
+                    LOG.debug("DataSender: posted data for category: {}", catlabel);
+                } catch (final ConnectException e) {
+                    // These exceptions will be thrown if we try to POST RTC data before the web UI is available.
+                    // Don't log a large stack trace for this because it will happen during startup before the
+                    // RTCPostServlet is ready to handle requests.
+                    LOG.warn("DataSender:  Unable to send category '{}' to URL '{}': {}", catlabel, url, e.getMessage());
+                } catch (final Throwable t) {
+                    LOG.warn("DataSender:  Unable to send category '{}' to URL '{}'", catlabel, url, t);
+                } finally {
+                    IOUtils.closeQuietly(inp);
+                    IOUtils.closeQuietly(inr);
                 }
             }
-
-            // return current thread to its previous priority
-            setCurrentThreadPriority(oldPriority);
-
-            LOG.debug("DataSender: posted data for category: {}", catlabel);
-        } catch (final Throwable t) {
-            LOG.warn("DataSender:  Unable to send category '{}' to URL '{}'", catlabel, url, t);
-            setCurrentThreadPriority(Thread.NORM_PRIORITY);
-        } finally {
-            IOUtils.closeQuietly(inp);
-            IOUtils.closeQuietly(inr);
-        }
+        });
     }
 
     /**
@@ -327,7 +321,7 @@ final class DataSender implements Fiber {
         LOG.debug("In DataSender sendData()");
 
         // loop through and send info
-        for (final RTCCategory cat : m_categories.values()) {
+        for (final RTCCategory cat : m_dataMgr.getCategories().values()) {
             // get label
             final String catlabel = cat.getLabel();
             LOG.debug("DataSender:sendData(): Category '{}'", catlabel);
@@ -342,16 +336,11 @@ final class DataSender implements Fiber {
 
             LOG.debug("DataSender: category '{}' has listeners - converting to xml...", catlabel);
 
-            // Run at a higher than normal priority since we do have to send
-            // the update on time
-            final int oldPriority = setCurrentThreadPriority(Thread.MAX_PRIORITY);
-
             final EuiLevel euidata;
             try {
                 euidata = m_euiMapper.convertToEuiLevelXML(cat);
             } catch (final Throwable t) {
                 LOG.warn("DataSender: unable to convert data to xml for category: '{}'", catlabel, t);
-                setCurrentThreadPriority(Thread.NORM_PRIORITY);
                 continue;
             }
 
@@ -366,7 +355,7 @@ final class DataSender implements Fiber {
                     try {
                         inr = new PipedMarshaller(euidata).getReader();
                         LOG.debug("DataSender: posting data to: {}", postInfo.getURLString());
-                        inp = HttpUtils.post(postInfo.getURL(), inr, postInfo.getUser(), postInfo.getPassword(), 8 * HttpUtils.DEFAULT_POST_BUFFER_SIZE);
+                        inp = HttpUtils.post(postInfo.getURL(), inr, postInfo.getUser(), postInfo.getPassword(), 8 * HttpUtils.DEFAULT_POST_BUFFER_SIZE, HttpUtils.DEFAULT_CONNECT_TIMEOUT);
                         LOG.debug("DataSender: posted data for category: {}", catlabel);
 
 
@@ -385,7 +374,6 @@ final class DataSender implements Fiber {
                     } catch (final Throwable t) {
                         LOG.warn("DataSender: unable to send data for category: {} due to {}: {}", catlabel, t.getClass().getName(), t.getMessage(), t);
                         postInfo.incrementErrors();
-                        setCurrentThreadPriority(Thread.NORM_PRIORITY);
                     } finally {
                         IOUtils.closeQuietly(inp);
                         IOUtils.closeQuietly(inr);
@@ -400,9 +388,6 @@ final class DataSender implements Fiber {
                     }
                 }
             }
-
-            // return current thread to its previous priority
-            setCurrentThreadPriority(oldPriority);
         }
     }
 
@@ -417,4 +402,105 @@ final class DataSender implements Fiber {
             LOG.warn("Unable to queue datasender to the dsConsumer queue", e);
         }
     }
+
+    /**
+     * Inform the data sender of the new listener
+     */
+    @EventHandler(uei=EventConstants.RTC_SUBSCRIBE_EVENT_UEI)
+    public void handleRtcSubscribe(Event event) {
+
+        List<Parm> list = event.getParmCollection();
+        if (list == null) {
+            LOG.warn("{} ignored - info incomplete (null event parms)", event.getUei());
+            return;
+        }
+
+        String url = null;
+        String clabel = null;
+        String user = null;
+        String passwd = null;
+
+        String parmName = null;
+        Value parmValue = null;
+        String parmContent = null;
+
+        for (Parm parm : list) {
+            parmName = parm.getParmName();
+            parmValue = parm.getValue();
+            if (parmValue == null)
+                continue;
+            else
+                parmContent = parmValue.getContent();
+
+            if (parmName.equals(EventConstants.PARM_URL)) {
+                url = parmContent;
+            }
+
+            else if (parmName.equals(EventConstants.PARM_CAT_LABEL)) {
+                clabel = parmContent;
+            }
+
+            else if (parmName.equals(EventConstants.PARM_USER)) {
+                user = parmContent;
+            }
+
+            else if (parmName.equals(EventConstants.PARM_PASSWD)) {
+                passwd = parmContent;
+            }
+
+        }
+
+        // check that we got all required parms
+        if (url == null || clabel == null || user == null || passwd == null) {
+            LOG.warn("{} did not have all required information. Values contained url: {} catlabel: {} user: {} passwd: {}", event.getUei(), url, clabel, user, passwd);
+
+        } else {
+            subscribe(url, clabel, user, passwd);
+
+            LOG.debug("{} subscribed {}: {}: {}", event.getUei(), url, clabel, user);
+
+        }
+    }
+
+    /**
+     * Inform the data sender of the listener unsubscribing
+     */
+    @EventHandler(uei=EventConstants.RTC_UNSUBSCRIBE_EVENT_UEI)
+    public void handleRtcUnsubscribe(Event event) {
+
+        List<Parm> list = event.getParmCollection();
+        if (list == null) {
+            LOG.warn("{} ignored - info incomplete (null event parms)", event.getUei());
+            return;
+        }
+
+        String url = null;
+
+        String parmName = null;
+        Value parmValue = null;
+        String parmContent = null;
+
+        for (Parm parm : list) {
+            parmName = parm.getParmName();
+            parmValue = parm.getValue();
+            if (parmValue == null)
+                continue;
+            else
+                parmContent = parmValue.getContent();
+
+            if (parmName.equals(EventConstants.PARM_URL)) {
+                url = parmContent;
+            }
+        }
+
+        // check that we got the required parameter
+        if (url == null) {
+            LOG.warn("{} did not have required information.  Value of url: {}", event.getUei(), url);
+        } else {
+            unsubscribe(url);
+
+            LOG.debug("{} unsubscribed {}", event.getUei(), url);
+        }
+    }
+
 }

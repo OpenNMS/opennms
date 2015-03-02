@@ -10,6 +10,7 @@
   <!-- the theme of your GWT application by uncommenting          -->
   <!-- any one of the following lines.                            -->
     <inherits name='org.opennms.features.gwt.theme.OpennmsTheme'/>
+    <inherits name="org.gwtbootstrap3.GwtBootstrap3NoThemeNoJs"/>
 
 
   <!-- Specify the app entry point class.                         -->

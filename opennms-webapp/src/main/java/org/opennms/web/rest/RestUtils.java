@@ -66,7 +66,6 @@ public abstract class RestUtils {
 	    }
 	}
 
-	@SuppressWarnings("unchecked")
 	private static Object convertIfNecessary(final BeanWrapper wrapper,	final String propertyName, final String stringValue) {
 		LOG.debug("convertIfNecessary({}, {})", propertyName, stringValue);
 		return wrapper.convertIfNecessary(stringValue, wrapper.getPropertyType(propertyName));

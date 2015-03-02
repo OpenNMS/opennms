@@ -28,310 +28,269 @@
 
 package org.opennms.smoketest;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 import org.junit.Before;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
+import org.openqa.selenium.By;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.Select;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class AdminSnmpConfigForIpPageTest extends OpenNMSSeleniumTestCase {
 
     @Before
     public void setUp() throws Exception {
-    	super.setUp();
-    	gotoPage();
+        gotoPage();
     }
 
     private void gotoPage() {
-    	selenium.click("link=Admin");
-    	waitForPageToLoad();
-    	selenium.click("link=Configure SNMP Community Names by IP");
-    	waitForPageToLoad();
+        adminPage();
+        findElementByLink("Configure SNMP Community Names by IP").click();
     }
-    
+
     /**
      * Tests if getting the current snmp configuration for a specific ip address works.
      */
     @Test
-    public void a_testGetIpInformation() {
-    	// v2c
-    	selenium.type("name=ipAddress",  "1.1.1.1");
-    	selenium.click("name=getConfig");
-    	waitForPageToLoad();
-    	
-    	assertEquals("", selenium.getValue("name=ipAddress"));
-    	assertEquals("v2c", selenium.getValue("name=version"));
-    	assertEquals("1.1.1.1", selenium.getValue("name=firstIPAddress"));
-    	assertEquals("", selenium.getValue("name=lastIPAddress"));
-    	assertEquals("1800", selenium.getValue("name=timeout"));
-    	assertEquals("1", selenium.getValue("name=retryCount"));
-    	assertEquals("161", selenium.getValue("name=port"));
-    	assertEquals("65535", selenium.getValue("name=maxRequestSize"));
-    	assertEquals("10", selenium.getValue("name=maxVarsPerPdu"));
-    	assertEquals("2", selenium.getValue("name=maxRepetitions"));
-    	assertEquals("public", selenium.getValue("name=readCommunityString"));
-    	assertEquals("private", selenium.getValue("name=writeCommunityString"));
-    	assertEquals("", selenium.getValue("name=securityName"));
-    	assertEquals("", selenium.getValue("name=securityLevel"));
-    	assertEquals("", selenium.getValue("name=authPassPhrase"));
-    	assertEquals("", selenium.getValue("name=authProtocol"));
-    	assertEquals("", selenium.getValue("name=privPassPhrase"));
-    	assertEquals("", selenium.getValue("name=privProtocol"));
-    	assertEquals("", selenium.getValue("name=engineId"));
-    	assertEquals("", selenium.getValue("name=contextEngineId"));
-    	assertEquals("", selenium.getValue("name=contextName"));
-    	assertEquals("", selenium.getValue("name=enterpriseId"));
-    	
-    	
-    	//v3
-    	gotoPage();
-    	selenium.type("name=firstIPAddress",  "1.2.3.4");
-    	selenium.select("name=version", "v3");
-    	selenium.select("name=securityLevel", "authNoPriv");
-    	selenium.type("name=authPassPhrase", "authMe!");
-    	selenium.select("name=authProtocol", "MD5");
-    	selenium.type("name=privPassPhrase", "privMe!");
-    	selenium.select("name=privProtocol", "DES");
-    	selenium.click("name=saveConfig");
-    	waitForPageToLoad();
-    	selenium.type("name=ipAddress",  "1.2.3.4");
-    	selenium.click("name=getConfig");
-    	waitForPageToLoad();
-    	
-    	assertEquals("", selenium.getValue("name=ipAddress"));
-    	assertEquals("v3", selenium.getValue("name=version"));
-    	assertEquals("1.2.3.4", selenium.getValue("name=firstIPAddress"));
-    	assertEquals("", selenium.getValue("name=lastIPAddress"));
-    	assertEquals("1800", selenium.getValue("name=timeout"));
-    	assertEquals("1", selenium.getValue("name=retryCount"));
-    	assertEquals("161", selenium.getValue("name=port"));
-    	assertEquals("65535", selenium.getValue("name=maxRequestSize"));
-    	assertEquals("10", selenium.getValue("name=maxVarsPerPdu"));
-    	assertEquals("2", selenium.getValue("name=maxRepetitions"));
-    	assertEquals("", selenium.getValue("name=readCommunityString"));
-    	assertEquals("", selenium.getValue("name=writeCommunityString"));
-    	assertEquals("opennmsUser", selenium.getValue("name=securityName"));
-    	assertEquals("2", selenium.getValue("name=securityLevel")); //authNoPriv
-    	assertEquals("authMe!", selenium.getValue("name=authPassPhrase"));
-    	assertEquals("MD5", selenium.getValue("name=authProtocol"));
-   	assertEquals("privMe!", selenium.getValue("name=privPassPhrase"));
-    	assertEquals("DES", selenium.getValue("name=privProtocol"));
-    	assertEquals("", selenium.getValue("name=engineId"));
-    	assertEquals("", selenium.getValue("name=contextEngineId"));
-    	assertEquals("", selenium.getValue("name=contextName"));
-    	assertEquals("", selenium.getValue("name=enterpriseId"));
-    	
+    public void testGetIpInformation() {
+        // v2c
+        new Select(findElementByName("version")).selectByVisibleText("v2c");
+        enterText(By.name("ipAddress"), "1.1.1.1");
+        findElementByName("getConfig").click();
+
+        assertEquals("", findElementByName("ipAddress").getAttribute("value"));
+        assertEquals("v2c", findElementByName("version").getAttribute("value"));
+        assertEquals("1.1.1.1", findElementByName("firstIPAddress").getAttribute("value"));
+
+
+        //v3
+        gotoPage();
+        new Select(findElementByName("version")).selectByVisibleText("v3");
+        enterText(By.name("firstIPAddress"), "1.2.3.4");
+
+        new Select(findElementByName("securityLevel")).selectByVisibleText("authNoPriv");
+        new Select(findElementByName("authProtocol")).selectByVisibleText("MD5");
+        new Select(findElementByName("privProtocol")).selectByVisibleText("DES");
+        enterText(By.name("authPassPhrase"), "authMe!");
+        enterText(By.name("privPassPhrase"), "privMe!");
+        findElementByName("saveConfig").click();
+
+        enterText(By.name("ipAddress"), "1.2.3.4");
+        findElementByName("getConfig").click();
+
+        assertEquals("", findElementByName("ipAddress").getAttribute("value"));
+        assertEquals("v3", findElementByName("version").getAttribute("value"));
+        assertEquals("1.2.3.4", findElementByName("firstIPAddress").getAttribute("value"));
+        assertEquals("authMe!", findElementByName("authPassPhrase").getAttribute("value"));
+        assertEquals("MD5", findElementByName("authProtocol").getAttribute("value"));
+        assertEquals("privMe!", findElementByName("privPassPhrase").getAttribute("value"));
+        assertEquals("DES", findElementByName("privProtocol").getAttribute("value"));
+        assertEquals("2", findElementByName("securityLevel").getAttribute("value")); //authNoPriv
     }
-    
+
     /**
      * Tests that only one "version specifics" area is visible at the time. 
      */
     @Test
-    public void b_testVersionHandling() {
-    	assertEquals("v2c", selenium.getValue("name=version"));
-    	assertTrue(selenium.isTextPresent("v1/v2c specific parameters"));
-    	assertFalse(selenium.isTextPresent("v3 specific parameters"));
-    	
-    	// change to v3
-    	selenium.select("name=version", "v3");
-    	assertFalse(selenium.isTextPresent("v1/v2c specific parameters"));
-    	assertTrue(selenium.isTextPresent("v3 specific parameters"));
-    	
-    	// change to v1
-    	selenium.select("name=version", "v1");
-    	assertTrue(selenium.isTextPresent("v1/v2c specific parameters"));
-    	assertFalse(selenium.isTextPresent("v3 specific parameters"));
+    public void testVersionHandling() {
+        new Select(findElementByName("version")).selectByVisibleText("v1");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//h3[text()='v1/v2c specific parameters']")));
+        wait.until(ExpectedConditions.invisibilityOfElementLocated(By.xpath("//h3[text()='v3 specific parameters']")));
+
+        new Select(findElementByName("version")).selectByVisibleText("v2c");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//h3[text()='v1/v2c specific parameters']")));
+        wait.until(ExpectedConditions.invisibilityOfElementLocated(By.xpath("//h3[text()='v3 specific parameters']")));
+
+        // change to v3
+        new Select(findElementByName("version")).selectByVisibleText("v3");
+        wait.until(ExpectedConditions.invisibilityOfElementLocated(By.xpath("//h3[text()='v1/v2c specific parameters']")));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//h3[text()='v3 specific parameters']")));
     }
-    
+
     /**
      * Tests if the validation of the integer fields in the "saveConfig" form works fine.
-     * 
      */
     @Test
-    public void c_testIntegerValidation() {
-    	final String defaultValidationErrorTemplate = "%s is not a valid %s. Please enter a number greater than 0 or leave it empty.";
-    	final String maxRequestSizeErrorTemplate = "%s is not a valid %s. Please enter a number greater or equal than 484 or leave it empty.";
-    	final String[] integerFields = new String[]{
-    			"timeout", 
-    			"retryCount", 
-    			"port", 
-    			"maxVarsPerPdu", 
-    			"maxRepetitions",
-    			"maxRequestSize"};
-    	final String[] fieldLabels = new String[]{
-    			"timeout", 
-    			"Retry Count", 
-    			"Port",
-    			"Max Vars Per Pdu",
-    			"Max Repetitions",
-    			"Max Request Size"};
-    	final String[] errorMessages = new String[]{
-    			defaultValidationErrorTemplate, 
-    			defaultValidationErrorTemplate, 
-    			defaultValidationErrorTemplate, 
-    			defaultValidationErrorTemplate, 
-    			defaultValidationErrorTemplate,
-    			maxRequestSizeErrorTemplate};
-    	assertTrue("integerFields and fieldDescriptions must have the same length", integerFields.length == fieldLabels.length);
-    	assertTrue("integerFields and errorMessages must have the same length", integerFields.length == errorMessages.length);
-    	
-    	for (int i=0; i<integerFields.length; i++) {
-    		if (i>0) gotoPage(); // reset page
-    		final String fieldName = integerFields[i];
-    		final String fieldLabel = fieldLabels[i];
-    		final String errorMessageTemplate = errorMessages[i];
-    		
-    		// we must set first ip to a valid value, otherwise we get an "ip not set" error
-    		selenium.type("name=firstIPAddress", "1.2.3.4");
-    		// now do the validation
-    		selenium.type("name=" + fieldName, "abc"); // no integer
-    		validate(errorMessageTemplate, fieldName, fieldLabel, "abc", false);
-    		selenium.type("name=" + fieldName, "-5"); // < 0
-    		validate(errorMessageTemplate, fieldName, fieldLabel, "-5", false);
-    		selenium.type("name=" +  fieldName, "0"); // = 0
-    		validate(errorMessageTemplate, fieldName, fieldLabel, "0", false);
-    		selenium.type("name=" + fieldName, "1000"); // > 0
-    		validate(errorMessageTemplate, fieldName, fieldLabel, "1000", true);
-    		// reset to default
-    		selenium.type("name=" + fieldName,  "");
-    	}
-    	
-    	// now test max request size individually
-    	final String[] input = new String[]{"483", "484", "65535", "65536"};
-    	final boolean[] success = new boolean[]{false, true, true, true};
-    	for (int i=0; i<input.length; i++) {
-    		gotoPage();
-    		selenium.type("name=firstIPAddress", "1.2.3.4");
-    		selenium.type("name=maxRequestSize", input[i]);
-    		validate(maxRequestSizeErrorTemplate, "maxRequestSize", "Max Request Size", input[i], success[i]);
-    	}
+    public void testIntegerValidation() {
+        final String defaultValidationErrorTemplate = "%s is not a valid %s. Please enter a number greater than 0 or leave it empty.";
+        final String maxRequestSizeErrorTemplate = "%s is not a valid %s. Please enter a number greater or equal than 484 or leave it empty.";
+        final String[] integerFields = new String[]{
+                "timeout", 
+                "retryCount", 
+                "port", 
+                "maxVarsPerPdu", 
+                "maxRepetitions",
+        "maxRequestSize"};
+        final String[] fieldLabels = new String[]{
+                "timeout", 
+                "Retry Count", 
+                "Port",
+                "Max Vars Per Pdu",
+                "Max Repetitions",
+        "Max Request Size"};
+        final String[] errorMessages = new String[]{
+                defaultValidationErrorTemplate, 
+                defaultValidationErrorTemplate, 
+                defaultValidationErrorTemplate, 
+                defaultValidationErrorTemplate, 
+                defaultValidationErrorTemplate,
+                maxRequestSizeErrorTemplate};
+        assertTrue("integerFields and fieldDescriptions must have the same length", integerFields.length == fieldLabels.length);
+        assertTrue("integerFields and errorMessages must have the same length", integerFields.length == errorMessages.length);
+
+        for (int i=0; i<integerFields.length; i++) {
+            if (i>0) {
+                gotoPage(); // reset page
+            }
+            final String fieldName = integerFields[i];
+            final String fieldLabel = fieldLabels[i];
+            final String errorMessageTemplate = errorMessages[i];
+
+            // we must set first ip to a valid value, otherwise we get an "ip not set" error
+            enterText(By.name("firstIPAddress"), "1.2.3.4");
+            // now do the validation
+            enterText(By.name(fieldName), "abc"); // no integer
+            validate(errorMessageTemplate, fieldName, fieldLabel, "abc", false);
+            enterText(By.name(fieldName), "-5"); // < 0
+            validate(errorMessageTemplate, fieldName, fieldLabel, "-5", false);
+            enterText(By.name( fieldName), "0"); // = 0
+            validate(errorMessageTemplate, fieldName, fieldLabel, "0", false);
+            enterText(By.name(fieldName), "1000"); // > 0
+            validate(errorMessageTemplate, fieldName, fieldLabel, "1000", true);
+            // reset to default
+            enterText(By.name(fieldName),  "");
+        }
+
+        // now test max request size individually
+        final String[] input = new String[]{"483", "484", "65535", "65536"};
+        final boolean[] success = new boolean[]{false, true, true, true};
+        for (int i=0; i<input.length; i++) {
+            gotoPage();
+            enterText(By.name("firstIPAddress"), "1.2.3.4");
+            enterText(By.name("maxRequestSize"), input[i]);
+            validate(maxRequestSizeErrorTemplate, "maxRequestSize", "Max Request Size", input[i], success[i]);
+        }
     }
-    
-    private void validate (String errorMessageTemplate, String fieldName, String fieldLabel, String fieldValue, Boolean success) {
-    	selenium.click("name=saveConfig");
-    	waitForPageToLoad();
-    	assertTrue(fieldName+": On success, there should not be any alert", success == !selenium.isAlertPresent()); 
-    	// if no success, validate the error message
-    	if (!success) assertEquals(String.format(errorMessageTemplate, fieldValue, fieldLabel), selenium.getAlert());
-    	assertTrue(fieldName + ": On Success, there should be a 'success message'", success == selenium.isTextPresent("Finished configuring SNMP"));
-    }
-    
+
     /**
      * Tests if the ip address validation in the "saveConfig" form works fine.
      * @throws Exception
      */
     @Test
-    public void d_testIpValidation() throws Exception {
-        // empty first and last ip
-        selenium.type("name=firstIPAddress", "");
-        selenium.type("name=lastIPAddress", "");
-        selenium.click("name=saveConfig");
-        waitForPageToLoad();
-        assertTrue(selenium.isAlertPresent());
-        assertEquals("Please enter a valid first IP address!", selenium.getAlert());
-        assertFalse(selenium.isTextPresent("Finished configuring SNMP"));
-        
+    public void testIpValidation() throws Exception {
         //invalid first and empty last ip
         gotoPage();
-        selenium.type("name=firstIPAddress", "1234");
-        selenium.type("name=lastIPAddress", "");
-        selenium.click("name=saveConfig");
-        waitForPageToLoad();
-        assertTrue(selenium.isAlertPresent());
-        assertEquals("1234 is not a valid IP address!", selenium.getAlert());
-        assertFalse(selenium.isTextPresent("Finished configuring SNMP"));
-        
+        enterText(By.name("firstIPAddress"), "1234");
+        enterText(By.name("lastIPAddress"), "");
+        findElementByName("saveConfig").click();
+
+        String alertText = handleAlert();
+        assertEquals("1234 is not a valid IP address!", alertText);
+
         // valid first and invalid last ip
         gotoPage();
-        selenium.type("name=firstIPAddress", "1.1.1.1");
-        selenium.type("name=lastIPAddress", "abc");
-        selenium.click("name=saveConfig");
-        waitForPageToLoad();
-        assertTrue(selenium.isAlertPresent());
-        assertEquals("abc is not a valid IP address!", selenium.getAlert());
-        assertFalse(selenium.isTextPresent("Finished configuring SNMP"));
+        enterText(By.name("firstIPAddress"), "1.1.1.1");
+        enterText(By.name("lastIPAddress"), "abc");
+        findElementByName("saveConfig").click();
+
+        alertText = handleAlert();
+        assertEquals("abc is not a valid IP address!", alertText);
 
         // valid first ip and empty last ip
         gotoPage();
-        selenium.type("name=firstIPAddress", "1.1.1.1");
-        selenium.type("name=lastIPAddress", "");
-        selenium.click("name=saveConfig");
-        waitForPageToLoad();
-        assertFalse(selenium.isAlertPresent());
-        assertTrue(selenium.isTextPresent("Finished configuring SNMP"));
-        
+        enterText(By.name("firstIPAddress"), "1.1.1.1");
+        enterText(By.name("lastIPAddress"), "");
+        findElementByName("saveConfig").click();
+
+        alertText = handleAlert();
+        assertNull(alertText);
+        assertTrue(wait.until(pageContainsText("Finished configuring SNMP")));
+
         // valid first ip and valid last ip
         gotoPage();
-        selenium.type("name=firstIPAddress", "1.1.1.1");
-        selenium.type("name=lastIPAddress", "1.1.1.2");
-        selenium.click("name=saveConfig");
-        waitForPageToLoad();
-        assertFalse(selenium.isAlertPresent());
-        assertTrue(selenium.isTextPresent("Finished configuring SNMP"));
+        enterText(By.name("firstIPAddress"), "1.1.1.1");
+        enterText(By.name("lastIPAddress"), "1.1.1.2");
+        findElementByName("saveConfig").click();
+
+        alertText = handleAlert();
+        assertNull(alertText);
+        assertTrue(wait.until(pageContainsText("Finished configuring SNMP")));
     }
-    
+
     /**
      * Tests that the cancel button works as expected.
      */
     @Test
-    public void e_testCancelButton() {
-    	selenium.click("name=cancelButton");
-    	waitForPageToLoad();
-    	assertTrue(selenium.isTextPresent("OpenNMS System"));
-        assertTrue(selenium.isTextPresent("Operations"));
-        assertTrue(selenium.isTextPresent("Nodes"));
-        assertTrue(selenium.isTextPresent("Distributed Monitoring"));
-        assertTrue(selenium.isTextPresent("Descriptions"));
-        assertTrue(selenium.isTextPresent("Scheduled Outages: Add"));
-        assertTrue(selenium.isTextPresent("Notification Status:"));
-        
-    	// go anywhere, but admin page
-    	selenium.click("link=Configure SNMP Community Names by IP"); 
+    public void testCancelButton() {
+        findElementByName("cancelButton").click();
+        // this takes you to the admin page
+        findElementByXpath("//h3[text()='OpenNMS System']");
+        assertTrue(m_driver.getCurrentUrl().endsWith("/admin/index.jsp"));
     }
-    
+
     /**
      * Tests that one or both save options can be selected, but that there must be at least one selection.
      */
     @Test
-    public void f_testSaveOptions() {
-    	// OK 
-    	selenium.type("name=firstIPAddress", "1.1.1.1");
-    	selenium.check("id=sendEventOption");
-    	selenium.uncheck("id=saveLocallyOption");
-    	selenium.click("name=saveConfig");
-    	waitForPageToLoad();
-        assertFalse(selenium.isAlertPresent());
-        assertTrue(selenium.isTextPresent("Finished configuring SNMP"));
-        
+    public void testSaveOptions() {
+        // OK
+        enterText(By.name("firstIPAddress"), "1.1.1.1");
+        setChecked(By.id("sendEventOption"));
+        setUnchecked(By.id("saveLocallyOption"));
+        findElementByName("saveConfig").click();
+        String alertText = handleAlert();
+        assertNull(alertText);
+        assertTrue(wait.until(pageContainsText("Finished configuring SNMP")));
+
+        // OK
+        gotoPage();
+        enterText(By.name("firstIPAddress"), "1.1.1.1");
+        setUnchecked(By.id("sendEventOption"));
+        setChecked(By.id("saveLocallyOption"));
+        findElementByName("saveConfig").click();
+        alertText = handleAlert();
+        assertNull(alertText);
+        assertTrue(wait.until(pageContainsText("Finished configuring SNMP")));
+
         // OK 
         gotoPage();
-        selenium.type("name=firstIPAddress", "1.1.1.1");
-        selenium.uncheck("id=sendEventOption");
-        selenium.check("id=saveLocallyOption");
-    	selenium.click("name=saveConfig");
-    	waitForPageToLoad();
-        assertFalse(selenium.isAlertPresent());
-        assertTrue(selenium.isTextPresent("Finished configuring SNMP"));
-        
-        // OK 
-        gotoPage();
-        selenium.type("name=firstIPAddress", "1.1.1.1");
-        selenium.check("id=sendEventOption");
-        selenium.check("id=saveLocallyOption");
-    	selenium.click("name=saveConfig");
-    	waitForPageToLoad();
-        assertFalse(selenium.isAlertPresent());
-        assertTrue(selenium.isTextPresent("Finished configuring SNMP"));
-        
+        enterText(By.name("firstIPAddress"), "1.1.1.1");
+        setChecked(By.id("sendEventOption"));
+        setChecked(By.id("saveLocallyOption"));
+        findElementByName("saveConfig").click();
+        alertText = handleAlert();
+        assertNull(alertText);
+        assertTrue(wait.until(pageContainsText("Finished configuring SNMP")));
+
         // Error
         gotoPage();
-        selenium.type("name=firstIPAddress", "1.1.1.1");
-        selenium.uncheck("id=sendEventOption");
-        selenium.uncheck("id=saveLocallyOption");
-    	selenium.click("name=saveConfig");
-    	waitForPageToLoad();
-        assertTrue(selenium.isAlertPresent());
-        assertEquals("You must select either 'Send Event' or 'Save Locally'. It is possible to select both options.", selenium.getAlert());
+        enterText(By.name("firstIPAddress"), "1.1.1.1");
+        setUnchecked(By.id("sendEventOption"));
+        setUnchecked(By.id("saveLocallyOption"));
+        findElementByName("saveConfig").click();
+        alertText = handleAlert();
+        assertNotNull(alertText);
+        assertEquals("You must select either 'Send Event' or 'Save Locally'. It is possible to select both options.", alertText);
     }
-    
+
+    private void validate (final String errorMessageTemplate, final String fieldName, final String fieldLabel, final String fieldValue, final Boolean success) {
+        findElementByName("saveConfig").click();
+        String alertText = handleAlert();
+        if (success) {
+            // if we expect this page to succeed, we should have no alert text, and we should find the finish text
+            assertNull(alertText);
+            assertTrue(wait.until(pageContainsText("Finished configuring SNMP")));
+        } else {
+            // if we expect a failure, check that the message matches
+            assertNotNull(alertText);
+            assertEquals(String.format(errorMessageTemplate, fieldValue, fieldLabel), alertText);
+        }
+    }
+
 }

@@ -34,7 +34,7 @@ import org.opennms.netmgt.model.StatisticsReport;
 import org.opennms.web.command.StatisticsReportCommand;
 import org.opennms.web.svclayer.support.StatisticsReportModel;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.validation.BindException;
+import org.springframework.validation.BindingResult;
 
 /**
  * Web service layer for statistics reports.
@@ -56,8 +56,8 @@ public interface StatisticsReportService {
      * <p>getReport</p>
      *
      * @param command a {@link org.opennms.web.command.StatisticsReportCommand} object.
-     * @param errors a {@link org.springframework.validation.BindException} object.
+     * @param errors a {@link org.springframework.validation.BindingResult} object.
      * @return a {@link org.opennms.web.svclayer.support.StatisticsReportModel} object.
      */
-    public StatisticsReportModel getReport(StatisticsReportCommand command, BindException errors);
+    public StatisticsReportModel getReport(StatisticsReportCommand command, BindingResult errors);
 }

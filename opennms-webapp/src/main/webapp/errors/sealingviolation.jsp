@@ -50,7 +50,7 @@
     }
 %>
 
-<jsp:include page="/includes/header.jsp" flush="false" >
+<jsp:include page="/includes/bootstrap.jsp" flush="false" >
   <jsp:param name="title" value="Error" />
   <jsp:param name="headTitle" value="Incorrect Jar Files" />
   <jsp:param name="headTitle" value="Error" />
@@ -67,4 +67,4 @@
   Web system will not work correctly, and you will get undefined results.
 </p>
 
-<jsp:include page="/includes/footer.jsp" flush="false" />
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />

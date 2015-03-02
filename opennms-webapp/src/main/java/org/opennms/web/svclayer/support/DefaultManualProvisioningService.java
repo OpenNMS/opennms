@@ -43,7 +43,6 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.apache.commons.beanutils.MethodUtils;
 import org.opennms.core.spring.PropertyPath;
-import org.opennms.netmgt.config.CapsdConfig;
 import org.opennms.netmgt.dao.api.CategoryDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.ServiceTypeDao;
@@ -81,7 +80,6 @@ public class DefaultManualProvisioningService implements ManualProvisioningServi
     private NodeDao m_nodeDao;
     private CategoryDao m_categoryDao;
     private ServiceTypeDao m_serviceTypeDao;
-    private CapsdConfig m_capsdConfig;
     
     private final ReadWriteLock m_globalLock = new ReentrantReadWriteLock();
     private final Lock m_readLock = m_globalLock.readLock();
@@ -159,10 +157,6 @@ public class DefaultManualProvisioningService implements ManualProvisioningServi
         m_serviceTypeDao = serviceTypeDao;
     }
     
-    public void setCapsdConfig(final CapsdConfig capsdConfig) {
-        m_capsdConfig = capsdConfig;
-    }
-
     /** {@inheritDoc} */
     @Override
     public Requisition addCategoryToNode(final String groupName, final String pathToNode, final String categoryName) {
@@ -566,7 +560,6 @@ public class DefaultManualProvisioningService implements ManualProvisioningServi
             for (final OnmsServiceType type : m_serviceTypeDao.findAll()) {
                 serviceNames.add(type.getName());
             }
-            serviceNames.addAll(m_capsdConfig.getConfiguredProtocols());
             return serviceNames;
         } finally {
             m_readLock.unlock();
