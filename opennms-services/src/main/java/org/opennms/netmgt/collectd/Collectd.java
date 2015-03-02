@@ -31,11 +31,11 @@ package org.opennms.netmgt.collectd;
 import static org.opennms.core.utils.InetAddressUtils.str;
 
 import java.net.InetAddress;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -290,8 +290,6 @@ public class Collectd extends AbstractServiceDaemon implements
                     public void run() {
                         try {
                             scheduleExistingInterfaces();
-                        } catch (SQLException e) {
-                            LOG.error("start: Failed to schedule existing interfaces", e);
                         } finally {
                             setSchedulingCompleted(true);
                         }
@@ -356,11 +354,8 @@ public class Collectd extends AbstractServiceDaemon implements
 
     /**
      * Schedule existing interfaces for data collection.
-     * 
-     * @throws SQLException
-     *             if database errors encountered.
      */
-    private void scheduleExistingInterfaces() throws SQLException {
+    private void scheduleExistingInterfaces() {
         
         instrumentation().beginScheduleExistingInterfaces();
         try {
@@ -444,9 +439,6 @@ public class Collectd extends AbstractServiceDaemon implements
     }
     
 	private void scheduleNode(final int nodeId, final boolean existing) {
-		
-        m_filterDao.flushActiveIpAddressListCache();
-		
 		OnmsNode node = m_nodeDao.getHierarchy(nodeId);
 		node.visit(new AbstractEntityVisitor() {
 
@@ -984,11 +976,45 @@ public class Collectd extends AbstractServiceDaemon implements
 
         LOG.debug("nodeCategoryMembershipChanged: unscheduling nodeid {} completed.", nodeId);
         
+        m_filterDao.flushActiveIpAddressListCache();
         scheduleNode(nodeId.intValue(), true);
-        
     }
-    
-	private void unscheduleNodeAndMarkForDeletion(Long nodeId) {
+
+    private void rebuildScheduler() {
+        // Register new collectors if necessary
+        Set<String> configuredCollectors = new HashSet<String>();
+        for (Collector collector : m_collectdConfigFactory.getCollectdConfig().getCollectors()) {
+            String svcName = collector.getService();
+            configuredCollectors.add(svcName);
+            if (getServiceCollector(svcName) == null) {
+                try {
+                    LOG.debug("rebuildScheduler: Loading collector {}, classname {}", svcName, collector.getClassName());
+                    Class<?> cc = Class.forName(collector.getClassName());
+                    ServiceCollector sc = (ServiceCollector) cc.newInstance();
+                    sc.initialize(Collections.<String, String>emptyMap());
+                    setServiceCollector(svcName, sc);
+                } catch (Throwable t) {
+                    LOG.warn("rebuildScheduler: Failed to load collector {} for service {}", collector.getClassName(), svcName, t);
+                }
+            }
+        }
+        // Removing unused collectors if necessary
+        for (String collectorName : getCollectorNames()) {
+            if (!configuredCollectors.contains(collectorName)) {
+                LOG.info("rebuildScheduler: removing collector for {}, it is no longer required", collectorName);
+                m_collectors.remove(collectorName);
+            }
+        }
+        // Recreating all Collectable Services (using the nodeID list populated at the beginning)
+        Collection<Integer> nodeIds = m_nodeDao.getNodeIds();
+        m_filterDao.flushActiveIpAddressListCache();
+        for (Integer nodeId : nodeIds) {
+            unscheduleNodeAndMarkForDeletion(new Long(nodeId));
+            scheduleNode(nodeId, true);
+        }
+    }
+
+    private void unscheduleNodeAndMarkForDeletion(Long nodeId) {
 		// Iterate over the collectable service list and mark any entries
         // which match the deleted nodeId for deletion.
         synchronized (getCollectableServices()) {
@@ -1115,8 +1141,8 @@ public class Collectd extends AbstractServiceDaemon implements
                     break;
                 }
             }
+            EventBuilder ebldr = null;
             if (isDataCollectionConfig) {
-                EventBuilder ebldr = null;
                 try {
                     DataCollectionConfigFactory.reload();
                     // Preparing successful event
@@ -1125,10 +1151,30 @@ public class Collectd extends AbstractServiceDaemon implements
                     ebldr.addParam(EventConstants.PARM_CONFIG_FILE_NAME, targetFile);
                 } catch (Throwable e) {
                     // Preparing failed event
-                    LOG.error("handleReloadDaemonConfig: Error reloading/processing thresholds configuration: {}", e.getMessage(), e);
+                    LOG.error("handleReloadDaemonConfig: Error reloading/processing datacollection configuration: {}", e.getMessage(), e);
                     ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_FAILED_UEI, "Collectd");
                     ebldr.addParam(EventConstants.PARM_DAEMON_NAME, collectionDaemonName);
                     ebldr.addParam(EventConstants.PARM_CONFIG_FILE_NAME, targetFile);
+                    ebldr.addParam(EventConstants.PARM_REASON, e.getMessage());
+                }
+                finally {
+                    if (ebldr != null) {
+                        getEventIpcManager().sendNow(ebldr.getEvent());
+                    }
+                }
+            } else {
+                final String cfgFile = ConfigFileConstants.getFileName(ConfigFileConstants.COLLECTD_CONFIG_FILE_NAME);
+                try {
+                    m_collectdConfigFactory.reload();
+                    rebuildScheduler();
+                    ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_SUCCESSFUL_UEI, "Collectd");
+                    ebldr.addParam(EventConstants.PARM_DAEMON_NAME, collectionDaemonName);
+                    ebldr.addParam(EventConstants.PARM_CONFIG_FILE_NAME, cfgFile);
+                } catch (Throwable e) {
+                    LOG.error("handleReloadDaemonConfig: Error reloading/processing collectd configuration: {}", e.getMessage(), e);
+                    ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_FAILED_UEI, "Collectd");
+                    ebldr.addParam(EventConstants.PARM_DAEMON_NAME, collectionDaemonName);
+                    ebldr.addParam(EventConstants.PARM_CONFIG_FILE_NAME, cfgFile);
                     ebldr.addParam(EventConstants.PARM_REASON, e.getMessage());
                 }
                 finally {

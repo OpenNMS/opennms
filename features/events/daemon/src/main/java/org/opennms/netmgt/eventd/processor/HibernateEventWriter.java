@@ -55,6 +55,7 @@ import org.opennms.netmgt.xml.event.Operaction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 /**
@@ -135,6 +136,7 @@ public final class HibernateEventWriter implements EventWriter {
      * The method that inserts the event into the database
      */
     @Override
+    @Transactional
     public void process(final Header eventHeader, final Event event) throws EventProcessorException {
         if (!checkEventSanityAndDoWeProcess(event, "HibernateEventWriter")) {
             return;

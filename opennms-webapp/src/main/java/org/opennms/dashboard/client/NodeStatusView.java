@@ -54,10 +54,10 @@ class NodeStatusView extends PageableTableView {
         }
         
         table.setText(row, 1, rtc.getDownServiceCount() + " of " + rtc.getServiceCount());
-        table.getCellFormatter().setStyleName(row, 1, rtc.getServiceStyle());
+        table.getCellFormatter().setStyleName(row, 1, "severity-" + rtc.getServiceStyle().toLowerCase());
         
         table.setText(row, 2, rtc.getAvailability());
-        table.getCellFormatter().setStyleName(row, 2, rtc.getAvailabilityStyle());
+        table.getCellFormatter().setStyleName(row, 2, "severity-" + rtc.getAvailabilityStyle().toLowerCase());
         
         table.getRowFormatter().setStyleName(row, "CellStatus");
     }

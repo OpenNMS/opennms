@@ -33,11 +33,4 @@
 
 <%@page language="java" contentType="text/html" session="true"  %>
 
-<jsp:include page="/includes/header.jsp" flush="false">
-	<jsp:param name="title" value="Web Console" />
-</jsp:include>
-
-
 <c:redirect url="/support/index.htm" />
-
-<jsp:include page="/includes/footer.jsp" flush="false" />

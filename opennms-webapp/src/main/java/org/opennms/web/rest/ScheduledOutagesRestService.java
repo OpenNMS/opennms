@@ -57,6 +57,7 @@ import org.opennms.netmgt.model.events.EventBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -111,6 +112,7 @@ public class ScheduledOutagesRestService extends OnmsRestService {
     protected CollectdConfigFactory m_collectdConfigFactory;
 
     @Autowired
+    @Qualifier("eventProxy")
     protected EventProxy m_eventProxy;
 
     @GET

@@ -7,7 +7,7 @@
   <inherits name="com.google.gwt.json.JSON"/>
 
   <inherits name='org.opennms.features.gwt.theme.OpennmsTheme'/>
-
+  <inherits name="org.gwtbootstrap3.GwtBootstrap3NoThemeNoJs"/>
 
   <!-- Specify the app entry point class.                         -->
   <entry-point class='org.opennms.features.gwt.combobox.client.NodeSuggestionCombobox'/>

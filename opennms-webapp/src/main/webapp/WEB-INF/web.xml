@@ -1,9 +1,9 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
-<web-app id="opennms" version="2.4"
-		 xmlns="http://java.sun.com/xml/ns/j2ee"
-		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		 xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
-
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app id="opennms" version="3.0"
+  xmlns="http://java.sun.com/xml/ns/javaee"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
+>
     <jsp-config>
         <taglib>
             <taglib-uri>http://www.springframework.org/tags/form</taglib-uri>
@@ -82,15 +82,25 @@
 
   <filter>
     <description>Allows "cross-site scripting" for the REST services.</description>
-    <filter-name>AccessControlAllowOrigin</filter-name>
-    <filter-class>org.opennms.web.servlet.AddAccessControlHeaderFilter</filter-class>
-    <!-- 
+    <filter-name>CORS Filter</filter-name>
+    <filter-class>org.ebaysf.web.cors.CORSFilter</filter-class>
+    <!-- See https://github.com/eBay/cors-filter for a full list of parameters -->
     <init-param>
-      <description>This parameter specifies what origins to allow.</description>
-      <param-name>origin</param-name>
+      <param-name>cors.allowed.origins</param-name>
       <param-value>*</param-value>
     </init-param>
-    -->
+    <init-param>
+      <param-name>cors.allowed.methods</param-name>
+      <param-value>GET,PUT,POST,HEAD,OPTIONS,DELETE</param-value>
+    </init-param>
+    <init-param>
+      <param-name>cors.allowed.headers</param-name>
+      <param-value>Accept,Access-Control-Request-Headers,Access-Control-Request-Method,Authorization,Content-Type,Origin,X-Requested-With</param-value>
+    </init-param>
+    <init-param>
+      <param-name>cors.support.credentials</param-name>
+      <param-value>true</param-value>
+    </init-param>
   </filter>
 
   <filter>
@@ -168,7 +178,12 @@
     <filter-name>openSessionInViewFilter</filter-name>
     <url-pattern>/*</url-pattern>
   </filter-mapping>
-  
+
+  <filter-mapping>
+    <filter-name>CORS Filter</filter-name>
+    <url-pattern>/rest/*</url-pattern>
+  </filter-mapping>
+
   <filter-mapping>
     <filter-name>springSecurityFilterChain</filter-name>
     <url-pattern>/*</url-pattern>
@@ -179,11 +194,6 @@
     <url-pattern>/*</url-pattern>
   </filter-mapping>
 
-  <filter-mapping>
-    <filter-name>AccessControlAllowOrigin</filter-name>
-    <url-pattern>/rest/*</url-pattern>
-  </filter-mapping>
-  
   <filter-mapping>
     <filter-name>AddRefreshHeader-300</filter-name>
     <url-pattern>/index.jsp</url-pattern>
@@ -411,6 +421,14 @@
     <init-param>
       <param-name>com.sun.jersey.config.property.packages</param-name>
       <param-value>org.codehaus.jackson.jaxrs;org.opennms.web.rest;org.opennms.web.rest.config</param-value>
+    </init-param>
+    <init-param>
+      <param-name>com.sun.jersey.spi.container.ContainerRequestFilters</param-name>
+      <param-value>com.sun.jersey.api.container.filter.GZIPContentEncodingFilter</param-value>
+    </init-param>
+    <init-param>
+      <param-name>com.sun.jersey.spi.container.ContainerResponseFilters</param-name>
+      <param-value>com.sun.jersey.api.container.filter.GZIPContentEncodingFilter</param-value>
     </init-param>
     <load-on-startup>1</load-on-startup>
   </servlet>
@@ -667,32 +685,6 @@
     <servlet-class>org.opennms.web.admin.nodeManagement.SnmpConfigServlet</servlet-class>
   </servlet>
   
-  <!-- servlets for editing the poller configuration files -->
-  <servlet>
-    <servlet-name>pollerConfig</servlet-name>
-    <servlet-class>org.opennms.web.admin.pollerConfig.PollerConfigServlet</servlet-class>
-    <init-param>
-      <description>Redirect to this sibling URL on success.</description>
-      <param-name>redirect.success</param-name>
-      <param-value>finishPollerConfig.jsp</param-value>
-    </init-param>
-  </servlet>
-  <servlet>
-    <servlet-name>finishPollerConfig</servlet-name>
-    <servlet-class>org.opennms.web.admin.pollerConfig.FinishPollerConfigServlet</servlet-class>
-  </servlet>
-  
-  <servlet>
-    <!-- servlet for managing and unmanaging interfaces and services -->
-    <servlet-name>addPollerConfig</servlet-name>
-    <servlet-class>org.opennms.web.admin.pollerConfig.AddPollerConfigServlet</servlet-class>
-    <init-param>
-      <description>Redirect to this sibling URL on success.</description>
-      <param-name>redirect.success</param-name>
-      <param-value>index.jsp</param-value>
-    </init-param>
-  </servlet>
-
   <!--servlet for updating the notify flag in the ifservices table -->
   <servlet>
         <servlet-name>updateServiceNotify</servlet-name>
@@ -702,10 +694,14 @@
   <servlet>
     <servlet-name>rtcPost</servlet-name>
     <servlet-class>org.opennms.web.category.RTCPostServlet</servlet-class>
+    <!-- Load on startup so that we can immediately start processing RTC POSTs -->
+    <load-on-startup>1</load-on-startup>
   </servlet>
   <servlet>
     <servlet-name>rtcRaw</servlet-name>
     <servlet-class>org.opennms.web.category.RTCDebugServlet</servlet-class>
+    <!-- Load on startup so that we can immediately start processing RTC POSTs -->
+    <load-on-startup>1</load-on-startup>
   </servlet>
   
   <servlet>
@@ -747,11 +743,6 @@
   </servlet-->
   
   <servlet>
-  	<servlet-name>scheduleEditor</servlet-name>
-  	<servlet-class>org.opennms.web.admin.schedule.ScheduleEditorServlet</servlet-class>
-  </servlet>
-  
-  <servlet>
   	<servlet-name>purdyChart</servlet-name>
   	<servlet-class>org.opennms.web.graph.PurdyChartServlet</servlet-class>
   	<init-param>
@@ -759,7 +750,6 @@
   		<param-value>sample-bar-chart</param-value>
   	</init-param>
   </servlet>
-
  
   <servlet>
         <servlet-name>dispatcher</servlet-name>
@@ -775,11 +765,6 @@
   	<url-pattern>/charts</url-pattern>
   </servlet-mapping>
   
-  <servlet-mapping>
-  	<servlet-name>scheduleEditor</servlet-name>
-  	<url-pattern>/admin/schedule/schedule-editor</url-pattern>
-  </servlet-mapping>
-
   <servlet-mapping>
     <servlet-name>queryEvent</servlet-name>
     <url-pattern>/event/query</url-pattern>
@@ -954,18 +939,6 @@
   <servlet-mapping>
     <servlet-name>snmpConfig</servlet-name>
     <url-pattern>/admin/snmpConfig</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>pollerConfig</servlet-name>
-    <url-pattern>/admin/pollerConfig/pollerConfig</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>finishPollerConfig</servlet-name>
-    <url-pattern>/admin/pollerConfig/finishPollerConfig</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>addPollerConfig</servlet-name>
-    <url-pattern>/admin/pollerConfig/addPollerConfig</url-pattern>
   </servlet-mapping>
 
   <servlet-mapping>

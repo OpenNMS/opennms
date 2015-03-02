@@ -502,9 +502,13 @@ abstract public class XmlTest<T> {
             final Object[] expectedArray = (Object[])expected;
             final Object[] actualArray   = (Object[])actual;
             assertTrue(assertionMessage, Arrays.equals(expectedArray, actualArray));
+        } else if (expected instanceof long[] || actual instanceof long[]) {
+            final long[] expectedArray = (long[])expected;
+            final long[] actualArray   = (long[])actual;
+            assertTrue(assertionMessage, Arrays.equals(expectedArray, actualArray));
         } else {
+            expected.getClass().isPrimitive();
             assertEquals(assertionMessage, expected, actual);
         }
     }
-
 }

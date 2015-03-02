@@ -102,7 +102,7 @@ import org.springframework.core.style.ToStringCreator;
 @Filter(name=FilterManager.AUTH_FILTER_NAME, condition="exists (select distinct x.nodeid from node x join category_node cn on x.nodeid = cn.nodeid join category_group cg on cn.categoryId = cg.categoryId where x.nodeid = nodeid and cg.groupId in (:userGroups))")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class OnmsNode extends OnmsEntity implements Serializable, Comparable<OnmsNode> {
-    private static final long serialVersionUID = -2081288277603435617L;
+    private static final long serialVersionUID = 5326410037533354861L;
     private static final Logger LOG = LoggerFactory.getLogger(OnmsNode.class);
 
     /** identifier field */
@@ -891,6 +891,10 @@ public class OnmsNode extends OnmsEntity implements Serializable, Comparable<Onm
         getIpInterfaces().add(iface);
     }
 
+    public void removeIpInterface(final OnmsIpInterface iface) {
+        getIpInterfaces().remove(iface);
+    }
+
     /**
      * The interfaces on this node
      *
@@ -1282,11 +1286,24 @@ public class OnmsNode extends OnmsEntity implements Serializable, Comparable<Onm
      * @return a {@link org.opennms.netmgt.model.OnmsIpInterface} object.
      */
     @Transient
+    @JsonIgnore
     public OnmsIpInterface getInterfaceWithService(String svcName) {
         for(OnmsIpInterface iface : getIpInterfaces()) {
             if (iface.getMonitoredServiceByServiceType(svcName) != null) {
                 return iface;
             }	
+        }
+        return null;
+    }
+
+    @Transient
+    @JsonIgnore
+    public OnmsIpInterface getInterfaceWithAddress(final InetAddress addr) {
+        if (addr == null) return null;
+        for(final OnmsIpInterface iface : getIpInterfaces()) {
+            if (addr.equals(iface.getIpAddress())) {
+                return iface;
+            }
         }
         return null;
     }
@@ -1341,7 +1358,7 @@ public class OnmsNode extends OnmsEntity implements Serializable, Comparable<Onm
      *
      * @param scannedNode a {@link org.opennms.netmgt.model.OnmsNode} object.
      */
-    public void mergeNodeAttributes(OnmsNode scannedNode, EventForwarder eventForwarder) {
+    public void mergeNodeAttributes(final OnmsNode scannedNode, final EventForwarder eventForwarder) {
         final String scannedLabel = scannedNode.getLabel();
 
         boolean send = false;
@@ -1360,7 +1377,7 @@ public class OnmsNode extends OnmsEntity implements Serializable, Comparable<Onm
             final EventBuilder bldr = new EventBuilder(EventConstants.NODE_LABEL_CHANGED_EVENT_UEI, "OnmsNode.mergeNodeAttributes");
 
             bldr.setNodeid(scannedNode.getId());
-            bldr.setHost("host");
+            bldr.setHost(InetAddressUtils.getLocalHostAddressAsString());
 
             if (m_oldLabel != null) {
                 bldr.addParam(EventConstants.PARM_OLD_NODE_LABEL, m_oldLabel);
@@ -1595,6 +1612,23 @@ public class OnmsNode extends OnmsEntity implements Serializable, Comparable<Onm
         mergeCategorySet(scannedNode);
 
         mergeAssets(scannedNode);
+    }
+
+    @Transient
+    @JsonIgnore
+    public boolean containsService(final InetAddress addr, final String service) {
+        final OnmsIpInterface iface = getInterfaceWithAddress(addr);
+        if (iface != null) {
+            final OnmsMonitoredService svc = iface.getMonitoredServiceByServiceType(service);
+            return svc != null;
+        }
+        return false;
+    }
+
+    @Transient
+    @JsonIgnore
+    public boolean containsInterface(final InetAddress addr) {
+        return (getInterfaceWithAddress(addr) != null);
     }
 
 }

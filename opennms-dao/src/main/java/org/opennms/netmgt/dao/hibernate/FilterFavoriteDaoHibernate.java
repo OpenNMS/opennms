@@ -42,7 +42,7 @@ public class FilterFavoriteDaoHibernate extends AbstractDaoHibernate<OnmsFilterF
 
     @Override
     public OnmsFilterFavorite findBy(final String userName, final String filterName) {
-        Query query = sessionFactory.getCurrentSession().createQuery("from OnmsFilterFavorite f where f.username = :userName and f.filterName = :filterName");
+        Query query = sessionFactory.getCurrentSession().createQuery("from OnmsFilterFavorite f where f.username = :userName and f.filterName = :filterName order by f.name");
         query.setParameter("filterName", filterName);
         query.setParameter("userName", userName);
         Object result = query.uniqueResult();
@@ -52,7 +52,7 @@ public class FilterFavoriteDaoHibernate extends AbstractDaoHibernate<OnmsFilterF
 
     @Override
     public List<OnmsFilterFavorite> findBy(final String userName, final OnmsFilterFavorite.Page page) {
-        Query query = sessionFactory.getCurrentSession().createQuery("from OnmsFilterFavorite f where f.username = :userName and f.page = :page");
+        Query query = sessionFactory.getCurrentSession().createQuery("from OnmsFilterFavorite f where f.username = :userName and f.page = :page order by f.name");
         query.setParameter("userName", userName);
         query.setParameter("page", page);
         return query.list();
@@ -61,7 +61,7 @@ public class FilterFavoriteDaoHibernate extends AbstractDaoHibernate<OnmsFilterF
 
     @Override
     public boolean existsFilter(final String userName, final String filterName, final OnmsFilterFavorite.Page page) {
-        Query query = sessionFactory.getCurrentSession().createQuery("from OnmsFilterFavorite f where f.username = :userName and f.page = :page and f.name = :filterName");
+        Query query = sessionFactory.getCurrentSession().createQuery("from OnmsFilterFavorite f where f.username = :userName and f.page = :page and f.name = :filterName order by f.name");
         query.setParameter("userName", userName);
         query.setParameter("page", page);
         query.setParameter("filterName", filterName);

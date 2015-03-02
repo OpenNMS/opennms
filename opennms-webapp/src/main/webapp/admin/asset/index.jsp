@@ -34,7 +34,7 @@
 	session="true"
 %>
 
-<jsp:include page="/includes/header.jsp" flush="false" >
+<jsp:include page="/includes/bootstrap.jsp" flush="false" >
   <jsp:param name="title" value="Import/Export Assets" />
   <jsp:param name="headTitle" value="Import/Export" />
   <jsp:param name="headTitle" value="Assets" />
@@ -42,33 +42,49 @@
   <jsp:param name="breadcrumb" value="Import/Export Assets" />
 </jsp:include>
 
-<div class="TwoColLAdmin">
-  <h3>Import and Export Assets</h3>
+<div class="row">
+  <div class="col-md-6">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Import and Export Assets</h3>
+      </div>
+      <div class="panel-body">
+        <p>
+          <a href="admin/asset/import.jsp">Import Assets</a>
+        </p>
+        <p>
+          <a href="admin/asset/assets.csv">Export Assets</a>
+        </p>
+      </div>
+    </div> <!-- panel -->
+  </div> <!-- column -->
 
-  <p>
-    <a href="admin/asset/import.jsp">Import Assets</a>
-  </p>
+  <div class="col-md-6">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Importing Asset Information</h3>
+      </div>
+      <div class="panel-body">
+        <p>
+          The asset import page imports a comma-separated value file (.csv),
+          (probably exported from spreadsheet) into the assets database.
+        </p>
+      </div>
+    </div> <!-- panel -->
 
-  <p>
-    <a href="admin/asset/assets.csv">Export Assets</a>
-  </p>
-</div>
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Exporting Asset Information</h3>
+      </div>
+      <div class="panel-body">
+        <p>
+          All the nodes with asset information will be exported to a
+          comma-separated value file (.csv), which is suitable for use in a
+          spreadsheet application.
+        </p>
+      </div>
+    </div> <!-- panel -->
+  </div> <!-- column -->
+</div> <!-- row -->
 
-<div class="TwoColRAdmin">
-  <h3>Importing Asset Information</h3>
-
-  <p>
-    The asset import page imports a comma-separated value file (.csv),
-    (probably exported from spreadsheet) into the assets database.
-  </p>
-
-  <h3>Exporting Asset Information</h3>
-
-  <p>
-    All the nodes with asset information will be exported to a 
-    comma-separated value file (.csv), which is suitable for use in a 
-    spreadsheet application. 
-  </p>
-</div>
-
-<jsp:include page="/includes/footer.jsp" flush="false" />
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />

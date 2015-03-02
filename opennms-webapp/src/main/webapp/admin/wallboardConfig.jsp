@@ -34,14 +34,14 @@
         session="true"
         %>
 
-<jsp:include page="/includes/header.jsp" flush="false" >
-    <jsp:param name="title" value="Ops Board Config Web UI" />
-    <jsp:param name="headTitle" value="Ops Board Config Web UI" />
+<jsp:include page="/includes/bootstrap.jsp" flush="false" >
+    <jsp:param name="title" value="Ops Board Configuration" />
+    <jsp:param name="headTitle" value="Ops Board Configuration" />
     <jsp:param name="location" value="admin" />
     <jsp:param name="breadcrumb" value="<a href='admin/index.jsp'>Admin</a>" />
-    <jsp:param name="breadcrumb" value="Ops Board Config Web UI" />
+    <jsp:param name="breadcrumb" value="Ops Board Configuration" />
     <jsp:param name="vaadinEmbeddedStyles" value="true" />
 </jsp:include>
 
-<iframe src="osgi/wallboard-config" frameborder="0" style="height:100%; width:100%;"></iframe>
-<jsp:include page="/includes/footer.jsp" flush="true"/>
+<iframe src="osgi/wallboard-config" style="height:100%; width:100%;"></iframe>
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="true"/>

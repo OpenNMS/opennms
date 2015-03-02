@@ -41,6 +41,7 @@ import org.opennms.web.event.filter.AcknowledgedByFilter;
 import org.opennms.web.event.filter.AfterDateFilter;
 import org.opennms.web.event.filter.AlarmIDFilter;
 import org.opennms.web.event.filter.BeforeDateFilter;
+import org.opennms.web.event.filter.EventIdFilter;
 import org.opennms.web.event.filter.ExactUEIFilter;
 import org.opennms.web.event.filter.IPAddrLikeFilter;
 import org.opennms.web.event.filter.IfIndexFilter;
@@ -125,6 +126,10 @@ public abstract class EventUtil {
             filter = new NegativeExactUEIFilter(value);
         } else if (type.equals(NegativeAcknowledgedByFilter.TYPE)) {
             filter = new NegativeAcknowledgedByFilter(value);
+        } else if (type.equals(EventIdFilter.TYPE)) {
+            filter = new EventIdFilter(WebSecurityUtils.safeParseInt(value));
+        } else if (type.equals(EventIdFilter.TYPE)) {
+            filter = new EventIdFilter(WebSecurityUtils.safeParseInt(value));
         } else if (type.equals(IPAddrLikeFilter.TYPE)) {
             filter = new IPAddrLikeFilter(value);
         } else if (type.equals(LogMessageSubstringFilter.TYPE)) {

@@ -40,6 +40,9 @@ public class NodeListCommand {
     private String m_maclike = null;
     private String m_foreignsource = null;
     private Integer m_service = null;
+    private String m_mib2Parm = null;
+    private String m_mib2ParmValue = null;
+    private String m_mib2ParmMatchType = null;
     private String m_snmpParm = null;
     private String m_snmpParmValue = null;
     private String m_snmpParmMatchType = null;
@@ -112,6 +115,34 @@ public class NodeListCommand {
     }
     public boolean hasService() {
         return m_service != null;
+    }
+    
+    public void setMib2Parm(String mib2Parm) {
+        m_mib2Parm = mib2Parm;
+    }
+    public String getMib2Parm() {
+        return m_mib2Parm;
+    }
+    public boolean hasMib2Parm() {
+        return m_mib2Parm != null;
+    }
+    public void setMib2ParmValue(String mib2ParmValue) {
+        m_mib2ParmValue = mib2ParmValue;
+    }
+    public String getMib2ParmValue() {
+        return m_mib2ParmValue;
+    }
+    public boolean hasMib2ParmValue() {
+        return m_mib2ParmValue != null;
+    }
+    public void setMib2ParmMatchType(String mib2ParmMatchType) {
+        m_mib2ParmMatchType = mib2ParmMatchType;
+    }
+    public String getMib2ParmMatchType() {
+        return m_mib2ParmMatchType;
+    }
+    public boolean hasMib2ParmMatchType() {
+        return m_mib2ParmMatchType != null;
     }
     
     public void setSnmpParm(String snmpParm) {

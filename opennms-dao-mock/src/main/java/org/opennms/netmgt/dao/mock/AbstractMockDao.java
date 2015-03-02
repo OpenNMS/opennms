@@ -49,7 +49,10 @@ import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.ServiceTypeDao;
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
+import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.model.OnmsCriteria;
+import org.opennms.netmgt.xml.event.Event;
+import org.opennms.netmgt.xml.event.Log;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -112,7 +115,7 @@ public abstract class AbstractMockDao<T, K extends Serializable> implements Lega
 
     @Override
     public long countAll() {
-        LOG.debug("countAll()");
+        //LOG.debug("countAll()");
         return findAll().size();
     }
 
@@ -288,5 +291,15 @@ public abstract class AbstractMockDao<T, K extends Serializable> implements Lega
             Assert.notNull(m_nodeDao);
         }
         return m_nodeDao;
+    }
+
+    public static final class NullEventForwarder implements EventForwarder {
+        @Override
+        public void sendNow(Event event) {
+        }
+
+        @Override
+        public void sendNow(Log eventLog) {
+        }
     }
 }

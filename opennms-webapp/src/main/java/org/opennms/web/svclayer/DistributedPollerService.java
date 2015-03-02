@@ -30,7 +30,7 @@ package org.opennms.web.svclayer;
 
 import org.opennms.web.command.LocationMonitorIdCommand;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.validation.BindException;
+import org.springframework.validation.BindingResult;
 
 /**
  * <p>DistributedPollerService interface.</p>
@@ -52,37 +52,37 @@ public interface DistributedPollerService {
      * <p>getLocationMonitorDetails</p>
      *
      * @param command a {@link org.opennms.web.command.LocationMonitorIdCommand} object.
-     * @param errors a {@link org.springframework.validation.BindException} object.
+     * @param errors a {@link org.springframework.validation.BindingResult} object.
      * @return a {@link org.opennms.web.svclayer.LocationMonitorListModel} object.
      */
-    public LocationMonitorListModel getLocationMonitorDetails(LocationMonitorIdCommand command, BindException errors);
+    public LocationMonitorListModel getLocationMonitorDetails(LocationMonitorIdCommand command, BindingResult errors);
 
     /**
      * <p>pauseLocationMonitor</p>
      *
      * @param command a {@link org.opennms.web.command.LocationMonitorIdCommand} object.
-     * @param errors a {@link org.springframework.validation.BindException} object.
+     * @param errors a {@link org.springframework.validation.BindingResult} object.
      */
     @Transactional(readOnly = false)
-    public void pauseLocationMonitor(LocationMonitorIdCommand command, BindException errors);
+    public void pauseLocationMonitor(LocationMonitorIdCommand command, BindingResult errors);
     
     /**
      * <p>resumeLocationMonitor</p>
      *
      * @param command a {@link org.opennms.web.command.LocationMonitorIdCommand} object.
-     * @param errors a {@link org.springframework.validation.BindException} object.
+     * @param errors a {@link org.springframework.validation.BindingResult} object.
      */
     @Transactional(readOnly = false)
-    public void resumeLocationMonitor(LocationMonitorIdCommand command, BindException errors);
+    public void resumeLocationMonitor(LocationMonitorIdCommand command, BindingResult errors);
     
     /**
      * <p>deleteLocationMonitor</p>
      *
      * @param command a {@link org.opennms.web.command.LocationMonitorIdCommand} object.
-     * @param errors a {@link org.springframework.validation.BindException} object.
+     * @param errors a {@link org.springframework.validation.BindingResult} object.
      */
     @Transactional(readOnly = false)
-    public void deleteLocationMonitor(LocationMonitorIdCommand command, BindException errors);
+    public void deleteLocationMonitor(LocationMonitorIdCommand command, BindingResult errors);
 
     /**
      * Pause all the locations monitors

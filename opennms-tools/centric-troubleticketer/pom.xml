@@ -3,7 +3,7 @@
   <parent>
     <artifactId>opennms-tools</artifactId>
     <groupId>org.opennms</groupId>
-    <version>15.0.0-SNAPSHOT</version>
+    <version>16.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>centric-troubleticketer</artifactId>
@@ -42,6 +42,7 @@
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
@@ -58,6 +59,7 @@
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
+      <scope>test</scope>
     </dependency>
   </dependencies>
   <repositories>

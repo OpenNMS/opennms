@@ -57,7 +57,6 @@ import org.opennms.netmgt.model.DataLinkInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.nb.Nms4005NetworkBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.annotation.NotTransactional;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
@@ -191,7 +190,6 @@ public class Nms4005Test extends LinkdTestBuilder {
             @JUnitSnmpAgent(host="10.1.4.2", port=161, resource="classpath:linkd/nms4005/10.1.4.2-walk.txt")
     })
     @JUnitTemporaryDatabase
-    @NotTransactional
     public void testNms4005NetworkWithThreads() throws Exception {
 
         // Run this test in a separate transaction from the @Before method to make sure

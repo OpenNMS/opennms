@@ -32,32 +32,34 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 
-<jsp:include page="/includes/header.jsp" flush="false">
-	<jsp:param name="title" value="OpenNMS Maps" />
-	<jsp:param name="breadcrumb" value="Maps" />
+<jsp:include page="/includes/bootstrap.jsp" flush="false">
+    <jsp:param name="title" value="Maps" />
+    <jsp:param name="breadcrumb" value="Maps" />
 </jsp:include>
 
-<h3 class="o-box">OpenNMS Maps</h3>
-<div class="boxWrapper">
-<ul class="plain o-box">
-<c:forEach var="entry" items="${entries.entries}">
-	<c:if test="${entry.value.display}">
-        <li>
-          <c:choose>
-            <c:when test="${entry.value.displayLink}">
-              <a href="${entry.key.url}">${entry.key.name}</a>
-            </c:when>
-            <c:otherwise>
-              ${entry.key.name}
-            </c:otherwise>
-          </c:choose>
-        </li>
-      </c:if>
-</c:forEach>
-</ul>
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <h3 class="panel-title">Maps</h3>
+    </div>
+
+    <div class="panel-body">
+      <ul class="list-unstyled">
+        <c:forEach var="entry" items="${entries.entries}">
+          <c:if test="${entry.value.display}">
+            <li>
+              <c:choose>
+                <c:when test="${entry.value.displayLink}">
+                  <a href="${entry.key.url}">${entry.key.displayString}</a>
+                </c:when>
+                <c:otherwise>
+                  ${entry.key.displayString}
+                </c:otherwise>
+              </c:choose>
+            </li>
+          </c:if>
+        </c:forEach>
+      </ul>
+    </div>
 </div>
 
-<jsp:include page="/includes/footer.jsp" flush="false" >
-	<jsp:param name="location" value="map" />
-</jsp:include>
-    
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="false"/>

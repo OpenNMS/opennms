@@ -1,0 +1,27 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+	xmlns:g="urn:import:com.google.gwt.user.client.ui" xmlns:opennms="urn:import:org.opennms.features.gwt.graph.resource.list.client.view">
+	<ui:style>
+		.divContainer{
+			overflow:auto;
+			height: 460px;
+		}
+		
+		.layoutContainer{
+		    overflow: auto;
+		}
+	</ui:style>
+	<g:LayoutPanel ui:field="m_layoutPanel">
+	   <g:layer top="0" right="0" bottom="40px" left="0" >
+	       <g:FlowPanel ui:field="m_treeContainer" styleName="{style.divContainer}">
+           </g:FlowPanel>
+	   </g:layer> 
+	   <g:layer height="40px" left="0" right="0" bottom="0" minWidth="500px">
+	       <g:HorizontalPanel ui:field="m_buttonDiv" styleName="onms-table-no-borders-margin" horizontalAlignment="center" >
+	           <g:Button ui:field="m_removeButton" width="150px" >Clear Selection</g:Button>
+	           <g:Button ui:field="m_submitButton" width="150px">Submit Selection</g:Button>
+	           <g:Button ui:field="m_searchButton" width="150px">Search</g:Button>
+	       </g:HorizontalPanel>
+	   </g:layer>
+	</g:LayoutPanel>
+</ui:UiBinder> 

@@ -1,6 +1,6 @@
 
 [[poller-http-monitor]]
-=== HttpMonitor
+==== HttpMonitor
 
 The HTTP monitor tests the response of an HTTP server on a specific HTTP 'GET' command.
 During the poll, an attempt is made to connect on the specified port(s).
@@ -9,7 +9,7 @@ By default the a test is made against port 80, 8080 and 8888.
 If the connection request is successful, an HTTP 'GET' command is sent to the interface.
 The response is parsed and a return code extracted and verified.
 
-==== Monitor facts
+===== Monitor facts
 
 [options="autowidth"]
 |===
@@ -17,7 +17,7 @@ The response is parsed and a return code extracted and verified.
 | Remote Enabled | true
 |===
 
-==== Configuration and Usage
+===== Configuration and Usage
 
 .Monitor specific parameters for the HttpMonitor
 [options="header, autowidth"]
@@ -66,7 +66,7 @@ The response is parsed and a return code extracted and verified.
                            (with a log level of `DEBUG`).                                                              | optional | `-`
 |===
 
-==== Examples
+===== Examples
 
 [source, xml]
 ----
@@ -104,7 +104,7 @@ The response is parsed and a return code extracted and verified.
 <monitor service="OpenNMS-129" class-name="org.opennms.netmgt.poller.monitors.HttpMonitor" />
 ----
 
-==== Testing filtering proxies with HttpMonitor
+===== Testing filtering proxies with HttpMonitor
 
 If you have a filtering proxy server that is supposed to allow retrieval of some URLs but deny others, you can use the HttpMonitor to verify this behavior.
 

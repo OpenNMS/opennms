@@ -39,7 +39,7 @@ import org.springframework.transaction.annotation.Transactional;
  * @version $Id: $
  * @since 1.8.1
  */
-@Transactional(readOnly = true)
+@Transactional
 public interface RtcService {
     /**
      * <p>getNodeList</p>

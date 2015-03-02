@@ -151,7 +151,7 @@
 %>
 
 <%@page import="org.opennms.web.svclayer.ResourceService"%>
-<jsp:include page="/includes/header.jsp" flush="false" >
+<jsp:include page="/includes/bootstrap.jsp" flush="false" >
   <jsp:param name="title" value="Custom Resource Graphs" />
   <jsp:param name="headTitle" value="Custom" />
   <jsp:param name="headTitle" value="Resource Graphs" />
@@ -169,11 +169,6 @@
   <strong>From:</strong> <%=startPretty%> <br/>
   <strong>To:</strong> <%=endPretty%>
 
-  <br/>
-  <br/>
-
-  <jsp:include page="/includes/bookmark.jsp" flush="false" />
-
 </div>
 
-<jsp:include page="/includes/footer.jsp" flush="false" />
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />

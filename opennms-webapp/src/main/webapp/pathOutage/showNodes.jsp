@@ -39,11 +39,11 @@
 			org.opennms.netmgt.poller.PathOutageManagerDaoImpl
 " %>
 
-<jsp:include page="/includes/header.jsp" flush="false">
-  <jsp:param name="title" value="Show Path Outage Nodes" />
-  <jsp:param name="headTitle" value="Show Path Outage Nodes" />
-  <jsp:param name="breadcrumb" value="Show Path Outage Nodes" />
-
+<jsp:include page="/includes/bootstrap.jsp" flush="false">
+  <jsp:param name="title" value="Path Outage Nodes" />
+  <jsp:param name="headTitle" value="Path Outage Nodes" />
+  <jsp:param name="breadcrumb" value="<a href=&quot;pathOutage/index.jsp&quot;>Path Outages</a>" />
+  <jsp:param name="breadcrumb" value="Nodes" />
 </jsp:include>
 
 <% 
@@ -54,31 +54,38 @@
       Set<Integer> nodeList = pathOutageManager.getNodesInPath(critIp, critSvc);
 %>
   
-      <h3>Path Outage Node List</h3>
-      <table>
+<div class="panel panel-default fix-subpixel">
+    <div class="panel-heading">
+        <h3 class="panel-title">Path Outage Node List</h3>
+    </div>
+    <table class="table table-condensed severity">
+          <thead class="dark">
           <tr>
           <th>Critical Path</th>
           <th>Status</th>
           </tr>
+          </thead>
 
-          <tr class="CellStatus">
+          <tr>
           <td><%= critIp %></td>
-          <td class="<%= pthData[3] %>"><%= critSvc %></td>
+          <td class="bright severity-<%= pthData[3].toLowerCase() %>"><%= critSvc %></td>
           </tr>
 
+          <thead class="dark">
           <tr>
           <th>Node</th>
           <th>Status</th>
           </tr>
+          </thead>
 
           <% for (Integer nodeid : nodeList) {
               String labelColor[] = PathOutageManagerDaoImpl.getInstance().getLabelAndStatus(nodeid.toString(), null); %>
-              <tr class="CellStatus">
+              <tr>
               <td><a href="element/node.jsp?node=<%= nodeid %>"><%= labelColor[0] %></a></td>
-              <td class="<%= labelColor[1] %>"><%= labelColor[2] %></td>
+              <td class="bright severity-<%= labelColor[1].toLowerCase() %>"><%= labelColor[2] %></td>
               </tr>
           <% } %>
+    </table>
+</div>
 
-      </table>
-
-<jsp:include page="/includes/footer.jsp" flush="false" />
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />

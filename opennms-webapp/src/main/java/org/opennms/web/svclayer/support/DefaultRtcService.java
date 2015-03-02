@@ -43,6 +43,7 @@ import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsOutage;
 import org.opennms.web.svclayer.RtcService;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 
@@ -104,9 +105,9 @@ public class DefaultRtcService implements RtcService, InitializingBean {
         long downMillisCount = 0;
         for (OnmsMonitoredService service : services) {
             if (!service.getIpInterface().getNode().equals(lastNode) && lastNode != null) {
-                Double availability = calculateAvailability(serviceCount, downMillisCount);
+                Double availability = calculateAvailability(serviceCount, downMillisCount, periodEnd.getTime() - periodStart.getTime());
                 
-                model.addNode(new RtcNodeModel.RtcNode(lastNode, serviceCount, serviceDownCount, availability));
+                model.addNode(new RtcNode(lastNode, serviceCount, serviceDownCount, availability));
                 
                 serviceCount = 0;
                 serviceDownCount = 0;
@@ -119,16 +120,18 @@ public class DefaultRtcService implements RtcService, InitializingBean {
             }
             
             Long downMillis = serviceDownTime.get(service);
-            if  (downMillis != null) {
+            if  (downMillis == null) {
+                // This service had 100% availability over the period, no downtime
+            } else {
                 downMillisCount += downMillis;
             }
             
             lastNode = service.getIpInterface().getNode();
         }
         if (lastNode != null) {
-            Double availability = calculateAvailability(serviceCount, downMillisCount);
+            Double availability = calculateAvailability(serviceCount, downMillisCount, periodEnd.getTime() - periodStart.getTime());
             
-            model.addNode(new RtcNodeModel.RtcNode(lastNode, serviceCount, serviceDownCount, availability));
+            model.addNode(new RtcNode(lastNode, serviceCount, serviceDownCount, availability));
         }
         
         return model;
@@ -173,38 +176,50 @@ public class DefaultRtcService implements RtcService, InitializingBean {
         return serviceCriteria;
     }
 
-    private Map<OnmsMonitoredService, Long> calculateServiceDownTime(Date periodEnd, Date periodStart, List<OnmsOutage> outages) {
+    private static Map<OnmsMonitoredService, Long> calculateServiceDownTime(Date periodEnd, Date periodStart, List<OnmsOutage> outages) {
         Map<OnmsMonitoredService, Long> map = new HashMap<OnmsMonitoredService, Long>();
         for (OnmsOutage outage : outages) {
             if (map.get(outage.getMonitoredService()) == null) {
-                map.put(outage.getMonitoredService(), Long.valueOf(0));
+                map.put(outage.getMonitoredService(), 0L);
             }
             
             Date begin;
             if (outage.getIfLostService().before(periodStart)) {
                 begin = periodStart;
+            } else if (outage.getIfLostService().after(periodEnd)) {
+                LoggerFactory.getLogger(DefaultRtcService.class).warn("Outage beginning is after period end {}, discarding outage: {}", periodEnd, outage.toString());
+                continue;
             } else {
                 begin = outage.getIfLostService();
             }
             
             Date end;
-            if (outage.getIfRegainedService() == null || !outage.getIfRegainedService().before(periodEnd)) {
+            if (outage.getIfRegainedService() == null) {
+                // If the outage hasn't ended yet, use the end of the period as the end time
+                end = periodEnd;
+            } else if (outage.getIfRegainedService().after(periodEnd)) {
+                // If the outage ended after the end of the period, use the end of the period as the end time
                 end = periodEnd;
             } else {
                 end = outage.getIfRegainedService();
             }
-            
-            Long count = map.get(outage.getMonitoredService());
-            count += (end.getTime() - begin.getTime());
-            map.put(outage.getMonitoredService(), count);
+
+            if (begin.after(end)) {
+                LoggerFactory.getLogger(DefaultRtcService.class).warn("Outage beginning is after outage end inside period {} to {}, discarding outage: {}", periodStart, periodEnd, outage.toString());
+                continue;
+            } else {
+                Long count = map.get(outage.getMonitoredService());
+                count += (end.getTime() - begin.getTime());
+                map.put(outage.getMonitoredService(), count);
+            }
         }
         return map;
     }
 
-    private Double calculateAvailability(int serviceCount, long downMillisCount) {
-        long upMillis = ((long)serviceCount * (24L * 60L * 60L * 1000L)) - downMillisCount;
+    private static Double calculateAvailability(int serviceCount, long downMillisCount, long periodLength) {
+        long upMillis = ((long)serviceCount * periodLength) - downMillisCount;
 
-        return ((double) upMillis / (double) (serviceCount * (24 * 60 * 60 * 1000)));
+        return ((double) upMillis / (double) (serviceCount * periodLength));
     }
     
     /**

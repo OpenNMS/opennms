@@ -48,6 +48,7 @@ import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * This class tests some of the quirky behaviors of persisting events.
@@ -69,6 +70,7 @@ import org.springframework.test.context.ContextConfiguration;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase(reuseDatabase=false)
+@Transactional
 public class HibernateEventWriterTest {
 
     @Autowired

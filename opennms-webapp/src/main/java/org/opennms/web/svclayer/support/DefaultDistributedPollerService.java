@@ -34,13 +34,13 @@ import java.util.List;
 
 import org.opennms.netmgt.dao.api.LocationMonitorDao;
 import org.opennms.netmgt.model.OnmsLocationMonitor;
-import org.opennms.netmgt.model.OnmsMonitoringLocationDefinition;
 import org.opennms.netmgt.model.OnmsLocationMonitor.MonitorStatus;
+import org.opennms.netmgt.model.OnmsMonitoringLocationDefinition;
 import org.opennms.web.command.LocationMonitorIdCommand;
 import org.opennms.web.svclayer.DistributedPollerService;
 import org.opennms.web.svclayer.LocationMonitorListModel;
 import org.opennms.web.svclayer.LocationMonitorListModel.LocationMonitorModel;
-import org.springframework.validation.BindException;
+import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 
 /**
@@ -140,7 +140,7 @@ public class DefaultDistributedPollerService implements
 
     /** {@inheritDoc} */
     @Override
-    public LocationMonitorListModel getLocationMonitorDetails(LocationMonitorIdCommand cmd, BindException errors) {
+    public LocationMonitorListModel getLocationMonitorDetails(LocationMonitorIdCommand cmd, BindingResult errors) {
         LocationMonitorListModel model = new LocationMonitorListModel();
         model.setErrors(errors);
         
@@ -157,7 +157,7 @@ public class DefaultDistributedPollerService implements
 
     /** {@inheritDoc} */
     @Override
-    public void pauseLocationMonitor(LocationMonitorIdCommand command, BindException errors) {
+    public void pauseLocationMonitor(LocationMonitorIdCommand command, BindingResult errors) {
         if (command == null) {
             throw new IllegalStateException("command argument cannot be null");
         }
@@ -185,7 +185,7 @@ public class DefaultDistributedPollerService implements
 
     /** {@inheritDoc} */
     @Override
-    public void resumeLocationMonitor(LocationMonitorIdCommand command, BindException errors) {
+    public void resumeLocationMonitor(LocationMonitorIdCommand command, BindingResult errors) {
         if (command == null) {
             throw new IllegalStateException("command argument cannot be null");
         }
@@ -213,7 +213,7 @@ public class DefaultDistributedPollerService implements
 
     /** {@inheritDoc} */
     @Override
-    public void deleteLocationMonitor(LocationMonitorIdCommand command, BindException errors) {
+    public void deleteLocationMonitor(LocationMonitorIdCommand command, BindingResult errors) {
         if (command == null) {
             throw new IllegalStateException("command argument cannot be null");
         }

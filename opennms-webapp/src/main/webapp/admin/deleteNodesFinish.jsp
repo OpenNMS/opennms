@@ -34,7 +34,7 @@
 	session="true"
 %>
 
-<jsp:include page="/includes/header.jsp" flush="false" >
+<jsp:include page="/includes/bootstrap.jsp" flush="false" >
   <jsp:param name="title" value="Node Deletion Completed" />
   <jsp:param name="headTitle" value="Node Deletion" />
   <jsp:param name="headTitle" value="Admin" />
@@ -43,10 +43,16 @@
   <jsp:param name="breadcrumb" value="Node Deletion Completed" />
 </jsp:include>
 
-<h3>Finished Deleting Nodes</h3>
-<p>
-  OpenNMS should not need to be restarted, but it may take a moment for
-  the Categories to be updated.
-</p>
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title">Finished Deleting Nodes</h3>
+  </div>
+  <div class="panel-body">
+    <p>
+      OpenNMS should not need to be restarted, but it may take a moment for
+      the Categories to be updated.
+    </p>
+  </div>
+</div> <!-- panel -->
 
-<jsp:include page="/includes/footer.jsp" flush="true"/>
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="true"/>

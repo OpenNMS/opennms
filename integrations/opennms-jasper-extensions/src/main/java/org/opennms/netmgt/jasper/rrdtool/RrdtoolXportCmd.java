@@ -33,8 +33,8 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
-import net.sf.jasperreports.engine.JRDataSource;
 import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JRRewindableDataSource;
 import net.sf.jasperreports.engine.util.JRProperties;
 
 import org.exolab.castor.xml.Unmarshaller;
@@ -46,7 +46,7 @@ import org.springframework.util.FileCopyUtils;
 public class RrdtoolXportCmd {
     private static final Logger LOG = LoggerFactory.getLogger(RrdtoolXportCmd.class);
 
-	public JRDataSource executeCommand(String queryString) throws JRException {
+	public JRRewindableDataSource executeCommand(String queryString) throws JRException {
 		Xport data = getXportData(queryString);
 		return new RrdtoolDataSource(data);
 	}

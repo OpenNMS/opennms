@@ -66,7 +66,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
 
 // FIXME inner non static class with backreference, bad design, keeps objects alive
-public class NodeScan implements RunInBatch {
+public class NodeScan implements Scan {
     private static final Logger LOG = LoggerFactory.getLogger(NodeScan.class);
 
     private Integer m_nodeId;
@@ -226,7 +226,8 @@ public class NodeScan implements RunInBatch {
 
     }
 
-    Task createTask() {
+    @Override
+    public Task createTask() {
         return getTaskCoordinator().createBatch().add(NodeScan.this).get();
     }
 

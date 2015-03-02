@@ -37,7 +37,7 @@ package org.opennms.netmgt.config;
  */
 public class WebUser {
     
-    private String m_name;
+    private final String m_name;
     
     /**
      * <p>Constructor for WebUser.</p>

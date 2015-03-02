@@ -1,17 +1,23 @@
 <!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
-	xmlns:g="urn:import:com.google.gwt.user.client.ui">
+	xmlns:g="urn:import:com.google.gwt.user.client.ui"
+    xmlns:b="urn:import:org.gwtbootstrap3.client.ui">
 	<ui:style>
 	   .outlineBorder{
 	   	   border: 1px solid #B5B8C8;
 	   	}
 	</ui:style>
-	<g:LayoutPanel ui:field="m_layoutPanel" styleName="{style.outlineBorder}">
-        <g:layer top="0" bottom="0" left="0" right="53px">
-            <g:TextBox ui:field="m_textBox" width="100%"></g:TextBox>
-        </g:layer>
-        <g:layer top="0" bottom="0" right="0px" width="53px">
-            <g:Button ui:field="m_goButton" width="53px" height="25px">Search</g:Button>
-        </g:layer>
-	</g:LayoutPanel>
-</ui:UiBinder> 
+    <b:Row>
+        <b:Column size="MD_12">
+            <b:Form type="INLINE">
+                <b:FieldSet>
+                    <b:FormGroup>
+                        <b:TextBox ui:field="m_textBox"></b:TextBox>
+                        <b:Button ui:field="m_goButton" addStyleNames="space-on-the-left">Search</b:Button>
+                    </b:FormGroup>
+                </b:FieldSet>
+            </b:Form>
+        </b:Column>
+    </b:Row>
+
+</ui:UiBinder>

@@ -43,7 +43,8 @@ public class IteratorIterator<T> implements Iterator<T>, Iterable<T> {
      *
      * @param iterators a {@link java.util.Iterator} object.
      */
-    public IteratorIterator(Iterator<T>... iterators) {
+    @SafeVarargs
+    public IteratorIterator(final Iterator<T>... iterators) {
         /*
          * We create an ArrayList to hold the list of iterators instead of
          * just calling Arrays.asList(..) because we cannot call the remove()

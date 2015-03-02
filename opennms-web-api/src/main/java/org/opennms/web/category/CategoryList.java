@@ -29,12 +29,9 @@
 package org.opennms.web.category;
 
 import java.io.IOException;
-import java.io.Writer;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -44,7 +41,6 @@ import java.util.Map.Entry;
 import java.util.TreeMap;
 
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletResponse;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
@@ -65,15 +61,15 @@ public class CategoryList {
 	private static final Logger LOG = LoggerFactory.getLogger(CategoryList.class);
 
 
-    protected CategoryModel m_model;
+    protected final CategoryModel m_model;
 
     /**
      * Display rules from viewsdisplay.xml. If null, then just show all known
      * categories under the header "Category". (See the getSections method.)
      */
-    protected Section[] m_sections;
+    protected final Section[] m_sections;
 
-    private int m_disconnectTimeout;
+    protected final int m_disconnectTimeout;
 
     /**
      * <p>Constructor for CategoryList.</p>
@@ -88,6 +84,8 @@ public class CategoryList {
             throw new ServletException("failed to instantiate the category model: " + e, e);
         }
 
+        Section[] sections = new Section[0];
+        int disconnectTimeout = 130000;
         try {
             ViewsDisplayFactory.init();
             ViewsDisplayFactory viewsDisplayFactory = ViewsDisplayFactory.getInstance();
@@ -95,8 +93,8 @@ public class CategoryList {
             View view = viewsDisplayFactory.getDefaultView();
 
             if (view != null) {
-                m_sections = view.getSection();
-                m_disconnectTimeout  = viewsDisplayFactory.getDisconnectTimeout();
+                sections = view.getSection();
+                disconnectTimeout  = viewsDisplayFactory.getDisconnectTimeout();
                 LOG.debug("found display rules from viewsdisplay.xml");
             } else {
                 LOG.debug("did not find display rules from viewsdisplay.xml");
@@ -104,6 +102,9 @@ public class CategoryList {
         } catch (Throwable e) {
             LOG.error("Couldn't open viewsdisplay factory on categories box: {}", e, e);
         }
+
+        m_sections = sections;
+        m_disconnectTimeout = disconnectTimeout;
     }
 
 
@@ -121,7 +122,7 @@ public class CategoryList {
      * @return a {@link java.util.List} object.
      * @throws java.io.IOException if any.
      */
-    public List<Section> getSections(Map<String, Category> categoryMap) throws IOException {
+    private List<Section> getSections(Map<String, Category> categoryMap) throws IOException {
         if (m_sections != null) {
             // Just return the display rules as a list.
             return Arrays.asList(m_sections);
@@ -197,7 +198,7 @@ public class CategoryList {
      *          is returned.
      * @return a long.
      */
-    public long getEarliestUpdate(Map<String,List<Category>> categoryData) {
+    public static long getEarliestUpdate(Map<String,List<Category>> categoryData) {
         long earliestUpdate = 0;
 
         for (final Entry<String, List<Category>> entry : categoryData.entrySet()) {

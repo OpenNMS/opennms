@@ -40,7 +40,7 @@
     MissingParameterException mpe = (MissingParameterException)exception;  
 %>
 
-<jsp:include page="/includes/header.jsp" flush="false" >
+<jsp:include page="/includes/bootstrap.jsp" flush="false" >
   <jsp:param name="title" value="Error" />
   <jsp:param name="headTitle" value="Missing Parameter" />
   <jsp:param name="headTitle" value="Error" />
@@ -67,4 +67,4 @@
 <%      }    %>
   </ul>
 
-<jsp:include page="/includes/footer.jsp" flush="false" />
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />
