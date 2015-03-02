@@ -46,10 +46,18 @@ import org.slf4j.LoggerFactory;
 @Theme("opennms")
 @Title("OpenNMS Surveillance Views")
 public class SurveillanceViewsConfigUI extends UI {
+    /**
+     * the logger instance
+     */
     private static final Logger LOG = LoggerFactory.getLogger(SurveillanceViewsConfigUI.class);
-
+    /**
+     * the surveillance view service to be used
+     */
     private SurveillanceViewService m_surveillanceViewService;
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void init(VaadinRequest request) {
         VerticalLayout rootLayout = new VerticalLayout();

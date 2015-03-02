@@ -31,17 +31,32 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * This class represents the category element of the surveillance view configuration xml
+ * This class represents the category element of the surveillance view configuration xml.
+ *
+ * @author Christian Pape
  */
 @XmlRootElement
 public class Category {
+    /**
+     * the field for storing thew category name
+     */
     private java.lang.String m_name;
 
+    /**
+     * Returns the name of this category.
+     *
+     * @return the name of this category
+     */
     @XmlAttribute(name = "name", required = true)
     public String getName() {
         return m_name;
     }
 
+    /**
+     * Sets the name of the category.
+     *
+     * @param name the name to be used
+     */
     public void setName(String name) {
         this.m_name = name;
     }

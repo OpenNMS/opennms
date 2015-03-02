@@ -45,18 +45,46 @@ import java.net.URL;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * This class represents a table displaying the node RTC calculations for the surveillance view's dashboard.
+ *
+ * @author Christian Pape
+ */
 public class SurveillanceViewNodeRtcTable extends SurveillanceViewDetailTable {
+    /**
+     * the logger instance
+     */
     private static final Logger LOG = LoggerFactory.getLogger(SurveillanceViewNodeRtcTable.class);
-
+    /**
+     * the bean containeer for storing the RTC calculations
+     */
     private BeanItemContainer<SurveillanceViewService.NodeRtc> m_beanItemContainer = new BeanItemContainer<SurveillanceViewService.NodeRtc>(SurveillanceViewService.NodeRtc.class);
 
+    /**
+     * Constructor for instantiating this component.
+     *
+     * @param surveillanceViewService the surveillance view service to be used
+     * @param enabled                 the flag should links be enabled?
+     */
     public SurveillanceViewNodeRtcTable(SurveillanceViewService surveillanceViewService, boolean enabled) {
+        /**
+         * call the super constructor
+         */
         super("Outages", surveillanceViewService, enabled);
 
+        /**
+         * set the datasource
+         */
         setContainerDataSource(m_beanItemContainer);
 
+        /**
+         * set the base style name
+         */
         addStyleName("surveillance-view");
 
+        /**
+         * add node column
+         */
         addGeneratedColumn("node", new ColumnGenerator() {
             @Override
             public Object generateCell(Table table, Object itemId, Object propertyId) {
@@ -96,6 +124,9 @@ public class SurveillanceViewNodeRtcTable extends SurveillanceViewDetailTable {
             }
         });
 
+        /**
+         * add currentOutages column
+         */
         addGeneratedColumn("currentOutages", new ColumnGenerator() {
             @Override
             public Object generateCell(Table table, final Object itemId, Object columnId) {
@@ -104,6 +135,9 @@ public class SurveillanceViewNodeRtcTable extends SurveillanceViewDetailTable {
             }
         });
 
+        /**
+         * add availability column
+         */
         addGeneratedColumn("availability", new ColumnGenerator() {
             @Override
             public Object generateCell(Table table, final Object itemId, Object propertyId) {
@@ -112,6 +146,9 @@ public class SurveillanceViewNodeRtcTable extends SurveillanceViewDetailTable {
             }
         });
 
+        /**
+         * set cell style generator that handles the two severities for RTC calculations
+         */
         setCellStyleGenerator(new CellStyleGenerator() {
             @Override
             public String getStyle(Table table, Object itemId, Object propertyId) {
@@ -129,27 +166,51 @@ public class SurveillanceViewNodeRtcTable extends SurveillanceViewDetailTable {
             }
         });
 
+        /**
+         * set the column headers
+         */
         setColumnHeader("node", "Node");
         setColumnHeader("currentOutages", "Current Outages");
         setColumnHeader("availability", "24 Hour Availability");
 
+        /**
+         * define the visible columns
+         */
         setVisibleColumns(new Object[]{"node", "currentOutages", "availability"});
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public synchronized void refreshDetails(Set<OnmsCategory> rowCategories, Set<OnmsCategory> colCategories) {
+        /**
+         * calculate and retrieve the RTC instances
+         */
         List<SurveillanceViewService.NodeRtc> nodeRtcs = getSurveillanceViewService().getNoteRtcsForCategories(rowCategories, colCategories);
 
+        /**
+         * empty the container
+         */
         m_beanItemContainer.removeAllItems();
 
+        /**
+         * add items to the container
+         */
         if (nodeRtcs != null && !nodeRtcs.isEmpty()) {
             for (SurveillanceViewService.NodeRtc nodeRtc : nodeRtcs) {
                 m_beanItemContainer.addItem(nodeRtc);
             }
         }
 
+        /**
+         * sort the iterms
+         */
         sort(new Object[]{"node"}, new boolean[]{true});
 
+        /**
+         * refresh the table
+         */
         refreshRowCache();
     }
 }

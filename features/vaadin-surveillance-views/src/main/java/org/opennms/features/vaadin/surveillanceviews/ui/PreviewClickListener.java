@@ -48,7 +48,6 @@ public class PreviewClickListener implements Button.ClickListener {
      * The surveillance view to be displayed
      */
     private View m_view;
-
     /**
      * The surveillance view service
      */
@@ -66,6 +65,9 @@ public class PreviewClickListener implements Button.ClickListener {
         m_view = view;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void buttonClick(Button.ClickEvent clickEvent) {
         final Window window = new Window("Preview");

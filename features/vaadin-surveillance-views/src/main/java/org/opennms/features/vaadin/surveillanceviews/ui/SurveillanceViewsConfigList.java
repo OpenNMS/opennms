@@ -42,28 +42,43 @@ import org.opennms.features.vaadin.surveillanceviews.service.SurveillanceViewSer
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * This class is used to display a list of editable surveillance view configurations.
+ *
+ * @author Christian Pape
+ */
 public class SurveillanceViewsConfigList extends VerticalLayout {
+    /**
+     * the logger instance
+     */
     private static final Logger LOG = LoggerFactory.getLogger(SurveillanceViewsConfigList.class);
-
     /**
      * The {@link Table} this component uses to display {@link View} configurations
      */
     private Table m_table;
-
     /**
      * The {@link com.vaadin.data.util.BeanItemContainer} this component uses for {@link View} configurations
      */
     BeanItemContainer<View> m_beanItemContainer = new BeanItemContainer<View>(View.class);
-
+    /**
+     * the surveillance view service
+     */
     private SurveillanceViewService m_surveillanceViewService;
 
+    /**
+     * Construcotr for creating this component.
+     *
+     * @param surveillanceViewService the surveillance view service to be used
+     */
     public SurveillanceViewsConfigList(SurveillanceViewService surveillanceViewService) {
+        /**
+         * set the fields
+         */
         this.m_surveillanceViewService = surveillanceViewService;
 
         /**
          * Loading the config
          */
-
         reloadSurveillanceViews();
 
         /**

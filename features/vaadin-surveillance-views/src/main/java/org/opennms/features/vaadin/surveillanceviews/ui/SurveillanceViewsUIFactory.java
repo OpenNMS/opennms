@@ -32,8 +32,15 @@ import org.osgi.service.blueprint.container.BlueprintContainer;
 
 /**
  * A factory class responsible for constructing this application.
+ *
+ * @author Christian Pape
  */
 public class SurveillanceViewsUIFactory extends OnmsVaadinUIFactory {
+    /**
+     * Constructor for this factory.
+     * @param container the blueprint container
+     * @param beanName the bean
+     */
     public SurveillanceViewsUIFactory(BlueprintContainer container, String beanName) {
         super(SurveillanceViewsUI.class, container, beanName);
     }

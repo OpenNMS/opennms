@@ -37,32 +37,59 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * This class represents the root element of the surveillance view configuration xml
+ * This class represents the root element of the surveillance view configuration xml.
+ *
+ * @author Christian Pape
  */
 @XmlRootElement(name = "surveillance-view-configuration")
 @XmlAccessorType(XmlAccessType.FIELD)
 @SuppressWarnings("all")
 public class SurveillanceViewConfiguration implements java.io.Serializable {
-
+    /**
+     * the field for storing the default view attribute
+     */
     @XmlAttribute(name = "default-view", required = false)
     private java.lang.String m_defaultView = "default";
-
+    /**
+     * the list of defined view elements
+     */
     @XmlElement(name = "view")
     @XmlElementWrapper(name = "views")
     private List<View> m_views = new LinkedList<View>();
 
+    /**
+     * Returns the name of the default view.
+     *
+     * @return the default view
+     */
     public String getDefaultView() {
         return m_defaultView;
     }
 
+    /**
+     * Sets the default view.
+     *
+     * @param defaultView the name of the default view to use
+     */
     public void setDefaultView(String defaultView) {
         this.m_defaultView = defaultView;
     }
 
+    /**
+     * Returns the list of views.
+     *
+     * @return the list of views
+     */
     public List<View> getViews() {
         return m_views;
     }
 
+    /**
+     * Checks whether this configuration instance contains a view with the given name.
+     *
+     * @param name the name to search for
+     * @return true, if a view with this name exists, false otherwise
+     */
     public boolean containsView(String name) {
         for (View view : getViews()) {
             if (name.equals(view.getName())) {
@@ -71,5 +98,4 @@ public class SurveillanceViewConfiguration implements java.io.Serializable {
         }
         return false;
     }
-
 }

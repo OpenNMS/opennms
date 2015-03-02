@@ -48,18 +48,50 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * This class represents a table for displaying the notifications for a surveillance view dashboard.
+ *
+ * @author Christian Pape
+ */
 public class SurveillanceViewNotificationTable extends SurveillanceViewDetailTable {
+    /**
+     * the logger instance
+     */
     private static final Logger LOG = LoggerFactory.getLogger(SurveillanceViewNotificationTable.class);
+    /**
+     * the bean container for storing notifications
+     */
     private BeanItemContainer<OnmsNotification> m_beanItemContainer = new BeanItemContainer<OnmsNotification>(OnmsNotification.class);
+    /**
+     * the custom severity map
+     */
     private HashMap<OnmsNotification, String> m_customSeverity = new HashMap<>();
 
+    /**
+     * Constructor for instantiating this component.
+     *
+     * @param surveillanceViewService the surveillance view service to be used
+     * @param enabled                 the flag should links be enabled?
+     */
     public SurveillanceViewNotificationTable(SurveillanceViewService surveillanceViewService, boolean enabled) {
+        /**
+         * calling the super constructor
+         */
         super("Notifications", surveillanceViewService, enabled);
 
+        /**
+         * set the datasource
+         */
         setContainerDataSource(m_beanItemContainer);
 
+        /**
+         * set the base style name
+         */
         addStyleName("surveillance-view");
 
+        /**
+         * add node column
+         */
         addGeneratedColumn("node", new ColumnGenerator() {
             @Override
             public Object generateCell(final Table table, final Object itemId, final Object propertyId) {
@@ -131,6 +163,9 @@ public class SurveillanceViewNotificationTable extends SurveillanceViewDetailTab
             }
         });
 
+        /**
+         * set the cell style generator
+         */
         setCellStyleGenerator(new CellStyleGenerator() {
             @Override
             public String getStyle(final Table source, final Object itemId, final Object propertyId) {
@@ -139,6 +174,9 @@ public class SurveillanceViewNotificationTable extends SurveillanceViewDetailTab
             }
         });
 
+        /**
+         * set column headers
+         */
         setColumnHeader("node", "Node");
         setColumnHeader("serviceType", "Service");
         setColumnHeader("textMsg", "Message");
@@ -146,23 +184,44 @@ public class SurveillanceViewNotificationTable extends SurveillanceViewDetailTab
         setColumnHeader("answeredBy", "Responder");
         setColumnHeader("respondTime", "Respond Time");
 
-        setVisibleColumns( "node", "serviceType", "textMsg", "pageTime", "answeredBy", "respondTime");
+        /**
+         * define visible columns
+         */
+        setVisibleColumns("node", "serviceType", "textMsg", "pageTime", "answeredBy", "respondTime");
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void refreshDetails(Set<OnmsCategory> rowCategories, Set<OnmsCategory> colCategories) {
+        /**
+         * retrieve the matching notifications
+         */
         List<OnmsNotification> notifications = getSurveillanceViewService().getNotificationsForCategories(rowCategories, colCategories, m_customSeverity);
 
+        /**
+         * empty the bean container
+         */
         m_beanItemContainer.removeAllItems();
 
+        /**
+         * add items to container
+         */
         if (notifications != null && !notifications.isEmpty()) {
             for (OnmsNotification onmsNotification : notifications) {
                 m_beanItemContainer.addItem(onmsNotification);
             }
         }
 
+        /**
+         * sort the items
+         */
         sort(new Object[]{"pageTime"}, new boolean[]{false});
 
+        /**
+         * refresh the table
+         */
         refreshRowCache();
     }
 }

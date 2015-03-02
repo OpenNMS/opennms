@@ -30,7 +30,6 @@ package org.opennms.features.vaadin.surveillanceviews.ui.dashboard;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.server.Page;
 import com.vaadin.server.VaadinServlet;
-import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Table;
@@ -48,18 +47,46 @@ import java.net.URL;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * This class represents a table displaying the OpenNMS alarms for given row/column categories.
+ *
+ * @author Christian Pape
+ */
 public class SurveillanceViewAlarmTable extends SurveillanceViewDetailTable {
+    /**
+     * the logger instance
+     */
     private static final Logger LOG = LoggerFactory.getLogger(SurveillanceViewAlarmTable.class);
-
+    /**
+     * the bean container storing the alarm instances
+     */
     private BeanItemContainer<OnmsAlarm> m_beanItemContainer = new BeanItemContainer<OnmsAlarm>(OnmsAlarm.class);
 
+    /**
+     * Constructor for instantiating this component.
+     *
+     * @param surveillanceViewService the surveillance view service to be used
+     * @param enabled                 the flag should links be enabled?
+     */
     public SurveillanceViewAlarmTable(SurveillanceViewService surveillanceViewService, boolean enabled) {
+        /**
+         * calling the super constructor
+         */
         super("Alarms", surveillanceViewService, enabled);
 
+        /**
+         * set the datasource
+         */
         setContainerDataSource(m_beanItemContainer);
 
+        /**
+         * the base stylename
+         */
         addStyleName("surveillance-view");
 
+        /**
+         * add node column
+         */
         addGeneratedColumn("node", new ColumnGenerator() {
             @Override
             public Object generateCell(final Table table, final Object itemId, final Object propertyId) {
@@ -130,6 +157,9 @@ public class SurveillanceViewAlarmTable extends SurveillanceViewDetailTable {
             }
         });
 
+        /**
+         * add logMsg column
+         */
         addGeneratedColumn("logMsg", new ColumnGenerator() {
             @Override
             public Object generateCell(Table table, Object itemId, Object propertyId) {
@@ -138,6 +168,9 @@ public class SurveillanceViewAlarmTable extends SurveillanceViewDetailTable {
             }
         });
 
+        /**
+         * set a cell style generator that handles the logMsg column
+         */
         setCellStyleGenerator(new CellStyleGenerator() {
             @Override
             public String getStyle(final Table source, final Object itemId, final Object propertyId) {
@@ -153,29 +186,52 @@ public class SurveillanceViewAlarmTable extends SurveillanceViewDetailTable {
             }
         });
 
+        /**
+         * set column headers
+         */
         setColumnHeader("node", "Node");
         setColumnHeader("logMsg", "Log Msg");
         setColumnHeader("counter", "Count");
         setColumnHeader("firstEventTime", "First Time");
         setColumnHeader("lastEventTime", "Last Time");
 
+        /**
+         * set visible columns
+         */
         setVisibleColumns("node", "logMsg", "counter", "firstEventTime", "lastEventTime");
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public synchronized void refreshDetails(Set<OnmsCategory> rowCategories, Set<OnmsCategory> colCategories) {
+        /**
+         * retrieve all matching alarms
+         */
         List<OnmsAlarm> alarms = getSurveillanceViewService().getAlarmsForCategories(rowCategories, colCategories);
 
+        /**
+         * empty the container
+         */
         m_beanItemContainer.removeAllItems();
 
+        /**
+         * add items to container
+         */
         if (alarms != null && !alarms.isEmpty()) {
             for (OnmsAlarm alarm : alarms) {
                 m_beanItemContainer.addItem(alarm);
             }
         }
-
+        /**
+         * sort the alarms
+         */
         sort(new Object[]{"firstEventTime"}, new boolean[]{true});
 
+        /**
+         * refresh the table
+         */
         refreshRowCache();
     }
 }

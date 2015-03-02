@@ -54,12 +54,28 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * This class represents the category chooser window for column/row definitions.
+ *
+ * @author Christian Pape
+ */
 public class SurveillanceViewConfigurationCategoryWindow extends Window {
+    /**
+     * the logger instance
+     */
     private static final Logger LOG = LoggerFactory.getLogger(SurveillanceViewConfigurationCategoryWindow.class);
 
+    /**
+     * The constructor for instantiating this component.
+     *
+     * @param surveillanceViewService the surveillance view service to be used.
+     * @param defs                    the column/row defs
+     * @param def                     the def to be edited
+     * @param saveActionListener      the listener for the saving action
+     */
     public SurveillanceViewConfigurationCategoryWindow(final SurveillanceViewService surveillanceViewService, final Collection<?> defs, final Def def, final SaveActionListener saveActionListener) {
         /**
-         * Setting the title
+         * calling the super constructor
          */
         super("Window title");
 
@@ -94,13 +110,16 @@ public class SurveillanceViewConfigurationCategoryWindow extends Window {
         /**
          * Creating a simple validator for the title field
          */
-        labelField.addValidator(new AbstractStringValidator("Please use an unique name for the surveillance view") {
+        labelField.addValidator(new AbstractStringValidator("Please use an unique name for this column/row definition") {
             @Override
             protected boolean isValidValue(String s) {
                 if ("".equals(s.trim())) {
                     return false;
                 }
 
+                /**
+                 * check if the name clashes with other defs
+                 */
                 for (Def defx : (Collection<Def>) defs) {
                     if (defx.getLabel().equals(s)) {
                         if (defx != def) {

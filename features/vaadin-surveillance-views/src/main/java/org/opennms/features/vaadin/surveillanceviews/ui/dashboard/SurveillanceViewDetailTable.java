@@ -33,14 +33,29 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.themes.BaseTheme;
 import org.opennms.features.vaadin.surveillanceviews.service.SurveillanceViewService;
-import org.opennms.netmgt.model.OnmsCategory;
 
-import java.util.Set;
-
+/**
+ * This abstract class represents a table based component that is refreshable by an associated surveillance view.
+ *
+ * @author Christian Pape
+ */
 public abstract class SurveillanceViewDetailTable extends Table implements SurveillanceViewDetail {
+    /**
+     * the surveillance view service
+     */
     private SurveillanceViewService m_surveillanceViewService;
+    /**
+     * field for storing whether links are enabled in this component
+     */
     protected boolean m_enabled;
 
+    /**
+     * Constructor to creating new instances.
+     *
+     * @param title                   the title for this table
+     * @param surveillanceViewService the surveillance service to be used
+     * @param enabled                 are links enabled?
+     */
     public SurveillanceViewDetailTable(String title, SurveillanceViewService surveillanceViewService, boolean enabled) {
         super(title);
 
@@ -51,10 +66,21 @@ public abstract class SurveillanceViewDetailTable extends Table implements Surve
         setPageLength(5);
     }
 
+    /**
+     * Returns the associated surveillance view service.
+     *
+     * @return the surveillance view service
+     */
     protected SurveillanceViewService getSurveillanceViewService() {
         return m_surveillanceViewService;
     }
 
+    /**
+     * Returns the image severity layout for the given content.
+     *
+     * @param content the content
+     * @return the label with the applied style
+     */
     protected HorizontalLayout getImageSeverityLayout(String content) {
         HorizontalLayout horizontalLayout = new HorizontalLayout();
 
@@ -70,6 +96,13 @@ public abstract class SurveillanceViewDetailTable extends Table implements Surve
         return horizontalLayout;
     }
 
+    /**
+     * Returns a clickable glyph icon with the given {@link com.vaadin.ui.Button.ClickListener}.
+     *
+     * @param glyphIcon     the icon to be used
+     * @param clickListener the listener
+     * @return the button instance
+     */
     protected Button getClickableIcon(String glyphIcon, Button.ClickListener clickListener) {
         Button button = new Button("<span class=\"" + glyphIcon + "\" aria-hidden=\"true\"></span>");
         button.setHtmlContentAllowed(true);

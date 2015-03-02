@@ -35,42 +35,71 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * This class represents the column-def element of the surveillance view configuration xml
+ * This class represents the column-def element of the surveillance view configuration xml.
+ *
+ * @author Christian Pape
  */
 public class ColumnDef implements Def {
-
+    /**
+     * field storing the label
+     */
     private java.lang.String m_label = "default";
+    /**
+     * field for the report-category attribute - this field is
+     * deprecated and should not be used anymore!
+     */
     private java.lang.String m_reportCategory;
+    /**
+     * the list of categories associated with this column def
+     */
     private List<Category> m_categories = new LinkedList<Category>();
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     @XmlAttribute(name = "label", required = true)
     public String getLabel() {
         return m_label;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void setLabel(String label) {
         this.m_label = label;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     @XmlAttribute(name = "report-category", required = false)
     public String getReportCategory() {
         return m_reportCategory;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void setReportCategory(String reportCategory) {
         this.m_reportCategory = reportCategory;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     @XmlElement(name = "category")
     public List<Category> getCategories() {
         return m_categories;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Set<String> getCategoryNames() {
         Set<String> listOfNames = new HashSet<>();
@@ -80,6 +109,9 @@ public class ColumnDef implements Def {
         return listOfNames;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean containsCategory(String name) {
         for (Category category : getCategories()) {

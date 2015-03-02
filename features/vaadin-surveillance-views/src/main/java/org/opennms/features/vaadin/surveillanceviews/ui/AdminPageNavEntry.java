@@ -39,16 +39,13 @@ public class AdminPageNavEntry implements PageNavEntry {
      * name of this PageNavEntry
      */
     private String m_name;
-
     /**
      * URL of this PageNavEntry
      */
     private String m_url;
 
     /**
-     * Returns the name of this PageNavEntry.
-     *
-     * @return the name
+     * {@inheritDoc}
      */
     @Override
     public String getName() {
@@ -65,9 +62,7 @@ public class AdminPageNavEntry implements PageNavEntry {
     }
 
     /**
-     * Returns the URL associated with this PageNavEntry.
-     *
-     * @return the URL
+     * {@inheritDoc}
      */
     @Override
     public String getUrl() {

@@ -37,10 +37,14 @@ import java.io.File;
 
 /**
  * This class is used for loading, holding and saving of {@link SurveillanceViewConfiguration} definitions.
+ *
+ * @author Christian Pape
  */
 public class SurveillanceViewProvider {
+    /**
+     * the logger instance
+     */
     private static final Logger LOG = LoggerFactory.getLogger(SurveillanceViewProvider.class);
-
     /**
      * Instance variable for this singleton object
      */

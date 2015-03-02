@@ -35,46 +35,95 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * This class represents the view element of the surveillance view configuration xml
+ * This class represents the view element of the surveillance view configuration xml.
+ *
+ * @author Christian Pape
  */
 @XmlRootElement
 public class View {
-
+    /**
+     * the row definitions for this view
+     */
     private List<RowDef> m_rows = new LinkedList<RowDef>();
+    /**
+     * the column definitions for this view
+     */
     private List<ColumnDef> m_columns = new LinkedList<ColumnDef>();
+    /**
+     * the name for this view
+     */
     private java.lang.String m_name = "untitled";
+    /**
+     * the refresh interval in seconds
+     */
     private java.lang.Integer m_refreshSeconds = 300;
 
+    /**
+     * Returns the list of row defs for this view.
+     *
+     * @return the list of row defs
+     */
     @XmlElement(name = "row-def")
     @XmlElementWrapper(name = "rows")
     public List<RowDef> getRows() {
         return m_rows;
     }
 
+    /**
+     * Returns the list of column defs for this view.
+     *
+     * @return the list of column defs
+     */
     @XmlElement(name = "column-def")
     @XmlElementWrapper(name = "columns")
     public List<ColumnDef> getColumns() {
         return m_columns;
     }
 
+    /**
+     * Returns the name of this view
+     *
+     * @return the view's name
+     */
     @XmlAttribute(name = "name", required = true)
     public String getName() {
         return m_name;
     }
 
+    /**
+     * Sets the name for this view.
+     *
+     * @param name the name to be used
+     */
     public void setName(String name) {
         this.m_name = name;
     }
 
+    /**
+     * Returns the refresh interval in seconds
+     *
+     * @return the refresh interval
+     */
     @XmlAttribute(name = "refresh-seconds", required = false)
     public int getRefreshSeconds() {
         return m_refreshSeconds;
     }
 
+    /**
+     * Sets the refresh interval in seconds
+     *
+     * @param refreshSeconds the refresh interval to be used
+     */
     public void setRefreshSeconds(int refreshSeconds) {
         this.m_refreshSeconds = refreshSeconds;
     }
 
+    /**
+     * Returns the row def with the given name.
+     *
+     * @param label the name to search for
+     * @return the row def if found, null otherwise
+     */
     public RowDef getRowDef(String label) {
         for (RowDef rowDef : getRows()) {
             if (label.equals(rowDef.getLabel())) {
@@ -84,6 +133,12 @@ public class View {
         return null;
     }
 
+    /**
+     * Returns the column def with the given name.
+     *
+     * @param label the name to search for
+     * @return the column def if found, null otherwise
+     */
     public ColumnDef getColumnDef(String label) {
         for (ColumnDef columnDef : getColumns()) {
             if (label.equals(columnDef.getLabel())) {

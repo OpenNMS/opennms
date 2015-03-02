@@ -31,6 +31,18 @@ import org.opennms.netmgt.model.OnmsCategory;
 
 import java.util.Set;
 
+/**
+ * This interface is used to represent components that are refreshable by a surveillance view table.
+ *
+ * @author Christian Pape
+ */
 public interface SurveillanceViewDetail {
+    /**
+     * Refreshes the contents of this component. This is triggered by a mouse interaction or data
+     * change in associated surveillance view.
+     *
+     * @param rowCategories the row categories
+     * @param colCategories the column categories
+     */
     public void refreshDetails(Set<OnmsCategory> rowCategories, Set<OnmsCategory> colCategories);
 }

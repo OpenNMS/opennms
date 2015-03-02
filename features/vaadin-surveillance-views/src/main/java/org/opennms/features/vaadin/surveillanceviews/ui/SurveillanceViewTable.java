@@ -49,49 +49,102 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * This class represents the surveillance view table itself.
+ *
+ * @author Christian Pape
+ */
 public class SurveillanceViewTable extends Table {
+    /**
+     * the logger instance
+     */
     private static final Logger LOG = LoggerFactory.getLogger(SurveillanceViewTable.class);
-
+    /**
+     * the surveillance view service
+     */
     private SurveillanceViewService m_surveillanceViewService;
-
-    enum TableSelectionMode {
-        ALL_SELECTED, ROW_SELECTED, COLUMN_SELECTED, ITEM_SELECTED
-    }
-
-    private TableSelectionMode m_selectionType = TableSelectionMode.ALL_SELECTED;
+    /**
+     * selected item id and property id
+     */
     private Object m_selectedItemId, m_selectedPropertyId;
+    /**
+     * the list of detail tables
+     */
     private List<SurveillanceViewDetail> m_detailTables = new ArrayList<SurveillanceViewDetail>();
-
+    /**
+     * the selected row categories
+     */
     private Set<OnmsCategory> m_selectedRowCategories = null;
+    /**
+     * the selected column categories
+     */
     private Set<OnmsCategory> m_selectedColumnCategories = null;
-
+    /**
+     * all row categories
+     */
     private Set<OnmsCategory> m_allRowCategories = new HashSet<>();
+    /**
+     * all column categories
+     */
     private Set<OnmsCategory> m_allColumnCategories = new HashSet<>();
-
+    /**
+     * the surveillance cell states
+     */
     private SurveillanceStatus[][] m_cells;
-
+    /**
+     * the category map
+     */
     private Map<String, OnmsCategory> m_onmsCategoryMap = new HashMap<>();
-
+    /**
+     * the view to be displayed
+     */
     private View m_view;
+    /**
+     * flag whether links are enabled
+     */
+    private boolean m_enabled;
+    /**
+     * flag whether dashboard should be displayed
+     */
+    private boolean m_dashboard;
 
-    private boolean m_enabled, m_dashboard;
-
+    /**
+     * Constructor for instatiating this component.
+     *
+     * @param view                    the view to be displayed
+     * @param surveillanceViewService the surveillance view service
+     * @param dashboard               should the dashboard be displayed?
+     * @param enabled                 should links be enabled?
+     */
     public SurveillanceViewTable(final View view, SurveillanceViewService surveillanceViewService, boolean dashboard, boolean enabled) {
+        /**
+         * call the super constructor
+         */
         super(null);
-
+        /**
+         * set the fields
+         */
         this.m_surveillanceViewService = surveillanceViewService;
         this.m_enabled = enabled;
         this.m_dashboard = dashboard;
         this.m_view = view;
-
+        /**
+         * initialize this component with the view
+         */
         refresh();
 
+        /**
+         * fill the categories map
+         */
         List<OnmsCategory> onmsCategories = m_surveillanceViewService.getOnmsCategories();
 
         for (OnmsCategory onmsCategory : onmsCategories) {
             m_onmsCategoryMap.put(onmsCategory.getName(), onmsCategory);
         }
 
+        /**
+         * initialize the table features
+         */
         setSizeUndefined();
         setWidth(100, Unit.PERCENTAGE);
 
@@ -100,8 +153,14 @@ public class SurveillanceViewTable extends Table {
         setImmediate(true);
         setSelectable(false);
 
+        /**
+         * set the base style name
+         */
         addStyleName("surveillance-view");
 
+        /**
+         * add row header column
+         */
         addGeneratedColumn("", new ColumnGenerator() {
             @Override
             public Object generateCell(Table table, final Object itemId, Object columnId) {
@@ -112,8 +171,14 @@ public class SurveillanceViewTable extends Table {
             }
         });
 
+        /**
+         * set header title for the row header column
+         */
         setColumnHeader("", view.getName());
 
+        /**
+         * create the other columns
+         */
         for (ColumnDef columnDef : view.getColumns()) {
             m_allColumnCategories.addAll(getOnmsCategoriesForNames(columnDef.getCategoryNames()));
 
@@ -134,25 +199,41 @@ public class SurveillanceViewTable extends Table {
             });
         }
 
+        /**
+         * gather all row categories
+         */
         for (RowDef rowDef : view.getRows()) {
             m_allRowCategories.addAll(getOnmsCategoriesForNames(rowDef.getCategoryNames()));
 
             addItem(rowDef.getLabel());
             setItemCaption(rowDef.getLabel(), rowDef.getLabel());
         }
-
+        /**
+         * per default all is selected
+         */
         m_selectedRowCategories = m_allRowCategories;
         m_selectedColumnCategories = m_allColumnCategories;
 
+        /**
+         * page length is equal to the row count
+         */
         this.setPageLength(this.getItemIds().size());
 
+        /**
+         * if dashboard is enabled...
+         */
         if (m_dashboard) {
+            /**
+             * ...add a click listener for cells...
+             */
             addItemClickListener(new ItemClickEvent.ItemClickListener() {
                 @Override
                 public void itemClick(ItemClickEvent itemClickEvent) {
                     String selectedColumn = (String) itemClickEvent.getPropertyId();
                     if (!"".equals(selectedColumn)) {
-                        m_selectionType = TableSelectionMode.ITEM_SELECTED;
+                        /**
+                         * this handles cell clicks
+                         */
                         m_selectedItemId = itemClickEvent.getItemId();
                         m_selectedPropertyId = itemClickEvent.getPropertyId();
 
@@ -161,7 +242,9 @@ public class SurveillanceViewTable extends Table {
                         m_selectedRowCategories = getOnmsCategoriesForNames(view.getRowDef((String) itemClickEvent.getItemId()).getCategoryNames());
                         m_selectedColumnCategories = getOnmsCategoriesForNames(view.getColumnDef((String) itemClickEvent.getPropertyId()).getCategoryNames());
                     } else {
-                        m_selectionType = TableSelectionMode.ROW_SELECTED;
+                        /**
+                         * this handles row clicks
+                         */
                         m_selectedItemId = itemClickEvent.getItemId();
 
                         Notification.show(m_selectedItemId + " selected");
@@ -175,18 +258,24 @@ public class SurveillanceViewTable extends Table {
                 }
             });
 
+            /**
+             * ...and a header click listener...
+             */
             addHeaderClickListener(new HeaderClickListener() {
                 @Override
                 public void headerClick(HeaderClickEvent headerClickEvent) {
                     if ("".equals(headerClickEvent.getPropertyId())) {
-                        m_selectionType = TableSelectionMode.ALL_SELECTED;
-
+                        /**
+                         * this handles the upper-left cell
+                         */
                         m_selectedRowCategories = m_allRowCategories;
                         m_selectedColumnCategories = m_allColumnCategories;
 
                         Notification.show("All entries selected");
                     } else {
-                        m_selectionType = TableSelectionMode.COLUMN_SELECTED;
+                        /**
+                         * this handles the rest of the header cells
+                         */
                         m_selectedPropertyId = headerClickEvent.getPropertyId();
 
                         m_selectedRowCategories = m_allRowCategories;
@@ -200,39 +289,11 @@ public class SurveillanceViewTable extends Table {
                 }
             });
         }
-
-        setCellStyleGenerator(new CellStyleGenerator() {
-            @Override
-            public String getStyle(final Table source, final Object itemId, final Object propertyId) {
-                String style = null;
-
-                if (m_selectionType == TableSelectionMode.ALL_SELECTED) {
-                    return style;
-                }
-
-                if (m_selectionType == TableSelectionMode.COLUMN_SELECTED) {
-                    if (m_selectedPropertyId.equals(propertyId)) {
-                        style = "marked";
-                    }
-                }
-
-                if (m_selectionType == TableSelectionMode.ROW_SELECTED) {
-                    if (m_selectedItemId.equals(itemId) && !"".equals(propertyId)) {
-                        style = "marked";
-                    }
-                }
-
-                if (m_selectionType == TableSelectionMode.ITEM_SELECTED) {
-                    if (m_selectedItemId.equals(itemId) && m_selectedPropertyId.equals(propertyId)) {
-                        style = "marked";
-                    }
-                }
-
-                return style;
-            }
-        });
     }
 
+    /**
+     * refreshes this surveillance view
+     */
     public synchronized void refresh() {
         m_cells = m_surveillanceViewService.calculateCellStatus(m_view);
         refreshRowCache();
@@ -240,6 +301,12 @@ public class SurveillanceViewTable extends Table {
         markAsDirtyRecursive();
     }
 
+    /**
+     * Returns a set of OpenNMS categories for a given collection of view categories.
+     *
+     * @param collection the collection of view categories
+     * @return the set of OpenNMS categories
+     */
     private Set<OnmsCategory> getOnmsCategoriesForNames(Collection<String> collection) {
         Set<OnmsCategory> onmsCategories = new HashSet<>();
         for (String name : collection) {
@@ -248,12 +315,20 @@ public class SurveillanceViewTable extends Table {
         return onmsCategories;
     }
 
+    /**
+     * Refreshes all associated detail tables.
+     */
     private void updateDetailsTable() {
         for (SurveillanceViewDetail surveillanceViewDetail : m_detailTables) {
             surveillanceViewDetail.refreshDetails(m_selectedRowCategories, m_selectedColumnCategories);
         }
     }
 
+    /**
+     * Associates a detail table with this surveillance view table.
+     *
+     * @param surveillanceViewDetail the detail table to add
+     */
     public void addDetailsTable(SurveillanceViewDetail surveillanceViewDetail) {
         m_detailTables.add(surveillanceViewDetail);
         surveillanceViewDetail.refreshDetails(m_selectedRowCategories, m_selectedColumnCategories);

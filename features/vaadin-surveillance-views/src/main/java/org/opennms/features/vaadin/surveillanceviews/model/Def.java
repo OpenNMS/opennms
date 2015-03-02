@@ -31,20 +31,58 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * Helper inteface to handle similar column-def/row-def stuff
+ * Helper inteface to handle similar column-def/row-def stuff.
+ *
+ * @author Christian Pape
  */
 public interface Def {
+    /**
+     * Returns the label of this column/row def.
+     *
+     * @return the label
+     */
     String getLabel();
 
+    /**
+     * Returns the report-category attribute of this column/row def.
+     *
+     * @return the report-category attribute
+     */
     String getReportCategory();
 
+    /**
+     * Returns the list of categories used by this column/row def.
+     *
+     * @return the list of categories
+     */
     List<Category> getCategories();
 
+    /**
+     * Returns a set of category names used by this column/row def.
+     *
+     * @return the set of category names
+     */
     Set<String> getCategoryNames();
 
+    /**
+     * Sets the label of this column/row def
+     *
+     * @param label the label to be used
+     */
     void setLabel(String label);
 
+    /**
+     * Sets the report-category attribute of this column/row def
+     *
+     * @param reportCategory the report-category attribute to be used
+     */
     void setReportCategory(String reportCategory);
 
+    /**
+     * Checks whether this column/row def uses the given category.
+     *
+     * @param name the nam eof the category to be checked
+     * @return true, if used by this column/row def, false otherwise
+     */
     boolean containsCategory(String name);
 }

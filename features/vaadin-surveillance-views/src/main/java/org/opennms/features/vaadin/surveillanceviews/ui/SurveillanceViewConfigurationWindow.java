@@ -56,9 +56,24 @@ import org.slf4j.LoggerFactory;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * This class is used to display the surveillance view configuration dialog.
+ *
+ * @author Christian Pape
+ */
 public class SurveillanceViewConfigurationWindow extends Window {
+    /**
+     * the logger instance
+     */
     private static final Logger LOG = LoggerFactory.getLogger(SurveillanceViewConfigurationWindow.class);
 
+    /**
+     * The constructor for instantiating this component.
+     *
+     * @param surveillanceViewService the surveillance view service to be used
+     * @param view                    the view to edit
+     * @param saveActionListener      the save action listener
+     */
     public SurveillanceViewConfigurationWindow(final SurveillanceViewService surveillanceViewService, final View view, final SaveActionListener saveActionListener) {
         /**
          * Setting the title

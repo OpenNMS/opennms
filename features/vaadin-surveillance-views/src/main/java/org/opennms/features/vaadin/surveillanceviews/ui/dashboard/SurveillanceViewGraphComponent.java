@@ -53,20 +53,53 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * This component is used to display the available graphs for a surveillance view dashboard.
+ *
+ * @author Christian Pape
+ */
 public class SurveillanceViewGraphComponent extends VerticalLayout implements SurveillanceViewDetail, Page.BrowserWindowResizeListener {
+    /**
+     * the logger instance
+     */
     private static final Logger LOG = LoggerFactory.getLogger(SurveillanceViewGraphComponent.class);
-
+    /**
+     * the surveillance view service instance
+     */
     private SurveillanceViewService m_surveillanceViewService;
+    /**
+     * flag, whether links are enabled
+     */
     protected boolean m_enabled;
+    /**
+     * selection boxes for node, resource and graph
+     */
     private NativeSelect m_nodeSelect, m_resourceSelect, m_graphSelect;
+    /**
+     * the image layout
+     */
     private VerticalLayout m_imageLayout;
+    /**
+     * initial width of image
+     */
     private int m_width = 1000;
 
+    /**
+     * Constructor for instantiating this component.
+     *
+     * @param surveillanceViewService the surveillance view service to be used
+     * @param enabled                 the flag should links be enabled?
+     */
     public SurveillanceViewGraphComponent(SurveillanceViewService surveillanceViewService, boolean enabled) {
-
+        /**
+         * set the fields
+         */
         m_surveillanceViewService = surveillanceViewService;
         m_enabled = enabled;
 
+        /**
+         * create layout for caption
+         */
         HorizontalLayout horizontalLayout = new HorizontalLayout();
 
         horizontalLayout.setWidth(100, Unit.PERCENTAGE);
@@ -75,6 +108,9 @@ public class SurveillanceViewGraphComponent extends VerticalLayout implements Su
         horizontalLayout.addComponent(new Label("Resource Graphs"));
         addComponent(horizontalLayout);
 
+        /**
+         * create node selection box
+         */
         m_nodeSelect = new NativeSelect();
         m_nodeSelect.setNullSelectionAllowed(false);
 
@@ -104,6 +140,9 @@ public class SurveillanceViewGraphComponent extends VerticalLayout implements Su
             }
         });
 
+        /**
+         * create resource selection box
+         */
         m_resourceSelect = new NativeSelect();
         m_resourceSelect.setNullSelectionAllowed(false);
 
@@ -131,6 +170,9 @@ public class SurveillanceViewGraphComponent extends VerticalLayout implements Su
             }
         });
 
+        /**
+         * create graph selection box
+         */
         m_graphSelect = new NativeSelect();
         m_graphSelect.setNullSelectionAllowed(false);
 
@@ -147,45 +189,64 @@ public class SurveillanceViewGraphComponent extends VerticalLayout implements Su
             }
         });
 
+        /**
+         * set box sizes to full
+         */
         m_nodeSelect.setSizeFull();
         m_resourceSelect.setSizeFull();
         m_graphSelect.setSizeFull();
 
+        /**
+         * add box styles
+         */
         m_nodeSelect.addStyleName("surveillance-view");
         m_resourceSelect.addStyleName("surveillance-view");
         m_graphSelect.addStyleName("surveillance-view");
 
-
+        /**
+         * create layout for storing the image
+         */
         m_imageLayout = new VerticalLayout();
         m_imageLayout.setSizeUndefined();
         m_imageLayout.setWidth(100, Unit.PERCENTAGE);
         m_imageLayout.setHeight(300, Unit.PIXELS);
 
-        HorizontalLayout verticalLayout = new HorizontalLayout();
-        verticalLayout.setSizeFull();
-        verticalLayout.addComponent(m_nodeSelect);
-        verticalLayout.addComponent(m_resourceSelect);
-        verticalLayout.addComponent(m_graphSelect);
+        /**
+         * create layout for selection boxes
+         */
+        HorizontalLayout selectionBoxesLayout = new HorizontalLayout();
+        selectionBoxesLayout.setSizeFull();
+        selectionBoxesLayout.addComponent(m_nodeSelect);
+        selectionBoxesLayout.addComponent(m_resourceSelect);
+        selectionBoxesLayout.addComponent(m_graphSelect);
 
         m_imageLayout.setId("imageLayout");
 
-        JavaScript.getCurrent().addFunction("myImageLayoutWidth", new JavaScriptFunction() {
+        /**
+         * add javascript magic to retrieve the layout width...
+         */
+        JavaScript.getCurrent().addFunction("getLayoutWidth", new JavaScriptFunction() {
             @Override
             public void call(final JSONArray arguments) throws JSONException {
                 m_width = arguments.getInt(0);
             }
         });
 
-
+        /**
+         * ...and call it when page is constructed. Also add a resize listener...
+         */
         addAttachListener(new AttachListener() {
             @Override
             public void attach(AttachEvent attachEvent) {
                 getUI().getPage().addBrowserWindowResizeListener(SurveillanceViewGraphComponent.this);
 
-                JavaScript.getCurrent().execute("myImageLayoutWidth(document.getElementById('" + m_imageLayout.getId() + "').clientWidth);");
+                JavaScript.getCurrent().execute("getLayoutWidth(document.getElementById('" + m_imageLayout.getId() + "').clientWidth);");
             }
         });
 
+        /**
+         * ... and remove the resize listener on detach event
+         */
         addDetachListener(new DetachListener() {
             @Override
             public void detach(DetachEvent detachEvent) {
@@ -193,13 +254,19 @@ public class SurveillanceViewGraphComponent extends VerticalLayout implements Su
             }
         });
 
-        addComponent(verticalLayout);
+        /**
+         * add layout for selection boxes and image
+         */
+        addComponent(selectionBoxesLayout);
         addComponent(m_imageLayout);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void browserWindowResized(Page.BrowserWindowResizeEvent browserWindowResizeEvent) {
-        JavaScript.getCurrent().execute("myImageLayoutWidth(document.getElementById('" + m_imageLayout.getId() + "').clientWidth);");
+        JavaScript.getCurrent().execute("getLayoutWidth(document.getElementById('" + m_imageLayout.getId() + "').clientWidth);");
 
         String string = (String) m_graphSelect.getValue();
 
@@ -208,6 +275,11 @@ public class SurveillanceViewGraphComponent extends VerticalLayout implements Su
         }
     }
 
+    /**
+     * Method to replace the current image with a new one given by the url.
+     *
+     * @param url the new image url
+     */
     private void replaceImage(String url) {
         m_imageLayout.removeAllComponents();
 
@@ -219,22 +291,42 @@ public class SurveillanceViewGraphComponent extends VerticalLayout implements Su
         }
     }
 
+    /**
+     * Return the associated surveillance view service.
+     *
+     * @return the surveillance view service.
+     */
     protected SurveillanceViewService getSurveillanceViewService() {
         return m_surveillanceViewService;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public synchronized void refreshDetails(Set<OnmsCategory> rowCategories, Set<OnmsCategory> colCategories) {
+        /**
+         * retrieve the matching nodes
+         */
         List<OnmsNode> nodes = getSurveillanceViewService().getNodesForCategories(rowCategories, colCategories);
 
+        /**
+         * save the current selection
+         */
         OnmsNode selectedNode = (OnmsNode) m_nodeSelect.getValue();
         OnmsResource selectedResource = (OnmsResource) m_resourceSelect.getValue();
         String selectedGraph = (String) m_graphSelect.getValue();
 
         LOG.debug("Saved selection={} / {} / {}", selectedNode == null ? "null" : selectedNode.getLabel(), selectedResource == null ? "null" : selectedResource.getLabel(), selectedGraph);
 
+        /**
+         * remove all entries in the node selection box
+         */
         m_nodeSelect.removeAllItems();
 
+        /**
+         * add the new items
+         */
         if (nodes != null && !nodes.isEmpty()) {
             for (OnmsNode node : nodes) {
                 m_nodeSelect.addItem(node);
@@ -242,6 +334,9 @@ public class SurveillanceViewGraphComponent extends VerticalLayout implements Su
             }
         }
 
+        /**
+         * try to select the same node/resource/graph combination as before
+         */
         if (selectedNode != null) {
             for (OnmsNode onmsNode : (Collection<OnmsNode>) m_nodeSelect.getItemIds()) {
                 if (onmsNode.getId().equals(selectedNode.getId())) {
@@ -261,6 +356,9 @@ public class SurveillanceViewGraphComponent extends VerticalLayout implements Su
             }
         }
 
+        /**
+         * if nothing was selected before, just select the first entry if possible
+         */
         Iterator<?> i = m_nodeSelect.getItemIds().iterator();
 
         if (i.hasNext()) {

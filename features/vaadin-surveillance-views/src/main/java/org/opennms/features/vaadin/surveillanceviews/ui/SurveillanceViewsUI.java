@@ -27,10 +27,8 @@
  *******************************************************************************/
 package org.opennms.features.vaadin.surveillanceviews.ui;
 
-import com.github.wolfie.refresher.Refresher;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.Title;
-import com.vaadin.event.UIEvents;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
@@ -51,36 +49,56 @@ import org.springframework.security.core.context.SecurityContextHolder;
 @Theme("opennms")
 @Title("OpenNMS Surveillance Views")
 public class SurveillanceViewsUI extends UI {
+    /**
+     * the logger instance
+     */
     private static final Logger LOG = LoggerFactory.getLogger(SurveillanceViewsUI.class);
-
+    /**
+     * the surveillane view service
+     */
     private SurveillanceViewService m_surveillanceViewService;
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void init(VaadinRequest request) {
+        /**
+         * create a layout
+         */
         VerticalLayout rootLayout = new VerticalLayout();
         rootLayout.setSpacing(true);
 
+        /**
+         * check query parameters for viewName, dashboard
+         */
         String viewName = request.getParameter("viewName");
         boolean dashboard = request.getParameter("dashboard") != null && "true".equals(request.getParameter("dashboard"));
+
+        /**
+         * retrieve the username
+         */
         String username = request.getRemoteUser();
 
+        /**
+         * now select the right view
+         */
         View view;
 
         if (viewName == null) {
             view = m_surveillanceViewService.selectDefaultViewForUsername(username);
-            viewName = view.getName();
         } else {
             view = SurveillanceViewProvider.getInstance().getView(viewName);
         }
 
-        /*
-        rootLayout.addComponent(new Label("viewName=" + viewName));
-        rootLayout.addComponent(new Label("dashboard=" + dashboard));
-        rootLayout.addComponent(new Label("username=" + username));
-        */
-
+        /**
+         * set the poll interval
+         */
         setPollInterval(1000);
 
+        /**
+         * check for dashboard role
+         */
         boolean isDashboardRole = true;
 
         SecurityContext context = SecurityContextHolder.getContext();
@@ -91,13 +109,12 @@ public class SurveillanceViewsUI extends UI {
 
         LOG.debug("User {} is in dashboard role? {}", username, isDashboardRole);
 
+        /**
+         * now construct the surveillance view/dashboard
+         */
         rootLayout.addComponent(new SurveillanceView(view, m_surveillanceViewService, dashboard, !isDashboardRole));
 
         setContent(rootLayout);
-
-        final Refresher refresher = new Refresher();
-        refresher.setRefreshInterval(500);
-        addExtension(refresher);
     }
 
     /**
