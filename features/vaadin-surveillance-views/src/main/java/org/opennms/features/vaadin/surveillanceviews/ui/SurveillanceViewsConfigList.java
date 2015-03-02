@@ -91,9 +91,11 @@ public class SurveillanceViewsConfigList extends VerticalLayout {
         Label label = new Label("Surveillance View Configurations");
         label.addStyleName("configuration-title");
 
+        /*
         Button button = new Button("Help");
         button.setStyleName("small");
         button.setDescription("Display help and usage");
+        */
 
         /**
          * button.addClickListener(new HelpClickListener(this, m_wallboardConfigView.getDashletSelector()));
@@ -136,11 +138,11 @@ public class SurveillanceViewsConfigList extends VerticalLayout {
 
         HorizontalLayout horizontalLayout = new HorizontalLayout();
         horizontalLayout.addComponent(label);
-        horizontalLayout.addComponent(button);
+        // horizontalLayout.addComponent(button);
         horizontalLayout.setWidth(100, Unit.PERCENTAGE);
 
         horizontalLayout.setComponentAlignment(label, Alignment.MIDDLE_LEFT);
-        horizontalLayout.setComponentAlignment(button, Alignment.MIDDLE_RIGHT);
+        // horizontalLayout.setComponentAlignment(button, Alignment.MIDDLE_RIGHT);
 
         addComponent(horizontalLayout);
 
