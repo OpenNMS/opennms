@@ -29,16 +29,18 @@
 
 --%>
 
-<%@page language="java" contentType="text/html" session="true"  %>
+<%@page language="java"
+        contentType="text/html"
+        session="true"
+        %>
 
-<meta name='gwt:module' content='org.opennms.dashboard.Dashboard' />
-<link media="screen" href="css/dashboard.css" type="text/css" rel="stylesheet">
-<script type="text/javascript" src='dashboard/dashboard.nocache.js'></script>
-<table class="dashboard" cellspacing="5" width="100%">
-  <tbody>
-    <tr>
-      <td class="dashletCell"id="surveillanceView"></td>
-    </tr>
-  </tbody>
-</table>
+<%
+    String viewName = "";
 
+    if (request.getParameterMap().containsKey("viewName")) {
+        viewName = "&viewName=" + request.getParameter("viewName");
+    }
+%>
+
+
+<iframe src="osgi/vaadin-surveillance-views?dashboard=false<%= viewName %>" frameborder="0" style="height:100%; width:100%;"></iframe>
