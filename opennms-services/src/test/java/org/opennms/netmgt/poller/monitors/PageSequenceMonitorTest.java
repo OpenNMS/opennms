@@ -271,20 +271,20 @@ public class PageSequenceMonitorTest {
             "    <session-variable name=\"ltr3\" match-group=\"3\" />\n" +
             "    <session-variable name=\"ltr4\" match-group=\"4\" />\n" +
             "  </page>\n" +
-            "  <page virtual-host=\"localhost\" path=\"/opennms/j_spring_security_check\"  response-range=\"300-399\" port=\"10342\" method=\"POST\">\n" +
+            "  <!-- Pick out the letters w-i-t-h to try and log in, this will fail -->\n" +
+            "  <page virtual-host=\"localhost\" path=\"/opennms/j_spring_security_check\" response-range=\"300-399\" locationMatch=\"/opennms/spring_security_login\\?login_error\" port=\"10342\" method=\"POST\">\n" +
             "    <parameter key=\"j_username\" value=\"${ltr1}${ltr2}${ltr3}${ltr4}\"/>\n" + 
             "    <parameter key=\"j_password\" value=\"${ltr1}${ltr2}${ltr3}${ltr4}\"/>\n" + 
             "  </page>\n" + 
-            "  <page virtual-host=\"localhost\" path=\"/opennms/spring_security_login\"  port=\"10342\" failureMatch=\"(?s)Log out\" failureMessage=\"Login should have Failed but did not\" successMatch=\"(?s)Your login attempt was not successful.*\">\n" +
-            "    <parameter key=\"login_error\" value=\"\"/>\n" + 
-            "  </page>\n" + 
+            "  <page virtual-host=\"localhost\" path=\"/opennms/spring_security_login\" query=\"login_error\" port=\"10342\" failureMatch=\"(?s)Log out\" failureMessage=\"Login should have failed but did not\" successMatch=\"Your login attempt was not successful\"/>\n" +
+            "  <!-- Pick out the letters d-e-m-o to try and log in, this will succeed -->\n" +
             "  <page path=\"/opennms/\" port=\"10342\" virtual-host=\"localhost\" successMatch=\"(?s)&lt;hea(.)&gt;&lt;titl(.)&gt;.*&lt;/for(.)&gt;&lt;/b(.)dy&gt;\">\n" +
             "    <session-variable name=\"ltr1\" match-group=\"1\" />\n" +
             "    <session-variable name=\"ltr2\" match-group=\"2\" />\n" +
             "    <session-variable name=\"ltr3\" match-group=\"3\" />\n" +
             "    <session-variable name=\"ltr4\" match-group=\"4\" />\n" +
             "  </page>\n" +
-            "  <page virtual-host=\"localhost\" path=\"/opennms/j_spring_security_check\"  response-range=\"300-399\" port=\"10342\" method=\"POST\">\n" +
+            "  <page virtual-host=\"localhost\" path=\"/opennms/j_spring_security_check\" response-range=\"300-399\" port=\"10342\" method=\"POST\">\n" +
             "    <parameter key=\"j_username\" value=\"${ltr1}${ltr2}${ltr3}${ltr4}\"/>\n" + 
             "    <parameter key=\"j_password\" value=\"${ltr1}${ltr2}${ltr3}${ltr4}\"/>\n" + 
             "  </page>\n" + 

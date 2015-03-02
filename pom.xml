@@ -1108,7 +1108,7 @@
     <asciidoctorjPdfVersion>1.5.0-alpha.6</asciidoctorjPdfVersion>
     <activemqVersion>5.10.0</activemqVersion>
     <atomikosVersion>3.9.2</atomikosVersion>
-    <camelVersion>2.13.2</camelVersion>
+    <camelVersion>2.14.1</camelVersion>
     <cloverVersion>3.2.0</cloverVersion>
     <commonsBeanutilsVersion>1.8.3</commonsBeanutilsVersion>
     <commonsCodecVersion>1.9</commonsCodecVersion>
@@ -1131,7 +1131,7 @@
     <jasperreportsVersion>5.6.1</jasperreportsVersion>
     <jettyVersion>8.1.10.v20130312</jettyVersion>
     <karafVersion>2.4.0</karafVersion>
-    <karafPaxExamVersion>2.3.8</karafPaxExamVersion>
+    <karafPaxExamVersion>2.3.9</karafPaxExamVersion>
     <felixVersion>2.3.0</felixVersion>
     <liquibaseVersion>2.0.5</liquibaseVersion>
     <log4jVersion>99.99.99-use-log4j2</log4jVersion>
@@ -1153,8 +1153,8 @@
     <!-- ALWAYS change aspectj to match the version referenced in the spring poms -->
     <aspectjVersion>1.7.4</aspectjVersion>
     <springWebFlowVersion>2.3.4.RELEASE</springWebFlowVersion>
-    <springSecurityVersion>3.1.7.RELEASE</springSecurityVersion>
-    <springLdapVersion>3.1.7.RELEASE</springLdapVersion>
+    <springSecurityVersion>3.2.5.RELEASE</springSecurityVersion>
+    <springLdapVersion>${springSecurityVersion}</springLdapVersion>
 
     <!-- moved here from topology features -->
     <jungVersion>2.0.1</jungVersion>
@@ -2699,7 +2699,7 @@
       <dependency>
         <groupId>commons-net</groupId>
         <artifactId>commons-net</artifactId>
-        <version>3.0.1</version>
+        <version>3.3</version>
       </dependency>
       <dependency>
         <groupId>commons-pool</groupId>

@@ -13,7 +13,6 @@
         <entry key="ami-config.xml" value="amiPeerFactory"/>
         <!-- <entry key="asterisk-configuration.properties" value="asteriskConfigProperties"/> --><!-- Not part of standard build -->
         <entry key="availability-reports.xml" value="onmsReportConfigDao"/>
-        <entry key="capsd-configuration.xml" value="capsdConfigFactory"/>
         <entry key="categories.xml" value="categoryFactory"/>
         <entry key="chart-configuration.xml" value="chartConfigFactory"/>
         <!-- <entry key="collectd-configuration.xml" value="collectdConfigFactory"/>--><!-- database access -->
@@ -121,12 +120,6 @@
   <bean id="onmsReportConfigDao" class="org.opennms.netmgt.dao.castor.DefaultOnmsReportConfigDao">
     <property name="configResource" value="file:${opennms.home}/etc/availability-reports.xml"/>
   </bean>
-  
-  <bean id="capsdConfigFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-    <property name="staticMethod"><value>org.opennms.netmgt.config.CapsdConfigFactory.init</value></property>
-  </bean>
-
-  <bean id="capsdConfigFactory" class="org.opennms.netmgt.config.CapsdConfigFactory" depends-on="capsdConfigFactory-init" factory-method="getInstance"/>
   
   <bean id="categoryFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
     <property name="staticMethod"><value>org.opennms.netmgt.config.CategoryFactory.init</value></property>
