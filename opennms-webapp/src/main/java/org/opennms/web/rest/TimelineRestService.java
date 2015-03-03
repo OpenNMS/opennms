@@ -255,7 +255,7 @@ public class TimelineRestService extends OnmsRestService {
          * @param width      the width of the timeline header
          * @return the number of labels
          */
-        public static int computeNumberOfLabels(Graphics2D graphics2D, int delta, int width) {
+        public static int computeNumberOfLabels(Graphics2D graphics2D, long delta, int width) {
             if (delta <= 3600 * 24) {
                 return width / graphics2D.getFontMetrics().stringWidth("XX:XX");
             } else {
@@ -343,11 +343,7 @@ public class TimelineRestService extends OnmsRestService {
     @Context
     ServletContext m_servletContext;
 
-    private OnmsOutageCollection queryOutages(final int nodeId,
-                                              final String ipAddress,
-                                              final String serviceName,
-                                              final int start,
-                                              final int end) {
+    private OnmsOutageCollection queryOutages(final int nodeId, final String ipAddress, final String serviceName, final long start, final long end) {
         OnmsOutageCollection onmsOutageCollection;
 
         readLock();
@@ -356,12 +352,14 @@ public class TimelineRestService extends OnmsRestService {
             builder.eq("node.id", nodeId);
 
             final Date startDate = new Date();
-            startDate.setTime(start);
-            builder.or(Restrictions.isNull("ifRegainedService"), Restrictions.gt("ifRegainedService", startDate));
+            startDate.setTime(start * 1000l);
 
             final Date endDate = new Date();
-            endDate.setTime(end);
-            builder.or(Restrictions.isNull("ifLostService"), Restrictions.gt("ifLostService", endDate));
+            endDate.setTime(end * 1000l);
+
+            builder.or(Restrictions.isNull("ifRegainedService"), Restrictions.and(Restrictions.gt("ifRegainedService", startDate), Restrictions.le("ifRegainedService", endDate)));
+
+            builder.le("ifLostService", endDate);
 
             builder.eq("serviceType.name", serviceName);
             builder.eq("ipInterface.ipAddress", InetAddressUtils.addr(ipAddress));
@@ -387,8 +385,8 @@ public class TimelineRestService extends OnmsRestService {
     @Produces("image/png")
     @Transactional
     @Path("header/{start}/{end}/{width}")
-    public Response header(@PathParam("start") final int start, @PathParam("end") final int end, @PathParam("width") final int width) throws IOException {
-        int delta = end - start;
+    public Response header(@PathParam("start") final long start, @PathParam("end") final long end, @PathParam("width") final int width) throws IOException {
+        long delta = end - start;
 
         BufferedImage bufferedImage = new BufferedImage(width, 20, BufferedImage.TYPE_INT_ARGB);
 
@@ -417,8 +415,8 @@ public class TimelineRestService extends OnmsRestService {
     @Produces("text/html")
     @Transactional
     @Path("html/{nodeId}/{ipAddress}/{serviceName}/{start}/{end}/{width}")
-    public Response html(@PathParam("nodeId") final int nodeId, @PathParam("ipAddress") final String ipAddress, @PathParam("serviceName") final String serviceName, @PathParam("start") final int start, @PathParam("end") final int end, @PathParam("width") final int width) throws IOException {
-        int delta = end - start;
+    public Response html(@PathParam("nodeId") final int nodeId, @PathParam("ipAddress") final String ipAddress, @PathParam("serviceName") final String serviceName, @PathParam("start") final long start, @PathParam("end") final long end, @PathParam("width") final int width) throws IOException {
+        long delta = end - start;
 
         OnmsOutageCollection onmsOutageCollection = queryOutages(nodeId, ipAddress, serviceName, start, end);
 
@@ -477,8 +475,8 @@ public class TimelineRestService extends OnmsRestService {
     @Produces("image/png")
     @Transactional
     @Path("image/{nodeId}/{ipAddress}/{serviceName}/{start}/{end}/{width}")
-    public Response image(@PathParam("nodeId") final int nodeId, @PathParam("ipAddress") final String ipAddress, @PathParam("serviceName") final String serviceName, @PathParam("start") final int start, @PathParam("end") final int end, @PathParam("width") final int width) throws IOException {
-        int delta = end - start;
+    public Response image(@PathParam("nodeId") final int nodeId, @PathParam("ipAddress") final String ipAddress, @PathParam("serviceName") final String serviceName, @PathParam("start") final long start, @PathParam("end") final long end, @PathParam("width") final int width) throws IOException {
+        long delta = end - start;
 
         OnmsOutageCollection onmsOutageCollection = queryOutages(nodeId, ipAddress, serviceName, start, end);
 
