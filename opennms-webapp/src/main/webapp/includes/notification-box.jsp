@@ -47,8 +47,6 @@
 "
 %>
 
-<link rel="stylesheet" href="css/font-awesome-4.0.3/css/font-awesome.min.css">
-
 <%!
 	protected java.text.ChoiceFormat formatter = new java.text.ChoiceFormat( "0#no outstanding notices|1#1 outstanding notice|2#{0} outstanding notices" );
 %>

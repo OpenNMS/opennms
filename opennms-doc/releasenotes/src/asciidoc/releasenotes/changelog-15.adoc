@@ -1,6 +1,46 @@
 [releasenotes-15]
 === OpenNMS 15
 
+[releasenotes-changelog-15.0.1]
+==== Release 15.0.1
+
+Release 15.0.1 is the latest stable release of OpenNMS.  It consists primarily of bugfixes to the new UI and a fix for some database-related issues that could cause duplicate outages.
+
+The codename for 15.0.1 is _Silpheed_.
+
+===== Sub-task
+
+* XmpMonitor (Issue http://issues.opennms.org/browse/NMS-6702[NMS-6702])
+
+===== Bug
+
+* Outage timeline does not show all outages in timeframe (Issue http://issues.opennms.org/browse/NMS-7331[NMS-7331])
+* Side-menu layout issues in node resources (Issue http://issues.opennms.org/browse/NMS-7392[NMS-7392])
+* Outage records are not getting written to the database (Issue http://issues.opennms.org/browse/NMS-7394[NMS-7394])
+* Overlapping input label in login screen (Issue http://issues.opennms.org/browse/NMS-7395[NMS-7395])
+* Notifications with asset fields on the message are not working (Issue http://issues.opennms.org/browse/NMS-7396[NMS-7396])
+* Surveillance box on start page doesn't work (Issue http://issues.opennms.org/browse/NMS-7399[NMS-7399])
+* Data Collection Logs in wrong file (Issue http://issues.opennms.org/browse/NMS-7403[NMS-7403])
+* Incorrect Availability information and Outage information (Issue http://issues.opennms.org/browse/NMS-7406[NMS-7406])
+* Visual issues on the start page (Issue http://issues.opennms.org/browse/NMS-7409[NMS-7409])
+* Duplicate copies of bootstrap.js are included in our pages (Issue http://issues.opennms.org/browse/NMS-7423[NMS-7423])
+* Poller: start: Failed to schedule existing interfaces (Issue http://issues.opennms.org/browse/NMS-7425[NMS-7425])
+* Not monitored services are shown as 100% available on the WebUI (Issue http://issues.opennms.org/browse/NMS-7426[NMS-7426])
+* The PageSequenceMonitor is broken in OpenNMS 15 (Issue http://issues.opennms.org/browse/NMS-7427[NMS-7427])
+* Normalize the HTTP Host Header with the new HttpClientWrapper (Issue http://issues.opennms.org/browse/NMS-7432[NMS-7432])
+* Topology UI takes a long to load after login (Issue http://issues.opennms.org/browse/NMS-7433[NMS-7433])
+* Disabling Notifd crashes webUI (Issue http://issues.opennms.org/browse/NMS-7434[NMS-7434])
+* The Quick Add Node menu item shouldn't be under the Admin menu (Issue http://issues.opennms.org/browse/NMS-7435[NMS-7435])
+* The default log level is DEBUG instead of WARN on log4j2.xml (Issue http://issues.opennms.org/browse/NMS-7437[NMS-7437])
+* CORS filter not working (Issue http://issues.opennms.org/browse/NMS-7452[NMS-7452])
+* Netscaler systemDef will never match a real Netscaler (Issue http://issues.opennms.org/browse/NMS-7454[NMS-7454])
+
+===== Enhancement
+
+* Read port and authentication user from XMP config (Issue http://issues.opennms.org/browse/NMS-7419[NMS-7419])
+* Apply the auto-resize feature for the timeline charts (Issue http://issues.opennms.org/browse/NMS-7438[NMS-7438])
+
+
 [releasenotes-changelog-15.0.0]
 ==== Release 15.0.0
 

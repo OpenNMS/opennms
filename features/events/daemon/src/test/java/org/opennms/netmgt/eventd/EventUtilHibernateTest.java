@@ -30,15 +30,17 @@ package org.opennms.netmgt.eventd;
 
 import static org.junit.Assert.assertEquals;
 
-import java.sql.SQLException;
-
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.netmgt.dao.DatabasePopulator;
+import org.opennms.netmgt.dao.api.AssetRecordDao;
+import org.opennms.netmgt.dao.api.HwEntityDao;
+import org.opennms.netmgt.model.OnmsAssetRecord;
+import org.opennms.netmgt.model.OnmsHwEntity;
+import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -58,61 +60,79 @@ import org.springframework.transaction.annotation.Transactional;
 @JUnitTemporaryDatabase
 @Transactional
 public class EventUtilHibernateTest {
-    
+
     @Autowired
     private EventUtilDaoImpl eventUtilDaoImpl;
-    
+
     @Autowired
     private DatabasePopulator m_populator;
-    
-    private static boolean m_populated = false;
-    
+
+    @Autowired
+    private AssetRecordDao m_assetRecordDao;
+
+    @Autowired
+    private HwEntityDao m_hwEntityDao;
+
     @Before
     public void setUp() throws Exception {
     	m_populator.populateDatabase();
-    	/*try {
-           if (!m_populated) {
-                m_populator.populateDatabase();
-            }
-        } catch (Throwable e) {
-            e.printStackTrace(System.err);
-        } finally {
-            m_populated = true;
-        }
-        **/
-        
-    }
-
-    @After
-    public void tearDown() throws Exception {
-    	
     }
 
     @Test
-    public void testGetNodeLabel() throws SQLException {
+    public void testGetNodeLabel() {
     	String label = eventUtilDaoImpl.getNodeLabel(m_populator.getNode3().getId());
 		assertEquals("node3",label);
 		label = eventUtilDaoImpl.getNodeLabel(m_populator.getNode1().getId());
 		assertEquals("node1",label);
 		label = eventUtilDaoImpl.getNodeLabel(m_populator.getNode2().getId());
 		assertEquals("node2",label);
-		
     }
     
     @Test
-    public void testGetIfAlias() throws SQLException {
+    public void testGetIfAlias() {
     	String alias = eventUtilDaoImpl.getIfAlias(m_populator.getNode1().getId(), "192.168.1.1");
     	assertEquals("Initial ifAlias value", alias);
     }
     
     @Test
-    public void testGetAssetFieldValue() throws SQLException {
-    	String asset = eventUtilDaoImpl.getAssetFieldValue("parm", m_populator.getNode3().getId());
-    	assertEquals("node3", asset);
-    	asset = eventUtilDaoImpl.getAssetFieldValue("parm", m_populator.getNode1().getId());
-    	assertEquals("node1", asset);
-    	asset = eventUtilDaoImpl.getAssetFieldValue("parm", m_populator.getNode2().getId());
-    	assertEquals("node2", asset);
+    public void testGetAssetFieldValue() {
+        OnmsNode node1 = m_populator.getNode1();
+        OnmsAssetRecord asset1 = node1.getAssetRecord();
+        asset1.setAdmin("some-adm1n-label");
+        asset1.setSerialNumber("42");
+        m_assetRecordDao.saveOrUpdate(asset1);
+
+        String asset = eventUtilDaoImpl.getAssetFieldValue("asset[admin]", node1.getId());
+        assertEquals("some-adm1n-label", asset);
+
+        asset = eventUtilDaoImpl.getAssetFieldValue("asset[serialNumber]", node1.getId());
+        assertEquals("42", asset);
+
+        // Checking case sensitivity
+        asset = eventUtilDaoImpl.getAssetFieldValue("asset[serialnumber]", node1.getId());
+        assertEquals("42", asset);
     }
 
+    @Test
+    public void getHardwareFieldValue() {
+        OnmsNode node1 = m_populator.getNode1();
+        OnmsHwEntity hwEntity = new OnmsHwEntity();
+        hwEntity.setNode(node1);
+        hwEntity.setEntPhysicalIndex(0);
+        hwEntity.setEntPhysicalName("Chassis");
+        hwEntity.setEntPhysicalDescr("some-physical-d3scr");
+        m_hwEntityDao.save(hwEntity);
+
+        // Access the field by index
+        String hwfield = eventUtilDaoImpl.getHardwareFieldValue("hardware[0:entPhysicalDescr]", node1.getId());
+        assertEquals("some-physical-d3scr", hwfield);
+
+        // Access the field by name
+        hwfield = eventUtilDaoImpl.getHardwareFieldValue("hardware[Chassis:entPhysicalDescr]", node1.getId());
+        assertEquals("some-physical-d3scr", hwfield);
+
+        // Access the field by regex
+        hwfield = eventUtilDaoImpl.getHardwareFieldValue("hardware[~%Cha%:entPhysicalDescr]", node1.getId());
+        assertEquals("some-physical-d3scr", hwfield);
+    }
 }

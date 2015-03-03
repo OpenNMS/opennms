@@ -371,7 +371,7 @@ public abstract class AbstractEventUtil implements EventUtil {
 	 * @return value of the event parm/element
 	 */
 	@Override
-	public final String getValueOfParm(String parm, Event event) {
+	public String getValueOfParm(String parm, Event event) {
 
 		String retParmVal = null;
 		final String ifString = event.getInterface();
@@ -810,7 +810,7 @@ public abstract class AbstractEventUtil implements EventUtil {
 	 * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
 	 * @return A parameter's value as a String using the parameter's name..
 	 */
-	public final String getNamedParmValue(String parm, Event event) {
+	public String getNamedParmValue(String parm, Event event) {
 		String retParmVal = null;
 		int end = parm.indexOf(PARM_END_SUFFIX, PARM_BEGIN_LENGTH);
 		if (end != -1) {
@@ -839,7 +839,7 @@ public abstract class AbstractEventUtil implements EventUtil {
 	 * @param map a {@link java.util.Map} object.
 	 * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
 	 */
-	public final void expandMapValues(final Map<String, String> map, final Event event) {
+	public void expandMapValues(final Map<String, String> map, final Event event) {
 		for (final Entry<String,String> entry : map.entrySet()) {
 			final String key = entry.getKey();
 			final String mapValue = entry.getValue();
@@ -873,7 +873,7 @@ public abstract class AbstractEventUtil implements EventUtil {
 	 *         otherwise
 	 * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
 	 */
-	public final String expandParms(String inp, Event event) {
+	public String expandParms(String inp, Event event) {
 		return expandParms(inp, event, null);
 	}
 
@@ -897,7 +897,7 @@ public abstract class AbstractEventUtil implements EventUtil {
 	 *         otherwise
 	 * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
 	 */
-	public final String expandParms(String inp, Event event, Map<String, Map<String, String>> decode) {
+	public String expandParms(String inp, Event event, Map<String, Map<String, String>> decode) {
 		int index1 = -1;
 		int index2 = -1;
 

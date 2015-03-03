@@ -127,7 +127,7 @@ public class BroadcastEventProcessorTest extends NotificationsTestCase {
         notifications = m_notificationManager.getNotifForEvent(bldr.getEvent());
         assertNotNull(notifications);
         assertEquals(1, notifications.length);
-        Map<String,String> paramMap = BroadcastEventProcessor.buildParameterMap(notifications[0], bldr.getEvent(), 9999);
+        Map<String,String> paramMap = m_eventProcessor.buildParameterMap(notifications[0], bldr.getEvent(), 9999);
         /*
         for (Map.Entry<String,String> entry : paramMap.entrySet()) {
             System.out.println(entry.getKey() + " => " + entry.getValue());

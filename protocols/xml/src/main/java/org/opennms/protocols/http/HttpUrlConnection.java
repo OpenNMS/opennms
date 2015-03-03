@@ -155,7 +155,9 @@ public class HttpUrlConnection extends URLConnection {
             ub.setPath(m_url.getPath());
             if (m_url.getQuery() != null && !m_url.getQuery().trim().isEmpty()) {
                 final List<NameValuePair> params = URLEncodedUtils.parse(m_url.getQuery(), Charset.forName("UTF-8"));
-                ub.addParameters(params);
+                if (!params.isEmpty()) {
+                    ub.addParameters(params);
+                }
             }
 
             // Build Request

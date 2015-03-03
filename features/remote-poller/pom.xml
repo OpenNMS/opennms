@@ -161,10 +161,6 @@ groovy.compiler.output.path=target/classes
       <exclusions>
         <exclusion>
           <groupId>org.springframework</groupId>
-          <artifactId>spring-struts</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.springframework</groupId>
           <artifactId>spring-webmvc</artifactId>
         </exclusion>
         <exclusion>
@@ -265,6 +261,11 @@ groovy.compiler.output.path=target/classes
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-rrd-jrobin</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-rrdtool-api</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>

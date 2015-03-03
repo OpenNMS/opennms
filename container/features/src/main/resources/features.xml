@@ -85,8 +85,8 @@
 
     <!-- OpenNMS features -->
     <feature name="opennms-core" description="OpenNMS :: Core" version="${project.version}">
-      <feature version="[3.2,3.3)">spring</feature>
-      <feature version="[3.2,3.3)">spring-orm</feature>
+      <feature version="[4.0,4.1)">spring</feature>
+      <feature version="[4.0,4.1)">spring-orm</feature>
 
       <feature>castor</feature>
       <feature>commons-io</feature>
@@ -126,10 +126,10 @@
     </feature>
 
     <feature name="opennms-model" description="OpenNMS :: Model" version="${project.version}">
-      <feature version="[3.2,3.3)">spring</feature>
-      <feature version="[3.2,3.3)">spring-jdbc</feature>
-      <feature version="[3.2,3.3)">spring-orm</feature>
-      <feature version="[3.2,3.3)">spring-tx</feature>
+      <feature version="[4.0,4.1)">spring</feature>
+      <feature version="[4.0,4.1)">spring-jdbc</feature>
+      <feature version="[4.0,4.1)">spring-orm</feature>
+      <feature version="[4.0,4.1)">spring-tx</feature>
 
       <!-- 
         We can't use the Karaf spring-security feature because it pulls in the "war" feature
@@ -142,7 +142,7 @@
 
       <!-- Hack in a replacement for spring-security -->
       <!-- spring-web is necessary for HTTP remoting -->
-      <feature version="[3.2,3.3)">spring-web</feature>
+      <feature version="[4.0,4.1)">spring-web</feature>
       <feature>commons-codec</feature>
       <bundle dependency="true">mvn:org.springframework.security/spring-security-core/${springSecurityVersion}</bundle>
       <bundle dependency="true">mvn:org.springframework.security/spring-security-remoting/${springSecurityVersion}</bundle>
@@ -166,7 +166,7 @@
     </feature>
 
     <feature name="opennms-collection-api" description="OpenNMS :: Collection API" version="${project.version}">
-      <feature version="[3.2,3.3)">spring</feature>
+      <feature version="[4.0,4.1)">spring</feature>
 
       <feature>opennms-config-api</feature>
       <feature>opennms-poller-api</feature>
@@ -221,7 +221,7 @@
     </feature>
 
     <feature name="opennms-events-api" description="OpenNMS :: Events API" version="${project.version}">
-      <feature version="[3.2,3.3)">spring</feature>
+      <feature version="[4.0,4.1)">spring</feature>
 
       <feature>castor</feature>
       <feature>commons-lang</feature>
@@ -259,7 +259,7 @@
     </feature>
 
     <feature name="opennms-poller-api" description="OpenNMS :: Poller API" version="${project.version}">
-      <feature version="[3.2,3.3)">spring</feature>
+      <feature version="[4.0,4.1)">spring</feature>
 
       <feature>opennms-core</feature>
 
@@ -267,7 +267,7 @@
     </feature>
 
     <feature name="opennms-rrd-api" description="OpenNMS :: RRD API" version="${project.version}">
-      <feature version="[3.2,3.3)">spring</feature>
+      <feature version="[4.0,4.1)">spring</feature>
 
       <feature>opennms-core</feature>
 
@@ -275,7 +275,7 @@
     </feature>
 
     <feature name="opennms-rrd-jrobin" description="OpenNMS :: RRD :: JRobin" version="${project.version}">
-      <feature version="[3.2,3.3)">spring</feature>
+      <feature version="[4.0,4.1)">spring</feature>
 
       <feature>jrobin</feature>
       <feature>opennms-rrd-api</feature>

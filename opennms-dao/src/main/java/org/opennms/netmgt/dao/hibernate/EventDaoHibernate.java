@@ -57,7 +57,7 @@ public class EventDaoHibernate extends AbstractDaoHibernate<OnmsEvent, Integer> 
     public List<OnmsEvent> getEventsAfterDate(final List<String> ueiList, final Date date) {
         final String hql = "From OnmsEvent e where e.eventUei in (:eventUei) and e.eventTime > :eventTime order by e.eventTime desc";
 
-        return getHibernateTemplate().executeFind(new HibernateCallback<List<OnmsEvent>>() {
+        return (List<OnmsEvent>)getHibernateTemplate().executeFind(new HibernateCallback<List<OnmsEvent>>() {
             @Override
             public List<OnmsEvent> doInHibernate(Session session) throws HibernateException, SQLException {
                 return session.createQuery(hql)

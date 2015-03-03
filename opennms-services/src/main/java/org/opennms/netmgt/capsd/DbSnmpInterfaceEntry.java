@@ -62,8 +62,10 @@ import org.slf4j.LoggerFactory;
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
  */
 public final class DbSnmpInterfaceEntry {
-	
-	private static final Logger LOG = LoggerFactory.getLogger(DbSnmpInterfaceEntry.class);
+
+    private static final Logger LOG = LoggerFactory.getLogger(DbSnmpInterfaceEntry.class);
+
+    static final int LAME_SNMP_HOST_IFINDEX = -100;
 
     /**
      * The SQL statement used to read a node from the database. This record is

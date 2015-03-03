@@ -64,11 +64,11 @@
 
 	String titleName = "Availability Over the Past 24 Hours";
 	if (opennmsDisconnect) {
-		titleName = "Waiting for availability data...";
+		titleName = "Waiting for availability data. ";
 		if (earliestUpdate > 0) {
 			titleName += new Date(earliestUpdate).toString();
 		} else {
-			titleName += "one or more categories have never been updated.";
+			titleName += "One or more categories have never been updated.";
 		}
 	}
 %>

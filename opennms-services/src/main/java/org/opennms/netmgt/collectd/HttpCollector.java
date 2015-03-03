@@ -598,7 +598,9 @@ public class HttpCollector implements ServiceCollector {
             final URIBuilder ub = new URIBuilder(uri);
             if (query.length() > 0) {
                 final List<NameValuePair> params = URLEncodedUtils.parse(query.toString(), Charset.forName("UTF-8"));
-                ub.setParameters(params);
+                if (!params.isEmpty()) {
+                    ub.setParameters(params);
+                }
             }
             uriWithQueryString = ub.build();
             return new HttpGet(uriWithQueryString);

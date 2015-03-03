@@ -13,3 +13,7 @@
 :revdate: {last-update-label} {docdatetime}
 :version-label!:
 
+// Include your documentation sections here
+// include::text/myFile.adoc[]
+
+include::text/dashboard.adoc[]

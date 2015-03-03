@@ -29,40 +29,58 @@
 package org.opennms.web.controller;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.hibernate.validator.constraints.NotEmpty;
 import org.opennms.netmgt.model.PrimaryType;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
 import org.opennms.web.svclayer.ManualProvisioningService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.validation.BindException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.SimpleFormController;
 
 /**
- * <p>EditProvisioningGroupController class.</p>
+ * TODO: Add validation
  */
-public class EditProvisioningGroupController extends SimpleFormController {
-	
-	private static final Logger LOG = LoggerFactory.getLogger(EditProvisioningGroupController.class);
+@Controller
+@RequestMapping("/admin/editProvisioningGroup.htm")
+@SessionAttributes({ "freeFormEditing" })
+public class EditProvisioningGroupController {
 
+    private static final Logger LOG = LoggerFactory.getLogger(EditProvisioningGroupController.class);
+
+    public static final String COMMAND_NAME = "nodeEditForm";
 
     public static class TreeCommand {
+
         private String m_formPath;
+
         private String m_action;
+
+        @Valid
         private Requisition m_formData;
+
+        @NotNull
         private String m_currentNode;
+
+        @NotEmpty
         private String m_groupName = "hardcoded";
-        
+
         public String getAction() {
             return m_action;
         }
@@ -95,216 +113,174 @@ public class EditProvisioningGroupController extends SimpleFormController {
         }
         public String getDataPath() {
             //added nodeEditForm. to the formData. because somehow we are getting that attached a prefix as well. 
-            return m_formPath.substring("nodeEditForm.formData.".length());
+            return m_formPath.substring((COMMAND_NAME + ".formData.").length());
         }
         public void setDataPath(String path) {
             //added nodeEditForm. to the formData. because somehow we are getting that attached a prefix as well.
-            m_formPath = "nodeEditForm.formData."+path;
+            m_formPath = COMMAND_NAME + ".formData." + path;
         }
-        
+
         @Override
         public String toString() {
-        	return new ToStringBuilder(this)
-        		.append("action", getAction())
-        		.append("currentNode", getCurrentNode())
-        		.append("dataPath", getDataPath())
-        		.append("formData", getFormData())
-        		.append("formPath", getFormPath())
-        		.append("groupName", getGroupName())
-        		.toString();
+            return new ToStringBuilder(this)
+            .append("action", getAction())
+            .append("currentNode", getCurrentNode())
+            .append("dataPath", getDataPath())
+            .append("formData", getFormData())
+            .append("formPath", getFormPath())
+            .append("groupName", getGroupName())
+            .toString();
         }
     }
 
+    @Autowired
     private ManualProvisioningService m_provisioningService;
 
     /**
-     * <p>setProvisioningService</p>
-     *
-     * @param provisioningService a {@link org.opennms.web.svclayer.ManualProvisioningService} object.
+     * @return View for this controller action
      */
-    public void setProvisioningService(ManualProvisioningService provisioningService) {
-        m_provisioningService = provisioningService;
-    }
-    
-    /** {@inheritDoc} */
-    @Override
-    protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        return super.handleRequestInternal(request, response);
-    }
+    @RequestMapping(method=RequestMethod.POST)
+    public ModelAndView onSubmit(@ModelAttribute(COMMAND_NAME) @Valid TreeCommand treeCmd, BindingResult errors, HttpSession session) {
 
-    /** {@inheritDoc} */
-    @Override
-    protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object command, BindException errors) throws Exception {
-        TreeCommand treeCmd = (TreeCommand)command;
+        if (errors.hasErrors()) {
+            return new ModelAndView("/admin/editProvisioningGroup", COMMAND_NAME, treeCmd);
+        }
+
         String action = treeCmd.getAction();
         if (action == null) {
-            return doShow(request, response, treeCmd, errors);
+            // Do nothing
         } else if ("toggleFreeForm".equalsIgnoreCase(action)) {
-            Boolean isFreeForm = (Boolean)request.getSession().getAttribute("freeFormEditing");
+            Boolean isFreeForm = (Boolean)session.getAttribute("freeFormEditing");
             if (isFreeForm == null) {
                 isFreeForm = false;
             }
-            request.getSession().setAttribute("freeFormEditing", !isFreeForm);
-            return doShow(request, response, treeCmd, errors);
+            session.setAttribute("freeFormEditing", !isFreeForm);
         } else if ("addNode".equalsIgnoreCase(action)) {
-            return doAddNode(request, response, treeCmd, errors);
+            doAddNode(treeCmd);
         } else if ("addInterface".equalsIgnoreCase(action)) {
-            return doAddInterface(request, response, treeCmd, errors);
+            doAddInterface(treeCmd);
         } else if ("addService".equalsIgnoreCase(action)) {
-            return doAddService(request, response, treeCmd, errors);
+            doAddService(treeCmd);
         } else if ("addCategory".equalsIgnoreCase(action)) {
-            return doAddCategory(request, response, treeCmd, errors);
+            doAddCategory(treeCmd);
         } else if ("addAssetField".equalsIgnoreCase(action)) {
-            return doAddAssetField(request, response, treeCmd, errors);
+            doAddAssetField(treeCmd);
         } else if ("save".equalsIgnoreCase(action)) {
-            return doSave(request, response, treeCmd, errors);
+            doSave(treeCmd, errors);
         } else if ("edit".equalsIgnoreCase(action)) {
-            return doEdit(request, response, treeCmd, errors);
+            doEdit(treeCmd);
         } else if ("cancel".equalsIgnoreCase(action)) {
-            return doCancel(request, response, treeCmd, errors);
+            doCancel(treeCmd);
         } else if ("delete".equalsIgnoreCase(action)) {
-            return doDelete(request, response, treeCmd, errors);
+            doDelete(treeCmd);
         } else if ("import".equalsIgnoreCase(action)) {
-            return doImport(request, response, treeCmd, errors);
+            doImport(treeCmd);
         } else if ("done".equalsIgnoreCase(action)) {
-            return done(request, response, treeCmd, errors);
+            return done(treeCmd);
         } else {
             errors.reject("Unrecognized action: "+action);
-            return showForm(request, response, errors);
         }
-        
+
+        return new ModelAndView("/admin/editProvisioningGroup", COMMAND_NAME, treeCmd);
     }
 
-    private ModelAndView done(HttpServletRequest request, HttpServletResponse response, TreeCommand treeCmd, BindException errors) throws Exception {
-        return new ModelAndView(getSuccessView());
+    private ModelAndView done(TreeCommand treeCmd) {
+        return new ModelAndView("redirect:/admin/provisioningGroups.htm");
     }
 
-    private ModelAndView doShow(HttpServletRequest request, HttpServletResponse response, TreeCommand treeCmd, BindException errors) throws Exception {
-        return showForm(request, response, errors);
-    }
-
-    private ModelAndView doCancel(HttpServletRequest request, HttpServletResponse response, TreeCommand treeCmd, BindException errors) throws Exception {
-
+    private void doCancel(TreeCommand treeCmd) {
         Requisition formData = m_provisioningService.getProvisioningGroup(treeCmd.getGroupName());
         treeCmd.setFormData(formData);
-        
         treeCmd.setCurrentNode("");
-        
-        return showForm(request, response, errors);
     }
 
-    private ModelAndView doImport(HttpServletRequest request, HttpServletResponse response, TreeCommand treeCmd, BindException errors) throws Exception {
-
+    private void doImport(TreeCommand treeCmd) {
         m_provisioningService.importProvisioningGroup(treeCmd.getGroupName());
-        return super.showForm(request, response, errors);
-        
     }
 
-    private ModelAndView doDelete(HttpServletRequest request, HttpServletResponse response, TreeCommand treeCmd, BindException errors) throws Exception {
-        
+    private void doDelete(TreeCommand treeCmd) {
         Requisition formData = m_provisioningService.deletePath(treeCmd.getGroupName(), treeCmd.getDataPath());
         treeCmd.setFormData(formData);
-        
-        return showForm(request, response, errors);
     }
 
-    private ModelAndView doAddCategory(HttpServletRequest request, HttpServletResponse response, TreeCommand treeCmd, BindException errors) throws Exception {
-        
+    private void doAddCategory(TreeCommand treeCmd) {
         Requisition formData = m_provisioningService.addCategoryToNode(treeCmd.getGroupName(), treeCmd.getDataPath(), "New Category");
         treeCmd.setFormData(formData);
-        
         treeCmd.setCurrentNode(treeCmd.getFormPath()+".category[0]");
-        
-        
-        return showForm(request, response, errors);
     }
 
-    private ModelAndView doAddAssetField(HttpServletRequest request, HttpServletResponse response, TreeCommand treeCmd, BindException errors) throws Exception {
+    private void doAddAssetField(TreeCommand treeCmd) {
         Requisition formData = m_provisioningService.addAssetFieldToNode(treeCmd.getGroupName(), treeCmd.getDataPath(), "key", "value");
         treeCmd.setFormData(formData);
-        
         treeCmd.setCurrentNode(treeCmd.getFormPath()+".asset[0]");
-        
-        return showForm(request, response, errors);
-    }
-    
-    private ModelAndView doEdit(HttpServletRequest request, HttpServletResponse response, TreeCommand treeCmd, BindException errors) throws Exception {
-        
-        treeCmd.setCurrentNode(treeCmd.getFormPath());
-        
-        return showForm(request, response, errors);
     }
 
-    private ModelAndView doSave(HttpServletRequest request, HttpServletResponse response, TreeCommand treeCmd, BindException errors) throws Exception {
-    	try {
-    		LOG.debug("treeCmd = {}", treeCmd);
-        	treeCmd.getFormData().validate();
-        	final Requisition formData = m_provisioningService.saveProvisioningGroup(treeCmd.getGroupName(), treeCmd.getFormData());
+    private void doEdit(TreeCommand treeCmd) {
+        treeCmd.setCurrentNode(treeCmd.getFormPath());
+    }
+
+    private void doSave(TreeCommand treeCmd, BindingResult errors) {
+        try {
+            LOG.debug("treeCmd = {}", treeCmd);
+            treeCmd.getFormData().validate();
+            final Requisition formData = m_provisioningService.saveProvisioningGroup(treeCmd.getGroupName(), treeCmd.getFormData());
             treeCmd.setFormData(formData);
             treeCmd.setCurrentNode("");
-    	} catch (final Throwable t) {
-    		errors.reject(t.getMessage());
-    	}
-        return showForm(request, response, errors);
+        } catch (final Throwable t) {
+            errors.reject(t.getMessage());
+        }
     }
 
-    private ModelAndView doAddService(HttpServletRequest request, HttpServletResponse response, TreeCommand treeCmd, BindException errors) throws Exception {
-
+    private void doAddService(TreeCommand treeCmd) {
         Requisition formData = m_provisioningService.addServiceToInterface(treeCmd.getGroupName(), treeCmd.getDataPath(), "SVC");
         treeCmd.setFormData(formData);
-        
         treeCmd.setCurrentNode(treeCmd.getFormPath()+".monitoredService[0]");
-        
-        
-        return showForm(request, response, errors);
     }
 
-    private ModelAndView doAddInterface(HttpServletRequest request, HttpServletResponse response, TreeCommand treeCmd, BindException errors) throws Exception {
-        
+    private void doAddInterface(TreeCommand treeCmd) {
         Requisition formData = m_provisioningService.addInterfaceToNode(treeCmd.getGroupName(), treeCmd.getDataPath(), "");
         treeCmd.setFormData(formData);
-        
         treeCmd.setCurrentNode(treeCmd.getFormPath()+".interface[0]");
-        
-        return showForm(request, response, errors);
     }
 
-    private ModelAndView doAddNode(HttpServletRequest request, HttpServletResponse response, TreeCommand treeCmd, BindException errors) throws Exception {
-
+    private void doAddNode(TreeCommand treeCmd) {
         treeCmd.setFormData(m_provisioningService.addNewNodeToGroup(treeCmd.getGroupName(), "New Node"));
-        
         treeCmd.setCurrentNode(treeCmd.getFormPath()+".node[0]");
-
-        return showForm(request, response, errors);
     }
 
-    /** {@inheritDoc} */
-    @Override
-    protected Object formBackingObject(HttpServletRequest request) throws Exception {
-        TreeCommand formCommand = new TreeCommand();
-        initializeTreeCommand(request, formCommand);
-        return formCommand;
-    }
+    /**
+     * Attach the current requisition to the model during each request.
+     * 
+     * @param foreignSourceName
+     * @return
+     */
+    @ModelAttribute(COMMAND_NAME)
+    private TreeCommand formBackingObject(@RequestParam String groupName) {
 
-    private void initializeTreeCommand(HttpServletRequest request, TreeCommand formCommand) throws Exception {
-        String groupName = request.getParameter("groupName");
         if (groupName == null) {
             throw new IllegalArgumentException("groupName required");
         }
-        
+
+        TreeCommand formCommand = new TreeCommand();
         Requisition formData = m_provisioningService.getProvisioningGroup(groupName);
+        // If we're trying to edit a requisition that doesn't yet exist, create it
         if (formData == null) {
             formData = m_provisioningService.createProvisioningGroup(groupName);
         }
-        
         formCommand.setFormData(formData);
+        return formCommand;
     }
 
-    /** {@inheritDoc} */
-    @Override
-    protected Map<String, Collection<String>> referenceData(HttpServletRequest request) throws Exception {
-        Map<String, Collection<String>> map = new HashMap<String, Collection<String>>();
-        
+    /**
+     * Enrich the model using {@link ModelMap} with extra attributes necessary to 
+     * display the page.
+     * 
+     * @param map
+     * @param groupName
+     */
+    @ModelAttribute
+    private void referenceData(ModelMap map, @RequestParam String groupName) {
+
         // Fetch the list of possible values out of the Castor enumeration
         List<String> choices = new ArrayList<String>();
         for (PrimaryType type : PrimaryType.getAllTypes()) {
@@ -317,21 +293,16 @@ public class EditProvisioningGroupController extends SimpleFormController {
         status.add("3");
         map.put("statusChoices", status);
 
-        String groupName = request.getParameter("groupName");
-        if (groupName != null) {
-            List<String> services = new ArrayList<String>(m_provisioningService.getServiceTypeNames(groupName));
-            Collections.sort(services);
-            map.put("services",  services);
-        }
+        List<String> services = new ArrayList<String>(m_provisioningService.getServiceTypeNames(groupName));
+        Collections.sort(services);
+        map.put("services",  services);
 
         List<String> categories = new ArrayList<String>(m_provisioningService.getNodeCategoryNames());
         Collections.sort(categories);
+        map.put("categories", categories);
+
         List<String> assetFields = new ArrayList<String>(m_provisioningService.getAssetFieldNames());
         Collections.sort(assetFields);
-        map.put("categories", categories);
         map.put("assetFields", assetFields);
-        
-        
-        return map;
     }
 }

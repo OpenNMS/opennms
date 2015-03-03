@@ -86,7 +86,9 @@ public class WebClient implements Client<WebRequest, WebResponse> {
         ub.setPath(m_path);
         if (m_queryString != null && m_queryString.trim().length() > 0) {
             final List<NameValuePair> params = URLEncodedUtils.parse(m_queryString, Charset.forName("UTF-8"));
-            ub.setParameters(params);
+            if (!params.isEmpty()) {
+                ub.setParameters(params);
+            }
         }
 
         m_httpMethod = new HttpGet(ub.build());

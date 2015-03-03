@@ -262,6 +262,7 @@ public class SnmpCollectorTest implements InitializingBean, TestContextAware {
         int stepSizeInSecs = 1;
 
         int stepSizeInMillis = stepSizeInSecs*1000;
+        final int rangeSizeInMillis = stepSizeInMillis + 20000;
 
         // don't forget to initialize the agent
         m_collectionSpecification.initialize(m_collectionAgent);
@@ -270,11 +271,11 @@ public class SnmpCollectorTest implements InitializingBean, TestContextAware {
 
         // This is the value from snmpTestData1.properties
         //.1.3.6.1.2.1.6.9.0 = Gauge32: 123
-        assertEquals(Double.valueOf(123.0), RrdUtils.fetchLastValueInRange(rrdFile.getAbsolutePath(), "tcpCurrEstab", stepSizeInMillis, stepSizeInMillis));
+        assertEquals(Double.valueOf(123.0), RrdUtils.fetchLastValueInRange(rrdFile.getAbsolutePath(), "tcpCurrEstab", stepSizeInMillis, rangeSizeInMillis));
 
         // This is the value from snmpTestData1.properties
         // .1.3.6.1.2.1.2.2.1.10.6 = Counter32: 1234567
-        assertEquals(Double.valueOf(1234567.0), RrdUtils.fetchLastValueInRange(ifRrdFile.getAbsolutePath(), "ifInOctets", stepSizeInMillis, stepSizeInMillis));
+        assertEquals(Double.valueOf(1234567.0), RrdUtils.fetchLastValueInRange(ifRrdFile.getAbsolutePath(), "ifInOctets", stepSizeInMillis, rangeSizeInMillis));
 
         // now update the data in the agent
         SnmpUtils.set(m_agentConfig, SnmpObjId.get(".1.3.6.1.2.1.6.9.0"), SnmpUtils.getValueFactory().getInt32(456));
@@ -283,8 +284,8 @@ public class SnmpCollectorTest implements InitializingBean, TestContextAware {
         CollectorTestUtils.collectNTimes(m_collectionSpecification, m_collectionAgent, numUpdates);
 
         // by now the values should be the new values
-        assertEquals(Double.valueOf(456.0), RrdUtils.fetchLastValueInRange(rrdFile.getAbsolutePath(), "tcpCurrEstab", stepSizeInMillis, stepSizeInMillis));
-        assertEquals(Double.valueOf(7654321.0), RrdUtils.fetchLastValueInRange(ifRrdFile.getAbsolutePath(), "ifInOctets", stepSizeInMillis, stepSizeInMillis));
+        assertEquals(Double.valueOf(456.0), RrdUtils.fetchLastValueInRange(rrdFile.getAbsolutePath(), "tcpCurrEstab", stepSizeInMillis, rangeSizeInMillis));
+        assertEquals(Double.valueOf(7654321.0), RrdUtils.fetchLastValueInRange(ifRrdFile.getAbsolutePath(), "ifInOctets", stepSizeInMillis, rangeSizeInMillis));
 
         // release the agent
         m_collectionSpecification.release(m_collectionAgent);
@@ -308,6 +309,8 @@ public class SnmpCollectorTest implements InitializingBean, TestContextAware {
         int numUpdates = 2;
 
         long start = System.currentTimeMillis();
+        final int stepSizeInMillis = stepSize*1000;
+        final int rangeSizeInMillis = stepSizeInMillis + 20000;
 
         File rrdFile = new File(snmpDir, rrd("test"));
 
@@ -323,7 +326,7 @@ public class SnmpCollectorTest implements InitializingBean, TestContextAware {
         }
         m_rrdStrategy.closeFile(rrdFileObject);
 
-        assertEquals(Double.valueOf(1.0), m_rrdStrategy.fetchLastValueInRange(rrdFile.getAbsolutePath(), "testAttr", stepSize*1000, 2*stepSize*1000));
+        assertEquals(Double.valueOf(1.0), m_rrdStrategy.fetchLastValueInRange(rrdFile.getAbsolutePath(), "testAttr", stepSizeInMillis, rangeSizeInMillis));
     }
 
     @Test

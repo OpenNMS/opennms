@@ -177,7 +177,7 @@ public class OspfLinkStatusProviderTest {
     }
 
     private List<OnmsAlarm> createEmptyAlarmList() {
-        return Collections.EMPTY_LIST;
+        return Collections.emptyList();
     }
 
     private List<OnmsAlarm> createDownAlarm(){

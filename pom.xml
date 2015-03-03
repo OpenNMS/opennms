@@ -1103,10 +1103,12 @@
     <!-- dependency versions -->
     <oldAsmVersion>99.99.99-exclude-and-use-org.ow2.asm.asm-all-instead</oldAsmVersion>
     <asmVersion>5.0.3</asmVersion>
-    <asciidoctorVersion>1.5.0</asciidoctorVersion>
+    <asciidoctorVersion>1.5.2</asciidoctorVersion>
+    <asciidoctorjVersion>1.5.2</asciidoctorjVersion>
+    <asciidoctorjPdfVersion>1.5.0-alpha.6</asciidoctorjPdfVersion>
     <activemqVersion>5.10.0</activemqVersion>
     <atomikosVersion>3.9.2</atomikosVersion>
-    <camelVersion>2.13.2</camelVersion>
+    <camelVersion>2.14.1</camelVersion>
     <cloverVersion>3.2.0</cloverVersion>
     <commonsBeanutilsVersion>1.8.3</commonsBeanutilsVersion>
     <commonsCodecVersion>1.9</commonsCodecVersion>
@@ -1129,7 +1131,7 @@
     <jasperreportsVersion>5.6.1</jasperreportsVersion>
     <jettyVersion>8.1.10.v20130312</jettyVersion>
     <karafVersion>2.4.0</karafVersion>
-    <karafPaxExamVersion>2.3.8</karafPaxExamVersion>
+    <karafPaxExamVersion>2.3.9</karafPaxExamVersion>
     <felixVersion>2.3.0</felixVersion>
     <liquibaseVersion>2.0.5</liquibaseVersion>
     <log4jVersion>99.99.99-use-log4j2</log4jVersion>
@@ -1138,20 +1140,21 @@
     <paxExamVersion>2.6.0</paxExamVersion>
     <powermockVersion>1.5.5</powermockVersion>
     <oroVersion>2.0.8</oroVersion>
-    <osgiVersion>4.3.1</osgiVersion>
-    <osgiEnterpriseVersion>4.2.0</osgiEnterpriseVersion>
+    <osgiVersion>5.0.0</osgiVersion>
+    <osgiEnterpriseVersion>5.0.0</osgiEnterpriseVersion>
     <slf4jVersion>1.7.7</slf4jVersion>
+    <smackVersion>4.0.6</smackVersion>
     <springJaxbVersion>2.1.7</springJaxbVersion>
     <xalanVersion>2.7.2</xalanVersion>
     <xercesVersion>2.9.1</xercesVersion>
     <xmlApisVersion>1.4.01</xmlApisVersion>
 
-    <springVersion>3.2.9.RELEASE_1</springVersion>
+    <springVersion>4.0.5.RELEASE_1</springVersion>
     <!-- ALWAYS change aspectj to match the version referenced in the spring poms -->
     <aspectjVersion>1.7.4</aspectjVersion>
-    <springWebFlowVersion>2.3.2.RELEASE</springWebFlowVersion>
-    <springSecurityVersion>3.1.7.RELEASE</springSecurityVersion>
-    <springLdapVersion>3.1.7.RELEASE</springLdapVersion>
+    <springWebFlowVersion>2.3.4.RELEASE</springWebFlowVersion>
+    <springSecurityVersion>3.2.5.RELEASE</springSecurityVersion>
+    <springLdapVersion>${springSecurityVersion}</springLdapVersion>
 
     <!-- moved here from topology features -->
     <jungVersion>2.0.1</jungVersion>
@@ -2406,6 +2409,12 @@
       </dependency>
       <dependency>
         <groupId>org.opennms.dependencies</groupId>
+        <artifactId>smack-dependencies</artifactId>
+        <version>${project.version}</version>
+        <type>pom</type>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.dependencies</groupId>
         <artifactId>rancid-dependencies</artifactId>
         <version>${project.version}</version>
         <type>pom</type>
@@ -2702,7 +2711,7 @@
       <dependency>
         <groupId>commons-net</groupId>
         <artifactId>commons-net</artifactId>
-        <version>3.0.1</version>
+        <version>3.3</version>
       </dependency>
       <dependency>
         <groupId>commons-pool</groupId>
@@ -3144,16 +3153,6 @@
       </exclusions>
       </dependency>
       <dependency>
-        <groupId>jivesoftware</groupId>
-        <artifactId>smack</artifactId>
-        <version>3.0.4</version>
-      </dependency>
-      <dependency>
-        <groupId>jivesoftware</groupId>
-        <artifactId>smackx</artifactId>
-        <version>3.0.4</version>
-      </dependency>
-      <dependency>
         <groupId>joda-time</groupId>
         <artifactId>joda-time</artifactId>
         <version>2.1</version>
@@ -3273,6 +3272,86 @@
         <scope>runtime</scope>
       </dependency>
       <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-aop</artifactId>
+        <version>99.99.99-exclude-and-use-opennms-spring-instead</version>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-asm</artifactId>
+        <version>99.99.99-exclude-and-use-opennms-spring-instead</version>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-aspects</artifactId>
+        <version>99.99.99-exclude-and-use-opennms-spring-instead</version>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-beans</artifactId>
+        <version>99.99.99-exclude-and-use-opennms-spring-instead</version>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-context</artifactId>
+        <version>99.99.99-exclude-and-use-opennms-spring-instead</version>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-context-support</artifactId>
+        <version>99.99.99-exclude-and-use-opennms-spring-instead</version>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-core</artifactId>
+        <version>99.99.99-exclude-and-use-opennms-spring-instead</version>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-expression</artifactId>
+        <version>99.99.99-exclude-and-use-opennms-spring-instead</version>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-instrument</artifactId>
+        <version>99.99.99-exclude-and-use-opennms-spring-instead</version>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-jdbc</artifactId>
+        <version>99.99.99-exclude-and-use-opennms-spring-instead</version>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-jms</artifactId>
+        <version>99.99.99-exclude-and-use-opennms-spring-instead</version>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-orm</artifactId>
+        <version>99.99.99-exclude-and-use-opennms-spring-instead</version>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-oxm</artifactId>
+        <version>99.99.99-exclude-and-use-opennms-spring-instead</version>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-tx</artifactId>
+        <version>99.99.99-exclude-and-use-opennms-spring-instead</version>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-web</artifactId>
+        <version>99.99.99-exclude-and-use-opennms-spring-instead</version>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-webmvc</artifactId>
+        <version>99.99.99-exclude-and-use-opennms-spring-instead</version>
+      </dependency>
+      <dependency>
         <groupId>org.tuckey</groupId>
         <artifactId>urlrewritefilter</artifactId>
         <version>4.0.3</version>
@@ -3301,17 +3380,6 @@
         <groupId>rome</groupId>
         <artifactId>rome</artifactId>
         <version>1.0</version>
-      </dependency>
-      <dependency>
-        <groupId>struts</groupId>
-        <artifactId>struts</artifactId>
-        <version>1.2.9</version>
-        <exclusions>
-          <exclusion>
-            <groupId>commons-logging</groupId>
-            <artifactId>commons-logging</artifactId>
-          </exclusion>
-        </exclusions>
       </dependency>
       <dependency>
         <groupId>com.ximpleware</groupId>

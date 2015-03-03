@@ -51,9 +51,13 @@
     <!-- webapps -->
     <module>root-webapp</module>
 
+    <!-- REST -->
+    <module>rest-measurements-api</module>
+
     <!-- GWT UI plugins -->
     <module>node-page-list</module>
     <module>opennms-gwt-theme</module>
+    <module>gwt-bootstrap</module>
     <module>gwt-suggestion-combobox</module>
     <module>gwt-ksc-combobox</module>
     <module>gwt-ksc-add</module>

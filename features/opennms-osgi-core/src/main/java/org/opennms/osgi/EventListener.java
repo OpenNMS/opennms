@@ -28,12 +28,13 @@
 
 package org.opennms.osgi;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Properties;
+import java.util.Dictionary;
+import java.util.Hashtable;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Is a wrapper for the "real" EventListener/EventConsumer.
@@ -57,8 +58,8 @@ class EventListener {
      * 
      * @param consumingType Means this {@link org.opennms.osgi.EventListener} consumes Events of type 'consumingType'
      */
-    public static Properties getProperties(Class<?> consumingType) {
-        Properties properties = new Properties();
+    public static Hashtable<String,Object> getProperties(Class<?> consumingType) {
+        Hashtable<String,Object> properties = new Hashtable<String,Object>();
         properties.put(EventListener.class.getName() + ".consumingType", consumingType.getName());
         return properties;
     }

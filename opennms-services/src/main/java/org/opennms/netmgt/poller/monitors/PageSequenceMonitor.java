@@ -49,7 +49,11 @@ import java.util.regex.Pattern;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.http.Header;
+import org.apache.http.HttpException;
 import org.apache.http.HttpHost;
+import org.apache.http.HttpRequest;
+import org.apache.http.HttpRequestInterceptor;
+import org.apache.http.HttpVersion;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -59,6 +63,8 @@ import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.protocol.HTTP;
+import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
 import org.opennms.core.utils.EmptyKeyRelaxedTrustProvider;
 import org.opennms.core.utils.HttpResponseRange;
@@ -85,16 +91,15 @@ import org.slf4j.LoggerFactory;
  * that allows it to be used along with other plug-ins by the service poller framework.
  *
  * @author <a mailto:brozow@opennms.org>Mathew Brozowski</a>
- * @version $Id: $
  */
 @Distributable
 public class PageSequenceMonitor extends AbstractServiceMonitor {
-    
-    
+
+
     private static final Logger LOG = LoggerFactory.getLogger(PageSequenceMonitor.class);
-    
+
     protected static class SequenceTracker{
-        
+
         TimeoutTracker m_tracker;
         public SequenceTracker(Map<String, Object> parameterMap, int defaultSequenceRetry, int defaultTimeout) {
             final Map<String, Object> parameters = new HashMap<String, Object>();
@@ -120,7 +125,7 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
             return m_tracker.elapsedTimeInMillis();
         }
     }
-    
+
     private static final int DEFAULT_SEQUENCE_RETRY = 0;
 
     //FIXME: This should be wired with Spring
@@ -197,7 +202,7 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
                     responseTimes.put(page.getDsName(), page.getResponseTime());
                 }
             }
-            
+
         }
 
         protected Properties getSequenceProperties() {
@@ -248,7 +253,9 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
                 String query = URLEncodedUtils.format(parms, "UTF-8");
                 URIBuilder ub = new URIBuilder(uri);
                 final List<NameValuePair> params = URLEncodedUtils.parse(query, Charset.forName("UTF-8"));
-                ub.setParameters(params);
+                if (!params.isEmpty()) {
+                    ub.setParameters(params);
+                }
                 uriWithQueryString = ub.build();
                 this.setURI(uriWithQueryString);
             } catch (URISyntaxException e) {
@@ -306,17 +313,30 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
                 URI uri = getURI(svc);
                 PageSequenceHttpUriRequest method = getMethod(uri);
 
-                if (getVirtualHost(svc) != null) {
-                    // According to the standard, adding the default ports to the host header is optional, and this makes IIS 7.5 happy.
-                    HttpHost host = null;
-                    if ("https".equals(uri.getScheme()) && uri.getPort() == 443) { // Suppress the addition of default port for HTTPS
-                        host = new HttpHost(getVirtualHost(svc));
-                    } else if ("http".equals(uri.getScheme()) && uri.getPort() == 80) { //  Suppress the addition of default port for HTTP
-                        host = new HttpHost(getVirtualHost(svc));
-                    } else {  // Add the port if it is non-standard
-                        host = new HttpHost(getVirtualHost(svc), uri.getPort());
-                    }
+                if (getVirtualHost(svc) == null) {
+                    LOG.debug("Adding request interceptor to remove the host header");
+                    clientWrapper.addRequestInterceptor(new HttpRequestInterceptor() {
+                        @Override
+                        public void process(HttpRequest request, HttpContext ctx) throws HttpException, IOException {
+                            Header host = request.getFirstHeader(HTTP.TARGET_HOST);
+                            if (host != null) {
+                                request.removeHeader(host);
+                                LOG.debug("httpRequestInterceptor: virtual-host is not set, removing host header");
+                            }
+                        }
+                    });
+                } else {
+                    HttpHost host = new HttpHost(getVirtualHost(svc), uri.getPort());
                     clientWrapper.setVirtualHost(host.toHostString());
+                }
+
+                switch(m_page.getHttpVersion()) {
+                    case "0.9":
+                        clientWrapper.setVersion(HttpVersion.HTTP_0_9); break;
+                    case "1.0":
+                        clientWrapper.setVersion(HttpVersion.HTTP_1_0); break;
+                    default:
+                        clientWrapper.setVersion(HttpVersion.HTTP_1_1); break;
                 }
 
                 if (getUserAgent() != null && !getUserAgent().trim().isEmpty()) {
@@ -471,7 +491,9 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
             ub.setPort(getPort());
             ub.setPath(getPath(seqProps, svcProps));
             final List<NameValuePair> params = URLEncodedUtils.parse(getQuery(seqProps, svcProps), Charset.forName("UTF-8"));
-            ub.setParameters(params);
+            if (!params.isEmpty()) {
+                ub.setParameters(params);
+            }
             ub.setFragment(getFragment(seqProps, svcProps));
             return ub.build();
         }
@@ -639,24 +661,24 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
         PollStatus serviceStatus = PollStatus.unavailable("Poll not completed yet");
 
         Map<String,Number> responseTimes = new LinkedHashMap<String,Number>();
-        
+
         SequenceTracker tracker = new SequenceTracker(parameterMap, DEFAULT_SEQUENCE_RETRY, DEFAULT_TIMEOUT);
         for(tracker.reset(); tracker.shouldRetry() && !serviceStatus.isAvailable(); tracker.nextAttempt() ) {
             HttpClientWrapper clientWrapper = null;
             try {
                 PageSequenceMonitorParameters parms = PageSequenceMonitorParameters.get(parameterMap);
-    
+
                 clientWrapper = parms.createHttpClient();
 
                 tracker.startAttempt();
                 responseTimes.put("response-time", Double.NaN);
                 parms.getPageSequence().execute(clientWrapper, svc, responseTimes);
-    
+
                 double responseTime = tracker.elapsedTimeInMillis();
                 serviceStatus = PollStatus.available();
                 responseTimes.put("response-time", responseTime);
                 serviceStatus.setProperties(responseTimes);
-    
+
             } catch (PageSequenceMonitorException e) {
                 serviceStatus = PollStatus.unavailable(e.getMessage());
                 serviceStatus.setProperties(responseTimes);
@@ -668,7 +690,7 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
                 IOUtils.closeQuietly(clientWrapper);
             }
         }
-        
+
         return serviceStatus;
     }
 }

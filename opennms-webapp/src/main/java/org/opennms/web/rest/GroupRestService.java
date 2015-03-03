@@ -167,7 +167,6 @@ public class GroupRestService extends OnmsRestService {
             for(final String key : params.keySet()) {
                 if (wrapper.isWritableProperty(key)) {
                     final String stringValue = params.getFirst(key);
-                    @SuppressWarnings("unchecked")
                     final Object value = wrapper.convertIfNecessary(stringValue, wrapper.getPropertyType(key));
                     wrapper.setPropertyValue(key, value);
                 }
