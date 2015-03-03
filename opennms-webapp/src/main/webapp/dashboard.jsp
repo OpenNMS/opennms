@@ -37,8 +37,9 @@
 <jsp:include page="/includes/bootstrap.jsp" flush="false" >
     <jsp:param name="title" value="Vaadin Surveillance Views" />
     <jsp:param name="headTitle" value="Vaadin Surveillance Views" />
-    <jsp:param name="location" value="vaadin-surveillance-views" />
+    <jsp:param name="location" value="surveillance-view" />
     <jsp:param name="vaadinEmbeddedStyles" value="true" />
+    <jsp:param name="breadcrumb" value="Vaadin Surveillance Dashboard" />
 </jsp:include>
 
 <%
