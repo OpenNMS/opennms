@@ -44,9 +44,9 @@ public class MockOnmsUpgrade extends AbstractOnmsUpgrade {
     public final static File TEST_ZIP = new File("target/zip-test.zip");
 
     /**
-     * Instantiates a new mock onms upgrade.
+     * Instantiates a new mock OpenNMS upgrade.
      *
-     * @throws OnmsUpgradeException the onms upgrade exception
+     * @throws OnmsUpgradeException the OpenNMS upgrade exception
      */
     public MockOnmsUpgrade() throws OnmsUpgradeException {
         super();
