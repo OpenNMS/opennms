@@ -67,7 +67,7 @@ public class MenuHeaderTest extends OpenNMSSeleniumTestCase {
         findElementByXpath("//h3[contains(text(), 'Distributed Status Summary')]");
 
         clickMenuItem("Status", "Surveillance", "surveillance-view.jsp");
-        findElementByXpath("//select[@class='v-select-select']");
+        findElementByXpath("//li[text()='Vaadin Surveillance Views']");
 
         clickMenuItem("Reports", "Charts", "charts/index.jsp");
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("include-charts")));
@@ -82,7 +82,7 @@ public class MenuHeaderTest extends OpenNMSSeleniumTestCase {
         findElementByXpath("//h3[text()='Statistics Report List']");
 
         clickMenuItem("Dashboards", "Dashboard", "dashboard.jsp");
-        findElementByXpath("//select[@class='v-select-select']");
+        findElementByXpath("//li[text()='Vaadin Surveillance Dashboard']");
 
         clickMenuItem("Dashboards", "Ops Board", "vaadin-wallboard");
         findElementByXpath("//select[@class='v-select-select']");
