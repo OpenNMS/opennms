@@ -71,7 +71,7 @@
             
             <!-- correlator -->
             <repository>mvn:org.opennms.features.correlator/correlator-feature/${project.version}/xml/features</repository>
-          
+
           </repositories>
 
           <!-- 
@@ -139,6 +139,13 @@
     </plugins>
   </build>
   <dependencies>
+    <dependency>
+      <groupId>org.opennms.features.correlator</groupId>
+      <artifactId>correlator-feature</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+      <type>pom</type>
+    </dependency>
     <dependency>
       <groupId>org.opennms.container</groupId>
       <artifactId>karaf</artifactId>

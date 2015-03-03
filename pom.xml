@@ -1549,6 +1549,18 @@
         <artifactId>org.opennms.features.name-cutter</artifactId>
         <version>${project.version}</version>
       </dependency>
+
+ <dependency>
+        <groupId>org.opennms.features.correlator</groupId>
+        <artifactId>correlator-core</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+ <dependency>
+        <groupId>org.opennms.features.correlator</groupId>
+        <artifactId>correlator-feature</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+
       <dependency>
         <groupId>org.opennms.features.ncs</groupId>
         <artifactId>ncs-alarm-gui</artifactId>

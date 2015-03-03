@@ -350,14 +350,6 @@
       <classifier>etc</classifier>
     </dependency>
 
-
-<dependency>
-<groupId>org.opennms.features</groupid>
-<artifactId>correlator</artifactId>
-<version>${project.version}</version>
-</dependency>
-
-
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-snmp-asset-provisioning-adapter</artifactId>
