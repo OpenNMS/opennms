@@ -28,8 +28,8 @@
 
 package org.opennms.netmgt.enlinkd.snmp;
 
+import org.opennms.core.utils.LldpUtils.LldpChassisIdSubType;
 import org.opennms.netmgt.model.LldpElement;
-import org.opennms.netmgt.model.LldpElement.LldpChassisIdSubType;
 import org.opennms.netmgt.snmp.AggregateTracker;
 import org.opennms.netmgt.snmp.NamedSnmpVar;
 import org.opennms.netmgt.snmp.SnmpResult;
