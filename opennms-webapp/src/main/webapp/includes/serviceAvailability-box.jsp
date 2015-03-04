@@ -134,8 +134,7 @@
         overallStatusString = CategoryUtil.formatValue(overallRtcValue) + "%";
     }
 
-    String timelineUrl = "/opennms/rest/timeline/image/" + String.valueOf(nodeId) + "/" + ipAddr + "/" + service.getServiceName() + "/" + timelineStart + "/" + timelineEnd + "/";
-    String timelineId  = String.valueOf(nodeId) + "-" + ipAddr + "-" + service.getServiceName();
+    String timelineUrl = "/opennms/rest/timeline/html/" + String.valueOf(nodeId) + "/" + ipAddr + "/" + service.getServiceName() + "/" + timelineStart + "/" + timelineEnd + "/";
 %>
 
 <div id="availability-box" class="panel panel-default">
@@ -154,7 +153,7 @@
     <%
         if (service.isManaged()) {
     %>
-    <td class="Cleared nobright"><img src="#" data-imgsrc="<%=timelineUrl%>" usemap="#<%=timelineId%>"><map name="<%=timelineId%>"></map></td>
+    <td class="Cleared nobright"><span data-src="<%=timelineUrl%>"></span></td>
     <%
         } else {
     %>
