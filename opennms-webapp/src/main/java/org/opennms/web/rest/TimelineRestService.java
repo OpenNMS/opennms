@@ -357,7 +357,7 @@ public class TimelineRestService extends OnmsRestService {
             final Date endDate = new Date();
             endDate.setTime(end * 1000l);
 
-            builder.or(Restrictions.isNull("ifRegainedService"), Restrictions.and(Restrictions.gt("ifRegainedService", startDate), Restrictions.le("ifRegainedService", endDate)));
+            builder.or(Restrictions.isNull("ifRegainedService"), Restrictions.gt("ifRegainedService", startDate)); 
 
             builder.le("ifLostService", endDate);
 
