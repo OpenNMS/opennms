@@ -67,7 +67,9 @@ public class MenuHeaderTest extends OpenNMSSeleniumTestCase {
         findElementByXpath("//h3[contains(text(), 'Distributed Status Summary')]");
 
         clickMenuItem("Status", "Surveillance", "surveillance-view.jsp");
-        findElementByXpath("//li[text()='Vaadin Surveillance Views']");
+        m_driver.switchTo().frame("surveillance-view-ui");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//span[text()='Surveillance view: default']")));
+        frontPage();
 
         clickMenuItem("Reports", "Charts", "charts/index.jsp");
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("include-charts")));
@@ -82,7 +84,9 @@ public class MenuHeaderTest extends OpenNMSSeleniumTestCase {
         findElementByXpath("//h3[text()='Statistics Report List']");
 
         clickMenuItem("Dashboards", "Dashboard", "dashboard.jsp");
-        findElementByXpath("//li[text()='Vaadin Surveillance Dashboard']");
+        m_driver.switchTo().frame("surveillance-view-ui");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//span[text()='Surveillance view: default']")));
+        frontPage();
 
         clickMenuItem("Dashboards", "Ops Board", "vaadin-wallboard");
         findElementByXpath("//select[@class='v-select-select']");
