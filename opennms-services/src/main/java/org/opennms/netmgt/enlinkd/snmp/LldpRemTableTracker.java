@@ -29,9 +29,9 @@
 package org.opennms.netmgt.enlinkd.snmp;
 
 
+import org.opennms.core.utils.LldpUtils.LldpChassisIdSubType;
+import org.opennms.core.utils.LldpUtils.LldpPortIdSubType;
 import org.opennms.netmgt.model.LldpLink;
-import org.opennms.netmgt.model.LldpElement.LldpChassisIdSubType;
-import org.opennms.netmgt.model.LldpLink.LldpPortIdSubType;
 import org.opennms.netmgt.snmp.RowCallback;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
@@ -150,7 +150,7 @@ public class LldpRemTableTracker extends TableTracker {
             lldpLink.setLldpRemSysname(getLldpRemSysname());
             LOG.info( "getLldpLink: row rem lldp sysname: {}", lldpLink.getLldpRemSysname());
 
-            lldpLink.setLldpRemPortId(LldpHelper.decodeLldpLink(getLldpRemPortidSubtype(), getLldpRemPortid()));
+            lldpLink.setLldpRemPortId(LldpHelper.decodeLldpPortId(getLldpRemPortidSubtype(), getLldpRemPortid()));
             LOG.info( "getLldpLink: row rem lldp port id: {}", lldpLink.getLldpRemPortId());
 
             lldpLink.setLldpRemPortIdSubType(LldpPortIdSubType.get(getLldpRemPortidSubtype()));
