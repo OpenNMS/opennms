@@ -71,6 +71,7 @@ public class BSFNotificationStrategy implements NotificationStrategy {
         String fileName = getFileName();
         String lang = getLangClass();
         String engine = getBsfEngine();
+        String runType = getBsfRunType();
         String[] extensions = getFileExtensions();
 
         LOG.info("Loading notification script from file '{}'", fileName);
@@ -98,7 +99,13 @@ public class BSFNotificationStrategy implements NotificationStrategy {
                 checkAberrantScriptBehaviors(code);
 
                 // Execute the script
-                bsfManager.exec(lang, "BSFNotificationStrategy", 0, 0, code);
+                if("eval".equals(runType)){
+                    results.put("status", bsfManager.eval(lang, "BSFNotificationStrategy", 0, 0, code).toString());  
+                }else if("exec".equals(runType)){
+                    bsfManager.exec(lang, "BSFNotificationStrategy", 0, 0, code);
+                }else{
+                    LOG.warn("Invalid run-type parameter value '{}' for BSF notification script '{}'. Only 'eval' and 'exec' are supported.", runType, scriptFile);
+                }
 
                 // Check whether the script finished successfully
                 if ("OK".equals(results.get("status"))) {
@@ -240,6 +247,15 @@ public class BSFNotificationStrategy implements NotificationStrategy {
         if (exts == null) return null;
         return exts.split(",");
     }
+
+    private String getBsfRunType() {
+        String runType = getSwitchValue("run-type");
+        if(runType == null){
+            runType = "exec";
+        }
+        return runType;
+    }
+
 
     private void retrieveParams() {
         for (Argument arg : m_arguments) {
