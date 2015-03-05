@@ -53,9 +53,12 @@
   </build>
   <dependencies>
     <dependency>
+      <groupId>org.opennms.core</groupId>
+      <artifactId>org.opennms.core.db</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-dao</artifactId>
-      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>

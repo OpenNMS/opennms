@@ -26,12 +26,11 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.config;
+package org.opennms.netmgt.config.datacollection;
 
 import java.util.Iterator;
 import java.util.List;
 
-import org.opennms.netmgt.config.datacollection.ResourceType;
 import org.opennms.netmgt.snmp.Collectable;
 import org.opennms.netmgt.snmp.CollectionTracker;
 import org.opennms.netmgt.snmp.ColumnTracker;
@@ -42,6 +41,8 @@ import org.opennms.netmgt.snmp.SnmpObjId;
 /**
  * This class is responsible for holding information about a particular MIB
  * object parsed from the DataCollection.xml file.
+ * 
+ * @deprecated Legacy MibObject model object
  *
  * @author <A HREF="mailto:mike@opennms.org">Mike </A>
  */

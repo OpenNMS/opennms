@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.filter;
+package org.opennms.netmgt.filter.api;
 
 import java.io.PrintStream;
 import java.io.PrintWriter;

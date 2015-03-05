@@ -34,7 +34,7 @@ import org.opennms.netmgt.collection.api.CollectionAttribute;
 import org.opennms.netmgt.collection.api.NumericCollectionAttributeType;
 import org.opennms.netmgt.collection.api.Persister;
 import org.opennms.netmgt.collection.persistence.rrd.PersistOperationBuilder;
-import org.opennms.netmgt.config.MibObject;
+import org.opennms.netmgt.config.datacollection.MibObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,7 +54,7 @@ public class NumericAttributeType extends SnmpAttributeType implements NumericCo
      *
      * @param resourceType a {@link org.opennms.netmgt.collectd.ResourceType} object.
      * @param collectionName a {@link java.lang.String} object.
-     * @param mibObj a {@link org.opennms.netmgt.config.MibObject} object.
+     * @param mibObj a {@link org.opennms.netmgt.config.datacollection.MibObject} object.
      * @param groupType a {@link org.opennms.netmgt.collection.api.AttributeGroupType} object.
      */
     public NumericAttributeType(ResourceType resourceType, String collectionName, MibObject mibObj, AttributeGroupType groupType) {

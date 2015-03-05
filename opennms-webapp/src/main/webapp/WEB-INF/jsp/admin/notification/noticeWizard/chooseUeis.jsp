@@ -147,7 +147,7 @@ $(document).ready(function() {
   <div class="modal-dialog modal-sm">
     <div class="modal-content">
       <div class="modal-body">
-        <i class="fa fa-spinner"></i> Filtering
+        <i class="fa fa-spinner fa-spin"></i> Filtering
       </div>
     </div>
   </div>

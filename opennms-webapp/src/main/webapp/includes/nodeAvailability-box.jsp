@@ -184,8 +184,7 @@
                   availValue = ElementUtil.getServiceStatusString(service);
                 }
 
-                String timelineUrl = "/opennms/rest/timeline/image/" + String.valueOf(nodeId) + "/" + ipAddr + "/" + service.getServiceName() + "/" + timelineStart + "/" + timelineEnd + "/";
-                String timelineId  = String.valueOf(nodeId) + "-" + ipAddr + "-" + service.getServiceName();
+                String timelineUrl = "/opennms/rest/timeline/html/" + String.valueOf(nodeId) + "/" + ipAddr + "/" + service.getServiceName() + "/" + timelineStart + "/" + timelineEnd + "/";
               %>
                        
                 <c:url var="serviceLink" value="element/service.jsp">
@@ -206,7 +205,7 @@
                     <%
                          if (service.isManaged()) {
                     %>
-                    <img src="#" data-imgsrc="<%=timelineUrl%>" usemap="#<%=timelineId%>"><map name="<%=timelineId%>"></map>
+                    <span data-src="<%=timelineUrl%>"></span>
                     <%
                         } else {
                     %>

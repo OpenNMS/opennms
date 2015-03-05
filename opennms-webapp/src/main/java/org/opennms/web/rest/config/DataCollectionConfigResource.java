@@ -38,7 +38,7 @@ import javax.ws.rs.core.UriInfo;
 
 import org.opennms.core.config.api.ConfigurationResourceException;
 import org.opennms.core.xml.AbstractJaxbConfigDao;
-import org.opennms.netmgt.config.DataCollectionConfigDao;
+import org.opennms.netmgt.config.api.DataCollectionConfigDao;
 import org.opennms.netmgt.config.datacollection.DatacollectionConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -33,12 +33,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.opennms.netmgt.capsd.EventUtils;
-import org.opennms.netmgt.capsd.InsufficientInformationException;
+import org.opennms.core.utils.InsufficientInformationException;
 import org.opennms.netmgt.daemon.SpringServiceDaemon;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventIpcManager;
 import org.opennms.netmgt.events.api.EventListener;
+import org.opennms.netmgt.model.events.EventUtils;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 import org.slf4j.Logger;
@@ -179,7 +179,7 @@ public class TroubleTicketer implements SpringServiceDaemon, EventListener {
         EventUtils.requireParm(e, EventConstants.PARM_USER);
         EventUtils.requireParm(e, EventConstants.PARM_TROUBLE_TICKET);
         
-        int alarmId = EventUtils.getIntParm(e, EventConstants.PARM_ALARM_ID);
+        int alarmId = EventUtils.getIntParm(e, EventConstants.PARM_ALARM_ID, 0);
         String ticketId = EventUtils.getParm(e, EventConstants.PARM_TROUBLE_TICKET);
         
         m_ticketerServiceLayer.closeTicketForAlarm(alarmId, ticketId);
@@ -196,7 +196,7 @@ public class TroubleTicketer implements SpringServiceDaemon, EventListener {
         EventUtils.requireParm(e, EventConstants.PARM_USER);
         EventUtils.requireParm(e, EventConstants.PARM_TROUBLE_TICKET);
 
-        int alarmId = EventUtils.getIntParm(e, EventConstants.PARM_ALARM_ID);
+        int alarmId = EventUtils.getIntParm(e, EventConstants.PARM_ALARM_ID, 0);
         String ticketId = EventUtils.getParm(e, EventConstants.PARM_TROUBLE_TICKET);
         
         m_ticketerServiceLayer.updateTicketForAlarm(alarmId, ticketId);
@@ -212,7 +212,7 @@ public class TroubleTicketer implements SpringServiceDaemon, EventListener {
         EventUtils.requireParm(e, EventConstants.PARM_ALARM_UEI);
         EventUtils.requireParm(e, EventConstants.PARM_USER);
 
-        int alarmId = EventUtils.getIntParm(e, EventConstants.PARM_ALARM_ID);
+        int alarmId = EventUtils.getIntParm(e, EventConstants.PARM_ALARM_ID, 0);
         Map<String,String> attributes = new HashMap<String, String>();
         for (final Parm parm: e.getParmCollection()) {
         	attributes.put(parm.getParmName(), parm.getValue().getContent());
@@ -232,7 +232,7 @@ public class TroubleTicketer implements SpringServiceDaemon, EventListener {
         EventUtils.requireParm(e, EventConstants.PARM_USER);
         EventUtils.requireParm(e, EventConstants.PARM_TROUBLE_TICKET);
 
-        int alarmId = EventUtils.getIntParm(e, EventConstants.PARM_ALARM_ID);
+        int alarmId = EventUtils.getIntParm(e, EventConstants.PARM_ALARM_ID, 0);
         String ticketId = EventUtils.getParm(e, EventConstants.PARM_TROUBLE_TICKET);
         
         m_ticketerServiceLayer.cancelTicketForAlarm(alarmId, ticketId);
