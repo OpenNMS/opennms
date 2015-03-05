@@ -912,7 +912,7 @@ public abstract class AbstractEventUtil implements EventUtil {
 
 		// check input string to see if it has any %xxx% substring
 		while ((tempInp != null) && ((index1 = tempInp.indexOf(PERCENT)) != -1)) {
-		    LOG.debug("checking input " + tempInp);
+		        LOG.debug("checking input " + tempInp);
 			// copy till first %
 			ret.append(tempInp.substring(0, index1));
 			tempInp = tempInp.substring(index1);
@@ -925,10 +925,10 @@ public abstract class AbstractEventUtil implements EventUtil {
 
 				// If there's any whitespace in between the % signs, then do not try to 
 				// expand it with a parameter value
-				if (parm.matches(".*\\s.*")) {
+				if (parm.matches("(?s).*\\s(?s).*")) {
 					ret.append(PERCENT);
 					tempInp = tempInp.substring(1);
-		                        LOG.debug("skipping parm: " + parm + " because whitespace found found in value");
+		                        LOG.debug("skipping parm: " + parm + " because whitespace found in value");
 					continue;
 				}
 
@@ -953,7 +953,6 @@ public abstract class AbstractEventUtil implements EventUtil {
 				}
 			}
 			else {
-			    LOG.debug("didn't find second '%' so I'm breaking?");
 				break;
 			}
 		}
