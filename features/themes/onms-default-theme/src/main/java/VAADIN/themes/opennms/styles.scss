@@ -226,6 +226,12 @@ $header-background-image: url("images/headerbg.png") !default;
   color: white !important;
   font-size: 12px !important;
   font-weight: bold;
+
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+  background-image: url(../../../../images/headingbg.png);
+  background-repeat: repeat-x;
+  background-position: center center;
 }
 
 .surveillance-view-fake-caption {
