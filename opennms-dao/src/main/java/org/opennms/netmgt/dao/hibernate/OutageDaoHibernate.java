@@ -39,16 +39,20 @@ import java.util.Set;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.opennms.netmgt.dao.api.OutageDao;
-import org.opennms.netmgt.filter.FilterDaoFactory;
+import org.opennms.netmgt.filter.api.FilterDao;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsOutage;
 import org.opennms.netmgt.model.ServiceSelector;
 import org.opennms.netmgt.model.outage.OutageSummary;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate3.HibernateCallback;
 
 public class OutageDaoHibernate extends AbstractDaoHibernate<OnmsOutage, Integer> implements OutageDao {
+
+    @Autowired
+    private FilterDao m_filterDao;
 
     private static final Logger LOG = LoggerFactory.getLogger(OutageDaoHibernate.class);
 
@@ -113,7 +117,7 @@ public class OutageDaoHibernate extends AbstractDaoHibernate<OnmsOutage, Integer
     /** {@inheritDoc} */
     @Override
     public Collection<OnmsOutage> matchingCurrentOutages(final ServiceSelector selector) {
-        final Set<InetAddress> matchingAddrs = new HashSet<InetAddress>(FilterDaoFactory.getInstance().getIPAddressList(selector.getFilterRule()));
+        final Set<InetAddress> matchingAddrs = new HashSet<InetAddress>(m_filterDao.getIPAddressList(selector.getFilterRule()));
         final Set<String> matchingSvcs = new HashSet<String>(selector.getServiceNames());
 
         final List<OnmsOutage> matchingOutages = new LinkedList<OnmsOutage>();

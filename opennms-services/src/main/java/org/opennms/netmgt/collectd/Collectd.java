@@ -66,7 +66,7 @@ import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventIpcManager;
 import org.opennms.netmgt.events.api.EventListener;
-import org.opennms.netmgt.filter.FilterDao;
+import org.opennms.netmgt.filter.api.FilterDao;
 import org.opennms.netmgt.model.AbstractEntityVisitor;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
@@ -1466,7 +1466,7 @@ public class Collectd extends AbstractServiceDaemon implements
     /**
      * <p>setFilterDao</p>
      *
-     * @param dao a {@link org.opennms.netmgt.filter.FilterDao} object.
+     * @param dao a {@link org.opennms.netmgt.filter.api.FilterDao} object.
      */
     void setFilterDao(FilterDao dao) {
         m_filterDao = dao;
