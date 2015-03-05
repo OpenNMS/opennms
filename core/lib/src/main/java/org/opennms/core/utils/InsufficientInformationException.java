@@ -26,16 +26,12 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.capsd;
+package org.opennms.core.utils;
 
 /**
  * <p>InsufficientInformationException class.</p>
  *
  * @author brozow
- *
- * FIXME To change the template for this generated type comment go to Window -
- * Preferences - Java - Code Generation - Code and Comments
- * @version $Id: $
  */
 public class InsufficientInformationException extends Exception {
 

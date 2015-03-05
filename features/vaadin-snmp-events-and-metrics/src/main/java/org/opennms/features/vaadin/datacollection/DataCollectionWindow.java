@@ -36,7 +36,7 @@ import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.features.vaadin.api.Logger;
 import org.opennms.features.vaadin.mibcompiler.api.MibParser;
 import org.opennms.features.vaadin.mibcompiler.services.PrefabGraphDumper;
-import org.opennms.netmgt.config.DataCollectionConfigDao;
+import org.opennms.netmgt.config.api.DataCollectionConfigDao;
 import org.opennms.netmgt.config.datacollection.DatacollectionGroup;
 import org.opennms.netmgt.model.PrefabGraph;
 import org.vaadin.dialogs.ConfirmDialog;

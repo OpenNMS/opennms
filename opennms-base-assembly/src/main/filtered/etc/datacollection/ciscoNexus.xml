@@ -6,7 +6,7 @@
       <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistRegexSelectorStrategy">
         <parameter key="match-expression" value="(#entPhysicalName != null) and (#entSensorType != null)" />
       </persistenceSelectorStrategy>
-      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
     </resourceType>
 
     <resourceType name="ciscoNXProcessIndex" label="Cisco Nexus System Resourses"
@@ -14,7 +14,7 @@
       <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistRegexSelectorStrategy">
         <parameter key="match-expression" value="(#cpmCPUTotalPhysicalIndex != null)" />
       </persistenceSelectorStrategy>
-      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
     </resourceType>
 
       <group name="cisco-nx-environmental" ifType="all">

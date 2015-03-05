@@ -27,12 +27,11 @@
  *******************************************************************************/
 
 package org.opennms.netmgt.collectd;
+
 import org.opennms.netmgt.config.DataCollectionConfigFactory;
-import org.opennms.netmgt.config.MibObject;
+import org.opennms.netmgt.config.datacollection.MibObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.jmx.support.JmxUtils;
-
 
 /**
  * This class encapsulates an RRDTool data source. Data source information
@@ -187,7 +186,7 @@ public class JMXDataSource implements Cloneable {
        /**
         * <p>Constructor for JMXDataSource.</p>
         *
-        * @param obj a {@link org.opennms.netmgt.config.MibObject} object.
+        * @param obj a {@link org.opennms.netmgt.config.datacollection.MibObject} object.
         * @param collectionName a {@link java.lang.String} object.
         */
        public JMXDataSource(MibObject obj, String collectionName) {

@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,18 +26,20 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.config;
+package org.opennms.netmgt.collection.api;
 
-import java.io.Serializable;
-import java.util.Comparator;
+import java.util.List;
 
-import org.opennms.netmgt.xml.eventconf.Event;
+import org.opennms.netmgt.config.datacollection.Parameter;
 
-public class EventLabelComparator implements Comparator<Event>, Serializable {
-    private static final long serialVersionUID = 7976730920523203921L;
+/**
+ * PersistenceSelectorStrategy
+ * 
+ * @author <a href="mail:agalue@opennms.org">Alejandro Galue</a>
+ */
+public interface PersistenceSelectorStrategy {
 
-    @Override
-    public int compare(final Event e1, final Event e2) {
-        return e1.getEventLabel().compareToIgnoreCase(e2.getEventLabel());
-    }
+    public boolean shouldPersist(CollectionResource resource);
+
+    public void setParameters(List<Parameter> parameterCollection);
 }

@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,27 +26,19 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.collectd;
+package org.opennms.netmgt.xml.eventconf;
 
-import java.util.List;
+import java.io.Serializable;
+import java.util.Comparator;
 
-import org.opennms.netmgt.collection.api.CollectionResource;
-import org.opennms.netmgt.config.datacollection.Parameter;
-
-/**
- * PersistAllSelectorStrategy (default implementation of the PersistenceSelectorStrategy interface).
- * 
- * @author <a href="mail:agalue@opennms.org">Alejandro Galue</a>
- */
-public class PersistAllSelectorStrategy implements PersistenceSelectorStrategy {
+public class EventLabelComparator implements Comparator<Event>, Serializable {
+    private static final long serialVersionUID = 7976730920523203921L;
 
     @Override
-    public boolean shouldPersist(CollectionResource resource) {
-        return true;
+    public int compare(final Event e1, final Event e2) {
+        if (e1.getEventLabel() == e2.getEventLabel()) return 0;
+        if (e1.getEventLabel() == null) return -1;
+        if (e2.getEventLabel() == null) return 1;
+        return e1.getEventLabel().compareToIgnoreCase(e2.getEventLabel());
     }
-
-    @Override
-    public void setParameters(List<Parameter> parameterCollection) {
-    }
-
 }

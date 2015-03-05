@@ -2,13 +2,13 @@
 <datacollection-group name="Acme Packet">
       <!-- Acme Packet Resource Types -->
       <resourceType name="apSipSAStatIdx" label="Acme Packet SIP Session Agent" resourceLabel="${apSipSAStatSAHost}">
-        <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+        <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
         <storageStrategy class="org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy">
           <parameter key="sibling-column-name" value="apSipSAStatSAHost" />
         </storageStrategy>
       </resourceType>
       <resourceType name="apH323SAStatIdx" label="Acme Packet H323 Session Agent" resourceLabel="${apH323SAStatSAHost}">
-        <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+        <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
         <storageStrategy class="org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy">
           <parameter key="sibling-column-name" value="apH323SAStatSAHost" />
         </storageStrategy>

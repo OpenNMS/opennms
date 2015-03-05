@@ -53,7 +53,7 @@ import org.opennms.netmgt.poller.pollables.PollableService;
 import org.opennms.netmgt.xml.event.Event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.dao.DataRetrievalFailureException;
+import org.springframework.dao.DataIntegrityViolationException;
 
 /**
  * Represents a DefaultPollContext
@@ -311,12 +311,16 @@ public class DefaultPollContext implements PollContext, EventListener {
 
                 final int eventId = svcLostEvent.getEventId();
                 if (eventId > 0) {
-                    getQueryManager().openOutage(getPollerConfig().getNextOutageIdSql(), nodeId, ipAddr, svcName, eventId, svcLostEvent.getDate());
+                    try {
+                        getQueryManager().openOutage(getPollerConfig().getNextOutageIdSql(), nodeId, ipAddr, svcName, eventId, svcLostEvent.getDate());
+                    } catch (DataIntegrityViolationException e) {
+                        // See NMS-7519 for details
+                        LOG.error("openOutage: Failed to open outage with event: '{}'. Another outage for this service is already open.", svcLostEvent, e);
+                    }
                 } else {
                     LOG.warn("run: Failed to determine an eventId for service outage for: {} with event: {}", svc, svcLostEvent);
                 }
             }
-
         };
         if (svcLostEvent instanceof PendingPollEvent) {
             ((PendingPollEvent)svcLostEvent).addPending(r);
@@ -403,13 +407,8 @@ public class DefaultPollContext implements PollContext, EventListener {
                 if (pollEvent.isPending()) continue;
 
                 LOG.trace("onEvent: processing pending pollEvent...: {}", pollEvent);
-                try {
-                    pollEvent.processPending();
-                    it.remove();
-                } catch (DataRetrievalFailureException ex) {
-                    LOG.error("onEvent: process pending failed on: {}", pollEvent, ex);
-                    continue;
-                }
+                pollEvent.processPending();
+                it.remove();
                 LOG.trace("onEvent: processing of pollEvent completed.: {}", pollEvent);
             }
         }
