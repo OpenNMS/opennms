@@ -30,7 +30,6 @@ package org.opennms.netmgt.statsd;
 
 import java.text.ParseException;
 
-import org.opennms.netmgt.capsd.EventUtils;
 import org.opennms.netmgt.daemon.SpringServiceDaemon;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.ResourceDao;
@@ -41,6 +40,7 @@ import org.opennms.netmgt.events.api.annotations.EventHandler;
 import org.opennms.netmgt.events.api.annotations.EventListener;
 import org.opennms.netmgt.filter.api.FilterDao;
 import org.opennms.netmgt.model.events.EventBuilder;
+import org.opennms.netmgt.model.events.EventUtils;
 import org.opennms.netmgt.xml.event.Event;
 import org.quartz.JobDetail;
 import org.quartz.Scheduler;

@@ -30,11 +30,6 @@ package org.opennms.netmgt.ticketd;
 
 import java.util.Properties;
 
-import org.opennms.api.integration.ticketing.*;
-import org.opennms.netmgt.model.OnmsAlarm;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import org.drools.KnowledgeBase;
 import org.drools.KnowledgeBaseFactory;
 import org.drools.builder.KnowledgeBuilder;
@@ -43,6 +38,10 @@ import org.drools.builder.ResourceType;
 import org.drools.compiler.PackageBuilderConfiguration;
 import org.drools.io.ResourceFactory;
 import org.drools.runtime.StatefulKnowledgeSession;
+import org.opennms.api.integration.ticketing.Ticket;
+import org.opennms.netmgt.model.OnmsAlarm;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * OpenNMS Trouble Ticket API implementation.

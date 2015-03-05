@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.model.events;
 
+import static org.opennms.core.utils.InetAddressUtils.addr;
 import static org.opennms.core.utils.InetAddressUtils.str;
 import static org.opennms.netmgt.events.api.EventConstants.INTERFACE_DELETED_EVENT_UEI;
 import static org.opennms.netmgt.events.api.EventConstants.NODE_ADDED_EVENT_UEI;
@@ -49,7 +50,9 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
 
+import org.opennms.core.utils.InsufficientInformationException;
 import org.opennms.core.utils.WebSecurityUtils;
+import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.OnmsNode.NodeLabelSource;
 import org.opennms.netmgt.xml.event.Autoaction;
 import org.opennms.netmgt.xml.event.Event;
@@ -574,6 +577,194 @@ public abstract class EventUtils {
         }
     
         return true;
+    }
+
+    /**
+     * Ensures the given event has an interface
+     *
+     * @param e
+     *            the event
+     * @throws org.opennms.netmgt.capsd.InsufficientInformationException
+     *             if an interface is not available
+     */
+    static public void checkInterface(Event e) throws InsufficientInformationException {
+        if (e == null) {
+            throw new NullPointerException("e is null");
+        } else if (e.getInterface() == null) {
+            throw new InsufficientInformationException("ipaddr for event is unavailable");
+        }
+    }
+    
+    /**
+     * Is the given interface a non-IP interface
+     *
+     * @param intf
+     *            the interface
+     * @return true/false
+     */
+    static public boolean isNonIpInterface(String intf) {
+        if (intf == null || intf.length() == 0 || "0.0.0.0".equals(intf) ) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Ensures that the given Event has a node id
+     *
+     * @param e
+     *            the event
+     * @throws org.opennms.netmgt.capsd.InsufficientInformationException
+     *             if a node id is not available
+     */
+    static public void checkNodeId(Event e) throws InsufficientInformationException {
+        if (e == null) {
+            throw new NullPointerException("e is null");
+        } else if (!e.hasNodeid()) {
+            throw new InsufficientInformationException("nodeid for event is unavailable");
+        }
+    }
+
+    /**
+     * Ensures that the given event has a service parameter
+     *
+     * @param e
+     *            the event to check
+     * @throws org.opennms.netmgt.capsd.InsufficientInformationException
+     *             if the event does not have a service
+     */
+    public static void checkService(Event e) throws InsufficientInformationException {
+        if (e == null) {
+            throw new NullPointerException("e is null");
+        } else if (e.getService() == null || e.getService().length() == 0) {
+            throw new InsufficientInformationException("service for event is unavailable");
+        }
+    }
+
+    /**
+     * Constructs a deleteInterface event for the given nodeId, ipAddress (or ifIndex) pair.
+     *
+     * @param source
+     *            the source for the event
+     * @param nodeId
+     *            the nodeId of the node that owns the interface
+     * @param ipAddr
+     *            the ipAddress of the interface being deleted
+     * @param ifIndex
+     *            the ifIndex of the interface being deleted
+     * @param txNo
+     *            the transaction number to use for processing this event
+     * @return an Event representing a deleteInterface event for the given
+     *         nodeId, ipaddr
+     */
+    public static Event createDeleteInterfaceEvent(String source, long nodeId, String ipAddr, int ifIndex, long txNo) {
+        return createInterfaceEventBuilder(EventConstants.DELETE_INTERFACE_EVENT_UEI, source, nodeId, ipAddr, ifIndex, txNo).getEvent();
+    }
+
+    private static EventBuilder createInterfaceEventBuilder(String uei, String source, long nodeId, String ipAddr, int ifIndex, long txNo) {
+        EventBuilder bldr = new EventBuilder(uei, source);
+        
+        if (ipAddr != null && ipAddr.length() != 0) {
+            bldr.setInterface(addr(ipAddr));
+        }
+        
+        bldr.setNodeid(nodeId);
+
+        if (ifIndex != -1) {
+            bldr.setIfIndex(ifIndex);
+        }
+
+        bldr.addParam(EventConstants.PARM_TRANSACTION_NO, txNo);
+
+        return bldr;
+    }
+
+    private static EventBuilder createNodeEventBuilder(String uei, String source, long nodeId, long txNo) {
+        EventBuilder bldr = new EventBuilder(uei, source);
+        
+        bldr.setNodeid(nodeId);
+        
+        if (txNo >= 0) {
+            bldr.addParam(EventConstants.PARM_TRANSACTION_NO, txNo);
+        }
+        return bldr;
+    }
+
+    /**
+     * Construct a deleteNode event for the given nodeId.
+     *
+     * @param source
+     *            the source for the event
+     * @param nodeId
+     *            the node to be deleted.
+     * @param txNo
+     *            the transaction number associated with deleting the node
+     * @return an Event object representing a delete node event.
+     */
+    public static Event createAssetInfoChangedEvent(String source, long nodeId, long txNo) {
+        return createNodeEventBuilder(EventConstants.ASSET_INFO_CHANGED_EVENT_UEI, source, nodeId, txNo).getEvent();
+    }
+
+    private static EventBuilder createServiceEventBuilder(String uei, String source, long nodeId, String ipAddr, String service, long txNo) {
+        EventBuilder bldr = new EventBuilder(uei, source);
+
+        bldr.setNodeid(nodeId);
+        bldr.setInterface(addr(ipAddr));
+        bldr.setService(service);
+        
+        bldr.addParam(EventConstants.PARM_TRANSACTION_NO, txNo);
+
+        return bldr;
+    }
+
+    /**
+     * Constructs a deleteService event for the given nodeId, ipAddress,
+     * serviceName triple.
+     *
+     * @param source
+     *            the source for the event
+     * @param nodeId
+     *            the nodeId of the node that service resides on
+     * @param ipAddr
+     *            the ipAddress of the interface the service resides on
+     * @param service
+     *            the service that is being deleted
+     * @param txNo
+     *            the transaction number to use for processing this event
+     * @return an Event representing a deleteInterface event for the given
+     *         nodeId, ipaddr
+     */
+    public static Event createDeleteServiceEvent(String source, long nodeId, String ipAddr, String service, long txNo) {
+        
+        return createServiceEventBuilder(EventConstants.DELETE_SERVICE_EVENT_UEI, source, nodeId, ipAddr, service, txNo).getEvent();
+        
+    }
+
+    /**
+     * Throw an exception if an event does have the required parameter
+     *
+     * @param e
+     *            the event the parameter must reside on
+     * @throws org.opennms.netmgt.capsd.InsufficientInformationException
+     *             if the paramter is not set on the event or if its value has
+     *             no content
+     * @param parmName a {@link java.lang.String} object.
+     */
+    public static void requireParm(Event e, String parmName) throws InsufficientInformationException {
+        for (Parm parm : e.getParmCollection()) {
+            if (parmName.equals(parm.getParmName())) {
+                if (parm.getValue() != null && parm.getValue().getContent() != null) {
+                    // we found a matching parm
+                    return;
+                } else {
+                    throw new InsufficientInformationException("parameter " + parmName + " required but only null valued parms available");
+                }
+            }
+        }
+
+        throw new InsufficientInformationException("parameter " + parmName + " required but was not available");
+
     }
 
 }

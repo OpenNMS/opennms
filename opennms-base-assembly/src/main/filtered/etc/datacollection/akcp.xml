@@ -4,38 +4,38 @@
 
   <!-- AKCP sensorProbe -->
   <resourceType name="hhmsSensorArrayTemp" label="AKCP" resourceLabel="${spTempDescr}">
-    <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-    <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+    <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+    <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
   </resourceType>
   <resourceType name="hhmsSensorArrayHumid" label="AKCP" resourceLabel="${spHumidityDescr}">
-    <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-    <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+    <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+    <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
   </resourceType>
 
   <!-- AKCP securityProbe -->
   <resourceType name="secTempIndex" label="Temperature sensor" resourceLabel="(Index: ${secTempIdx}) Temperature: ${secTempDescr}">
-    <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-    <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+    <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+    <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
   </resourceType>
   <resourceType name="secHumidityIndex" label="Humidity sensor" resourceLabel="(Index: ${secHumidityIdx}) Humidity: ${secHumidityDescr}">
-    <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-    <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+    <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+    <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
   </resourceType>
   <resourceType name="sec4to20maIndex" label="4 to 20mA sensor" resourceLabel="(Index: ${sec4to20maIdx}) 4 to 20mA: ${sec4to20maDescr}">
-    <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-    <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+    <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+    <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
   </resourceType>
   <resourceType name="secDcVoltIndex" label="DC Voltage" resourceLabel="(Index: ${secDcVoltIdx}) DC Voltage: ${secDcVoltDescr}">
-    <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-    <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+    <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+    <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
   </resourceType>
   <resourceType name="secAirflowIndex" label="Airflow" resourceLabel="(Index: ${secAirflowIdx}) Airflow: ${secAirflowDescr}">
-    <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-    <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+    <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+    <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
   </resourceType>
   <resourceType name="secThermostatIndex" label="Thermostat" resourceLabel="(Index: ${secThermostatIdx}) Thermostat: ${secThermostatDescr}">
-    <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-    <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+    <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+    <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
   </resourceType>
 
   <!-- AKCP sensorProbe -->

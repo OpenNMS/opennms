@@ -43,7 +43,7 @@ import java.util.Map;
 import junit.framework.TestCase;
 
 import org.easymock.EasyMock;
-import org.opennms.netmgt.capsd.InsufficientInformationException;
+import org.opennms.core.utils.InsufficientInformationException;
 import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionSet;
 import org.opennms.netmgt.collection.api.CollectionSetVisitor;

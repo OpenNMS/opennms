@@ -112,7 +112,7 @@ public class PersistRegexSelectorStrategyTest {
         org.opennms.netmgt.config.datacollection.ResourceType rt = new org.opennms.netmgt.config.datacollection.ResourceType();
         rt.setName("myResourceType");
         StorageStrategy storageStrategy = new StorageStrategy();
-        storageStrategy.setClazz("org.opennms.netmgt.dao.support.IndexStorageStrategy");
+        storageStrategy.setClazz("org.opennms.netmgt.collection.support.IndexStorageStrategy");
         rt.setStorageStrategy(storageStrategy);
         PersistenceSelectorStrategy persistenceSelectorStrategy = new PersistenceSelectorStrategy();
         persistenceSelectorStrategy.setClazz("org.opennms.netmgt.collectd.PersistRegexSelectorStrategy");

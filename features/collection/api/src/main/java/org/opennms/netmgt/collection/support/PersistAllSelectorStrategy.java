@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,21 +26,28 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.collectd;
+package org.opennms.netmgt.collection.support;
 
 import java.util.List;
 
 import org.opennms.netmgt.collection.api.CollectionResource;
+import org.opennms.netmgt.collection.api.PersistenceSelectorStrategy;
 import org.opennms.netmgt.config.datacollection.Parameter;
 
 /**
- * PersistenceSelectorStrategy
+ * PersistAllSelectorStrategy (default implementation of the PersistenceSelectorStrategy interface).
  * 
  * @author <a href="mail:agalue@opennms.org">Alejandro Galue</a>
  */
-public interface PersistenceSelectorStrategy {
+public class PersistAllSelectorStrategy implements PersistenceSelectorStrategy {
 
-    public boolean shouldPersist(CollectionResource resource);
+    @Override
+    public boolean shouldPersist(CollectionResource resource) {
+        return true;
+    }
 
-    public void setParameters(List<Parameter> parameterCollection);
+    @Override
+    public void setParameters(List<Parameter> parameterCollection) {
+    }
+
 }

@@ -421,7 +421,7 @@ public class CollectionResourceWrapperTest {
         strategy.addParameter(new Parameter("replace-all", "s/^-//"));
         rt.setStorageStrategy(strategy);
         PersistenceSelectorStrategy pstrategy = new PersistenceSelectorStrategy();
-        pstrategy.setClazz("org.opennms.netmgt.collectd.PersistAllSelectorStrategy");
+        pstrategy.setClazz("org.opennms.netmgt.collection.support.PersistAllSelectorStrategy");
         rt.setPersistenceSelectorStrategy(pstrategy);
 
         GenericIndexResourceType resourceType = new GenericIndexResourceType(agent, collection, rt);
@@ -454,7 +454,7 @@ public class CollectionResourceWrapperTest {
         strategy.addParameter(new Parameter("replace-all","s/:\\\\.*//"));
         rt.setStorageStrategy(strategy);
         PersistenceSelectorStrategy pstrategy = new PersistenceSelectorStrategy();
-        pstrategy.setClazz("org.opennms.netmgt.collectd.PersistAllSelectorStrategy");
+        pstrategy.setClazz("org.opennms.netmgt.collection.support.PersistAllSelectorStrategy");
         rt.setPersistenceSelectorStrategy(pstrategy);
 
         GenericIndexResourceType resourceType = new GenericIndexResourceType(agent, collection, rt);
