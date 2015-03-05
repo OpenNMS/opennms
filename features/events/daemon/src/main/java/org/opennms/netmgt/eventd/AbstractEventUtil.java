@@ -925,7 +925,7 @@ public abstract class AbstractEventUtil implements EventUtil {
 
 				// If there's any whitespace in between the % signs, then do not try to 
 				// expand it with a parameter value
-				if (parm.matches("(?s).*\\s(?s).*")) {
+				if (parm.matches(".*\\s(?s).*")) {
 					ret.append(PERCENT);
 					tempInp = tempInp.substring(1);
 		                        LOG.debug("skipping parm: " + parm + " because whitespace found in value");
