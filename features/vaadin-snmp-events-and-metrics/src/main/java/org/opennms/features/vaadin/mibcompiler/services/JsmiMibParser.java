@@ -55,13 +55,13 @@ import org.jsmiparser.smi.SmiTrapType;
 import org.jsmiparser.smi.SmiVariable;
 import org.opennms.features.namecutter.NameCutter;
 import org.opennms.features.vaadin.mibcompiler.api.MibParser;
+import org.opennms.netmgt.collection.support.IndexStorageStrategy;
 import org.opennms.netmgt.config.datacollection.DatacollectionGroup;
 import org.opennms.netmgt.config.datacollection.Group;
 import org.opennms.netmgt.config.datacollection.MibObj;
 import org.opennms.netmgt.config.datacollection.PersistenceSelectorStrategy;
 import org.opennms.netmgt.config.datacollection.ResourceType;
 import org.opennms.netmgt.config.datacollection.StorageStrategy;
-import org.opennms.netmgt.dao.support.IndexStorageStrategy;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.PrefabGraph;
 import org.opennms.netmgt.xml.eventconf.Decode;
@@ -469,7 +469,7 @@ public class JsmiMibParser implements MibParser, Serializable {
             type.setName(resourceType);
             type.setLabel(resourceType);
             type.setResourceLabel("${index}");
-            type.setPersistenceSelectorStrategy(new PersistenceSelectorStrategy("org.opennms.netmgt.collectd.PersistAllSelectorStrategy")); // To avoid requires opennms-services
+            type.setPersistenceSelectorStrategy(new PersistenceSelectorStrategy("org.opennms.netmgt.collection.support.PersistAllSelectorStrategy")); // To avoid requires opennms-services
             type.setStorageStrategy(new StorageStrategy(IndexStorageStrategy.class.getName()));
             data.addResourceType(type);
         }

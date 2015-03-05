@@ -1830,10 +1830,10 @@ public class ThresholdingVisitorTest {
         type.setName(resourceTypeName);
         type.setLabel(resourceTypeName);
         org.opennms.netmgt.config.datacollection.StorageStrategy strategy = new org.opennms.netmgt.config.datacollection.StorageStrategy();
-        strategy.setClazz("org.opennms.netmgt.dao.support.IndexStorageStrategy");
+        strategy.setClazz("org.opennms.netmgt.collection.support.IndexStorageStrategy");
         type.setStorageStrategy(strategy);
         org.opennms.netmgt.config.datacollection.PersistenceSelectorStrategy pstrategy = new org.opennms.netmgt.config.datacollection.PersistenceSelectorStrategy();
-        pstrategy.setClazz("org.opennms.netmgt.collectd.PersistAllSelectorStrategy");
+        pstrategy.setClazz("org.opennms.netmgt.collection.support.PersistAllSelectorStrategy");
         type.setPersistenceSelectorStrategy(pstrategy);
         MockDataCollectionConfig dataCollectionConfig = new MockDataCollectionConfig();
         OnmsSnmpCollection collection = new OnmsSnmpCollection(agent, new ServiceParameters(new HashMap<String, Object>()), dataCollectionConfig);
