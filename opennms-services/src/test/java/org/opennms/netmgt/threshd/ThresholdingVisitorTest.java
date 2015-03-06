@@ -272,7 +272,7 @@ public class ThresholdingVisitorTest {
      */
     @Test
     public void testResourceGaugeData() {
-        addHighThresholdEvent(1, 10000, 5000, 15000, "Unknown", null, "freeMem", null, null);
+        addHighThresholdEvent(1, 10000, 5000, 15000, "node", "node", "freeMem", null, null);
         ThresholdingVisitor visitor = createVisitor();
         runGaugeDataTest(visitor, 15000);
         verifyEvents(0);
@@ -281,7 +281,7 @@ public class ThresholdingVisitorTest {
     @Test
     public void testTriggersNodeResource() throws Exception {
         initFactories("/threshd-configuration.xml", "/test-thresholds-triggers.xml");
-        addHighThresholdEvent(3, 10000, 5000, 22000, "Unknown", null, "freeMem", null, null);
+        addHighThresholdEvent(3, 10000, 5000, 22000, "node", "node", "freeMem", null, null);
         ThresholdingVisitor visitor = createVisitor();
         
         // Trigger = 1
@@ -350,8 +350,8 @@ public class ThresholdingVisitorTest {
         SnmpAttributeType attributeType = new NumericAttributeType(resourceType, "default", mibObject, new AttributeGroupType("mibGroup", AttributeGroupType.IF_TYPE_IGNORE));
 
         // Add Events
-        addHighThresholdEvent(1, 10, 5, 15, "Unknown", null, "myCounter", null, null);
-        addHighRearmEvent(1, 10, 5, 2, "Unknown", null, "myCounter", null, null);
+        addHighThresholdEvent(1, 10, 5, 15, "node", "node", "myCounter", null, null);
+        addHighRearmEvent(1, 10, 5, 2, "node", "node", "myCounter", null, null);
 
         long baseDate = new Date().getTime();
         // Step 0: Visit a CollectionSet with a timestamp, so that the thresholder knows how when the collection was held 
@@ -390,8 +390,8 @@ public class ThresholdingVisitorTest {
         SnmpAttributeType attributeType = new NumericAttributeType(resourceType, "default", mibObject, new AttributeGroupType("mibGroup", AttributeGroupType.IF_TYPE_IGNORE));
 
         // Add Events
-        addHighThresholdEvent(1, 10, 5, 15, "Unknown", null, "myCounter", null, null);
-        addHighRearmEvent(1, 10, 5, 2, "Unknown", null, "myCounter", null, null);
+        addHighThresholdEvent(1, 10, 5, 15, "node", "node", "myCounter", null, null);
+        addHighRearmEvent(1, 10, 5, 2, "node", "node", "myCounter", null, null);
 
         long baseDate = new Date().getTime();
         // Step 0: Visit a CollectionSet with a timestamp, so that the thresholder knows how when the collection was held 
@@ -493,7 +493,7 @@ public class ThresholdingVisitorTest {
         ThresholdingVisitor visitor = createVisitor();
         
         // Step 1: No events
-        addHighThresholdEvent(1, 10000, 5000, 4500, "Unknown", null, "freeMem", null, null);
+        addHighThresholdEvent(1, 10000, 5000, 4500, "node", "node", "freeMem", null, null);
         runGaugeDataTest(visitor, 4500);
         verifyEvents(1);
         
@@ -503,7 +503,7 @@ public class ThresholdingVisitorTest {
         resetAnticipator();
         
         // Step 3: Trigger threshold with new configuration values
-        addHighThresholdEvent(1, 4000, 2000, 4500, "Unknown", null, "freeMem", null, null);
+        addHighThresholdEvent(1, 4000, 2000, 4500, "node", "node", "freeMem", null, null);
         runGaugeDataTest(visitor, 4500);
         verifyEvents(0);
     }
@@ -642,7 +642,7 @@ public class ThresholdingVisitorTest {
         SnmpAttributeType attributeType = new NumericAttributeType(resourceType, "default", mibObject, new AttributeGroupType("mibGroup", AttributeGroupType.IF_TYPE_IGNORE));
 
         // Add Events
-        addHighThresholdEvent(1, 50, 40, 60, "Unknown", null, "bug2746", null, null);
+        addHighThresholdEvent(1, 50, 40, 60, "node", "node", "bug2746", null, null);
 
         // Step 1 : Execute visitor
         SnmpCollectionResource resource = new NodeInfo(resourceType, agent);
@@ -683,8 +683,8 @@ public class ThresholdingVisitorTest {
         ThresholdingVisitor visitor = createVisitor();
         
         // Add Events
-        addHighThresholdEvent(1, 10000, 5000, 12000, "Unknown", null, "freeMem", null, null);
-        addHighRearmEvent(1, 10000, 5000, 1000, "Unknown", null, "freeMem", null, null);
+        addHighThresholdEvent(1, 10000, 5000, 12000, "node", "node", "freeMem", null, null);
+        addHighRearmEvent(1, 10000, 5000, 1000, "node", "node", "freeMem", null, null);
         
         // Step 1: Trigger threshold
         runGaugeDataTest(visitor, 12000);
@@ -713,10 +713,10 @@ public class ThresholdingVisitorTest {
         ThresholdingVisitor visitor = createVisitor();
 
         // Add Events
-        addHighThresholdEvent(1, 10000, 5000, 12000, "Unknown", null, "freeMem", null, null);
-        addHighRearmEvent(1, 10000, 5000, Double.NaN, "Unknown", null, "freeMem", null, null);
-        addHighThresholdEvent(1, 4000, 2000, 5000, "Unknown", null, "freeMem", null, null);
-        addHighRearmEvent(1, 4000, 2000, 1000, "Unknown", null, "freeMem", null, null);
+        addHighThresholdEvent(1, 10000, 5000, 12000, "node", "node", "freeMem", null, null);
+        addHighRearmEvent(1, 10000, 5000, Double.NaN, "node", "node", "freeMem", null, null);
+        addHighThresholdEvent(1, 4000, 2000, 5000, "node", "node", "freeMem", null, null);
+        addHighRearmEvent(1, 4000, 2000, 1000, "node", "node", "freeMem", null, null);
 
         // Step 1: Trigger threshold
         runGaugeDataTest(visitor, 12000);
@@ -751,8 +751,8 @@ public class ThresholdingVisitorTest {
         ThresholdingVisitor visitor = createVisitor();
 
         // Add Events
-        addHighThresholdEvent(1, 10000, 5000, 12000, "Unknown", null, "freeMem", null, null);
-        addHighRearmEvent(1, 10000, 5000, Double.NaN, "Unknown", null, "freeMem", null, null);
+        addHighThresholdEvent(1, 10000, 5000, 12000, "node", "node", "freeMem", null, null);
+        addHighRearmEvent(1, 10000, 5000, Double.NaN, "node", "node", "freeMem", null, null);
 
         // Step 1: Trigger threshold
         runGaugeDataTest(visitor, 12000);
@@ -766,14 +766,14 @@ public class ThresholdingVisitorTest {
         
         // Step 4: New collected data is not above the new threshold value. No Events generated
         resetAnticipator();
-        addHighThresholdEvent(1, 15000, 14000, 13000, "Unknown", null, "freeMem", null, null);
+        addHighThresholdEvent(1, 15000, 14000, 13000, "node", "node", "freeMem", null, null);
         runGaugeDataTest(visitor, 13000);
         verifyEvents(1);
         
         // Step 5: Trigger and rearm a threshold using new configuration
         resetAnticipator();
-        addHighThresholdEvent(1, 15000, 14000, 16000, "Unknown", null, "freeMem", null, null);
-        addHighRearmEvent(1, 15000, 14000, 1000, "Unknown", null, "freeMem", null, null);
+        addHighThresholdEvent(1, 15000, 14000, 16000, "node", "node", "freeMem", null, null);
+        addHighRearmEvent(1, 15000, 14000, 1000, "node", "node", "freeMem", null, null);
         runGaugeDataTest(visitor, 16000);
         runGaugeDataTest(visitor, 1000);
         verifyEvents(0);
@@ -834,10 +834,10 @@ public class ThresholdingVisitorTest {
         SnmpAttributeType attributeType = new NumericAttributeType(resourceType, "default", mibObject, new AttributeGroupType("mibGroup", AttributeGroupType.IF_TYPE_IGNORE));
 
         // Add Events
-        addHighThresholdEvent(1, 100, 90, 110, "Unknown", null, "myCounter", null, null);
-        addHighThresholdEvent(1, 70, 60, 80, "Unknown", null, "myCounter - 30", null, null);
-        addHighRearmEvent(1, 100, 90, 40, "Unknown", null, "myCounter", null, null);
-        addHighRearmEvent(1, 70, 60, 10, "Unknown", null, "myCounter - 30", null, null);
+        addHighThresholdEvent(1, 100, 90, 110, "node", "node", "myCounter", null, null);
+        addHighThresholdEvent(1, 70, 60, 80, "node", "node", "myCounter - 30", null, null);
+        addHighRearmEvent(1, 100, 90, 40, "node", "node", "myCounter", null, null);
+        addHighRearmEvent(1, 70, 60, 10, "node", "node", "myCounter - 30", null, null);
         
         long baseDate = new Date().getTime();
         // Collect Step 1 : First Data: Last should be NaN
@@ -1071,7 +1071,7 @@ public class ThresholdingVisitorTest {
     public void testBug3748() throws Exception {
         initFactories("/threshd-configuration-bug3748.xml","/test-thresholds-bug3748.xml");
         // Absolute threshold evaluator doesn't show threshold and rearm levels on the event.
-        addEvent(EventConstants.ABSOLUTE_CHANGE_THRESHOLD_EVENT_UEI, "127.0.0.1", "SNMP", 1, null, null, 6.0, "Unknown", null, "freeMem", null, null, m_anticipator, m_anticipatedEvents);
+        addEvent(EventConstants.ABSOLUTE_CHANGE_THRESHOLD_EVENT_UEI, "127.0.0.1", "SNMP", 1, null, null, 6.0, "node", "node", "freeMem", null, null, m_anticipator, m_anticipatedEvents);
         ThresholdingVisitor visitor = createVisitor();
         runGaugeDataTest(visitor, 2); // Set initial value
         runGaugeDataTest(visitor, 6); // Increment the value above configured threshold level: 6 - lastValue > 3, where lastValue=2
@@ -1089,7 +1089,7 @@ public class ThresholdingVisitorTest {
     public void testNMS5115() throws Exception {
         initFactories("/threshd-configuration.xml","/test-thresholds-NMS5115.xml");
 
-        addEvent(EventConstants.LOW_THRESHOLD_EVENT_UEI, "127.0.0.1", "SNMP", 1, null, null, 5.0, "Unknown", null, "memAvailSwap / memTotalSwap * 100.0", null, null, m_anticipator, m_anticipatedEvents);
+        addEvent(EventConstants.LOW_THRESHOLD_EVENT_UEI, "127.0.0.1", "SNMP", 1, null, null, 5.0, "node", "node", "memAvailSwap / memTotalSwap * 100.0", null, null, m_anticipator, m_anticipatedEvents);
         ThresholdingVisitor visitor = createVisitor();
 
         SnmpCollectionAgent agent = createCollectionAgent();
@@ -1306,8 +1306,8 @@ public class ThresholdingVisitorTest {
         String ifAliasComment = "#";
 
         String label = domain + "/" + ifAlias;
-        addHighThresholdEvent(1, 90, 50, 120, label, null, "ifOutOctets", label, ifIndex.toString());
-        addHighThresholdEvent(1, 90, 50, 120, label, null, "ifInOctets", label, ifIndex.toString());
+        addHighThresholdEvent(1, 90, 50, 120, label, "Unknown", "ifOutOctets", label, ifIndex.toString());
+        addHighThresholdEvent(1, 90, 50, 120, label, "Unknown", "ifInOctets", label, ifIndex.toString());
 
         Map<String,Object> params = new HashMap<String,Object>();
         params.put("thresholding-enabled", "true");
@@ -1644,8 +1644,8 @@ public class ThresholdingVisitorTest {
         ThresholdingVisitor visitor = createVisitor();
         
         // Adding Expected Thresholds
-        addHighThresholdEvent(1, 30, 25, 50, "/home", null, "(hda1_hrStorageUsed/hda1_hrStorageSize)*100", null, null);
-        addHighThresholdEvent(1, 50, 45, 60, "/opt", null, "(hda2_hrStorageUsed/hda2_hrStorageSize)*100", null, null);
+        addHighThresholdEvent(1, 30, 25, 50, "/home", "node", "(hda1_hrStorageUsed/hda1_hrStorageSize)*100", null, null);
+        addHighThresholdEvent(1, 50, 45, 60, "/opt", "node", "(hda2_hrStorageUsed/hda2_hrStorageSize)*100", null, null);
 
         // Creating Node ResourceType
         SnmpCollectionAgent agent = createCollectionAgent();

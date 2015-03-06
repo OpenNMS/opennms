@@ -326,7 +326,16 @@ public class CollectionResourceWrapper {
             return null;
         }
     }
-    
+
+    /**
+     * <p>isNodeResource</p>
+     *
+     * @return a boolean.
+     */
+    public boolean isNodeResource() {
+        return getResourceTypeName() != null && CollectionResource.RESOURCE_TYPE_NODE.equals(getResourceTypeName());
+    }
+
     /**
      * <p>isAnInterfaceResource</p>
      *
