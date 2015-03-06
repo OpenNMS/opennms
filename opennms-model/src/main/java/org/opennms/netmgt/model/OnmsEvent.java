@@ -745,7 +745,7 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	 * @return a {@link java.lang.String} object.
 	 */
 	@XmlElement(name="operatorInstructions")
-	@Column(name="eventOperInstruct", length=1024)
+	@Column(name="eventOperInstruct")
 	public String getEventOperInstruct() {
 		return m_eventOperInstruct;
 	}
