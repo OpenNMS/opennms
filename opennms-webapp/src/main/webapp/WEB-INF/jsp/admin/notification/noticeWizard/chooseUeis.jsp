@@ -143,8 +143,6 @@ $(document).ready(function() {
 
 </script>
 
-<h2>${model.title}</h2>
-
 <div id="filteringModal" class="modal fade" tabindex="-1">
   <div class="modal-dialog modal-sm">
     <div class="modal-content">
@@ -154,6 +152,8 @@ $(document).ready(function() {
     </div>
   </div>
 </div>
+
+<h2>${model.title}</h2>
 
 <form method="post" name="events"
       action="admin/notification/noticeWizard/notificationWizard" >
