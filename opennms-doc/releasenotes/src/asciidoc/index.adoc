@@ -1,0 +1,51 @@
+// Global settings
+:ascii-ids:
+:encoding: UTF-8
+:lang: en
+:icons: font
+:toc: left
+:toclevels: 8
+:numbered!:
+
+= OpenNMS Release Notes
+:author: Copyright (c) 2014 The OpenNMS Group, Inc.
+:revnumber: OpenNMS v{opennms-version}
+:revdate: {last-update-label} {docdatetime}
+:version-label!:
+
+== OpenNMS Development Team
+[options="header"]
+|===
+| Name and mail contact
+| Tarus Balog <tarus@opennms.org>
+| Matt Brozowski <brozow@opennms.org>
+| David Hustace <david@opennms.org>
+| Benjamin Reed <ranger@opennms.org>
+|===
+
+:numbered:
+// Global header
+include::common/copyright.adoc[]
+
+include::common/legalnotice.adoc[]
+include::common/preface.adoc[]
+
+[releasenotes-changelog]
+== Changelog
+:numbered!:
+include::releasenotes/changelog-15.adoc[]
+include::releasenotes/changelog-14.adoc[]
+include::releasenotes/changelog-1.13.adoc[]
+include::releasenotes/changelog-1.12.adoc[]
+include::releasenotes/changelog-1.11.adoc[]
+include::releasenotes/changelog-1.10.adoc[]
+include::releasenotes/changelog-1.9.adoc[]
+
+:numbered:
+include::releasenotes/known-issues.adoc[]
+include::releasenotes/supported-systems.adoc[]
+
+// <xi:include href="releasenotes/chap1.xml" />
+// <xi:include href="releasenotes/chap2.xml" />
+// <!-- <xi:include href="releasenotes/chap3.xml" /> -->
+// <xi:include href="releasenotes/chap4.xml" />
