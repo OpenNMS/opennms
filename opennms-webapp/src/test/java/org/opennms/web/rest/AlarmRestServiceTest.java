@@ -28,6 +28,7 @@
 
 package org.opennms.web.rest;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -48,6 +49,7 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.rest.AbstractSpringJerseyRestTestCase;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.DistPollerDao;
@@ -89,24 +91,24 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
 public class AlarmRestServiceTest extends AbstractSpringJerseyRestTestCase {
-	@Autowired
-	TransactionTemplate m_template;
+    @Autowired
+    TransactionTemplate m_template;
 
-	private DatabasePopulator m_databasePopulator;
+    private DatabasePopulator m_databasePopulator;
 
-	@Override
-	protected void afterServletStart() {
-		MockLogAppender.setupLogging(true, "DEBUG");
-		final WebApplicationContext context = WebApplicationContextUtils.getWebApplicationContext(getServletContext());
-		m_databasePopulator = context.getBean("databasePopulator", DatabasePopulator.class);
-		m_template.execute(new TransactionCallbackWithoutResult() {
+    @Override
+    protected void afterServletStart() {
+        MockLogAppender.setupLogging(true, "DEBUG");
+        final WebApplicationContext context = WebApplicationContextUtils.getWebApplicationContext(getServletContext());
+        m_databasePopulator = context.getBean("databasePopulator", DatabasePopulator.class);
+        m_template.execute(new TransactionCallbackWithoutResult() {
 
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				m_databasePopulator.populateDatabase();
-			}
-		});
-	}
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus status) {
+                m_databasePopulator.populateDatabase();
+            }
+        });
+    }
 
     @Test
     @JUnitTemporaryDatabase
@@ -309,7 +311,7 @@ public class AlarmRestServiceTest extends AbstractSpringJerseyRestTestCase {
         assertXpathDoesNotMatch(xml, "//alarm[@severity='CRITICAL' and @id='2']");
     }
 
-    private void createAlarm(final OnmsSeverity severity) {
+    private OnmsAlarm createAlarm(final OnmsSeverity severity) {
         final OnmsEvent event = getEventDao().findAll().get(0);
 
         final OnmsAlarm alarm = new OnmsAlarm();
@@ -329,6 +331,56 @@ public class AlarmRestServiceTest extends AbstractSpringJerseyRestTestCase {
 
         getAlarmDao().save(alarm);
         getAlarmDao().flush();
+        return alarm;
+    }
+
+    @Test
+    @JUnitTemporaryDatabase
+    public void testAlarmClearAsAdmin() throws Exception {
+        setUser("admin", new String[]{ "ROLE_ADMIN" });
+        final OnmsAlarm alarm = createAlarm(OnmsSeverity.MAJOR);
+        sendRequest(PUT, "/alarms/" + alarm.getId(), parseParamData("clear=true"), 303);
+        final String xml = sendRequest(GET, "/alarms/" + alarm.getId(), 200);
+        final OnmsAlarm fromRest = JaxbUtils.unmarshal(OnmsAlarm.class, xml);
+        assertEquals(fromRest.getSeverity(), OnmsSeverity.CLEARED);
+    }
+
+    @Test
+    @JUnitTemporaryDatabase
+    public void testAlarmClearAsUser() throws Exception {
+        setUser("ranger", new String[]{ "ROLE_USER" });
+        final OnmsAlarm alarm = createAlarm(OnmsSeverity.MAJOR);
+        sendRequest(PUT, "/alarms/" + alarm.getId(), parseParamData("clear=true"), 403);
+    }
+
+    @Test
+    @JUnitTemporaryDatabase
+    public void testAlarmClearAsRest() throws Exception {
+        setUser("ranger", new String[]{ "ROLE_REST" });
+        final OnmsAlarm alarm = createAlarm(OnmsSeverity.MAJOR);
+        sendRequest(PUT, "/alarms/" + alarm.getId(), parseParamData("clear=true"), 303);
+        final String xml = sendRequest(GET, "/alarms/" + alarm.getId(), 200);
+        final OnmsAlarm fromRest = JaxbUtils.unmarshal(OnmsAlarm.class, xml);
+        assertEquals(fromRest.getSeverity(), OnmsSeverity.CLEARED);
+    }
+
+    @Test
+    @JUnitTemporaryDatabase
+    public void testAlarmClearAsMobile() throws Exception {
+        setUser("ranger", new String[]{ "ROLE_MOBILE" });
+        final OnmsAlarm alarm = createAlarm(OnmsSeverity.MAJOR);
+        sendRequest(PUT, "/alarms/" + alarm.getId(), parseParamData("clear=true"), 303);
+        final String xml = sendRequest(GET, "/alarms/" + alarm.getId(), 200);
+        final OnmsAlarm fromRest = JaxbUtils.unmarshal(OnmsAlarm.class, xml);
+        assertEquals(fromRest.getSeverity(), OnmsSeverity.CLEARED);
+    }
+
+    @Test
+    @JUnitTemporaryDatabase
+    public void testAlarmClearAsReadOnly() throws Exception {
+        setUser("ranger", new String[]{ "ROLE_MOBILE", "ROLE_READONLY" });
+        final OnmsAlarm alarm = createAlarm(OnmsSeverity.MAJOR);
+        sendRequest(PUT, "/alarms/" + alarm.getId(), parseParamData("clear=true"), 403);
     }
 
     private EventDao getEventDao() {
