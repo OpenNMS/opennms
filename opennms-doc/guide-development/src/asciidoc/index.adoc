@@ -1,0 +1,20 @@
+// Global settings
+:ascii-ids:
+:encoding: UTF-8
+:lang: en
+:icons: font
+:toc: left
+:toclevels: 3
+:numbered:
+
+= Developers Guide
+:author: Copyright (c) 2014 The OpenNMS Group, Inc.
+:revnumber: OpenNMS v{opennms-version}
+:revdate: {last-update-label} {docdatetime}
+:version-label!:
+
+// Include your documentation sections here
+// include::text/myFile.adoc[]
+
+== REST API
+include::text/rest/CORS.adoc[]
