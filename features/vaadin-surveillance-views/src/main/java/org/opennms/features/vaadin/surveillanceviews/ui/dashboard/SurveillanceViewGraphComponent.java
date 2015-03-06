@@ -316,6 +316,10 @@ public class SurveillanceViewGraphComponent extends VerticalLayout implements Su
             m_future.cancel(true);
         }
 
+        m_nodeSelect.setEnabled(false);
+        m_resourceSelect.setEnabled(false);
+        m_graphSelect.setEnabled(false);
+
         m_future = getSurveillanceViewService().getExecutorService().submit(new Callable<List<OnmsNode>>() {
             @Override
             public List<OnmsNode> call() throws Exception {
@@ -357,6 +361,10 @@ public class SurveillanceViewGraphComponent extends VerticalLayout implements Su
                                     m_nodeSelect.setItemCaption(node, "Node: " + node.getLabel());
                                 }
                             }
+
+                            m_nodeSelect.setEnabled(true);
+                            m_resourceSelect.setEnabled(true);
+                            m_graphSelect.setEnabled(true);
 
                             /**
                              * try to select the same node/resource/graph combination as before
