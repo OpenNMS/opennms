@@ -80,11 +80,6 @@
       <artifactId>snmp-dependencies</artifactId>
       <type>pom</type>
     </dependency>
-    <dependency>
-      <groupId>org.opennms.dependencies</groupId>
-      <artifactId>spring-security-core-dependencies</artifactId>
-      <type>pom</type>
-    </dependency>
     <!-- used by castor -->
     <dependency>
       <groupId>oro</groupId>
