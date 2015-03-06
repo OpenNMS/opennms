@@ -29,9 +29,7 @@
 package org.opennms.netmgt.config;
 
 import java.io.IOException;
-import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -44,6 +42,7 @@ import java.util.TreeSet;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.api.EventConfDao;
 import org.opennms.netmgt.xml.eventconf.Event;
+import org.opennms.netmgt.xml.eventconf.EventLabelComparator;
 import org.opennms.netmgt.xml.eventconf.EventMatchers;
 import org.opennms.netmgt.xml.eventconf.EventOrdering;
 import org.opennms.netmgt.xml.eventconf.Events;
@@ -76,19 +75,6 @@ public class DefaultEventConfDao implements EventConfDao, InitializingBean {
      * See the reloadConfig() for details.
      */
     private Map<String, Long> m_lastModifiedEventFiles = new LinkedHashMap<String, Long>();
-
-    private static class EventLabelComparator implements Comparator<Event>, Serializable {
-
-        private static final long serialVersionUID = 7976730920523203921L;
-
-        @Override
-        public int compare(final Event e1, final Event e2) {
-            if (e1.getEventLabel() == e2.getEventLabel()) return 0;
-            if (e1.getEventLabel() == null) return -1;
-            if (e2.getEventLabel() == null) return 1;
-            return e1.getEventLabel().compareToIgnoreCase(e2.getEventLabel());
-        }
-    }
 
 	public String getProgrammaticStoreRelativeUrl() {
 		return m_programmaticStoreRelativePath;

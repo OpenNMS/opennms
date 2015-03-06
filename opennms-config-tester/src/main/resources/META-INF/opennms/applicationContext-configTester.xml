@@ -67,7 +67,7 @@
         <entry key="site-status-views.xml" value="siteStatusViewConfigDao"/>
         <entry key="snmp-adhoc-graph.properties" value="snmpAdhocGraph"/>
         <!-- <entry key="snmp-asset-adapter-configuration.xml" value="snmpAssetAdapterConfigFactory"/> --><!-- Not part of standard build -->
-        <entry key="snmp-config.xml" value="snmpConfigDao"/>
+        <entry key="snmp-config.xml" value="snmpPeerFactory"/>
         <entry key="snmp-graph.properties" value="snmpPrefabGraph"/>
         <!-- <entry key="snmp-interface-poller-configuration.xml" value="snmpInterfacePollerConfigFactory"/> --><!-- database access -->
         <entry key="statsd-configuration.xml" value="statisticsDaemonConfigDao"/>
@@ -487,6 +487,12 @@ org.opennms.netmgt.filter.FilterParseException: SQL Exception occurred getting I
   </bean>
 
   <bean id="snmpInterfacePollerConfigFactory" class="org.opennms.netmgt.config.SnmpInterfacePollerConfigFactory" depends-on="snmpInterfacePollerConfigFactory-init" factory-method="getInstance"/>
+
+ <bean id="snmpPeerFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+    <property name="staticMethod"><value>org.opennms.netmgt.config.SnmpPeerFactory.init</value></property>
+  </bean>
+
+  <bean id="snmpPeerFactory" class="org.opennms.netmgt.config.SnmpPeerFactory" depends-on="snmpPeerFactory-init" factory-method="getInstance"/>
 
   <bean id="statisticsDaemonConfigDao" class="org.opennms.netmgt.dao.castor.DefaultStatisticsDaemonConfigDao">
     <property name="configResource" value="file:${opennms.home}/etc/statsd-configuration.xml"/>

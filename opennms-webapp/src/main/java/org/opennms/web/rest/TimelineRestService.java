@@ -414,7 +414,7 @@ public class TimelineRestService extends OnmsRestService {
     }
 
     @GET
-    @Produces("text/javascript")
+    @Produces("text/html")
     @Transactional
     @Path("html/{nodeId}/{ipAddress}/{serviceName}/{start}/{end}/{width}")
     public Response html(@PathParam("nodeId") final int nodeId, @PathParam("ipAddress") final String ipAddress, @PathParam("serviceName") final String serviceName, @PathParam("start") final int start, @PathParam("end") final int end, @PathParam("width") final int width) throws IOException {
@@ -470,7 +470,7 @@ public class TimelineRestService extends OnmsRestService {
 
         htmlBuffer.append("</map>");
 
-        return Response.ok("document.write('" + htmlBuffer.toString() + "');").build();
+        return Response.ok(htmlBuffer.toString()).build();
     }
 
     @GET

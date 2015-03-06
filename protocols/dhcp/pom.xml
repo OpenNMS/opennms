@@ -85,10 +85,6 @@
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
-      <artifactId>opennms-services</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
       <artifactId>opennms-mock-simpleserver</artifactId>
       <scope>test</scope>
     </dependency>
