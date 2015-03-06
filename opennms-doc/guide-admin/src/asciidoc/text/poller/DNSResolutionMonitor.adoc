@@ -1,0 +1,98 @@
+
+[[poller-dns-resolution-monitor]]
+==== DNSResolutionMonitor
+
+The DNS resolution monitor, tests if the node label of an OpenNMS node can be resolved.
+This monitor uses the name resolver configuration from the operating system where OpenNMS is running on.
+It can be used to test a client behavior for a given host name.
+For example: Create a node with the node label www.google.com and an IP interface.
+Assigning the DNS resolution monitor on the IP interface will test if www.google.com can be resolved using the DNS configuration of the underlying operating system.
+The response from the A record lookup can be any address, it is not verified with the IP address on the OpenNMS IP interface where the monitor is assigned to.
+
+===== Monitor facts
+
+[options="autowidth"]
+|===
+| Class Name | `org.opennms.netmgt.poller.monitors.DNSResolutionMonitor`
+| Remote Enabled | true
+|===
+
+===== Configuration and Usage
+
+.Monitor specific parameters for the DNSResolutionMonitor
+[options="header, autowidth"]
+|===
+| Parameter | Description                                               | Required | Default value
+| `resolution-type` | Type of record for the node label test. +
+                      Allowed values +
+                      `v4` for _A records_, +
+                      `v6` for _AAAA record_, +
+                      `both` _A_ and _AAAA record_ must be available, +
+                      `either` _A_ or _AAAA record_ must be available.   | optional | `either`
+| `retry`           | Amount of attempts to resolve the node label before the service goes down | required | `-`
+| `timeout`         | Time to wait for a _A_ and/or _AAAA record_ from the system configured _DNS server_ before trying a next attempt. | required | `-`
+|===
+
+===== Examples
+
+The following example shows the possibilities monitoring IPv4 and/or IPv6 for the service configuration:
+
+[source, xml]
+----
+<!-- Assigned service test if the node label is resolved for an A record -->
+<service name="DNS-Resolution-v4" interval="300000" user-defined="false" status="on">
+    <parameter key="retry" value="2"/>
+    <parameter key="timeout" value="2000"/>
+    <parameter key="resolution-type" value="v4"/>
+    <parameter key="rrd-repository" value="/opt/opennms/share/rrd/response"/>
+    <parameter key="rrd-base-name" value="dns-res-v4"/>
+    <parameter key="ds-name" value="dns-res-v4"/>
+</service>
+
+<!-- Assigned service test if the node label is resolved for an AAAA record -->
+<service name="DNS-Resolution-v6" interval="300000" user-defined="false" status="on">
+    <parameter key="retry" value="2"/>
+    <parameter key="timeout" value="2000"/>
+    <parameter key="resolution-type" value="v6"/>
+    <parameter key="rrd-repository" value="/opt/opennms/share/rrd/response"/>
+    <parameter key="rrd-base-name" value="dns-res-v6"/>
+    <parameter key="ds-name" value="dns-res-v6"/>
+</service>
+
+<!-- Assigned service test if the node label is resolved for an AAAA record AND A record -->
+<service name="DNS-Resolution-v4-and-v6" interval="300000" user-defined="false" status="on">
+    <parameter key="retry" value="2"/>
+    <parameter key="timeout" value="2000"/>
+    <parameter key="resolution-type" value="both"/>
+    <parameter key="rrd-repository" value="/opt/opennms/share/rrd/response"/>
+    <parameter key="rrd-base-name" value="dns-res-both"/>
+    <parameter key="ds-name" value="dns-res-both"/>
+</service>
+
+<!-- Assigned service test if the node label is resolved for an AAAA record OR A record -->
+<service name="DNS-Resolution-v4-or-v6" interval="300000" user-defined="false" status="on">
+    <parameter key="retry" value="2"/>
+    <parameter key="timeout" value="2000"/>
+    <parameter key="resolution-type" value="either"/>
+    <parameter key="rrd-repository" value="/opt/opennms/share/rrd/response"/>
+    <parameter key="rrd-base-name" value="dns-res-either"/>
+    <parameter key="ds-name" value="dns-res-either"/>
+</service>
+
+<monitor service="DNS-Resolution-v4" class-name="org.opennms.netmgt.poller.monitors.DNSResolutionMonitor" />
+<monitor service="DNS-Resolution-v6" class-name="org.opennms.netmgt.poller.monitors.DNSResolutionMonitor" />
+<monitor service="DNS-Resolution-v4-and-v6" class-name="org.opennms.netmgt.poller.monitors.DNSResolutionMonitor" />
+<monitor service="DNS-Resolution-v4-or-v6" class-name="org.opennms.netmgt.poller.monitors.DNSResolutionMonitor" />
+----
+
+To have response time graphs for the name resolution you have to configure RRD graphs for the given ds-names (`dns-res-v4`, `dns-res-v6`, `dns-res-both`, `dns-res-either`) in '$OPENNMS_HOME/etc/response-graph.properties'.
+
+===== DNSResolutionMonitor vs DnsMonitor
+
+The DNSResolutionMonitor is used to measure the availability and record outages of a name resolution from client perspective.
+The service is mainly used for websites or similar public available resources.
+It can be used in combination with the Page Sequence Monitor to give a hint if a website isn't available for DNS reasons.
+
+The DnsMonitor on the other hand is a test against a specific DNS server.
+In OpenNMS the DNS server is the node and the DnsMonitor will send a lookup request for a given A record to the DNS server IP address.
+The service goes down if the DNS server doesn't have a valid A record in his zone database or as some other issues resolving A records.
