@@ -42,6 +42,7 @@ import org.opennms.netmgt.dao.api.*;
 import org.opennms.netmgt.model.*;
 import org.opennms.netmgt.model.topology.BridgeMacTopologyLink;
 import org.opennms.netmgt.model.topology.CdpTopologyLink;
+import org.opennms.netmgt.model.topology.IsIsTopologyLink;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
@@ -569,23 +570,17 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
     }
 
     private void getIsIsLinks(){
-        List<Object[]> isislinks = m_isisLinkDao.getLinksForTopology();
+        List<IsIsTopologyLink> isislinks = m_isisLinkDao.getLinksForTopology();
 
-        for (Object[] linkObj : isislinks) {
-            Integer link1Id = (Integer) linkObj[1];
-            Integer link1Nodeid = (Integer) linkObj[2];
-            Integer link1IfIndex = (Integer) linkObj[3];
-            Integer link2Id = (Integer) linkObj[4];
-            Integer link2Nodeid = (Integer) linkObj[5];
-            Integer link2IfIndex = (Integer) linkObj[6];
+        for (IsIsTopologyLink linkObj : isislinks) {
             IsIsLinkDetail linkDetail = new IsIsLinkDetail(
-                    Math.min(link1Id, link2Id) + "|" + Math.max(link1Id, link2Id),
-                    getVertex(m_nodeDao.get(link1Nodeid)),
-                    link1Id,
-                    link1IfIndex,
-                    getVertex(m_nodeDao.get(link2Nodeid)),
-                    link2Id,
-                    link2IfIndex
+                    Math.min(linkObj.getSourceId(), linkObj.getTargetId()) + "|" + Math.max(linkObj.getSourceId(), linkObj.getTargetId()),
+                    getVertex(m_nodeDao.get(linkObj.getSourceNodeId())),
+                    linkObj.getSourceId(),
+                    linkObj.getSourceIfIndex(),
+                    getVertex(m_nodeDao.get(linkObj.getTargetNodeId())),
+                    linkObj.getTargetId(),
+                    linkObj.getTargetIfIndex()
             );
 
             AbstractEdge edge = connectVertices(linkDetail.getId(), linkDetail.getSource(), linkDetail.getTarget(), ISIS_EDGE_NAMESPACE);

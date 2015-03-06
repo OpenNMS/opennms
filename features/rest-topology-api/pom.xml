@@ -25,9 +25,23 @@
           <artifactId>opennms-dao</artifactId>
       </dependency>
 
+      <!-- Third party -->
+      <dependency>
+          <groupId>org.opennms.dependencies</groupId>
+          <artifactId>jersey-dependencies</artifactId>
+          <type>pom</type>
+      </dependency>
       <dependency>
           <groupId>com.google.guava</groupId>
           <artifactId>guava</artifactId>
+      </dependency>
+      <dependency>
+          <groupId>org.apache.commons</groupId>
+          <artifactId>commons-exec</artifactId>
+      </dependency>
+      <dependency>
+          <groupId>org.apache.commons</groupId>
+          <artifactId>commons-jexl</artifactId>
       </dependency>
 
 

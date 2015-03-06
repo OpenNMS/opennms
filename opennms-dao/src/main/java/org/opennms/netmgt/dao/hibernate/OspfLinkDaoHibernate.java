@@ -29,12 +29,18 @@
 package org.opennms.netmgt.dao.hibernate;
 
 import java.net.InetAddress;
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.hibernate.HibernateException;
+import org.hibernate.Session;
 import org.opennms.netmgt.dao.api.OspfLinkDao;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OspfLink;
+import org.opennms.netmgt.model.topology.OspfTopologyLink;
+import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.util.Assert;
 
 /**
@@ -87,6 +93,33 @@ public class OspfLinkDaoHibernate extends AbstractDaoHibernate<OspfLink, Integer
 			delete(link);
 		}
 	}
-    
-    
+
+    @Override
+    public List<OspfTopologyLink> findAllTopologyLinks() {
+
+        return getHibernateTemplate().execute(new HibernateCallback<List<OspfTopologyLink>>() {
+            @Override
+            public List<OspfTopologyLink> doInHibernate(Session session) throws HibernateException, SQLException {
+                List<Object[]> list = session.createSQLQuery("select DISTINCT on (distinct_id) " +
+                        "least(l1.id, l2.id) as distinct_id, " +
+                        "l1.id as source_id, " +
+                        "l1.nodeid as source_nodeid, " +
+                        "l2.id as target_id, " +
+                        "l2.nodeid as target_nodeid" +
+                        "from ospflink l1 " +
+                        "left join ospfelement e1 on l1.nodeid = e1.nodeid " +
+                        "left join ospfelement l2 on l1.ospfipaddr = l2.ospfremipaddr " +
+                        "where l1.ospfipaddr = l2.ospfremipaddr").list();
+
+                List<OspfTopologyLink> links = new ArrayList<OspfTopologyLink>();
+                for (Object[] objects : list) {
+                    links.add(new OspfTopologyLink((Integer)objects[1], (Integer) objects[2], (Integer) objects[3], (Integer) objects[4]));
+                }
+                return links;
+
+            }
+        });
+    }
+
+
 }

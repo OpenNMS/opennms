@@ -33,6 +33,7 @@ import java.util.List;
 
 import org.opennms.netmgt.model.LldpLink;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.topology.LldpTopologyLink;
 
 
 public interface LldpLinkDao extends OnmsDao<LldpLink, Integer> {
@@ -46,5 +47,7 @@ public interface LldpLinkDao extends OnmsDao<LldpLink, Integer> {
     List<LldpLink> findLinksForIds(List<Integer> ids);
 
     void deleteByNodeIdOlderThen(Integer nodeiId, Date now);
+
+    List<LldpTopologyLink> findAllTopologyLinks();
 
 }

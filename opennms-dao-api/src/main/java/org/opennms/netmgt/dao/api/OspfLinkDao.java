@@ -34,6 +34,7 @@ import java.util.List;
 
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OspfLink;
+import org.opennms.netmgt.model.topology.OspfTopologyLink;
 
 
 public interface OspfLinkDao extends OnmsDao<OspfLink, Integer> {
@@ -46,5 +47,7 @@ public interface OspfLinkDao extends OnmsDao<OspfLink, Integer> {
     List<OspfLink> findByNodeId(Integer nodeId);
 
     void deleteByNodeIdOlderThen(Integer nodeiId, Date now);
+
+    List<OspfTopologyLink> findAllTopologyLinks();
 
 }

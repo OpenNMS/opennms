@@ -29,6 +29,7 @@
 package org.opennms.netmgt.dao.hibernate;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -37,6 +38,7 @@ import org.hibernate.Session;
 import org.opennms.netmgt.dao.api.IsIsLinkDao;
 import org.opennms.netmgt.model.IsIsLink;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.topology.IsIsTopologyLink;
 import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.util.Assert;
 
@@ -100,11 +102,11 @@ public class IsIsLinkDaoHibernate extends AbstractDaoHibernate<IsIsLink, Integer
      * [6] = link2 isiscircifindex
      * @return A list of Object[] see notes for index mapping
      */
-    public List<Object[]> getLinksForTopology() {
-        return getHibernateTemplate().execute(new HibernateCallback<List<Object[]>>() {
+    public List<IsIsTopologyLink> getLinksForTopology() {
+        return getHibernateTemplate().execute(new HibernateCallback<List<IsIsTopologyLink>>() {
 
             @Override
-            public List<Object[]> doInHibernate(Session session) throws HibernateException, SQLException {
+            public List<IsIsTopologyLink> doInHibernate(Session session) throws HibernateException, SQLException {
                 List<Object[]> list = session.createSQLQuery("select distinct on (distinct_id) " +
                         "least(l1.id, l2.id) as distinct_id, " +
                         "l1.id as source_id, " +
@@ -120,7 +122,12 @@ public class IsIsLinkDaoHibernate extends AbstractDaoHibernate<IsIsLink, Integer
                         "left join isislink l2 on e2.nodeid=l2.nodeid " +
                         "where l1.isisisadjindex = l2.isisisadjindex and l2.isisisadjneighsysid = e1.isissysid " +
                         "order by distinct_id;").list();
-                return list;
+
+                List<IsIsTopologyLink> links = new ArrayList<IsIsTopologyLink>();
+                for(Object[] objects : list) {
+                    links.add(new IsIsTopologyLink((Integer)objects[1], (Integer)objects[2], (Integer)objects[3], (Integer)objects[4], (Integer)objects[5], (Integer)objects[6]));
+                }
+                return links;
             }
 
         });

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2010-2015 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,25 +26,35 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.dao.api;
+package org.opennms.netmgt.model.topology;
 
-import java.util.Date;
-import java.util.List;
+public class LldpTopologyLink {
 
-import org.opennms.netmgt.model.IsIsLink;
-import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.model.topology.IsIsTopologyLink;
+    private final int m_sourceId;
+    private final int m_sourceNodeId;
+    private final int m_targetId;
+    private final int m_targetNodeId;
 
+    public LldpTopologyLink(Integer sourceId, Integer sourceNodeId, Integer targetId, Integer targetNodeId) {
+        m_sourceId = sourceId;
+        m_sourceNodeId = sourceNodeId;
+        m_targetId = targetId;
+        m_targetNodeId = targetNodeId;
+    }
 
-public interface IsIsLinkDao extends OnmsDao<IsIsLink, Integer> {
+    public int getSourceId() {
+        return m_sourceId;
+    }
 
-    IsIsLink get(OnmsNode node, Integer isisCircIndex, Integer isisISAdjIndex);
+    public int getSourceNodeId() {
+        return m_sourceNodeId;
+    }
 
-    IsIsLink get(Integer nodeId, Integer isisCircIndex, Integer isisISAdjIndex);
-    
-    List<IsIsLink> findByNodeId(Integer nodeId);
+    public int getTargetId() {
+        return m_targetId;
+    }
 
-    void deleteByNodeIdOlderThen(Integer nodeiId, Date now);
-
-    List<IsIsTopologyLink> getLinksForTopology();
+    public int getTargetNodeId() {
+        return m_targetNodeId;
+    }
 }

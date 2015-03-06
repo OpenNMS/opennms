@@ -28,12 +28,18 @@
 
 package org.opennms.netmgt.dao.hibernate;
 
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.hibernate.HibernateException;
+import org.hibernate.Session;
 import org.opennms.netmgt.dao.api.LldpLinkDao;
 import org.opennms.netmgt.model.LldpLink;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.topology.LldpTopologyLink;
+import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.util.Assert;
 
 /**
@@ -77,6 +83,40 @@ public class LldpLinkDaoHibernate extends AbstractDaoHibernate<LldpLink, Integer
 			delete(link);
 		}
 	}
+
+    @Override
+    public List<LldpTopologyLink> findAllTopologyLinks() {
+        return getHibernateTemplate().execute(new HibernateCallback<List<LldpTopologyLink>>() {
+            @Override
+            public List<LldpTopologyLink> doInHibernate(Session session) throws HibernateException, SQLException {
+                List<Object[]> list = session.createSQLQuery("select DISTINCT on (distint_id) " +
+                        "least(l1.id, l2.id) as distint_id, " +
+                        "l1.id as source_id, " +
+                        "l1.nodeid as source_node, " +
+                        "l2.id as target_id, " +
+                        "l2.nodeid as target_nodeid" +
+
+                        "from lldplink l1 " +
+                        "left join lldpelement e1 on l1.nodeid = e1.nodeid " +
+                        "left join lldpelement e2 on l1.lldpremchassisid = e2.lldpchassisid " +
+                        "left join lldplink l2 on e2.nodeid = l2.nodeid " +
+
+                        "where l1.lldpremportid = l2.lldpportid " +
+                        "and l1.lldpremportdescr = l2.lldpportdescr " +
+                        "and l1.lldpremchassisid = e2.lldpchassisid " +
+                        "and l1.lldpremsysname = e2.lldpsysname " +
+                        "and l1.lldpremportidsubtype = l2.lldpportidsubtype").list();
+
+                List<LldpTopologyLink> links = new ArrayList<LldpTopologyLink>();
+
+                for(Object[] objects : list){
+                    links.add(new LldpTopologyLink((Integer)objects[1], (Integer) objects[2], (Integer) objects[3], (Integer) objects[4]));
+                }
+                return links;
+            }
+        });
+
+    }
 
     public List<LldpLink> findLinksForIds(List<Integer> linkIds) {
 
