@@ -36,9 +36,11 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 
@@ -51,7 +53,6 @@ import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsAlarmCollection;
 import org.opennms.netmgt.model.alarm.AlarmSummaryCollection;
 import org.opennms.web.api.Authentication;
-import org.opennms.netmgt.model.alarm.AlarmSummaryCollection;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -93,6 +94,7 @@ public class AlarmRestService extends AlarmRestServiceBase {
     public Response getAlarm(@PathParam("alarmId") final String alarmId) {
         readLock();
         try {
+            assertUserReadCredentials();
             if ("summaries".equals(alarmId)) {
                 return Response.ok(new AlarmSummaryCollection(m_alarmDao.getNodeAlarmSummaries())).build();
             } else {
@@ -117,6 +119,7 @@ public class AlarmRestService extends AlarmRestServiceBase {
     public String getCount() {
         readLock();
         try {
+            assertUserReadCredentials();
             return Integer.toString(m_alarmDao.countAll());
         } finally {
             readUnlock();
@@ -137,6 +140,7 @@ public class AlarmRestService extends AlarmRestServiceBase {
         readLock();
 
         try {
+            assertUserReadCredentials();
             final CriteriaBuilder builder = getCriteriaBuilder(m_uriInfo.getQueryParameters(), false);
             builder.distinct();
             final OnmsAlarmCollection coll = new OnmsAlarmCollection(m_alarmDao.findMatching(builder.toCriteria()));
@@ -187,7 +191,7 @@ public class AlarmRestService extends AlarmRestServiceBase {
             }
 
             final String ackUser = ackUserValue == null ? m_securityContext.getUserPrincipal().getName() : ackUserValue;
-            assertUserCredentials(ackUser);
+            assertUserEditCredentials(ackUser);
 
             final OnmsAcknowledgment acknowledgement = new OnmsAcknowledgment(alarm, ackUser);
             acknowledgement.setAckAction(AckAction.UNSPECIFIED);
@@ -244,7 +248,7 @@ public class AlarmRestService extends AlarmRestServiceBase {
 
             final String ackUser = formProperties.containsKey("ackUser") ? formProperties.getFirst("ackUser") : m_securityContext.getUserPrincipal().getName();
             formProperties.remove("ackUser");
-            assertUserCredentials(ackUser);
+            assertUserEditCredentials(ackUser);
 
             final List<OnmsAlarm> alarms = m_alarmDao.findMatching(builder.toCriteria());
             for (final OnmsAlarm alarm : alarms) {
@@ -280,11 +284,42 @@ public class AlarmRestService extends AlarmRestServiceBase {
         }
     }
 
-    private void assertUserCredentials(final String ackUser) {
+    private void assertUserReadCredentials() {
         final String currentUser = m_securityContext.getUserPrincipal().getName();
-        if (!(m_securityContext.isUserInRole(Authentication.ROLE_ADMIN)) && !(ackUser.equals(currentUser))) {
-            throw new IllegalArgumentException("You are logged in as non-admin user '" + currentUser + "', but you are trying to update an alarm as another user ('" + ackUser + "')!");
+
+        if (m_securityContext.isUserInRole(Authentication.ROLE_ADMIN)) {
+            // admin can do anything
+            return;
         }
+        if (m_securityContext.isUserInRole(Authentication.ROLE_REST) ||
+                m_securityContext.isUserInRole(Authentication.ROLE_MOBILE)) {
+            return;
+        }
+        // otherwise
+        throw new WebApplicationException(new IllegalArgumentException("User '" + currentUser + "', is not allowed to read alarms."), Status.FORBIDDEN);
+    }
+
+    private void assertUserEditCredentials(final String ackUser) {
+        final String currentUser = m_securityContext.getUserPrincipal().getName();
+
+        if (m_securityContext.isUserInRole(Authentication.ROLE_ADMIN)) {
+            // admin can do anything
+            return;
+        }
+        if (m_securityContext.isUserInRole(Authentication.ROLE_READONLY)) {
+            // read only is not allowed to edit
+            throw new WebApplicationException(new IllegalArgumentException("User '" + currentUser + "', is a read-only user!"), Status.FORBIDDEN);
+        }
+        if (m_securityContext.isUserInRole(Authentication.ROLE_REST) ||
+                m_securityContext.isUserInRole(Authentication.ROLE_MOBILE)) {
+            if (ackUser.equals(currentUser)) {
+                // ROLE_REST and ROLE_MOBILE are allowed to modify things as long as it's as the
+                // same user as they're logging in with.
+                return;
+            }
+        }
+        // otherwise
+        throw new WebApplicationException(new IllegalArgumentException("User '" + currentUser + "', is not allowed to perform updates to alarms as user '" + ackUser + "'"), Status.FORBIDDEN);
     }
 
 }
