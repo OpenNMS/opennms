@@ -89,24 +89,24 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
 public class AlarmRestServiceTest extends AbstractSpringJerseyRestTestCase {
-	@Autowired
-	TransactionTemplate m_template;
+    @Autowired
+    TransactionTemplate m_template;
 
-	private DatabasePopulator m_databasePopulator;
+    private DatabasePopulator m_databasePopulator;
 
-	@Override
-	protected void afterServletStart() {
-		MockLogAppender.setupLogging(true, "DEBUG");
-		final WebApplicationContext context = WebApplicationContextUtils.getWebApplicationContext(getServletContext());
-		m_databasePopulator = context.getBean("databasePopulator", DatabasePopulator.class);
-		m_template.execute(new TransactionCallbackWithoutResult() {
+    @Override
+    protected void afterServletStart() {
+        MockLogAppender.setupLogging(true, "DEBUG");
+        final WebApplicationContext context = WebApplicationContextUtils.getWebApplicationContext(getServletContext());
+        m_databasePopulator = context.getBean("databasePopulator", DatabasePopulator.class);
+        m_template.execute(new TransactionCallbackWithoutResult() {
 
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				m_databasePopulator.populateDatabase();
-			}
-		});
-	}
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus status) {
+                m_databasePopulator.populateDatabase();
+            }
+        });
+    }
 
     @Test
     @JUnitTemporaryDatabase
