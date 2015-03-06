@@ -336,7 +336,7 @@ public class SurveillanceView extends VerticalLayout implements UIEvents.PollLis
             lowerLayout.addComponent(surveillanceViewAlarmTable);
             lowerLayout.addComponent(surveillanceViewNotificationTable);
             lowerLayout.addComponent(surveillanceViewNodeRtcTable);
-            lowerLayout.addComponent(surveillanceViewGraphComponent);
+            //lowerLayout.addComponent(surveillanceViewGraphComponent);
 
             /**
              * associate the detail tables and components with the surveillance view table
@@ -344,7 +344,7 @@ public class SurveillanceView extends VerticalLayout implements UIEvents.PollLis
             m_surveillanceViewTable.addDetailsTable(surveillanceViewAlarmTable);
             m_surveillanceViewTable.addDetailsTable(surveillanceViewNotificationTable);
             m_surveillanceViewTable.addDetailsTable(surveillanceViewNodeRtcTable);
-            m_surveillanceViewTable.addDetailsTable(surveillanceViewGraphComponent);
+            //m_surveillanceViewTable.addDetailsTable(surveillanceViewGraphComponent);
 
             /**
              * add the layout to this component

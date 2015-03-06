@@ -30,6 +30,7 @@ package org.opennms.features.vaadin.surveillanceviews.service;
 import org.opennms.core.criteria.Alias;
 import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.CriteriaBuilder;
+import org.opennms.core.criteria.Fetch;
 import org.opennms.core.criteria.Order;
 import org.opennms.core.criteria.restrictions.Restriction;
 import org.opennms.core.criteria.restrictions.Restrictions;
@@ -253,6 +254,57 @@ public class DefaultSurveillanceViewService implements SurveillanceViewService {
     }
 
     /**
+     * Creates a SQL query string for filtering on categories.
+     *
+     * @param rowCategories the row categories
+     * @param colCategories the column catgories
+     * @return the SQL query string
+     */
+    private String createQuery(final Set<OnmsCategory> rowCategories, final Set<OnmsCategory> colCategories) {
+        StringBuffer stringBuffer = new StringBuffer();
+
+        boolean first = true;
+
+        stringBuffer.append("{alias}.nodeId in (select distinct cn.nodeId from category_node cn join categories c on cn.categoryId = c.categoryId where c.categoryName in (");
+
+        for (OnmsCategory onmsCategory : rowCategories) {
+
+            if (first) {
+                stringBuffer.append("'");
+                first = false;
+            } else {
+                stringBuffer.append(",'");
+            }
+
+            stringBuffer.append(onmsCategory.getName());
+            stringBuffer.append("'");
+        }
+
+        stringBuffer.append("))");
+
+        first = true;
+
+        stringBuffer.append("and {alias}.nodeId in (select distinct cn.nodeId from category_node cn join categories c on cn.categoryId = c.categoryId where c.categoryName in (");
+
+        for (OnmsCategory onmsCategory : colCategories) {
+
+            if (first) {
+                stringBuffer.append("'");
+                first = false;
+            } else {
+                stringBuffer.append(",'");
+            }
+
+            stringBuffer.append(onmsCategory.getName());
+            stringBuffer.append("'");
+        }
+
+        stringBuffer.append("))");
+
+        return stringBuffer.toString();
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -260,25 +312,9 @@ public class DefaultSurveillanceViewService implements SurveillanceViewService {
         return m_transactionOperations.execute(new TransactionCallback<List<OnmsNode>>() {
             @Override
             public List<OnmsNode> doInTransaction(TransactionStatus transactionStatus) {
-                List<OnmsNode> nodes = new ArrayList<>();
-
-                if (rowCategories == null || colCategories == null) {
-                    return nodes;
-                }
-
-                if (rowCategories.size() == 0 || colCategories.size() == 0) {
-                    if (rowCategories.size() == 0 && colCategories.size() > 0) {
-                        nodes = m_nodeDao.findAllByCategoryList(colCategories);
-                    }
-
-                    if (rowCategories.size() > 0 && colCategories.size() == 0) {
-                        nodes = m_nodeDao.findAllByCategoryList(rowCategories);
-                    }
-                } else {
-                    nodes = m_nodeDao.findAllByCategoryLists(rowCategories, colCategories);
-                }
-
-                return nodes;
+                CriteriaBuilder criteriaBuilder = new CriteriaBuilder(OnmsNode.class);
+                criteriaBuilder.sql(createQuery(rowCategories, colCategories));
+                return m_nodeDao.findMatching(criteriaBuilder.toCriteria());
             }
         });
     }
@@ -291,22 +327,19 @@ public class DefaultSurveillanceViewService implements SurveillanceViewService {
         return m_transactionOperations.execute(new TransactionCallback<List<OnmsAlarm>>() {
             @Override
             public List<OnmsAlarm> doInTransaction(TransactionStatus transactionStatus) {
-                List<OnmsNode> nodes = getNodesForCategories(rowCategories, colCategories);
-
                 final CriteriaBuilder criteriaBuilder = new CriteriaBuilder(OnmsAlarm.class);
 
                 criteriaBuilder.alias("node", "node");
+
                 criteriaBuilder.alias("lastEvent", "event");
                 criteriaBuilder.ne("node.type", "D");
+
                 criteriaBuilder.limit(100);
                 criteriaBuilder.distinct();
 
-                if (nodes != null && nodes.size() > 0) {
-                    criteriaBuilder.in("node", nodes);
-                    return m_alarmDao.findMatching(criteriaBuilder.toCriteria());
-                }
+                criteriaBuilder.sql(createQuery(rowCategories, colCategories));
 
-                return new ArrayList<>();
+                return m_alarmDao.findMatching(criteriaBuilder.toCriteria());
             }
         });
     }
@@ -319,22 +352,16 @@ public class DefaultSurveillanceViewService implements SurveillanceViewService {
         return m_transactionOperations.execute(new TransactionCallback<List<OnmsNotification>>() {
             @Override
             public List<OnmsNotification> doInTransaction(TransactionStatus transactionStatus) {
-                List<OnmsNode> nodes = getNodesForCategories(rowCategories, colCategories);
-
                 Date fifteenMinutesAgo = new Date(System.currentTimeMillis() - (15 * 60 * 1000));
                 Date oneWeekAgo = new Date(System.currentTimeMillis() - (7 * 24 * 60 * 60 * 1000));
 
                 customSeverity.clear();
 
-                if (nodes != null && nodes.size() > 0) {
-                    List<OnmsNotification> notifications = new ArrayList<OnmsNotification>();
-                    notifications.addAll(getNotificationsWithCriterias(customSeverity, nodes, "Critical", Restrictions.isNull("respondTime"), Restrictions.le("pageTime", fifteenMinutesAgo)));
-                    notifications.addAll(getNotificationsWithCriterias(customSeverity, nodes, "Minor", Restrictions.isNull("respondTime"), Restrictions.gt("pageTime", fifteenMinutesAgo)));
-                    notifications.addAll(getNotificationsWithCriterias(customSeverity, nodes, "Normal", Restrictions.isNotNull("respondTime"), Restrictions.gt("pageTime", oneWeekAgo)));
-                    return notifications;
-                }
-
-                return new ArrayList<>();
+                List<OnmsNotification> notifications = new ArrayList<>();
+                notifications.addAll(getNotificationsWithCriterias(rowCategories, colCategories, customSeverity, "Critical", Restrictions.isNull("respondTime"), Restrictions.le("pageTime", fifteenMinutesAgo)));
+                notifications.addAll(getNotificationsWithCriterias(rowCategories, colCategories, customSeverity, "Minor", Restrictions.isNull("respondTime"), Restrictions.gt("pageTime", fifteenMinutesAgo)));
+                notifications.addAll(getNotificationsWithCriterias(rowCategories, colCategories, customSeverity, "Normal", Restrictions.isNotNull("respondTime"), Restrictions.gt("pageTime", oneWeekAgo)));
+                return notifications;
             }
         });
     }
@@ -347,8 +374,6 @@ public class DefaultSurveillanceViewService implements SurveillanceViewService {
         return m_transactionOperations.execute(new TransactionCallback<List<NodeRtc>>() {
             @Override
             public List<NodeRtc> doInTransaction(TransactionStatus transactionStatus) {
-                List<OnmsNode> nodes = getNodesForCategories(rowCategories, colCategories);
-
                 CriteriaBuilder outageCriteriaBuilder = new CriteriaBuilder(OnmsOutage.class);
 
                 outageCriteriaBuilder.alias("monitoredService", "monitoredService", Alias.JoinType.INNER_JOIN);
@@ -368,12 +393,9 @@ public class DefaultSurveillanceViewService implements SurveillanceViewService {
                 serviceCriteriaBuilder.ne("ipInterface.isManaged", "D");
                 serviceCriteriaBuilder.ne("node.type", "D");
 
-                if (nodes == null || nodes.isEmpty()) {
-                    return new ArrayList<>();
-                } else {
-                    serviceCriteriaBuilder.in("ipInterface.node", nodes);
-                    return getNodeListForCriteria(serviceCriteriaBuilder.toCriteria(), outageCriteriaBuilder.toCriteria());
-                }
+                serviceCriteriaBuilder.sql(createQuery(rowCategories, colCategories));
+
+                return getNodeListForCriteria(serviceCriteriaBuilder.toCriteria(), outageCriteriaBuilder.toCriteria());
             }
         });
     }
@@ -482,6 +504,7 @@ public class DefaultSurveillanceViewService implements SurveillanceViewService {
      * @param downMillisCount the number of milliseconds downtime
      * @return the computed availability
      */
+
     private Double calculateAvailability(int serviceCount, long downMillisCount) {
         long upMillis = ((long) serviceCount * (24L * 60L * 60L * 1000L)) - downMillisCount;
 
@@ -595,17 +618,18 @@ public class DefaultSurveillanceViewService implements SurveillanceViewService {
     /**
      * Returns a list of notifications for a given list of nodes.
      *
+     * @param rowCategories  the row catgories
+     * @param colCategories  the column categories
      * @param customSeverity the custom severity mapping for notifications
-     * @param nodes          the nodes to be search notifications for
      * @param severity       the severity for these nodes
      * @param criterias      the restrictions to use
      * @return the list of notifications
      */
-    private List<OnmsNotification> getNotificationsWithCriterias(final Map<OnmsNotification, String> customSeverity, final List<OnmsNode> nodes, final String severity, final Restriction... criterias) {
+    private List<OnmsNotification> getNotificationsWithCriterias(final Set<OnmsCategory> rowCategories, final Set<OnmsCategory> colCategories, final Map<OnmsNotification, String> customSeverity, final String severity, final Restriction... criterias) {
         CriteriaBuilder criteriaBuilder = new CriteriaBuilder(OnmsNotification.class);
 
         criteriaBuilder.alias("node", "node");
-        criteriaBuilder.in("node", nodes);
+        criteriaBuilder.sql(createQuery(rowCategories, colCategories));
         criteriaBuilder.ne("node.type", "D");
         criteriaBuilder.orderBy("pageTime", false);
 
