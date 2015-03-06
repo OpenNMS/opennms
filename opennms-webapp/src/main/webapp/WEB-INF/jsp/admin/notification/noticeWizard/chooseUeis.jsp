@@ -155,16 +155,6 @@ $(document).ready(function() {
 
 <h2>${model.title}</h2>
 
-<div id="filteringModal" class="modal fade" tabindex="-1">
-  <div class="modal-dialog modal-sm">
-    <div class="modal-content">
-      <div class="modal-body">
-        <i class="fa fa-spinner fa-spin"></i> Filtering
-      </div>
-    </div>
-  </div>
-</div>
-
 <form method="post" name="events"
       action="admin/notification/noticeWizard/notificationWizard" >
 <input type="hidden" name="sourcePage" value="<%=NotificationWizardServlet.SOURCE_PAGE_UEIS%>"/>
