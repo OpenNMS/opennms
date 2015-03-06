@@ -27,6 +27,8 @@
  *******************************************************************************/
 package org.opennms.features.vaadin.surveillanceviews.ui.dashboard;
 
+import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.MoreExecutors;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.server.Page;
 import com.vaadin.server.VaadinServlet;
@@ -44,9 +46,14 @@ import org.slf4j.LoggerFactory;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 
 /**
  * This class represents a table for displaying the notifications for a surveillance view dashboard.
@@ -55,17 +62,120 @@ import java.util.Set;
  */
 public class SurveillanceViewNotificationTable extends SurveillanceViewDetailTable {
     /**
+     * Helper class for handling notifications.
+     */
+    public class Notification {
+        /**
+         * the notification's id
+         */
+        private int id;
+        /**
+         * the node's id
+         */
+        private int nodeId;
+        /**
+         * the node label
+         */
+        private String nodeLabel;
+        /**
+         * the respond time
+         */
+        private Date respondTime;
+        /**
+         * the start time
+         */
+        private Date pageTime;
+        /**
+         * the responder
+         */
+        private String answeredBy;
+        /**
+         * the text message
+         */
+        private String textMsg;
+        /**
+         * the service type
+         */
+        private String serviceType;
+        /**
+         * the custom severity
+         */
+        private String severity;
+
+        /**
+         * Constructor for instantiating new instances.
+         *
+         * @param id          the notification id
+         * @param nodeId      the node id
+         * @param nodeLabel   the node label
+         * @param pageTime    the start time
+         * @param respondTime the respond time
+         * @param answeredBy  the responder
+         * @param textMsg     the text message
+         * @param serviceType the service type
+         * @param severity    the custom severity
+         */
+        public Notification(int id, int nodeId, String nodeLabel, Date pageTime, Date respondTime, String answeredBy, String textMsg, String serviceType, String severity) {
+            this.id = id;
+            this.nodeId = nodeId;
+            this.nodeLabel = nodeLabel;
+            this.respondTime = respondTime;
+            this.textMsg = textMsg;
+            this.answeredBy = answeredBy;
+            this.severity = severity;
+            this.serviceType = serviceType;
+            this.pageTime = pageTime;
+        }
+
+        public Date getPageTime() {
+            return pageTime;
+        }
+
+        public String getAnsweredBy() {
+            return answeredBy;
+        }
+
+        public int getId() {
+            return id;
+        }
+
+        public int getNodeId() {
+            return nodeId;
+        }
+
+        public String getNodeLabel() {
+            return nodeLabel;
+        }
+
+        public Date getRespondTime() {
+            return respondTime;
+        }
+
+        public String getTextMsg() {
+            return textMsg;
+        }
+
+        public String getServiceType() {
+            return serviceType;
+        }
+
+        public String getSeverity() {
+            return severity;
+        }
+    }
+
+    /**
      * the logger instance
      */
     private static final Logger LOG = LoggerFactory.getLogger(SurveillanceViewNotificationTable.class);
     /**
      * the bean container for storing notifications
      */
-    private BeanItemContainer<OnmsNotification> m_beanItemContainer = new BeanItemContainer<OnmsNotification>(OnmsNotification.class);
+    private BeanItemContainer<Notification> m_beanItemContainer = new BeanItemContainer<>(Notification.class);
     /**
-     * the custom severity map
+     * the refresh future
      */
-    private HashMap<OnmsNotification, String> m_customSeverity = new HashMap<>();
+    protected ListenableFuture<List<Notification>> m_future;
 
     /**
      * Constructor for instantiating this component.
@@ -92,29 +202,25 @@ public class SurveillanceViewNotificationTable extends SurveillanceViewDetailTab
         /**
          * add node column
          */
-        addGeneratedColumn("node", new ColumnGenerator() {
+        addGeneratedColumn("nodeLabel", new ColumnGenerator() {
             @Override
             public Object generateCell(final Table table, final Object itemId, final Object propertyId) {
-                final OnmsNotification onmsNotification = (OnmsNotification) itemId;
+                final Notification notification = (Notification) itemId;
 
                 Button icon = getClickableIcon("glyphicon glyphicon-bell", new Button.ClickListener() {
                     @Override
                     public void buttonClick(Button.ClickEvent clickEvent) {
-
-                        OnmsNotification onmsNotification = (OnmsNotification) itemId;
-                        final int notificationId = onmsNotification.getNotifyId();
-
                         final URI currentLocation = Page.getCurrent().getLocation();
                         final String contextRoot = VaadinServlet.getCurrent().getServletContext().getContextPath();
-                        final String redirectFragment = contextRoot + "/notification/detail.jsp?quiet=true&notice=" + notificationId;
+                        final String redirectFragment = contextRoot + "/notification/detail.jsp?quiet=true&notice=" + notification.getId();
 
-                        LOG.debug("notification {} clicked, current location = {}, uri = {}", notificationId, currentLocation, redirectFragment);
+                        LOG.debug("notification {} clicked, current location = {}, uri = {}", notification.getId(), currentLocation, redirectFragment);
 
                         try {
                             SurveillanceViewNotificationTable.this.getUI().addWindow(new InfoWindow(new URL(currentLocation.toURL(), redirectFragment), new InfoWindow.LabelCreator() {
                                 @Override
                                 public String getLabel() {
-                                    return "Notification Info " + notificationId;
+                                    return "Notification Info " + notification.getId();
                                 }
                             }));
                         } catch (MalformedURLException e) {
@@ -123,27 +229,25 @@ public class SurveillanceViewNotificationTable extends SurveillanceViewDetailTab
                     }
                 });
 
-                Button button = new Button(onmsNotification.getNodeLabel());
+                Button button = new Button(notification.getNodeLabel());
                 button.setPrimaryStyleName(BaseTheme.BUTTON_LINK);
                 button.setEnabled(m_enabled);
 
                 button.addClickListener(new Button.ClickListener() {
                     @Override
                     public void buttonClick(Button.ClickEvent clickEvent) {
-
-                        final int nodeId = onmsNotification.getNodeId();
-
                         final URI currentLocation = Page.getCurrent().getLocation();
                         final String contextRoot = VaadinServlet.getCurrent().getServletContext().getContextPath();
-                        final String redirectFragment = contextRoot + "/element/node.jsp?quiet=true&node=" + nodeId;
+                        final String redirectFragment = contextRoot + "/element/node.jsp?quiet=true&node=" + notification.getNodeId();
+                        ;
 
-                        LOG.debug("node {} clicked, current location = {}, uri = {}", nodeId, currentLocation, redirectFragment);
+                        LOG.debug("node {} clicked, current location = {}, uri = {}", notification.getNodeId(), currentLocation, redirectFragment);
 
                         try {
                             SurveillanceViewNotificationTable.this.getUI().addWindow(new InfoWindow(new URL(currentLocation.toURL(), redirectFragment), new InfoWindow.LabelCreator() {
                                 @Override
                                 public String getLabel() {
-                                    return "Node Info " + nodeId;
+                                    return "Node Info " + notification.getNodeId();
                                 }
                             }));
                         } catch (MalformedURLException e) {
@@ -169,59 +273,108 @@ public class SurveillanceViewNotificationTable extends SurveillanceViewDetailTab
         setCellStyleGenerator(new CellStyleGenerator() {
             @Override
             public String getStyle(final Table source, final Object itemId, final Object propertyId) {
-                OnmsNotification onmsNotification = ((OnmsNotification) itemId);
-                return m_customSeverity.get(onmsNotification).toLowerCase();
+                Notification notification = ((Notification) itemId);
+                return notification.getSeverity().toLowerCase();
             }
         });
 
         /**
          * set column headers
          */
-        setColumnHeader("node", "Node");
+        setColumnHeader("nodeLabel", "Node");
         setColumnHeader("serviceType", "Service");
         setColumnHeader("textMsg", "Message");
         setColumnHeader("pageTime", "Sent Time");
         setColumnHeader("answeredBy", "Responder");
         setColumnHeader("respondTime", "Respond Time");
 
+        setColumnExpandRatio("nodeLabel", 2.0f);
+        setColumnExpandRatio("serviceType", 1.0f);
+        setColumnExpandRatio("textMsg", 4.0f);
+        setColumnExpandRatio("pageTime", 2.0f);
+        setColumnExpandRatio("answeredBy", 1.0f);
+        setColumnExpandRatio("respondTime", 2.0f);
+
         /**
          * define visible columns
          */
-        setVisibleColumns("node", "serviceType", "textMsg", "pageTime", "answeredBy", "respondTime");
+        setVisibleColumns("nodeLabel", "serviceType", "textMsg", "pageTime", "answeredBy", "respondTime");
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void refreshDetails(Set<OnmsCategory> rowCategories, Set<OnmsCategory> colCategories) {
-        /**
-         * retrieve the matching notifications
-         */
-        List<OnmsNotification> notifications = getSurveillanceViewService().getNotificationsForCategories(rowCategories, colCategories, m_customSeverity);
-
-        /**
-         * empty the bean container
-         */
-        m_beanItemContainer.removeAllItems();
-
-        /**
-         * add items to container
-         */
-        if (notifications != null && !notifications.isEmpty()) {
-            for (OnmsNotification onmsNotification : notifications) {
-                m_beanItemContainer.addItem(onmsNotification);
-            }
+    public void refreshDetails(final Set<OnmsCategory> rowCategories, final Set<OnmsCategory> colCategories) {
+        if (m_future != null && !m_future.isDone()) {
+            m_future.cancel(true);
         }
 
-        /**
-         * sort the items
-         */
-        sort(new Object[]{"pageTime"}, new boolean[]{false});
+        m_future = getSurveillanceViewService().getExecutorService().submit(new Callable<List<Notification>>() {
+            @Override
+            public List<Notification> call() throws Exception {
+                /**
+                 * create the custom severity map
+                 */
+                Map<OnmsNotification, String> customSeverity = new HashMap<>();
 
-        /**
-         * refresh the table
-         */
-        refreshRowCache();
+                /**
+                 * retrieve the matching notifications
+                 */
+                List<OnmsNotification> onmsNotifications = getSurveillanceViewService().getNotificationsForCategories(rowCategories, colCategories, customSeverity);
+
+                /**
+                 * create the notifications list
+                 */
+                List<Notification> notifications = new ArrayList<>();
+
+                for (OnmsNotification onmsNotification : onmsNotifications) {
+                    notifications.add(new Notification(onmsNotification.getNotifyId(), onmsNotification.getNodeId(), onmsNotification.getNodeLabel(), onmsNotification.getPageTime(), onmsNotification.getRespondTime(), onmsNotification.getAnsweredBy(), onmsNotification.getTextMsg(), onmsNotification.getServiceType() != null ? onmsNotification.getServiceType().getName() : "", customSeverity.get(onmsNotification)));
+                }
+
+                return notifications;
+            }
+        });
+
+        m_future.addListener(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    final List<Notification> notifications = m_future.get();
+                    getUI().access(new Runnable() {
+                        @Override
+                        public void run() {
+                            /**
+                             * empty the bean container
+                             */
+                            m_beanItemContainer.removeAllItems();
+
+                            /**
+                             * add items to container
+                             */
+                            if (notifications != null && !notifications.isEmpty()) {
+                                for (Notification notification : notifications) {
+                                    m_beanItemContainer.addItem(notification);
+                                }
+                            }
+
+                            /**
+                             * sort the items
+                             */
+                            sort(new Object[]{"pageTime"}, new boolean[]{false});
+
+                            /**
+                             * refresh the table
+                             */
+                            refreshRowCache();
+                        }
+                    });
+                } catch (InterruptedException e) {
+                    LOG.error("Interrupted", e);
+                } catch (ExecutionException e) {
+                    LOG.error("Exception in task", e.getCause());
+                }
+            }
+        }, MoreExecutors.sameThreadExecutor());
     }
 }

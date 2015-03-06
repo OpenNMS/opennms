@@ -257,13 +257,7 @@ public class SurveillanceView extends VerticalLayout implements UIEvents.PollLis
 
         if (m_countdown < 0) {
             m_countdown = m_view.getRefreshSeconds();
-
-            getUI().access(new Runnable() {
-                @Override
-                public void run() {
-                    m_surveillanceViewTable.refresh();
-                }
-            });
+            m_surveillanceViewTable.refresh();
         }
     }
 
@@ -272,6 +266,7 @@ public class SurveillanceView extends VerticalLayout implements UIEvents.PollLis
      *
      * @param view the view to be displayed
      */
+
     public void setView(View view) {
         /**
          * set the field
@@ -336,7 +331,7 @@ public class SurveillanceView extends VerticalLayout implements UIEvents.PollLis
             lowerLayout.addComponent(surveillanceViewAlarmTable);
             lowerLayout.addComponent(surveillanceViewNotificationTable);
             lowerLayout.addComponent(surveillanceViewNodeRtcTable);
-            //lowerLayout.addComponent(surveillanceViewGraphComponent);
+            lowerLayout.addComponent(surveillanceViewGraphComponent);
 
             /**
              * associate the detail tables and components with the surveillance view table
@@ -344,7 +339,7 @@ public class SurveillanceView extends VerticalLayout implements UIEvents.PollLis
             m_surveillanceViewTable.addDetailsTable(surveillanceViewAlarmTable);
             m_surveillanceViewTable.addDetailsTable(surveillanceViewNotificationTable);
             m_surveillanceViewTable.addDetailsTable(surveillanceViewNodeRtcTable);
-            //m_surveillanceViewTable.addDetailsTable(surveillanceViewGraphComponent);
+            m_surveillanceViewTable.addDetailsTable(surveillanceViewGraphComponent);
 
             /**
              * add the layout to this component

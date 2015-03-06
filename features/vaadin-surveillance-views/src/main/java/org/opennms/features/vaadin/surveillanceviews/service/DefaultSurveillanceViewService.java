@@ -27,10 +27,11 @@
  *******************************************************************************/
 package org.opennms.features.vaadin.surveillanceviews.service;
 
+import com.google.common.util.concurrent.ListeningExecutorService;
+import com.google.common.util.concurrent.MoreExecutors;
 import org.opennms.core.criteria.Alias;
 import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.CriteriaBuilder;
-import org.opennms.core.criteria.Fetch;
 import org.opennms.core.criteria.Order;
 import org.opennms.core.criteria.restrictions.Restriction;
 import org.opennms.core.criteria.restrictions.Restrictions;
@@ -78,6 +79,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.concurrent.Executors;
 
 /**
  * Service class that encapsulate helper methods for surveillance views.
@@ -102,6 +104,10 @@ public class DefaultSurveillanceViewService implements SurveillanceViewService {
     private OutageDao m_outageDao;
     private MonitoredServiceDao m_monitoredServiceDao;
     private TransactionOperations m_transactionOperations;
+    /**
+     * the shared executor service pool
+     */
+    ListeningExecutorService m_listeningExecutorService = MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(10));
 
     /**
      * Method to set the node dao.
@@ -330,8 +336,6 @@ public class DefaultSurveillanceViewService implements SurveillanceViewService {
                 final CriteriaBuilder criteriaBuilder = new CriteriaBuilder(OnmsAlarm.class);
 
                 criteriaBuilder.alias("node", "node");
-
-                criteriaBuilder.alias("lastEvent", "event");
                 criteriaBuilder.ne("node.type", "D");
 
                 criteriaBuilder.limit(100);
@@ -495,6 +499,23 @@ public class DefaultSurveillanceViewService implements SurveillanceViewService {
 
         LOG.debug("Did not find a surveillance view matching the user's user name or one of their group names.  Using the default view for user '{}'", username);
         return defaultView;
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public ListeningExecutorService getExecutorService() {
+        return m_listeningExecutorService;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public OnmsNode getNodeForId(int id) {
+        return m_nodeDao.get(id);
     }
 
     /**

@@ -175,6 +175,7 @@ public class SurveillanceViewTable extends Table {
          * set header title for the row header column
          */
         setColumnHeader("", view.getName());
+        setColumnExpandRatio("", 1.0f);
 
         /**
          * create the other columns
@@ -197,6 +198,8 @@ public class SurveillanceViewTable extends Table {
                     return label;
                 }
             });
+
+            setColumnExpandRatio(columnDef.getLabel(), 1.0f);
         }
 
         /**
@@ -296,6 +299,7 @@ public class SurveillanceViewTable extends Table {
      */
     public synchronized void refresh() {
         m_cells = m_surveillanceViewService.calculateCellStatus(m_view);
+
         refreshRowCache();
         updateDetailsTable();
         markAsDirtyRecursive();

@@ -27,6 +27,7 @@
  *******************************************************************************/
 package org.opennms.features.vaadin.surveillanceviews.service;
 
+import com.google.common.util.concurrent.ListeningExecutorService;
 import org.opennms.features.vaadin.surveillanceviews.model.Category;
 import org.opennms.features.vaadin.surveillanceviews.model.View;
 import org.opennms.netmgt.model.OnmsAlarm;
@@ -154,6 +155,21 @@ public interface SurveillanceViewService {
      * @return the default view for this user
      */
     View selectDefaultViewForUsername(String username);
+
+    /**
+     * Returns the executor pool.
+     *
+     * @return the executor service pool
+     */
+    ListeningExecutorService getExecutorService();
+
+    /**
+     * Returns a node for a given id.
+     *
+     * @param id the node id
+     * @return the node
+     */
+    OnmsNode getNodeForId(int id);
 
     /**
      * The class for storing node RTC calculations

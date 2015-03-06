@@ -27,6 +27,8 @@
  *******************************************************************************/
 package org.opennms.features.vaadin.surveillanceviews.ui.dashboard;
 
+import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.MoreExecutors;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.server.Page;
 import com.vaadin.server.VaadinServlet;
@@ -44,6 +46,8 @@ import java.net.URI;
 import java.net.URL;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 
 /**
  * This class represents a table displaying the node RTC calculations for the surveillance view's dashboard.
@@ -59,6 +63,10 @@ public class SurveillanceViewNodeRtcTable extends SurveillanceViewDetailTable {
      * the bean containeer for storing the RTC calculations
      */
     private BeanItemContainer<SurveillanceViewService.NodeRtc> m_beanItemContainer = new BeanItemContainer<SurveillanceViewService.NodeRtc>(SurveillanceViewService.NodeRtc.class);
+    /**
+     * the refresh future
+     */
+    protected ListenableFuture<List<SurveillanceViewService.NodeRtc>> m_future;
 
     /**
      * Constructor for instantiating this component.
@@ -98,20 +106,17 @@ public class SurveillanceViewNodeRtcTable extends SurveillanceViewDetailTable {
                 button.addClickListener(new Button.ClickListener() {
                     @Override
                     public void buttonClick(Button.ClickEvent clickEvent) {
-
-                        final int nodeId = nodeRtc.getNode().getId();
-
                         final URI currentLocation = Page.getCurrent().getLocation();
                         final String contextRoot = VaadinServlet.getCurrent().getServletContext().getContextPath();
-                        final String redirectFragment = contextRoot + "/element/node.jsp?quiet=true&node=" + nodeId;
+                        final String redirectFragment = contextRoot + "/element/node.jsp?quiet=true&node=" + nodeRtc.getNode().getId();
 
-                        LOG.debug("node {} clicked, current location = {}, uri = {}", nodeId, currentLocation, redirectFragment);
+                        LOG.debug("node {} clicked, current location = {}, uri = {}", nodeRtc.getNode().getId(), currentLocation, redirectFragment);
 
                         try {
                             SurveillanceViewNodeRtcTable.this.getUI().addWindow(new InfoWindow(new URL(currentLocation.toURL(), redirectFragment), new InfoWindow.LabelCreator() {
                                 @Override
                                 public String getLabel() {
-                                    return "Node Info " + nodeId;
+                                    return "Node Info " + nodeRtc.getNode().getId();
                                 }
                             }));
                         } catch (MalformedURLException e) {
@@ -173,6 +178,10 @@ public class SurveillanceViewNodeRtcTable extends SurveillanceViewDetailTable {
         setColumnHeader("currentOutages", "Current Outages");
         setColumnHeader("availability", "24 Hour Availability");
 
+        setColumnExpandRatio("node", 1.0f);
+        setColumnExpandRatio("currentOutages", 1.0f);
+        setColumnExpandRatio("availability", 1.0f);
+
         /**
          * define the visible columns
          */
@@ -183,34 +192,60 @@ public class SurveillanceViewNodeRtcTable extends SurveillanceViewDetailTable {
      * {@inheritDoc}
      */
     @Override
-    public synchronized void refreshDetails(Set<OnmsCategory> rowCategories, Set<OnmsCategory> colCategories) {
-        /**
-         * calculate and retrieve the RTC instances
-         */
-        List<SurveillanceViewService.NodeRtc> nodeRtcs = getSurveillanceViewService().getNoteRtcsForCategories(rowCategories, colCategories);
-
-        /**
-         * empty the container
-         */
-        m_beanItemContainer.removeAllItems();
-
-        /**
-         * add items to the container
-         */
-        if (nodeRtcs != null && !nodeRtcs.isEmpty()) {
-            for (SurveillanceViewService.NodeRtc nodeRtc : nodeRtcs) {
-                m_beanItemContainer.addItem(nodeRtc);
-            }
+    public void refreshDetails(final Set<OnmsCategory> rowCategories, final Set<OnmsCategory> colCategories) {
+        if (m_future != null && !m_future.isDone()) {
+            m_future.cancel(true);
         }
 
-        /**
-         * sort the iterms
-         */
-        sort(new Object[]{"node"}, new boolean[]{true});
+        m_future = getSurveillanceViewService().getExecutorService().submit(new Callable<List<SurveillanceViewService.NodeRtc>>() {
+            @Override
+            public List<SurveillanceViewService.NodeRtc> call() throws Exception {
+                /**
+                 * calculate and retrieve the RTC instances
+                 */
+                return getSurveillanceViewService().getNoteRtcsForCategories(rowCategories, colCategories);
+            }
+        });
 
-        /**
-         * refresh the table
-         */
-        refreshRowCache();
+        m_future.addListener(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    final List<SurveillanceViewService.NodeRtc> nodeRtcs = m_future.get();
+                    getUI().access(new Runnable() {
+                        @Override
+                        public void run() {
+                            /**
+                             * empty the container
+                             */
+                            m_beanItemContainer.removeAllItems();
+
+                            /**
+                             * add items to the container
+                             */
+                            if (nodeRtcs != null && !nodeRtcs.isEmpty()) {
+                                for (SurveillanceViewService.NodeRtc nodeRtc : nodeRtcs) {
+                                    m_beanItemContainer.addItem(nodeRtc);
+                                }
+                            }
+
+                            /**
+                             * sort the iterms
+                             */
+                            sort(new Object[]{"node"}, new boolean[]{true});
+
+                            /**
+                             * refresh the table
+                             */
+                            refreshRowCache();
+                        }
+                    });
+                } catch (InterruptedException e) {
+                    LOG.error("Interrupted", e);
+                } catch (ExecutionException e) {
+                    LOG.error("Exception in task", e.getCause());
+                }
+            }
+        }, MoreExecutors.sameThreadExecutor());
     }
 }
