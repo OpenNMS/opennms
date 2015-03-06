@@ -48,11 +48,11 @@ import org.junit.runners.BlockJUnit4ClassRunner;
 import org.opennms.core.config.impl.JaxbResourceConfiguration;
 import org.opennms.core.criteria.Criteria;
 import org.opennms.netmgt.config.agents.AgentResponse;
+import org.opennms.netmgt.config.api.SnmpAgentConfigFactory;
 import org.opennms.netmgt.config.collectd.CollectdConfiguration;
 import org.opennms.netmgt.dao.mock.UnimplementedFilterDao;
 import org.opennms.netmgt.dao.mock.UnimplementedMonitoredServiceDao;
-import org.opennms.netmgt.dao.mock.UnimplementedSnmpConfigDao;
-import org.opennms.netmgt.filter.FilterParseException;
+import org.opennms.netmgt.filter.api.FilterParseException;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
@@ -152,14 +152,13 @@ public class AgentConfigurationResourceTest {
         }
     }
     
-    private static final class TestSnmpConfigDao extends UnimplementedSnmpConfigDao {
+    private static final class TestSnmpConfigDao implements SnmpAgentConfigFactory {
         @Override
         public SnmpAgentConfig getAgentConfig(final InetAddress address) {
             return new SnmpAgentConfig(address, getDefaults());
         }
 
-        @Override
-        public SnmpConfiguration getDefaults() {
+        private static SnmpConfiguration getDefaults() {
             final SnmpConfiguration config = new SnmpConfiguration();
             config.setPort(1161);
             return config;

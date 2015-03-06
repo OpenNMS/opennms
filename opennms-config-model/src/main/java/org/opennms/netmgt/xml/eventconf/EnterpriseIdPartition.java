@@ -26,14 +26,9 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.config;
+package org.opennms.netmgt.xml.eventconf;
 
 import java.util.List;
-
-import org.opennms.netmgt.xml.eventconf.Event;
-import org.opennms.netmgt.xml.eventconf.EventMatchers;
-import org.opennms.netmgt.xml.eventconf.Field;
-import org.opennms.netmgt.xml.eventconf.Partition;
 
 public class EnterpriseIdPartition implements Partition {
 

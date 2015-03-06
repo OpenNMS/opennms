@@ -11,7 +11,7 @@ import org.opennms.netmgt.correlation.drools.DroolsCorrelationEngine;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.events.api.EventConstants;
-import org.opennms.netmgt.capsd.EventUtils;
+import org.opennms.netmgt.model.events.EventUtils;
 import org.drools.spi.KnowledgeHelper;
 
 global org.opennms.netmgt.correlation.drools.DroolsCorrelationEngine engine;

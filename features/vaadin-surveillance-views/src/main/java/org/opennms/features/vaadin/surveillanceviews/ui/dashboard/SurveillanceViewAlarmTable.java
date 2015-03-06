@@ -27,6 +27,8 @@
  *******************************************************************************/
 package org.opennms.features.vaadin.surveillanceviews.ui.dashboard;
 
+import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.MoreExecutors;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.server.Page;
 import com.vaadin.server.VaadinServlet;
@@ -38,14 +40,21 @@ import org.opennms.features.topology.api.support.InfoWindow;
 import org.opennms.features.vaadin.surveillanceviews.service.SurveillanceViewService;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsCategory;
+import org.opennms.netmgt.model.OnmsNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 
 /**
  * This class represents a table displaying the OpenNMS alarms for given row/column categories.
@@ -54,13 +63,110 @@ import java.util.Set;
  */
 public class SurveillanceViewAlarmTable extends SurveillanceViewDetailTable {
     /**
+     * Helper class for alarm entries.
+     */
+    public class Alarm {
+        /**
+         * the alarm's id
+         */
+        private int id;
+        /**
+         * this node's id
+         */
+        private int nodeId;
+        /**
+         * alarm severity
+         */
+        private String severity;
+        /**
+         * label of the node
+         */
+        private String nodeLabel;
+        /**
+         * log message
+         */
+        private String logMsg;
+        /**
+         * the counter value
+         */
+        private int counter;
+        /**
+         * first event date
+         */
+        private Date firstEventTime;
+        /**
+         * last event date
+         */
+        private Date lastEventTime;
+
+        /**
+         * Constructor for instantiating new alarm instances.
+         *
+         * @param id             the alarm id
+         * @param severity       the severity of the alarm
+         * @param nodeLabel      the label of the node
+         * @param nodeId         the node id
+         * @param logMsg         the log message
+         * @param counter        the counter value
+         * @param firstEventTime the first event date
+         * @param lastEventTime  the last event date
+         */
+        public Alarm(int id, String severity, String nodeLabel, int nodeId, String logMsg, int counter, Date firstEventTime, Date lastEventTime) {
+            this.id = id;
+            this.severity = severity;
+            this.nodeLabel = nodeLabel;
+            this.nodeId = nodeId;
+            this.logMsg = logMsg;
+            this.counter = counter;
+            this.firstEventTime = firstEventTime;
+            this.lastEventTime = lastEventTime;
+        }
+
+        public String getSeverity() {
+            return severity;
+        }
+
+        public int getNodeId() {
+            return nodeId;
+        }
+
+        public int getId() {
+            return id;
+        }
+
+        public String getNodeLabel() {
+            return nodeLabel;
+        }
+
+        public String getLogMsg() {
+            return logMsg;
+        }
+
+        public int getCounter() {
+            return counter;
+        }
+
+        public Date getFirstEventTime() {
+            return firstEventTime;
+        }
+
+        public Date getLastEventTime() {
+            return lastEventTime;
+        }
+    }
+
+    /**
      * the logger instance
      */
     private static final Logger LOG = LoggerFactory.getLogger(SurveillanceViewAlarmTable.class);
     /**
      * the bean container storing the alarm instances
      */
-    private BeanItemContainer<OnmsAlarm> m_beanItemContainer = new BeanItemContainer<OnmsAlarm>(OnmsAlarm.class);
+    private BeanItemContainer<Alarm> m_beanItemContainer = new BeanItemContainer<>(Alarm.class);
+    /**
+     * the refresh future
+     */
+    protected ListenableFuture<List<Alarm>> m_future;
 
     /**
      * Constructor for instantiating this component.
@@ -87,28 +193,25 @@ public class SurveillanceViewAlarmTable extends SurveillanceViewDetailTable {
         /**
          * add node column
          */
-        addGeneratedColumn("node", new ColumnGenerator() {
+        addGeneratedColumn("nodeLabel", new ColumnGenerator() {
             @Override
             public Object generateCell(final Table table, final Object itemId, final Object propertyId) {
-                final OnmsAlarm onmsAlarm = (OnmsAlarm) itemId;
+                final Alarm alarm = (Alarm) itemId;
 
                 Button icon = getClickableIcon("glyphicon glyphicon-warning-sign", new Button.ClickListener() {
                     @Override
                     public void buttonClick(Button.ClickEvent clickEvent) {
-                        OnmsAlarm alarm = (OnmsAlarm) itemId;
-                        final int alarmId = alarm.getId();
-
                         final URI currentLocation = Page.getCurrent().getLocation();
                         final String contextRoot = VaadinServlet.getCurrent().getServletContext().getContextPath();
-                        final String redirectFragment = contextRoot + "/alarm/detail.htm?quiet=true&id=" + alarmId;
+                        final String redirectFragment = contextRoot + "/alarm/detail.htm?quiet=true&id=" + alarm.getId();
 
-                        LOG.debug("alarm {} clicked, current location = {}, uri = {}", alarmId, currentLocation, redirectFragment);
+                        LOG.debug("alarm {} clicked, current location = {}, uri = {}", alarm.getId(), currentLocation, redirectFragment);
 
                         try {
                             SurveillanceViewAlarmTable.this.getUI().addWindow(new InfoWindow(new URL(currentLocation.toURL(), redirectFragment), new InfoWindow.LabelCreator() {
                                 @Override
                                 public String getLabel() {
-                                    return "Alarm Info " + alarmId;
+                                    return "Alarm Info " + alarm.getId();
                                 }
                             }));
                         } catch (MalformedURLException e) {
@@ -117,27 +220,24 @@ public class SurveillanceViewAlarmTable extends SurveillanceViewDetailTable {
                     }
                 });
 
-                Button button = new Button(onmsAlarm.getNodeLabel());
+                Button button = new Button(alarm.getNodeLabel());
                 button.setPrimaryStyleName(BaseTheme.BUTTON_LINK);
                 button.setEnabled(m_enabled);
 
                 button.addClickListener(new Button.ClickListener() {
                     @Override
                     public void buttonClick(Button.ClickEvent clickEvent) {
-
-                        final int nodeId = onmsAlarm.getNodeId();
-
                         final URI currentLocation = Page.getCurrent().getLocation();
                         final String contextRoot = VaadinServlet.getCurrent().getServletContext().getContextPath();
-                        final String redirectFragment = contextRoot + "/element/node.jsp?quiet=true&node=" + nodeId;
+                        final String redirectFragment = contextRoot + "/element/node.jsp?quiet=true&node=" + alarm.getNodeId();
 
-                        LOG.debug("node {} clicked, current location = {}, uri = {}", nodeId, currentLocation, redirectFragment);
+                        LOG.debug("node {} clicked, current location = {}, uri = {}", alarm.getNodeId(), currentLocation, redirectFragment);
 
                         try {
                             SurveillanceViewAlarmTable.this.getUI().addWindow(new InfoWindow(new URL(currentLocation.toURL(), redirectFragment), new InfoWindow.LabelCreator() {
                                 @Override
                                 public String getLabel() {
-                                    return "Node Info " + nodeId;
+                                    return "Node Info " + alarm.getNodeId();
                                 }
                             }));
                         } catch (MalformedURLException e) {
@@ -163,8 +263,8 @@ public class SurveillanceViewAlarmTable extends SurveillanceViewDetailTable {
         addGeneratedColumn("logMsg", new ColumnGenerator() {
             @Override
             public Object generateCell(Table table, Object itemId, Object propertyId) {
-                OnmsAlarm onmsAlarm = (OnmsAlarm) itemId;
-                return getImageSeverityLayout(onmsAlarm.getLogMsg());
+                Alarm alarm = (Alarm) itemId;
+                return getImageSeverityLayout(alarm.getLogMsg());
             }
         });
 
@@ -174,9 +274,9 @@ public class SurveillanceViewAlarmTable extends SurveillanceViewDetailTable {
         setCellStyleGenerator(new CellStyleGenerator() {
             @Override
             public String getStyle(final Table source, final Object itemId, final Object propertyId) {
-                OnmsAlarm onmsAlarm = ((OnmsAlarm) itemId);
+                Alarm alarm = ((Alarm) itemId);
 
-                String style = onmsAlarm.getSeverity().getLabel().toLowerCase();
+                String style = alarm.getSeverity().toLowerCase();
 
                 if ("logMsg".equals(propertyId)) {
                     style += "-image";
@@ -189,49 +289,94 @@ public class SurveillanceViewAlarmTable extends SurveillanceViewDetailTable {
         /**
          * set column headers
          */
-        setColumnHeader("node", "Node");
+        setColumnHeader("nodeLabel", "Node");
         setColumnHeader("logMsg", "Log Msg");
         setColumnHeader("counter", "Count");
         setColumnHeader("firstEventTime", "First Time");
         setColumnHeader("lastEventTime", "Last Time");
 
+        setColumnExpandRatio("nodeLabel", 2.0f);
+        setColumnExpandRatio("logMsg", 4.0f);
+        setColumnExpandRatio("counter", 1.0f);
+        setColumnExpandRatio("firstEventTime", 1.0f);
+        setColumnExpandRatio("lastEventTime", 1.0f);
+
         /**
          * set visible columns
          */
-        setVisibleColumns("node", "logMsg", "counter", "firstEventTime", "lastEventTime");
+        setVisibleColumns("nodeLabel", "logMsg", "counter", "firstEventTime", "lastEventTime");
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public synchronized void refreshDetails(Set<OnmsCategory> rowCategories, Set<OnmsCategory> colCategories) {
-        /**
-         * retrieve all matching alarms
-         */
-        List<OnmsAlarm> alarms = getSurveillanceViewService().getAlarmsForCategories(rowCategories, colCategories);
-
-        /**
-         * empty the container
-         */
-        m_beanItemContainer.removeAllItems();
-
-        /**
-         * add items to container
-         */
-        if (alarms != null && !alarms.isEmpty()) {
-            for (OnmsAlarm alarm : alarms) {
-                m_beanItemContainer.addItem(alarm);
-            }
+    public void refreshDetails(final Set<OnmsCategory> rowCategories, final Set<OnmsCategory> colCategories) {
+        if (m_future != null && !m_future.isDone()) {
+            m_future.cancel(true);
         }
-        /**
-         * sort the alarms
-         */
-        sort(new Object[]{"firstEventTime"}, new boolean[]{true});
 
-        /**
-         * refresh the table
-         */
-        refreshRowCache();
+        m_future = getSurveillanceViewService().getExecutorService().submit(new Callable<List<Alarm>>() {
+            @Override
+            public List<Alarm> call() throws Exception {
+                /**
+                 * retrieve the matching alarms
+                 */
+                List<OnmsAlarm> onmsAlarms = getSurveillanceViewService().getAlarmsForCategories(rowCategories, colCategories);
+
+                List<Alarm> alarms = new ArrayList<>();
+
+                Map<Integer, OnmsNode> nodeMap = new HashMap<>();
+
+                for (OnmsAlarm onmsAlarm : onmsAlarms) {
+                    if (!nodeMap.containsKey(onmsAlarm.getNodeId())) {
+                        nodeMap.put(onmsAlarm.getNodeId(), getSurveillanceViewService().getNodeForId(onmsAlarm.getNodeId()));
+                    }
+
+                    alarms.add(new Alarm(onmsAlarm.getId(), onmsAlarm.getSeverity().getLabel(), nodeMap.get(onmsAlarm.getNodeId()).getLabel(), onmsAlarm.getNodeId(), onmsAlarm.getLogMsg(), onmsAlarm.getCounter(), onmsAlarm.getFirstEventTime(), onmsAlarm.getLastEventTime()));
+                }
+                return alarms;
+            }
+        });
+
+        m_future.addListener(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    final List<Alarm> alarms = m_future.get();
+                    getUI().access(new Runnable() {
+                        @Override
+                        public void run() {
+                            /**
+                             * empty the container
+                             */
+                            m_beanItemContainer.removeAllItems();
+
+                            /**
+                             * add items to container
+                             */
+                            if (alarms != null && !alarms.isEmpty()) {
+                                for (Alarm alarm : alarms) {
+                                    m_beanItemContainer.addItem(alarm);
+                                }
+                            }
+                            /**
+                             * sort the alarms
+                             */
+                            sort(new Object[]{"lastEventTime"}, new boolean[]{true});
+
+                            /**
+                             * refresh the table
+                             */
+                            refreshRowCache();
+                        }
+                    });
+                } catch (InterruptedException e) {
+                    LOG.error("Interrupted", e);
+                } catch (ExecutionException e) {
+                    LOG.error("Exception in task", e.getCause());
+                }
+            }
+        }, MoreExecutors.sameThreadExecutor());
     }
 }

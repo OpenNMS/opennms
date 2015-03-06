@@ -141,8 +141,7 @@
             }
         }
 
-        String timelineUrl = "/opennms/rest/timeline/image/" + String.valueOf(nodeId) + "/" + ipAddr + "/" + service.getServiceName() + "/" + timelineStart + "/" + timelineEnd + "/";
-        String timelineId  = String.valueOf(nodeId) + "-" + ipAddr + "-" + service.getServiceName();
+        String timelineUrl = "/opennms/rest/timeline/html/" + String.valueOf(nodeId) + "/" + ipAddr + "/" + service.getServiceName() + "/" + timelineStart + "/" + timelineEnd + "/";
     %>
     <%
       String serviceClass;
@@ -162,7 +161,7 @@
     <td class="severity-<%=warnClass%> bright"><a href="<c:out value="${serviceLink}"/>"><c:out value="<%=service.getServiceName()%>"/></a></td>
     <% if( service.isManaged() ) { %>
       <td class="Cleared nobright">
-        <img src="#" data-imgsrc="<%=timelineUrl%>" usemap="#<%=timelineId%>"><map name="<%=timelineId%>"></map>
+        <span data-src="<%=timelineUrl%>"></span>
       </td>
       <td class="severity-<%=serviceClass%> nobright"><%=CategoryUtil.formatValue(svcValue)%>%</td>
     <% } else { %>

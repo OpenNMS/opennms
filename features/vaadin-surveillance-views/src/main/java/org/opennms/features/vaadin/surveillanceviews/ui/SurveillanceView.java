@@ -257,13 +257,7 @@ public class SurveillanceView extends VerticalLayout implements UIEvents.PollLis
 
         if (m_countdown < 0) {
             m_countdown = m_view.getRefreshSeconds();
-
-            getUI().access(new Runnable() {
-                @Override
-                public void run() {
-                    m_surveillanceViewTable.refresh();
-                }
-            });
+            m_surveillanceViewTable.refresh();
         }
     }
 
@@ -272,6 +266,7 @@ public class SurveillanceView extends VerticalLayout implements UIEvents.PollLis
      *
      * @param view the view to be displayed
      */
+
     public void setView(View view) {
         /**
          * set the field

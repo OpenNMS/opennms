@@ -47,8 +47,8 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.RTCConfigFactory;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.events.api.EventConstants;
-import org.opennms.netmgt.filter.FilterDao;
-import org.opennms.netmgt.filter.FilterParseException;
+import org.opennms.netmgt.filter.api.FilterDao;
+import org.opennms.netmgt.filter.api.FilterParseException;
 import org.opennms.netmgt.rtc.datablock.RTCCategory;
 import org.opennms.netmgt.rtc.datablock.RTCHashMap;
 import org.opennms.netmgt.rtc.datablock.RTCNode;
@@ -297,7 +297,7 @@ public class DataManager implements AvailabilityService, InitializingBean {
      * @throws org.xml.sax.SAXException if any.
      * @throws java.io.IOException if any.
      * @throws java.sql.SQLException if any.
-     * @throws org.opennms.netmgt.filter.FilterParseException if any.
+     * @throws org.opennms.netmgt.filter.api.FilterParseException if any.
      * @throws org.opennms.netmgt.rtc.RTCException if any.
      */
 	@Override
@@ -609,7 +609,7 @@ public class DataManager implements AvailabilityService, InitializingBean {
      *            the nodeid on which SNMP service was added
      * @throws java.sql.SQLException
      *             if the database read fails due to an SQL error
-     * @throws org.opennms.netmgt.filter.FilterParseException
+     * @throws org.opennms.netmgt.filter.api.FilterParseException
      *             if filtering the data against the category rule fails due to
      *             the rule being incorrect
      * @throws org.opennms.netmgt.rtc.RTCException

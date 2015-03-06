@@ -27,6 +27,8 @@
  *******************************************************************************/
 package org.opennms.features.vaadin.surveillanceviews.ui.dashboard;
 
+import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.MoreExecutors;
 import com.vaadin.data.Property;
 import com.vaadin.server.ExternalResource;
 import com.vaadin.server.Page;
@@ -52,6 +54,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 
 /**
  * This component is used to display the available graphs for a surveillance view dashboard.
@@ -83,6 +87,10 @@ public class SurveillanceViewGraphComponent extends VerticalLayout implements Su
      * initial width of image
      */
     private int m_width = 1000;
+    /**
+     * the refresh future
+     */
+    protected ListenableFuture<List<OnmsNode>> m_future;
 
     /**
      * Constructor for instantiating this component.
@@ -239,7 +247,6 @@ public class SurveillanceViewGraphComponent extends VerticalLayout implements Su
             @Override
             public void attach(AttachEvent attachEvent) {
                 getUI().getPage().addBrowserWindowResizeListener(SurveillanceViewGraphComponent.this);
-
                 JavaScript.getCurrent().execute("getLayoutWidth(document.getElementById('" + m_imageLayout.getId() + "').clientWidth);");
             }
         });
@@ -304,65 +311,91 @@ public class SurveillanceViewGraphComponent extends VerticalLayout implements Su
      * {@inheritDoc}
      */
     @Override
-    public synchronized void refreshDetails(Set<OnmsCategory> rowCategories, Set<OnmsCategory> colCategories) {
-        /**
-         * retrieve the matching nodes
-         */
-        List<OnmsNode> nodes = getSurveillanceViewService().getNodesForCategories(rowCategories, colCategories);
-
-        /**
-         * save the current selection
-         */
-        OnmsNode selectedNode = (OnmsNode) m_nodeSelect.getValue();
-        OnmsResource selectedResource = (OnmsResource) m_resourceSelect.getValue();
-        String selectedGraph = (String) m_graphSelect.getValue();
-
-        LOG.debug("Saved selection={} / {} / {}", selectedNode == null ? "null" : selectedNode.getLabel(), selectedResource == null ? "null" : selectedResource.getLabel(), selectedGraph);
-
-        /**
-         * remove all entries in the node selection box
-         */
-        m_nodeSelect.removeAllItems();
-
-        /**
-         * add the new items
-         */
-        if (nodes != null && !nodes.isEmpty()) {
-            for (OnmsNode node : nodes) {
-                m_nodeSelect.addItem(node);
-                m_nodeSelect.setItemCaption(node, "Node: " + node.getLabel());
-            }
+    public void refreshDetails(final Set<OnmsCategory> rowCategories, final Set<OnmsCategory> colCategories) {
+        if (m_future != null && !m_future.isDone()) {
+            m_future.cancel(true);
         }
 
-        /**
-         * try to select the same node/resource/graph combination as before
-         */
-        if (selectedNode != null) {
-            for (OnmsNode onmsNode : (Collection<OnmsNode>) m_nodeSelect.getItemIds()) {
-                if (onmsNode.getId().equals(selectedNode.getId())) {
-                    m_nodeSelect.select(onmsNode);
-                    if (selectedResource != null) {
-                        for (OnmsResource onmsResource : (Collection<OnmsResource>) m_resourceSelect.getItemIds()) {
-                            if (onmsResource.getId().equals(selectedResource.getId())) {
-                                m_resourceSelect.select(onmsResource);
-                                if (selectedGraph != null) {
-                                    m_graphSelect.select(selectedGraph);
+        m_future = getSurveillanceViewService().getExecutorService().submit(new Callable<List<OnmsNode>>() {
+            @Override
+            public List<OnmsNode> call() throws Exception {
+                /**
+                 * retrieve the matching nodes
+                 */
+                return getSurveillanceViewService().getNodesForCategories(rowCategories, colCategories);
+            }
+        });
+
+        m_future.addListener(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    final List<OnmsNode> nodes = m_future.get();
+                    getUI().access(new Runnable() {
+                        @Override
+                        public void run() {
+                            /**
+                             * save the current selection
+                             */
+                            OnmsNode selectedNode = (OnmsNode) m_nodeSelect.getValue();
+                            OnmsResource selectedResource = (OnmsResource) m_resourceSelect.getValue();
+                            String selectedGraph = (String) m_graphSelect.getValue();
+
+                            LOG.debug("Saved selection={} / {} / {}", selectedNode == null ? "null" : selectedNode.getLabel(), selectedResource == null ? "null" : selectedResource.getLabel(), selectedGraph);
+
+                            /**
+                             * remove all entries in the node selection box
+                             */
+                            m_nodeSelect.removeAllItems();
+
+                            /**
+                             * add the new items
+                             */
+                            if (nodes != null && !nodes.isEmpty()) {
+                                for (OnmsNode node : nodes) {
+                                    m_nodeSelect.addItem(node);
+                                    m_nodeSelect.setItemCaption(node, "Node: " + node.getLabel());
                                 }
                             }
+
+                            /**
+                             * try to select the same node/resource/graph combination as before
+                             */
+                            if (selectedNode != null) {
+                                for (OnmsNode onmsNode : (Collection<OnmsNode>) m_nodeSelect.getItemIds()) {
+                                    if (onmsNode.getId().equals(selectedNode.getId())) {
+                                        m_nodeSelect.select(onmsNode);
+                                        if (selectedResource != null) {
+                                            for (OnmsResource onmsResource : (Collection<OnmsResource>) m_resourceSelect.getItemIds()) {
+                                                if (onmsResource.getId().equals(selectedResource.getId())) {
+                                                    m_resourceSelect.select(onmsResource);
+                                                    if (selectedGraph != null) {
+                                                        m_graphSelect.select(selectedGraph);
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        return;
+                                    }
+                                }
+                            }
+
+                            /**
+                             * if nothing was selected before, just select the first entry if possible
+                             */
+                            Iterator<?> i = m_nodeSelect.getItemIds().iterator();
+
+                            if (i.hasNext()) {
+                                m_nodeSelect.select(i.next());
+                            }
                         }
-                    }
-                    return;
+                    });
+                } catch (InterruptedException e) {
+                    LOG.error("Interrupted", e);
+                } catch (ExecutionException e) {
+                    LOG.error("Exception in task", e.getCause());
                 }
             }
-        }
-
-        /**
-         * if nothing was selected before, just select the first entry if possible
-         */
-        Iterator<?> i = m_nodeSelect.getItemIds().iterator();
-
-        if (i.hasNext()) {
-            m_nodeSelect.select(i.next());
-        }
+        }, MoreExecutors.sameThreadExecutor());
     }
 }

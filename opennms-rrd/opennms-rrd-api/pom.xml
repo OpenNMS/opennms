@@ -28,7 +28,7 @@
             -->
             <Import-Package>
               *,
-              org.springframework.beans.factory.config;version="[3.2,3.3)",
+              org.springframework.beans.factory.config;version="[4.0,4.1)",
               org.opennms.netmgt.rrd.jrobin;resolution:=optional,
               org.opennms.netmgt.rrd.rrdtool;resolution:=optional,
               org.opennms.netmgt.rrd.tcp;resolution:=optional
