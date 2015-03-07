@@ -56,7 +56,7 @@ import org.slf4j.LoggerFactory;
 public final class SyslogHandler implements Fiber {
     private static final Logger LOG = LoggerFactory.getLogger(SyslogHandler.class);
 
-    private final boolean USE_NIO = true;
+    private final boolean USE_NIO = false;
     private final boolean USE_NETTY = false;
 
     /**
