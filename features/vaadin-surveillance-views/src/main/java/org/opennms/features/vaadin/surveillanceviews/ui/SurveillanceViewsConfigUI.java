@@ -33,6 +33,7 @@ import com.vaadin.server.VaadinRequest;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
+import org.opennms.features.vaadin.surveillanceviews.config.SurveillanceViewProvider;
 import org.opennms.features.vaadin.surveillanceviews.service.SurveillanceViewService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,6 +61,14 @@ public class SurveillanceViewsConfigUI extends UI {
      */
     @Override
     protected void init(VaadinRequest request) {
+        /**
+         * Force the reload of the configuration
+         */
+        SurveillanceViewProvider.getInstance().load();
+
+        /**
+         * Create the basic layout
+         */
         VerticalLayout rootLayout = new VerticalLayout();
         rootLayout.setSizeFull();
         rootLayout.setSpacing(true);

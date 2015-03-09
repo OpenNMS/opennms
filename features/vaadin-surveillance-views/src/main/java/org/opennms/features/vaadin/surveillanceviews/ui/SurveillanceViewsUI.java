@@ -64,6 +64,11 @@ public class SurveillanceViewsUI extends UI {
     @Override
     protected void init(VaadinRequest request) {
         /**
+         * Force the reload of the configuration
+         */
+        SurveillanceViewProvider.getInstance().load();
+
+        /**
          * create a layout
          */
         VerticalLayout rootLayout = new VerticalLayout();

@@ -169,9 +169,12 @@ public class SurveillanceViewsConfigList extends VerticalLayout {
                                 getUI().addWindow(new SurveillanceViewConfigurationWindow(m_surveillanceViewService, m_beanItemContainer.getItem(itemId).getBean(), new SurveillanceViewConfigurationWindow.SaveActionListener() {
                                     @Override
                                     public void save(View view) {
+                                        View oldView = m_beanItemContainer.getItem(itemId).getBean();
+
                                         m_beanItemContainer.removeItem(itemId);
                                         m_beanItemContainer.addItem(view);
-                                        SurveillanceViewProvider.getInstance().getSurveillanceViewConfiguration().getViews().set(SurveillanceViewProvider.getInstance().getSurveillanceViewConfiguration().getViews().indexOf(itemId), view);
+
+                                        SurveillanceViewProvider.getInstance().replaceView(oldView, view);
 
                                         SurveillanceViewProvider.getInstance().save();
                                         ((SurveillanceViewsConfigUI) getUI()).notifyMessage("Data saved", "Surveillance view");
