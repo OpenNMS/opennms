@@ -280,13 +280,6 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.opennms.doc</groupId>
-      <artifactId>guide-all</artifactId>
-      <type>zip</type>
-      <version>${project.version}</version>
-      <classifier>docs</classifier>
-    </dependency>
-    <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-base-assembly</artifactId>
       <type>tar.gz</type>
@@ -299,6 +292,13 @@
       <type>tar.gz</type>
       <version>${project.version}</version>
       <classifier>log4j2</classifier>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.doc</groupId>
+      <artifactId>guide-all</artifactId>
+      <type>tar.gz</type>
+      <version>${project.version}</version>
+      <classifier>docs</classifier>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
