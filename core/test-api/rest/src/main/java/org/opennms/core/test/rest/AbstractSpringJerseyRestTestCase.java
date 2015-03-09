@@ -256,7 +256,8 @@ public abstract class AbstractSpringJerseyRestTestCase {
     }
 
     private static Collection<String> getUserRoles() {
-        return Collections.unmodifiableCollection(m_roles.get());
+        final Set<String> roles = m_roles.get();
+        return roles == null? new HashSet<String>() : new HashSet<>(roles);
     }
 
     /**
