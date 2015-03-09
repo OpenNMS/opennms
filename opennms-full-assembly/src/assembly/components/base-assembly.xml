@@ -15,7 +15,7 @@
       <useTransitiveDependencies>false</useTransitiveDependencies>
       <outputDirectory>/docs</outputDirectory>
       <includes>
-        <include>org.opennms.doc:guide-all:zip:docs:${project.version}</include>
+        <include>org.opennms.doc:guide-all:tar.gz:docs:${project.version}</include>
       </includes>
     </dependencySet>
     <dependencySet>

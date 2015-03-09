@@ -30,6 +30,7 @@ package org.opennms.netmgt.model;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -68,7 +69,7 @@ public class OnmsUser implements UserDetails {
     private Boolean m_passwordSalted;
 
     @XmlTransient
-    private Collection<? extends GrantedAuthority> m_authorities;
+    private final Set<GrantedAuthority> m_authorities = new HashSet<>();
 
     @XmlElement(name="duty-schedule", required=false)
     private List<String> m_dutySchedule = new ArrayList<String>();
@@ -140,11 +141,14 @@ public class OnmsUser implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return m_authorities;
+        return Collections.unmodifiableSet(m_authorities);
     }
 
-    public void setAuthorities(Collection<? extends GrantedAuthority> authorities) {
-        m_authorities = authorities;
+    public void setAuthorities(final Collection<? extends GrantedAuthority> authorities) {
+        if (m_authorities != authorities) {
+            m_authorities.clear();
+            m_authorities.addAll(authorities);
+        }
     }
 
     @Override
@@ -168,10 +172,7 @@ public class OnmsUser implements UserDetails {
     }
 
     public void addAuthority(final GrantedAuthority authority) {
-        final Set<GrantedAuthority> authorities = new HashSet<GrantedAuthority>();
-        if (m_authorities != null) authorities.addAll(m_authorities);
-        authorities.add(authority);
-        m_authorities = authorities;
+        m_authorities.add(authority);
     }
 
     public String getEmail() {
