@@ -129,7 +129,7 @@ public abstract class AbstractJdbcPersister implements InitializingBean, EventPr
     protected static final int EVENT_CORRELATION_FIELD_SIZE = 1024;
 
     /** Constant <code>EVENT_OPERINSTRUCT_FIELD_SIZE=1024</code> */
-    protected static final int EVENT_OPERINSTRUCT_FIELD_SIZE = 1024;
+//    protected static final int EVENT_OPERINSTRUCT_FIELD_SIZE = 1024;
 
     /** Constant <code>EVENT_AUTOACTION_FIELD_SIZE=256</code> */
     protected static final int EVENT_AUTOACTION_FIELD_SIZE = 256;

@@ -1,0 +1,23 @@
+// Global settings
+:ascii-ids:
+:encoding: UTF-8
+:lang: en
+:icons: font
+:toc: left
+:toclevels: 8
+:numbered:
+
+= Documentation Guide
+:author: Copyright (c) 2014 The OpenNMS Group, Inc.
+:revnumber: OpenNMS v{opennms-version}
+:revdate: {last-update-label} {docdatetime}
+:version-label!:
+
+// Include your documentation sections here
+include::text/introduction.adoc[]
+include::text/git-workflow.adoc[]
+include::text/writing.adoc[]
+include::text/images.adoc[]
+include::text/include-source.adoc[]
+include::text/cheat-sheets.adoc[]
+include::text/reviewing.adoc[]

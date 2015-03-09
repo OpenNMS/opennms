@@ -1,0 +1,20 @@
+[release-notes-known-issues]
+== Known Issues and Caveats
+
+Here is the list of known issues in this release of OpenNMS:
+
+[release-notes-known-issues-current-release]
+=== Current Release
+
+While an attempt was made to test the UI with Internet Explorer, there may be some lingering issues with IE.  It is recommended that you use Chrome or Firefox with the OpenNMS UI.
+
+Additionally, there has been significant refactoring of the remote pollers, and you should upgrade all remote pollers to 14.0.0.
+
+[release-notes-known-issues-1-12]
+=== OpenNMS 1.12.7 and Newer
+
+As of OpenNMS 1.12.7, we have replaced the code that creates the OpenNMS web UI with the standard jetty.xml instead.
+
+This means that if you need to do any customization (adding AJP support, changing limits on threads or post sizes, etc.) you can now do so by editing a standard jetty.xml file instead. While most of the simple Jetty configuration properties from $OPENNMS_HOME/etc/opennms.properties are still supported, it is strongly recommended that you instead copy $OPENNMS_HOME/etc/examples/jetty.xml to $OPENNMS_HOME/etc/jetty.xml and edit that, rather than relying on properties from the config file(s).
+
+The majority of users will have to change nothing, but if you have done any configuration changes relating to Jetty, you may need to review them.

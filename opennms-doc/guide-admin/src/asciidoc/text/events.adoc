@@ -1,0 +1,72 @@
+
+== Events in OpenNMS
+
+=== Events
+
+Events are central to the operation of the OpenNMS platform, so it's critical to have a firm grasp of this topic.
+
+IMPORTANT: Whenever something in OpenNMS appears to work by magic, it's probably events working behind the curtain.
+
+[[section-events-anatomy-of-an-event]]
+==== Anatomy of an Event
+
+Events are structured historical records of things that happen in OpenNMS and the nodes, interfaces, and services it manages.
+Every event has a number of fixed *fields* and zero or more *parameters*.
+
+.Mandatory Fields
+UEI (Universal Event Identifier)::
+    A string uniquely identifying the event's type.
+    UEIs are typically formatted in the style of a URI, but the only requirement is that they start with the string `uei.`.
+Event Label::
+    A short, static label summarizing the gist of all instances of this event.
+Description::
+    A long-form description describing all instances of this event.
+Log Message::
+    A long-form log message describing this event, optionally including expansions of fields and parameters so that the value is tailored to the event at hand.
+Severity::
+    A severity for this event type.
+    Possible values range from `Cleared` to `Critical`.
+Event ID::
+    A numeric identifier used to look up a specific event in the OpenNMS system.
+
+.Notable Optional Fields
+Operator Instruction::
+    A set of instructions for an operator to respond appropriately to an event of this type.
+Alarm Data::
+    If this field is provided for an event, OpenNMS will create, update, or clear *alarms* for events of that type according to the alarm-data specifics.
+    For more about alarms and how they relate to events, see <<alarms-introduction>>.
+
+[[section-events-sources-of-events]]
+==== Sources of Events
+
+Events may originate within OpenNMS itself or from outside.
+
+Internally-generated events can be the result of the platform's monitoring and management functions (_e.g._ a monitored node becoming totally unavailable results in an event with the UEI `uei.opennms.org/nodes/nodeDown`) or they may act as inputs or outputs of housekeeping processes.
+
+Externally-created events can arrive by a variety of mechanisms, including:
+
+.External Event Mechanisms
+SNMP Traps::
+    If SNMP-capable devices in the network are configured to send *traps* to OpenNMS, these traps are transformed into events according to pre-configured rules.
+    Event definitions are included with OpenNMS for traps from many vendors' equipment.
+Syslog Messages::
+    Syslog messages sent over the network to OpenNMS can be transformed into events according to pre-configured rules.
+TL1 Autonomous Messages::
+    Autonomous messages can be retrieved from certain TL1-enabled equipment and transformed into events.
+XML-TCP::
+    Any application or script can create custom events in OpenNMS by sending properly-formatted XML data over a TCP socket.
+
+[[section-events-event-bus]]
+==== The Event Bus
+
+At the heart of OpenNMS lies an *event bus*.
+Any OpenNMS component can _publish_ events to the bus, and any component can _subscribe_ to receive events of interest that have been published on the bus.
+This publish-subscribe model enables components to use events as a mechanism to send messages to each other.
+For example, the provisioning subsystem of OpenNMS publishes a _node-added_ event whenever a new node is added to the system.
+Other subsystems with an interest in new nodes subscribe to the _node-added_ event and automatically receive these events, so they know to start monitoring and managing the new node if their configuration dictates.
+The publisher and subscriber components do not need to have any knowledge of each other, allowing for a clean division of labor and lessening the programming burden to add entirely new OpenNMS subsystems or modify the behavior of existing ones.
+
+[[section-events-events-in-action]]
+==== Events in Action
+
+[[section-events-events-in-action-notifications]]

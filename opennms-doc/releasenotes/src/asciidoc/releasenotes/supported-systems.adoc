@@ -1,0 +1,33 @@
+[release-notes-supported-systems]
+== Supported Systems
+
+[release-notes-supported-unix-like-oses]
+=== Supported UNIX-like OSes
+
+OpenNMS is written almost entirely in Java, and should be able to run on any system that supports the Sun Java Virtual Machine -- OpenNMS 14 requires Java 7 or higher.
+
+The following are the systems that support or are known to run OpenNMS:
+
+[supported-fullysupported]
+=== Fully Supported
+
+The following systems are supported out-of-the-box with native installation packages:
+
+* RPM-based Distributions (Using Yum)
+** Red hat Enterprise Linux 5 and higher
+** CentOS 5 and higher
+** Fedora 19 and higher (including 64-bit)
+* Debian and Ubuntu Linux: Debian packages for Wheezy and later are available at the following apt repository:
+[source, bash]
+----
+deb http://debian.opennms.org/ unstable main
+----
+These same packages should work equally well with modern Ubuntu releases.
+
+* Windows Server 2008/Windows 7 or Higher:
+Note that while it is technically possible to install on FAT32, NTFS is the only officially supported filesystem for Windows installs.  Additionally, while Windows is supported, OpenNMS is much more heavily tested (and easier to maintain) on UNIX, and it is recommended that unless you have a specific reason to go with Windows, that you use one of the supported UNIX-based operating systems.
+
+[supported-dependencies]
+=== 3rd-Party Dependencies
+
+OpenNMS 14 requires Java 7 JDK or greater, and PostgreSQL 8.4 or greater.  In addition, for native RRD support (as opposed to the builtin Java-based JRobin round-robin database), RRDTool 1.2 is required.
