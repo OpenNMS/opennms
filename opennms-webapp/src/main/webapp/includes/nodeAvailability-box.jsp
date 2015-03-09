@@ -218,21 +218,23 @@
                 </tr>
             <% } %>
           <% } else { %>
-            <%-- interface is not managed --%>
-            <% if("0.0.0.0".equals(ipAddr)) {
-            }
-            else { %>
-            <tr>
-              <td>
+      <%-- interface is not managed --%>
+      <% if("0.0.0.0".equals(ipAddr)) {
+      }
+      else { %>
+      <tr>
+          <td class="severity-Cleared nobright" colspan=2>
               <a href="<c:out value="${interfaceLink}"/>"><%=ipAddr%></a>
-              </td>
-              <td class="severity-Indeterminate" colspan="2"><%=ElementUtil.getInterfaceStatusString(intf)%></td>
-            </tr>
-            <% } %>
-          <% } %>
-        <% } %>
-<% } %>
-</table>   
+          </td>
+          <!--<td class="severity-Cleared nobright"></td>-->
+          <td class="severity-Cleared nobright"><img src="#" data-imgsrc="<%=timelineEmptyUrl%>"></td>
+          <td class="severity-Indeterminate" colspan="2"><%=ElementUtil.getInterfaceStatusString(intf)%></td>
+      </tr>
+      <% } %>
+      <% } %>
+      <% } %>
+      <% } %>
+  </table>
 
 </div>
 
