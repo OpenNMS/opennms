@@ -277,7 +277,7 @@ public final class JdbcEventWriter extends AbstractJdbcPersister implements Even
             insStmt.setNull(21, Types.INTEGER);
 
             // eventOperInstruct
-            set(insStmt, 22, EventDatabaseConstants.format(event.getOperinstruct(), EVENT_OPERINSTRUCT_FIELD_SIZE));
+            set(insStmt, 22, EventDatabaseConstants.format(event.getOperinstruct(), 0)); // the field should be text on the DB
 
             // eventAutoAction
             set(insStmt, 23, (event.getAutoactionCount() > 0) ? AutoAction.format(event.getAutoaction(), EVENT_AUTOACTION_FIELD_SIZE) : null);

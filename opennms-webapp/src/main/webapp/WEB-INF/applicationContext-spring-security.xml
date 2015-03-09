@@ -7,19 +7,37 @@
   
   <!-- Only use BASIC auth for the RESTful APIs -->
   <http pattern="/rest/**" realm="OpenNMS Realm">
+    <!-- OPTIONS pre-flight requests should always be accepted -->
+    <intercept-url pattern="/rest/**" method="OPTIONS" access="ROLE_ANONYMOUS,ROLE_REST,ROLE_ADMIN,ROLE_USER,ROLE_MOBILE"/>
+
+    <!-- give the MOBILE role access to the things the mobile app uses -->
+    <intercept-url pattern="/rest/**" method="GET" access="ROLE_MOBILE" />
+    <intercept-url pattern="/rest/**" method="HEAD" access="ROLE_MOBILE" />
+    <!-- ack/unack/escalate/clear alarms -->
+    <intercept-url pattern="/rest/alarms/**" method="PUT" access="ROLE_MOBILE" />
+    <!-- set/unset maintenance mode on services -->
+    <intercept-url pattern="/rest/nodes/**/ipinterface/**/services/**" method="PUT" access="ROLE_MOBILE" />
+    <!-- set/unset maintenance mode on nodes -->
+    <intercept-url pattern="/rest/ifservices" method="PUT" access="ROLE_MOBILE" />
+
     <!-- Provisioning-related stuff is all allowed as long as you're in the provision, rest, or admin roles. -->
-    <intercept-url pattern="/rest/foreignSources/**" access="ROLE_PROVISION,ROLE_REST,ROLE_MOBILE,ROLE_ADMIN"/>
-    <intercept-url pattern="/rest/requisitions/**" access="ROLE_PROVISION,ROLE_REST,ROLE_MOBILE,ROLE_ADMIN"/>
+    <intercept-url pattern="/rest/foreignSources/**" access="ROLE_PROVISION,ROLE_REST,ROLE_ADMIN"/>
+    <intercept-url pattern="/rest/requisitions/**" access="ROLE_PROVISION,ROLE_REST,ROLE_ADMIN"/>
+
     <!-- Restrict access to SNMP configuration to ROLE_REST and ROLE_ADMIN only -->
     <intercept-url pattern="/rest/snmpConfig/**" access="ROLE_REST,ROLE_ADMIN"/>
+
     <!-- Allow users to POST to the Measurements API, which is read-only -->
-    <intercept-url pattern="/rest/measurements" method="POST" access="ROLE_REST,ROLE_MOBILE,ROLE_ADMIN,ROLE_USER"/>
-    <intercept-url pattern="/rest/**" method="DELETE" access="ROLE_REST,ROLE_MOBILE,ROLE_ADMIN"/>
-    <intercept-url pattern="/rest/**" method="POST" access="ROLE_REST,ROLE_MOBILE,ROLE_ADMIN"/>
-    <intercept-url pattern="/rest/**" method="PUT" access="ROLE_REST,ROLE_MOBILE,ROLE_ADMIN"/>
-    <intercept-url pattern="/rest/**" method="GET" access="ROLE_REST,ROLE_MOBILE,ROLE_ADMIN,ROLE_USER"/>
-    <intercept-url pattern="/rest/**" method="HEAD" access="ROLE_REST,ROLE_MOBILE,ROLE_ADMIN,ROLE_USER"/>
-    <intercept-url pattern="/rest/**" method="OPTIONS" access="ROLE_ANONYMOUS,ROLE_REST,ROLE_MOBILE,ROLE_ADMIN,ROLE_USER"/>
+    <intercept-url pattern="/rest/measurements" method="POST" access="ROLE_REST,ROLE_ADMIN,ROLE_USER"/>
+
+    <!-- read-only calls should be allowed for any user -->
+    <intercept-url pattern="/rest/**" method="GET" access="ROLE_REST,ROLE_ADMIN,ROLE_USER"/>
+    <intercept-url pattern="/rest/**" method="HEAD" access="ROLE_REST,ROLE_ADMIN,ROLE_USER"/>
+
+    <!-- read-write calls should be allowed for the REST and ADMIN roles -->
+    <intercept-url pattern="/rest/**" method="DELETE" access="ROLE_REST,ROLE_ADMIN"/>
+    <intercept-url pattern="/rest/**" method="POST" access="ROLE_REST,ROLE_ADMIN"/>
+    <intercept-url pattern="/rest/**" method="PUT" access="ROLE_REST,ROLE_ADMIN"/>
 
     <http-basic />
 
