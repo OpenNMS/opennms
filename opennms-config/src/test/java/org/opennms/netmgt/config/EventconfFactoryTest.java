@@ -644,7 +644,6 @@ public class EventconfFactoryTest {
         
         if (passFile) {
             URL url = getUrlForRelativeResourcePath(relativeResourcePath);
-			System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" + url);
             dao.setConfigResource(new MockFileSystemResourceWithInputStream(new File(url.getFile()), getFilteredInputStreamForConfig(relativeResourcePath)));
         } else {
             dao.setConfigResource(new InputStreamResource(getFilteredInputStreamForConfig(relativeResourcePath)));
