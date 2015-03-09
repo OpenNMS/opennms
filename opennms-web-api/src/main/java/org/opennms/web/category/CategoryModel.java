@@ -46,7 +46,7 @@ import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.utils.DBUtils;
 import org.opennms.netmgt.config.CategoryFactory;
-import org.opennms.netmgt.config.categories.CatFactory;
+import org.opennms.netmgt.config.api.CatFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

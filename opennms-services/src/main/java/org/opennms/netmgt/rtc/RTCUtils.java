@@ -45,7 +45,7 @@ import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.utils.DBUtils;
 import org.opennms.netmgt.config.CategoryFactory;
-import org.opennms.netmgt.config.categories.CatFactory;
+import org.opennms.netmgt.config.api.CatFactory;
 import org.opennms.netmgt.config.categories.Categorygroup;
 import org.opennms.netmgt.filter.api.FilterDao;
 import org.opennms.netmgt.filter.api.FilterParseException;
