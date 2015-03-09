@@ -46,7 +46,6 @@ import java.util.concurrent.RejectedExecutionException;
 import org.apache.commons.io.IOUtils;
 import org.opennms.core.concurrent.LogPreservingThreadFactory;
 import org.opennms.core.fiber.Fiber;
-import org.opennms.core.utils.HttpUtils;
 import org.opennms.netmgt.config.RTCConfigFactory;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.annotations.EventHandler;

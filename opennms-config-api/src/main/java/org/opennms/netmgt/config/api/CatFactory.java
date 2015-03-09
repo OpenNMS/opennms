@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.config.categories;
+package org.opennms.netmgt.config.api;
 
 import java.util.concurrent.locks.Lock;
 
