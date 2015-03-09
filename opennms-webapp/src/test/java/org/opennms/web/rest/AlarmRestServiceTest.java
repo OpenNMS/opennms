@@ -207,16 +207,9 @@ public class AlarmRestServiceTest extends AbstractSpringJerseyRestTestCase {
         getAlarmDao().saveOrUpdate(alarm);
 
         // Log in as a normal REST user and attempt to resolve an alarm as a different user.
-        // This should fail.
+        // This should fail with a 403 forbidden.
         setUser("foo", new String[] { "ROLE_REST" });
-        Exception failure = null;
-        try {
-            sendPut("/alarms/" + alarmId, "ack=true&ackUser=bar", 303, "/alarms/" + alarmId);
-        } catch (final IllegalArgumentException e) {
-            failure = e;
-        }
-        // we should get an exception about users
-        assertNotNull(failure);
+        sendPut("/alarms/" + alarmId, "ack=true&ackUser=bar", 403, null);
     }
 
     private OnmsAlarm getLastAlarm() {
