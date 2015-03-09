@@ -47,26 +47,28 @@ public final class Authentication extends Object {
     public static final String ROLE_REMOTING = "ROLE_REMOTING";
     public static final String ROLE_REST = "ROLE_REST";
     public static final String ROLE_ASSET_EDITOR = "ROLE_ASSET_EDITOR";
-    
+    public static final String ROLE_MOBILE = "ROLE_MOBILE";
+
     private static Map<String, String> s_oldToNewMap = new HashMap<String, String>();
-    
+
     static {
-    	s_oldToNewMap.put("OpenNMS RTC Daemon", ROLE_RTC);
-    	s_oldToNewMap.put("OpenNMS Administrator", ROLE_ADMIN);
+        s_oldToNewMap.put("OpenNMS RTC Daemon", ROLE_RTC);
+        s_oldToNewMap.put("OpenNMS Administrator", ROLE_ADMIN);
         s_oldToNewMap.put("OpenNMS Read-Only User", ROLE_READONLY);
         s_oldToNewMap.put("OpenNMS Dashboard User", ROLE_DASHBOARD);
         s_oldToNewMap.put("OpenNMS Provision User", ROLE_PROVISION);
         s_oldToNewMap.put("OpenNMS Remote Poller User", ROLE_REMOTING);
         s_oldToNewMap.put("OpenNMS REST User", ROLE_REST);
         s_oldToNewMap.put("OpenNMS Asset Editor", ROLE_ASSET_EDITOR);
-        
-    	// There is no entry for ROLE_USER, because all authenticated people are users
+        s_oldToNewMap.put("OpenNMS Mobile User", ROLE_MOBILE);
+
+        // There is no entry for ROLE_USER, because all authenticated people are users
     }
 
     /** Private, empty constructor so this class cannot be instantiated. */
     private Authentication() {
     }
-    
+
     /**
      * <p>getSpringSecuirtyRoleFromOldRoleName</p>
      *
@@ -74,7 +76,7 @@ public final class Authentication extends Object {
      * @return a {@link java.lang.String} object.
      */
     public static String getSpringSecurityRoleFromOldRoleName(String oldRole) {
-    	return s_oldToNewMap.get(oldRole);
+        return s_oldToNewMap.get(oldRole);
     }
 
 }

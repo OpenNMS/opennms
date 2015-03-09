@@ -1,0 +1,1942 @@
+<?xml version="1.0"?>
+<events>
+  <event>
+    <uei>MATCH-ANY-UEI</uei>
+    <event-label>OpenNMS defined event: MATCH-ANY-UEI</event-label>
+    <descr>
+                        &lt;p&gt;This UEI will never be generated, but exists
+                        so that notifications can match any UEI for a
+                        particular filter rule. Useful to see all events for
+                        a particular node via notifications.
+                        &lt;/p&gt;
+                </descr>
+    <logmsg dest="logonly">
+                        MATCH-ANY-UEI event.
+                </logmsg>
+    <severity>Indeterminate</severity>
+  </event>
+  <event>
+    <uei>uei.opennms.org/internal/capsd/discPause</uei>
+    <event-label>OpenNMS-defined internal event: capsd discPause</event-label>
+    <descr>
+      &lt;p&gt;The services scanning engine has asked discovery to
+      pause due to a backlog of interfaces yet to be scanned.
+      &lt;/p&gt;
+    </descr>
+    <logmsg dest="logonly">
+      Capsd has asked Discovery to pause momentarily.
+    </logmsg>
+    <severity>Warning</severity>
+  </event>
+  <event>
+    <uei>uei.opennms.org/internal/capsd/discResume</uei>
+    <event-label>OpenNMS-defined internal event: capsd discResume</event-label>
+    <descr>
+      &lt;p&gt;Capsd is approving discovery to resume adding nodes
+      to the Capsd queue.&lt;/p&gt;
+    </descr>
+    <logmsg dest="logonly">
+      Capsd is ready for Discovery to resume scheduling nodes.
+    </logmsg>
+    <severity>Normal</severity>
+  </event>
+  <event>
+    <uei>uei.opennms.org/internal/capsd/snmpConflictsWithDb</uei>
+    <event-label>OpenNMS-defined capsd event: snmpConflictsWithDb</event-label>
+    <descr>
+      &lt;p&gt;During a rescan the ip interfaces as determined by snmp
+      conflict with the ip interfaces listed in the database for this node.
+      &lt;/p&gt;
+    </descr>
+    <logmsg dest="logndisplay">
+      IP interfaces as determined by SNMP disagree with the database.
+    </logmsg>
+    <severity>Warning</severity>
+  </event>
+  <event>
+    <uei>uei.opennms.org/internal/capsd/forceRescan</uei>
+    <event-label>OpenNMS-defined internal event: capsd forceRescan</event-label>
+    <descr>
+      &lt;p&gt;A services scan has been forced.&lt;/p&gt;
+      &lt;p&gt;The administrator has forced a services scan on
+      this node to update the list of supported
+      services.&lt;/p&gt;
+    </descr>
+    <logmsg dest="logndisplay">
+      &lt;p&gt;A services scan has been forced on this
+      node.&lt;/p&gt;
+    </logmsg>
+    <severity>Warning</severity>
+  </event>
+  <event>
+    <uei>uei.opennms.org/internal/capsd/rescanCompleted</uei>
+    <event-label>OpenNMS-defined internal event: capsd rescanCompleted</event-label>
+    <descr>
+      &lt;p&gt;A services scan has been completed.&lt;/p&gt;
+      &lt;p&gt;The list of services on this node has been
+      updated.&lt;/p&gt;
+    </descr>
+    <logmsg dest="logndisplay">
+      &lt;p&gt;A services scan has been completed on this
+      node.&lt;/p&gt;
+    </logmsg>
+    <severity>Normal</severity>
+  </event>
+  <event>
+    <uei>uei.opennms.org/internal/capsd/interfaceSupportsSNMP</uei>
+    <event-label>OpenNMS-defined internal event: capsd interfaceSupportsSNMP</event-label>
+    <descr>
+      &lt;p&gt;A services scan has verified that this interface
+      supports the SNMP protocol.&lt;/p&gt;
+    </descr>
+    <logmsg dest="logonly">
+      &lt;p&gt;A services scan has verified that this interface
+      supports the SNMP protocol.&lt;/p&gt;
+    </logmsg>
+    <severity>Normal</severity>
+  </event>
+  <event>
+    <uei>uei.opennms.org/internal/capsd/duplicateIPAddress</uei>
+    <event-label>OpenNMS-defined internal event: capsd duplicateIPAddress</event-label>
+    <descr>
+      &lt;p&gt;A services scan has discovered an IP address on 
+            more than one device: IP Address: %interface%. The address
+      has been added to the database under all nodes that have it.
+      If this address is in error, please take steps to correct it.
+      &lt;/p&gt;
+    </descr>
+    <logmsg dest="logndisplay">
+      &lt;p&gt;A services scan has discovered a duplicate IP address:
+      %interface%.&lt;/p&gt;
+    </logmsg>
+    <severity>Minor</severity>
+    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="true"/>
+  </event>
+  <event>
+    <uei>uei.opennms.org/internal/capsd/updateServer</uei>
+    <event-label>OpenNMS-defined internal event: capsd updateServer</event-label>
+    <descr>
+      &lt;p&gt;This event is an external command to add an
+                        interface/server mapping to the database. The required 
+                        paramater is the IP address of the interface: %interface%, 
+                        the NMS host server name: %host%, and the optional parameter 
+                        of a node label: %nodelabel%. This event will cause an 
+                        addInterface event. &lt;/p&gt;
+    </descr>
+    <logmsg dest="logndisplay">
+      &lt;p&gt;A request has been made to add an interface/server
+                        mapping as well as the interface to the database. The interface:
+      %interface%, the NMS host: %host%,  and node label: %nodelabel%
+                        are specified. &lt;/p&gt;
+    </logmsg>
+    <severity>Normal</severity>
+  </event>
+  <event>
+    <uei>uei.opennms.org/internal/capsd/updateService</uei>
+    <event-label>OpenNMS-defined internal event: capsd updateService</event-label>
+    <descr>
+      &lt;p&gt;This event is an external command to add or remove 
+                        an interface/service mapping into the database. The required 
+                        paramater is the IP address of the interface: %interface%, 
+                        the service name: %service%, and the optional parameter 
+                        action: %action%. This event will cause a changeService
+                        event with the specified action. &lt;/p&gt;
+    </descr>
+    <logmsg dest="logndisplay">
+      &lt;p&gt;A request has been made to add or remove an 
+                        interface/service mapping, as well as add or remove a service:
+                        %service% from the specified interface: %interface%. &lt;/p&gt;
+    </logmsg>
+    <severity>Normal</severity>
+  </event>
+  <event>
+    <uei>uei.opennms.org/internal/capsd/addNode</uei>
+    <event-label>OpenNMS-defined internal event: capsd addNode</event-label>
+    <descr>
+      &lt;p&gt;This event is an external command to add a node
+      to the database. The required paramater is the IP
+      address for the main interface: %interface%, and
+      the optional parameter of a node label: %nodelabel%.&lt;/p&gt;
+    </descr>
+    <logmsg dest="logndisplay">
+      &lt;p&gt;A request has been made to add a node with interface:
+      %interface% and node label: %nodelabel%.&lt;/p&gt;
+    </logmsg>
+    <severity>Normal</severity>
+  </event>
+  <event>
+    <uei>uei.opennms.org/internal/capsd/deleteNode</uei>
+    <event-label>OpenNMS-defined internal event: capsd deleteNode</event-label>
+    <descr>
+      &lt;p&gt;This event is an external command to delete a node
+      from the database. The required paramater is the IP
+      address for one interface: %interface%.&lt;/p&gt;
+    </descr>
+    <logmsg dest="logndisplay">
+      &lt;p&gt;A request has been made to delete a node with interface:
+      %interface%.&lt;/p&gt;
+    </logmsg>
+    <severity>Normal</severity>
+  </event>
+  <event>
+    <uei>uei.opennms.org/internal/capsd/addInterface</uei>
+    <event-label>OpenNMS-defined internal event: capsd addInterface</event-label>
+    <descr>
+      &lt;p&gt;This event is an external command to add an interface
+      to the database. The required paramater is the IP
+      address for the main interface: %interface%.&lt;/p&gt;
+    </descr>
+    <logmsg dest="logndisplay">
+      &lt;p&gt;A request has been made to add an interface 
+      %interface%.&lt;/p&gt;
+    </logmsg>
+    <severity>Normal</severity>
+  </event>
+  <event>
+    <uei>uei.opennms.org/internal/capsd/deleteInterface</uei>
+    <event-label>OpenNMS-defined internal event: capsd deleteInterface</event-label>
+    <descr>
+      &lt;p&gt;This event is an external command to delete an interface
+      from the database. The required paramater is the IP
+      address for the interface: %interface%, or the nodeid %nodeid%
+      and ifIndex %ifindex%.&lt;/p&gt;
+    </descr>
+    <logmsg dest="logndisplay">
+      &lt;p&gt;A request has been made to delete an interface:
+      %interface% on node %nodeid% with ifIndex %ifindex%.&lt;/p&gt;
+    </logmsg>
+    <severity>Normal</severity>
+  </event>
+  <event>
+    <uei>uei.opennms.org/internal/capsd/changeService</uei>
+    <event-label>OpenNMS-defined internal event: capsd changeService</event-label>
+    <descr>
+      &lt;p&gt;This event will add or remove a service from an interface.
+      The paramters include the interface, %interface%, the service,
+      %service%, and any required qualifiers, %parm[#2]%. The action
+      taken will be: %parm[#1]%.&lt;/p&gt;
+    </descr>
+    <logmsg dest="logndisplay">
+      &lt;p&gt;A request has been made to %parm[#1]% the %service% service
+      on interface: %interface%.&lt;/p&gt;
+    </logmsg>
+    <severity>Normal</severity>
+  </event>
+  <!-- New Importer Service Events -->
+  <event>
+    <uei>uei.opennms.org/internal/importer/reloadImport</uei>
+    <event-label>OpenNMS-defined internal event: importer reloadImport</event-label>
+    <descr>
+        &lt;p&gt;This event will cause the importer to run the model-import process.
+        The parameters include foreignSource, url, and deleteThreshold that override
+        configuration properties as well as XML and default values.&lt;/p&gt;
+      </descr>
+    <logmsg dest="logndisplay">
+        &lt;p&gt;A request had been made to run the model-import process with the
+        parms: %parm[all]%.&lt;/p&gt;
+      </logmsg>
+    <severity>Normal</severity>
+  </event>
+  <event>
+    <uei>uei.opennms.org/internal/importer/importStarted</uei>
+    <event-label>OpenNMS-defined internal event: importer process has started</event-label>
+    <descr>
+        &lt;p&gt;This event indicates the model-importer process has started&lt;/p&gt;
+      </descr>
+    <logmsg dest="logndisplay">
+        &lt;p&gt;This event indicates the model-importer process has started from resource: %parm[importResource]% &lt;/p&gt;
+      </logmsg>
+    <severity>Normal</severity>
+  </event>
+  <event>
+    <uei>uei.opennms.org/internal/importer/importSuccessful</uei>
+    <event-label>OpenNMS-defined internal event: importer process successfully completed</event-label>
+    <descr>
+        &lt;p&gt;This event indicates the model-importer process has completed successfully. There 
+        is 1 parameter called importStats: %parm[importStats]%&lt;/p&gt;
+      </descr>
+    <logmsg dest="logndisplay">
+        &lt;p&gt;This event indicates the model-importer process has completed successfully from resource: %parm[importResource]%&lt;/p&gt;
+      </logmsg>
+    <severity>Normal</severity>
+    <alarm-data reduction-key="%uei%:%parm[importResource]%" alarm-type="2" clear-key="uei.opennms.org/internal/importer/importFailed:%parm[importResource]%" auto-clean="true"/>
+  </event>
+  <event>
+    <uei>uei.opennms.org/internal/importer/importFailed</uei>
+    <event-label>OpenNMS-defined internal event: importer process failed.</event-label>
+    <descr>
+        &lt;p&gt;This event indicates the model-importer process has failed.  There is 1 parameter 
+        called failureMessage: %parm[failureMessage]%&lt;/p&gt;
+      </descr>
+    <logmsg dest="logndisplay">
+        &lt;p&gt;This event indicates the model-importer process has failed from resource: %parm[importResource]% with reason: %parm[failureMessage]%&lt;/p&gt;
+      </logmsg>
+    <severity>Warning</severity>
+    <alarm-data reduction-key="%uei%:%parm[importResource]%" alarm-type="1" auto-clean="false"/>
+  </event>
+  <!-- New Importer Service Events -->
+  <event>
+    <uei>uei.opennms.org/nodes/restartPollingInterface</uei>
+    <event-label>OpenNMS-defined node event: restartPollingInterface</event-label>
+    <descr> 
+                        &lt;p&gt;This event is an external command to restart polling 
+                        all active services on a specified interface. The requeried 
+                        parameter is the IP address of the interface. (%parm[ipaddr]%). 
+                        &lt;/p&gt; 
+                </descr>
+    <logmsg dest="logndisplay">
+                        Reschedule polling to services on a specified interface(%parm[ipaddr]%).                
+                </logmsg>
+    <severity>Normal</severity>
+  </event>
+  <event>
+    <uei>uei.opennms.org/internal/capsd/xmlrpcNotification</uei>
+    <event-label>OpenNMS-defined internal event: capsd xmlrpcNotification</event-label>
+    <descr>
+      &lt;p&gt;This event will be produced by capsd to carry the process status
+                        information, so that the xmlrpcd could catch it, and reports to the external
+                        XMLRPC server. The paramters include transaction number, %parm[txNo]%, 
+                        source event uei, %parm[srcUei]%, message, %parm[message]%, and process
+                        status, %parm[status]%.&lt;/p&gt;
+    </descr>
+    <logmsg dest="logndisplay">
+      &lt;p&gt;A request has been made to xmlrpcd to report status for 
+      %parm[srcUei]%.&lt;/p&gt;
+    </logmsg>
+    <severity>Normal</severity>
+  </event>
+  <event>
+    <uei>uei.opennms.org/internal/discovery/newSuspect</uei>
+    <event-label>OpenNMS-defined internal event: discovery newSuspect</event-label>
+    <descr>
+      &lt;p&gt;Interface %interface% has been discovered and is
+      being queued for a services scan.&lt;/p&gt;
+    </descr>
+    <logmsg dest="logndisplay">
+      A new interface (%interface%) has been discovered and is
+      being queued for a services scan.
+    </logmsg>
+    <severity>Warning</severity>
+  </event>
+  <event>
+    <uei>uei.opennms.org/internal/capsd/suspectScanCompleted</uei>
+    <event-label>OpenNMS-defined internal event: suspect scan completed</event-label>
+    <descr>
+      &lt;p&gt;The suspect services scan of interface %interface%
+      has completed.&lt;/p&gt;
+    </descr>
+    <logmsg dest="logndisplay">
+      The suspect services scan of interface %interface%
+      has completed.
+    </logmsg>
+    <severity>Normal</severity>
+  </event>
+  <event>
+    <uei>uei.opennms.org/internal/interfaceManaged</uei>
+    <event-label>OpenNMS-defined internal event: interfaceManaged</event-label>
+    <descr>
+      &lt;p&gt;The interface %interface% is being
+      remanaged.&lt;/p&gt; &lt;p&gt;This interface will now
+      participate in service polling.&lt;/p&gt;
+    </descr>
+    <logmsg dest="logndisplay">
+      The interface %interface% is being remanaged.
+    </logmsg>
+    <severity>Warning</severity>
+  </event>
+  <event>
+    <uei>uei.opennms.org/internal/interfaceUnmanaged</uei>
+    <event-label>OpenNMS-defined internal event: interfaceUnmanaged</event-label>
+    <descr>
+      &lt;p&gt;The interface %interface% is being forcibly
+      unmanaged.&lt;/p&gt; &lt;p&gt;This interface and all
+      associated services will &lt;b&gt;NOT&lt;/b&gt; be polled
+      until the interface is remanaged.&lt;/p&gt;
+    </descr>
+    <logmsg dest="logndisplay">
+      The interface %interface% is being forcibly unmanaged.
+    </logmsg>
+    <severity>Minor</severity>
+  </event>
+  <event>
+    <uei>uei.opennms.org/internal/notificationWithoutUsers</uei>
+    <event-label>OpenNMS-defined internal event: notificationWithoutUsers</event-label>
+    <descr>
+      &lt;p&gt;A destination path in a notification has not been
+      assigned any users.&lt;/p&gt;
+    </descr>
+    <logmsg dest="logndisplay">
+      A destination path in a notification has not been assigned
+      any users.
+    </logmsg>
+    <severity>Warning</severity>
+  </event>
+  <event>
+    <uei>uei.opennms.org/internal/notificationsTurnedOff</uei>
+    <event-label>OpenNMS-defined internal event: notificationsTurnedOff</event-label>
+    <descr>
+      &lt;p&gt;Notifications have been disabled.&lt;/p&gt;
+      &lt;p&gt;The administrator has disabled notifications on
+      OpenNMS. No pages or emails will be sent until notifications
+      are reenabled.&lt;/p&gt;
+      &lt;p&gt;
+      Responsible user: &lt;em&gt;%parm[remoteUser]%&lt;/em&gt;
+      at &lt;em&gt;%parm[remoteHost]% (%parm[remoteAddr]%)&lt;/em&gt;
+      &lt;/p&gt;
+    </descr>
+    <logmsg dest="logndisplay">
+      &lt;p&gt;Notifications have been disabled.&lt;/p&gt;
+    </logmsg>
+    <severity>Minor</severity>
+  </event>
+  <event>
+    <uei>uei.opennms.org/internal/notificationsTurnedOn</uei>
+    <event-label>OpenNMS-defined internal event: notificationsTurnedOn</event-label>
+    <descr>
+      &lt;p&gt;Notifications have been enabled.&lt;/p&gt;
+      &lt;p&gt;The administrator has enabled notifications on
+      OpenNMS. Pages and/or emails will be sent based upon receipt
+      of important events.&lt;/p&gt;
+      &lt;p&gt;
+      Responsible user: &lt;em&gt;%parm[remoteUser]%&lt;/em&gt;
+      at &lt;em&gt;%parm[remoteHost]% (%parm[remoteAddr]%)&lt;/em&gt;
+      &lt;/p&gt;
+    </descr>
+    <logmsg dest="logndisplay">
+      &lt;p&gt;Notifications have been enabled.&lt;/p&gt;
+    </logmsg>
+    <severity>Warning</severity>
+  </event>
+  <event>
+    <uei>uei.opennms.org/internal/reloadDaemonConfig</uei>
+    <event-label>OpenNMS-defined internal event: reload specified daemon configuration </event-label>
+    <descr>
+      &lt;p&gt;The administrator has changed the daemon: %parm[daemonName]% 
+      configuration files and requests the configuration to be re-marshaled and applied.&lt;/p&gt;
+    </descr>
+    <logmsg dest="logndisplay">
+      &lt;p&gt;The daemon: %parm[daemonName]% configuration files has changed.&lt;/p&gt;
+    </logmsg>
+    <severity>Normal</severity>
+  </event>
+  <event>
+    <uei>uei.opennms.org/internal/reloadDaemonConfigFailed</uei>
+    <event-label>OpenNMS-defined internal event: reload specified daemon configuration failed</event-label>
+    <descr>
+      &lt;p&gt;The administrator has changed the daemon: %parm[daemonName]% 
+      configuration files and the request for the configuration to be re-marshaled and applied 
+      has failed.&lt;/p&gt;
+    </descr>
+    <logmsg dest="logndisplay">
+      &lt;p&gt;The daemon: %parm[daemonName]% configuration changes have failed to be 
+      applied. Reason: %parm[reason]%.&lt;/p&gt;
+    </logmsg>
+    <severity>Major</severity>
+    <alarm-data reduction-key="%uei%:%dpname%:%parm[daemonName]%" alarm-type="1" auto-clean="false"/>
+  </event>
+  <event>
+    <uei>uei.opennms.org/internal/reloadDaemonConfigSuccessful</uei>
+    <event-label>OpenNMS-defined internal event: reload specified daemon configuration successful</event-label>
+    <descr>
+      &lt;p&gt;The administrator has changed the daemon: %parm[daemonName]% 
+      configuration files and the request for the configuration to be re-marshaled and applied 
+      has succeeded.&lt;/p&gt;
+    </descr>
+    <logmsg dest="logndisplay">
+      &lt;p&gt;The daemon: %parm[daemonName]% configuration changes have successfully been 
+      applied.&lt;/p&gt;
+    </logmsg>
+    <severity>Normal</severity>
+    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="2" clear-key="uei.opennms.org/internal/reloadDaemonConfigFailed:%dpname%:%parm[daemonName]%" auto-clean="false"/>
+  </event>
+  <!--  Going to slowly get rid of these random daemon reload events for the generic
+  reloadDaemonConfig event -->
+  <event>
+    <uei>uei.opennms.org/internal/reloadPollerConfig</uei>
+    <event-label>OpenNMS-defined internal event: reloadPollerConfig</event-label>
+    <descr>
+      &lt;p&gt;The administrator has changed the poller
+      configuration files. The pollers and related services will
+      now restart to detect the changes.&lt;/p&gt;
+    </descr>
+    <logmsg dest="logndisplay">
+      &lt;p&gt;The poller configuration files have
+      changed.&lt;/p&gt;
+    </logmsg>
+    <severity>Warning</severity>
+  </event>
+  <event>
+    <uei>uei.opennms.org/internal/reloadScriptConfig</uei>
+    <event-label>OpenNMS-defined internal event: reloadScriptConfig</event-label>
+    <descr>
+      &lt;p&gt;The administrator has changed the ScriptD
+      configuration. ScriptD will load the new configuration.&lt;/p&gt;
+    </descr>
+    <logmsg dest="logndisplay">
+      &lt;p&gt;The ScriptD configuration files have changed.&lt;/p&gt;
+    </logmsg>
+    <severity>Minor</severity>
+  </event>
+  <event>
+    <uei>uei.opennms.org/internal/reloadVacuumdConfig</uei>
+    <event-label>OpenNMS-defined internal event: reloadVacuumdConfig</event-label>
+    <descr>
+        &lt;p&gt;The administrator has changed the Vacuumd
+        configuration. Vacuumd will load the new configuration.&lt;/p&gt;
+      </descr>
+    <logmsg dest="logndisplay">
+        &lt;p&gt;The Vacuumd configuration files have changed.&lt;/p&gt;
+      </logmsg>
+    <severity>Minor</severity>
+  </event>
+  <event>
+    <uei>uei.opennms.org/internal/reloadSnmpPollerConfig</uei>
+    <event-label>OpenNMS-defined internal event: reloadSnmpPollerConfig</event-label>
+    <descr>
+        &lt;p&gt;The administrator has changed the SnmpPoller
+        configuration. SnmpPoller will load the new configuration.&lt;/p&gt;
+      </descr>
+    <logmsg dest="logndisplay">
+        &lt;p&gt;The SnmpPoller configuration files have changed.&lt;/p&gt;
+      </logmsg>
+    <severity>Minor</severity>
+  </event>
+  <event>
+    <uei>uei.opennms.org/internal/configureSNMP</uei>
+    <event-label>OpenNMS-defined internal event: configureSNMP</event-label>
+    <descr>
+      &lt;p&gt;SNMP definition for IP address
+                        %parm[firstIPAddress]%-%parm[lastIPAddress]% has been
+                        updated with community string
+                        "%parm[communityString]%"&lt;/p&gt;
+    </descr>
+    <logmsg dest="logonly">
+      &lt;p&gt;SNMP community string
+                        "%parm[communityString]%" has been defined
+                        for IP %parm[firstIPAddress]%-%parm[lastIPAddress]%.&lt;/p&gt;
+    </logmsg>
+    <severity>Warning</severity>
+  </event>
+  <!-- deprecated: originally designed for something called service control manager -->
+  <event>
+    <uei>uei.opennms.org/internal/restartSCM</uei>
+    <event-label>OpenNMS-defined internal event: restartSCM</event-label>
+    <descr>
+      &lt;p&gt;SCM has been asked to restart.&lt;/p&gt;
+    </descr>
+    <logmsg dest="logonly">
+      SCM has been asked to restart.
+    </logmsg>
+    <severity>Indeterminate</severity>
+  </event>
+  <event>
+    <uei>uei.opennms.org/internal/rtc/subscribe</uei>
+    <event-label>OpenNMS-defined internal event: rtc subscribe</event-label>
+    <descr>
+      &lt;p&gt;This event is generated to RTC by any process that
+      wishes to receive POSTs of RTC data.&lt;/p&gt;
+    </descr>
+    <logmsg dest="logonly">
+      A subscription to RTC for the %parm[viewname]% for
+      %parm[url]% has been generated.
+    </logmsg>
+    <severity>Normal</severity>
+  </event>
+  <event>
+    <uei>uei.opennms.org/internal/rtc/unsubscribe</uei>
+    <event-label>OpenNMS-defined internal event: rtc unsubscribe</event-label>
+    <descr>
+      &lt;p&gt;This event is generated to RTC by any subscribed
+      process that wishes to discontinue receipt of POSTs of RTC
+      data.&lt;/p&gt;
+    </descr>
+    <logmsg dest="logonly">
+      Unsubscribe request received from %parm[url]%.
+    </logmsg>
+    <severity>Warning</severity>
+  </event>
+  <event>
+    <uei>uei.opennms.org/internal/serviceManaged</uei>
+    <event-label>OpenNMS-defined internal event: serviceManaged</event-label>
+    <descr>
+      &lt;p&gt;The service %service% on interface %interface% is
+      being remanaged.&lt;/p&gt;
+    </descr>
+    <logmsg dest="logndisplay">
+      The service %service% on interface %interface% is being
+      remanaged.
+    </logmsg>
+    <severity>Warning</severity>
+  </event>
+  <event>
+    <uei>uei.opennms.org/nodes/serviceUnmanaged</uei>
+    <event-label>OpenNMS-defined internal event: serviceUnmanaged</event-label>
+    <descr>
+      &lt;p&gt;The service %service% on interface %interface% is
+      being forcibly unmanaged.&lt;/p&gt;
+    </descr>
+    <logmsg dest="logndisplay">
+      The service %service% on interface %interface% is being
+      forcibly unmanaged.
+    </logmsg>
+    <severity>Warning</severity>
+  </event>
+  <event>
+    <uei>uei.opennms.org/internal/unknownServiceStatus</uei>
+    <event-label>OpenNMS-defined internal event: unknownServiceStatus</event-label>
+    <descr>
+      &lt;p&gt;The Scheduler has received an unrecognized service
+      status from a scheduler.&lt;/p&gt;
+    </descr>
+    <logmsg dest="logonly">
+      The Scheduler has received an unrecognized service status
+      from a scheduler.
+    </logmsg>
+    <severity>Warning</severity>
+  </event>
+  <event>
+    <uei>uei.opennms.org/nodes/dataCollectionFailed</uei>
+    <event-label>OpenNMS-defined node event: dataCollectionFailed</event-label>
+    <descr>
+      &lt;p&gt;%service% data collection on interface %interface%
+      failed.&lt;/p&gt;
+    </descr>
+    <logmsg dest="logndisplay">
+      %service% data collection on interface %interface% failed with '%parm[reason]%'.
+    </logmsg>
+    <severity>Minor</severity>
+    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="1" auto-clean="true"/>
+  </event>
+  <event>
+    <uei>uei.opennms.org/nodes/dataCollectionSucceeded</uei>
+    <event-label>OpenNMS-defined node event: dataCollectionSucceeded</event-label>
+    <descr>
+      &lt;p&gt;%service% data collection on interface %interface%
+      previously failed and has been restored.&lt;/p&gt;
+    </descr>
+    <logmsg dest="logndisplay">
+      %service% data collection on interface %interface% previously
+      failed and has been restored.
+    </logmsg>
+    <severity>Normal</severity>
+    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="2" clear-key="uei.opennms.org/nodes/dataCollectionFailed:%dpname%:%nodeid%" auto-clean="true"/>
+  </event>
+  <event>
+    <uei>uei.opennms.org/nodes/deleteService</uei>
+    <event-label>OpenNMS-defined node event: deleteService</event-label>
+    <descr>
+      &lt;p&gt;Due to excessive downtime, the %service% service on
+      interface %interface% has been scheduled for
+      deletion.&lt;/p&gt; &lt;p&gt;When a service has been down
+      for one week, it is determined to have been removed and will
+      be deleted. If the service is later rediscovered, it will be
+      re-added and associated with the appropriate
+      interface.&lt;/p&gt; &lt;p&gt;If this is the only service
+      associated with an interface, the interface will be
+      scheduled for deletion as well, with the generation of the
+      deleteInterface event.&lt;/p&gt;
+    </descr>
+    <logmsg dest="logndisplay">
+      The %service% service on interface %interface% has been
+      scheduled for deletion.
+    </logmsg>
+    <severity>Warning</severity>
+  </event>
+  <event>
+    <uei>uei.opennms.org/nodes/duplicateNodeDeleted</uei>
+    <event-label>OpenNMS-defined node event: duplicateNodeDeleted</event-label>
+    <descr>
+      &lt;p&gt;Node :%nodeid% labled: %nodelabel%; was determined to be a 
+      duplicate node and is has been deleted.&lt;/p&gt;
+    </descr>
+    <logmsg dest="logndisplay">
+      &lt;p&gt;Node #&lt;a
+      href="element/node.jsp?node=%nodeid%"&gt;%nodeid%&lt;/a&gt;
+      was determined to be a duplicate node and is being flagged
+      for deletion.&lt;/p&gt;
+    </logmsg>
+    <severity>Minor</severity>
+  </event>
+  <event>
+    <uei>uei.opennms.org/nodes/interfaceDeleted</uei>
+    <event-label>OpenNMS-defined node event: interfaceDeleted</event-label>
+    <descr>
+      &lt;p&gt;Interface %interface% deleted from node #&lt;a
+      href="element/node.jsp?node=%nodeid%"&gt;
+      %nodeid%&lt;/a&gt; with ifIndex %ifindex%.&lt;/p&gt; &lt;p&gt;This event is
+      generated following an extended outage for a service, in
+      which that service is the only service associated with an
+      interface. If the service is later rediscovered, a new
+      interface will be added and the service will be associated
+      with that new interface.&lt;/p&gt;
+    </descr>
+    <logmsg dest="logndisplay">
+      Interface %interface% deleted from node #&lt;a
+      href="element/node.jsp?node=%nodeid%"&gt;%nodeid%&lt;/a&gt;
+      with ifIndex %ifindex%.
+    </logmsg>
+    <severity>Minor</severity>
+  </event>
+  <event>
+    <uei>uei.opennms.org/nodes/interfaceDown</uei>
+    <event-label>OpenNMS-defined node event: interfaceDown</event-label>
+    <descr>
+      &lt;p&gt;All services are down on interface %interface%
+      &lt;/p&gt; &lt;p&gt;This event is generated when node outage
+      processing determines that the critical service or all
+      services on the interface are now down &lt;/p&gt; &lt;p&gt;
+      New outage records have been created and service level
+      availability calculations will be impacted until this outage
+      is resolved.&lt;/p&gt;
+    </descr>
+    <logmsg dest="logndisplay">
+      Interface %interface% is down.
+    </logmsg>
+    <severity>Minor</severity>
+    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+  </event>
+  <event>
+    <uei>uei.opennms.org/nodes/snmp/interfaceOperDown</uei>
+    <event-label>OpenNMS-defined node event: snmp interface Oper Status Down</event-label>
+    <descr>
+      &lt;p&gt;The operational status of interface is down
+      &lt;/p&gt; &lt;p&gt;This event is generated when an snmp poll on interface find the operational status down.
+      &lt;/p&gt;
+      &lt;p&gt;Params %parm[all]% &lt;/p&gt;
+    </descr>
+    <logmsg dest="logndisplay">Operational status Down on interface ifname:%parm[snmpifname]% ifindex:%parm[snmpifindex]% ifdescr:%parm[snmpifdescr]%
+    </logmsg>
+    <severity>Minor</severity>
+    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[snmpifindex]%" alarm-type="1" auto-clean="false"/>
+  </event>
+  <event>
+    <uei>uei.opennms.org/nodes/snmp/interfaceAdminDown</uei>
+    <event-label>OpenNMS-defined node event: snmp interface Admin Status Down</event-label>
+    <descr>
+      &lt;p&gt;The administration status of interface is down
+      &lt;/p&gt; &lt;p&gt;This event is generated when an snmp poll on interface find the administration status down.
+      &lt;/p&gt;
+      &lt;p&gt;Params %parm[all]% &lt;/p&gt;
+    </descr>
+    <logmsg dest="logndisplay">Administration status Down on interface ifname:%parm[snmpifname]% ifindex:%parm[snmpifindex]% ifdescr:%parm[snmpifdescr]%
+    </logmsg>
+    <severity>Minor</severity>
+    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[snmpifindex]%" alarm-type="1" auto-clean="false"/>
+  </event>
+  <event>
+    <uei>uei.opennms.org/nodes/interfaceIPHostNameChanged</uei>
+    <event-label>OpenNMS-defined node event: interfaceIPHostNameChanged</event-label>
+    <descr>
+      &lt;p&gt;The hostname for this node changed.&lt;/p&gt;
+    </descr>
+    <logmsg dest="logndisplay">
+      The hostname for this node changed.
+    </logmsg>
+    <severity>Warning</severity>
+  </event>
+  <event>
+    <uei>uei.opennms.org/nodes/interfaceIndexChanged</uei>
+    <event-label>OpenNMS-defined node event: interfaceIndexChanged</event-label>
+    <descr>
+      &lt;p&gt;SNMP Interface Index %parm[oldIfIndex]% has changed
+      to %parm[newIfIndex]% on %interface%&lt;/p&gt; &lt;p&gt;The
+      ifIndex, or unique numeric identifier of an SNMP device's
+      interfaces, can be reordered by the SNMP agent. Usually this
+      happens if interfaces are added or removed, or by a change
+      in administrative or operational status.&lt;/p&gt;
+      &lt;p&gt;This is typically not a reason for concern, but you
+      should be aware that the active configuration on this SNMP
+      device has changed, and the hardware configuration may have
+      been impacted as well.&lt;/p&gt;
+    </descr>
+    <logmsg dest="logndisplay">
+      &lt;p&gt;SNMP Interface Index %parm[oldIfIndex]% has changed
+      to %parm[newIfIndex]% on %interface%&lt;/p&gt;
+    </logmsg>
+    <severity>Warning</severity>
+  </event>
+  <event>
+    <uei>uei.opennms.org/nodes/interfaceReparented</uei>
+    <event-label>OpenNMS-defined node event: interfaceReparented</event-label>
+    <descr>
+      &lt;p&gt;Interface %interface% has been reparented under
+      node %parm[newNodeID]% from node
+      %parm[oldNodeID]%.&lt;/p&gt; &lt;p&gt;Usually this happens
+      after a services scan discovers that a node with multiple
+      interfaces is now running an SNMP agent and is therefore
+      able to reparent the node's interfaces under a single node
+      identifier.&lt;/p&gt; &lt;p&gt;This is typically not a
+      reason for concern, but you should be aware that the node
+      association of this interface has changed.&lt;/p&gt;
+    </descr>
+    <logmsg dest="logndisplay">
+      %interface% has been reparented under node %parm[newNodeID]%
+      from node %parm[oldNodeID]%.
+    </logmsg>
+    <severity>Warning</severity>
+  </event>
+  <event>
+    <uei>uei.opennms.org/nodes/interfaceUp</uei>
+    <event-label>OpenNMS-defined node event: interfaceUp</event-label>
+    <descr>
+      &lt;p&gt;The interface %interface% which was previously down
+      is now up.&lt;/p&gt; &lt;p&gt;This event is generated when
+      node outage processing determines that the critical service
+      or all services on the interface are restored. &lt;/p&gt;
+      &lt;p&gt;This event will cause any active outages associated
+      with this interface to be cleared.&lt;/p&gt;
+    </descr>
+    <logmsg dest="logndisplay">
+      Interface %interface% is up.
+    </logmsg>
+    <severity>Normal</severity>
+    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" clear-key="uei.opennms.org/nodes/interfaceDown:%dpname%:%nodeid%:%interface%" auto-clean="false"/>
+  </event>
+  <event>
+    <uei>uei.opennms.org/nodes/snmp/interfaceOperUp</uei>
+    <event-label>OpenNMS-defined node event: snmp interface Oper Status Up</event-label>
+    <descr>
+      &lt;p&gt;The operational status of interface is up
+      &lt;/p&gt; &lt;p&gt;This event is generated when an snmp poll on interface find the operational status up.
+      &lt;/p&gt;
+      &lt;p&gt;Params %parm[all]% &lt;/p&gt;
+    </descr>
+    <logmsg dest="logndisplay">Operational status Up on interface ifname:%parm[snmpifname]% ifindex:%parm[snmpifindex]% ifdescr:%parm[snmpifdescr]%
+    </logmsg>
+    <severity>Normal</severity>
+    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[snmpifindex]%" alarm-type="2" clear-key="uei.opennms.org/nodes/snmp/interfaceOperDown:%dpname%:%nodeid%:%interface%:%parm[snmpifindex]%" auto-clean="false"/>
+  </event>
+  <event>
+    <uei>uei.opennms.org/nodes/snmp/interfaceAdminUp</uei>
+    <event-label>OpenNMS-defined node event: snmp interface Admin Status Up</event-label>
+    <descr>
+      &lt;p&gt;The administration status of interface is down
+      &lt;/p&gt; &lt;p&gt;This event is generated when an snmp poll on interface find the administration status up.
+      &lt;/p&gt;
+      &lt;p&gt;Params %parm[all]% &lt;/p&gt;
+    </descr>
+    <logmsg dest="logndisplay">Administration status Up on interface ifname:%parm[snmpifname]% ifindex:%parm[snmpifindex]% ifdescr:%parm[snmpifdescr]%
+    </logmsg>
+    <severity>Normal</severity>
+    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[snmpifindex]%" alarm-type="2" clear-key="uei.opennms.org/nodes/snmp/interfaceAdminDown:%dpname%:%nodeid%:%interface%:%parm[snmpifindex]%" auto-clean="false"/>
+  </event>
+  <event>
+    <uei>uei.opennms.org/nodes/nodeAdded</uei>
+    <event-label>OpenNMS-defined node event: nodeAdded</event-label>
+    <descr>
+      &lt;p&gt;A new node (%parm[nodelabel]%) was discovered by
+      OpenNMS.&lt;/p&gt;
+    </descr>
+    <logmsg dest="logndisplay">
+      A new node (%parm[nodelabel]%) was discovered by OpenNMS.
+    </logmsg>
+    <severity>Warning</severity>
+  </event>
+  <event>
+    <uei>uei.opennms.org/nodes/nodeUpdated</uei>
+    <event-label>OpenNMS-defined node event: nodeUpdated</event-label>
+    <descr>
+      &lt;p&gt;A currently provisioned node (%parm[nodelabel]%) was updated by
+      OpenNMS.&lt;/p&gt;
+    </descr>
+    <logmsg dest="logndisplay">
+      A provisioned node (%parm[nodelabel]%) was updated by OpenNMS.
+    </logmsg>
+    <severity>Warning</severity>
+  </event>
+  <event>
+    <uei>uei.opennms.org/nodes/nodeCategoryMembershipChanged</uei>
+    <event-label>OpenNMS-defined node event: nodeCategoryMembershipChanged</event-label>
+    <descr>
+      &lt;p&gt;Node category membership has changed for node
+      (%parm[nodelabel]%)&lt;/p&gt;
+    </descr>
+    <logmsg dest="logndisplay">
+      Node category membership has changed for node (%parm[nodelabel]%).
+    </logmsg>
+    <severity>Warning</severity>
+  </event>
+  <event>
+    <uei>uei.opennms.org/nodes/nodeDeleted</uei>
+    <event-label>OpenNMS-defined node event: nodeDeleted</event-label>
+    <descr>
+      &lt;p&gt;Node %nodeid% was deleted.&lt;/p&gt; 
+      &lt;p&gt;OpenNMS will delete any node
+      that is down for seven (7) consecutive days, or via operator action. 
+      Nodes are considered "down" if there are no interfaces that have
+      pollable services associated with them.&lt;/p&gt;
+      &lt;p&gt;If a node becomes active again
+      &lt;i&gt;after&lt;/i&gt; it has been deleted, it will be
+      rediscovered in the next, daily discovery cycle and will be
+      re-added to OpenNMS's database as a new node. It will be
+      disassociated with any historic outage
+      information.&lt;/p&gt;
+    </descr>
+    <logmsg dest="logndisplay">
+      Node &lt;a
+      href="element/node.jsp?node=%nodeid%"&gt;%nodeid%&lt;/a&gt;
+      was deleted.
+    </logmsg>
+    <severity>Warning</severity>
+  </event>
+  <event>
+    <uei>uei.opennms.org/nodes/nodeDown</uei>
+    <event-label>OpenNMS-defined node event: nodeDown</event-label>
+    <descr>
+      &lt;p&gt;All interfaces on node %parm[nodelabel]% are
+      down.&lt;/p&gt; &lt;p&gt;This event is generated when node
+      outage processing determines that all interfaces on the node
+      are down.&lt;/p&gt; &lt;p&gt;New outage records have been
+      created and service level availability calculations will be
+      impacted until this outage is resolved.&lt;/p&gt;
+    </descr>
+    <logmsg dest="logndisplay">
+      Node %parm[nodelabel]% is down. %parm[eventReason]%
+    </logmsg>
+    <severity>Major</severity>
+    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="1" auto-clean="false"/>
+  </event>
+  <event>
+    <uei>uei.opennms.org/nodes/pathOutage</uei>
+    <event-label>OpenNMS-defined node event: pathOutage</event-label>
+    <descr>
+                        &lt;p&gt;The state of node %parm[nodelabel]% is unknown
+                        because the critical path to the node is down.&lt;/p&gt;
+                        &lt;p&gt;This event is generated when node outage processing
+                        determines that the critical path IP address/service for
+                        this node is not responding..&lt;/p&gt;
+                </descr>
+    <logmsg dest="logndisplay">
+                        %parm[nodelabel]% path outage. Critical path =
+                        %parm[criticalPathIp]% %parm[criticalPathServiceName]%
+                </logmsg>
+    <severity>Major</severity>
+    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="false"/>
+  </event>
+  <event>
+    <uei>uei.opennms.org/nodes/nodeGainedInterface</uei>
+    <event-label>OpenNMS-defined node event: nodeGainedInterface</event-label>
+    <descr>
+      &lt;p&gt;Interface %interface% has been associated with Node
+      #&lt;a
+      href="element/node.jsp?node=%nodeid%"&gt;%nodeid%&lt;/a&gt;.&lt;/p&gt;
+    </descr>
+    <logmsg dest="logndisplay">
+      Interface %interface% has been associated with Node #&lt;a
+      href="element/node.jsp?node=%nodeid%"&gt;%nodeid%&lt;/a&gt;.
+    </logmsg>
+    <severity>Warning</severity>
+  </event>
+  <event>
+    <uei>uei.opennms.org/nodes/nodeGainedService</uei>
+    <event-label>OpenNMS-defined node event: nodeGainedService</event-label>
+    <descr>
+      &lt;p&gt;A service scan has identified the %service% service
+      on interface %interface%.&lt;/p&gt; &lt;p&gt;If this
+      interface (%interface%) is within the list of ranges and
+      specific addresses to be managed by OpenNMS, this service
+      will be scheduled for regular availability checks.&lt;/p&gt;
+    </descr>
+    <logmsg dest="logndisplay">
+      The %service% service has been discovered on interface
+      %interface%.
+    </logmsg>
+    <severity>Warning</severity>
+  </event>
+  <event>
+    <uei>uei.opennms.org/internal/linkd/dataLinkFailed</uei>
+    <event-label>OpenNMS-defined linkd event: Data Link Failed</event-label>
+    <descr>
+      &lt;p&gt;A data link between two interfaces has failed.
+      &lt;/p&gt; &lt;p&gt;This event is generated when a link between two endpoints changes status to down.
+      &lt;/p&gt;
+      &lt;p&gt;Params %parm[all]% &lt;/p&gt;
+    </descr>
+    <logmsg dest="logndisplay">Data Link Failed between %parm[endPoint1]% and %parm[endPoint2]%
+    </logmsg>
+    <severity>Minor</severity>
+    <alarm-data reduction-key="%uei%:%dpname%:%parm[endPoint1]%:%parm[endPoint2]%" alarm-type="1" auto-clean="false"/>
+  </event>
+  <event>
+    <uei>uei.opennms.org/internal/linkd/dataLinkRestored</uei>
+    <event-label>OpenNMS-defined linkd event: Data Link Restored</event-label>
+    <descr>
+      &lt;p&gt;A data link between two interfaces has been restored.
+      &lt;/p&gt; &lt;p&gt;This event is generated when a link between two endpoints changes status to up.
+      &lt;/p&gt;
+      &lt;p&gt;Params %parm[all]% &lt;/p&gt;
+    </descr>
+    <logmsg dest="logndisplay">Data Link Restored between %parm[endPoint1]% and %parm[endPoint2]%
+    </logmsg>
+    <severity>Normal</severity>
+    <alarm-data alarm-type="2" auto-clean="false" reduction-key="%uei%:%dpname%:%parm[endPoint1]%:%parm[endPoint2]%" clear-key="uei.opennms.org/internal/linkd/dataLinkFailed:%dpname%:%parm[endPoint1]%:%parm[endPoint2]%"/>
+  </event>
+  <event>
+    <uei>uei.opennms.org/internal/linkd/dataLinkUnmanaged</uei>
+    <event-label>OpenNMS-defined linkd event: Data Link Unmanaged</event-label>
+    <descr>
+      &lt;p&gt;A data link between two interfaces has been unmanaged.
+      &lt;/p&gt; &lt;p&gt;A link is considered unmanaged when either endpoint of a link does not have the link endpoint service as 
+      &lt;/p&gt; &lt;p&gt;per the EndPoint configuration.
+      &lt;/p&gt;
+      &lt;p&gt;Params %parm[all]% &lt;/p&gt;
+    </descr>
+    <logmsg dest="logndisplay">Data Link Unmanaged between %parm[endPoint1]% and %parm[endPoint2]%
+    </logmsg>
+    <severity>Normal</severity>
+    <alarm-data alarm-type="2" auto-clean="false" reduction-key="%uei%:%dpname%:%parm[endPoint1]%:%parm[endPoint2]%" clear-key="uei.opennms.org/internal/linkd/dataLinkFailed:%dpname%:%parm[endPoint1]%:%parm[endPoint2]%"/>
+  </event>
+  <event>
+    <uei>uei.opennms.org/internal/poller/suspendPollingService</uei>
+    <event-label>OpenNMS-defined poller event: suspendPollingService</event-label>
+    <descr>
+      &lt;p&gt;A forced rescan has identified the %service% service
+      on interface %interface% as no longer part of any poller package,
+      or the service has been unmanaged.
+      &lt;/p&gt; Polling will be discontinued.&lt;/p&gt;
+    </descr>
+    <logmsg dest="logndisplay">
+      Polling will be discontinued for %service% service on interface
+      %interface%.
+    </logmsg>
+    <severity>Normal</severity>
+  </event>
+  <event>
+    <uei>uei.opennms.org/internal/poller/resumePollingService</uei>
+    <event-label>OpenNMS-defined poller event: resumePollingService</event-label>
+    <descr>
+      &lt;p&gt;A forced rescan has identified the %service% service
+      on interface %interface% as covered by a poller package, and
+      managed.
+      &lt;/p&gt; Polling will begin in accordance with the package and
+      any applicable outage calendar.&lt;/p&gt;
+    </descr>
+    <logmsg dest="logndisplay">
+      Polling will begin/resume for %service% service on interface
+      %interface%.
+    </logmsg>
+    <severity>Normal</severity>
+  </event>
+  <event>
+    <uei>uei.opennms.org/nodes/nodeInfoChanged</uei>
+    <event-label>OpenNMS-defined node event: nodeInfoChanged</event-label>
+    <descr>
+      &lt;p&gt;Node information has changed for node
+      #%nodeid%.&lt;/p&gt;
+    </descr>
+    <logmsg dest="logndisplay">
+      &lt;p&gt;Node information has changed for &lt;a
+      href="element/node.jsp?node=%nodeid%"&gt;%nodeid%&lt;/a&gt;.&lt;/p&gt;
+    </logmsg>
+    <severity>Warning</severity>
+  </event>
+  <event>
+    <uei>uei.opennms.org/nodes/nodeLabelChanged</uei>
+    <event-label>OpenNMS-defined node event: nodeLabelChanged</event-label>
+    <descr>
+      &lt;p&gt;Node #&lt;a
+      href="element/node.jsp?node=%nodeid%"&gt;%nodeid%&lt;/a&gt;'s
+      label was changed from "%parm[oldNodeLabel]%" to
+      "%parm[newNodeLabel]%".&lt;/p&gt;
+    </descr>
+    <logmsg dest="logndisplay">
+      Node #&lt;a
+      href="element/node.jsp?node=%nodeid%"&gt;%nodeid%&lt;/a&gt;'s
+      label was changed from "%parm[oldNodeLabel]%" to
+      "%parm[newNodeLabel]%".
+    </logmsg>
+    <severity>Normal</severity>
+  </event>
+  <event>
+    <uei>uei.opennms.org/nodes/nodeLostService</uei>
+    <event-label>OpenNMS-defined node event: nodeLostService</event-label>
+    <descr>
+      &lt;p&gt;A %service% outage was identified on interface
+      %interface%.&lt;/p&gt; &lt;p&gt;A new Outage record has been
+      created and service level availability calculations will be
+      impacted until this outage is resolved.&lt;/p&gt;
+    </descr>
+    <logmsg dest="logndisplay">
+      %service% outage identified on interface %interface% with reason code: %parm[eventReason]%.
+    </logmsg>
+    <severity>Minor</severity>
+    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%service%" alarm-type="1" auto-clean="false"/>
+  </event>
+  <event>
+    <uei>uei.opennms.org/nodes/nodeRegainedService</uei>
+    <event-label>OpenNMS-defined node event: nodeRegainedService</event-label>
+    <descr>
+      &lt;p&gt;The %service% service on interface %interface% was
+      previously down and has been restored.&lt;/p&gt;
+      &lt;p&gt;This event is generated when a service which had
+      previously failed polling attempts is again responding to
+      polls by OpenNMS. &lt;/p&gt; &lt;p&gt;This event will cause
+      any active outages associated with this service/interface
+      combination to be cleared.&lt;/p&gt;
+    </descr>
+    <logmsg dest="logndisplay">
+      The %service% outage on interface %interface% has been
+      cleared. Service is restored.
+    </logmsg>
+    <severity>Normal</severity>
+    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%service%" alarm-type="2" clear-key="uei.opennms.org/nodes/nodeLostService:%dpname%:%nodeid%:%interface%:%service%" auto-clean="false"/>
+  </event>
+  <event>
+    <uei>uei.opennms.org/nodes/nodeUp</uei>
+    <event-label>OpenNMS-defined node event: nodeUp</event-label>
+    <descr>
+      &lt;p&gt;Node %parm[nodelabel]% which was previously down is
+      now up.&lt;/p&gt; &lt;p&gt;This event is generated when node
+      outage processing determines that all interfaces on the node
+      are up.&lt;/p&gt; &lt;p&gt;This event will cause any active
+      outages associated with this node to be cleared.&lt;/p&gt;
+    </descr>
+    <logmsg dest="logndisplay">
+      Node %parm[nodelabel]% is up.
+    </logmsg>
+    <severity>Normal</severity>
+    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="2" clear-key="uei.opennms.org/nodes/nodeDown:%dpname%:%nodeid%" auto-clean="false"/>
+  </event>
+  <event>
+    <uei>uei.opennms.org/nodes/primarySnmpInterfaceChanged</uei>
+    <event-label>OpenNMS-defined node event: primarySnmpInterfaceChanged</event-label>
+    <descr>
+      &lt;p&gt;This event indicates that the interface selected
+      for SNMP data collection for this node has changed. This is
+      usually due to a network or address reconfiguration
+      impacting this device.&lt;/p&gt;
+    </descr>
+    <logmsg dest="logndisplay">
+      Primary SNMP interface for node &lt;a
+      href="element/node.jsp?node=%nodeid%"&gt;%nodeid%&lt;/a&gt;
+      has changed from %parm[oldPrimarySnmpAddress]% to
+      %parm[newPrimarySnmpAddress]%.
+    </logmsg>
+    <severity>Warning</severity>
+  </event>
+  <event>
+    <uei>uei.opennms.org/nodes/reinitializePrimarySnmpInterface</uei>
+    <event-label>OpenNMS-defined node event: reinitializePrimarySnmpInterface</event-label>
+    <descr>
+      &lt;p&gt;A change in configuration on this node has been
+      detected and the SNMP data collection mechanism is being
+      triggered to refresh its required profile of the remote
+      node.&lt;/p&gt;
+    </descr>
+    <logmsg dest="logndisplay">
+      SNMP information on %interface% is being refreshed for data
+      collection purposes.
+    </logmsg>
+    <severity>Warning</severity>
+  </event>
+  <event>
+    <uei>uei.opennms.org/nodes/serviceResponsive</uei>
+    <event-label>OpenNMS-defined node event: serviceResponsive</event-label>
+    <descr>
+      &lt;p&gt;The %service% service which was previously unresponsive
+      is now responding normally on interface %interface%.&lt;/p&gt; 
+    </descr>
+    <logmsg dest="logndisplay">
+      %service% is responding normally on interface %interface%.
+    </logmsg>
+    <severity>Normal</severity>
+  </event>
+  <event>
+    <uei>uei.opennms.org/nodes/serviceDeleted</uei>
+    <event-label>OpenNMS-defined node event: serviceDeleted</event-label>
+    <descr>
+      &lt;p&gt;Service %service% was deleted from interface
+      %interface%, associated with Node ID# %nodeid%.&lt;/p&gt;
+      &lt;p&gt;When a service is deleted from an interface, it is
+      due to extended downtime of that service of over seven (7)
+      days.&lt;/p&gt; &lt;p&gt;If a previously deleted service
+      becomes active again on an interface, it will be re-added to
+      the OpenNMS database as a new occurrence of that service and
+      will be disassociated with any historic outages.&lt;/p&gt;
+    </descr>
+    <logmsg dest="logndisplay">
+      The %service% service was deleted from interface
+      %interface%.
+    </logmsg>
+    <severity>Warning</severity>
+  </event>
+  <event>
+    <uei>uei.opennms.org/nodes/serviceUnresponsive</uei>
+    <event-label>OpenNMS-defined node event: serviceUnresponsive</event-label>
+    <descr>
+      &lt;p&gt;The %service% service is up but was unresponsive 
+      during the last poll on interface %interface%.&lt;/p&gt; 
+    </descr>
+    <logmsg dest="logndisplay">
+      %service% is up but unresponsive on interface %interface%.
+    </logmsg>
+    <severity>Minor</severity>
+  </event>
+  <event>
+    <uei>uei.opennms.org/threshold/highThresholdExceeded</uei>
+    <event-label>OpenNMS-defined threshold event: highThresholdExceeded</event-label>
+    <descr>
+      &lt;p&gt;High threshold exceeded for %service% datasource
+                        %parm[ds]% on interface %interface%, parms: %parm[all]%&lt;/p&gt;
+                        &lt;p&gt;By default, OpenNMS watches some key parameters
+                        on devices in your network and will alert you with
+                        an event if certain conditions arise. For example, if
+                        the CPU utilization on your Cisco router maintains an
+                        inordinately high percentage of utilization for an extended
+                        period, an event will be generated. These thresholds are
+                        determined and configured based on vendor recommendations,
+                        tempered with real-world experience in working
+                        deployments.&lt;/p&gt; &lt;p&gt;This specific event
+                        indicates that a high threshold was exceeded.&lt;/p&gt;
+    </descr>
+    <logmsg dest="logndisplay">
+      High threshold exceeded for %service% datasource %parm[ds]% on interface
+      %interface%, parms: %parm[all]%
+    </logmsg>
+    <severity>Warning</severity>
+    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[ds]%:%parm[threshold]%:%parm[trigger]%:%parm[rearm]%:%parm[label]%" alarm-type="1" auto-clean="false"/>
+  </event>
+  <event>
+    <uei>uei.opennms.org/threshold/lowThresholdExceeded</uei>
+    <event-label>OpenNMS-defined threshold event: lowThresholdExceeded</event-label>
+    <descr>
+      &lt;p&gt;Low threshold exceeded for %service% datasource
+                        %parm[ds]% on interface %interface%, parms: %parm[all]%.&lt;/p&gt;
+                        &lt;p&gt;By default, OpenNMS watches some key parameters
+                        on devices in your network and will alert you with
+                        an event if certain conditions arise. For example, if
+                        the CPU utilization on your Cisco router maintains an
+                        inordinately high percentage of utilization for an extended
+                        period, an event will be generated. These thresholds are
+                        determined and configured based on working experience with
+                        real deployments, not vendor recommendation alone.&lt;/p&gt;
+                        &lt;p&gt;This specific event indicates that a low threshold
+                        was exceeded.&lt;/p&gt;
+    </descr>
+    <logmsg dest="logndisplay">
+      Low threshold exceeded for %service% datasource %parm[ds]% on interface
+      %interface%, parms: %parm[all]%
+    </logmsg>
+    <severity>Warning</severity>
+    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[ds]%:%parm[threshold]%:%parm[trigger]%:%parm[rearm]%:%parm[label]%" alarm-type="1" auto-clean="false"/>
+  </event>
+  <event>
+    <uei>uei.opennms.org/threshold/highThresholdRearmed</uei>
+    <event-label>OpenNMS-defined threshold event: highThresholdRearmed</event-label>
+    <descr>
+                        &lt;p&gt;High threshold has been rearmed for %service% datasource
+                        %parm[ds]% on interface %interface%, parms: %parm[all]%&lt;/p&gt;
+                        &lt;p&gt;By default, OpenNMS watches some key parameters
+                        on devices in your network and will alert you with
+                        an event if certain conditions arise. For example, if
+                        the CPU utilization on your Cisco router maintains an
+                        inordinately high percentage of utilization for an extended
+                        period, an event will be generated. These thresholds are
+                        determined and configured based on vendor recommendations,
+                        tempered with real-world experience in working
+                        deployments.&lt;/p&gt; &lt;p&gt;This specific event
+                        indicates that a high threshold was exceeded but then dropped 
+      below the rearm threshold..&lt;/p&gt;
+                </descr>
+    <logmsg dest="logndisplay">
+                        High threshold rearmed for %service% datasource %parm[ds]% on interface
+                        %interface%, parms: %parm[all]%
+                </logmsg>
+    <severity>Normal</severity>
+    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[ds]%:%parm[threshold]%:%parm[trigger]%:%parm[rearm]%:%parm[label]%" alarm-type="2" clear-key="uei.opennms.org/threshold/highThresholdExceeded:%dpname%:%nodeid%:%interface%:%parm[ds]%:%parm[threshold]%:%parm[trigger]%:%parm[rearm]%:%parm[label]%" auto-clean="false"/>
+  </event>
+  <event>
+    <uei>uei.opennms.org/threshold/lowThresholdRearmed</uei>
+    <event-label>OpenNMS-defined threshold event: lowThresholdRearmed</event-label>
+    <descr>
+                        &lt;p&gt;Low threshold has been rearmed for %service% datasource
+                        %parm[ds]% on interface %interface%, parms: %parm[all]%.&lt;/p&gt;
+                        &lt;p&gt;By default, OpenNMS watches some key parameters
+                        on devices in your network and will alert you with
+                        an event if certain conditions arise. For example, if
+                        the CPU utilization on your Cisco router maintains an
+                        inordinately high percentage of utilization for an extended
+                        period, an event will be generated. These thresholds are
+                        determined and configured based on working experience with
+                        real deployments, not vendor recommendation alone.&lt;/p&gt;
+                        &lt;p&gt;This specific event indicates that a low threshold
+                        was exceeded but then dropped below the rearm threshold.&lt;/p&gt;
+                </descr>
+    <logmsg dest="logndisplay">
+                        Low threshold rearmed for %service% datasource %parm[ds]% on interface
+                        %interface%, parms: %parm[all]%
+                </logmsg>
+    <severity>Normal</severity>
+    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[ds]%:%parm[threshold]%:%parm[trigger]%:%parm[rearm]%:%parm[label]%" alarm-type="2" clear-key="uei.opennms.org/threshold/lowThresholdExceeded:%dpname%:%nodeid%:%interface%:%parm[ds]%:%parm[threshold]%:%parm[trigger]%:%parm[rearm]%:%parm[label]%" auto-clean="false"/>
+  </event>
+  <event>
+    <uei>uei.opennms.org/nodes/thresholdingFailed</uei>
+    <event-label>OpenNMS-defined threshold event: thresholdingFailed</event-label>
+    <descr>
+      &lt;p&gt;%service% thresholding on interface %interface%
+      failed.&lt;/p&gt;
+    </descr>
+    <logmsg dest="logndisplay">
+      %service% thresholding on interface %interface% failed.
+    </logmsg>
+    <severity>Warning</severity>
+  </event>
+  <event>
+    <uei>uei.opennms.org/nodes/thresholdingSucceeded</uei>
+    <event-label>OpenNMS-defined threshold event: thresholdingSucceeded</event-label>
+    <descr>
+      &lt;p&gt;%service% thresholding on interface %interface%
+      previously failed and has been restored.&lt;/p&gt;
+    </descr>
+    <logmsg dest="logndisplay">
+      %service% thresholding on interface %interface% previously
+      failed and has been restored.
+    </logmsg>
+    <severity>Normal</severity>
+  </event>
+  <event>
+    <uei>uei.opennms.org/threshold/relativeChangeExceeded</uei>
+    <event-label>OpenNMS-defined threshold event: relativeChangeExceeded</event-label>
+    <descr>
+      &lt;p&gt;Relative change exceeded for %service% datasource %parm[ds]% on interface %interface%, parms: %parm[all]%&lt;/p&gt;
+    </descr>
+    <logmsg dest="logndisplay">
+      Relative change exceeded for %service% datasource %parm[ds]% on interface %interface%, parms: %parm[all]%
+    </logmsg>
+    <severity>Warning</severity>
+  </event>
+  <event>
+    <uei>uei.opennms.org/threshold/absoluteChangeExceeded</uei>
+    <event-label>OpenNMS-defined threshold event: absoluteChangeExceeded</event-label>
+    <descr>
+        &lt;p&gt;Absolute change exceeded for %service% datasource %parm[ds]% on interface %interface%, parms: %parm[all]%&lt;/p&gt;
+      </descr>
+    <logmsg dest="logndisplay">
+        Absolute change exceeded for %service% datasource %parm[ds]% on interface %interface%, parms: %parm[all]%
+      </logmsg>
+    <severity>Warning</severity>
+  </event>
+  <event>
+    <uei>uei.opennms.org/vacuumd/alarmEscalated</uei>
+    <event-label>OpenNMS-defined internal event: alarmEscalated</event-label>
+    <descr>
+        &lt;p&gt;Alarm #&lt;a href="/opennms/alarm/detail.htm?id=%parm[alarmId]%"&gt;%parm[alarmId]%&lt;/a&gt;
+        was determined to require an escalation of its severity.&lt;/p&gt;
+      </descr>
+    <logmsg dest="logndisplay">
+        &lt;p&gt;Alarm #&lt;a href="/opennms/alarm/detail.htm?id=%parm[alarmId]%"&gt;%parm[alarmId]%&lt;/a&gt;
+        for node:%nodelabel%; interface:%interface%; service:%service%; was escalated.&lt;/p&gt;
+      </logmsg>
+    <severity>Minor</severity>
+  </event>
+  <event>
+    <uei>uei.opennms.org/nodes/assetInfoChanged</uei>
+    <event-label>OpenNMS-defined node event: assetInfoChanged</event-label>
+    <descr>
+                &lt;p&gt;The Asset info for node %nodeid% (%nodelabel%)
+                has been changed via the webUI.&lt;/p&gt;
+        </descr>
+    <logmsg dest="logndisplay">
+                &lt;p&gt;The Asset info for node %nodeid% (%nodelabel%)
+                has been changed via the webUI.&lt;/p&gt;
+        </logmsg>
+    <severity>Normal</severity>
+  </event>
+  <event>
+    <uei>uei.opennms.org/services/passiveServiceStatus</uei>
+    <event-label>OpenNMS-defined service event: passiveServiceStatus</event-label>
+    <descr>
+      &lt;p&gt;Status information for service %service% has been updated.&lt;/p&gt;
+    </descr>
+    <logmsg dest="logndisplay">
+      &lt;p&gt;Status information for service %service% has been updated.&lt;/p&gt;
+    </logmsg>
+    <severity>Normal</severity>
+    <!--    
+    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%service%" alarm-type="3" auto-clean="false" />
+-->
+  </event>
+  <event>
+    <uei>uei.opennms.org/internal/demandPollService</uei>
+    <event-label>OpenNMS-defined node event: DemandPoll</event-label>
+    <descr>
+      &lt;p&gt;The Demand Poll requested on %nodeid% (%nodelabel%)
+    </descr>
+    <logmsg dest="logndisplay">
+      &lt;p&gt;The Demand Poll requested on %nodeid% (%nodelabel%).&lt;/p&gt;
+    </logmsg>
+    <severity>Normal</severity>
+  </event>
+  <!-- Remote Poller Events -->
+  <event>
+    <uei>uei.opennms.org/remote/nodes/nodeLostService</uei>
+    <event-label>OpenNMS defined remote poller event: A remote poller detected a node lost service</event-label>
+    <descr>
+      &lt;p&gt;A %service% outage was identified on interface
+    %interface% from remote poller %parm[locationMonitorId]% from location: %parm[location]%.
+    &lt;/p&gt;
+    </descr>
+    <logmsg dest="logndisplay">
+      %service% outage identified on interface %interface% from the remote poller %parm[locationMonitorId]% 
+      in location %parm[location]% with reason code: %parm[eventReason]%.
+    </logmsg>
+    <severity>Minor</severity>
+    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%service%" alarm-type="1" auto-clean="false"/>
+  </event>
+  <event>
+    <uei>uei.opennms.org/remote/nodes/nodeRegainedService</uei>
+    <event-label>OpenNMS defined remote poller event: A remote poller detected a node regained service</event-label>
+    <descr>
+      &lt;p&gt;The %service% service on interface %interface% was
+    previously down as viewed by remote poller
+    %parm[locationMonitorId]% and has been restored.&lt;/p&gt;
+    &lt;p&gt;This event is generated when a service which had
+    previously failed polling attempts is again responding to
+    polls by OpenNMS. &lt;/p&gt;
+    </descr>
+    <logmsg dest="logndisplay">
+      %service% outage identified on interface %interface% from the remote poller %parm[locationMonitorId]% 
+      in location %parm[location]% has cleared.
+    </logmsg>
+    <severity>Normal</severity>
+    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%service%" alarm-type="2" clear-key="uei.opennms.org/remote/nodes/nodeLostService:%dpname%:%nodeid%:%interface%:%service%" auto-clean="false"/>
+  </event>
+  <event>
+    <uei>uei.opennms.org/remote/locationMonitorRegistered</uei>
+    <event-label>OpenNMS defined remote poller event: A remote poller has registered</event-label>
+    <descr>
+      This event is sent by the remote poller server side API when
+      a remote poller is created. 
+    </descr>
+    <logmsg dest="logndisplay">
+      A remote poller has registered from location %parm[location]% and been given the id: %parm[locationMonitorId]%.
+    </logmsg>
+    <severity>Normal</severity>
+  </event>
+  <event>
+    <uei>uei.opennms.org/remote/locationMonitorStarted</uei>
+    <event-label>OpenNMS defined remote poller event: A remote poller has started polling</event-label>
+    <descr>
+      This event is sent when a registered remote poller begins
+      monitoring services defined in its configuration.
+    </descr>
+    <logmsg dest="logndisplay">
+      The remote poller %parm[locationMonitorId]% has started polling from location %parm[location]%.
+    </logmsg>
+    <severity>Normal</severity>
+  </event>
+  <event>
+    <uei>uei.opennms.org/remote/locationMonitorPaused</uei>
+    <event-label>OpenNMS defined remote poller event: A remote poller has been paused</event-label>
+    <descr>
+      This event is sent when a registered remote poller is configured with
+      a polling package containing no services to poll. (experimental)
+      
+      The idea here is that a webui administrator can pause a remote poller
+      and the remote poller's configuration is changed to an empty
+      polling package.
+    </descr>
+    <logmsg dest="logndisplay">
+      The remote poller %parm[locationMonitorId]% in location %parm[location]% has been paused.
+    </logmsg>
+    <severity>Normal</severity>
+  </event>
+  <event>
+    <uei>uei.opennms.org/remote/locationMonitorStopped</uei>
+    <event-label>OpenNMS defined remote poller event: A remote poller has been shutdown.</event-label>
+    <descr>
+      This event is sent when a registered remote poller is
+      shutdown by the remote system.
+    </descr>
+    <logmsg dest="logndisplay">
+      The remote poller %parm[locationMonitorId]% in location %parm[location]% has been shutdown.
+    </logmsg>
+    <severity>Normal</severity>
+  </event>
+  <event>
+    <uei>uei.opennms.org/remote/locationMonitorDisconnected</uei>
+    <event-label>OpenNMS defined remote poller event: A remote poller has disconnected</event-label>
+    <descr>
+      This event is sent when a registered remote location fails to report
+      status and check for configuration changes at the required interval.
+    </descr>
+    <logmsg dest="logndisplay">
+      The remote poller %parm[locationMonitorId]% in location %parm[location]% has disconnected.
+    </logmsg>
+    <severity>Minor</severity>
+    <alarm-data reduction-key="%uei%:%parm[locationMonitorId]%" alarm-type="1" auto-clean="false"/>
+  </event>
+  <event>
+    <uei>uei.opennms.org/remote/locationMonitorReconnected</uei>
+    <event-label>OpenNMS defined remote poller event: A disconnected remote poller has reconnected</event-label>
+    <descr>
+      This event is sent when a disconnected remote poller reconnects
+      and reports status changes and checks for configuration changes.
+    </descr>
+    <logmsg dest="logndisplay">
+      The disconnected remote poller %parm[locationMonitorId]% in location %parm[location]% has reconnected.
+    </logmsg>
+    <severity>Normal</severity>
+    <alarm-data reduction-key="%uei%:%parm[locationMonitorId]%" alarm-type="2" clear-key="uei.opennms.org/remote/locationMonitorDisconnected:%parm[locationMonitorId]%" auto-clean="false"/>
+  </event>
+  <event>
+    <uei>uei.opennms.org/remote/configurationChangeDetected</uei>
+    <event-label>OpenNMS defined remote poller event: A remote poller's configuration has been changed</event-label>
+    <descr>
+      This event is sent when a remote poller's configuration has been
+      changed and was detected by the monitor.
+    </descr>
+    <logmsg dest="logndisplay">
+      The configuration has changed for the remote poller %parm[locationMonitorId]% in location %parm[location]%.
+    </logmsg>
+    <severity>Normal</severity>
+  </event>
+  <event>
+    <uei>uei.opennms.org/remote/locationMonitorConnectionAddressChanged</uei>
+    <event-label>OpenNMS defined remote poller event: A remote poller's connection IP address has changed</event-label>
+    <descr>
+      This event is sent when a remote poller's connection IP address has changed.
+    </descr>
+    <logmsg dest="logndisplay">
+      The connection IP address for remote poller %parm[locationMonitorId]% in location %parm[location]% has changed
+      from %parm[oldConnectionHostAddress]% to %parm[newConnectionHostAddress]%.
+    </logmsg>
+    <severity>Warning</severity>
+  </event>
+  <event>
+    <uei>uei.opennms.org/correlation/remote/wideSpreadOutage</uei>
+    <event-label>OpenNMS defined correlator event: A widespread outage has been detected</event-label>
+    <descr>
+      This event is sent when a widespread outage is detected.  Typically used in correlation rules
+      that detected a threshold # of monitors have detected the same outage.
+    </descr>
+    <logmsg dest="logndisplay">
+      A wide spread outage of the service: %service% has been correlated from multiple remote pollers.
+    </logmsg>
+    <severity>Major</severity>
+    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%service%" alarm-type="1" auto-clean="false"/>
+  </event>
+  <event>
+    <uei>uei.opennms.org/correlation/remote/wideSpreadOutageResolved</uei>
+    <event-label>OpenNMS defined correlator event: A widespread outage has been resolved</event-label>
+    <descr>
+      This event is sent when a widespread outage has been cleared.  Typically used in correlation rules
+      that have detected that a wide spread outage has been cleared.
+    </descr>
+    <logmsg dest="logndisplay">
+      A wide spread outage of the service: %service% has been resolved.
+    </logmsg>
+    <severity>Normal</severity>
+    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%service%" alarm-type="2" clear-key="uei.opennms.org/correlation/remote/wideSpreadOutage:%dpname%:%nodeid%:%interface%:%service%" auto-clean="false"/>
+  </event>
+  <event>
+    <uei>uei.opennms.org/correlation/serviceFlapping</uei>
+    <event-label>OpenNMS defined correlator event: A service has been detected to be in a flapping state</event-label>
+    <descr>
+      This event is sent when a correlation rule has detected that a service is flapping.
+    </descr>
+    <logmsg dest="logndisplay">
+      The service: %service% has been correlated to indicate a flapping state.
+    </logmsg>
+    <severity>Minor</severity>
+    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%service%" alarm-type="3" auto-clean="false"/>
+  </event>
+  <event>
+    <uei>uei.opennms.org/internal/schedOutagesChanged</uei>
+    <event-label>OpenNMS-defined internal event: scehduled outage configuration changed</event-label>
+    <descr>
+      This event is sent by the WebUI or the user when scheduled outage configuration has changed and shoule be reloaded
+    </descr>
+    <logmsg dest="logndisplay">
+      The scheduled outage configuration has been changed and should be reloaded
+    </logmsg>
+    <severity>Normal</severity>
+  </event>
+  <event>
+    <uei>uei.opennms.org/internal/thresholdConfigChange</uei>
+    <event-label>OpenNMS-defined internal event: threshold configuration changed</event-label>
+    <descr>
+      This event is sent by the WebUI or the user when threshold configuration has changed and should be reloaded
+    </descr>
+    <logmsg dest="logndisplay">
+      The thresholds configuration has been changed and should be reloaded
+    </logmsg>
+    <severity>Normal</severity>
+  </event>
+  <event>
+    <uei>uei.opennms.org/internal/eventsConfigChange</uei>
+    <event-label>OpenNMS-defined internal event: event configuration changed</event-label>
+    <descr>
+      This event is sent by the WebUI or the user when event configuration has changed and should be reloaded
+    </descr>
+    <logmsg dest="logndisplay">
+      The events configuration has been changed and should be reloaded
+    </logmsg>
+    <severity>Normal</severity>
+  </event>
+  <event>
+    <uei>uei.opennms.org/internal/discoveryConfigChange</uei>
+    <event-label>OpenNMS-defined internal event: discovery configuration changed</event-label>
+    <descr>
+      This event is sent by the WebUI or the user when discovery configuration has changed and should be reloaded
+    </descr>
+    <logmsg dest="logndisplay">
+      The discovery configuration has been changed and should be reloaded
+    </logmsg>
+    <severity>Normal</severity>
+  </event>
+  <event>
+    <uei>uei.opennms.org/troubleTicket/create</uei>
+    <event-label>OpenNMS defined trouble ticket event: A request has been made to create a trouble ticket</event-label>
+    <descr>
+      This event is generated to invoke the asynchronous Trouble Ticket API in OpenNMS
+      for creating a new trouble ticket.
+    </descr>
+    <logmsg dest="logndisplay">
+      A request has been generated to create a trouble ticket.
+    </logmsg>
+    <severity>Normal</severity>
+  </event>
+  <event>
+    <uei>uei.opennms.org/troubleTicket/update</uei>
+    <event-label>OpenNMS defined trouble ticket event: A request has been made to update a trouble ticket</event-label>
+    <descr>
+      This event is generated to invoke the asynchronous Trouble Ticket API in OpenNMS
+      for updating an existing trouble ticket.
+    </descr>
+    <logmsg dest="logndisplay">
+      A request has been generated to update a trouble ticket.
+    </logmsg>
+    <severity>Normal</severity>
+  </event>
+  <event>
+    <uei>uei.opennms.org/troubleTicket/close</uei>
+    <event-label>OpenNMS defined trouble ticket event: A request has been made to close a trouble ticket</event-label>
+    <descr>
+      This event is generated to invoke the asynchronous Trouble Ticket API in OpenNMS
+      for closing an existing trouble ticket.
+    </descr>
+    <logmsg dest="logndisplay">
+      A request has been generated to close a trouble ticket.
+    </logmsg>
+    <severity>Normal</severity>
+  </event>
+  <event>
+    <uei>uei.opennms.org/troubleTicket/cancel</uei>
+    <event-label>OpenNMS defined trouble ticket event: A request has been made to cancel a trouble ticket</event-label>
+    <descr>
+      This event is generated to invoke the asynchronous Trouble Ticket API in OpenNMS
+      for canceling an existing trouble ticket.
+    </descr>
+    <logmsg dest="logndisplay">
+      A request has been generated to cancel a trouble ticket.
+    </logmsg>
+    <severity>Normal</severity>
+  </event>
+  <event>
+    <uei>uei.opennms.org/troubleTicket/communicationError</uei>
+    <event-label>OpenNMS defined trouble ticket event: A communication error occurred</event-label>
+    <descr>
+      This event is generated when OpenNMS is unable to retrive, save or update a ticket
+      via the Trouble Ticket API.
+    </descr>
+    <logmsg dest="logndisplay">
+      A communication error occurred between OpenNMS and the Trouble Ticket system.
+      Communications failed with reason: %parm[reason]%.
+    </logmsg>
+    <severity>Warning</severity>
+  </event>
+  <event>
+    <uei>uei.opennms.org/internal/promoteQueueData</uei>
+    <event-label>OpenNMS defined event: A request has been made promote data from the RRD Queue</event-label>
+    <descr>
+      This event is generated to invoke the promotion data of the Queueing RRD Strategy.
+    </descr>
+    <logmsg dest="donotpersist">
+      A request has been generated to promote data from the queue for the file(s): %parm[filesToPromote]%.
+    </logmsg>
+    <severity>Normal</severity>
+  </event>
+  <event>
+    <uei>uei.opennms.org/internal/translator/hypericAlert</uei>
+    <event-label>OpenNMS defined event: An event received from Hyperic has been translated</event-label>
+    <descr>
+      This is a translated Hyperic Alert to associate with OpenNMS entity..&lt;p&gt;
+
+      &lt;p&gt;Alert reason: %parm[action.shortReason]% &lt;/p&gt;
+      &lt;p&gt;Alert reason: %parm[action.longReason]% &lt;/p&gt;
+      &lt;p&gt;&lt;a href="%parm[resource.url]%" &gt; %parm[resource.name]% &lt;/a&gt;&lt;/p&gt;
+    </descr>
+    <logmsg dest="logndisplay">
+      &lt;p&gt;&lt;a href="%parm[alert.url]%" &gt; Hyperic Alert: %parm[action.longReason]% &lt;/a&gt;&lt;/p&gt;
+    </logmsg>
+    <severity>Minor</severity>
+    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%service%:%parm[resource.name]%:%parm[alertDef.name]%" alarm-type="3" auto-clean="false"/>
+  </event>
+  <event>
+    <uei>uei.opennms.org/internal/syslogdConfigChange</uei>
+    <event-label>OpenNMS-defined internal event: Syslogd configuration changed</event-label>
+    <descr>
+      This event is sent by the WebUI or the user when the Syslogd configuration has changed and should be reloaded
+    </descr>
+    <logmsg dest="logndisplay">
+      The Syslogd configuration has been changed and should be reloaded
+    </logmsg>
+    <severity>Normal</severity>
+  </event>
+  <event>
+    <uei>uei.opennms.org/internal/authentication/successfulLogin</uei>
+    <event-label>OpenNMS-defined internal event: a user has successfully authentication to the WebUI</event-label>
+    <descr>
+      This event is sent by the WebUI when a user has successfully authenticated
+    </descr>
+    <logmsg dest="donotpersist">
+      OpenNMS user %parm[user]% has logged in from %parm[ip]%.
+    </logmsg>
+    <severity>Normal</severity>
+    <!--     <alarm-data reduction-key="%uei%:%parm[user]%" alarm-type="3" auto-clean="true"/>  -->
+  </event>
+  <event>
+    <uei>uei.opennms.org/internal/authentication/failure</uei>
+    <event-label>OpenNMS-defined internal event: an authentication failure has occurred in WebUI</event-label>
+    <descr>
+      This event is sent by the WebUI when an authentication failure occurs.
+    </descr>
+    <logmsg dest="logndisplay">
+      OpenNMS user '%parm[user]%' (may be blank) has failed to login
+      from %parm[ip]%.  The failure event is %parm[exceptionName]% with
+      the message '%parm[exceptionMessage]%'.
+    </logmsg>
+    <severity>Minor</severity>
+    <!--    <alarm-data reduction-key="%uei%:%parm[exceptionName]%:%parm[user]%" alarm-type="3" auto-clean="true"/> -->
+  </event>
+  <event>
+    <uei>uei.opennms.org/internal/authentication/loggedOut</uei>
+    <event-label>OpenNMS-defined internal event: a user logged out of the web UI</event-label>
+    <descr>
+      This event is sent by the WebUI when a user logs out of the WebUI.
+    </descr>
+    <logmsg dest="logndisplay">
+      OpenNMS user '%parm[user]%' logged out of the WebUI.
+    </logmsg>
+    <severity>Normal</severity>
+    <!--    <alarm-data reduction-key="%uei%:%parm[user]%" alarm-type="3" auto-clean="true"/> -->
+  </event>
+  <event>
+    <uei>uei.opennms.org/internal/authentication/sessionRemoved</uei>
+    <event-label>OpenNMS-defined internal event: a user's session was removed from the WebUI</event-label>
+    <descr>
+      This event is sent by the WebUI when a user's session is removed for any
+      reason other than a user-initiated logout.  This generally means that
+      the session timed out due to inactivity.
+    </descr>
+    <logmsg dest="logndisplay">
+      OpenNMS user '%parm[user]%' has been logged out of the WebUI, most likely
+      due to a session timeout.
+    </logmsg>
+    <severity>Normal</severity>
+    <!--    <alarm-data reduction-key="%uei%:%parm[user]%" alarm-type="3" auto-clean="true"/> -->
+  </event>
+  <event>
+    <uei>uei.opennms.org/api/tl1d/message/autonomous</uei>
+    <event-label>OpenNMS-defined Autonomous TL1 message</event-label>
+    <descr>
+      This is a TL1 autonomous message delivered for host: %host%.&lt;p&gt;
+
+      &lt;p&gt;Message: %parm[raw-message]% &lt;/p&gt;
+      &lt;p&gt;Alarm Code: %parm[alarm-code]% &lt;/p&gt;
+      &lt;p&gt;ATAG: %parm[atag]% &lt;/p&gt;
+      &lt;p&gt;Verb: %parm[verb]% &lt;/p&gt;
+      &lt;p&gt;Auto Block: %parm[autoblock]% &lt;/p&gt;
+    </descr>
+    <logmsg dest="logndisplay">
+      &lt;p&gt; %host%:%parm[verb]%:%parm[autoblock]% &lt;/p&gt;
+    </logmsg>
+    <severity>Warning</severity>
+    <alarm-data reduction-key="%uei%:%host%:%parm[aid]%" alarm-type="3" auto-clean="false"/>
+  </event>
+  <event>
+    <uei>uei.opennms.org/provisioner/provisioningAdapterFailed</uei>
+    <event-label>OpenNMS-defined Provisioning Adapter Failed message</event-label>
+    <descr>
+      A provisioning adapter failed for host: %host%.&lt;p&gt;
+      &lt;p&gt;Message: %parm[reason]% &lt;/p&gt;
+    </descr>
+    <logmsg dest="logndisplay">
+      &lt;p&gt; %host%:%parm[host]%:%parm[reason]% &lt;/p&gt;
+    </logmsg>
+    <severity>Major</severity>
+    <alarm-data reduction-key="%uei%:%host%:%parm[reason]%" alarm-type="3" auto-clean="false"/>
+  </event>
+  <event>
+    <uei>uei.opennms.org/ackd/acknowledge</uei>
+    <event-label>OpenNMS-defined Acknowledgment request</event-label>
+    <descr>
+      A message received requesting an Acknowledgable be acknowledged.
+      &lt;p&gt;Acknowledgement Request:%parm[refId]% of type:%parm[ackType]% was received with the action:%parm[ackAction]% was received for User: %parm[ackUser]%&lt;/p&gt;
+      Typically received from an external source or as a choice of an AckReader implementation.
+    </descr>
+    <logmsg dest="logndisplay">
+      &lt;p&gt;Acknowledgement Request:%parm[refId]% of type:%parm[ackType]% was received with the action:%parm[ackAction]% was received for User: %parm[ackUser]%.&lt;/p&gt;
+     </logmsg>
+    <severity>Normal</severity>
+  </event>
+  <event>
+    <uei>uei.opennms.org/ackd/acknowledgment</uei>
+    <event-label>OpenNMS-defined Acknowledgment message</event-label>
+    <descr>
+      A message from the acknowledgment service that an acknowledgment has been processed:
+      &lt;p&gt;Acknowledgable:%parm[refId]% of type:%parm[ackType]% was processed with the action:%parm[ackAction]%&lt;/p&gt;
+      Typically the result of a request via an AckReader or a generated acknowledge request event.
+    </descr>
+    <logmsg dest="logndisplay">
+      &lt;p&gt;Acknowledgable:%parm[refId]% of type:%parm[ackType]% was processed with the action:%parm[ackAction]%; Acknowledgment:%parm[ackId]%.&lt;/p&gt;
+     </logmsg>
+    <severity>Normal</severity>
+  </event>
+  <event>
+    <uei>uei.opennms.org/internal/provisiond/nodeScanCompleted</uei>
+    <event-label>OpenNMS-defined Provisiond Event: nodeScanCompleted</event-label>
+    <descr>
+      A message from the Provisiond NodeScan lifecycle that a NodeScan has completed:
+      &lt;p&gt;The Node with Id: %nodeid%; ForeignSource: %parm[foreignSource]%; ForeignId:%parm[foreignId]% has completed.&lt;/p&gt;
+      Typically the result of a request of an import request or a scheduled/user forced rescan.
+    </descr>
+    <logmsg dest="logndisplay">
+      &lt;p&gt;The Node with Id: %nodeid%; ForeignSource: %parm[foreignSource]%; ForeignId:%parm[foreignId]% has completed.&lt;/p&gt;
+     </logmsg>
+    <severity>Normal</severity>
+  </event>
+  <event>
+    <uei>uei.opennms.org/internal/provisiond/nodeScanAborted</uei>
+    <event-label>OpenNMS-defined Provisiond Event: nodeScanAborted</event-label>
+    <descr>
+      A message from the Provisiond NodeScan lifecycle that a NodeScan has Aborted:
+      &lt;p&gt;The Node with Id: %nodeid%; ForeignSource: %parm[foreignSource]%; ForeignId:%parm[foreignId]% has aborted for the following reason: %parm[reason]% &lt;/p&gt;
+    </descr>
+    <logmsg dest="logndisplay">
+      &lt;p&gt;The Node with Id: %nodeid%; ForeignSource: %parm[foreignSource]%; ForeignId:%parm[foreignId]% has aborted for the following reason: %parm[reason]% &lt;/p&gt;
+     </logmsg>
+    <severity>Warning</severity>
+  </event>
+  <event>
+    <uei>DISCARD-MATCHING-MESSAGES</uei>
+    <event-label>OpenNMS-defined DISCARD-MATCHING-MESSAGES</event-label>
+    <descr>
+        DISCARD-MATCHING-MESSAGES is used in the syslogd to generate events that 
+        have no matching events. This event is not persisted by default.
+    </descr>
+    <logmsg dest="donotpersist">
+      &lt;p&gt;DISCARD-MATCHING-MESSAGES.&lt;/p&gt;
+     </logmsg>
+    <severity>Normal</severity>
+  </event>
+  <event>
+    <uei>uei.opennms.org/reportd/reportRunFailed</uei>
+    <event-label>OpenNMS-defined Reportd Event: reportRunFailed</event-label>
+    <descr>
+      A message from the Reportd reporting service that a report has failed to run:
+      &lt;p&gt;The report with name %parm[reportName]% failed to run for the following reason: %parm[reason]% &lt;/p&gt;
+    </descr>
+    <logmsg dest="logndisplay">
+      &lt;p&gt;The report with name %parm[reportName]% failed to run for the following reason: %parm[reason]% &lt;/p&gt;
+     </logmsg>
+    <severity>Minor</severity>
+    <alarm-data reduction-key="%uei%:%nodeid%:%dpname%:%parm[reportName]%" alarm-type="3" auto-clean="false"/>
+  </event>
+  <event>
+    <uei>uei.opennms.org/reportd/reportDeliveryFailed</uei>
+    <event-label>OpenNMS-defined Reportd Event: reportDeliveryFailed</event-label>
+    <descr>
+      A message from the Reportd delivery service that a report could not be delivered:
+      &lt;p&gt;The report with name %parm[reportName]% could not be delivered for the following reason: %parm[reason]% &lt;/p&gt;
+    </descr>
+    <logmsg dest="logndisplay">
+      &lt;p&gt;The report with name %parm[reportName]% could not be delivered for the following reason: %parm[reason]% &lt;/p&gt;
+     </logmsg>
+    <severity>Minor</severity>
+    <alarm-data reduction-key="%uei%:%nodeid%:%dpname%:%parm[reportName]%" alarm-type="3" auto-clean="false"/>
+  </event>
+  <event>
+    <uei>uei.opennms.org/internal/linkd/nodeLinkDiscoveryStarted</uei>
+    <event-label>OpenNMS-defined Linkd Event: nodeLinkDiscoveryStarted</event-label>
+    <descr>&lt;p&gt;The Linkd process has started its attempt to discover links for this node.&lt;/p&gt;</descr>
+    <logmsg dest="logndisplay">&lt;p&gt;Linkd %parm[runnable]% started.&lt;/p&gt;</logmsg>
+    <severity>Normal</severity>
+  </event>
+  <event>
+    <uei>uei.opennms.org/internal/linkd/nodeLinkDiscoveryCompleted</uei>
+    <event-label>OpenNMS-defined Linkd Event: nodeLinkDiscoveryCompleted</event-label>
+    <descr>&lt;p&gt;The Linkd process has finished its attempt to discover links for this node.&lt;/p&gt;</descr>
+    <logmsg dest="logndisplay">&lt;p&gt;Linkd %parm[runnable]% completed.&lt;/p&gt;</logmsg>
+    <severity>Normal</severity>
+  </event>
+  <event>
+    <uei>uei.opennms.org/internal/linkd/nodeLinkDiscoverySuspended</uei>
+    <event-label>OpenNMS-defined Linkd Event: nodeLinkDiscoverySuspended</event-label>
+    <descr>&lt;p&gt;The Linkd process suspended its attempt to discover links for this node.&lt;/p&gt;</descr>
+    <logmsg dest="logndisplay">&lt;p&gt;Linkd %parm[runnable]% suspended.&lt;/p&gt;</logmsg>
+    <severity>Warning</severity>
+  </event>
+  <event>
+    <uei>uei.opennms.org/internal/linkd/linkDiscoveryStarted</uei>
+    <event-label>OpenNMS-defined Linkd Event: linkDiscoveryStarted</event-label>
+    <descr>&lt;p&gt;The Linkd process has started its attempt to discover links.&lt;/p&gt;</descr>
+    <logmsg dest="logndisplay">&lt;p&gt;Linkd %parm[runnable]% started.&lt;/p&gt;</logmsg>
+    <severity>Normal</severity>
+  </event>
+  <event>
+    <uei>uei.opennms.org/internal/linkd/linkDiscoveryCompleted</uei>
+    <event-label>OpenNMS-defined Linkd Event: linkDiscoveryCompleted</event-label>
+    <descr>&lt;p&gt;The Linkd process has finished its attempt to discover links.&lt;/p&gt;</descr>
+    <logmsg dest="logndisplay">&lt;p&gt;Linkd %parm[runnable]% completed.&lt;/p&gt;</logmsg>
+    <severity>Normal</severity>
+  </event>
+  <event>
+    <uei>uei.opennms.org/internal/linkd/linkDiscoverySuspended</uei>
+    <event-label>OpenNMS-defined Linkd Event: linkDiscoverySuspended</event-label>
+    <descr>&lt;p&gt;The Linkd process suspended its attempt to discover links.&lt;/p&gt;</descr>
+    <logmsg dest="logndisplay">&lt;p&gt;Linkd %parm[runnable]% suspended.&lt;/p&gt;</logmsg>
+    <severity>Warning</severity>
+  </event>
+  <event>
+    <uei>uei.opennms.org/internal/discovery/hardwareInventoryFailed</uei>
+    <event-label>OpenNMS-defined internal event: reload specified daemon configuration failed</event-label>
+    <descr>
+      &lt;p&gt;The hardware discovery on node %nodelabel% (IP address %interface%) has failed.&lt;/p&gt;
+    </descr>
+    <logmsg dest="logndisplay">
+      &lt;p&gt;The hardware discovery on node %nodelabel% (IP address %interface%) has failed.&lt;/p&gt;
+      &lt;p&gt;Reason: %parm[reason]%.&lt;/p&gt;
+    </logmsg>
+    <severity>Minor</severity>
+    <!--
+    If there are several equipments that don't support the ENTITY-MIB, this event could be very noisy
+    in terms of alarms, considering that it can be triggered every time the node is updated.
+    For this reason, the alarm-data should not be used.
+    -->
+    <!-- 
+    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="true" />
+    -->
+  </event>
+  <event>
+    <uei>uei.opennms.org/internal/discovery/hardwareInventorySuccessful</uei>
+    <event-label>OpenNMS-defined internal event: hardware discovery successful</event-label>
+    <descr>
+      &lt;p&gt;The hardware discovery on node %nodelabel% (IP address %interface%) has been completed successfuly.&lt;/p&gt;
+    </descr>
+    <logmsg dest="logndisplay">
+      &lt;p&gt;The hardware discovery on node %nodelabel% (IP address %interface%) has been completed successfuly.&lt;/p&gt;
+    </logmsg>
+    <severity>Normal</severity>
+    <!--
+    If there are several equipments that don't support the ENTITY-MIB, this event could be very noisy
+    in terms of alarms, considering that it can be triggered every time the node is updated.
+    For this reason, the alarm-data should not be used.
+    -->
+    <!--
+    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false"
+                clear-key="uei.opennms.org/internal/discovery/hardwareInventoryFailed:%dpname%:%nodeid%:%interface%"/>
+    -->
+  </event>
+</events>
