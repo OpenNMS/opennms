@@ -224,40 +224,7 @@ public class GraphResultsController extends AbstractController implements Initia
         // The 'matching' parameter is going to work only for one resource.
         String matching = request.getParameter("matching");
         if (matching != null) {
-            List<String> metricList = new ArrayList<String>();
-            JexlEngine expressionParser = new JexlEngine();
-            try {
-                ExpressionImpl e = (ExpressionImpl) expressionParser.createExpression(matching);
-                for (List<String> list : e.getVariables()) {
-                    if (list.get(0).equalsIgnoreCase("math")) {
-                        continue;
-                    }
-                    if (list.get(0).equalsIgnoreCase("datasources")) {
-                        metricList.add(list.get(1).intern());
-                    } else {
-                        metricList.add(list.get(0).intern());
-                    }
-                }
-            } catch (Exception e) {
-            }
-            if (!metricList.isEmpty()) {
-                List<String> templates = new ArrayList<String>();
-                for (PrefabGraph graph : m_graphResultsService.getAllPrefabGraphs(resourceIds[0])) {
-                    boolean found = false;
-                    for (String c : graph.getColumns()) {
-                        if (metricList.contains(c)) {
-                            found = true;
-                            continue;
-                        }
-                    }
-                    if (found) {
-                        templates.add(graph.getName());
-                    }
-                }
-                if (!templates.isEmpty()) {
-                    reports = templates.toArray(new String[templates.size()]);
-                }
-            }
+            reports = getSuggestedReports(resourceIds[0], matching);
         }
 
         GraphResults model = m_graphResultsService.findResults(resourceIds, reports, startLong, endLong, relativeTime);
@@ -268,6 +235,49 @@ public class GraphResultsController extends AbstractController implements Initia
 
         return modelAndView;
     }
+
+    /**
+     * <p>getSuggestedReports</p>
+     *
+     * @return an array of {@link java.lang.String} objects.
+     */
+	public String[] getSuggestedReports(String resourceId, String matching) {
+		List<String> metricList = new ArrayList<String>();
+		JexlEngine expressionParser = new JexlEngine();
+		try {
+		    ExpressionImpl e = (ExpressionImpl) expressionParser.createExpression(matching);
+		    for (List<String> list : e.getVariables()) {
+		        if (list.get(0).equalsIgnoreCase("math")) {
+		            continue;
+		        }
+		        if (list.get(0).equalsIgnoreCase("datasources")) {
+		            metricList.add(list.get(1).intern());
+		        } else {
+		            metricList.add(list.get(0).intern());
+		        }
+		    }
+		} catch (Exception e) {
+		}
+		if (!metricList.isEmpty()) {
+		    List<String> templates = new ArrayList<String>();
+		    for (PrefabGraph graph : m_graphResultsService.getAllPrefabGraphs(resourceId)) {
+		        boolean found = false;
+		        for (String c : graph.getColumns()) {
+		            if (metricList.contains(c)) {
+		                found = true;
+		                continue;
+		            }
+		        }
+		        if (found) {
+		            templates.add(graph.getName());
+		        }
+		    }
+		    if (!templates.isEmpty()) {
+		        return templates.toArray(new String[templates.size()]);
+		    }
+		}
+		return new String[] { "all" };
+	}
 
     /**
      * <p>getGraphResultsService</p>
