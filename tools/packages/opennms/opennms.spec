@@ -46,7 +46,6 @@ AutoReq: no
 AutoProv: no
 
 %define with_tests	0%{nil}
-%define with_docs	1%{nil}
 
 Name:			%{_name}
 Summary:		Enterprise-grade Network Management Platform (Easy Install)
@@ -120,7 +119,6 @@ option, like so:
 %{extrainfo2}
 
 
-%if %{with_docs}
 %package docs
 Summary:	Documentation for the %{_descr} network management platform
 Group:		Applications/System
@@ -131,7 +129,6 @@ This package contains the API and user documentation.
 %{extrainfo}
 %{extrainfo2}
 
-%endif
 
 %package remote-poller
 Summary:	Remote (Distributed) Poller for %{_descr}
@@ -556,15 +553,12 @@ export OPENNMS_HOME PATH
 
 END
 
-%if %{with_docs}
-
-mkdir -p $RPM_BUILD_ROOT%{_docdir}/%{name}-%{version}
-tar -xvzf $RPM_BUILD_DIR/%{name}-%{version}-%{release}/opennms-doc/guide-all/target/*.tar.gz -C $RPM_BUILD_ROOT%{_docdir}/%{name}-%{version}/
-rm -rf $RPM_BUILD_ROOT%{instprefix}/docs
+rm -rf $RPM_BUILD_ROOT%{_docdir}/%{name}-%{version}
+mkdir -p $RPM_BUILD_ROOT%{_docdir}
+mv $RPM_BUILD_ROOT%{instprefix}/docs $RPM_BUILD_ROOT%{_docdir}/%{name}-%{version}
 cp README* $RPM_BUILD_ROOT%{instprefix}/etc/
 rm -rf $RPM_BUILD_ROOT%{instprefix}/etc/README
 rm -rf $RPM_BUILD_ROOT%{instprefix}/etc/README.build
-%endif
 
 install -d -m 755 $RPM_BUILD_ROOT%{logdir}
 mv $RPM_BUILD_ROOT%{instprefix}/logs/.readme $RPM_BUILD_ROOT%{logdir}/
@@ -726,11 +720,9 @@ rm -rf $RPM_BUILD_ROOT
 			%{instprefix}/data
 			%{instprefix}/deploy
 
-%if %{with_docs}
 %files docs
 %defattr(644 root root 755)
 %{_docdir}/%{name}-%{version}
-%endif
 
 %files remote-poller
 %attr(755,root,root) %{_initrddir}/%{name}-remote-poller

@@ -28,11 +28,13 @@
 
 package org.opennms.web.controller;
 
+import org.apache.commons.jexl2.ExpressionImpl;
+import org.apache.commons.jexl2.JexlEngine;
 import org.jrobin.core.RrdException;
 import org.jrobin.core.timespec.TimeParser;
 import org.jrobin.core.timespec.TimeSpec;
 import org.opennms.core.utils.WebSecurityUtils;
-
+import org.opennms.netmgt.model.PrefabGraph;
 import org.opennms.web.graph.GraphResults;
 import org.opennms.web.graph.RelativeTimePeriod;
 import org.opennms.web.servlet.MissingParameterException;
@@ -46,7 +48,10 @@ import org.springframework.web.servlet.mvc.AbstractController;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
 
 /**
@@ -215,7 +220,46 @@ public class GraphResultsController extends AbstractController implements Initia
             startLong = times[0];
             endLong = times[1];
         }
-        
+
+        // The 'matching' parameter is going to work only for one resource.
+        String matching = request.getParameter("matching");
+        if (matching != null) {
+            List<String> metricList = new ArrayList<String>();
+            JexlEngine expressionParser = new JexlEngine();
+            try {
+                ExpressionImpl e = (ExpressionImpl) expressionParser.createExpression(matching);
+                for (List<String> list : e.getVariables()) {
+                    if (list.get(0).equalsIgnoreCase("math")) {
+                        continue;
+                    }
+                    if (list.get(0).equalsIgnoreCase("datasources")) {
+                        metricList.add(list.get(1).intern());
+                    } else {
+                        metricList.add(list.get(0).intern());
+                    }
+                }
+            } catch (Exception e) {
+            }
+            if (!metricList.isEmpty()) {
+                List<String> templates = new ArrayList<String>();
+                for (PrefabGraph graph : m_graphResultsService.getAllPrefabGraphs(resourceIds[0])) {
+                    boolean found = false;
+                    for (String c : graph.getColumns()) {
+                        if (metricList.contains(c)) {
+                            found = true;
+                            continue;
+                        }
+                    }
+                    if (found) {
+                        templates.add(graph.getName());
+                    }
+                }
+                if (!templates.isEmpty()) {
+                    reports = templates.toArray(new String[templates.size()]);
+                }
+            }
+        }
+
         GraphResults model = m_graphResultsService.findResults(resourceIds, reports, startLong, endLong, relativeTime);
         
         ModelAndView modelAndView = new ModelAndView("/graph/results", "results", model);

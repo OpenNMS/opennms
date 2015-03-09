@@ -156,6 +156,7 @@
 
       <feature>opennms-core</feature>
       <feature>opennms-events-api</feature>
+      <feature>opennms-poller-api</feature>
       <feature>opennms-rrd-api</feature>
       <feature>opennms-snmp</feature>
 
@@ -218,6 +219,13 @@
       <feature>opennms-config-api</feature>
 
       <bundle>mvn:org.opennms/opennms-dao-api/${project.version}</bundle>
+    </feature>
+
+    <feature name="opennms-dao" description="OpenNMS :: DAO" version="${project.version}">
+      <feature>opennms-collection-api</feature>
+      <feature>opennms-dao-api</feature>
+
+      <bundle>mvn:org.opennms/opennms-dao/${project.version}</bundle>
     </feature>
 
     <feature name="opennms-events-api" description="OpenNMS :: Events API" version="${project.version}">

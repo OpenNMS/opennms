@@ -129,6 +129,29 @@ public class SurveillanceViewProvider {
     }
 
     /**
+     * Replaces a {@link View} with a new one.
+     *
+     * @param oldView the old view to be replaced
+     * @param newView the new view
+     */
+    public synchronized void replaceView(View oldView, View newView) {
+        View viewFound = null;
+
+        for (View view : m_surveillanceViewConfiguration.getViews()) {
+            if (view.getName().equals(oldView.getName())) {
+                viewFound = view;
+
+                break;
+            }
+        }
+
+        if (viewFound != null) {
+            int index = getSurveillanceViewConfiguration().getViews().indexOf(viewFound);
+            getSurveillanceViewConfiguration().getViews().set(index, newView);
+        }
+    }
+
+    /**
      * Returns the default {@link View}.
      *
      * @return the {@link View} instance if found, null otherwise
