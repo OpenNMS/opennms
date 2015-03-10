@@ -16,5 +16,8 @@
 // Include your documentation sections here
 // include::text/myFile.adoc[]
 
+== Design and Styleguidelines
+include::text/reporting/jasperreport-styleguide.adoc[]
+
 == REST API
 include::text/rest/CORS.adoc[]
