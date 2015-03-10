@@ -63,3 +63,6 @@ include::text/amqp/event_forwarder.adoc[]
 include::text/amqp/event_receiver.adoc[]
 include::text/amqp/alarm_northbounder.adoc[]
 include::text/amqp/custom_processors.adoc[]
+
+== Design and Styleguidelines
+include::text/reporting/jasperreport-styleguide.adoc[]
