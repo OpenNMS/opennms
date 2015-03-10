@@ -124,6 +124,11 @@ public class QueryManagerDaoImpl implements QueryManager {
 
         final OnmsEvent event = m_eventDao.get(lostEventId);
         final OnmsOutage outage = m_outageDao.get(outageId);
+        if (outage == null) {
+            LOG.warn("Failed to update outage {} with event id {}. The outage no longer exists.",
+                    outageId, lostEventId);
+            return;
+        }
 
         // Update the outage
         outage.setServiceLostEvent(event);
@@ -135,6 +140,11 @@ public class QueryManagerDaoImpl implements QueryManager {
     public Integer resolveOutagePendingRegainEventId(int nodeId, String ipAddr, String svcName, Date regainedTime) {
         LOG.info("resolving outage for {}:{}:{} @ {}", nodeId, ipAddr, svcName, regainedTime);
         final OnmsMonitoredService service = m_monitoredServiceDao.get(nodeId, InetAddressUtils.addr(ipAddr), svcName);
+        if (service == null) {
+            LOG.warn("Failed to resolve the pending outage for {}:{}:{} @ {}. The service could not be found.",
+                    nodeId, ipAddr, svcName, regainedTime);
+            return null;
+        }
 
         final OnmsOutage outage = m_outageDao.currentOutageForService(service);
         if (outage == null) {
@@ -154,6 +164,11 @@ public class QueryManagerDaoImpl implements QueryManager {
 
         final OnmsEvent event = m_eventDao.get(regainedEventId);
         final OnmsOutage outage = m_outageDao.get(outageId);
+        if (outage == null) {
+            LOG.warn("Failed to update outage {} with event id {}. The outage no longer exists.",
+                    outageId, regainedEventId);
+            return;
+        }
 
         // Update the outage
         outage.setServiceRegainedEvent(event);
