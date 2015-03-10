@@ -63,3 +63,13 @@ include::text/docs/writing.adoc[]
 include::text/docs/images.adoc[]
 include::text/docs/include-source.adoc[]
 include::text/docs/cheat-sheets.adoc[]
+
+== AMQP Integration
+include::text/amqp/introduction.adoc[]
+include::text/amqp/event_forwarder.adoc[]
+include::text/amqp/event_receiver.adoc[]
+include::text/amqp/alarm_northbounder.adoc[]
+include::text/amqp/custom_processors.adoc[]
+
+== Design and Styleguidelines
+include::text/reporting/jasperreport-styleguide.adoc[]
