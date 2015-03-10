@@ -51,7 +51,7 @@ public class CustomHttpClientConfigurer implements HttpClientConfigurer {
     @Override
     public void configureHttpClient(final HttpClient client) {
         try {
-            final SSLContext ctx = SSLContext.getInstance("SSL");
+            final SSLContext ctx = SSLContext.getDefault();
             ctx.init(EMPTY_KEYMANAGER_ARRAY, new TrustManager[] { new DefaultTrustManager() }, new SecureRandom());
             SSLContext.setDefault(ctx);
 

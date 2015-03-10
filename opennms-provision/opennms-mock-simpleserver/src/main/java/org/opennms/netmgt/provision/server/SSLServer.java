@@ -66,14 +66,14 @@ public class SSLServer extends SimpleServer {
     /** Constant <code>DEFAULT_KEY_MANAGER_PROVIDER="SunJSSE"</code> */
     public static final String DEFAULT_KEY_MANAGER_PROVIDER = "SunJSSE";
     /** Constant <code>DEFAULT_SSL_CONTEXT_PROTOCOL="SSL"</code> */
-    public static final String DEFAULT_SSL_CONTEXT_PROTOCOL = "SSL";
+    public static final String DEFAULT_SSL_CONTEXT_PROTOCOL = "Default";
     
     private int m_port = DEFAULT_TESTING_PORT;
     private String m_password = DEFAULT_PASSWORD;
     private String m_pathToKeyStore = DEFAULT_PATH_TO_KEY_STORE;
     private String m_keyManagerAlgorithm = DEFAULT_KEY_MANAGER_ALGORITHM;
     private String m_keyManagerProvider = DEFAULT_KEY_MANAGER_PROVIDER;
-    private String m_sslContextProtocol = DEFAULT_SSL_CONTEXT_PROTOCOL;    
+    private String m_sslContextProtocol = DEFAULT_SSL_CONTEXT_PROTOCOL;
     
     /**
      * <p>init</p>

@@ -103,7 +103,7 @@ class JMXSecureMBeanServerConnector implements JmxServerConnector {
                     tmf.init(ks);
                     // X509TrustManager defaultTrustManager = (X509TrustManager) tmf.getTrustManagers()[0];
                     tm = new AnyServerX509TrustManager();
-                    SSLContext ctx = SSLContext.getInstance("TLSv1");
+                    SSLContext ctx = SSLContext.getDefault();
                     ctx.init(null, new TrustManager[]{tm}, null);
                     SSLSocketFactory ssf = ctx.getSocketFactory();
                     env.put("jmx.remote.tls.socket.factory", ssf);
