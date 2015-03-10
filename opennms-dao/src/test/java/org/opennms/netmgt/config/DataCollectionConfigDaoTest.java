@@ -42,6 +42,8 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml"
+        // Can't use minimal-conf here
+        //"classpath:/META-INF/opennms/applicationContext-minimal-conf.xml"
 })
 @JUnitConfigurationEnvironment(systemProperties = {"org.opennms.snmp.dataCollectionConfig.reloadCheckInterval=60000"})
 @JUnitTemporaryDatabase(dirtiesContext=false)
