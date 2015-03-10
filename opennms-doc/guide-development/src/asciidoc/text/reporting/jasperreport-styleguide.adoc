@@ -1,5 +1,5 @@
-
-:imagedir: ../../images
+// Allow GitHub image rendering
+:imagesdir: ../../images
 === Jasper Report Guideline
 
 Building and contributing JasperReports is a way to contribute to the project.
