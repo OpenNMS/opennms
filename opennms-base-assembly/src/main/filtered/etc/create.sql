@@ -784,6 +784,7 @@ create index outages_serviceid_idx on outages(serviceID);
 create index outages_ipaddr_idx on outages(ipaddr);
 create index outages_regainedservice_idx on outages(ifRegainedService);
 create index outages_ifServivceId_idx on outages(ifServiceId);
+create unique index one_outstanding_outage_per_service_idx on outages (ifserviceid) where ifregainedservice is null;
 
 --########################################################################
 --#
