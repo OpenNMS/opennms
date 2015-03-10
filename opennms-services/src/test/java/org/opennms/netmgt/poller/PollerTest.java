@@ -1288,6 +1288,13 @@ public class PollerTest implements TemporaryDatabaseAware<MockDatabase> {
                 m_latch.countDown();
             }
         }
+
+        @Override
+        public void finishProcessingEvents() {
+            while(m_latch.getCount() > 0) {
+                m_latch.countDown();
+            }
+        }
     }
 
     /**
