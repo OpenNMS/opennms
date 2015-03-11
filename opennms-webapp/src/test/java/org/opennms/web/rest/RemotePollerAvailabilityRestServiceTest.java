@@ -37,16 +37,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.ServletException;
-
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.opennms.core.db.DataSourceFactory;
-import org.opennms.core.db.XADataSourceFactory;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
-import org.opennms.core.test.db.MockDatabase;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.rest.AbstractSpringJerseyRestTestCase;
 import org.opennms.netmgt.dao.DatabasePopulator;
@@ -59,23 +53,16 @@ import org.opennms.netmgt.model.OnmsLocationMonitor.MonitorStatus;
 import org.opennms.netmgt.model.OnmsLocationSpecificStatus;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
-import org.opennms.test.DaoTestConfigBean;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.opennms.web.rest.AvailCalculator.UptimeCalculator;
 import org.opennms.web.rest.support.TimeChunker;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mock.web.MockFilterConfig;
-import org.springframework.mock.web.MockServletConfig;
-import org.springframework.orm.hibernate3.support.OpenSessionInViewFilter;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
-import org.springframework.web.context.support.WebApplicationContextUtils;
-
-import com.sun.jersey.spi.spring.container.servlet.SpringServlet;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @WebAppConfiguration
@@ -116,38 +103,6 @@ public class RemotePollerAvailabilityRestServiceTest extends AbstractSpringJerse
     DatabasePopulator m_databasePopulator;
 
     public static final String BASE_REST_URL = "/remotelocations/availability";
-
-    @Before
-    @Override
-    public void setUp() throws Throwable {
-        beforeServletStart();
-
-        final DaoTestConfigBean bean = new DaoTestConfigBean();
-        bean.afterPropertiesSet();
-
-        final MockDatabase db = new MockDatabase(true);
-        DataSourceFactory.setInstance(db);
-        XADataSourceFactory.setInstance(db);
-
-        setServletConfig(new MockServletConfig(getServletContext(), "dispatcher"));    
-        getServletConfig().addInitParameter("com.sun.jersey.config.property.resourceConfigClass", "com.sun.jersey.api.core.PackagesResourceConfig");
-        getServletConfig().addInitParameter("com.sun.jersey.config.property.packages", "org.opennms.web.rest");
-
-        try {
-            final MockFilterConfig filterConfig = new MockFilterConfig(getServletContext(), "openSessionInViewFilter");
-            setFilter(new OpenSessionInViewFilter());        
-            getFilter().init(filterConfig);
-
-            setDispatcher(new SpringServlet());
-            getDispatcher().init(getServletConfig());
-        } catch (final ServletException se) {
-            throw se.getRootCause();
-        }
-
-        setWebAppContext(WebApplicationContextUtils.getWebApplicationContext(getServletContext()));
-        afterServletStart();
-        System.err.println("------------------------------------------------------------------------------");
-    }
 
     @Override
     protected void afterServletStart() {
