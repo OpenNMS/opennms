@@ -1,8 +1,7 @@
-<%--
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -27,23 +26,22 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
---%>
+package org.opennms.core.utils;
 
-<%@page language="java"
-	contentType="text/html"
-	session="true"
-	isErrorPage="true"
-%>
+import static org.junit.Assert.assertEquals;
+import org.junit.Test;
 
-<!DOCTYPE html>
-<html>
-  <head>
-    <title>Page Not Found</title>
-  </head>
-  <body>
-    <h1>Page Not Found</h1>
-    <p>
-      The page you were looking for does not exist.
-    </p>
-  </body>
-</html>
+public class LldpUtilsTest {
+    
+    @Test
+    /* 
+     * From NMS-7148: 01:ac:14:14:8b
+     * 01 is IP version 4 end the address is 172.20.20.139
+     */
+    public void testNMS7184() throws Exception {
+        String ianafamilyaddress = "01:ac:14:14:8b";
+        assertEquals(1, LldpUtils.IanaFamilyAddressStringToType(ianafamilyaddress).intValue());
+        assertEquals("172.20.20.139",LldpUtils.decodeNetworkAddress(ianafamilyaddress));
+    }
+    
+}

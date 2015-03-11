@@ -26,8 +26,9 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.core.utils;
+package org.opennms.netmgt.rtc;
 
+import org.opennms.core.utils.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

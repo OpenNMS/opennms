@@ -28,8 +28,8 @@
 
 package org.opennms.netmgt.enlinkd.snmp;
 
+import org.opennms.core.utils.LldpUtils.LldpPortIdSubType;
 import org.opennms.netmgt.model.LldpLink;
-import org.opennms.netmgt.model.LldpLink.LldpPortIdSubType;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpUtils;
@@ -63,7 +63,7 @@ public class LldpLocPortGetter extends TableTracker {
 			return null;
 		LldpLink lldplink = new LldpLink();
 		lldplink.setLldpLocalPortNum(lldpRemLocalPortNum);
-		lldplink.setLldpPortId(LldpHelper.decodeLldpLink(val[0].toInt(),val[1]));
+		lldplink.setLldpPortId(LldpHelper.decodeLldpPortId(val[0].toInt(),val[1]));
 		lldplink.setLldpPortIdSubType(LldpPortIdSubType.get(val[0].toInt()));
 		if (val[2] != null)
 			lldplink.setLldpPortDescr((val[2].toDisplayString()));

@@ -202,6 +202,7 @@ public class WillItUnmarshalTest {
         addFile(Source.EXAMPLE, "destinationPaths.xml", DestinationPaths.class, Impl.CASTOR);
         addFile(Source.CONFIG, "discovery-configuration.xml", DiscoveryConfiguration.class, Impl.CASTOR);
         addFile(Source.EXAMPLE, "discovery-configuration.xml", DiscoveryConfiguration.class, Impl.CASTOR);
+        addFile(Source.CONFIG, "eventconf.xml", Events.class, Impl.JAXB);
         addFile(Source.CONFIG, "eventconf.xml", Events.class, Impl.CASTOR);
         addFile(Source.CONFIG, "groups.xml", Groupinfo.class, Impl.CASTOR);
         addFile(Source.EXAMPLE, "groups.xml", Groupinfo.class, Impl.CASTOR);

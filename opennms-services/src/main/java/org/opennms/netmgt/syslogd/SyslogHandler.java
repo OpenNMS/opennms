@@ -57,6 +57,7 @@ public final class SyslogHandler implements Fiber {
     private static final Logger LOG = LoggerFactory.getLogger(SyslogHandler.class);
 
     private final boolean USE_NIO = false;
+    private final boolean USE_NETTY = false;
 
     /**
      * The UDP receiver thread.
@@ -172,6 +173,21 @@ public final class SyslogHandler implements Fiber {
 
                 m_receiver = new SyslogReceiverNioThreadPoolImpl(
                     channel,
+                    m_ForwardingRegexp,
+                    m_MatchingGroupHost,
+                    m_MatchingGroupMessage,
+                    m_UeiList,
+                    m_HideMessages,
+                    m_DiscardUei
+                );
+            } else if (USE_NETTY){
+                // Camel Netty SyslogReceiver implementation
+
+                m_receiver = new SyslogReceiverCamelNettyImpl(
+                    (m_dgIp != null && m_dgIp.length() != 0) ? 
+                        InetAddressUtils.addr(m_dgIp) :
+                        InetAddressUtils.getLocalHostAddress(),
+                    m_dgPort,
                     m_ForwardingRegexp,
                     m_MatchingGroupHost,
                     m_MatchingGroupMessage,
