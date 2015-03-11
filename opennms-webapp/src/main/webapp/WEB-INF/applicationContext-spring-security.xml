@@ -124,14 +124,14 @@
     </beans:bean>
     <!-- END CUSTOM AUthentication Filter -->
 
-  <!-- use our custom authentication provider; to use RADIUS instead, change this to "radiusAuthenticationProvider" and uncomment below -->
   <authentication-manager alias="authenticationManager">
     <!-- Use our custom authentication provider -->
     <authentication-provider ref="hybridAuthenticationProvider" />
-    <!-- To enable external (e.g. LDAP, RADIUS) authentication, uncomment the following.
-         You must also rename and customize exactly ONE of the example files in the
-         spring-security.d subdirectory. -->
-    <!-- <authentication-provider ref="externalAuthenticationProvider" /> -->
+    <!-- To enable external (e.g. LDAP, RADIUS) authentication, replace
+         OPENNMS_HOME/etc/external-auth-config.xml with a version implementing
+         your desired configuration. Some example configs can be found in
+         OPENNMS_HOME/etc/examples/external-auth-config/. -->
+    <authentication-provider ref="externalAuthenticationProvider" />
   </authentication-manager>
 
   <!-- ===================== USER DAO AUTHENTICATION ==================== -->

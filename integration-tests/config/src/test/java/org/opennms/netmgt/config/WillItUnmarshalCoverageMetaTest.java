@@ -127,6 +127,7 @@ public class WillItUnmarshalCoverageMetaTest {
         ignoreFile(new File(getDaemonEtcDirectory(), "syslog/POSIX.syslog.xml"));
         ignoreFile(new File(getDaemonEtcDirectory(), "syslog/Sudo.syslog.xml"));
         ignoreFile(new File(getDaemonEtcDirectory(), "log4j2.xml"));
+        ignoreFile(new File(getDaemonEtcDirectory(), "external-auth-config.xml"));
         LOG.debug("FILES.size() = {}", FILES.size());
     }
     
