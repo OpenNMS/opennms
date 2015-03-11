@@ -40,6 +40,7 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
@@ -100,8 +101,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.support.TransactionTemplate;
-
-import com.google.common.collect.Sets;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
@@ -1425,7 +1424,7 @@ public class PollerTest implements TemporaryDatabaseAware<MockDatabase> {
     private static class QueueMultipleDownsHook implements SendNowHook {
         private final CountDownLatch m_latch;
 
-        private final Set<String> m_ueis = Sets.newHashSet();
+        private final Set<String> m_ueis = new HashSet<String>();
 
         public QueueMultipleDownsHook(int count) {
             m_latch = new CountDownLatch(count);
