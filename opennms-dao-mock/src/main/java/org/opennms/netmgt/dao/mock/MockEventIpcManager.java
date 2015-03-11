@@ -174,6 +174,8 @@ public class MockEventIpcManager implements EventForwarder, EventProxy, EventIpc
         public void beforeBroadcast(Event event);
 
         public void afterBroadcast(Event event);
+
+        void finishProcessingEvents();
     }
 
     private EventAnticipator m_anticipator;
@@ -362,6 +364,11 @@ public class MockEventIpcManager implements EventForwarder, EventProxy, EventIpc
      * 
      */
     public synchronized void finishProcessingEvents() {
+        // Allow the hook to unblock any pending events
+        if (m_sendNowHook != null) {
+            m_sendNowHook.finishProcessingEvents();
+        }
+
         while (m_pendingEvents > 0) {
         	LOG.debug("Waiting for event processing: ({} remaining)", m_pendingEvents);
             try {
