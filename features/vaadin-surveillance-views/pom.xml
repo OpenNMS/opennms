@@ -114,16 +114,24 @@
 
     <repositories>
         <repository>
-            <snapshots><enabled>true</enabled></snapshots>
-            <releases><enabled>false</enabled></releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
             <id>opennms-snapshots</id>
             <name>OpenNMS Snapshot Maven Repository</name>
             <url>http://maven.opennms.org/content/groups/opennms.org-snapshot</url>
         </repository>
         <repository>
             <id>vaadin-snapshots</id>
-            <releases><enabled>false</enabled></releases>
-            <snapshots><enabled>true</enabled></snapshots>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
             <url>http://maven.opennms.org/content/groups/vaadin-snapshot/</url>
         </repository>
         <repository>
@@ -135,25 +143,27 @@
     <pluginRepositories>
         <pluginRepository>
             <id>codehaus-snapshots</id>
-            <snapshots><enabled>true</enabled></snapshots>
-            <releases><enabled>false</enabled></releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
             <url>http://maven.opennms.org/content/groups/codehaus.org-snapshot/</url>
         </pluginRepository>
         <pluginRepository>
             <id>vaadin-snapshots</id>
-            <snapshots><enabled>true</enabled></snapshots>
-            <releases><enabled>false</enabled></releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
             <url>http://maven.opennms.org/content/groups/vaadin-snapshot/</url>
         </pluginRepository>
     </pluginRepositories>
 
     <dependencies>
-        <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-            <scope>provided</scope>
-        </dependency>
-
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
@@ -233,22 +243,6 @@
             <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
-
-        <!--
-
-                <dependency>
-                    <groupId>org.opennms.features.topology.plugins</groupId>
-                    <artifactId>browsers</artifactId>
-                    <version>${project.version}</version>
-                    <scope>provided</scope>
-                </dependency>
-
-                <dependency>
-                    <groupId>org.opennms</groupId>
-                    <artifactId>opennms-config-model</artifactId>
-                    <scope>provided</scope>
-                </dependency>
-        -->
 
     </dependencies>
 

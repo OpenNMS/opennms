@@ -203,7 +203,7 @@ public class SurveillanceViewNodeRtcTable extends SurveillanceViewDetailTable {
                 /**
                  * calculate and retrieve the RTC instances
                  */
-                return getSurveillanceViewService().getNoteRtcsForCategories(rowCategories, colCategories);
+                return getSurveillanceViewService().getNodeRtcsForCategories(rowCategories, colCategories);
             }
         });
 
