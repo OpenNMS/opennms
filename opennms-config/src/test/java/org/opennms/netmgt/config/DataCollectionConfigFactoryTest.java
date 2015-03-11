@@ -38,6 +38,7 @@ import java.util.List;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.junit.Test;
+import org.opennms.netmgt.config.datacollection.MibObject;
 import org.opennms.test.ThrowableAnticipator;
 import org.springframework.core.io.ByteArrayResource;
 

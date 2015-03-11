@@ -31,7 +31,7 @@ package org.opennms.features.vaadin.datacollection;
 import java.util.List;
 
 import org.opennms.features.vaadin.api.OnmsBeanContainer;
-import org.opennms.netmgt.config.DataCollectionConfigDao;
+import org.opennms.netmgt.config.api.DataCollectionConfigDao;
 
 import com.vaadin.data.Property;
 import com.vaadin.data.fieldgroup.BeanFieldGroup;

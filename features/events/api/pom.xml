@@ -23,6 +23,7 @@
             <Bundle-Version>${project.version}</Bundle-Version>
             <Export-Package>
               org.opennms.netmgt.events.api.*;version="${project.version}",
+              org.opennms.netmgt.events.api.support.*;version="${project.version}",
               org.opennms.netmgt.xml.event.*;version="${project.version}"
             </Export-Package>
           </instructions>

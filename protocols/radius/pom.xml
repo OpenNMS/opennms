@@ -39,10 +39,6 @@
       <artifactId>opennms-web-api</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-services</artifactId>
-    </dependency>
-    <dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>jradius-dependencies</artifactId>
       <type>pom</type>

@@ -46,14 +46,14 @@ import org.exolab.castor.xml.ValidationException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.core.test.MockLogAppender;
+import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.MockDatabase;
+import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.xml.JaxbUtils;
-import org.opennms.netmgt.capsd.JdbcCapsdDbSyncer;
-import org.opennms.netmgt.config.CapsdConfigFactory;
-import org.opennms.netmgt.config.CollectdConfigFactory;
 import org.opennms.netmgt.config.DatabaseSchemaConfigFactory;
 import org.opennms.netmgt.config.OpennmsServerConfigFactory;
 import org.opennms.netmgt.config.PollerConfigFactory;
@@ -64,18 +64,31 @@ import org.opennms.netmgt.config.poller.Service;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.mock.MockEventUtil;
-import org.opennms.netmgt.mock.TestCapsdConfigManager;
 import org.opennms.netmgt.rrd.RrdStrategy;
 import org.opennms.netmgt.rrd.RrdUtils;
+import org.opennms.test.JUnitConfigurationEnvironment;
 import org.opennms.test.mock.EasyMockUtils;
-import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
 
+@RunWith(OpenNMSJUnit4ClassRunner.class)
+@ContextConfiguration(locations={
+        "classpath:/META-INF/opennms/applicationContext-soa.xml",
+        "classpath:/META-INF/opennms/applicationContext-dao.xml",
+        "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
+        "classpath*:/META-INF/opennms/component-dao.xml",
+        "classpath*:/META-INF/opennms/component-service.xml",
+        "classpath:/META-INF/opennms/applicationContext-daemon.xml",
+        "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
+        "classpath:/META-INF/opennms/mockEventIpcManager.xml",
+        "classpath:/META-INF/opennms/applicationContext-provisioner.xml"
+})
+@JUnitConfigurationEnvironment
+@JUnitTemporaryDatabase
 public class OpenNMSProvisionerTest {
 
-
+    @Autowired
     private OpenNMSProvisioner m_provisioner;
-
-    private TestCapsdConfigManager m_capsdConfig;
 
     private TestPollerConfigManager m_pollerConfig;
 
@@ -121,19 +134,11 @@ public class OpenNMSProvisionerTest {
         "   <monitor service=\"MyTcp\" class-name=\"org.opennms.netmgt.poller.monitors.LdapMonitor\"/>\n" + 
         "</poller-configuration>\n";
 
-    private static final String CAPSD_CONFIG = "\n" +
-            "<capsd-configuration max-suspect-thread-pool-size=\"2\" max-rescan-thread-pool-size=\"3\"\n" +
-            "   delete-propagation-enabled=\"true\">\n" +
-            "   <protocol-plugin protocol=\"ICMP\" class-name=\"org.opennms.netmgt.capsd.plugins.LdapPlugin\"/>\n" +
-            "   <protocol-plugin protocol=\"MyTcp\" class-name=\"org.opennms.netmgt.capsd.plugins.LdapPlugin\"/>\n" +
-            "</capsd-configuration>\n";
-
     private EasyMockUtils m_mocks = new EasyMockUtils();
     private RrdStrategy<?,?> m_strategy = m_mocks.createMock(RrdStrategy.class);
 
+    @Autowired
     private MockEventIpcManager m_eventManager;
-
-    private JdbcCapsdDbSyncer m_syncer;
 
     @Before
     public void setUp() throws Exception {
@@ -143,18 +148,11 @@ public class OpenNMSProvisionerTest {
 
         RrdUtils.setStrategy(m_strategy);
         
-        m_provisioner = new OpenNMSProvisioner();
-        
-        m_eventManager = new MockEventIpcManager();
         m_provisioner.setEventManager(m_eventManager);
         
-        m_capsdConfig = new TestCapsdConfigManager(CAPSD_CONFIG);
-        CapsdConfigFactory.setInstance(m_capsdConfig);
-
         m_pollerConfig = new TestPollerConfigManager(POLLER_CONFIG, "localhost", false);
         PollerConfigFactory.setInstance(m_pollerConfig);
         
-        m_provisioner.setCapsdConfig(m_capsdConfig);
         m_provisioner.setPollerConfig(m_pollerConfig);
 
         InputStream configStream = ConfigurationTestUtils.getInputStreamForConfigFile("opennms-server.xml");
@@ -165,25 +163,6 @@ public class OpenNMSProvisionerTest {
         configStream = ConfigurationTestUtils.getInputStreamForConfigFile("database-schema.xml");
         DatabaseSchemaConfigFactory.setInstance(new DatabaseSchemaConfigFactory(configStream));
         configStream.close();
-
-        configStream = ConfigurationTestUtils.getInputStreamForResource(this, "/org/opennms/netmgt/capsd/collectd-configuration.xml");
-        CollectdConfigFactory collectdConfigFactory = new CollectdConfigFactory(configStream, onmsSvrConfig.getServerName(), onmsSvrConfig.verifyServer());
-        configStream.close();
-
-        JdbcTemplate jdbcTemplate = new JdbcTemplate(db);
-
-        m_syncer = new JdbcCapsdDbSyncer();
-        m_syncer.setJdbcTemplate(jdbcTemplate);
-        m_syncer.setOpennmsServerConfig(OpennmsServerConfigFactory.getInstance());
-        m_syncer.setCapsdConfig(m_capsdConfig);
-        m_syncer.setPollerConfig(m_pollerConfig);
-        m_syncer.setCollectdConfig(collectdConfigFactory);
-        m_syncer.setNextSvcIdSql(db.getNextServiceIdStatement());
-        m_syncer.afterPropertiesSet();
-
-        m_syncer.syncServices();
-        m_provisioner.setCapsdDbSyncer(m_syncer);
-
     }
 
     @After
@@ -255,9 +234,6 @@ public class OpenNMSProvisionerTest {
         assertEquals(Long.valueOf(interval), svc.getInterval());
         assertNotNull("Unables to find monitor for svc "+svcName+" in origonal config", m_pollerConfig.getServiceMonitor(svcName));
         assertNotNull("Unable to find monitor for svc "+svcName, mgr.getServiceMonitor(svcName));
-        
-        assertNotNull("Unable to find protocol plugin in capsdConfig for svc "+svcName, m_capsdConfig.getProtocolPlugin(svcName));
-        assertNotNull("Unable to find service table entry in capsdConfig for svc "+svcName, m_syncer.getServiceId(svcName));
 
         return configParams;
     }

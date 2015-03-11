@@ -102,6 +102,7 @@
                                 <toc/>
                                 <idprefix/>
                                 <idseparator>-</idseparator>
+                                <pdf-style>../../../default-theme.yml</pdf-style>
                             </attributes>
                         </configuration>
                     </execution>

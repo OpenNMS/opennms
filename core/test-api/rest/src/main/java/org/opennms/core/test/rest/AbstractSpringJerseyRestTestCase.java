@@ -118,13 +118,11 @@ public abstract class AbstractSpringJerseyRestTestCase {
     private static ThreadLocal<String> m_username = new InheritableThreadLocal<String>();
     private static ThreadLocal<Set<String>> m_roles = new InheritableThreadLocal<Set<String>>();
     
-    static {
-        setUser("admin", new String[] { "ROLE_ADMIN" });
-    }
-
     @Before
     public void setUp() throws Throwable {
         beforeServletStart();
+
+        setUser("admin", new String[] { "ROLE_ADMIN" });
 
         DaoTestConfigBean bean = new DaoTestConfigBean();
         bean.afterPropertiesSet();
@@ -258,7 +256,8 @@ public abstract class AbstractSpringJerseyRestTestCase {
     }
 
     private static Collection<String> getUserRoles() {
-        return Collections.unmodifiableCollection(m_roles.get());
+        final Set<String> roles = m_roles.get();
+        return roles == null? new HashSet<String>() : new HashSet<>(roles);
     }
 
     /**

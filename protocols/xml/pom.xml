@@ -95,17 +95,29 @@
       <artifactId>opennms-model</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-config</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-dao</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.core</groupId>
       <artifactId>org.opennms.core.web</artifactId>
       <scope>compile</scope>
     </dependency>
     <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-services</artifactId>
+      <groupId>org.opennms.features.collection</groupId>
+      <artifactId>org.opennms.features.collection.api</artifactId>
     </dependency>
     <dependency>
       <groupId>org.opennms.features.collection</groupId>
-      <artifactId>org.opennms.features.collection.api</artifactId>
+      <artifactId>org.opennms.features.collection.persistence.rrd</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.jcraft</groupId>
+      <artifactId>jsch</artifactId>
     </dependency>
     <dependency>
       <groupId>commons-jxpath</groupId>

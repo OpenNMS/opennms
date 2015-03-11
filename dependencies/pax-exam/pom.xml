@@ -67,7 +67,7 @@
     <dependency>
       <groupId>org.apache.karaf.itests</groupId>
       <artifactId>itests</artifactId>
-      <version>${karafPaxExamVersion}</version>
+      <version>${karafVersion}</version>
       <classifier>tests</classifier>
     </dependency>
     <!--

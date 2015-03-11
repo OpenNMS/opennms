@@ -277,38 +277,45 @@ public class Snmp4JTrapNotifier implements CommandResponder {
 
     @Override
     public void processPdu(CommandResponderEvent e) {
-    	PDU command = new PDU(e.getPDU());
-        IpAddress addr = ((IpAddress)e.getPeerAddress());
-        
+        PDU command = e.getPDU();
         if (command != null) {
-        	if (command.getType() == PDU.INFORM) {
-        		PDU response = new PDU(command);
-        		response.setErrorIndex(0);
-        		response.setErrorStatus(0);
-        		response.setType(PDU.RESPONSE);
-        		StatusInformation statusInformation = new StatusInformation();
-        		StateReference ref = e.getStateReference();
-        		try {
-        			e.getMessageDispatcher().returnResponsePdu(e.getMessageProcessingModel(),
-        														e.getSecurityModel(),
-        														e.getSecurityName(),
-        														e.getSecurityLevel(),
-        														response,
-        														e.getMaxSizeResponsePDU(),
-        														ref,
-        														statusInformation);
-        			LOG.debug("Sent RESPONSE PDU to peer {} acknowledging receipt of INFORM (reqId={})", addr, command.getRequestID());
-        		} catch (MessageException ex) {
-				LOG.error("Error while sending RESPONSE PDU to peer {}: {} acknowledging receipt of INFORM (reqId={})", addr, ex.getMessage(), command.getRequestID()
-				        );
-        		}
-        	}
-        }
-        
-        if (e.getPDU() instanceof PDUv1) {
-            m_listener.trapReceived(new Snmp4JV1TrapInformation(addr.getInetAddress(), new String(e.getSecurityName()), (PDUv1)e.getPDU(), m_trapProcessorFactory.createTrapProcessor()));
-        } else {
-            m_listener.trapReceived(new Snmp4JV2TrapInformation(addr.getInetAddress(), new String(e.getSecurityName()), e.getPDU(), m_trapProcessorFactory.createTrapProcessor()));
+            IpAddress addr = ((IpAddress)e.getPeerAddress());
+            if (command.getType() == PDU.INFORM) {
+                // Backing up original content
+                int errorIndex = command.getErrorIndex();
+                int errorStatus = command.getErrorStatus();
+                int type = command.getType();
+                // Prepare resopnse
+                command.setErrorIndex(0);
+                command.setErrorStatus(0);
+                command.setType(PDU.RESPONSE);
+                StatusInformation statusInformation = new StatusInformation();
+                StateReference ref = e.getStateReference();
+                // Send the response
+                try {
+                    e.getMessageDispatcher().returnResponsePdu(e.getMessageProcessingModel(),
+                                                               e.getSecurityModel(),
+                                                               e.getSecurityName(),
+                                                               e.getSecurityLevel(),
+                                                               command,
+                                                               e.getMaxSizeResponsePDU(),
+                                                               ref,
+                                                               statusInformation);
+                    LOG.debug("Sent RESPONSE PDU to peer {} acknowledging receipt of INFORM (reqId={})", addr, command.getRequestID());
+                } catch (MessageException ex) {
+                    LOG.error("Error while sending RESPONSE PDU to peer {}: {} acknowledging receipt of INFORM (reqId={})", addr, ex.getMessage(), command.getRequestID());
+                } finally {
+                    // Restoring original settings
+                    command.setErrorIndex(errorIndex);
+                    command.setErrorStatus(errorStatus);
+                    command.setType(type);
+                }
+            }
+            if (command instanceof PDUv1) {
+                m_listener.trapReceived(new Snmp4JV1TrapInformation(addr.getInetAddress(), new String(e.getSecurityName()), (PDUv1)command, m_trapProcessorFactory.createTrapProcessor()));
+            } else {
+                m_listener.trapReceived(new Snmp4JV2TrapInformation(addr.getInetAddress(), new String(e.getSecurityName()), command, m_trapProcessorFactory.createTrapProcessor()));
+            }
         }
     }
 }

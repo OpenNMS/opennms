@@ -31,17 +31,10 @@
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-config</artifactId>
-      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-model</artifactId>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-services</artifactId>
-      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms.dependencies</groupId>

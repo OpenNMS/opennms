@@ -31,6 +31,8 @@ package org.opennms.features.topology.plugins.topo.linkd.internal;
 import org.easymock.EasyMock;
 import org.junit.Before;
 import org.junit.Test;
+import org.opennms.core.utils.LldpUtils.LldpChassisIdSubType;
+import org.opennms.core.utils.LldpUtils.LldpPortIdSubType;
 import org.opennms.features.topology.api.topo.*;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.LldpLinkDao;
@@ -58,11 +60,11 @@ public class LldpLinkStatusProviderTest {
     public void setUp() {
         m_node1 = new OnmsNode();
         m_node1.setId(1);
-        m_node1.setLldpElement(new LldpElement(m_node1, "node1ChassisId", "node1SysName", LldpElement.LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_LOCAL));
+        m_node1.setLldpElement(new LldpElement(m_node1, "node1ChassisId", "node1SysName", LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_LOCAL));
 
         m_node2 = new OnmsNode();
         m_node2.setId(2);
-        m_node2.setLldpElement(new LldpElement(m_node2, "node2ChassisId", "node2SysName", LldpElement.LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_LOCAL));
+        m_node2.setLldpElement(new LldpElement(m_node2, "node2ChassisId", "node2SysName", LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_LOCAL));
 
         m_alarmDao = EasyMock.createMock(AlarmDao.class);
         m_lldpLinkDao = EasyMock.createMock(LldpLinkDao.class);
@@ -138,15 +140,15 @@ public class LldpLinkStatusProviderTest {
     private List<LldpLink> createLldpLinks() {
         List<LldpLink> links = new ArrayList<LldpLink>();
 
-        LldpLink link = new LldpLink(m_node1, 12, 1, "node1PortId", "node1PortDescr", LldpLink.LldpPortIdSubType.LLDP_PORTID_SUBTYPE_LOCAL,
-                "node2ChassisId", "node2SysName", LldpElement.LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_LOCAL, "node2PortId",
-                LldpLink.LldpPortIdSubType.LLDP_PORTID_SUBTYPE_LOCAL, "node2PortDescr");
+        LldpLink link = new LldpLink(m_node1, 12, 1, "node1PortId", "node1PortDescr", LldpPortIdSubType.LLDP_PORTID_SUBTYPE_LOCAL,
+                "node2ChassisId", "node2SysName", LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_LOCAL, "node2PortId",
+                LldpPortIdSubType.LLDP_PORTID_SUBTYPE_LOCAL, "node2PortDescr");
         link.setId(1);
         links.add(link);
 
-        LldpLink link2 = new LldpLink(m_node2, 21, 2, "node2PortId", "node2PortDescr", LldpLink.LldpPortIdSubType.LLDP_PORTID_SUBTYPE_LOCAL,
-                "node1ChassisId", "node1SysName", LldpElement.LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_LOCAL, "node1PortId",
-                LldpLink.LldpPortIdSubType.LLDP_PORTID_SUBTYPE_LOCAL, "node1PortDescr");
+        LldpLink link2 = new LldpLink(m_node2, 21, 2, "node2PortId", "node2PortDescr", LldpPortIdSubType.LLDP_PORTID_SUBTYPE_LOCAL,
+                "node1ChassisId", "node1SysName", LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_LOCAL, "node1PortId",
+                LldpPortIdSubType.LLDP_PORTID_SUBTYPE_LOCAL, "node1PortDescr");
         link2.setId(2);
         links.add(link2);
 

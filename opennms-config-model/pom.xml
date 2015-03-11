@@ -92,7 +92,6 @@
               org.opennms.netmgt.config.ackd.*;version="${project.version}",
               org.opennms.netmgt.config.actiond.*;version="${project.version}",
               org.opennms.netmgt.config.ami.*;version="${project.version}",
-              org.opennms.netmgt.config.capsd.*;version="${project.version}",
               org.opennms.netmgt.config.categories.*;version="${project.version}",
               org.opennms.netmgt.config.charts.*;version="${project.version}",
               org.opennms.netmgt.config.collectd.*;version="${project.version}",

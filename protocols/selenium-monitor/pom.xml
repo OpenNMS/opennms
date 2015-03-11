@@ -50,8 +50,18 @@
 
   <dependencies>
     <dependency>
-	<groupId>org.hibernate.javax.persistence</groupId>
-        <artifactId>hibernate-jpa-2.0-api</artifactId>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-util</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.opennms.features.poller</groupId>
+      <artifactId>org.opennms.features.poller.api</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.hibernate.javax.persistence</groupId>
+      <artifactId>hibernate-jpa-2.0-api</artifactId>
     </dependency>
 
     <dependency>
@@ -59,12 +69,6 @@
       <artifactId>junit</artifactId>
       <!-- Overrided scope from parent to compile -->
       <scope>compile</scope>
-    </dependency>
-    
-    <dependency>
-		<groupId>org.opennms</groupId>
-    	<artifactId>opennms-services</artifactId>
-    	<scope>provided</scope>
     </dependency>
     
     <dependency>

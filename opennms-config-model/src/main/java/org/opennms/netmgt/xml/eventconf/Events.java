@@ -91,7 +91,7 @@ public class Events implements Serializable {
     private Global m_global;
 
 	// @Size(min=1)
-	@XmlElement(name="event", required=true)
+	@XmlElement(name="event", required=false)
     private List<Event> m_events = new ArrayList<Event>();
 
 	// @Size(min=0)

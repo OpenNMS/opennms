@@ -56,7 +56,6 @@ import org.opennms.core.test.db.MockDatabase;
 import org.opennms.core.test.db.TemporaryDatabaseAware;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.Querier;
-import org.opennms.netmgt.capsd.JdbcCapsdDbSyncer;
 import org.opennms.netmgt.config.CollectdConfigFactory;
 import org.opennms.netmgt.config.DatabaseSchemaConfigFactory;
 import org.opennms.netmgt.config.OpennmsServerConfigFactory;
@@ -80,7 +79,6 @@ import org.opennms.netmgt.mock.MockVisitor;
 import org.opennms.netmgt.mock.MockVisitorAdapter;
 import org.opennms.netmgt.mock.OutageAnticipator;
 import org.opennms.netmgt.mock.PollAnticipator;
-import org.opennms.netmgt.mock.TestCapsdConfigManager;
 import org.opennms.netmgt.model.events.EventUtils;
 import org.opennms.netmgt.poller.pollables.PollableNetwork;
 import org.opennms.netmgt.rrd.RrdUtils;
@@ -89,7 +87,6 @@ import org.opennms.netmgt.xmlrpcd.OpenNMSProvisioner;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.opennms.test.mock.MockUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.support.TransactionTemplate;
 
@@ -103,6 +100,7 @@ import org.springframework.transaction.support.TransactionTemplate;
         "classpath:/META-INF/opennms/applicationContext-daemon.xml",
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
         "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
+        "classpath:/META-INF/opennms/applicationContext-provisioner.xml",
 
         // Override the default QueryManager with the DAO version
         "classpath:/META-INF/opennms/applicationContext-pollerdTest.xml"
@@ -110,13 +108,6 @@ import org.springframework.transaction.support.TransactionTemplate;
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase(tempDbClass=MockDatabase.class,reuseDatabase=false)
 public class PollerQueryManagerDaoTest implements TemporaryDatabaseAware<MockDatabase> {
-    private static final String CAPSD_CONFIG = "\n"
-            + "<capsd-configuration max-suspect-thread-pool-size=\"2\" max-rescan-thread-pool-size=\"3\"\n"
-            + "   delete-propagation-enabled=\"true\">\n"
-            + "   <protocol-plugin protocol=\"ICMP\" class-name=\"org.opennms.netmgt.capsd.plugins.LdapPlugin\"/>\n"
-            + "   <protocol-plugin protocol=\"SMTP\" class-name=\"org.opennms.netmgt.capsd.plugins.LdapPlugin\"/>\n"
-            + "   <protocol-plugin protocol=\"HTTP\" class-name=\"org.opennms.netmgt.capsd.plugins.LdapPlugin\"/>\n"
-            + "</capsd-configuration>\n";
 
 	private Poller m_poller;
 
@@ -143,6 +134,9 @@ public class PollerQueryManagerDaoTest implements TemporaryDatabaseAware<MockDat
 
 	@Autowired
 	private TransactionTemplate m_transactionTemplate;
+
+	@Autowired
+	private OpenNMSProvisioner m_provisioner;
 
 
 	//private DemandPollDao m_demandPollDao;
@@ -213,6 +207,8 @@ public class PollerQueryManagerDaoTest implements TemporaryDatabaseAware<MockDat
 		m_pollerConfig.addDowntime(1000L, 0L, -1L, false);
 		m_pollerConfig.setDefaultPollInterval(2000L);
 		m_pollerConfig.addService(m_network.getService(2, "192.168.1.3", "HTTP"));
+
+		m_provisioner.setPollerConfig(m_pollerConfig);
 
 		m_anticipator = new EventAnticipator();
 		m_outageAnticipator = new OutageAnticipator(m_db);
@@ -1152,8 +1148,6 @@ public class PollerQueryManagerDaoTest implements TemporaryDatabaseAware<MockDat
 
 		startDaemons();
 
-        TestCapsdConfigManager capsdConfig = new TestCapsdConfigManager(CAPSD_CONFIG);
-
         InputStream configStream = ConfigurationTestUtils.getInputStreamForConfigFile("opennms-server.xml");
         OpennmsServerConfigFactory onmsSvrConfig = new OpennmsServerConfigFactory(configStream);
         configStream.close();
@@ -1166,24 +1160,7 @@ public class PollerQueryManagerDaoTest implements TemporaryDatabaseAware<MockDat
         CollectdConfigFactory collectdConfig = new CollectdConfigFactory(configStream, onmsSvrConfig.getServerName(), onmsSvrConfig.verifyServer());
         configStream.close();
         
-        JdbcTemplate jdbcTemplate = new JdbcTemplate(m_db);
-
-        JdbcCapsdDbSyncer syncer = new JdbcCapsdDbSyncer();
-        syncer.setJdbcTemplate(jdbcTemplate);
-        syncer.setOpennmsServerConfig(onmsSvrConfig);
-        syncer.setCapsdConfig(capsdConfig);
-        syncer.setPollerConfig(m_pollerConfig);
-        syncer.setCollectdConfig(collectdConfig);
-        syncer.setNextSvcIdSql(m_db.getNextServiceIdStatement());
-        syncer.afterPropertiesSet();
-
-		OpenNMSProvisioner provisioner = new OpenNMSProvisioner();
-		provisioner.setPollerConfig(m_pollerConfig);
-		provisioner.setCapsdConfig(capsdConfig);
-		provisioner.setCapsdDbSyncer(syncer);
-
-		provisioner.setEventManager(m_eventMgr);
-		provisioner.addServiceDNS("MyDNS", 3, 100, 1000, 500, 3000, 53,
+		m_provisioner.addServiceDNS("MyDNS", 3, 100, 1000, 500, 3000, 53,
 				"www.opennms.org");
 
 		assertNotNull("The service id for MyDNS is null", m_db
