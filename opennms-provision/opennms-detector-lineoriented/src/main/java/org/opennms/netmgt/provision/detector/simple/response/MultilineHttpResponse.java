@@ -31,6 +31,9 @@ package org.opennms.netmgt.provision.detector.simple.response;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 /**
  * <p>MultilineHttpResponse class.</p>
@@ -39,15 +42,14 @@ import java.util.regex.Pattern;
  * @version $Id: $
  */
 public class MultilineHttpResponse extends MultilineOrientedResponse {
-    
-    
-    private static final Pattern DEFAULT_REGEX = Pattern.compile("([H][T][T][P+]/[1].[0-1]) ([0-6]+) ([a-zA-Z ]+)\r\n");
+    private static final Logger LOG = LoggerFactory.getLogger(MultilineHttpResponse.class);
+    private static final Pattern HTTP_RESPONSE_REGEX = Pattern.compile("([H][T][T][P+]/[1].[0-1]) ([0-9][0-9][0-9]) ([a-zA-Z ]+)\r?\n");
 
     /**
      * <p>Constructor for MultilineHttpResponse.</p>
      */
     public MultilineHttpResponse(){}
-    
+
     /**
      * <p>validateResponse</p>
      *
@@ -59,27 +61,23 @@ public class MultilineHttpResponse extends MultilineOrientedResponse {
      * @throws java.lang.Exception if any.
      */
     public boolean validateResponse(final String pattern, final String url, final boolean isCheckCode, final int maxRetCode) throws Exception {
-        final String[] codeArray = Integer.toString(maxRetCode).split("");
-        if(codeArray.length < 3) {
-            throw new Exception("Max Ret Code is too Short");
-        }
         final String httpResponse = (String)getResponseList().toArray()[0];
-
-        final Pattern p;
-        if (isCheckCode) {
-            p = Pattern.compile(String.format("([H][T][T][P+]/[1].[0-1]) ([0-%s][0-2][0-%s]) ([a-zA-Z ]+)\r\n", codeArray[1], codeArray[3]));
-        } else {
-            p = DEFAULT_REGEX;
-        }
-
-        final Matcher m = p.matcher(httpResponse);
+        LOG.debug("HTTP Response: {}", httpResponse);
+        final Matcher m = HTTP_RESPONSE_REGEX.matcher(httpResponse);
         if (m.matches()) {
-            return getResponseListAsString(getResponseList().toArray()).contains(pattern);
+            if (isCheckCode) {
+                final int returnCode = Integer.valueOf(m.group(2)).intValue();
+                LOG.debug("return code = {}, max return code = {}", returnCode, maxRetCode);
+                return (returnCode <= maxRetCode);
+            } else {
+                return true;
+            }
+        } else {
+            LOG.debug("does not match");
+            return false;
         }
-        
-        return false;
     }
-    
+
     /**
      * <p>toString</p>
      *
@@ -89,7 +87,7 @@ public class MultilineHttpResponse extends MultilineOrientedResponse {
     public String toString() {
         return getResponseList().isEmpty() ? "MultilineHttpResponse" : String.format("Response: %s", getResponseListAsString(getResponseList().toArray()));
     }
-    
+
     private String getResponseListAsString(final Object[] array) {
         final StringBuffer retVal = new StringBuffer();
         for(int i = 0; i < array.length; i++){
