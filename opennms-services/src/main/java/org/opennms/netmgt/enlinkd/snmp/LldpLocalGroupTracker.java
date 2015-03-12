@@ -88,8 +88,14 @@ public final class LldpLocalGroupTracker extends AggregateTracker {
     public static final String LLDP_LOC_OID = ".1.0.8802.1.1.2.1.3";
 
     public static String decodeLldpChassisId(final SnmpValue lldpchassisid, Integer lldpLocChassisidSubType) {
+        if (lldpLocChassisidSubType == null) {
+            if (lldpchassisid.isDisplayable())
+                return lldpchassisid.toDisplayString();
+            else 
+                return lldpchassisid.toHexString();
+        }
         try {
-        LldpChassisIdSubType type = LldpChassisIdSubType.get(lldpLocChassisidSubType);
+            LldpChassisIdSubType type = LldpChassisIdSubType.get(lldpLocChassisidSubType);
         
         /*
          *  If the associated LldpChassisIdSubtype object has a value of
@@ -234,8 +240,8 @@ public final class LldpLocalGroupTracker extends AggregateTracker {
         return m_store.getInt32(LLDP_LOC_CHASSISID_SUBTYPE_ALIAS);
     }
     
-    public String getLldpLocChassisid() {
-    	return decodeLldpChassisId(m_store.getValue(LLDP_LOC_CHASSISID_ALIAS),getLldpLocChassisidSubType());
+    public SnmpValue getLldpLocChassisid() {
+    	return m_store.getValue(LLDP_LOC_CHASSISID_ALIAS);
     }
     
     public String getLldpLocSysname() {
@@ -259,7 +265,7 @@ public final class LldpLocalGroupTracker extends AggregateTracker {
 
     public LldpElement getLldpElement() {
 		LldpElement lldpElement = new LldpElement();
-		lldpElement.setLldpChassisId(getLldpLocChassisid());
+		lldpElement.setLldpChassisId(decodeLldpChassisId(getLldpLocChassisid(),getLldpLocChassisidSubType()));
 		lldpElement.setLldpChassisIdSubType(LldpChassisIdSubType.get(getLldpLocChassisidSubType()));
 		lldpElement.setLldpSysname(getLldpLocSysname());
 		return lldpElement;
