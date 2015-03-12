@@ -12,10 +12,10 @@
       <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
     </resourceType>
 
-    <resourceType name="jnxJsSPUMonitoringObjectsTable" label="Juniper SRX SPU Monitoring" resourceLabel="${jnxJsSPUMonitoringNodeDescr}">
+    <resourceType name="jnxJsSPUMonitoringObjectsTable" label="Juniper SRX SPU Monitoring" resourceLabel="${juniSPUMonNodeDescr}">
       <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
       <storageStrategy class="org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy">
-        <parameter key="sibling-column-name" value="jnxJsSPUMonitoringNodeDescr"/>
+        <parameter key="sibling-column-name" value="juniSPUMonNodeDescr"/>
       </storageStrategy>
     </resourceType>
 
@@ -53,9 +53,9 @@
       </group>
 
       <group name="juniper-srx-router" ifType="all">
-        <mibObj oid=".1.3.6.1.4.1.2636.3.39.1.12.1.1.1.11" instance="jnxJsSPUMonitoringObjectsTable" alias="jnxJsSPUMonitoringNodeDescr"          type="string" />
-        <mibObj oid=".1.3.6.1.4.1.2636.3.39.1.12.1.1.1.6"  instance="jnxJsSPUMonitoringObjectsTable" alias="jnxJsSPUMonitoringCurrentFlowSession" type="Gauge32" />
-        <mibObj oid=".1.3.6.1.4.1.2636.3.39.1.12.1.1.1.7"  instance="jnxJsSPUMonitoringObjectsTable" alias="jnxJsSPUMonitoringMaxFlowSession"     type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.2636.3.39.1.12.1.1.1.11" instance="jnxJsSPUMonitoringObjectsTable" alias="juniSPUMonNodeDescr"    type="string" />
+        <mibObj oid=".1.3.6.1.4.1.2636.3.39.1.12.1.1.1.6"  instance="jnxJsSPUMonitoringObjectsTable" alias="juniSPUMongCurrFlow"    type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.2636.3.39.1.12.1.1.1.7"  instance="jnxJsSPUMonitoringObjectsTable" alias="juniSPUMonMaxFlow"      type="Gauge32" />
       </group>
 
       <group name="juniper-jrouter" ifType="ignore">
