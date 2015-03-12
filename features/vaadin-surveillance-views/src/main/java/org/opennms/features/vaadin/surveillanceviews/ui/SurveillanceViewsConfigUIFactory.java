@@ -1,8 +1,7 @@
-<%--
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,21 +25,24 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
+package org.opennms.features.vaadin.surveillanceviews.ui;
 
---%>
+import org.opennms.osgi.OnmsVaadinUIFactory;
+import org.osgi.service.blueprint.container.BlueprintContainer;
 
-<%@page language="java"
-        contentType="text/html"
-        session="true"
-        %>
-
-<%
-    String viewName = "";
-
-    if (request.getParameterMap().containsKey("viewName")) {
-        viewName = "&viewName=" + request.getParameter("viewName");
+/**
+ * A factory class responsible for constructing this application.
+ *
+ * @author Christian Pape
+ */
+public class SurveillanceViewsConfigUIFactory extends OnmsVaadinUIFactory {
+    /**
+     * Constructor for this factory.
+     *
+     * @param container the blueprint container
+     * @param beanName  the bean
+     */
+    public SurveillanceViewsConfigUIFactory(BlueprintContainer container, String beanName) {
+        super(SurveillanceViewsConfigUI.class, container, beanName);
     }
-%>
-
-
-<iframe src="osgi/vaadin-surveillance-views?dashboard=false<%= viewName %>" frameborder="0" style="min-height:100%; min-width:100%;"></iframe>
+}

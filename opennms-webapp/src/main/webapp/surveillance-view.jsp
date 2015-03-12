@@ -34,6 +34,14 @@
         session="true"
         %>
 
+<jsp:include page="/includes/bootstrap.jsp" flush="false" >
+    <jsp:param name="title" value="Vaadin Surveillance Views" />
+    <jsp:param name="headTitle" value="Vaadin Surveillance Views" />
+    <jsp:param name="location" value="surveillance-view" />
+    <jsp:param name="vaadinEmbeddedStyles" value="true" />
+    <jsp:param name="breadcrumb" value="Vaadin Surveillance Views" />
+</jsp:include>
+
 <%
     String viewName = "";
 
@@ -43,4 +51,6 @@
 %>
 
 
-<iframe src="osgi/vaadin-surveillance-views?dashboard=false<%= viewName %>" frameborder="0" style="min-height:100%; min-width:100%;"></iframe>
+<iframe id="surveillance-view-ui" src="osgi/vaadin-surveillance-views?dashboard=false<%= viewName %>" frameborder="0" style="height:100%; width:100%;"></iframe>
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="true"/>
+

@@ -34,13 +34,14 @@
         session="true"
         %>
 
-<%
-    String viewName = "";
+<jsp:include page="/includes/bootstrap.jsp" flush="false" >
+  <jsp:param name="title" value="Surveillance Views Config Web UI" />
+  <jsp:param name="headTitle" value="Surveillance Views Config Web UI" />
+  <jsp:param name="location" value="admin" />
+  <jsp:param name="breadcrumb" value="<a href='admin/index.jsp'>Admin</a>" />
+  <jsp:param name="breadcrumb" value="Surveillance Views Config Web UI" />
+  <jsp:param name="vaadinEmbeddedStyles" value="true" />
+</jsp:include>
 
-    if (request.getParameterMap().containsKey("viewName")) {
-        viewName = "&viewName=" + request.getParameter("viewName");
-    }
-%>
-
-
-<iframe src="osgi/vaadin-surveillance-views?dashboard=false<%= viewName %>" frameborder="0" style="min-height:100%; min-width:100%;"></iframe>
+<iframe src="osgi/vaadin-surveillance-views-config" frameborder="0" style="height:100%; width:100%;"></iframe>
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="true"/>

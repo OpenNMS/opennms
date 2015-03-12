@@ -1,4 +1,3 @@
-<%--
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
@@ -26,21 +25,39 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
+package org.opennms.features.vaadin.surveillanceviews.model;
 
---%>
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlRootElement;
 
-<%@page language="java"
-        contentType="text/html"
-        session="true"
-        %>
+/**
+ * This class represents the category element of the surveillance view configuration xml.
+ *
+ * @author Christian Pape
+ */
+@XmlRootElement
+public class Category {
+    /**
+     * the field for storing thew category name
+     */
+    private java.lang.String m_name;
 
-<%
-    String viewName = "";
-
-    if (request.getParameterMap().containsKey("viewName")) {
-        viewName = "&viewName=" + request.getParameter("viewName");
+    /**
+     * Returns the name of this category.
+     *
+     * @return the name of this category
+     */
+    @XmlAttribute(name = "name", required = true)
+    public String getName() {
+        return m_name;
     }
-%>
 
-
-<iframe src="osgi/vaadin-surveillance-views?dashboard=false<%= viewName %>" frameborder="0" style="min-height:100%; min-width:100%;"></iframe>
+    /**
+     * Sets the name of the category.
+     *
+     * @param name the name to be used
+     */
+    public void setName(String name) {
+        this.m_name = name;
+    }
+}

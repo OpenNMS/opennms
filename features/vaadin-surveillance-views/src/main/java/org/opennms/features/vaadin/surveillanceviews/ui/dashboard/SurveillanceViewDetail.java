@@ -1,8 +1,7 @@
-<%--
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,21 +25,24 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
+package org.opennms.features.vaadin.surveillanceviews.ui.dashboard;
 
---%>
+import org.opennms.netmgt.model.OnmsCategory;
 
-<%@page language="java"
-        contentType="text/html"
-        session="true"
-        %>
+import java.util.Set;
 
-<%
-    String viewName = "";
-
-    if (request.getParameterMap().containsKey("viewName")) {
-        viewName = "&viewName=" + request.getParameter("viewName");
-    }
-%>
-
-
-<iframe src="osgi/vaadin-surveillance-views?dashboard=false<%= viewName %>" frameborder="0" style="min-height:100%; min-width:100%;"></iframe>
+/**
+ * This interface is used to represent components that are refreshable by a surveillance view table.
+ *
+ * @author Christian Pape
+ */
+public interface SurveillanceViewDetail {
+    /**
+     * Refreshes the contents of this component. This is triggered by a mouse interaction or data
+     * change in associated surveillance view.
+     *
+     * @param rowCategories the row categories
+     * @param colCategories the column categories
+     */
+    public void refreshDetails(Set<OnmsCategory> rowCategories, Set<OnmsCategory> colCategories);
+}

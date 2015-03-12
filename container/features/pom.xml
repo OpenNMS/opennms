@@ -69,6 +69,9 @@
             <repository>mvn:org.opennms.features/vaadin-dashboard/${project.version}/xml/features</repository>
             <repository>mvn:org.opennms.features.vaadin-dashlets/dashlet-features/${project.version}/xml</repository>
 
+            <!-- Vaadin Surveillance Views Feature-->
+            <repository>mvn:org.opennms.features/vaadin-surveillance-views/${project.version}/xml/features</repository>
+
           </repositories>
 
           <!-- 
@@ -253,5 +256,12 @@
       <type>pom</type>
       <scope>provided</scope>
     </dependency>
+      <dependency>
+          <groupId>org.opennms.features</groupId>
+          <artifactId>vaadin-surveillance-views</artifactId>
+          <version>${project.version}</version>
+          <type>pom</type>
+          <scope>provided</scope>
+      </dependency>
   </dependencies>
 </project>

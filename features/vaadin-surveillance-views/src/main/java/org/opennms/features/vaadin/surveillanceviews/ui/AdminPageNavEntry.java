@@ -1,8 +1,7 @@
-<%--
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,21 +25,56 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
+package org.opennms.features.vaadin.surveillanceviews.ui;
 
---%>
+import org.opennms.web.navigate.PageNavEntry;
 
-<%@page language="java"
-        contentType="text/html"
-        session="true"
-        %>
+/**
+ * Navigation entry for displaying a link to the surveillance view configuration page.
+ *
+ * @author Christian Pape
+ */
+public class AdminPageNavEntry implements PageNavEntry {
+    /**
+     * name of this PageNavEntry
+     */
+    private String m_name;
+    /**
+     * URL of this PageNavEntry
+     */
+    private String m_url;
 
-<%
-    String viewName = "";
-
-    if (request.getParameterMap().containsKey("viewName")) {
-        viewName = "&viewName=" + request.getParameter("viewName");
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getName() {
+        return m_name;
     }
-%>
 
+    /**
+     * Sets the name of the PageNavEntry.
+     *
+     * @param name the name to be set
+     */
+    public void setName(final String name) {
+        this.m_name = name;
+    }
 
-<iframe src="osgi/vaadin-surveillance-views?dashboard=false<%= viewName %>" frameborder="0" style="min-height:100%; min-width:100%;"></iframe>
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getUrl() {
+        return m_url;
+    }
+
+    /**
+     * Sets the URL of this PageNavEntry.
+     *
+     * @param url the URL to be set
+     */
+    public void setUrl(final String url) {
+        this.m_url = url;
+    }
+}
