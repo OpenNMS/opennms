@@ -221,11 +221,11 @@ public class TimelineRestService extends OnmsRestService {
          * @return true, if no resolved yet
          */
         public boolean drawEvent(Graphics2D graphics2D, long delta, long start, int width, OnmsOutage onmsOutage) throws IOException {
-            long p1 = onmsOutage.getServiceLostEvent().getEventCreateTime().getTime() / 1000;
+            long p1 = onmsOutage.getIfLostService().getTime() / 1000;
             long p2 = start + delta;
 
-            if (onmsOutage.getServiceRegainedEvent() != null) {
-                p2 = onmsOutage.getServiceRegainedEvent().getEventCreateTime().getTime() / 1000;
+            if (onmsOutage.getIfRegainedService() != null) {
+                p2 = onmsOutage.getIfRegainedService().getTime() / 1000;
             }
 
             graphics2D.setColor(ONMS_RED);
@@ -233,7 +233,7 @@ public class TimelineRestService extends OnmsRestService {
             int n2 = (int) ((p2 - start) / (delta / width));
             graphics2D.fillRect(n1, 2, (n2 - n1 > 0 ? n2 - n1 : 1), 16);
 
-            return onmsOutage.getServiceRegainedEvent() == null;
+            return onmsOutage.getIfRegainedService() == null;
         }
 
         /**
@@ -274,11 +274,11 @@ public class TimelineRestService extends OnmsRestService {
          * @return the HTML map entry
          */
         public String getMapEntry(Graphics2D graphics2D, long delta, long start, int width, OnmsOutage onmsOutage) {
-            long p1 = onmsOutage.getServiceLostEvent().getEventCreateTime().getTime() / 1000;
+            long p1 = onmsOutage.getIfLostService().getTime() / 1000;
             long p2 = start + delta;
 
-            if (onmsOutage.getServiceRegainedEvent() != null) {
-                p2 = onmsOutage.getServiceRegainedEvent().getEventCreateTime().getTime() / 1000;
+            if (onmsOutage.getIfRegainedService() != null) {
+                p2 = onmsOutage.getIfRegainedService().getTime() / 1000;
             }
 
             graphics2D.setColor(ONMS_RED);
@@ -292,7 +292,7 @@ public class TimelineRestService extends OnmsRestService {
             stringBuffer.append(",18\" ");
             stringBuffer.append("href=\"/opennms/outage/detail.htm?id=");
             stringBuffer.append(onmsOutage.getId());
-            stringBuffer.append("\" alt=\"Id " + onmsOutage.getId() + "\" title=\"" + onmsOutage.getServiceLostEvent().getEventCreateTime() + "\">");
+            stringBuffer.append("\" alt=\"Id " + onmsOutage.getId() + "\" title=\"" + onmsOutage.getIfLostService() + "\">");
             return stringBuffer.toString();
         }
     }

@@ -89,7 +89,7 @@ public class OutageRestServiceTest extends AbstractSpringJerseyRestTestCase {
                 dao.save(application);
 
                 // get the SNMP service from node 1 and assign the application to it
-                final OnmsMonitoredService svc = populator.getMonitoredServiceDao().get(populator.getNode1().getId(), InetAddressUtils.addr("192.168.1.1"), "SNMP");
+                final OnmsMonitoredService svc = populator.getMonitoredServiceDao().get(populator.getNode1().getId(), InetAddressUtils.addr("192.168.1.2"), "HTTP");
                 svc.addApplication(application);
                 application.addMonitoredService(svc);
                 populator.getMonitoredServiceDao().saveOrUpdate(svc);
