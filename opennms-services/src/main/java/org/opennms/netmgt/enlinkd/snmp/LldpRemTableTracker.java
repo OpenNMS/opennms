@@ -96,6 +96,12 @@ public class LldpRemTableTracker extends TableTracker {
     };
     
     public static String decodeLldpPortId(Integer lldpPortIdSubType,SnmpValue lldpportid) {
+        if (lldpPortIdSubType == null) {
+            if (lldpportid.isDisplayable())
+                return lldpportid.toDisplayString();
+            else 
+                return lldpportid.toHexString();
+        }
         try {
             LldpPortIdSubType type=LldpPortIdSubType.get(lldpPortIdSubType);
         /*
@@ -179,8 +185,8 @@ public class LldpRemTableTracker extends TableTracker {
 	    	return getValue(LLDP_REM_CHASSIS_ID_SUBTYPE).toInt();
 	    }
 	    
-	    public String getLldpRemChassisId() {
-	    	return LldpLocalGroupTracker.decodeLldpChassisId(getValue(LLDP_REM_CHASSIS_ID), getLldpRemChassisidSubtype());
+	    public SnmpValue getLldpRemChassisId() {
+	        return getValue(LLDP_REM_CHASSIS_ID);
 	    }
 	    
 	    public Integer getLldpRemPortidSubtype() {
@@ -210,7 +216,7 @@ public class LldpRemTableTracker extends TableTracker {
             LOG.info( "getLldpLink: row local port id: {}", lldpLink.getLldpPortId());
             LOG.info( "getLldpLink: row local port subtype: {}", LldpPortIdSubType.getTypeString(lldpLink.getLldpPortIdSubType().getValue()));
     	
-            lldpLink.setLldpRemChassisId(getLldpRemChassisId());
+            lldpLink.setLldpRemChassisId(LldpLocalGroupTracker.decodeLldpChassisId(getLldpRemChassisId() , getLldpRemChassisidSubtype()));
             LOG.info( "getLldpLink: row rem lldp identifier: {}", lldpLink.getLldpRemChassisId());
             
             lldpLink.setLldpRemChassisIdSubType(LldpChassisIdSubType.get(getLldpRemChassisidSubtype()));
