@@ -42,5 +42,36 @@
     }
 %>
 
+<script type="text/javascript">
 
-<iframe src="osgi/vaadin-surveillance-views?dashboard=false<%= viewName %>" frameborder="0" style="min-height:100%; min-width:100%;"></iframe>
+  var isInitialized = false;
+  var checkInterval = setInterval(checkIframe, 1000);
+
+  function checkIframe(){
+
+      var iframe = document.getElementById("surveillance-iframe");
+
+      iframe.contentWindow.postMessage("test", window.location.origin);
+      if(isInitialized){
+          clearInterval(checkInterval);
+      }
+  }
+
+  function receiveMessage(event){
+    isInitialized = true;
+    if(event.origin !== window.location.origin)
+      return;
+
+    var elem = document.getElementById("surveillance-view");
+    elem.style.height = event.data;
+
+  }
+
+  window.addEventListener("message", receiveMessage, false);
+
+</script>
+
+<div id="surveillance-view">
+
+<iframe id="surveillance-iframe" src="osgi/vaadin-surveillance-views?dashboard=false<%= viewName %>" frameborder="0" style="min-height:100%; min-width:100%;"></iframe>
+</div>
